@@ -69,22 +69,34 @@ export async function GET(req: NextRequest) {
     }
 
     // Execute queries in parallel
+    // skipFacets: true — facets are fetched separately via getSearchFacets
+    const queryStart = Date.now();
     const [searchResult, facets] = await Promise.all([
       searchListings(params, { 
-        skipFacets: false,
+        skipFacets: true,
         skipTotalCount: false,
       }),
       getSearchFacets(params),
     ]);
+    const queryMs = Date.now() - queryStart;
 
-    // Combine results
+    // Combine results (facets from getSearchFacets replace any from searchListings)
     const finalResult: SearchResponse = {
       ...searchResult,
       facets,
     };
 
+    const totalMs = Date.now() - startTime;
+
+    // Server timing header (visible in DevTools Network tab)
     const response = NextResponse.json(finalResult);
+    response.headers.set('Server-Timing', `db;dur=${queryMs}, total;dur=${totalMs}, search;dur=${searchResult.meta?.took ?? 0}`);
     applyCdnHeaders(response, 'search');
+
+    // Log slow requests (>1s) for monitoring
+    if (totalMs > 1000) {
+      console.warn(`[search] Slow: ${totalMs}ms (db=${queryMs}ms, search=${searchResult.meta?.took ?? 0}ms) q=${params.q || '-'} make=${params.make?.join(',') || '-'}`);
+    }
 
     return response;
   } catch (error) {

@@ -10,6 +10,7 @@ import {
   uniqueIndex,
   pgEnum,
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { user } from './auth';
 import { partner } from './partner';
 import {
@@ -385,6 +386,61 @@ export const carListing = pgTable('car_listing', {
   // ⚡ Optimized sorting index for newest sort (avoid coalesce in ORDER BY)
   index('car_listing_partnerId_publishedAt_createdAt_idx').on(table.partnerId, table.publishedAt.desc(), table.createdAt.desc()),
   index('car_listing_userId_publishedAt_createdAt_idx').on(table.userId, table.publishedAt.desc(), table.createdAt.desc()),
+  
+  // ========================================
+  // ⚡ SEARCH PERFORMANCE: Partial indexes for public active listings
+  // Base: WHERE approved AND active AND NOT needs_remoderation
+  // These dramatically reduce scan size for ALL search/facet/count queries
+  // Uses raw SQL to avoid drizzle-kit parameterization issues with DDL
+  // ========================================
+  
+  // Public listings base (for ID query, COUNT)
+  index('idx_public_listings_id_expires').on(table.expiresAt, table.id)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  
+  // Newest sort
+  index('idx_public_listings_newest').on(table.originalPublishedAt.desc(), table.publishedAt.desc(), table.createdAt.desc())
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  
+  // Price sort  
+  index('idx_public_listings_price_asc').on(table.price.asc(), table.createdAt.desc())
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_listings_price_desc').on(table.price.desc(), table.createdAt.desc())
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  
+  // Facet indexes (each GROUP BY column + expires_at for range filter)
+  index('idx_public_facet_make').on(table.make, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_model').on(table.model, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_trim').on(table.trim, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_emirate').on(table.emirate, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_specs').on(table.specs, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_body_type').on(table.bodyType, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_fuel_type').on(table.fuelType, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_transmission').on(table.transmission, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_engine_size').on(table.engineSize, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_exterior_color').on(table.exteriorColor, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_interior_color').on(table.interiorColor, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_seller_type').on(table.sellerType, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  
+  // Range facet indexes (year, price, mileage min/max)
+  index('idx_public_facet_year').on(table.year, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_mileage').on(table.mileage, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
+  index('idx_public_facet_price').on(table.price, table.expiresAt)
+    .where(sql`moderation_status = 'approved' AND lifecycle_status = 'active' AND needs_remoderation = false`),
 ]);
 
 export const listingPriceHistory = pgTable('listing_price_history', {

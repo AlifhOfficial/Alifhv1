@@ -4,7 +4,7 @@
  * Features:
  * - 3-tier filters: basic (text), medium (common), advanced (all)
  * - Faceted counts for filter UI
- * - Full-text search with pg_trgm (fuzzy matching)
+ * - Constants-resolved text search with pg_trgm GIN fallback
  * - Optimized 2-step pattern (IDs first, then details)
  * 
  * @module queries/listings/car-listings/search-query
@@ -41,6 +41,145 @@ import {
 const DEFAULT_LIMIT = 30;
 const MAX_LIMIT = 100;
 
+// ============================================================================
+// TEXT SEARCH: In-memory keyword resolution against known constants
+// Converts free-text keywords to exact filter conditions (B-tree indexed)
+// instead of expensive ILIKE scans across multiple columns.
+// ============================================================================
+
+// Build lowercase lookup maps at module load (once, ~0ms)
+const MAKE_LOOKUP = new Map<string, string>(); // lowercase → exact value
+for (const make of CAR_MAKES) {
+  MAKE_LOOKUP.set(make.toLowerCase(), make);
+}
+
+const MODEL_LOOKUP = new Map<string, { model: string; make: string }[]>(); // lowercase → [{model, make}]
+for (const [make, models] of Object.entries(CAR_MODELS)) {
+  for (const model of models) {
+    const key = model.toLowerCase();
+    if (!MODEL_LOOKUP.has(key)) MODEL_LOOKUP.set(key, []);
+    MODEL_LOOKUP.get(key)!.push({ model, make });
+  }
+}
+
+const BODY_TYPE_LOOKUP = new Map<string, string>(); // lowercase label/value → value
+for (const bt of BODY_TYPES) {
+  BODY_TYPE_LOOKUP.set(bt.value.toLowerCase(), bt.value);
+  BODY_TYPE_LOOKUP.set(bt.label.toLowerCase(), bt.value);
+}
+
+const FUEL_TYPE_LOOKUP = new Map<string, string>();
+for (const ft of FUEL_TYPES) {
+  FUEL_TYPE_LOOKUP.set(ft.value.toLowerCase(), ft.value);
+  FUEL_TYPE_LOOKUP.set(ft.label.toLowerCase(), ft.value);
+}
+
+const TRANSMISSION_LOOKUP = new Map<string, string>();
+for (const t of TRANSMISSION_TYPES) {
+  TRANSMISSION_LOOKUP.set(t.value.toLowerCase(), t.value);
+  TRANSMISSION_LOOKUP.set(t.label.toLowerCase(), t.value);
+}
+
+const SPECS_LOOKUP = new Map<string, string>();
+for (const s of SPECS_TYPES) {
+  SPECS_LOOKUP.set(s.value.toLowerCase(), s.value);
+  SPECS_LOOKUP.set(s.label.toLowerCase(), s.value);
+}
+
+const EMIRATE_LOOKUP = new Map<string, string>();
+for (const e of UAE_EMIRATES) {
+  EMIRATE_LOOKUP.set(e.value.toLowerCase(), e.value);
+  EMIRATE_LOOKUP.set(e.label.toLowerCase(), e.value);
+}
+
+const TAG_LOOKUP = new Map<string, string>();
+for (const tag of LISTING_TAGS) {
+  TAG_LOOKUP.set(tag.value.toLowerCase(), tag.value);
+  TAG_LOOKUP.set(tag.label.toLowerCase(), tag.value);
+  // Also match partial labels: "accident" → "accidentFree"
+  for (const word of tag.label.toLowerCase().split(/\s+/)) {
+    if (word.length >= 4 && !TAG_LOOKUP.has(word)) {
+      TAG_LOOKUP.set(word, tag.value);
+    }
+  }
+}
+
+const EXTRA_LOOKUP = new Map<string, string>();
+for (const extra of VEHICLE_EXTRAS) {
+  EXTRA_LOOKUP.set(extra.value.toLowerCase(), extra.value);
+  EXTRA_LOOKUP.set(extra.label.toLowerCase(), extra.value);
+}
+
+const CONDITION_LOOKUP = new Map<string, string>();
+CONDITION_LOOKUP.set('new', 'new');
+CONDITION_LOOKUP.set('brand new', 'new');
+CONDITION_LOOKUP.set('used', 'used');
+
+type KeywordResolution = {
+  make?: string;
+  models?: { model: string; make: string }[];
+  bodyType?: string;
+  fuelType?: string;
+  transmission?: string;
+  specs?: string;
+  emirate?: string;
+  condition?: string;
+  tag?: string;
+  extra?: string;
+  unresolved: boolean; // true if keyword didn't match any constant
+};
+
+/**
+ * Resolve a keyword against all known constants.
+ * Returns the matched category or marks as unresolved for ILIKE fallback.
+ */
+function resolveKeyword(keyword: string): KeywordResolution {
+  const kw = keyword.toLowerCase();
+  
+  // 1. Exact make match (e.g., "toyota", "bmw", "mercedes-benz")
+  const make = MAKE_LOOKUP.get(kw);
+  if (make) return { make, unresolved: false };
+  
+  // 2. Exact model match (e.g., "camry", "rs5", "x5")
+  const models = MODEL_LOOKUP.get(kw);
+  if (models && models.length > 0) return { models, unresolved: false };
+  
+  // 3. Body type (e.g., "sedan", "suv", "coupe", "pickup truck")
+  const bodyType = BODY_TYPE_LOOKUP.get(kw);
+  if (bodyType) return { bodyType, unresolved: false };
+  
+  // 4. Fuel type (e.g., "petrol", "diesel", "electric", "hybrid")
+  const fuelType = FUEL_TYPE_LOOKUP.get(kw);
+  if (fuelType) return { fuelType, unresolved: false };
+  
+  // 5. Transmission (e.g., "automatic", "manual", "cvt")
+  const transmission = TRANSMISSION_LOOKUP.get(kw);
+  if (transmission) return { transmission, unresolved: false };
+  
+  // 6. Specs (e.g., "gcc", "american", "european")
+  const specs = SPECS_LOOKUP.get(kw);
+  if (specs) return { specs, unresolved: false };
+  
+  // 7. Emirate (e.g., "dubai", "sharjah", "abu dhabi")
+  const emirate = EMIRATE_LOOKUP.get(kw);
+  if (emirate) return { emirate, unresolved: false };
+  
+  // 8. Condition (e.g., "new", "used")
+  const condition = CONDITION_LOOKUP.get(kw);
+  if (condition) return { condition, unresolved: false };
+  
+  // 9. Tags (e.g., "accident", "warranty", "service")
+  const tag = TAG_LOOKUP.get(kw);
+  if (tag) return { tag, unresolved: false };
+  
+  // 10. Extras (e.g., "sunroof", "leather", "bluetooth")
+  const extra = EXTRA_LOOKUP.get(kw);
+  if (extra) return { extra, unresolved: false };
+  
+  // No match — will fall back to ILIKE (now GIN-indexed on make/model/trim)
+  return { unresolved: true };
+}
+
 /**
  * Build WHERE conditions for public listings base
  */
@@ -49,7 +188,8 @@ function buildPublicBaseConditions(now: Date): SQL[] {
     eq(carListing.moderationStatus, 'approved'),
     eq(carListing.lifecycleStatus, 'active'),
     eq(carListing.needsRemoderation, false),
-    and(isNotNull(carListing.expiresAt), gt(carListing.expiresAt, now)),
+    isNotNull(carListing.expiresAt),
+    gt(carListing.expiresAt, now),
   ];
 }
 
@@ -61,11 +201,14 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
 
   // === BASIC TIER ===
   
-  // Text search (q) - searches across make, model, trim, tags, extras, and filter fields
-  // Supports multiple keywords: "audi rs5" matches listings with BOTH "audi" AND "rs5"
-  // Also works for mixed queries like "accident free audi" — matches tag + make
+  // Text search (q) — Constants-resolved + GIN-indexed fallback
+  // Strategy:
+  //   1. Resolve each keyword against known constants in-memory (O(1) lookup)
+  //   2. Resolved keywords → exact eq()/inArray() conditions (B-tree indexed, instant)
+  //   3. Unresolved keywords → ILIKE on make/model/trim (GIN pg_trgm indexed)
+  //   4. All keywords must match (AND logic)
   if (params.q?.trim()) {
-    // Common stop words to filter out (avoids pointless DB matches)
+    // Common stop words to filter out
     const STOP_WORDS = new Set([
       'i', 'me', 'my', 'we', 'a', 'an', 'the', 'is', 'am', 'are', 'was', 'were',
       'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
@@ -83,26 +226,53 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
       .filter(k => k.length >= 2 && !STOP_WORDS.has(k));
     
     if (keywords.length > 0) {
-      // Each keyword must match somewhere across ANY searchable field
-      const keywordConditions = keywords.map(keyword => {
-        const searchTerm = `%${keyword}%`;
-        return or(
-          // Vehicle identity
-          ilike(carListing.make, searchTerm),
-          ilike(carListing.model, searchTerm),
-          ilike(carListing.trim, searchTerm),
-          // Tags & extras (JSONB text search)
-          sql`${carListing.tags}::text ILIKE ${searchTerm}`,
-          sql`${carListing.extras}::text ILIKE ${searchTerm}`,
-          // Filter fields (enum columns — must cast to text for ILIKE)
-          sql`${carListing.bodyType}::text ILIKE ${searchTerm}`,
-          sql`${carListing.fuelType}::text ILIKE ${searchTerm}`,
-          sql`${carListing.condition}::text ILIKE ${searchTerm}`,
-        )!;
-      });
+      const keywordConditions: SQL[] = [];
+      
+      for (const keyword of keywords) {
+        const resolved = resolveKeyword(keyword);
+        
+        if (resolved.make) {
+          // Exact make match → B-tree indexed eq()
+          keywordConditions.push(eq(carListing.make, resolved.make));
+        } else if (resolved.models) {
+          // Exact model match → B-tree indexed inArray()
+          keywordConditions.push(inArray(carListing.model, resolved.models.map(m => m.model)));
+        } else if (resolved.bodyType) {
+          keywordConditions.push(eq(carListing.bodyType, resolved.bodyType));
+        } else if (resolved.fuelType) {
+          keywordConditions.push(eq(carListing.fuelType, resolved.fuelType));
+        } else if (resolved.transmission) {
+          keywordConditions.push(eq(carListing.transmission, resolved.transmission));
+        } else if (resolved.specs) {
+          keywordConditions.push(eq(carListing.specs, resolved.specs));
+        } else if (resolved.emirate) {
+          keywordConditions.push(eq(carListing.emirate, resolved.emirate));
+        } else if (resolved.condition) {
+          keywordConditions.push(eq(carListing.condition, resolved.condition));
+        } else if (resolved.tag) {
+          // JSONB contains check for tag
+          keywordConditions.push(sql`${carListing.tags} @> ${JSON.stringify([resolved.tag])}::jsonb`);
+        } else if (resolved.extra) {
+          // JSONB contains check for extra
+          keywordConditions.push(sql`${carListing.extras} @> ${JSON.stringify([resolved.extra])}::jsonb`);
+        } else {
+          // Unresolved keyword → ILIKE fallback on vehicle identity columns only
+          // These columns have GIN pg_trgm indexes for fast '%keyword%' matching
+          const searchTerm = `%${keyword}%`;
+          keywordConditions.push(
+            or(
+              ilike(carListing.make, searchTerm),
+              ilike(carListing.model, searchTerm),
+              ilike(carListing.trim, searchTerm),
+            )!
+          );
+        }
+      }
       
       // ALL keywords must match (AND logic) — narrows results with each word
-      conditions.push(and(...keywordConditions)!);
+      if (keywordConditions.length > 0) {
+        conditions.push(and(...keywordConditions)!);
+      }
     }
   }
 
@@ -628,6 +798,7 @@ async function getAllEnumFacets(
  * - All enum facets: 1 consolidated UNION query
  */
 async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFacets> {
+  const facetStart = Date.now();
   const [
     make,
     model,
@@ -641,6 +812,10 @@ async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFace
     getRangeFacets(params, now),
     getAllEnumFacets(params, now),
   ]);
+  const facetMs = Date.now() - facetStart;
+  if (facetMs > 500) {
+    console.warn(`[search] getAllFacets: ${facetMs}ms`);
+  }
 
   return {
     make,
@@ -702,6 +877,7 @@ export async function searchListings(
   const queries: Promise<any>[] = [
     // STEP 1: Get IDs with pagination
     (async () => {
+      const idStart = Date.now();
       const listingIds = await db
         .select({ id: carListing.id })
         .from(carListing)
@@ -709,16 +885,19 @@ export async function searchListings(
         .orderBy(...orderBy)
         .limit(limit + 1) // Fetch one extra to check hasMore
         .offset(offset);
+      const idMs = Date.now() - idStart;
 
       if (listingIds.length === 0) {
-        return { listings: [], hasMoreFromFetch: false };
+        return { listings: [], hasMoreFromFetch: false, timing: { ids: idMs, cards: 0 } };
       }
 
       const hasMoreFromFetch = listingIds.length > limit;
       const idsToFetch = listingIds.slice(0, limit).map(l => l.id);
 
       // STEP 2: Use shared card query for batch fetch (avoids duplicate JOIN logic)
+      const cardStart = Date.now();
       const cardData = await getListingCardsByIds(idsToFetch);
+      const cardMs = Date.now() - cardStart;
       
       // Map CarCardData to SearchResultItem (same fields, just type alignment)
       const listings = cardData as unknown as SearchResultItem[];
@@ -726,6 +905,7 @@ export async function searchListings(
       return {
         listings,
         hasMoreFromFetch,
+        timing: { ids: idMs, cards: cardMs },
       };
     })(),
   ];
@@ -738,10 +918,15 @@ export async function searchListings(
   // Only include total count if not skipped
   if (!skipTotalCount) {
     queries.push(
-      db
-        .select({ count: count() })
-        .from(carListing)
-        .where(conditions.length > 0 ? and(...conditions) : undefined)
+      (async () => {
+        const countStart = Date.now();
+        const result = await db
+          .select({ count: count() })
+          .from(carListing)
+          .where(conditions.length > 0 ? and(...conditions) : undefined);
+        const countMs = Date.now() - countStart;
+        return { result, countMs };
+      })()
     );
   }
 
@@ -749,17 +934,19 @@ export async function searchListings(
   const results = await Promise.all(queries);
   
   // Extract results based on what was queried
-  const searchResult = results[0] as { listings: SearchResultItem[]; hasMoreFromFetch: boolean };
+  const searchResult = results[0] as { listings: SearchResultItem[]; hasMoreFromFetch: boolean; timing: { ids: number; cards: number } };
   let facets: SearchFacets | undefined;
   let total: number | undefined;
+  let countMs = 0;
   
   let resultIdx = 1;
   if (!skipFacets) {
     facets = results[resultIdx++] as SearchFacets;
   }
   if (!skipTotalCount) {
-    const totalResult = results[resultIdx] as Array<{ count: number }>;
-    total = Number(totalResult[0]?.count || 0);
+    const countResult = results[resultIdx] as { result: Array<{ count: number }>; countMs: number };
+    total = Number(countResult.result[0]?.count || 0);
+    countMs = countResult.countMs;
   } else {
     // When skipping total count, estimate from current batch
     // This prevents showing "0 cars" when facets are cached
@@ -767,6 +954,11 @@ export async function searchListings(
   }
 
   const took = Date.now() - startTime;
+
+  // Log query breakdown for performance monitoring
+  if (took > 500) {
+    console.warn(`[search] searchListings: ${took}ms (ids=${searchResult.timing.ids}ms, cards=${searchResult.timing.cards}ms, count=${countMs}ms) sort=${params.sortBy || 'relevance'} total=${total}`);
+  }
 
   // Use hasMore from extra row fetch if total count was skipped
   const hasMore = skipTotalCount 
