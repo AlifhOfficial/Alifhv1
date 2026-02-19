@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Revvup - Vehicle Marketplace & Valuation Platform",
-  "packageManager": "bun@1.3.4",
+  "packageManager": "bun@1.2.5",
   "scripts": {
     "dev": "turbo run dev --parallel",
     "dev:ws": "cd apps/ws && bun run src/index.ts",
