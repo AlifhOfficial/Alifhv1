@@ -11,7 +11,8 @@ import { carListing } from '../../../../schema/listing';
 import { 
   makeListingId, 
   addDays, 
-  DEFAULT_LISTING_EXPIRY_DAYS 
+  DEFAULT_LISTING_EXPIRY_DAYS,
+  computeQiScore,
 } from './helpers';
 import { recordVinPublication, updateVinHistoryCurrentListing } from './vin-history';
 import type { CreateCarListingInput } from './types';
@@ -114,8 +115,15 @@ export async function createCarListing(input: CreateCarListingInput): Promise<st
     estimateMax: null,
     priceTrend: null,
     
-    // Quality & Engagement - start at 0
-    qiScore: null,
+    // Quality & Engagement - qiScore pre-computed for fast relevance sorting
+    qiScore: computeQiScore({
+      images: input.images ?? [],
+      description: input.description ?? null,
+      extras: input.extras ?? [],
+      tags: input.tags ?? [],
+      videoUrl: input.videoUrl ?? null,
+      partnerVerified: false, // New listings start unverified
+    }),
     viewCount: 0,
     favouriteCount: 0,
     superlikeCount: 0,

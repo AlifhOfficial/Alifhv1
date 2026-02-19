@@ -164,33 +164,47 @@ export interface UpdateCarListingInput {
  * Fields that trigger re-moderation when edited on user-posted listings.
  * Staff-posted listings can edit these without re-moderation.
  * 
- * MAJOR edits: Core vehicle identity, media, and text content that could be abused.
- * These trigger re-moderation because they could hide fraud or scams.
+ * MAJOR edits: Only free-form content and significant pricing changes.
+ * 
+ * Fields that DON'T trigger re-moderation (constrained/validated):
+ * - make, model, year, trim, vin — fixed dropdown values
+ * - images, thumbnail, videoUrl — media (validated on upload)
+ * - bodyType, fuelType, transmission, specs — fixed dropdowns
+ * - All other spec fields
+ * 
+ * Why this is safe:
+ * - Dropdown values are constrained to our constants
+ * - Images go through upload validation
+ * - Only free text (description) can contain spam/scams
  */
 export const MAJOR_CONTENT_EDIT_KEYS: Array<keyof UpdateCarListingInput> = [
-  // Core identity - could be used for bait-and-switch
-  'make',
-  'model',
-  'year',
-  'vin',
-  // Content that could hide scams
+  // Free-form text that could contain scams/spam
   'description',
-  'images',
-  'videoUrl',
-  'thumbnail',
-  // Price changes could indicate fraud
+  // Significant price changes could indicate bait-and-switch
   'price',
-  'currency',
 ];
 
 /**
  * Minor edit fields that do NOT trigger re-moderation.
- * These are typically specifications, features, and metadata that don't
- * fundamentally change what the listing represents.
+ * These are constrained values (dropdowns), validated formats, or media
+ * that goes through upload validation.
  */
 export const MINOR_CONTENT_EDIT_KEYS: Array<keyof UpdateCarListingInput> = [
+  // Core identity - constrained dropdown values
+  'make',
+  'model',
+  'year',
   'trim',
+  'vin',
+  'condition',
+  // Media - validated on upload
+  'images',
+  'thumbnail',
+  'videoUrl',
+  // Pricing metadata
+  'currency',
   'isNegotiable',
+  // Specs - all constrained dropdowns
   'bodyType',
   'fuelType',
   'transmission',

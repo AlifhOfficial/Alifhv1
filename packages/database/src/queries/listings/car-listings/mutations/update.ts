@@ -14,7 +14,9 @@ import {
   addDays, 
   recordPriceChange, 
   isListingPublic,
-  DEFAULT_LISTING_EXPIRY_DAYS 
+  DEFAULT_LISTING_EXPIRY_DAYS,
+  computeQiScore,
+  QI_SCORE_KEYS,
 } from './helpers';
 import { recordVinPublication, updateVinHistoryCurrentListing } from './vin-history';
 import type { 
@@ -26,6 +28,13 @@ import type {
   ListingLifecycleStatus 
 } from '../../../../schema/listing-constants';
 import { MAJOR_CONTENT_EDIT_KEYS, MINOR_CONTENT_EDIT_KEYS } from './types';
+
+/**
+ * Check if input contains fields that affect qiScore
+ */
+function hasQiScoreFields(input: UpdateCarListingInput): boolean {
+  return QI_SCORE_KEYS.some((k) => (input as any)[k] !== undefined);
+}
 
 /**
  * Build the common update data object from input
@@ -239,6 +248,13 @@ export async function updateCarListing(
       expiresAt: carListing.expiresAt,
       price: carListing.price,
       vin: carListing.vin,
+      // QiScore fields for recomputation
+      images: carListing.images,
+      description: carListing.description,
+      extras: carListing.extras,
+      tags: carListing.tags,
+      videoUrl: carListing.videoUrl,
+      partnerVerified: carListing.partnerVerified,
     })
     .from(carListing)
     .where(and(eq(carListing.id, listingId), eq(carListing.userId, userId)))
@@ -261,6 +277,18 @@ export async function updateCarListing(
     lastEditedAt: now,
     ...buildUpdateData(input, now),
   };
+
+  // Recompute qiScore if any quality-affecting fields changed
+  if (hasQiScoreFields(input)) {
+    updateData.qiScore = computeQiScore({
+      images: input.images ?? current.images,
+      description: input.description ?? current.description,
+      extras: input.extras ?? current.extras,
+      tags: input.tags ?? current.tags,
+      videoUrl: input.videoUrl ?? current.videoUrl,
+      partnerVerified: current.partnerVerified ?? false, // Admin-controlled, not user-editable
+    });
+  }
 
   // Lifecycle updates (owner-controlled)
   applyLifecycleUpdates(updateData, input.lifecycleStatus, now);
@@ -357,6 +385,13 @@ export async function updateCarListingByStaff(
       expiresAt: carListing.expiresAt,
       price: carListing.price,
       vin: carListing.vin,
+      // QiScore fields for recomputation
+      images: carListing.images,
+      description: carListing.description,
+      extras: carListing.extras,
+      tags: carListing.tags,
+      videoUrl: carListing.videoUrl,
+      partnerVerified: carListing.partnerVerified,
     })
     .from(carListing)
     .where(eq(carListing.id, listingId))
@@ -377,6 +412,18 @@ export async function updateCarListingByStaff(
     updatedAt: now,
     ...buildUpdateData(input, now),
   };
+
+  // Recompute qiScore if any quality-affecting fields changed
+  if (hasQiScoreFields(input)) {
+    updateData.qiScore = computeQiScore({
+      images: input.images ?? current.images,
+      description: input.description ?? current.description,
+      extras: input.extras ?? current.extras,
+      tags: input.tags ?? current.tags,
+      videoUrl: input.videoUrl ?? current.videoUrl,
+      partnerVerified: current.partnerVerified ?? false, // Admin-controlled, not user-editable
+    });
+  }
 
   // Only treat as an "edit" when content/lifecycle changes (not just moderation).
   // Use major content check + minor content keys for lastEditedAt

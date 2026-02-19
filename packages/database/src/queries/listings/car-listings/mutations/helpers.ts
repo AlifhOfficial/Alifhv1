@@ -92,3 +92,64 @@ export const DEFAULT_LISTING_EXPIRY_DAYS = 24;
  * Extension window in milliseconds (2 days before expiry)
  */
 export const EXTENSION_WINDOW_MS = 2 * 24 * 60 * 60 * 1000;
+
+/**
+ * QI Score input for pre-computation
+ */
+export interface QiScoreInput {
+  images: string[] | null;
+  description: string | null;
+  extras: string[] | null;
+  tags: string[] | null;
+  videoUrl: string | null;
+  partnerVerified: boolean;
+}
+
+/**
+ * Compute Quality Index score for a listing (0-70 scale)
+ * 
+ * Pre-computed on create/edit to avoid expensive runtime calculations.
+ * This score is stored in qiScore column and used for relevance sorting.
+ * 
+ * Components (70 points total):
+ * - Photos (25): 10+ images = full score
+ * - Description (15): 250+ chars = full score  
+ * - Completeness (20): extras, tags, video presence
+ * - Trust (10): partner verified bonus
+ */
+export function computeQiScore(input: QiScoreInput): number {
+  const images = input.images ?? [];
+  const description = input.description ?? '';
+  const extras = input.extras ?? [];
+  const tags = input.tags ?? [];
+  
+  // Photos: 0-25 points (10+ images = full score)
+  const photoScore = Math.min(images.length, 10) / 10 * 25;
+  
+  // Description: 0-15 points (250+ chars = full score)
+  const descScore = Math.min(description.length, 250) / 250 * 15;
+  
+  // Completeness: 0-20 points
+  const completeness = (
+    Math.min(extras.length, 6) / 6 * 0.5 +
+    Math.min(tags.length, 3) / 3 * 0.3 +
+    (input.videoUrl ? 0.2 : 0)
+  ) * 20;
+  
+  // Trust: 0-10 points
+  const trust = input.partnerVerified ? 10 : 0;
+  
+  return Math.round((photoScore + descScore + completeness + trust) * 100) / 100;
+}
+
+/**
+ * Keys that affect qiScore and should trigger recomputation
+ * Note: partnerVerified is admin-controlled, recomputed separately
+ */
+export const QI_SCORE_KEYS = [
+  'images',
+  'description', 
+  'extras',
+  'tags',
+  'videoUrl',
+] as const;
