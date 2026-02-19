@@ -122,7 +122,7 @@ export const CDN_HEADERS = Object.fromEntries(
  * return res;
  * ```
  */
-export function applyCdnHeaders(response: NextResponse, key: CdnTtlKey): void {
+export function applyCdnHeaders(response: Response | NextResponse, key: CdnTtlKey): void {
   const headers = CDN_HEADERS[key];
   for (const [k, v] of Object.entries(headers)) {
     response.headers.set(k, v);
