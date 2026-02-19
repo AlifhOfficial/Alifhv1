@@ -113,7 +113,7 @@ export function MessageBubble({
         )}
 
         {/* Message Bubble with Hover Timestamp */}
-        <div className="relative">
+        <div className="relative flex items-center gap-1">
           {/* Message Bubble */}
           <div
             className={cn(
@@ -155,6 +155,11 @@ export function MessageBubble({
               </small>
             )}
           </div>
+          
+          {/* Sending dot - right of bubble for own messages */}
+          {isOptimistic && isOwn && (
+            <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-pulse" />
+          )}
 
           {/* Hover Timestamp - Shows on hover */}
           <small 
@@ -169,13 +174,6 @@ export function MessageBubble({
             {formatDistanceToNow(new Date(createdAt), { addSuffix: true })}
           </small>
         </div>
-
-        {/* Sending indicator - show for optimistic messages */}
-        {isOptimistic && isOwn && (
-          <div className="mt-1 px-2 flex items-center justify-end">
-            <small className="text-xs text-muted-foreground/60 italic">Sending...</small>
-          </div>
-        )}
 
         {/* Failed indicator - only show X if message failed to send */}
         {isOwn && !isOptimistic && !message.deliveredAt && !message.createdAt && (

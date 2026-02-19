@@ -76,12 +76,13 @@ export async function GET(req: NextRequest) {
 
     const totalMs = Date.now() - startTime;
 
-    // Use raw Response with pre-stringified JSON — NextResponse.json() adds 500ms+ overhead
+    // Use raw Response with pre-stringified JSON + Content-Length for CF streaming
     const body = JSON.stringify(finalResult);
     const response = new Response(body, {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
+        'Content-Length': String(new TextEncoder().encode(body).length),
         'Server-Timing': `db;dur=${queryMs}, total;dur=${totalMs}, search;dur=${searchResult.meta?.took ?? 0}`,
       },
     });
