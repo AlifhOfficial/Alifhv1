@@ -22,7 +22,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import { optimisticUpdate, invalidateQueries } from '@/lib/cache-patterns';
+import { optimisticUpdate, invalidateQueries } from '@/lib/query-helpers';
 import { useState } from 'react';
 
 // ============================================================================

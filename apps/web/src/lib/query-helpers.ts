@@ -1,19 +1,21 @@
 /**
- * Cache Invalidation Patterns - Standardized
- * 
- * Helper functions for common cache invalidation scenarios.
- * 
+ * React Query Helpers — Client-Side Query Management
+ *
+ * Helper functions for React Query (TanStack Query) operations.
+ * These are CLIENT-SIDE only — they manage the browser query cache,
+ * not server-side caching.
+ *
  * THREE PATTERNS:
  * 1. Simple Invalidation - Just refetch (most common)
  * 2. Optimistic Updates - Update cache immediately, rollback on error
  * 3. Manual Updates - Manually update cache without refetch
- * 
+ *
  * WHEN TO USE WHICH:
  * - Simple: Default for most cases (mutations, data changes)
  * - Optimistic: Fast UI feedback (likes, favorites, toggles)
  * - Manual: Real-time updates (WebSocket messages, notifications)
- * 
- * @module lib/cache-patterns
+ *
+ * @module lib/query-helpers
  */
 
 import { QueryClient } from '@tanstack/react-query';

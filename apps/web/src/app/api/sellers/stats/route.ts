@@ -14,7 +14,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { CDN_HEADERS } from '@/lib/cdn-cache';
+import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { 
   calculateUserStats,
   calculatePartnerStats,
@@ -78,7 +78,9 @@ export async function GET(req: NextRequest) {
 
     console.log(`[seller-stats] ${type}:${id} - ${(performance.now() - startTime).toFixed(0)}ms`);
 
-    return NextResponse.json(stats, { headers: CDN_HEADERS.sellerStats });
+    const response = NextResponse.json(stats);
+    applyCdnHeaders(response, 'sellerStats');
+    return response;
   } catch (error) {
     console.error('[API] Error fetching seller stats:', error);
     return NextResponse.json(

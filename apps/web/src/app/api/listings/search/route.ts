@@ -17,7 +17,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { CDN_HEADERS } from '@/lib/cdn-cache';
+import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { 
   searchListings,
   getSearchFacets,
@@ -84,10 +84,7 @@ export async function GET(req: NextRequest) {
     };
 
     const response = NextResponse.json(finalResult);
-    
-    Object.entries(CDN_HEADERS.search).forEach(([key, value]) =>
-      response.headers.set(key, value)
-    );
+    applyCdnHeaders(response, 'search');
 
     return response;
   } catch (error) {

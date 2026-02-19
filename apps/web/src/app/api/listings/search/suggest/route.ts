@@ -14,7 +14,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { CDN_HEADERS } from '@/lib/cdn-cache';
+import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { quickSearch, getPopularMakes } from "@alifh/database";
 import { createRateLimiter, getIdentifier, rateLimitResponse } from "@/lib/rate-limit";
 
@@ -60,9 +60,7 @@ export async function GET(req: NextRequest) {
       const result = { suggestions: popularItems };
       
       const response = NextResponse.json(result);
-      Object.entries(CDN_HEADERS.suggest).forEach(([key, value]) =>
-        response.headers.set(key, value)
-      );
+      applyCdnHeaders(response, 'suggest');
       return response;
     }
 
@@ -72,9 +70,7 @@ export async function GET(req: NextRequest) {
     const result = { suggestions };
 
     const response = NextResponse.json(result);
-    Object.entries(CDN_HEADERS.suggest).forEach(([key, value]) =>
-      response.headers.set(key, value)
-    );
+    applyCdnHeaders(response, 'suggest');
 
     return response;
   } catch (error) {

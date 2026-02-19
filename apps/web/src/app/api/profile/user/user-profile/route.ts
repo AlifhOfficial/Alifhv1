@@ -88,7 +88,6 @@ export async function GET(req: NextRequest) {
       return response;
     }
 
-    // Query already handles caching via CacheKeys.userProfile
     let profile = await getUserProfileByUserId(user.id);
     
     if (!profile) {

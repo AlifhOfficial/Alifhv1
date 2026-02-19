@@ -13,7 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { CDN_HEADERS } from '@/lib/cdn-cache';
+import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { getPublishedShowrooms } from '@alifh/database';
 import { getPublicUrl } from '@/utils';
 
@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
     // Transform to card format with URLs
     const cards = showrooms.map(attachCardUrls);
     
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         showrooms: cards,
         pagination: {
@@ -83,11 +83,10 @@ export async function GET(req: NextRequest) {
           totalPages: Math.ceil(total / limit),
           hasMore: page * limit < total,
         },
-      },
-      {
-        headers: CDN_HEADERS.showroom,
       }
     );
+    applyCdnHeaders(response, 'showroom');
+    return response;
     
   } catch (error) {
     console.error('[api/showroom] GET failed:', error);

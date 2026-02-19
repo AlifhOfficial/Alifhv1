@@ -13,7 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { CDN_HEADERS } from '@/lib/cdn-cache';
+import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { getPartnersList } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 
@@ -69,9 +69,7 @@ export async function GET(req: NextRequest) {
     const withUrls = partners.map(attachImageUrls);
 
     const response = NextResponse.json({ partners: withUrls });
-    Object.entries(CDN_HEADERS.partnerList).forEach(([key, value]) =>
-      response.headers.set(key, value)
-    );
+    applyCdnHeaders(response, 'partnerList');
     return response;
   } catch (error) {
     console.error('[partner-list] GET failed', error);

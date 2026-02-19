@@ -17,7 +17,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { CDN_HEADERS } from '@/lib/cdn-cache';
+import { applyCdnHeaders } from '@/lib/cdn-cache';
 import {
   getSimilarListings,
   getListingDetailed,
@@ -68,9 +68,7 @@ export async function GET(
     });
 
     const response = NextResponse.json({ listings: similar });
-    Object.entries(CDN_HEADERS.similar).forEach(([key, value]) =>
-      response.headers.set(key, value)
-    );
+    applyCdnHeaders(response, 'similar');
     
     return response;
   } catch (error) {

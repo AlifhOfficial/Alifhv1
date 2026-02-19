@@ -18,7 +18,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { CDN_HEADERS } from '@/lib/cdn-cache';
+import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { 
   getListingDetailed, 
   getDealerBaseProfile, 
@@ -130,7 +130,9 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
     logTiming('total');
 
-    return NextResponse.json(responseData, { headers: CDN_HEADERS.listing });
+    const response = NextResponse.json(responseData);
+    applyCdnHeaders(response, 'listing');
+    return response;
   } catch (error) {
     console.error('[API] Error fetching detailed listing:', error);
     return NextResponse.json(

@@ -17,7 +17,7 @@
  * - getFavoritesWithListings: CTE with JOIN to car_listing (single query for IDs + data)
  * 
  * CACHE INVALIDATION:
- * Call invalidateFavoritesCache(userId) after toggles - clears both cache keys
+ * Client-side: React Query invalidation handled by hooks (use-favorites-unified.ts)
  * 
  * @module queries/favorites
  */

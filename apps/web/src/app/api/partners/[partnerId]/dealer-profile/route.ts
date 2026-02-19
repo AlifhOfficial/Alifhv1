@@ -16,7 +16,7 @@
  * - Operating hours and specialties
  * 
  * Cache Strategy:
- * - GET: CDN_HEADERS.dealerProfile (see @/lib/cdn-cache)
+ * - GET: applyCdnHeaders(res, 'dealerProfile') (see @/lib/cdn-cache)
  * - PATCH: no-cache (immediate invalidation)
  * 
  * Standards:
@@ -27,7 +27,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { CDN_HEADERS, NO_CACHE_HEADERS } from '@/lib/cdn-cache';
+import { applyCdnHeaders, NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import { z } from 'zod';
 import { getDealerBaseProfile, updateDealerBaseProfile } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
@@ -130,9 +130,7 @@ export async function GET(
     const profileWithUrls = attachImageUrls(profile);
 
     const response = NextResponse.json(profileWithUrls);
-    Object.entries(CDN_HEADERS.dealerProfile).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
+    applyCdnHeaders(response, 'dealerProfile');
     return response;
   } catch (error) {
     console.error('[partner dealer-profile] GET failed', error);

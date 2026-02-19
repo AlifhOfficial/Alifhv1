@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { CDN_HEADERS } from '@/lib/cdn-cache';
+import { applyCdnHeaders } from '@/lib/cdn-cache';
 import {
   getAvailableSlots,
   getAvailableDates,
@@ -28,10 +28,9 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 function cachedJson(data: unknown, init?: { status?: number }) {
-  return NextResponse.json(data, {
-    status: init?.status,
-    headers: CDN_HEADERS.bookingSlots,
-  });
+  const response = NextResponse.json(data, { status: init?.status });
+  applyCdnHeaders(response, 'bookingSlots');
+  return response;
 }
 
 /**

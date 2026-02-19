@@ -10,7 +10,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/providers/auth-provider';
 import { queryKeys } from '@/lib/query-keys';
-import { invalidateUserData } from '@/lib/cache-patterns';
+import { invalidateUserData } from '@/lib/query-helpers';
 
 // ============================================================================
 // Types

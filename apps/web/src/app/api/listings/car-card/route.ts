@@ -32,7 +32,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { CDN_HEADERS, NO_CACHE_HEADERS } from '@/lib/cdn-cache';
+import { applyCdnHeaders, NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import { getListingCards } from "@alifh/database";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from "@/lib/rate-limit";
 
@@ -83,8 +83,8 @@ export async function GET(req: NextRequest) {
           .slice(0, 100)
       : null;
 
-    // Select appropriate cache headers
-    const cacheHeaders = (ids?.length) ? NO_CACHE_HEADERS : CDN_HEADERS.carCard;
+    // Select appropriate cache headers: CDN for public browse, no-cache for specific ID lookups
+    const isPublicBrowse = !ids?.length;
 
     // In dev, bypass cache so new/updated listings reflect immediately.
     if (!isProd) {
@@ -128,9 +128,13 @@ export async function GET(req: NextRequest) {
     
     const response = NextResponse.json(responseData);
     
-    Object.entries(cacheHeaders).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
+    if (isPublicBrowse) {
+      applyCdnHeaders(response, 'carCard');
+    } else {
+      Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
+        response.headers.set(key, value)
+      );
+    }
     
     return response;
   } catch (error) {

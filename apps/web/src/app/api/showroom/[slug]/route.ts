@@ -14,7 +14,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { CDN_HEADERS } from '@/lib/cdn-cache';
+import { applyCdnHeaders } from '@/lib/cdn-cache';
 import {
   getPublishedShowroomBySlug,
   getPublishedShowroomByPartnerId,
@@ -112,12 +112,9 @@ export async function GET(
     const showroomWithUrls = attachPublicUrls(showroom);
     
     // Return with cache headers for CDN
-    return NextResponse.json(
-      { showroom: showroomWithUrls },
-      {
-        headers: CDN_HEADERS.showroomDetail,
-      }
-    );
+    const response = NextResponse.json({ showroom: showroomWithUrls });
+    applyCdnHeaders(response, 'showroomDetail');
+    return response;
     
   } catch (error) {
     console.error('[api/showroom/[slug]] GET failed:', error);
