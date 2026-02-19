@@ -75,6 +75,9 @@ const nextConfig = {
   },
   
   images: {
+    // Disable Next.js image optimization - serve images directly from CDN
+    // This allows Cloudflare to cache images at edge via cdn.revvup.ae
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
