@@ -176,6 +176,14 @@ export function useMessages(conversationId: string, userId?: string, options: Us
       // New message
       if (msg.type === 'new_message' && msg.conversationId === conversationId) {
         const newMsg = msg.message as Message;
+        
+        // Skip own messages delivered via WebSocket - onSuccess handler already adds them
+        // This prevents duplicates caused by race between API response and WebSocket
+        if (newMsg.senderId === userId) {
+          console.log(`⏭️ [useMessages] Skipping own message from WebSocket (handled by onSuccess):`, newMsg.id);
+          return;
+        }
+        
         console.log(`💬 [useMessages] New message received:`, {
           convId: conversationId,
           msgId: newMsg.id,
