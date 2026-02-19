@@ -1,7 +1,7 @@
 /**
  * Car Card Component - Revvup Design System
  * Following "Less is More" principle with minimalist aesthetic
- * Responsive: Mobile-first with desktop enhancements
+ * Responsive: Mobile-first with desktop enhancements is been taken care of
  */
 
 'use client';

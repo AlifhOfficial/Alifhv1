@@ -1,6 +1,7 @@
 /**
  * API: Storage Status Endpoint
- * GET /api/storage/status
+ * GET /api/storage/status 
+ *
  * 
  * Purpose: Get storage provider configuration status
  * Authentication: Public (no auth required)
