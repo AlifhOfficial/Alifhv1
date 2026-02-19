@@ -3,26 +3,141 @@
  * 
  * Provides HEIC detection/conversion and optimized Sharp processing
  * Used by all storage upload routes for consistent image handling
+ * 
+ * Features:
+ * - Magic-byte format detection (more reliable than MIME)
+ * - HEIC → JPEG conversion before Sharp processing
+ * - Auto-rotate based on EXIF orientation
+ * - Metadata stripped by default (EXIF, GPS, etc. removed for privacy/size)
+ * - Light sharpening for crisp output
+ * - Dual output: thumb (480w) + full (1600w)
+ * - Safety guardrails: max file size, max megapixels
+ * 
+ * Note: GIF animations are NOT preserved - converted to single-frame WebP.
+ * This is intentional for car listings where animation is not needed.
  */
 
 import sharp from "sharp";
 import convert from "heic-convert";
 
+// ============================================================================
+// Safety Guardrails - Prevent crashes from oversized uploads
+// ============================================================================
+
+/** Maximum file size in bytes (20MB) */
+export const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024;
+
+/** Maximum megapixels allowed (40MP) - prevents memory issues */
+export const MAX_MEGAPIXELS = 40;
+
+/** Maximum input pixels for Sharp (enforced at decode level) */
+const SHARP_LIMIT_INPUT_PIXELS = MAX_MEGAPIXELS * 1_000_000;
+
+export class ImageValidationError extends Error {
+  constructor(message: string, public code: 'FILE_TOO_LARGE' | 'TOO_MANY_PIXELS' | 'INVALID_FORMAT' | 'PROCESSING_ERROR') {
+    super(message);
+    this.name = 'ImageValidationError';
+  }
+}
+
+/**
+ * Validate image buffer before processing
+ * Throws ImageValidationError if validation fails
+ */
+export async function validateImage(buffer: Buffer): Promise<{ width: number; height: number; format: string }> {
+  // Check file size
+  if (buffer.length > MAX_FILE_SIZE_BYTES) {
+    throw new ImageValidationError(
+      `File size ${(buffer.length / 1024 / 1024).toFixed(1)}MB exceeds maximum ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB`,
+      'FILE_TOO_LARGE'
+    );
+  }
+
+  // Detect format
+  const format = detectImageFormat(buffer);
+  if (!isValidImageFormat(format)) {
+    throw new ImageValidationError(
+      `Invalid image format: ${format}. Supported: JPEG, PNG, WebP, HEIC, GIF`,
+      'INVALID_FORMAT'
+    );
+  }
+
+  // For HEIC, we can't easily get dimensions without converting first
+  // So we'll check megapixels after conversion in processImage
+  if (format === 'heic') {
+    return { width: 0, height: 0, format };
+  }
+
+  // Get image metadata to check dimensions
+  // limitInputPixels enforces megapixel limit at Sharp decode level
+  try {
+    const metadata = await sharp(buffer, { limitInputPixels: SHARP_LIMIT_INPUT_PIXELS }).metadata();
+    const width = metadata.width || 0;
+    const height = metadata.height || 0;
+
+    return { width, height, format };
+  } catch (error) {
+    if (error instanceof ImageValidationError) throw error;
+    // Sharp throws when limitInputPixels is exceeded
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    if (errorMsg.includes('Input image exceeds pixel limit')) {
+      throw new ImageValidationError(
+        `Image exceeds maximum ${MAX_MEGAPIXELS}MP`,
+        'TOO_MANY_PIXELS'
+      );
+    }
+    throw new ImageValidationError(
+      `Failed to read image metadata: ${errorMsg}`,
+      'PROCESSING_ERROR'
+    );
+  }
+}
+
+// ============================================================================
+// Format Detection - Magic bytes (more reliable than MIME type)
+// ============================================================================
+
+/** HEIC/HEIF brand identifiers */
+const HEIC_BRANDS = ['heic', 'heix', 'mif1', 'msf1', 'hevc', 'hevx'];
+
+/**
+ * Check if buffer contains HEIC ftyp box at given offset
+ */
+function checkHeicAtOffset(buffer: Buffer, offset: number): boolean {
+  if (buffer.length < offset + 8) return false;
+  const ftyp = buffer.slice(offset, offset + 4).toString('ascii');
+  if (ftyp !== 'ftyp') return false;
+  const brand = buffer.slice(offset + 4, offset + 8).toString('ascii').toLowerCase();
+  return HEIC_BRANDS.includes(brand);
+}
+
 /**
  * Detect image format from magic bytes (first few bytes of file)
  * More reliable than MIME type since mobile apps often mislabel HEIC as JPEG
+ * 
+ * HEIC detection:
+ * - First checks exact position (offset 4) for standard HEIC files
+ * - Falls back to scanning first 64 bytes for edge cases
+ * - Avoids scanning entire file to prevent false positives
  */
 export function detectImageFormat(buffer: Buffer): 'heic' | 'jpeg' | 'png' | 'webp' | 'gif' | 'unknown' {
   // Check minimum buffer size
   if (buffer.length < 12) return 'unknown';
   
-  // HEIC/HEIF: Check for ftyp box with heic/heix/mif1/msf1 brand
-  // Format: [4 bytes size][ftyp][4 bytes brand]
-  if (buffer.length >= 12) {
-    const ftypOffset = buffer.indexOf('ftyp');
-    if (ftypOffset >= 4 && ftypOffset <= 8) {
-      const brand = buffer.slice(ftypOffset + 4, ftypOffset + 8).toString('ascii').toLowerCase();
-      if (['heic', 'heix', 'mif1', 'msf1', 'hevc', 'hevx'].includes(brand)) {
+  // HEIC/HEIF: Standard position is [4 bytes size][ftyp][brand]
+  // Check exact offset 4 first (most common), then scan small window
+  if (checkHeicAtOffset(buffer, 4)) {
+    return 'heic';
+  }
+  
+  // Some HEIF files have ftyp at different offsets (rare but real)
+  // Scan first 64 bytes as fallback
+  const scanLimit = Math.min(64, buffer.length - 8);
+  for (let i = 0; i < scanLimit; i++) {
+    if (buffer[i] === 0x66 && buffer[i + 1] === 0x74 && 
+        buffer[i + 2] === 0x79 && buffer[i + 3] === 0x70) { // 'ftyp'
+      const brand = buffer.slice(i + 4, i + 8).toString('ascii').toLowerCase();
+      if (HEIC_BRANDS.includes(brand)) {
         return 'heic';
       }
     }
@@ -45,12 +160,17 @@ export function detectImageFormat(buffer: Buffer): 'heic' | 'jpeg' | 'png' | 'we
   }
   
   // GIF: GIF87a or GIF89a
+  // WARNING: Animated GIFs are converted to single-frame WebP (intentional for car listings)
   if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) {
     return 'gif';
   }
   
   return 'unknown';
 }
+
+// ============================================================================
+// HEIC Conversion
+// ============================================================================
 
 /**
  * Convert HEIC buffer to JPEG buffer using heic-convert
@@ -77,6 +197,10 @@ export async function ensureNonHeic(buffer: Buffer): Promise<Buffer> {
   return buffer;
 }
 
+// ============================================================================
+// Image Processing Options & Defaults
+// ============================================================================
+
 export interface ProcessImageOptions {
   /** Max width in pixels */
   maxWidth: number;
@@ -92,27 +216,56 @@ export interface ProcessImageOptions {
   effort?: number;
   /** Whether to auto-convert HEIC */
   convertHeic?: boolean;
+  /** Sharpening amount (0 = none, 0.5-1.0 = light, 1.5+ = aggressive) */
+  sharpen?: number;
+  // Note: Metadata (EXIF, GPS, etc.) is always stripped for privacy/size.
+  // Sharp doesn't preserve metadata unless explicitly asked.
 }
 
-const DEFAULT_OPTIONS: Required<ProcessImageOptions> = {
-  maxWidth: 2048,
-  maxHeight: 2048,
+/** Default options for full-size images */
+const DEFAULT_FULL_OPTIONS: Required<ProcessImageOptions> = {
+  maxWidth: 1600,
+  maxHeight: 1600,
   fit: 'inside',
   position: 'center',
   quality: 82,
   effort: 2,
   convertHeic: true,
+  sharpen: 0.5,
 };
+
+/** Default options for thumbnail images */
+const DEFAULT_THUMB_OPTIONS: Required<ProcessImageOptions> = {
+  maxWidth: 480,
+  maxHeight: 480,
+  fit: 'inside',
+  position: 'center',
+  quality: 75,
+  effort: 2,
+  convertHeic: true,
+  sharpen: 0.6, // Slightly more sharpening for thumbs to maintain crispness
+};
+
+// ============================================================================
+// Core Processing Functions
+// ============================================================================
 
 /**
  * Process image buffer: detect format, convert HEIC if needed, resize, convert to WebP
  * Optimized for speed while maintaining quality
+ * 
+ * Features:
+ * - Auto-rotate based on EXIF orientation (then stripped)
+ * - Metadata automatically stripped (Sharp default, no withMetadata call)
+ * - Light sharpening for crisp output
+ * - Smart subsampling for better compression
+ * - Single decode for output dimensions (resolveWithObject)
  */
 export async function processImage(
   inputBuffer: Buffer,
   options: ProcessImageOptions
-): Promise<{ buffer: Buffer; originalFormat: string }> {
-  const opts = { ...DEFAULT_OPTIONS, ...options };
+): Promise<{ buffer: Buffer; originalFormat: string; width: number; height: number }> {
+  const opts = { ...DEFAULT_FULL_OPTIONS, ...options };
   
   // Detect format
   const originalFormat = detectImageFormat(inputBuffer);
@@ -121,36 +274,163 @@ export async function processImage(
   let buffer = inputBuffer;
   if (opts.convertHeic && originalFormat === 'heic') {
     buffer = await convertHeicToJpeg(inputBuffer);
+    
+    // Validate megapixels after HEIC conversion using limitInputPixels
+    try {
+      await sharp(buffer, { limitInputPixels: SHARP_LIMIT_INPUT_PIXELS }).metadata();
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : '';
+      if (errorMsg.includes('Input image exceeds pixel limit')) {
+        throw new ImageValidationError(
+          `HEIC image exceeds maximum ${MAX_MEGAPIXELS}MP`,
+          'TOO_MANY_PIXELS'
+        );
+      }
+      throw error;
+    }
   }
   
-  // Process with Sharp (optimized settings)
-  const processedBuffer = await sharp(buffer, {
-    failOnError: false,     // Don't fail on minor image issues
-    sequentialRead: true,   // Faster for single-pass processing
+  // Build Sharp pipeline with limitInputPixels for safety
+  let pipeline = sharp(buffer, {
+    failOnError: false,           // Don't fail on minor image issues
+    sequentialRead: true,         // Faster for single-pass processing
+    limitInputPixels: SHARP_LIMIT_INPUT_PIXELS, // Enforce megapixel limit at decode
   })
-    .rotate() // Auto-rotate based on EXIF orientation
+    .rotate() // Auto-rotate based on EXIF orientation (metadata stripped by default)
     .resize(opts.maxWidth, opts.maxHeight, {
       fit: opts.fit,
       position: opts.position,
       withoutEnlargement: true, // Don't upscale smaller images
       fastShrinkOnLoad: true,   // Use shrink-on-load for faster processing
-    })
-    .webp({
-      quality: opts.quality,
-      effort: opts.effort,
-      smartSubsample: true,     // Better chroma subsampling
-    })
-    .toBuffer();
+    });
+  
+  // Apply light sharpening after resize (makes cars look crisp)
+  if (opts.sharpen && opts.sharpen > 0) {
+    pipeline = pipeline.sharpen(opts.sharpen);
+  }
+  
+  // Note: Metadata (EXIF, GPS, etc.) is automatically stripped by Sharp
+  // unless withMetadata() is called. We intentionally don't call it.
+  
+  // Convert to WebP with optimized settings
+  pipeline = pipeline.webp({
+    quality: opts.quality,
+    effort: opts.effort,
+    smartSubsample: true, // Better chroma subsampling for edges
+  });
+  
+  // Use resolveWithObject to get dimensions without re-decoding
+  const { data, info } = await pipeline.toBuffer({ resolveWithObject: true });
   
   return {
-    buffer: processedBuffer,
+    buffer: data,
     originalFormat,
+    width: info.width,
+    height: info.height,
   };
 }
+
+// ============================================================================
+// Listing Image Processing - Dual Output (Thumb + Full)
+// ============================================================================
+
+export interface ListingImageResult {
+  thumb: {
+    buffer: Buffer;
+    width: number;
+    height: number;
+  };
+  full: {
+    buffer: Buffer;
+    width: number;
+    height: number;
+  };
+  originalFormat: string;
+}
+
+/**
+ * Process a listing image and generate both thumb and full versions
+ * 
+ * This is the main entry point for listing image uploads.
+ * Validates the image, converts HEIC if needed, and outputs:
+ * - thumb: 480w max, quality 75, ~30-90KB (for grid cards)
+ * - full: 1600w max, quality 82, ~120-350KB (for detail page)
+ * 
+ * @param inputBuffer - Raw image buffer from upload
+ * @returns Both processed versions ready for storage
+ * @throws ImageValidationError if image is invalid or too large
+ * 
+ * @example
+ * const { thumb, full } = await processListingImages(buffer);
+ * // Store as: photo_001_thumb.webp, photo_001_full.webp
+ */
+export async function processListingImages(inputBuffer: Buffer): Promise<ListingImageResult> {
+  // Validate before processing
+  const validation = await validateImage(inputBuffer);
+  
+  // Normalize: convert HEIC to JPEG if needed (do this once, reuse for both)
+  const normalizedBuffer = await ensureNonHeic(inputBuffer);
+  
+  // Process both variants in parallel
+  const [thumbResult, fullResult] = await Promise.all([
+    processImage(normalizedBuffer, {
+      ...DEFAULT_THUMB_OPTIONS,
+      convertHeic: false, // Already converted
+    }),
+    processImage(normalizedBuffer, {
+      ...DEFAULT_FULL_OPTIONS,
+      convertHeic: false, // Already converted
+    }),
+  ]);
+  
+  return {
+    thumb: {
+      buffer: thumbResult.buffer,
+      width: thumbResult.width,
+      height: thumbResult.height,
+    },
+    full: {
+      buffer: fullResult.buffer,
+      width: fullResult.width,
+      height: fullResult.height,
+    },
+    originalFormat: validation.format,
+  };
+}
+
+/**
+ * Process a single image (avatar, logo, etc.) - not listings
+ * Uses full-size defaults but can be customized
+ */
+export async function processSingleImage(
+  inputBuffer: Buffer, 
+  options?: Partial<ProcessImageOptions>
+): Promise<{ buffer: Buffer; width: number; height: number; originalFormat: string }> {
+  // Validate before processing
+  await validateImage(inputBuffer);
+  
+  return processImage(inputBuffer, {
+    ...DEFAULT_FULL_OPTIONS,
+    ...options,
+  });
+}
+
+// ============================================================================
+// Utility Functions
+// ============================================================================
 
 /**
  * Check if a detected format is valid for image processing
  */
 export function isValidImageFormat(format: string): boolean {
   return ['heic', 'jpeg', 'png', 'webp', 'gif'].includes(format);
+}
+
+/**
+ * Get human-readable file size string
+ */
+export function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes}B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)}MB`;
 }

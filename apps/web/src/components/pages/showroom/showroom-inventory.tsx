@@ -20,7 +20,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { getPublicUrl } from '@/utils';
+import { getPublicUrl, getThumbUrl } from '@/utils';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -403,9 +403,9 @@ interface ShowroomCarCardProps {
 
 function ShowroomCarCard({ listing, priority = false, index, theme }: ShowroomCarCardProps) {
   const displayImage = listing.thumbnail 
-    ? getPublicUrl(listing.thumbnail) 
+    ? getThumbUrl(listing.thumbnail) || getPublicUrl(listing.thumbnail) 
     : listing.images?.[0] 
-      ? getPublicUrl(listing.images[0]) 
+      ? getThumbUrl(listing.images[0]) || getPublicUrl(listing.images[0]) 
       : '/assets/cars/car1.avif';
 
   const price = listing.price ? `AED ${listing.price.toLocaleString()}` : null;

@@ -11,6 +11,7 @@ import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X } from "
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { cn } from "@/utils";
+import { getThumbUrl } from "@/utils/storage";
 
 interface PartnerBookingsClientProps {
   partnerId: string;
@@ -519,7 +520,7 @@ export function PartnerBookingsClient({
                   <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
                     {booking.listingThumbnail ? (
                       <img
-                        src={booking.listingThumbnail}
+                        src={getThumbUrl(booking.listingThumbnail) || booking.listingThumbnail}
                         alt=""
                         className="w-full h-full object-cover"
                       />

@@ -51,6 +51,7 @@ import {
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { getThumbUrl } from '@/lib/config';
 import { Heading, Body, Data, Supporting, ButtonText, Label } from '@/components/ui';
 import type { UserBooking } from '@/lib/booking-api';
 import {
@@ -248,7 +249,7 @@ export function BookingDetailsSheet({
         >
           {booking.listingThumbnail ? (
             <Image
-              source={{ uri: booking.listingThumbnail }}
+              source={{ uri: getThumbUrl(booking.listingThumbnail) || booking.listingThumbnail }}
               style={styles.heroImage}
               contentFit="cover"
               transition={150}

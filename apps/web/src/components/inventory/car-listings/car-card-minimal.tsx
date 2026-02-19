@@ -9,6 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/utils';
+import { getThumbUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
@@ -49,7 +50,9 @@ export function CarCardMinimal({
   className,
   priority = false,
 }: CarCardMinimalProps) {
-  const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
+  // Use thumb URL for grid cards (480w, ~30-90KB) - bandwidth optimization
+  const rawImageUrl = thumbnail || images?.[0] || '/assets/cars/car1.avif';
+  const displayImage = getThumbUrl(rawImageUrl) || rawImageUrl;
   const displaySellerName = partnerName || sellerName || 'Private Seller';
   const isVerified = partnerVerified || kycVerified;
   const isPartnerListing = Boolean(partnerLogo || partnerName);

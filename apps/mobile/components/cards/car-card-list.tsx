@@ -11,6 +11,7 @@ import { Share2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { getThumbUrl } from '@/lib/config';
 import { 
   HapticPressable, 
   Skeleton, 
@@ -181,8 +182,10 @@ export const CarCardList = memo(function CarCardList({
   const colors = Colors[colorScheme];
   const theme = useCardTheme(colors, isBlkListing);
 
-  // Derived values
-  const displayImage = thumbnail || images?.[0];
+  // Derived values - use thumb URL for optimized card display
+  const rawImage = thumbnail || images?.[0];
+  // Only apply thumb URL conversion for string URLs (not local require() assets)
+  const displayImage = typeof rawImage === 'string' ? (getThumbUrl(rawImage) || rawImage) : rawImage;
   const displayEmirate = emirate ? (EMIRATE_SHORT[emirate.toLowerCase()] || emirate) : '';
   const displaySpecs = specs ? (SPECS_SHORT[specs.toLowerCase()] || specs) : 'GCC';
 

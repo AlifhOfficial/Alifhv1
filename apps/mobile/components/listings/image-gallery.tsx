@@ -21,6 +21,7 @@ import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { getThumbUrl, getPublicUrl } from '@/lib/config';
 import { Skeleton, Data, ButtonText } from '@/components/ui';
 import { ImageLightbox } from './image-lightbox';
 import { ImageGridModal } from './image-grid-modal';
@@ -51,7 +52,19 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
     [images]
   );
   
-  const allImages = validImages.length > 0 ? validImages : [];
+  // Full URLs for lightbox (high-res viewing)
+  const fullImages = useMemo(() => 
+    validImages.map(img => getPublicUrl(img) || img),
+    [validImages]
+  );
+  
+  // Thumb URLs for carousel and grid (optimized for bandwidth)
+  const thumbImages = useMemo(() => 
+    validImages.map(img => getThumbUrl(img) || getPublicUrl(img) || img),
+    [validImages]
+  );
+  
+  const allImages = thumbImages.length > 0 ? thumbImages : [];
 
   const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = e.nativeEvent.contentOffset.x;
@@ -179,9 +192,9 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         </HapticPressable>
       </View>
 
-      {/* Lightbox Modal */}
+      {/* Lightbox Modal - uses full-res images */}
       <ImageLightbox
-        images={allImages}
+        images={fullImages}
         currentIndex={currentIndex}
         isOpen={lightboxOpen}
         title={title}
@@ -189,9 +202,9 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         onIndexChange={setCurrentIndex}
       />
 
-      {/* Grid Modal */}
+      {/* Grid Modal - uses thumbs for grid, lightbox opens full-res */}
       <ImageGridModal
-        images={allImages}
+        images={thumbImages}
         isOpen={gridModalOpen}
         title={title}
         onClose={() => setGridModalOpen(false)}

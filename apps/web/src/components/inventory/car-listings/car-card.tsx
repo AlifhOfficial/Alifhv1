@@ -12,6 +12,7 @@ import { Share2, Heart, CheckCircle2, Zap } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/utils';
+import { getThumbUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
@@ -125,7 +126,9 @@ export function CarCard({
   priority = false, // LCP optimization for first card
 }: CarCardProps) {
   // Derived display values
-  const displayImage = thumbnail || images?.[0] || '/assets/cars/car1.avif';
+  // Use thumb URL for grid cards (480w, ~30-90KB) - bandwidth optimization
+  const rawImageUrl = thumbnail || images?.[0] || '/assets/cars/car1.avif';
+  const displayImage = getThumbUrl(rawImageUrl) || rawImageUrl;
   const displaySpecs = formatSpecs(specs || 'GCC');
   const displayEmirate = formatEmirate(emirate);
   const displaySellerName = partnerName || sellerName || 'Private Seller';

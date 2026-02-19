@@ -1,32 +1,41 @@
 /**
- * API: Listing Image Upload with WebP Conversion
+ * API: Listing Image Upload with WebP Conversion (Thumb + Full)
  * POST /api/storage/upload-listing-image
  * 
- * Purpose: Upload listing images with automatic WebP conversion and optimization
+ * Purpose: Upload listing images with automatic WebP conversion and dual-size output
  * Authentication: Required (user must be logged in)
  * 
  * Request Body (multipart/form-data):
- * - file: Image file (JPEG, PNG, WebP, HEIC, HEIF)
+ * - file: Image file (JPEG, PNG, WebP, HEIC, HEIF, GIF)
  * - vin: Vehicle VIN (required for organizing images)
  * 
  * Processing:
+ * - Validates file size (max 20MB) and megapixels (max 40MP)
  * - Auto-detects HEIC/HEIF by magic bytes (handles mobile mislabeling)
  * - Converts HEIC/HEIF to JPEG first using heic-convert
- * - Converts final output to WebP format using Sharp
- * - Resizes to max 2048x2048 (preserving aspect ratio)
- * - Compresses with quality 82 (optimal balance of quality/size/speed)
+ * - Generates TWO WebP outputs:
+ *   - thumb: 480w max, quality 75. ~30-90KB (for grid cards)
+ *   - full: 1600w max, quality 82, ~120-350KB (for detail page)
+ * - Light sharpening for crisp output
+ * - Strips metadata for privacy/size
  * 
- * Returns: { key, url, etag, size }
+ * Returns: { thumbKey, thumbUrl, fullKey, fullUrl, thumbSize, fullSize }
  * 
  * Standards:
  * - Returns 400 for invalid file
  * - Returns 401 for unauthenticated
+ * - Returns 413 for file too large
  * - Returns 500 for server errors
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { uploadFile } from "@/lib/storage";
-import { detectImageFormat, isValidImageFormat, processImage } from "@/lib/storage/image-processing";
+import { 
+  processListingImages, 
+  ImageValidationError,
+  MAX_FILE_SIZE_BYTES,
+  formatFileSize 
+} from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 import { createId } from "@paralleldrive/cuid2";
@@ -34,13 +43,11 @@ import { createId } from "@paralleldrive/cuid2";
 export const runtime = "nodejs";
 export const maxDuration = 60; // 60 seconds for large HEIC image processing
 
-const MAX_SIZE = 10 * 1024 * 1024; // 10MB per image
-
 const listingImageLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_GENERAL);
 
 /**
  * Generate organized storage key for listing images
- * Format: listings/{year}/{month}/{day}/{userId}/{vin}/{uniqueId}.webp
+ * Format: listings/{year}/{month}/{day}/{userId}/{vin}/{uniqueId}_{variant}.webp
  * 
  * Benefits:
  * - Time-based organization for easy browsing
@@ -48,7 +55,7 @@ const listingImageLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_GENERAL
  * - VIN grouping keeps all vehicle images together
  * - Easy cleanup by prefix
  */
-function generateListingImageKey(userId: string, vin: string): string {
+function generateListingImageKey(userId: string, vin: string, variant: 'thumb' | 'full'): string {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -58,7 +65,7 @@ function generateListingImageKey(userId: string, vin: string): string {
   // Use first 8 chars of userId for shorter paths
   const userPrefix = userId.slice(0, 8);
   
-  return `listings/${year}/${month}/${day}/${userPrefix}/${vin}/${uniqueId}.webp`;
+  return `listings/${year}/${month}/${day}/${userPrefix}/${vin}/${uniqueId}_${variant}.webp`;
 }
 
 export async function POST(req: NextRequest) {
@@ -90,64 +97,79 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Valid VIN is required" }, { status: 400 });
     }
 
-    // Validate file size first (before reading buffer)
-    if (file.size > MAX_SIZE) {
+    // Quick size check before reading buffer (slightly larger to account for formdata overhead)
+    if (file.size > MAX_FILE_SIZE_BYTES * 1.1) {
       return NextResponse.json({ 
-        error: "File too large. Maximum 10MB allowed" 
-      }, { status: 400 });
+        error: `File too large. Maximum ${formatFileSize(MAX_FILE_SIZE_BYTES)} allowed` 
+      }, { status: 413 });
     }
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     
-    // Detect actual format from magic bytes (mobile often mislabels HEIC as JPEG)
-    const detectedFormat = detectImageFormat(buffer);
-    console.log("[upload-listing-image] Detected format:", detectedFormat, "MIME:", file.type);
-    
-    if (!isValidImageFormat(detectedFormat)) {
-      return NextResponse.json({ 
-        error: "Invalid file type. Allowed: JPEG, PNG, WebP, HEIC" 
-      }, { status: 400 });
-    }
-    
-    // Process image: HEIC conversion + resize + WebP output (optimized for speed)
+    // Process image: validate, HEIC conversion, generate thumb + full
     const startTime = Date.now();
-    const { buffer: processedBuffer, originalFormat } = await processImage(buffer, {
-      maxWidth: 2048,
-      maxHeight: 2048,
-      quality: 82,      // Slightly lower = faster encoding
-      effort: 2,        // Low effort = faster encoding
-    });
+    const { thumb, full, originalFormat } = await processListingImages(buffer);
     const processingTime = Date.now() - startTime;
     
-    // Generate organized storage key using VIN and user
-    const key = generateListingImageKey(user.id, vin);
+    // Generate organized storage keys using VIN and user
+    const thumbKey = generateListingImageKey(user.id, vin, 'thumb');
+    const fullKey = generateListingImageKey(user.id, vin, 'full');
     
     console.log("[upload-listing-image] Processing complete:", {
       originalFormat,
-      originalSize: buffer.length,
-      processedSize: processedBuffer.length,
-      compressionRatio: ((1 - processedBuffer.length / buffer.length) * 100).toFixed(1) + '%',
+      originalSize: formatFileSize(buffer.length),
+      thumbSize: formatFileSize(thumb.buffer.length),
+      fullSize: formatFileSize(full.buffer.length),
+      thumbDimensions: `${thumb.width}x${thumb.height}`,
+      fullDimensions: `${full.width}x${full.height}`,
       processingTimeMs: processingTime,
       vin,
-      key,
     });
 
-    // Upload to R2 with public cache headers
-    const result = await uploadFile({
-      data: processedBuffer,
-      contentType: "image/webp",
-      key,
-      cacheControl: "public, max-age=31536000, immutable", // 1 year cache (immutable)
-    });
+    // Upload both versions to R2 in parallel
+    const [thumbResult, fullResult] = await Promise.all([
+      uploadFile({
+        data: thumb.buffer,
+        contentType: "image/webp",
+        key: thumbKey,
+        cacheControl: "public, max-age=31536000, immutable", // 1 year cache
+      }),
+      uploadFile({
+        data: full.buffer,
+        contentType: "image/webp",
+        key: fullKey,
+        cacheControl: "public, max-age=31536000, immutable", // 1 year cache
+      }),
+    ]);
 
     return NextResponse.json({
-      key: result.key,
-      url: result.url,
-      etag: result.etag,
-      size: processedBuffer.length,
+      // Thumb (for grids/cards)
+      thumbKey: thumbResult.key,
+      thumbUrl: thumbResult.url,
+      thumbSize: thumb.buffer.length,
+      thumbWidth: thumb.width,
+      thumbHeight: thumb.height,
+      // Full (for detail page)
+      fullKey: fullResult.key,
+      fullUrl: fullResult.url,
+      fullSize: full.buffer.length,
+      fullWidth: full.width,
+      fullHeight: full.height,
+      // Legacy compatibility (point to full for existing code)
+      key: fullResult.key,
+      url: fullResult.url,
+      size: full.buffer.length,
     });
   } catch (error: any) {
+    // Handle validation errors with appropriate status codes
+    if (error instanceof ImageValidationError) {
+      const status = error.code === 'FILE_TOO_LARGE' ? 413 
+        : error.code === 'TOO_MANY_PIXELS' ? 413 
+        : 400;
+      return NextResponse.json({ error: error.message }, { status });
+    }
+    
     // Log detailed error for debugging
     console.error("[upload-listing-image] POST failed:", {
       message: error.message,

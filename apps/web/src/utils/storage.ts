@@ -16,6 +16,45 @@ import type { StorageData, UploadFileParams } from "@/lib/storage/types";
 
 const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
 
+/** CDN base URL for static assets (public folder) */
+const CDN_STATIC_URL = process.env.NEXT_PUBLIC_CDN_STATIC_URL;
+
+/**
+ * Get CDN URL for static assets from the public folder.
+ * 
+ * In production, serves files from cdn.revvup.ae/static/... instead of the Next.js server.
+ * This offloads bandwidth from Railway to Cloudflare edge caching.
+ * 
+ * Set NEXT_PUBLIC_CDN_STATIC_URL=https://cdn.revvup.ae/static in production.
+ * Leave unset in development to serve from Next.js public folder.
+ * 
+ * @param path - Path relative to public folder (e.g., "/Marketing/Hero_img.png")
+ * @returns CDN URL in production, original path in development
+ * 
+ * @example
+ * getStaticUrl("/Marketing/Hero_img.png") 
+ * // Dev: "/Marketing/Hero_img.png"
+ * // Prod: "https://cdn.revvup.ae/static/Marketing/Hero_img.png"
+ */
+export function getStaticUrl(path: string): string {
+  if (!path) return path;
+  
+  // Already a full URL - return as-is
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  
+  // If CDN static URL is configured, use it
+  if (CDN_STATIC_URL) {
+    // Remove leading slash from path if present
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${CDN_STATIC_URL.replace(/\/$/, '')}/${cleanPath}`;
+  }
+  
+  // Development: serve from Next.js public folder
+  return path;
+}
+
 /**
  * Converts a storage key to a public URL.
  * This is the SINGLE SOURCE OF TRUTH for all R2 URL resolution.
@@ -57,6 +96,70 @@ export function getPublicUrl(key: string | null | undefined, cacheBuster?: strin
   }
   
   return baseUrl;
+}
+
+/**
+ * Get thumbnail URL from a full-size image URL/key.
+ * 
+ * For listing images uploaded after Feb 2026, images are stored as pairs:
+ * - Full: xxx_full.webp (1600w, ~120-350KB)
+ * - Thumb: xxx_thumb.webp (480w, ~30-90KB)
+ * 
+ * This function converts a full URL to its thumb equivalent.
+ * Falls back to original URL for legacy images without _full suffix.
+ * 
+ * @param url - Full-size image URL or key
+ * @param cacheBuster - Optional cache buster
+ * @returns Thumbnail URL or original if not a dual-output image
+ * 
+ * @example
+ * getThumbUrl("listings/.../abc_full.webp") → "https://cdn.../abc_thumb.webp"
+ * getThumbUrl("https://cdn.../abc_full.webp") → "https://cdn.../abc_thumb.webp"
+ * getThumbUrl("legacy/image.webp") → "https://cdn.../legacy/image.webp" (unchanged)
+ */
+export function getThumbUrl(url: string | null | undefined, cacheBuster?: string | number): string | null {
+  if (!url) return null;
+  
+  // Get the public URL first
+  const fullUrl = getPublicUrl(url, cacheBuster);
+  if (!fullUrl) return null;
+  
+  // Convert _full.webp to _thumb.webp
+  if (fullUrl.includes('_full.webp')) {
+    return fullUrl.replace('_full.webp', '_thumb.webp');
+  }
+  
+  // Legacy image - return as-is (no thumb version exists)
+  return fullUrl;
+}
+
+/**
+ * Get listing image URLs with both thumb and full variants.
+ * Useful for responsive images where thumb is used for grid cards
+ * and full is used for detail pages/lightbox.
+ * 
+ * @param url - Image URL or key
+ * @returns Object with thumb and full URLs
+ */
+export function getListingImageUrls(url: string | null | undefined): { thumb: string | null; full: string | null } {
+  if (!url) return { thumb: null, full: null };
+  
+  const publicUrl = getPublicUrl(url);
+  if (!publicUrl) return { thumb: null, full: null };
+  
+  // Check if this is a dual-output image
+  if (publicUrl.includes('_full.webp')) {
+    return {
+      thumb: publicUrl.replace('_full.webp', '_thumb.webp'),
+      full: publicUrl,
+    };
+  }
+  
+  // Legacy image - use same URL for both
+  return {
+    thumb: publicUrl,
+    full: publicUrl,
+  };
 }
 
 // ============================================================================

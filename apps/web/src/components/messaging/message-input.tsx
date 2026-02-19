@@ -8,6 +8,7 @@
 import { useEffect, useRef, useState, useCallback, KeyboardEvent, ChangeEvent } from 'react';
 import { Send, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { getThumbUrl } from '@/utils/storage';
 
 interface MessageInputProps {
   onSend: (text: string, mediaUrl?: string) => Promise<void>;
@@ -200,7 +201,7 @@ export function MessageInput({
             <div className="flex gap-2 p-1.5 sm:p-2">
               {listingPreview.thumbnail ? (
                 <img 
-                  src={listingPreview.thumbnail} 
+                  src={getThumbUrl(listingPreview.thumbnail) || listingPreview.thumbnail} 
                   alt={listingPreview.title} 
                   className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-md flex-shrink-0" 
                 />

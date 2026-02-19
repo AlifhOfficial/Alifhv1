@@ -12,6 +12,7 @@ import { useFavoritesStatus } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getThumbUrl } from '@/utils/storage';
 
 interface NavbarFavoritesProps {
   userId?: string;
@@ -218,7 +219,7 @@ function FavoritePreviewItem({ listing, onClose }: FavoritePreviewItemProps) {
       <div className="relative w-16 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
         {thumbnail ? (
           <Image
-            src={thumbnail}
+            src={getThumbUrl(thumbnail) || thumbnail}
             alt={title}
             fill
             className="object-cover"

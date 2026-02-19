@@ -23,6 +23,7 @@ import { useRouter } from 'expo-router';
 
 import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { getThumbUrl } from '@/lib/config';
 import { HapticPressable, Heading, Data, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
 import { type PartnerListItem } from '@/lib/partner-api';
 import { type ListingCard } from '@/lib/search-api';
@@ -141,10 +142,14 @@ const IMAGE_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 // UTILITIES
 // ============================================================================
 
-/** Convert image source to expo-image compatible format */
+/** Convert image source to expo-image compatible format with thumb optimization */
 function toImageSource(source: ImageSourcePropType | string | undefined | null): ImageSource | undefined {
   if (!source) return undefined;
-  if (typeof source === 'string') return { uri: source };
+  if (typeof source === 'string') {
+    // Apply thumb URL conversion for string URLs
+    const thumbUrl = getThumbUrl(source) || source;
+    return { uri: thumbUrl };
+  }
   // Handle number (require() assets) and other ImageSourcePropType values
   return source as ImageSource;
 }

@@ -34,6 +34,7 @@ import {
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { getThumbUrl } from '@/lib/config';
 import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import type { ModerationStatus, LifecycleStatus } from '@/lib/sell-car-user-api';
 import { formatListingStatus, getStatusColor } from '../utilities/listing-helpers';
@@ -259,7 +260,7 @@ export function EditStatusSheet({
         {/* Listing preview with status badge */}
         <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
           {listingThumbnail ? (
-            <Image source={{ uri: listingThumbnail }} style={styles.thumbnail} />
+            <Image source={{ uri: getThumbUrl(listingThumbnail) || listingThumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
               <Ionicons name="image-outline" size={Sizes.iconLg} color={colors.textMuted} />

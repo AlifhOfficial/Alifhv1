@@ -8,6 +8,7 @@ import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { getThumbUrl } from '@/lib/config';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Body, Data, Supporting } from '@/components/ui';
 import type { Message } from '@/lib/messaging-api';
@@ -88,7 +89,7 @@ export function MessageBubble({
           >
             {listing.thumbnail ? (
               <Image
-                source={{ uri: listing.thumbnail }}
+                source={{ uri: getThumbUrl(listing.thumbnail) || listing.thumbnail }}
                 style={styles.listingImage}
                 resizeMode="cover"
               />

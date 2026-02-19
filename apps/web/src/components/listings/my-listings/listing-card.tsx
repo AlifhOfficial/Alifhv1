@@ -24,7 +24,7 @@ import {
   BarChart3,
   Eye
 } from 'lucide-react';
-import { cn } from '@/utils';
+import { cn, getThumbUrl } from '@/utils';
 import type { ListingData, ListingType } from './types';
 import {
   DropdownMenu,
@@ -104,7 +104,7 @@ export function ListingCard({
     ? '/staff-dashboard/work-listings/new' 
     : '/user-dashboard/listings/new';
 
-  const displayImage = listing.thumbnail || '/assets/cars/car1.avif';
+  const displayImage = getThumbUrl(listing.thumbnail) || listing.thumbnail || '/assets/cars/car1.avif';
 
   // Time calculations
   const expiresAt = listing.expiresAt ? new Date(listing.expiresAt as any) : null;

@@ -23,7 +23,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
 import { uploadPrivateFile } from "@/lib/storage";
-import { detectImageFormat, isValidImageFormat, processImage } from "@/lib/storage/image-processing";
+import { processSingleImage, ImageValidationError } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { createRateLimiter, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
@@ -91,28 +91,38 @@ export async function POST(req: NextRequest) {
     let finalContentType = contentType;
     let finalFileName = fileName;
 
-    // Process images with HEIC detection and WebP conversion
+    // Process images with validation, HEIC conversion and WebP output
     const buffer = Buffer.from(arrayBuffer);
-    const detectedFormat = detectImageFormat(buffer);
-    const isImage = isValidImageFormat(detectedFormat);
     
-    if (isImage) {
-      try {
-        const { buffer: processedBuffer } = await processImage(buffer, {
-          maxWidth: 2048,
-          maxHeight: 2048,
-          quality: 85,
-        });
-        
-        processedData = processedBuffer;
-        finalContentType = "image/webp";
-        // Change extension to .webp
-        finalFileName = typeof fileName === "string" 
-          ? fileName.replace(/\.[^.]+$/, ".webp") 
-          : "document.webp";
-      } catch (error) {
+    try {
+      // processSingleImage handles format detection and validation internally
+      const { buffer: processedBuffer } = await processSingleImage(buffer, {
+        maxWidth: 2048,
+        maxHeight: 2048,
+        quality: 85,
+        sharpen: 0.5,
+      });
+      
+      processedData = processedBuffer;
+      finalContentType = "image/webp";
+      // Change extension to .webp
+      finalFileName = typeof fileName === "string" 
+        ? fileName.replace(/\.[^.]+$/, ".webp") 
+        : "document.webp";
+    } catch (error) {
+      // If not a valid image format, just upload the original file (e.g., PDFs)
+      if (error instanceof ImageValidationError && error.code === 'INVALID_FORMAT') {
+        // Not an image - upload original file as-is
+        processedData = arrayBuffer;
+      } else if (error instanceof ImageValidationError) {
+        // Image validation failed (too large, etc.)
+        const status = error.code === 'FILE_TOO_LARGE' ? 413 
+          : error.code === 'TOO_MANY_PIXELS' ? 413 
+          : 400;
+        return NextResponse.json({ error: error.message }, { status });
+      } else {
         console.error('[Upload Private] Image processing failed, uploading original:', error);
-        // If processing fails, upload original
+        // If processing fails for other reasons, upload original
       }
     }
 

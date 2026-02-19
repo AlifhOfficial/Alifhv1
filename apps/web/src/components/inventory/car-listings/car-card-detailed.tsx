@@ -24,6 +24,7 @@ import {
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/lib/utils';
+import { getThumbUrl, getPublicUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
@@ -93,19 +94,34 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
     imageArray.filter(img => img && typeof img === 'string' && img.trim().length > 0),
     [imageArray]
   );
-  const allImages = validImages.length > 0 ? validImages : ['/assets/cars/placeholder.avif'];
+  
+  // Full URLs for lightbox (high-res viewing)
+  const fullImages = useMemo(() => 
+    validImages.length > 0 
+      ? validImages.map(img => getPublicUrl(img) || img)
+      : ['/assets/cars/placeholder.avif'],
+    [validImages]
+  );
+  
+  // Thumb URLs for carousel and grid (optimized for bandwidth)
+  const thumbImages = useMemo(() => 
+    validImages.length > 0 
+      ? validImages.map(img => getThumbUrl(img) || getPublicUrl(img) || img)
+      : ['/assets/cars/placeholder.avif'],
+    [validImages]
+  );
   
   // Ensure currentIndex is always valid
-  const safeCurrentIndex = Math.min(Math.max(0, currentIndex), allImages.length - 1);
-  const currentImage = allImages[safeCurrentIndex] || '/assets/cars/placeholder.avif';
+  const safeCurrentIndex = Math.min(Math.max(0, currentIndex), thumbImages.length - 1);
+  const currentImage = thumbImages[safeCurrentIndex] || '/assets/cars/placeholder.avif';
 
   const next = useCallback(() => {
-    setCurrentIndex((i) => (i + 1) % allImages.length);
-  }, [allImages.length]);
+    setCurrentIndex((i) => (i + 1) % thumbImages.length);
+  }, [thumbImages.length]);
 
   const prev = useCallback(() => {
-    setCurrentIndex((i) => (i - 1 + allImages.length) % allImages.length);
-  }, [allImages.length]);
+    setCurrentIndex((i) => (i - 1 + thumbImages.length) % thumbImages.length);
+  }, [thumbImages.length]);
 
   // Handle image click from grid - opens lightbox at that index
   const handleGridImageClick = useCallback((index: number) => {
@@ -121,8 +137,8 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
 
   // Max thumbnails to show before "View All"
   const maxThumbnails = 5;
-  const displayedThumbnails = allImages.slice(0, maxThumbnails);
-  const remainingCount = allImages.length - maxThumbnails;
+  const displayedThumbnails = thumbImages.slice(0, maxThumbnails);
+  const remainingCount = thumbImages.length - maxThumbnails;
 
   return (
     <>
@@ -144,7 +160,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
           )}
           
           {/* Navigation Arrows */}
-          {allImages.length > 1 && (
+          {thumbImages.length > 1 && (
             <>
               <button
                 onClick={(e) => { e.stopPropagation(); prev(); }}
@@ -165,12 +181,12 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
 
           {/* Image Counter */}
           <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 text-white text-xs font-medium tabular-nums rounded">
-            {safeCurrentIndex + 1}/{allImages.length}
+            {safeCurrentIndex + 1}/{thumbImages.length}
           </div>
         </div>
 
         {/* Thumbnails Row */}
-        {allImages.length > 1 && (
+        {thumbImages.length > 1 && (
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin min-w-0">
             {displayedThumbnails.map((img, idx) => (
               img && (
@@ -207,7 +223,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
             )}
             
             {/* View All for smaller counts */}
-            {remainingCount <= 0 && allImages.length > 3 && (
+            {remainingCount <= 0 && thumbImages.length > 3 && (
               <button
                 onClick={() => setShowAllImages(true)}
                 className="relative w-16 h-12 flex-shrink-0 rounded-md bg-muted/80 hover:bg-muted transition-colors flex flex-col items-center justify-center gap-0.5"
@@ -220,9 +236,9 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
         )}
       </div>
 
-      {/* Fullscreen Lightbox */}
+      {/* Fullscreen Lightbox - uses full-res images */}
       <ImageLightbox
-        images={allImages}
+        images={fullImages}
         currentIndex={lightboxIndex}
         isOpen={isLightboxOpen}
         title={title}
@@ -230,9 +246,9 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
         onIndexChange={handleLightboxIndexChange}
       />
 
-      {/* View All Images Grid */}
+      {/* View All Images Grid - uses thumbs for grid, lightbox opens full-res */}
       <ImageGridModal
-        images={allImages}
+        images={thumbImages}
         isOpen={showAllImages}
         title="All Photos"
         onClose={() => setShowAllImages(false)}

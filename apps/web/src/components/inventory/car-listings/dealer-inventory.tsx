@@ -11,6 +11,7 @@ import { ShoppingCart, User, RefreshCw, Crown, Search, ChevronLeft, ChevronRight
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { cn } from "@/utils";
+import { getThumbUrl } from "@/utils/storage";
 import {
   Select,
   SelectContent,
@@ -615,7 +616,7 @@ export function DealerInventory({
                   <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-lg overflow-hidden bg-secondary flex-shrink-0 relative">
                     {listing.thumbnail ? (
                       <Image
-                        src={listing.thumbnail}
+                        src={getThumbUrl(listing.thumbnail) || listing.thumbnail}
                         alt=""
                         fill
                         className="object-cover"

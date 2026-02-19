@@ -16,6 +16,7 @@ import { CheckCircle2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { getThumbUrl } from '@/lib/config';
 import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import { markListingSold, type MarkSoldResponse } from '@/lib/sell-car-user-api';
 
@@ -133,7 +134,7 @@ export function MarkSoldSheet({
         {/* Listing preview card */}
         <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
           {listingThumbnail ? (
-            <Image source={{ uri: listingThumbnail }} style={styles.thumbnail} />
+            <Image source={{ uri: getThumbUrl(listingThumbnail) || listingThumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
               <Ionicons name="image-outline" size={Sizes.iconLg} color={colors.textMuted} />

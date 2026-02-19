@@ -17,6 +17,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/utils';
+import { getThumbUrl } from '@/utils/storage';
 import type { UserBookingData } from './types';
 
 interface UserBookingCardProps {
@@ -102,7 +103,7 @@ export function UserBookingCard({
           >
             {booking.listingThumbnail ? (
               <Image
-                src={booking.listingThumbnail}
+                src={getThumbUrl(booking.listingThumbnail) || booking.listingThumbnail}
                 alt={booking.listingTitle}
                 fill
                 className="object-cover"

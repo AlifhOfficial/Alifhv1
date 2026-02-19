@@ -12,6 +12,7 @@ import { TrendingUp, TrendingDown, Minus, AlertCircle, Clock, Eye } from 'lucide
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getThumbUrl } from '@/utils/storage';
 
 // ============================================================================
 // Types
@@ -172,7 +173,7 @@ export function TopListings({ title, listings, emptyMessage = "No data", classNa
             >
               <div className="relative w-12 h-9 rounded overflow-hidden bg-muted flex-shrink-0">
                 <Image
-                  src={listing.thumbnail || '/assets/cars/placeholder.avif'}
+                  src={getThumbUrl(listing.thumbnail) || listing.thumbnail || '/assets/cars/placeholder.avif'}
                   alt={listing.title}
                   fill
                   className="object-cover"
@@ -234,7 +235,7 @@ export function ColdListings({
           >
             <div className="relative w-12 h-9 rounded overflow-hidden bg-muted flex-shrink-0">
               <Image
-                src={listing.thumbnail || '/assets/cars/placeholder.avif'}
+                src={getThumbUrl(listing.thumbnail) || listing.thumbnail || '/assets/cars/placeholder.avif'}
                 alt={listing.title}
                 fill
                 className="object-cover"

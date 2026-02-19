@@ -23,7 +23,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { uploadFile, deleteFile } from '@/lib/storage';
 import { generateShowroomAssetKey, type ShowroomAssetType } from '@/lib/storage/keys';
-import { detectImageFormat, isValidImageFormat, processImage } from '@/lib/storage/image-processing';
+import { processSingleImage, ImageValidationError, detectImageFormat, isValidImageFormat } from '@/lib/storage/image-processing';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from '@/lib/rate-limit';
 
@@ -213,14 +213,15 @@ export async function POST(req: NextRequest) {
           fileExtension = 'mp4';
       }
     } else {
-      // Process image with HEIC conversion and WebP output
+      // Process image with validation, HEIC conversion, sharpening and WebP output
       const config = ASSET_CONFIG[assetType as ShowroomAssetType];
-      const { buffer: processed } = await processImage(buffer, {
+      const { buffer: processed } = await processSingleImage(buffer, {
         maxWidth: config.width,
         maxHeight: config.height,
         fit: config.fit,
         position: 'center',
         quality: config.quality,
+        sharpen: 0.5,
       });
       processedBuffer = processed;
       
@@ -263,6 +264,13 @@ export async function POST(req: NextRequest) {
     });
     
   } catch (error) {
+    // Handle validation errors with appropriate status codes
+    if (error instanceof ImageValidationError) {
+      const status = error.code === 'FILE_TOO_LARGE' ? 413 
+        : error.code === 'TOO_MANY_PIXELS' ? 413 
+        : 400;
+      return NextResponse.json({ error: error.message }, { status });
+    }
     console.error('[storage/upload-showroom-asset] POST failed', error);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
   }

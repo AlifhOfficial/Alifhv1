@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/utils';
+import { getThumbUrl } from '@/utils/storage';
 import type { BookingData } from './types';
 
 const BOOKING_TIME_ZONE = 'Asia/Dubai';
@@ -107,7 +108,7 @@ export function BookingCard({
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted/20">
             {booking.listingThumbnail ? (
               <img
-                src={booking.listingThumbnail}
+                src={getThumbUrl(booking.listingThumbnail) || booking.listingThumbnail}
                 alt={booking.listingTitle}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
               />

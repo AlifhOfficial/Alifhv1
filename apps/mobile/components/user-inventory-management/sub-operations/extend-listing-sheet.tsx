@@ -16,6 +16,7 @@ import { CalendarPlus } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { getThumbUrl } from '@/lib/config';
 import { Heading, Body, ButtonText, Supporting, Data } from '@/components/ui';
 import { extendListing, type ExtendListingResponse } from '@/lib/sell-car-user-api';
 import { formatExpiryCountdown } from '../utilities/listing-helpers';
@@ -138,7 +139,7 @@ export function ExtendListingSheet({
         {/* Listing preview */}
         <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
           {listingThumbnail ? (
-            <Image source={{ uri: listingThumbnail }} style={styles.thumbnail} />
+            <Image source={{ uri: getThumbUrl(listingThumbnail) || listingThumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
               <Ionicons name="image-outline" size={Sizes.iconLg} color={colors.textMuted} />

@@ -26,7 +26,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { uploadFile, deleteFile } from "@/lib/storage";
 import { generateUserAvatarKey } from "@/lib/storage/keys";
-import { detectImageFormat, isValidImageFormat, processImage } from "@/lib/storage/image-processing";
+import { processSingleImage, ImageValidationError, formatFileSize } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
@@ -70,21 +70,14 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     
-    // Detect actual format from magic bytes (mobile often mislabels HEIC as JPEG)
-    const detectedFormat = detectImageFormat(buffer);
-    if (!isValidImageFormat(detectedFormat)) {
-      return NextResponse.json({ 
-        error: "Invalid file type. Allowed: JPEG, PNG, WebP, HEIC" 
-      }, { status: 400 });
-    }
-
-    // Process image with HEIC conversion and WebP output
-    const { buffer: processedBuffer } = await processImage(buffer, {
+    // Process image with validation, HEIC conversion, sharpening, and WebP output
+    const { buffer: processedBuffer } = await processSingleImage(buffer, {
       maxWidth: 512,
       maxHeight: 512,
       fit: 'cover',
       position: 'center',
       quality: 80,
+      sharpen: 0.5,
     });
 
     // Generate unique key with date-based path
@@ -110,6 +103,13 @@ export async function POST(req: NextRequest) {
       updatedAt: Date.now(),
     });
   } catch (error) {
+    // Handle validation errors with appropriate status codes
+    if (error instanceof ImageValidationError) {
+      const status = error.code === 'FILE_TOO_LARGE' ? 413 
+        : error.code === 'TOO_MANY_PIXELS' ? 413 
+        : 400;
+      return NextResponse.json({ error: error.message }, { status });
+    }
     console.error("[upload-avatar] Failed:", error);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }

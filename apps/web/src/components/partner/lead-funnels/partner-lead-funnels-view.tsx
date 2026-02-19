@@ -24,6 +24,7 @@ import { Combobox } from '@/components/ui/forms/combobox';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useDebouncedCallback } from 'use-debounce';
+import { getThumbUrl } from '@/utils/storage';
 
 // ============================================================================
 // Constants
@@ -594,7 +595,7 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
                     <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
                       {listing.thumbnail ? (
                         <Image
-                          src={listing.thumbnail}
+                          src={getThumbUrl(listing.thumbnail) || listing.thumbnail}
                           alt=""
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"

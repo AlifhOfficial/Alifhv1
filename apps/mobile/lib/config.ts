@@ -99,20 +99,87 @@ export const CDN_BASE = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.revvup.a
 export const R2_PUBLIC_URL = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.revvup.ae';
 
 /**
- * Convert avatar key to full public URL
- * Handles null values and already-full URLs
+ * Convert a storage key or partial URL to full public CDN URL.
  */
-export function getAvatarUrl(key: string | null | undefined, cacheBuster?: number): string | null {
+export function getPublicUrl(key: string | null | undefined, cacheBuster?: number): string | null {
   if (!key) return null;
   
   // Already a full URL
-  if (key.startsWith('http://') || key.startsWith('https://') || key.startsWith('/')) {
+  if (key.startsWith('http://') || key.startsWith('https://')) {
+    return cacheBuster ? `${key}${key.includes('?') ? '&' : '?'}v=${cacheBuster}` : key;
+  }
+  
+  // Local asset
+  if (key.startsWith('/')) {
     return key;
   }
   
   // Convert storage key to public URL
   const baseUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${key}`;
   return cacheBuster ? `${baseUrl}?v=${cacheBuster}` : baseUrl;
+}
+
+/**
+ * Convert avatar key to full public URL
+ * Handles null values and already-full URLs
+ */
+export function getAvatarUrl(key: string | null | undefined, cacheBuster?: number): string | null {
+  return getPublicUrl(key, cacheBuster);
+}
+
+/**
+ * Get thumbnail URL from a full-size image URL/key.
+ * 
+ * For listing images uploaded after Feb 2026, images are stored as pairs:
+ * - Full: xxx_full.webp (1600w, ~120-350KB)
+ * - Thumb: xxx_thumb.webp (480w, ~30-90KB)
+ * 
+ * This function converts a full URL to its thumb equivalent.
+ * Falls back to original URL for legacy images without _full suffix.
+ * 
+ * @param url - Full-size image URL or key
+ * @returns Thumbnail URL or original if not a dual-output image
+ */
+export function getThumbUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  
+  // Get the public URL first
+  const fullUrl = getPublicUrl(url);
+  if (!fullUrl) return null;
+  
+  // Convert _full.webp to _thumb.webp
+  if (fullUrl.includes('_full.webp')) {
+    return fullUrl.replace('_full.webp', '_thumb.webp');
+  }
+  
+  // Legacy image - return as-is (no thumb version exists)
+  return fullUrl;
+}
+
+/**
+ * Get listing image URLs with both thumb and full variants.
+ * Useful for galleries where thumb is used for grid/thumbnails
+ * and full is used for main view/lightbox.
+ */
+export function getListingImageUrls(url: string | null | undefined): { thumb: string | null; full: string | null } {
+  if (!url) return { thumb: null, full: null };
+  
+  const publicUrl = getPublicUrl(url);
+  if (!publicUrl) return { thumb: null, full: null };
+  
+  // Check if this is a dual-output image
+  if (publicUrl.includes('_full.webp')) {
+    return {
+      thumb: publicUrl.replace('_full.webp', '_thumb.webp'),
+      full: publicUrl,
+    };
+  }
+  
+  // Legacy image - use same URL for both
+  return {
+    thumb: publicUrl,
+    full: publicUrl,
+  };
 }
 
 // Auth endpoints

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getThumbUrl } from '@/utils/storage';
 
 interface ConsignmentFunnel {
   id: string;
@@ -133,7 +134,7 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
                   <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
                     {listing.thumbnail ? (
                       <Image
-                        src={listing.thumbnail}
+                        src={getThumbUrl(listing.thumbnail) || listing.thumbnail}
                         alt={`${listing.year} ${listing.make} ${listing.model}`}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"

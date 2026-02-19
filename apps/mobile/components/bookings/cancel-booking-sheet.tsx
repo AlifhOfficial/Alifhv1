@@ -18,6 +18,7 @@ import { X as XIcon } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { getThumbUrl } from '@/lib/config';
 import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import {
   cancelBooking,
@@ -160,7 +161,7 @@ export function CancelBookingSheet({
         {/* Booking preview */}
         <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
           {listingThumbnail ? (
-            <Image source={{ uri: listingThumbnail }} style={styles.thumbnail} />
+            <Image source={{ uri: getThumbUrl(listingThumbnail) || listingThumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
               <Ionicons name="car-outline" size={Sizes.iconLg} color={colors.textMuted} />
