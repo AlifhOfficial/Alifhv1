@@ -13,7 +13,7 @@
  * - index?: Optional index for array-type assets (gallery, team, etc.)
  * 
  * Processing:
- * - Images: Converts to WebP, resizes, compresses
+ * - Images: Auto-detects HEIC, converts to WebP, resizes, compresses
  * - Videos: Validates format and size (max 20MB), uploads to R2
  * - Stores under brands/{partnerId}/showroom/
  * 
@@ -21,9 +21,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import sharp from 'sharp';
 import { uploadFile, deleteFile } from '@/lib/storage';
 import { generateShowroomAssetKey, type ShowroomAssetType } from '@/lib/storage/keys';
+import { detectImageFormat, isValidImageFormat, processImage } from '@/lib/storage/image-processing';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from '@/lib/rate-limit';
 
@@ -32,7 +32,6 @@ export const runtime = 'nodejs';
 // Allow up to 60MB body size for video uploads
 export const maxDuration = 60; // 60 seconds timeout for large uploads
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'image/avif'];
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
 const MAX_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB for high-quality showroom images
 const MAX_VIDEO_SIZE = 20 * 1024 * 1024; // 20MB for hero videos
@@ -150,28 +149,14 @@ export async function POST(req: NextRequest) {
     const mediaType = formData.get('mediaType') as string | null;
     const isVideo = mediaType === 'video' || VIDEO_ASSET_TYPES.includes(assetType as ShowroomAssetType);
     
-    // Validate file type
+    // Validate file size first
     if (isVideo) {
-      if (!ALLOWED_VIDEO_TYPES.includes(file.type)) {
-        return NextResponse.json({ 
-          error: 'Invalid video type. Allowed: MP4, WebM, MOV' 
-        }, { status: 400 });
-      }
-      
-      // Validate video file size
       if (file.size > MAX_VIDEO_SIZE) {
         return NextResponse.json({ 
           error: 'Video too large. Maximum 20MB allowed' 
         }, { status: 400 });
       }
     } else {
-      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-        return NextResponse.json({ 
-          error: 'Invalid file type. Allowed: JPEG, PNG, WebP, HEIC' 
-        }, { status: 400 });
-      }
-      
-      // Validate image file size
       if (file.size > MAX_IMAGE_SIZE) {
         return NextResponse.json({ 
           error: 'File too large. Maximum 15MB allowed' 
@@ -181,6 +166,23 @@ export async function POST(req: NextRequest) {
     
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+    
+    // Validate file type (use magic bytes for images, MIME type for videos)
+    if (isVideo) {
+      if (!ALLOWED_VIDEO_TYPES.includes(file.type)) {
+        return NextResponse.json({ 
+          error: 'Invalid video type. Allowed: MP4, WebM, MOV' 
+        }, { status: 400 });
+      }
+    } else {
+      // Detect actual format from magic bytes (mobile often mislabels HEIC as JPEG)
+      const detectedFormat = detectImageFormat(buffer);
+      if (!isValidImageFormat(detectedFormat)) {
+        return NextResponse.json({ 
+          error: 'Invalid file type. Allowed: JPEG, PNG, WebP, HEIC' 
+        }, { status: 400 });
+      }
+    }
     
     let processedBuffer: Buffer;
     let contentType: string;
@@ -211,16 +213,16 @@ export async function POST(req: NextRequest) {
           fileExtension = 'mp4';
       }
     } else {
-      // Process image with Sharp
+      // Process image with HEIC conversion and WebP output
       const config = ASSET_CONFIG[assetType as ShowroomAssetType];
-      processedBuffer = await sharp(buffer)
-        .resize(config.width, config.height, {
-          fit: config.fit,
-          position: 'center',
-          withoutEnlargement: true, // Don't upscale smaller images
-        })
-        .webp({ quality: config.quality })
-        .toBuffer();
+      const { buffer: processed } = await processImage(buffer, {
+        maxWidth: config.width,
+        maxHeight: config.height,
+        fit: config.fit,
+        position: 'center',
+        quality: config.quality,
+      });
+      processedBuffer = processed;
       
       contentType = 'image/webp';
       fileExtension = 'webp';

@@ -9,10 +9,11 @@
  * - file: Image file (JPEG, PNG, WebP, HEIC)
  * 
  * Processing:
+ * - Auto-detects HEIC by magic bytes (handles mobile mislabeling)
+ * - Converts HEIC to JPEG first using heic-convert
  * - Converts to WebP format
- * - Resizes to 512x512 max (preserving aspect ratio)
+ * - Resizes to 512x512 (square crop)
  * - Compresses with quality 80
- * - Uses user ID as filename for easy cleanup
  * 
  * Returns: { key, url, etag }
  * 
@@ -23,18 +24,16 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import sharp from "sharp";
 import { uploadFile, deleteFile } from "@/lib/storage";
 import { generateUserAvatarKey } from "@/lib/storage/keys";
+import { detectImageFormat, isValidImageFormat, processImage } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
-export const runtime = "nodejs"; // Sharp requires Node.js runtime
+export const runtime = "nodejs";
+export const maxDuration = 60; // 60 seconds for HEIC image processing
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-const OUTPUT_SIZE = 512; // Max dimension
-const OUTPUT_QUALITY = 80; // WebP quality
 
 const avatarUploadLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_AVATAR);
 
@@ -61,14 +60,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Validate file type
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json({ 
-        error: "Invalid file type. Allowed: JPEG, PNG, WebP, HEIC" 
-      }, { status: 400 });
-    }
-
-    // Validate file size
+    // Validate file size first
     if (file.size > MAX_SIZE) {
       return NextResponse.json({ 
         error: "File too large. Maximum 5MB allowed" 
@@ -77,20 +69,25 @@ export async function POST(req: NextRequest) {
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+    
+    // Detect actual format from magic bytes (mobile often mislabels HEIC as JPEG)
+    const detectedFormat = detectImageFormat(buffer);
+    if (!isValidImageFormat(detectedFormat)) {
+      return NextResponse.json({ 
+        error: "Invalid file type. Allowed: JPEG, PNG, WebP, HEIC" 
+      }, { status: 400 });
+    }
 
-    // Process image with Sharp - optimized pipeline
-    const processedBuffer = await sharp(buffer, { failOnError: false })
-      .resize(OUTPUT_SIZE, OUTPUT_SIZE, {
-        fit: "cover",
-        position: "center",
-        fastShrinkOnLoad: true, // Fast shrink for large images
-      })
-      .webp({ quality: OUTPUT_QUALITY, effort: 2 }) // effort 2 = faster encoding
-      .toBuffer();
+    // Process image with HEIC conversion and WebP output
+    const { buffer: processedBuffer } = await processImage(buffer, {
+      maxWidth: 512,
+      maxHeight: 512,
+      fit: 'cover',
+      position: 'center',
+      quality: 80,
+    });
 
     // Generate unique key with date-based path
-    // Format: users/{userId}/{YYYY}/{MM}/{DD}/avatar-{timestamp}.webp
-    const timestamp = Date.now();
     const key = generateUserAvatarKey({ userId: user.id });
 
     // Upload to public R2 bucket
@@ -102,7 +99,6 @@ export async function POST(req: NextRequest) {
     });
 
     // Delete old avatar in background (don't await)
-    // Supports both legacy (avatars/) and new (users/) formats
     if (previousKey && (previousKey.startsWith("avatars/") || previousKey.startsWith("users/"))) {
       deleteFile(previousKey).catch(() => {});
     }
@@ -111,7 +107,7 @@ export async function POST(req: NextRequest) {
       key: result.key,
       url: result.url,
       etag: result.etag,
-      updatedAt: timestamp,
+      updatedAt: Date.now(),
     });
   } catch (error) {
     console.error("[upload-avatar] Failed:", error);

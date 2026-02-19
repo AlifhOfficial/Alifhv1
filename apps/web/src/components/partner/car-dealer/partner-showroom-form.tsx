@@ -95,8 +95,9 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
 
   // Upload image
   const uploadImage = async (file: File, type: string, field: keyof PartnerShowroom) => {
-    if (!['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'].includes(file.type)) {
-      toast({ title: 'Invalid file type', variant: 'destructive' });
+    // Basic check - server does magic byte detection for full validation
+    if (!file.type.startsWith('image/') && file.type !== '' && file.type !== 'application/octet-stream') {
+      toast({ title: 'Only image files are allowed', variant: 'destructive' });
       return;
     }
     if (file.size > 10 * 1024 * 1024) {

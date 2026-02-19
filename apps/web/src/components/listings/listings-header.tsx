@@ -210,7 +210,7 @@ export function ListingsHeader({
     <>
       {/* ===== MOBILE HEADER ===== */}
       <div className={cn(
-        "sm:hidden sticky z-30 bg-background border-b border-border/40",
+        "sm:hidden sticky z-30 bg-background border-b border-border/20",
         embedded ? "top-0" : "top-14"
       )}>
         <div className="pt-2 pb-3 px-2 space-y-2">
@@ -688,7 +688,7 @@ export function ListingsHeader({
       {/* ===== DESKTOP HEADER ===== */}
       <header className={cn(
         "hidden sm:block sticky z-30 bg-background border-b border-transparent",
-        "[&:not(:first-child)]:border-border/40",
+        "[&:not(:first-child)]:border-border/20",
         embedded ? "top-0" : "top-16 lg:top-0"
       )}>
         <div className="pt-4 pb-4 relative">

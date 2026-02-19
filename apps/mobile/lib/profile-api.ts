@@ -392,10 +392,18 @@ export async function uploadAvatar(
     // Create form data
     const formData = new FormData();
     
-    // Get file info from URI
+    // Get file info from URI - server detects format by magic bytes
     const filename = uri.split('/').pop() || 'avatar.jpg';
-    const match = /\.(\w+)$/.exec(filename);
-    const type = match ? `image/${match[1]}` : 'image/jpeg';
+    const ext = filename.split('.').pop()?.toLowerCase() || '';
+    const mimeTypes: Record<string, string> = {
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'png': 'image/png',
+      'webp': 'image/webp',
+      'heic': 'image/heic',
+      'heif': 'image/heif',
+    };
+    const type = mimeTypes[ext] || 'image/jpeg';
     
     // Append file - React Native FormData format
     formData.append('file', {

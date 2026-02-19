@@ -71,8 +71,9 @@ export interface AuthResult {
  */
 async function authFetch(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit & { timeoutMs?: number } = {}
 ): Promise<Response> {
+  const { timeoutMs = 30000, ...fetchOptions } = options;
   const session = await getStoredSession();
   
   const headers: HeadersInit = {
@@ -80,7 +81,7 @@ async function authFetch(
     // Better Auth requires Origin header for CSRF protection
     // Use the API base URL as origin (it's in trustedOrigins)
     'Origin': API_BASE,
-    ...options.headers,
+    ...fetchOptions.headers,
   };
 
   // Add session token if available
@@ -90,10 +91,25 @@ async function authFetch(
 
   console.log(`[Auth] Fetching ${API_BASE}${endpoint}`);
   
-  return fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  // Create abort controller for timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      ...fetchOptions,
+      headers,
+      signal: controller.signal,
+    });
+    return response;
+  } catch (err: any) {
+    if (err.name === 'AbortError') {
+      throw new Error('Request timed out. Please check your connection and try again.');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 /**

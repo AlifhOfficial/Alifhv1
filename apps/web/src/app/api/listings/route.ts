@@ -130,6 +130,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // For published listings, require at least 1 image
+    // Drafts can be saved without images
+    const isPublishing = body.status === 'published';
+    if (isPublishing && (!body.images || body.images.length === 0)) {
+      return NextResponse.json(
+        { error: 'At least 1 photo is required to publish a listing' },
+        { status: 400 }
+      );
+    }
+
     // Server-side VIN uniqueness check (safety net for unique constraint)
     // Exclude soft-deleted listings - those VINs can be reused
     let formattedVIN: string | undefined;

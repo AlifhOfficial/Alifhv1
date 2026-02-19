@@ -114,6 +114,16 @@ export function ReviewSheet({
   const emirateLabel = UAE_EMIRATES.find((e) => e.value === data.emirate)?.label ?? data.emirate;
   const vehicleTitle = `${data.year} ${data.make} ${data.model}${data.trim ? ` ${data.trim}` : ''}`;
   const mileageNum = parseInt(data.mileage, 10) || 0;
+  
+  // Check if all required fields are present for publishing
+  const canPublish = 
+    data.vinVerified &&
+    data.make && 
+    data.model && 
+    data.mileage && 
+    data.price && 
+    data.emirate &&
+    data.images.length > 0;
 
   return (
     <CreateFlowSheet
@@ -123,7 +133,7 @@ export function ReviewSheet({
       showBack
       onBack={onBack}
       primaryLabel={submitting ? 'Publishing...' : 'Publish'}
-      primaryDisabled={submitting}
+      primaryDisabled={submitting || !canPublish}
       onPrimary={handlePublish}
       progress={100}
     >
@@ -201,7 +211,7 @@ export function ReviewSheet({
             <ChecklistItem checked={!!data.mileage} label="Mileage entered" colors={colors} />
             <ChecklistItem checked={!!data.price} label="Price set" colors={colors} />
             <ChecklistItem checked={!!data.emirate} label="Location selected" colors={colors} />
-            <ChecklistItem checked={data.images.length > 0} label="Photos uploaded" colors={colors} optional />
+            <ChecklistItem checked={data.images.length > 0} label="At least 1 photo" colors={colors} />
           </View>
         </View>
 

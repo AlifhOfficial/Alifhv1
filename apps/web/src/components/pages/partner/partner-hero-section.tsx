@@ -6,6 +6,7 @@
 
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
@@ -75,37 +76,33 @@ export function PartnerHeroSection() {
           </Link>
         </div>
 
-        {/* Hero Video */}
+        {/* Hero Image */}
         <div className="relative w-full overflow-hidden rounded-lg mb-8">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            disablePictureInPicture
-            disableRemotePlayback
+          <Image
+            src="/Abstract/homescreen.png"
+            alt="Revvup - For Dealers"
+            width={1600}
+            height={900}
+            priority
             className="w-full h-auto"
-          >
-            <source src="/Marketing_Media/phero.mp4" type="video/mp4" />
-          </video>
+          />
         </div>
 
         {/* Trust Indicators */}
-        <div className="flex items-center justify-center gap-12 md:gap-20 pt-8">
-          <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">0%</p>
-            <span className="text-sm text-muted-foreground">Commission</span>
+        <div className="flex items-center justify-center gap-8 sm:gap-12 max-w-2xl mx-auto">
+          <div className="text-center">
+            <div className="text-2xl font-semibold tracking-tight text-primary mb-1">0%</div>
+            <div className="text-sm text-muted-foreground">Commission</div>
           </div>
-          <div className="w-px h-10 bg-border/30 hidden sm:block" />
-          <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">∞</p>
-            <span className="text-sm text-muted-foreground">Listings</span>
+          <div className="w-px h-10 bg-border/30" />
+          <div className="text-center">
+            <div className="text-2xl font-semibold tracking-tight text-primary mb-1">∞</div>
+            <div className="text-sm text-muted-foreground">Listings</div>
           </div>
-          <div className="w-px h-10 bg-border/30 hidden sm:block" />
-          <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">1</p>
-            <span className="text-sm text-muted-foreground">Flat fee</span>
+          <div className="w-px h-10 bg-border/30" />
+          <div className="text-center">
+            <div className="text-2xl font-semibold tracking-tight text-primary mb-1">1</div>
+            <div className="text-sm text-muted-foreground">Flat fee</div>
           </div>
         </div>
 

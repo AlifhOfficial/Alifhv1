@@ -11,11 +11,12 @@
  * - partnerId: Partner ID (required)
  * 
  * Processing:
+ * - Auto-detects HEIC by magic bytes (handles mobile mislabeling)
+ * - Converts HEIC to JPEG first using heic-convert
  * - Converts to WebP format
  * - Logo: Resizes to 512x512 max (square crop)
  * - Hero: Resizes to 1920x600 max (cover crop for banner)
  * - Compresses with quality 85
- * - Uses partnerId as filename for easy cleanup/overwrite
  * 
  * Returns: { key, url, etag }
  * 
@@ -27,15 +28,15 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import sharp from "sharp";
 import { uploadFile, deleteFile } from "@/lib/storage";
 import { generateBrandImageKey, type BrandImageType } from "@/lib/storage/keys";
+import { detectImageFormat, isValidImageFormat, processImage } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
-export const runtime = "nodejs"; // Sharp requires Node.js runtime
+export const runtime = "nodejs";
+export const maxDuration = 60; // 60 seconds for HEIC image processing
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
 const partnerImageLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_PARTNER);
@@ -45,13 +46,13 @@ const IMAGE_CONFIG = {
   logo: {
     width: 512,
     height: 512,
-    fit: "cover" as const, // Square crop for logos
+    fit: "cover" as const,
     quality: 85,
   },
   hero: {
     width: 1920,
     height: 600,
-    fit: "cover" as const, // Banner crop for hero images
+    fit: "cover" as const,
     quality: 85,
   },
 } as const;
@@ -96,14 +97,7 @@ export async function POST(req: NextRequest) {
     // For now, we trust that the calling code has validated permissions
     // In production, you should verify user has admin/staff access to this partnerId
 
-    // Validate file type
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json({ 
-        error: "Invalid file type. Allowed: JPEG, PNG, WebP, HEIC" 
-      }, { status: 400 });
-    }
-
-    // Validate file size
+    // Validate file size first
     if (file.size > MAX_SIZE) {
       return NextResponse.json({ 
         error: "File too large. Maximum 10MB allowed" 
@@ -113,18 +107,23 @@ export async function POST(req: NextRequest) {
     const config = IMAGE_CONFIG[imageType as BrandImageType];
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+    
+    // Detect actual format from magic bytes (mobile often mislabels HEIC as JPEG)
+    const detectedFormat = detectImageFormat(buffer);
+    if (!isValidImageFormat(detectedFormat)) {
+      return NextResponse.json({ 
+        error: "Invalid file type. Allowed: JPEG, PNG, WebP, HEIC" 
+      }, { status: 400 });
+    }
 
-    // Process image with Sharp
-    // - Resize to configured dimensions
-    // - Convert to WebP
-    // - Compress with configured quality
-    const processedBuffer = await sharp(buffer)
-      .resize(config.width, config.height, {
-        fit: config.fit,
-        position: "center",
-      })
-      .webp({ quality: config.quality })
-      .toBuffer();
+    // Process image with HEIC conversion and WebP output
+    const { buffer: processedBuffer } = await processImage(buffer, {
+      maxWidth: config.width,
+      maxHeight: config.height,
+      fit: config.fit,
+      position: 'center',
+      quality: config.quality,
+    });
 
     // Generate unique key with date-based path to bust CDN cache
     // Format: brands/{partnerId}/{YYYY}/{MM}/{DD}/{type}-{timestamp}.webp

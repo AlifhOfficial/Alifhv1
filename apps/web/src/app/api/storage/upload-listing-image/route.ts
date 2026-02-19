@@ -6,17 +6,15 @@
  * Authentication: Required (user must be logged in)
  * 
  * Request Body (multipart/form-data):
- * - file: Image file (JPEG, PNG, WebP)
+ * - file: Image file (JPEG, PNG, WebP, HEIC, HEIF)
  * - vin: Vehicle VIN (required for organizing images)
  * 
- * Note: HEIC/HEIF not supported - requires libvips with heif codec.
- * iPhone users should use "Most Compatible" camera setting.
- * 
  * Processing:
- * - Converts to WebP format using Sharp
+ * - Auto-detects HEIC/HEIF by magic bytes (handles mobile mislabeling)
+ * - Converts HEIC/HEIF to JPEG first using heic-convert
+ * - Converts final output to WebP format using Sharp
  * - Resizes to max 2048x2048 (preserving aspect ratio)
- * - Compresses with quality 85 (optimal balance of quality/size)
- * - Organized storage: listings/{year}/{month}/{day}/{id}.webp
+ * - Compresses with quality 82 (optimal balance of quality/size/speed)
  * 
  * Returns: { key, url, etag, size }
  * 
@@ -27,27 +25,16 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import sharp from "sharp";
 import { uploadFile } from "@/lib/storage";
+import { detectImageFormat, isValidImageFormat, processImage } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 import { createId } from "@paralleldrive/cuid2";
 
-export const runtime = "nodejs"; // Sharp requires Node.js runtime
+export const runtime = "nodejs";
+export const maxDuration = 60; // 60 seconds for large HEIC image processing
 
-// Supported input formats
-// Note: HEIC/HEIF requires libvips compiled with heif support (not available on all systems)
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const HEIC_TYPES = ["image/heic", "image/heif"];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB per image
-
-// Output configuration - optimized for listing photos
-const OUTPUT_CONFIG = {
-  maxWidth: 2048,      // Max dimension (good for full-screen viewing)
-  maxHeight: 2048,     // Max dimension
-  quality: 85,         // WebP quality (85 is optimal for photos)
-  effort: 4,           // Compression effort (0-6, 4 is balanced)
-} as const;
 
 const listingImageLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_GENERAL);
 
@@ -103,20 +90,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Valid VIN is required" }, { status: 400 });
     }
 
-    // Validate file type
-    if (HEIC_TYPES.includes(file.type)) {
-      return NextResponse.json({ 
-        error: "HEIC/HEIF not supported. Please convert to JPEG first (use iPhone's 'Most Compatible' camera setting)" 
-      }, { status: 400 });
-    }
-    
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json({ 
-        error: "Invalid file type. Allowed: JPEG, PNG, WebP" 
-      }, { status: 400 });
-    }
-
-    // Validate file size
+    // Validate file size first (before reading buffer)
     if (file.size > MAX_SIZE) {
       return NextResponse.json({ 
         error: "File too large. Maximum 10MB allowed" 
@@ -125,30 +99,36 @@ export async function POST(req: NextRequest) {
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-
-    // Process image with Sharp
-    // - Resize to max dimensions (preserving aspect ratio)
-    // - Convert to WebP format
-    // - Apply quality compression
-    const processedBuffer = await sharp(buffer)
-      .rotate() // Auto-rotate based on EXIF orientation
-      .resize(OUTPUT_CONFIG.maxWidth, OUTPUT_CONFIG.maxHeight, {
-        fit: "inside",           // Preserve aspect ratio, fit within bounds
-        withoutEnlargement: true, // Don't upscale smaller images
-      })
-      .webp({ 
-        quality: OUTPUT_CONFIG.quality,
-        effort: OUTPUT_CONFIG.effort,
-      })
-      .toBuffer();
-
+    
+    // Detect actual format from magic bytes (mobile often mislabels HEIC as JPEG)
+    const detectedFormat = detectImageFormat(buffer);
+    console.log("[upload-listing-image] Detected format:", detectedFormat, "MIME:", file.type);
+    
+    if (!isValidImageFormat(detectedFormat)) {
+      return NextResponse.json({ 
+        error: "Invalid file type. Allowed: JPEG, PNG, WebP, HEIC" 
+      }, { status: 400 });
+    }
+    
+    // Process image: HEIC conversion + resize + WebP output (optimized for speed)
+    const startTime = Date.now();
+    const { buffer: processedBuffer, originalFormat } = await processImage(buffer, {
+      maxWidth: 2048,
+      maxHeight: 2048,
+      quality: 82,      // Slightly lower = faster encoding
+      effort: 2,        // Low effort = faster encoding
+    });
+    const processingTime = Date.now() - startTime;
+    
     // Generate organized storage key using VIN and user
     const key = generateListingImageKey(user.id, vin);
     
     console.log("[upload-listing-image] Processing complete:", {
+      originalFormat,
       originalSize: buffer.length,
       processedSize: processedBuffer.length,
       compressionRatio: ((1 - processedBuffer.length / buffer.length) * 100).toFixed(1) + '%',
+      processingTimeMs: processingTime,
       vin,
       key,
     });
@@ -167,8 +147,26 @@ export async function POST(req: NextRequest) {
       etag: result.etag,
       size: processedBuffer.length,
     });
-  } catch (error) {
-    console.error("[upload-listing-image] POST failed", error);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+  } catch (error: any) {
+    // Log detailed error for debugging
+    console.error("[upload-listing-image] POST failed:", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    });
+    
+    // Provide more specific error messages
+    const errorMessage = error.message || "Upload failed";
+    if (errorMessage.includes('HEIC') || errorMessage.includes('heic')) {
+      return NextResponse.json({ error: "Failed to process HEIC image. Please try a different format." }, { status: 500 });
+    }
+    if (errorMessage.includes('R2') || errorMessage.includes('storage') || errorMessage.includes('S3')) {
+      return NextResponse.json({ error: "Storage service temporarily unavailable. Please try again." }, { status: 503 });
+    }
+    if (errorMessage.includes('sharp') || errorMessage.includes('image')) {
+      return NextResponse.json({ error: "Failed to process image. Please try a different image." }, { status: 500 });
+    }
+    
+    return NextResponse.json({ error: "Upload failed. Please try again." }, { status: 500 });
   }
 }

@@ -12,7 +12,7 @@
  * - contentType: MIME type (optional)
  * 
  * Processing:
- * - Images: Converts to WebP, compresses with quality 85, max 2048px
+ * - Images: Auto-detects HEIC, converts to WebP, compresses with quality 85, max 2048px
  * - PDFs: Kept as-is (no compression)
  * 
  * Returns: { key }
@@ -22,12 +22,13 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
-import sharp from "sharp";
 import { uploadPrivateFile } from "@/lib/storage";
+import { detectImageFormat, isValidImageFormat, processImage } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { createRateLimiter, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
-export const runtime = "nodejs"; // Sharp requires Node.js runtime
+export const runtime = "nodejs";
+export const maxDuration = 60; // 60 seconds for HEIC image processing
 
 const FileUploadSchema = z.object({
   directory: z.string().optional(),
@@ -90,19 +91,18 @@ export async function POST(req: NextRequest) {
     let finalContentType = contentType;
     let finalFileName = fileName;
 
-    // Process images with Sharp for optimization
-    const isImage = typeof contentType === "string" && contentType.startsWith("image/");
+    // Process images with HEIC detection and WebP conversion
+    const buffer = Buffer.from(arrayBuffer);
+    const detectedFormat = detectImageFormat(buffer);
+    const isImage = isValidImageFormat(detectedFormat);
     
     if (isImage) {
       try {
-        const buffer = Buffer.from(arrayBuffer);
-        const processedBuffer = await sharp(buffer)
-          .resize(2048, 2048, {
-            fit: "inside",
-            withoutEnlargement: true,
-          })
-          .webp({ quality: 85 })
-          .toBuffer();
+        const { buffer: processedBuffer } = await processImage(buffer, {
+          maxWidth: 2048,
+          maxHeight: 2048,
+          quality: 85,
+        });
         
         processedData = processedBuffer;
         finalContentType = "image/webp";

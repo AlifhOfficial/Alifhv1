@@ -61,15 +61,14 @@ export function ImageUpload({
 
     const filesToUpload = Array.from(files).slice(0, remainingSlots);
     
-    // Validate file types - optimized endpoint supports more formats
-    const validTypes = optimized 
-      ? ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif']
-      : ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    const invalidFiles = filesToUpload.filter(f => !validTypes.includes(f.type));
+    // Basic client-side type check (server does magic byte detection for full validation)
+    // Accept any image/* type - common formats + HEIC/HEIF which browsers may report differently
+    const invalidFiles = filesToUpload.filter(f => 
+      !f.type.startsWith('image/') && f.type !== '' && f.type !== 'application/octet-stream'
+    );
     
     if (invalidFiles.length > 0) {
-      const allowedFormats = optimized ? 'JPG, PNG, WebP, or HEIC' : 'JPG, PNG, and WebP';
-      alert(`Only ${allowedFormats} images are allowed`);
+      alert('Only image files are allowed');
       return;
     }
 
@@ -107,26 +106,48 @@ export function ImageUpload({
           formData.append('cacheControl', 'public, max-age=31536000, immutable');
         }
 
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          body: formData,
-          credentials: 'include', // Include auth cookies for optimized endpoint
-        });
+        // Add timeout for uploads (HEIC conversion can take 10-15s)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || `Upload failed: ${response.statusText}`);
+        try {
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            body: formData,
+            credentials: 'include',
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            // Provide user-friendly error messages
+            if (response.status === 413) {
+              throw new Error('Image is too large. Please use an image under 10MB.');
+            }
+            if (response.status === 401) {
+              throw new Error('Please sign in to upload images.');
+            }
+            throw new Error(errorData.error || `Upload failed: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          return data.url || data.key;
+        } catch (err: any) {
+          clearTimeout(timeoutId);
+          if (err.name === 'AbortError') {
+            throw new Error('Upload timed out. Please check your connection and try again.');
+          }
+          throw err;
         }
-
-        const data = await response.json();
-        return data.url || data.key;
       });
 
       const uploadedUrls = await Promise.all(uploadPromises);
       onChange([...value, ...uploadedUrls]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      alert('Failed to upload images. Please try again.');
+      alert(error.message || 'Failed to upload images. Please try again.');
     } finally {
       setUploading(false);
       if (inputRef.current) {
@@ -272,10 +293,7 @@ export function ImageUpload({
             ref={inputRef}
             type="file"
             multiple
-            accept={optimized 
-              ? "image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif" 
-              : "image/jpeg,image/jpg,image/png,image/webp"
-            }
+            accept="image/*"
             onChange={(e) => handleFiles(e.target.files)}
             className="hidden"
             disabled={uploading}

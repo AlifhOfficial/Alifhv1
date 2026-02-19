@@ -152,6 +152,7 @@ export function validateStep3(form: CreateListingFormData): ValidationErrors {
   const p = parseInt(form.price, 10);
   if (form.price && (isNaN(p) || p <= 0)) errors.price = 'Enter a valid price';
   if (!form.emirate) errors.emirate = 'Emirate is required';
+  if (form.images.length === 0) errors.images = 'At least 1 photo is required';
   return errors;
 }
 

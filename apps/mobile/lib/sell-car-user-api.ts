@@ -270,16 +270,18 @@ function toAbsoluteUrl(path: string | null | undefined): string | null {
 /**
  * Authenticated fetch wrapper.
  * Automatically injects Bearer token + Origin header.
+ * Supports timeout for long-running requests.
  */
 async function authFetch(
   endpoint: string,
-  options: RequestInit = {},
+  options: RequestInit & { timeoutMs?: number } = {},
 ): Promise<Response> {
+  const { timeoutMs = 30000, ...fetchOptions } = options;
   const session = await getStoredSession();
 
   const headers: Record<string, string> = {
     'Origin': API_BASE,
-    ...(options.headers as Record<string, string> ?? {}),
+    ...(fetchOptions.headers as Record<string, string> ?? {}),
   };
 
   if (session?.token) {
@@ -287,14 +289,29 @@ async function authFetch(
   }
 
   // Only set Content-Type for JSON bodies (not for FormData/multipart)
-  if (!(options.body instanceof FormData)) {
+  if (!(fetchOptions.body instanceof FormData)) {
     headers['Content-Type'] = 'application/json';
   }
 
-  return fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  // Create abort controller for timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      ...fetchOptions,
+      headers,
+      signal: controller.signal,
+    });
+    return response;
+  } catch (err: any) {
+    if (err.name === 'AbortError') {
+      throw new Error('Request timed out. Please check your connection and try again.');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 /** Throw a descriptive error from a failed response */
@@ -381,6 +398,11 @@ export async function checkVin(
  * Upload a listing image (auto-converts to WebP on server).
  * POST /api/storage/upload-listing-image
  *
+ * Server processing includes:
+ * - HEIC/HEIF auto-detection and conversion (can take 5-10s for large images)
+ * - WebP conversion and compression
+ * - Resize to max 2048x2048
+ *
  * @param fileUri  Local file URI from image picker (e.g. file:///...)
  * @param vin      VIN string (min 11 chars, used for R2 folder)
  * @param fileName Optional filename override
@@ -394,19 +416,47 @@ export async function uploadListingImage(
 
   // React Native FormData accepts { uri, type, name }
   const name = fileName ?? fileUri.split('/').pop() ?? 'photo.jpg';
+  
+  // Detect MIME type from extension (server also detects via magic bytes)
+  const ext = name.split('.').pop()?.toLowerCase() ?? '';
+  const mimeTypes: Record<string, string> = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'webp': 'image/webp',
+    'heic': 'image/heic',
+    'heif': 'image/heif',
+  };
+  const mimeType = mimeTypes[ext] || 'image/jpeg';
+  
   formData.append('file', {
     uri: fileUri,
-    type: 'image/jpeg',
+    type: mimeType,
     name,
   } as any);
   formData.append('vin', vin);
 
+  // Longer timeout for image uploads (HEIC conversion can take 10-15s on slow connections)
   const res = await authFetch('/api/storage/upload-listing-image', {
     method: 'POST',
     body: formData,
+    timeoutMs: 60000, // 60 seconds for large HEIC images
   });
 
-  if (!res.ok) await handleError(res, 'Image upload failed');
+  if (!res.ok) {
+    // Provide user-friendly error messages
+    if (res.status === 413) {
+      throw new Error('Image is too large. Please use an image under 10MB.');
+    }
+    if (res.status === 400) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || 'Invalid image format. Please use JPEG, PNG, WebP, or HEIC.');
+    }
+    if (res.status === 401) {
+      throw new Error('Please sign in to upload images.');
+    }
+    await handleError(res, 'Image upload failed. Please try again.');
+  }
 
   const data = await res.json();
   return {

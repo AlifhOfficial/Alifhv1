@@ -169,8 +169,9 @@ export function ProfileView() {
     e.target.value = '';
     if (!file) return;
 
-    if (!['image/jpeg', 'image/png', 'image/webp', 'image/heic'].includes(file.type)) {
-      toast({ title: 'Invalid file type', variant: 'destructive' });
+    // Basic check - server does magic byte detection for full validation
+    if (!file.type.startsWith('image/') && file.type !== '' && file.type !== 'application/octet-stream') {
+      toast({ title: 'Only image files are allowed', variant: 'destructive' });
       return;
     }
     if (file.size > 5 * 1024 * 1024) {

@@ -115,7 +115,18 @@ export async function pickAndUploadListingImage(
       uploaded.push(result);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     } catch (err: any) {
-      errors.push(err.message ?? `Failed to upload image ${i + 1}`);
+      // User-friendly error messages
+      const message = err.message ?? `Failed to upload image ${i + 1}`;
+      errors.push(message);
+      
+      // Show alert for timeout errors (user may want to retry)
+      if (message.includes('timed out') || message.includes('connection')) {
+        Alert.alert(
+          'Upload Problem',
+          `Image ${i + 1} failed: ${message}`,
+          [{ text: 'OK' }],
+        );
+      }
     }
     onProgress?.(i + 1, assets.length);
   }

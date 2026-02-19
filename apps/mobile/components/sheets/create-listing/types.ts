@@ -115,10 +115,10 @@ export const SHEET_STEPS = [
   { id: 'powertrain', label: 'Powertrain', required: false, group: 'specs' },
   { id: 'extras', label: 'Extras', required: false, group: 'specs' },
 
-  // Price & Media (price + emirate required)
+  // Price & Media (price + emirate + photos required)
   { id: 'price', label: 'Price', required: true, group: 'listing' },
   { id: 'location', label: 'Location', required: true, group: 'listing' },
-  { id: 'photos', label: 'Photos', required: false, group: 'listing' },
+  { id: 'photos', label: 'Photos', required: true, group: 'listing' },
   { id: 'description', label: 'Description', required: false, group: 'listing' },
 
   // Final

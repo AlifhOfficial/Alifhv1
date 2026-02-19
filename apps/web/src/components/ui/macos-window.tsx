@@ -91,7 +91,7 @@ function TypewriterToast({
     >
       <div 
         className={cn(
-          "bg-white/[0.08] backdrop-blur-2xl border border-white/[0.12] rounded-full shadow-2xl overflow-hidden transition-all duration-300 ease-out",
+          "bg-transparent backdrop-blur-2xl border border-white/[0.12] rounded-full shadow-2xl overflow-hidden transition-all duration-300 ease-out",
           isExpanded ? "px-5 py-2.5" : "px-0 py-0"
         )}
         style={{
@@ -202,7 +202,7 @@ export function MacOSWindow({
         <div className="flex items-center">
           <button
             onClick={handleLogoClick}
-            className="flex items-center justify-center p-1.5 rounded-full bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.05)] hover:bg-white/[0.1] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+            className="flex items-center justify-center p-1.5 rounded-full bg-transparent backdrop-blur-xl border border-white/[0.08] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.05)] hover:bg-white/[0.1] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
           >
             <svg className="w-4 h-4" viewBox="0 0 400 400" fill="none">
               <path
@@ -220,7 +220,7 @@ export function MacOSWindow({
           <div className="flex items-center">
             <button
               onClick={handleUrlBarClick}
-              className="bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.05),0_1px_2px_0_rgba(0,0,0,0.2)] rounded-full px-2.5 py-1.5 flex items-center gap-1.5 max-w-[180px] sm:max-w-[220px] hover:bg-white/[0.1] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+              className="bg-transparent backdrop-blur-xl border border-white/[0.08] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.05),0_1px_2px_0_rgba(0,0,0,0.2)] rounded-full px-2.5 py-1.5 flex items-center gap-1.5 max-w-[180px] sm:max-w-[220px] hover:bg-white/[0.1] active:scale-[0.98] transition-all duration-200 cursor-pointer"
             >
               {/* Lock icon */}
               <svg className="w-3 h-3 text-white/40 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -238,11 +238,11 @@ export function MacOSWindow({
         
         {/* Right side toolbar - Outer pill containing 3 bubbles */}
         <div className="hidden sm:flex items-center">
-          <div className="flex items-center gap-1 rounded-full bg-white/[0.04] backdrop-blur-xl border border-white/[0.06] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.03)] p-1">
+          <div className="flex items-center gap-1 rounded-full bg-transparent backdrop-blur-xl border border-white/[0.06] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.03)] p-1">
             {/* Share bubble */}
             <button
               onClick={handleShare}
-              className="p-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-white/50 hover:text-white/70 hover:bg-white/[0.1] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+              className="p-1.5 rounded-full bg-transparent border border-white/[0.08] text-white/50 hover:text-white/70 hover:bg-white/[0.1] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15" />
@@ -251,7 +251,7 @@ export function MacOSWindow({
             {/* Copy bubble */}
             <button
               onClick={handleCopy}
-              className="p-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-white/50 hover:text-white/70 hover:bg-white/[0.1] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+              className="p-1.5 rounded-full bg-transparent border border-white/[0.08] text-white/50 hover:text-white/70 hover:bg-white/[0.1] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
@@ -260,7 +260,7 @@ export function MacOSWindow({
             {/* Tabs bubble */}
             <button
               onClick={handleNewTab}
-              className="p-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-white/50 hover:text-white/70 hover:bg-white/[0.1] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+              className="p-1.5 rounded-full bg-transparent border border-white/[0.08] text-white/50 hover:text-white/70 hover:bg-white/[0.1] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-6A2.25 2.25 0 019.75 18v-2.25m8.25-8.25h-6a2.25 2.25 0 00-2.25 2.25v6" />

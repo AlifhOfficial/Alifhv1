@@ -105,9 +105,11 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
-    if (!allowedTypes.includes(file.type)) {
-      setErrors(prev => ({ ...prev, tradeLicenseDocumentUrl: 'Please upload a PDF, JPEG, or PNG file' }));
+    // Allow PDF or any image (server detects image format by magic bytes)
+    const isPdf = file.type === 'application/pdf';
+    const isImage = file.type.startsWith('image/') || file.type === '' || file.type === 'application/octet-stream';
+    if (!isPdf && !isImage) {
+      setErrors(prev => ({ ...prev, tradeLicenseDocumentUrl: 'Please upload a PDF or image file' }));
       return;
     }
 
