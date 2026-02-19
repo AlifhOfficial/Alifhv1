@@ -7,7 +7,7 @@ import {
   isDealerStaff,
 } from "@/lib/auth/routing";
 import type { ExtendedUser } from "@/types/auth";
-// TODO: Add Upstash Redis session cache for distributed caching
+import { getCachedSession, setCachedSession } from "@/lib/redis";
 
 // Request-scoped session cache key
 const SESSION_HEADER_KEY = "x-auth-user";
@@ -164,33 +164,32 @@ export async function proxy(request: NextRequest) {
 
   // Fetch session once for all protected routes
   try {
-    // Fetch from Better Auth directly
-    // TODO: Add Upstash Redis session cache to avoid hitting DB on every request
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    // Check Upstash Redis cache first (avoids DB hit on every request)
+    let user: ExtendedUser | null = null;
+    const cached = await getCachedSession<ExtendedUser>(sessionToken);
 
-    if (!session?.user || !isExtendedUser(session.user)) {
-      if (isApiRoute) {
-        return NextResponse.next();
+    if (cached && isExtendedUser(cached)) {
+      user = normalizeExtendedUser(cached as Record<string, unknown>);
+    } else {
+      // Cache miss — fetch from Better Auth (hits DB)
+      const session = await auth.api.getSession({
+        headers: request.headers,
+      });
+
+      if (!session?.user || !isExtendedUser(session.user)) {
+        if (isApiRoute) {
+          return NextResponse.next();
+        }
+        const signInUrl = new URL("/", request.url);
+        signInUrl.searchParams.set("auth", "signin");
+        signInUrl.searchParams.set("redirect", pathname);
+        return NextResponse.redirect(signInUrl);
       }
-      const signInUrl = new URL("/", request.url);
-      signInUrl.searchParams.set("auth", "signin");
-      signInUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(signInUrl);
-    }
 
-    // Normalize user to ensure extended fields have defaults
-    const user = normalizeExtendedUser(session.user as Record<string, unknown>);
+      user = normalizeExtendedUser(session.user as Record<string, unknown>);
 
-    if (!user) {
-      if (isApiRoute) {
-        return NextResponse.next();
-      }
-      const signInUrl = new URL("/", request.url);
-      signInUrl.searchParams.set("auth", "signin");
-      signInUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(signInUrl);
+      // Cache in Redis (fire-and-forget, non-blocking)
+      setCachedSession(sessionToken, user);
     }
 
     // Check if user is banned - redirect to banned page
