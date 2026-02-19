@@ -17,13 +17,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getAllPartnerFunnels, getPartnerFunnelStats, getPartnerFunnelStaff } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const funnelLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 /**
  * GET /api/partner/consignment/funnels/all
@@ -36,12 +34,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limit
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await funnelLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { searchParams } = new URL(req.url);
     

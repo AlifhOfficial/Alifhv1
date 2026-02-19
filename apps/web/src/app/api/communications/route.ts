@@ -5,14 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createCommunication } from '@alifh/database';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-} from '@/lib/rate-limit';
 
-const communicationsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.CONTACT_FORM);
 
 // Email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,12 +15,6 @@ const PHONE_REGEX = /^[+]?[\d\s-]{7,20}$/;
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limit by IP (no auth required for public form)
-    const identifier = getIdentifier(request);
-    const rateLimitResult = await communicationsLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const body = await request.json();
     const { name, email, phone, subject, message, type } = body;

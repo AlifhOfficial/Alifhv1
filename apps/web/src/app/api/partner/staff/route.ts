@@ -7,14 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPartnerStaff } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-} from '@/lib/rate-limit';
 
-const staffListLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -32,12 +25,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await staffListLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     if (!user.hasPartnerAccess || !user.partnerMemberships?.[0]) {
       return NextResponse.json(

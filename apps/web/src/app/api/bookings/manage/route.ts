@@ -16,11 +16,9 @@ import {
   runBookingMaintenance,
   type BookingStatus,
 } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_BOOKINGS } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-const bookingManageLimiter = createRateLimiter(RATE_LIMITS_BOOKINGS.MANAGE);
 
 /**
  * GET /api/bookings/manage

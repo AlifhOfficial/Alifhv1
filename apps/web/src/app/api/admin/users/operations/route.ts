@@ -29,13 +29,11 @@ import {
   adminDeleteUser,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ADMIN } from '@/lib/rate-limit';
 import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const adminUserOpsLimiter = createRateLimiter(RATE_LIMITS_ADMIN.USER_OPERATIONS);
 
 // ============================================================================
 // Validation Schemas
@@ -115,12 +113,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Rate limiting: 100 admin operations per minute (relaxed for admins)
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await adminUserOpsLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const body = await req.json();
     const validated = operationSchema.parse(body);

@@ -32,15 +32,8 @@ import {
   getFavoritesWithListings,
   getSuperlikeQuotaForUser,
 } from '@alifh/database';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-} from '@/lib/rate-limit';
 import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
-const statusLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -75,12 +68,6 @@ export async function GET(req: NextRequest) {
       return response;
     }
 
-    // Rate limit by user (only for authenticated users)
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await statusLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     // ⚡ OPTIMIZED: Single query for favorites + listings OR just IDs
     // Previously: getFavoriteStatusForListings → getListingCards (2 queries)

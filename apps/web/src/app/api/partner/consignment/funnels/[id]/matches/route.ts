@@ -12,13 +12,11 @@ import {
   getFunnelById,
   getFunnelMatchingListings,
 } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const matchesLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 /**
  * GET /api/partner/consignment/funnels/[id]/matches
@@ -34,11 +32,6 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await matchesLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const membership = (user as any).partnerMemberships?.find(
       (m: any) => m.staffRole !== 'viewer'

@@ -14,16 +14,7 @@ import {
   rescheduleBooking,
   submitBookingFeedback,
 } from '@alifh/database';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-  RATE_LIMITS_BOOKINGS,
-} from '@/lib/rate-limit';
 
-const readLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
-const updateLimiter = createRateLimiter(RATE_LIMITS_BOOKINGS.MANAGE);
 
 export const runtime = 'nodejs';
 
@@ -42,12 +33,6 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await readLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { id } = await params;
     const booking = await getBookingById(id);
@@ -82,12 +67,6 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await updateLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { id } = await params;
     const body = await req.json();

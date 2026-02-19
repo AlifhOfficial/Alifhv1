@@ -31,19 +31,9 @@ import { applyCdnHeaders, NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import { z } from 'zod';
 import { getDealerBaseProfile, updateDealerBaseProfile } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-  RATE_LIMITS_PARTNER,
-} from '@/lib/rate-limit';
 
-const readLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
-const updateLimiter = createRateLimiter(RATE_LIMITS_PARTNER.PROFILE_UPDATE);
 
 export const revalidate = 0;
-
 
 
 /**
@@ -103,12 +93,6 @@ export async function GET(
 ) {
   const start = performance.now();
   try {
-    // Rate limit by IP (public endpoint)
-    const identifier = getIdentifier(request);
-    const rateLimitResult = await readLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { partnerId } = await params;
 
@@ -155,12 +139,6 @@ export async function PATCH(
       );
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(request, user.id);
-    const rateLimitResult = await updateLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { partnerId } = await params;
     

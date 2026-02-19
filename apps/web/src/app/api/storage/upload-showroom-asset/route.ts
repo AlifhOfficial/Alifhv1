@@ -25,7 +25,6 @@ import { uploadFile, deleteFile } from '@/lib/storage';
 import { generateShowroomAssetKey, type ShowroomAssetType } from '@/lib/storage/keys';
 import { processSingleImage, ImageValidationError, detectImageFormat, isValidImageFormat } from '@/lib/storage/image-processing';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -36,7 +35,6 @@ const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'vide
 const MAX_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB for high-quality showroom images
 const MAX_VIDEO_SIZE = 20 * 1024 * 1024; // 20MB for hero videos
 
-const showroomAssetLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_PARTNER);
 
 // Asset type configurations (for images - videos are passed through without processing)
 const ASSET_CONFIG: Record<ShowroomAssetType, { width: number; height: number; fit: 'cover' | 'inside'; quality: number }> = {
@@ -111,12 +109,6 @@ export async function POST(req: NextRequest) {
       }, { status: 403 });
     }
     
-    // Rate limiting
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await showroomAssetLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
     
     const formData = await req.formData();
     const file = formData.get('file');

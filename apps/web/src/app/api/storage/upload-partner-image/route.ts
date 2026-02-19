@@ -32,14 +32,12 @@ import { uploadFile, deleteFile } from "@/lib/storage";
 import { generateBrandImageKey, type BrandImageType } from "@/lib/storage/keys";
 import { processSingleImage, ImageValidationError, formatFileSize } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60; // 60 seconds for HEIC image processing
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
-const partnerImageLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_PARTNER);
 
 // Image configuration by type
 const IMAGE_CONFIG = {
@@ -65,12 +63,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Rate limiting: 10 partner image uploads per hour
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await partnerImageLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const formData = await req.formData();
     const file = formData.get("file");

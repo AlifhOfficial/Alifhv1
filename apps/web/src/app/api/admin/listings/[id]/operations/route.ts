@@ -24,13 +24,11 @@ import {
   createAuditLogEntry,
   getListingModerationContext,
 } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ADMIN } from '@/lib/rate-limit';
 import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const adminListingOpsLimiter = createRateLimiter(RATE_LIMITS_ADMIN.LISTING_OPERATIONS);
 
 // ============================================================================
 // Validation Schemas
@@ -81,12 +79,6 @@ export async function POST(
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    // Rate limiting: 100 admin listing ops per minute
-    const identifier = getIdentifier(req, sessionUser.id);
-    const rateLimitResult = await adminListingOpsLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { id } = await params;
     const body = await req.json().catch(() => ({}));

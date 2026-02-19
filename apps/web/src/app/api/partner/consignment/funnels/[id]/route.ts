@@ -16,12 +16,10 @@ import {
   updateFunnel,
   deleteFunnel,
 } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const funnelLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 // Validation schema for funnel filters
 const filtersSchema = z.object({
@@ -59,11 +57,6 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await funnelLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const membership = (user as any).partnerMemberships?.find(
       (m: any) => m.staffRole !== 'viewer'
@@ -112,11 +105,6 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await funnelLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     // Any staff member can update funnels
     const membership = (user as any).partnerMemberships?.find(
@@ -171,11 +159,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await funnelLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     // Any staff member can delete funnels
     const membership = (user as any).partnerMemberships?.find(

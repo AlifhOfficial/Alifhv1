@@ -20,22 +20,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { validateUserExists } from "../validation-utils";
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_AUTH } from "@/lib/rate-limit";
 
 const MagicLinkSchema = z.object({
   email: z.string().email('Invalid email address'),
   callbackURL: z.string().optional(), // Can be relative path like "/dashboard"
 });
 
-const magicLinkLimiter = createRateLimiter(RATE_LIMITS_AUTH.MAGIC_LINK);
 
 export async function POST(request: NextRequest) {
-  // Rate limiting: 5 magic link requests per 10 minutes
-  const identifier = getIdentifier(request);
-  const rateLimitResult = await magicLinkLimiter.check(identifier);
-  if (!rateLimitResult.success) {
-    return rateLimitResponse(rateLimitResult);
-  }
   try {
     const body = await request.json().catch(() => null);
     const result = MagicLinkSchema.safeParse(body);

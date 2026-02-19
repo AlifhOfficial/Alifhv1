@@ -166,15 +166,21 @@ export async function proxy(request: NextRequest) {
   try {
     // Check Upstash Redis cache first (avoids DB hit on every request)
     let user: ExtendedUser | null = null;
+    let sessionSource = 'unknown';
+    const sessionStart = Date.now();
     const cached = await getCachedSession<ExtendedUser>(sessionToken);
+    const cacheMs = Date.now() - sessionStart;
 
     if (cached && isExtendedUser(cached)) {
       user = normalizeExtendedUser(cached as Record<string, unknown>);
+      sessionSource = 'redis';
     } else {
       // Cache miss — fetch from Better Auth (hits DB)
+      const dbStart = Date.now();
       const session = await auth.api.getSession({
         headers: request.headers,
       });
+      const dbMs = Date.now() - dbStart;
 
       if (!session?.user || !isExtendedUser(session.user)) {
         if (isApiRoute) {
@@ -187,9 +193,19 @@ export async function proxy(request: NextRequest) {
       }
 
       user = normalizeExtendedUser(session.user as Record<string, unknown>);
+      sessionSource = 'db';
 
       // Cache in Redis (fire-and-forget, non-blocking)
       setCachedSession(sessionToken, user);
+      
+      if (dbMs > 200) {
+        console.warn(`[proxy] Slow session fetch from DB: ${dbMs}ms (cache lookup: ${cacheMs}ms) ${pathname}`);
+      }
+    }
+
+    const sessionMs = Date.now() - sessionStart;
+    if (sessionMs > 200) {
+      console.warn(`[proxy] Session resolution: ${sessionMs}ms (source=${sessionSource}, cache=${cacheMs}ms) ${pathname}`);
     }
 
     // Check if user is banned - redirect to banned page

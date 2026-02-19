@@ -10,7 +10,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { createVerificationSession, isDiditConfigured } from '@/lib/kyc/didit-client';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_KYC } from '@/lib/rate-limit';
 import { 
   createKycRecord, 
   getLatestKycRecordForUser,
@@ -21,7 +20,6 @@ import {
 
 export const runtime = 'nodejs';
 
-const kycSessionLimiter = createRateLimiter(RATE_LIMITS_KYC.SUBMIT);
 
 export async function POST(req: NextRequest) {
   try {
@@ -37,11 +35,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await kycSessionLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const existingKyc = await getLatestKycRecordForUser(user.id);
     if (existingKyc) {

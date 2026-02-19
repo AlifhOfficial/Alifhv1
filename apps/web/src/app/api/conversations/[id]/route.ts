@@ -10,16 +10,7 @@ import {
   getConversation,
   updateConversationSettings,
 } from '@alifh/database';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-  RATE_LIMITS_MESSAGING,
-} from '@/lib/rate-limit';
 
-const readLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
-const updateLimiter = createRateLimiter(RATE_LIMITS_MESSAGING.READ_RECEIPT);
 
 export const runtime = 'nodejs';
 
@@ -41,12 +32,6 @@ export async function GET(
       );
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await readLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { id } = await params;
     const conversation = await getConversation(id, user.id);
@@ -91,12 +76,6 @@ export async function PATCH(
       );
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await updateLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { id } = await params;
     const body = await req.json();

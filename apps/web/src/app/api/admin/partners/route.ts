@@ -17,15 +17,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminAllPartners } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_ADMIN,
-} from '@/lib/rate-limit';
 import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
-const partnersListLimiter = createRateLimiter(RATE_LIMITS_ADMIN.LIST);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -48,12 +41,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await partnersListLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     // Parse query params
     const { searchParams } = new URL(req.url);

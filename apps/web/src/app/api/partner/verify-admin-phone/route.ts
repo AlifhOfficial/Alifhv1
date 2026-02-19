@@ -10,12 +10,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getPartnerProfileByUserId, updatePartnerProfile } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ACCOUNT } from '@/lib/rate-limit';
 import twilio from 'twilio';
 
 export const runtime = 'nodejs';
 
-const verifyLimiter = createRateLimiter(RATE_LIMITS_ACCOUNT.ADMIN_PHONE_VERIFY);
 
 const VerifySchema = z.object({
   phoneNumber: z.string().min(10),
@@ -29,12 +27,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limit by user ID
-    const identifier = getIdentifier(request, sessionUser.id);
-    const rateLimitResult = await verifyLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const body = await request.json();
     const parsed = VerifySchema.safeParse(body);

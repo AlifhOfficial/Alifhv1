@@ -29,12 +29,10 @@ import {
   eq, and, ne,
 } from '@alifh/database';
 import { getClientIp } from '@/lib/utils/get-client-ip';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from '@/lib/rate-limit';
 import { moderateListing, type ModerationInput } from '@alifh/ai/moderation';
 
 export const runtime = 'nodejs';
 
-const listingCreateLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.CREATE);
 
 export async function POST(req: NextRequest) {
   try {
@@ -51,13 +49,7 @@ export async function POST(req: NextRequest) {
       user.role === 'super_admin' || 
       (user.partnerMemberships && user.partnerMemberships.length > 0);
 
-    // Rate limit check - only for regular users (5 listings per day)
     if (!isStaffOrAdmin) {
-      const identifier = getIdentifier(req, user.id);
-      const rateLimitResult = await listingCreateLimiter.check(identifier);
-      if (!rateLimitResult.success) {
-        return rateLimitResponse(rateLimitResult);
-      }
     }
 
     // Parse request body

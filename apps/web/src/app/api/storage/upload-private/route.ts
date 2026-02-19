@@ -25,7 +25,6 @@ import { z } from 'zod';
 import { uploadPrivateFile } from "@/lib/storage";
 import { processSingleImage, ImageValidationError } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
-import { createRateLimiter, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60; // 60 seconds for HEIC image processing
@@ -36,7 +35,6 @@ const FileUploadSchema = z.object({
   contentType: z.string().optional(),
 });
 
-const privateUploadLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_PRIVATE);
 
 export async function POST(req: NextRequest) {
   try {
@@ -47,12 +45,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Rate limiting: 20 private file uploads per hour per user
     const identifier = user.id;
-    const rateLimitResult = await privateUploadLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const formData = await req.formData();
     const file = formData.get("file");

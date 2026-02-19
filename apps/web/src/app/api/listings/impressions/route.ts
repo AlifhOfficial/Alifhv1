@@ -15,30 +15,16 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { recordImpressionsBuffered, getViewBufferStats } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-// Rate limit: 30 batch calls per minute per IP
 // This covers ~600 listings per minute (assuming 20 per page)
-const impressionLimiter = createRateLimiter({
-  windowSeconds: 60,
-  maxRequests: 30,
-  keyPrefix: 'listing:impression',
-  description: 'Listing impression tracking',
-});
 
 // Max listings per request (prevent abuse)
 const MAX_LISTINGS_PER_REQUEST = 100;
 
 export async function POST(req: NextRequest) {
   try {
-    // Rate limit by IP
-    const identifier = getIdentifier(req);
-    const rateLimitResult = await impressionLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     // Parse body
     const body = await req.json().catch(() => ({}));

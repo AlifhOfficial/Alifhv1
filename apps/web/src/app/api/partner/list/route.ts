@@ -15,13 +15,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { getPartnersList } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-const listLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
-
 
 
 /**
@@ -58,11 +54,6 @@ function attachImageUrls(partner: any) {
 
 export async function GET(req: NextRequest) {
   try {
-    // Rate limit
-    const identifier = getIdentifier(req);
-    const { success, ...rateLimitResult } = await listLimiter.check(identifier);
-    if (!success) return rateLimitResponse({ success, ...rateLimitResult });
-
     const partners = await getPartnersList();
 
     // Attach image URLs

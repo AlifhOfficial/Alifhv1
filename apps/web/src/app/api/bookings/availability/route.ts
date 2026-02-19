@@ -15,11 +15,9 @@ import {
   getPartnerBookingSettings,
   upsertPartnerBookingSettings,
 } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_BOOKINGS } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-const availabilityLimiter = createRateLimiter(RATE_LIMITS_BOOKINGS.CHECK_AVAILABILITY);
 
 /**
  * GET /api/bookings/availability
@@ -32,12 +30,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limiting: 30 availability checks per minute
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await availabilityLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const membership = user.partnerMemberships?.[0];
     if (!membership) {

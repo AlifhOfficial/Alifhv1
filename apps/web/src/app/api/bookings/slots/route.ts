@@ -15,14 +15,7 @@ import {
   getListingBookingContext,
   initializeDefaultAvailability,
 } from '@alifh/database';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-} from '@/lib/rate-limit';
 
-const slotsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -44,12 +37,6 @@ function cachedJson(data: unknown, init?: { status?: number }) {
  */
 export async function GET(req: NextRequest) {
   try {
-    // Rate limit by IP (public endpoint)
-    const identifier = getIdentifier(req);
-    const rateLimitResult = await slotsLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { searchParams } = new URL(req.url);
     const listingId = searchParams.get('listingId');

@@ -37,13 +37,11 @@ import {
   formatFileSize 
 } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 import { createId } from "@paralleldrive/cuid2";
 
 export const runtime = "nodejs";
 export const maxDuration = 60; // 60 seconds for large HEIC image processing
 
-const listingImageLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_GENERAL);
 
 /**
  * Generate organized storage keys for listing images (thumb + full pair)
@@ -76,12 +74,6 @@ function generateListingImageKeys(userId: string, vin: string): { thumbKey: stri
 }
 
 export async function POST(req: NextRequest) {
-  // Rate limiting: standard upload limits
-  const identifier = getIdentifier(req);
-  const rateLimitResult = await listingImageLimiter.check(identifier);
-  if (!rateLimitResult.success) {
-    return rateLimitResponse(rateLimitResult);
-  }
 
   try {
     // Authentication required

@@ -28,14 +28,12 @@ import { uploadFile, deleteFile } from "@/lib/storage";
 import { generateUserAvatarKey } from "@/lib/storage/keys";
 import { processSingleImage, ImageValidationError, formatFileSize } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60; // 60 seconds for HEIC image processing
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-const avatarUploadLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_AVATAR);
 
 export async function POST(req: NextRequest) {
   try {
@@ -45,12 +43,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Rate limiting: 5 avatar uploads per hour
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await avatarUploadLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const formData = await req.formData();
     const file = formData.get("file");

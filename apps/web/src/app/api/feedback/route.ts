@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createFeedback, getUserFeedback } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-} from '@/lib/rate-limit';
 
-const feedbackLimiter = createRateLimiter(RATE_LIMITS_GENERAL.FEEDBACK);
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,12 +11,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(request, user.id);
-    const rateLimitResult = await feedbackLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { title, content } = await request.json();
 

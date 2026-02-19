@@ -1,9 +1,8 @@
 /**
- * Upstash Redis Client — Distributed Cache
+ * Upstash Redis Client — Session Cache
  *
  * Used for:
- * - Session caching in proxy (avoids DB hit on every request)
- * - Rate limiting (shared across Railway instances)
+ * - Session caching in proxy (avoids DB hit on every authenticated request)
  *
  * @module lib/redis
  */

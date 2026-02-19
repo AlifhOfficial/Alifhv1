@@ -10,7 +10,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { toggleSuperlikeForUser } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ENGAGEMENT } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -20,7 +19,6 @@ const ToggleSuperlikeSchema = z.object({
   addedFrom: z.string().optional(),
 });
 
-const superlikeLimiter = createRateLimiter(RATE_LIMITS_ENGAGEMENT.SUPERLIKE);
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,12 +30,6 @@ export async function POST(req: NextRequest) {
       }, { status: 401 });
     }
 
-    // Rate limiting: 10 superlikes per day
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await superlikeLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const payload = await req.json().catch(() => null);
     const validationResult = ToggleSuperlikeSchema.safeParse(payload);

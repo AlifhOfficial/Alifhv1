@@ -20,30 +20,16 @@ import {
   calculatePartnerStats,
   hasPublishedShowroom,
 } from "@alifh/database";
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-} from '@/lib/rate-limit';
 
-const statsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
 
 
 export async function GET(req: NextRequest) {
   const startTime = performance.now();
 
   try {
-    // Rate limit by IP
-    const identifier = getIdentifier(req);
-    const rateLimitResult = await statsLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { searchParams } = new URL(req.url);
     const type = searchParams.get('type'); // 'partner' or 'user'

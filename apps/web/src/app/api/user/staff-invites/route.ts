@@ -12,16 +12,7 @@ import {
   rejectStaffInvite,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-  RATE_LIMITS_PARTNER,
-} from '@/lib/rate-limit';
 
-const readLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
-const inviteActionLimiter = createRateLimiter(RATE_LIMITS_PARTNER.STAFF_INVITE);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -36,12 +27,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await readLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const invites = await getUserStaffInvites(user.id);
 
@@ -73,12 +58,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await inviteActionLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const body = await req.json();
     const validated = actionSchema.parse(body);

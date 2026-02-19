@@ -16,12 +16,10 @@ import {
   and,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_PARTNER } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const staffOperationsLimiter = createRateLimiter(RATE_LIMITS_PARTNER.STAFF_OPERATIONS);
 
 // Helper: Check if operation would leave partner with no owners
 async function wouldLeaveNoOwners(
@@ -107,12 +105,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Rate limiting: 30 staff operations per hour
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await staffOperationsLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     if (!user.hasPartnerAccess || !user.partnerMemberships?.[0]) {
       return NextResponse.json(

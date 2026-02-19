@@ -16,30 +16,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { quickSearch, getPopularMakes } from "@alifh/database";
-import { createRateLimiter, getIdentifier, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// Rate limit: 200 requests per minute (fast typing = many requests)
-const suggestLimiter = createRateLimiter({
-  windowSeconds: 60,
-  maxRequests: 200,
-  keyPrefix: 'suggest',
-  description: 'Search suggestions',
-});
-
-
+// Rate limiting removed — public read endpoint protected by CF DDoS/bot + CDN caching.
+// Upstash REST round-trip was adding ~100ms per request to typeahead.
 
 export async function GET(req: NextRequest) {
   try {
-    // Rate limiting
-    const identifier = getIdentifier(req);
-    const rateLimitResult = await suggestLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('q') || '';

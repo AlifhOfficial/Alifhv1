@@ -6,14 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { markConversationAsRead, getConversationParticipants } from '@alifh/database';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_MESSAGING,
-} from '@/lib/rate-limit';
 
-const readReceiptLimiter = createRateLimiter(RATE_LIMITS_MESSAGING.READ_RECEIPT);
 
 export const runtime = 'nodejs';
 
@@ -35,12 +28,6 @@ export async function PATCH(
       );
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await readReceiptLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { id } = await params;
     const lastReadAt = new Date().toISOString();

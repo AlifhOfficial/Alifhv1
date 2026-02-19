@@ -20,22 +20,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { validateUserExists } from "../validation-utils";
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_AUTH } from "@/lib/rate-limit";
 
 const PasswordResetSchema = z.object({
   email: z.string().email('Invalid email address'),
   redirectTo: z.string().optional(), // Can be relative path like "/reset-password"
 });
 
-const passwordResetLimiter = createRateLimiter(RATE_LIMITS_AUTH.PASSWORD_RESET);
 
 export async function POST(request: NextRequest) {
-  // Rate limiting: 3 password reset requests per 5 minutes
-  const identifier = getIdentifier(request);
-  const rateLimitResult = await passwordResetLimiter.check(identifier);
-  if (!rateLimitResult.success) {
-    return rateLimitResponse(rateLimitResult);
-  }
   try {
     const body = await request.json().catch(() => null);
     const result = PasswordResetSchema.safeParse(body);

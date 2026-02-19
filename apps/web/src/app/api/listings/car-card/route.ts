@@ -34,26 +34,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { applyCdnHeaders, NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import { getListingCards } from "@alifh/database";
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const listingBrowseLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.BROWSE);
 export const revalidate = 0;
 
-
+// Rate limiting removed — public read endpoint protected by CF DDoS/bot + CDN caching.
+// Upstash REST round-trip was adding ~100ms per request.
 
 export async function GET(req: NextRequest) {
   try {
     const isProd = process.env.NODE_ENV === 'production';
-
-    // Rate limiting: 300 browse requests per minute
-    const identifier = getIdentifier(req);
-    const rateLimitResult = await listingBrowseLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { searchParams } = new URL(req.url);
 

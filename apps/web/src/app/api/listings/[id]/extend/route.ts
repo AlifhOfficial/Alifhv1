@@ -14,14 +14,7 @@ import {
   getListingModerationContext,
 } from '@alifh/database';
 import { getClientIp } from '@/lib/utils/get-client-ip';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_LISTINGS,
-} from '@/lib/rate-limit';
 
-const extendLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.UPDATE);
 
 export const runtime = 'nodejs';
 
@@ -33,12 +26,6 @@ export async function POST(
     const user = await getSessionUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await extendLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { id } = await params;
     const body = await req.json().catch(() => ({}));

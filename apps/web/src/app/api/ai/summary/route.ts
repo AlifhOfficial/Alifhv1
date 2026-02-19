@@ -18,25 +18,12 @@ import {
   getUserProfileByUserId,
 } from '@alifh/database';
 import { generateSummary, type SummaryInput } from '@alifh/ai/summary';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-} from '@/lib/rate-limit';
 
-const summaryLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   try {
-    // Rate limit
-    const identifier = getIdentifier(req);
-    const rateLimitResult = await summaryLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const body = await req.json();
     const { listingId } = body;

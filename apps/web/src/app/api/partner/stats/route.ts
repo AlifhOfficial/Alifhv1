@@ -16,18 +16,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-} from '@/lib/rate-limit';
 import { getPartnerDescriptiveStats } from '@alifh/database';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const statsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 export async function GET(req: NextRequest) {
   try {
@@ -39,12 +32,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await statsLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     // Must have partner access
     if (!user.hasPartnerAccess || !user.partnerMemberships?.[0]) {

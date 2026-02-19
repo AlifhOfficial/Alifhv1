@@ -15,16 +15,7 @@ import {
   reportNoShow,
   cancelBooking,
 } from '@alifh/database';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-  RATE_LIMITS_PARTNER,
-} from '@/lib/rate-limit';
 
-const readLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
-const manageLimiter = createRateLimiter(RATE_LIMITS_PARTNER.STAFF_OPERATIONS);
 
 export const runtime = 'nodejs';
 
@@ -43,12 +34,6 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await readLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const membership = user.partnerMemberships?.[0];
     if (!membership) {
@@ -91,12 +76,6 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await manageLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const membership = user.partnerMemberships?.[0];
     if (!membership) {

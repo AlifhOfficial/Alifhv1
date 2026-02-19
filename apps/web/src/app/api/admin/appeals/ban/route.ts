@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminBanAppeals, approveBanAppeal, rejectBanAppeal } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ADMIN } from '@/lib/rate-limit';
 import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const banAppealsLimiter = createRateLimiter(RATE_LIMITS_ADMIN.BAN_APPEALS);
 
 /**
  * GET /api/admin/appeals/ban - List all ban appeals
@@ -57,12 +55,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    // Rate limiting: 50 ban appeal reviews per minute
-    const identifier = getIdentifier(request, user.id);
-    const rateLimitResult = await banAppealsLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { appealId, action, reviewNote } = await request.json();
 

@@ -16,11 +16,9 @@ import {
   getPartnerBookingSettingsBatch,
   type BookingStatus,
 } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_BOOKINGS } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-const bookingCreateLimiter = createRateLimiter(RATE_LIMITS_BOOKINGS.CREATE);
 
 /**
  * GET /api/bookings
@@ -103,12 +101,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limiting: 10 booking creations per hour
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await bookingCreateLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     // Best-effort cleanup (fire-and-forget, don't block response)
     runBookingMaintenance().catch(() => {});

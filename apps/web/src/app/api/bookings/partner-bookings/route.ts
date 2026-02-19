@@ -22,14 +22,7 @@ import {
   getPartnerBookingStats,
   type BookingStatus,
 } from '@alifh/database';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-} from '@/lib/rate-limit';
 
-const partnerBookingsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 export const runtime = 'nodejs';
 
@@ -40,12 +33,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await partnerBookingsLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { searchParams } = new URL(req.url);
     

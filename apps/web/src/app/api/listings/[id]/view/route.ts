@@ -18,17 +18,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { recordListingViewBuffered, getViewBufferStats } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { createRateLimiter, getIdentifier, rateLimitResponse } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-// Rate limit: 60 views per minute per IP (generous for real users)
-const viewLimiter = createRateLimiter({
-  windowSeconds: 60,
-  maxRequests: 60,
-  keyPrefix: 'listing:view',
-  description: 'Listing view tracking',
-});
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -48,12 +40,6 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     // Get user if authenticated (optional)
     const user = await getSessionUser().catch(() => null);
 
-    // Rate limit by IP (not user - we want to count all views)
-    const identifier = getIdentifier(req);
-    const rateLimitResult = await viewLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     // Extract metadata from request
     const userAgent = req.headers.get('user-agent') ?? undefined;

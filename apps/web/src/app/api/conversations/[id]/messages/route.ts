@@ -13,12 +13,9 @@ import {
   getConversationParticipantsWithProfiles,
   sendNewMessageNotification,
 } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_MESSAGING } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-const fetchMessagesLimiter = createRateLimiter(RATE_LIMITS_MESSAGING.FETCH_MESSAGES);
-const sendMessageLimiter = createRateLimiter(RATE_LIMITS_MESSAGING.SEND_MESSAGE);
 
 // ============================================================================
 // GET /api/conversations/:id/messages
@@ -38,12 +35,6 @@ export async function GET(
       );
     }
 
-    // Rate limiting: 60 fetch requests per minute
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await fetchMessagesLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { id: conversationId } = await params;
     const { searchParams } = new URL(req.url);
@@ -109,12 +100,6 @@ export async function POST(
       );
     }
 
-    // Rate limiting: 20 messages per minute
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await sendMessageLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { id: conversationId } = await params;
     const body = await req.json();

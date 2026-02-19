@@ -23,11 +23,9 @@ import {
   publishShowroom,
   unpublishShowroom,
 } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_PARTNER } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
-const publishLimiter = createRateLimiter(RATE_LIMITS_PARTNER.PROFILE_UPDATE);
 
 const PublishSchema = z.object({
   action: z.enum(['publish', 'unpublish']),
@@ -62,12 +60,6 @@ export async function POST(req: NextRequest) {
       }, { status: 403 });
     }
     
-    // Rate limiting
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await publishLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
     
     // Parse body
     const body = await req.json();

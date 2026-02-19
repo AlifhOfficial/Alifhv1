@@ -25,13 +25,11 @@ import {
   updateShowroom,
   type ShowroomUpdateInput,
 } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_PARTNER } from '@/lib/rate-limit';
 import { getPublicUrl } from '@/utils';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const showroomUpdateLimiter = createRateLimiter(RATE_LIMITS_PARTNER.PROFILE_UPDATE);
 
 // ============================================================================
 // Validation Schemas
@@ -316,12 +314,6 @@ export async function PATCH(req: NextRequest) {
       }, { status: 403 });
     }
     
-    // Rate limiting
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await showroomUpdateLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
     
     // Parse and validate body
     const body = await req.json();

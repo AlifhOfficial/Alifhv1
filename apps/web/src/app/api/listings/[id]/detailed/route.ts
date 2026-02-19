@@ -25,19 +25,11 @@ import {
   getUserProfileByUserId,
   getStaffEffectivePhone,
 } from "@alifh/database";
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-} from '@/lib/rate-limit';
 
-const detailedLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-
 
 
 interface RouteParams {
@@ -91,12 +83,6 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   const logTiming = (label: string) => console.log(`[listing-detailed] ${label}: ${(performance.now() - startTime).toFixed(0)}ms`);
 
   try {
-    // Rate limit by IP (public endpoint)
-    const identifier = getIdentifier(req);
-    const rateLimitResult = await detailedLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
     logTiming('rate-limit');
 
     const { id } = await params;

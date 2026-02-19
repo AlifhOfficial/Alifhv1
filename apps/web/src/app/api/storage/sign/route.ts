@@ -22,7 +22,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
 import { getSignedUrl } from "@/lib/storage";
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 import { getSessionUser } from "@/lib/auth/session-context";
 
 export const runtime = "nodejs";
@@ -33,7 +32,6 @@ const SignedUrlSchema = z.object({
   downloadName: z.string().optional(),
 });
 
-const signedUrlLimiter = createRateLimiter(RATE_LIMITS_STORAGE.SIGNED_URL);
 
 // Key prefixes that require ownership validation
 const PRIVATE_KEY_PREFIXES = ['kyc/', 'private/', 'documents/'];
@@ -64,12 +62,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   }
 
-  // Rate limiting: 100 signed URL requests per minute per user
   const identifier = user.id;
-  const rateLimitResult = await signedUrlLimiter.check(identifier);
-  if (!rateLimitResult.success) {
-    return rateLimitResponse(rateLimitResult);
-  }
   try {
     const payload = await req.json().catch(() => null);
     const validationResult = SignedUrlSchema.safeParse(payload);

@@ -27,13 +27,9 @@ import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile, c
 import { getSessionUser } from "@/lib/auth/session-context";
 import { deleteFile } from "@/lib/storage";
 import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 
 export const runtime = "nodejs";
 export const dynamic = 'force-dynamic';
-
-const profileUpdateLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
-
 
 
 const UpdateProfileSchema = z.object({
@@ -133,12 +129,6 @@ export async function PATCH(req: NextRequest) {
       return response;
     }
 
-    // Rate limiting: 60 profile operations per minute
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await profileUpdateLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const payload = await req.json().catch(() => null);
     const result = UpdateProfileSchema.safeParse(payload);

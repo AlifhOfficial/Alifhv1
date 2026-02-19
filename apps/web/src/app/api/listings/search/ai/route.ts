@@ -17,27 +17,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseSearchIntent, intentToSearchParams } from '@alifh/ai/search';
 import { searchParamsToUrl } from '@/lib/search-utils';
-import { createRateLimiter, getIdentifier, rateLimitResponse } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Rate limit: 30 AI requests per minute per user (generous but controlled)
-const aiSearchLimiter = createRateLimiter({
-  windowSeconds: 60,
-  maxRequests: 30,
-  keyPrefix: 'ai-search',
-  description: 'AI search parsing',
-});
 
 export async function POST(req: NextRequest) {
   try {
-    // Rate limiting
-    const identifier = getIdentifier(req);
-    const rateLimitResult = await aiSearchLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const body = await req.json();
     const query = body?.query;

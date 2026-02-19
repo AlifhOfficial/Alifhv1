@@ -13,14 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getUserDashboardStats } from '@alifh/database';
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_GENERAL,
-} from '@/lib/rate-limit';
 
-const dashboardLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -35,12 +28,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await dashboardLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const stats = await getUserDashboardStats(user.id);
     

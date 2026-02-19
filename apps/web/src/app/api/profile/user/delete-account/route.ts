@@ -59,14 +59,7 @@ import {
   // Auth
   passkey,
 } from "@alifh/database";
-import {
-  createRateLimiter,
-  getIdentifier,
-  rateLimitResponse,
-  RATE_LIMITS_ACCOUNT,
-} from '@/lib/rate-limit';
 
-const deleteAccountLimiter = createRateLimiter(RATE_LIMITS_ACCOUNT.DELETE_ACCOUNT);
 
 export const runtime = "nodejs";
 
@@ -77,12 +70,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Rate limit by user
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await deleteAccountLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const deletionDate = new Date();
     deletionDate.setMonth(deletionDate.getMonth() + 6);

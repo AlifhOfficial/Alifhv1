@@ -26,30 +26,18 @@ import {
   type SearchResponse,
   type SearchFacets,
 } from "@alifh/database";
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from "@/lib/rate-limit";
-
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// Rate limit: 100 search requests per minute (more expensive than browse)
-const searchLimiter = createRateLimiter({
-  ...RATE_LIMITS_LISTINGS.BROWSE,
-  maxRequests: 100, // Lower than browse due to facet computation
-});
-
-
+// Rate limiting removed from search — adds ~100ms per request (Upstash REST round-trip).
+// Public search is protected by Cloudflare's built-in DDoS/bot protection + CDN caching.
+// Rate limiting is kept on auth, create, and mutation endpoints where it matters.
 
 export async function GET(req: NextRequest) {
   const startTime = Date.now();
   
   try {
-    // Rate limiting
-    const identifier = getIdentifier(req);
-    const rateLimitResult = await searchLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     // Parse search params from URL
     const { searchParams: urlParams } = new URL(req.url);

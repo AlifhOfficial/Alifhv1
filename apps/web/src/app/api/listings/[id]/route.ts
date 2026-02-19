@@ -30,15 +30,11 @@ import {
 } from '@alifh/database';
 import { getListingDetailed } from '@alifh/database';
 import { getClientIp } from '@/lib/utils/get-client-ip';
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 import { moderateListing, type ModerationInput } from '@alifh/ai/moderation';
 import { deleteListingImages } from '@/lib/storage/listing-image-cleanup';
 
 export const runtime = 'nodejs';
 
-const listingReadLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
-const listingUpdateLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.UPDATE);
-const listingDeleteLimiter = createRateLimiter(RATE_LIMITS_LISTINGS.DELETE);
 
 async function canManagePartnerListing(
   user: { id: string; partnerMemberships?: any[] },
@@ -69,12 +65,6 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limit
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await listingReadLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { id } = await params;
 
@@ -120,12 +110,6 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Rate limiting: 20 listing updates per hour
-    const identifier = getIdentifier(req, user.id);
-    const rateLimitResult = await listingUpdateLimiter.check(identifier);
-    if (!rateLimitResult.success) {
-      return rateLimitResponse(rateLimitResult);
-    }
 
     const { id } = await params;
 

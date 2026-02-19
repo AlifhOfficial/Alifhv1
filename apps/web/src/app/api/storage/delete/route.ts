@@ -25,7 +25,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
 import { deleteFile } from "@/lib/storage";
 import { getSessionUser } from "@/lib/auth/session-context";
-import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_STORAGE } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -41,15 +40,8 @@ const DeleteSchema = z.object({
   key: z.string().min(1, "Key is required"),
 });
 
-const deleteLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_GENERAL);
 
 export async function DELETE(req: NextRequest) {
-  // Rate limiting
-  const identifier = getIdentifier(req);
-  const rateLimitResult = await deleteLimiter.check(identifier);
-  if (!rateLimitResult.success) {
-    return rateLimitResponse(rateLimitResult);
-  }
 
   try {
     // Authentication required
