@@ -10,6 +10,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getStaticUrl } from '@/utils';
 import { useRouter } from 'next/navigation';
 import { 
   CheckCircle2,
@@ -53,7 +54,7 @@ export function HowRankingWorksPage() {
           {/* Hero Image */}
           <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1] overflow-hidden rounded-lg">
             <Image
-              src="/Abstract/rsxx2.png"
+              src={getStaticUrl("/Abstract/rsxx2.png")}
               alt="Revvup Ranking"
               fill
               priority
@@ -256,7 +257,7 @@ function WhyQualityInfographic() {
                   {/* Car image */}
                   <div className="w-36 sm:w-56 lg:w-80 aspect-[4/3] rounded-xl overflow-hidden border border-white/10">
                     <img 
-                      src="/Marketing/m7.jpeg" 
+                      src={getStaticUrl("/Marketing/m7.jpeg")} 
                       alt="" 
                       className="w-full h-full object-cover opacity-60"
                     />

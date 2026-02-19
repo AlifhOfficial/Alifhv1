@@ -8,6 +8,7 @@
 import Link from 'next/link';
 import { CircleDollarSign, FileKey, CalendarCheck, Layout, CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
+import { getStaticUrl } from '@/utils';
 
 export function DifferentiatorsSection() {
   return (
@@ -179,7 +180,7 @@ function HumanFirstInfographic() {
             style={{ animation: 'card-elevate 6s ease-out infinite' }}
           >
             <img 
-              src="/Marketing/m12.jpeg" 
+              src={getStaticUrl("/Marketing/m12.jpeg")} 
               alt="" 
               className="w-full h-full object-cover"
             />

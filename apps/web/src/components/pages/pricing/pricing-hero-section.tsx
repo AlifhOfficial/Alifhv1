@@ -6,6 +6,7 @@
 'use client';
 
 import Image from 'next/image';
+import { getStaticUrl } from '@/utils';
 
 export function PricingHeroSection() {
   return (
@@ -30,7 +31,7 @@ export function PricingHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-12">
           <Image
-            src="/Abstract/rsxx5.png"
+            src={getStaticUrl("/Abstract/rsxx5.png")}
             alt="Revvup Pricing"
             fill
             priority

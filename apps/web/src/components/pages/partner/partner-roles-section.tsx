@@ -67,19 +67,20 @@ export function PartnerRolesSection() {
 // ============================================================================
 
 import { useState, useEffect } from 'react';
+import { getStaticUrl } from '@/utils';
 
 const OWNER_SCREENS = [
-  '/Marketing/Partner_dashboard_shots/overviewtab.png',
-  '/Marketing/Partner_dashboard_shots/inventorytab.png',
-  '/Marketing/Partner_dashboard_shots/teamtab.png',
-  '/Marketing/Partner_dashboard_shots/analyticstab.png',
+  getStaticUrl('/Marketing/Partner_dashboard_shots/overviewtab.png'),
+  getStaticUrl('/Marketing/Partner_dashboard_shots/inventorytab.png'),
+  getStaticUrl('/Marketing/Partner_dashboard_shots/teamtab.png'),
+  getStaticUrl('/Marketing/Partner_dashboard_shots/analyticstab.png'),
 ];
 
 const STAFF_SCREENS = [
-  '/Marketing/Staff_dashboard_shots/invenotrytab.png',
-  '/Marketing/Staff_dashboard_shots/leadstab.png',
-  '/Marketing/Staff_dashboard_shots/bookingtab.png',
-  '/Marketing/Staff_dashboard_shots/messeagestab.png',
+  getStaticUrl('/Marketing/Staff_dashboard_shots/invenotrytab.png'),
+  getStaticUrl('/Marketing/Staff_dashboard_shots/leadstab.png'),
+  getStaticUrl('/Marketing/Staff_dashboard_shots/bookingtab.png'),
+  getStaticUrl('/Marketing/Staff_dashboard_shots/messeagestab.png'),
 ];
 
 function RolesInfographic() {

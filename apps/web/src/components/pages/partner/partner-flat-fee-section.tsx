@@ -7,6 +7,7 @@
 
 import { CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
+import { getStaticUrl } from '@/utils';
 
 export function PartnerFlatFeeSection() {
   return (
@@ -145,7 +146,7 @@ function UnlimitedListingsInfographic() {
               {/* Card 1 */}
               <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
                 <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                  <img src="/Marketing/m14.jpeg" alt="" className="w-full h-full object-cover" />
+                  <img src={getStaticUrl("/Marketing/m14.jpeg")} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex items-center justify-between gap-1 sm:gap-2 p-1.5 sm:p-3">
                   <div className="min-w-0 flex-1">
@@ -155,14 +156,14 @@ function UnlimitedListingsInfographic() {
                       <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0 text-blue-500" />
                     </div>
                   </div>
-                  <img src="/Marketing/avatarmock.png" alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
+                  <img src={getStaticUrl("/Marketing/avatarmock.png")} alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
                 </div>
               </div>
               
               {/* Card 2 */}
               <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
                 <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                  <img src="/Marketing/m15.jpeg" alt="" className="w-full h-full object-cover" />
+                  <img src={getStaticUrl("/Marketing/m15.jpeg")} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex items-center justify-between gap-1 sm:gap-2 p-1.5 sm:p-3">
                   <div className="min-w-0 flex-1">
@@ -172,14 +173,14 @@ function UnlimitedListingsInfographic() {
                       <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0 text-blue-500" />
                     </div>
                   </div>
-                  <img src="/Marketing/avatarmock.png" alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
+                  <img src={getStaticUrl("/Marketing/avatarmock.png")} alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
                 </div>
               </div>
               
               {/* Card 3 */}
               <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
                 <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                  <img src="/Marketing/m17.jpeg" alt="" className="w-full h-full object-cover" />
+                  <img src={getStaticUrl("/Marketing/m17.jpeg")} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex items-center justify-between gap-1 sm:gap-2 p-1.5 sm:p-3">
                   <div className="min-w-0 flex-1">
@@ -189,7 +190,7 @@ function UnlimitedListingsInfographic() {
                       <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0 text-blue-500" />
                     </div>
                   </div>
-                  <img src="/Marketing/avatarmock.png" alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
+                  <img src={getStaticUrl("/Marketing/avatarmock.png")} alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
                 </div>
               </div>
             </div>

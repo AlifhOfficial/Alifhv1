@@ -6,6 +6,7 @@
 'use client';
 
 import { CheckCircle2 } from 'lucide-react';
+import { getStaticUrl } from '@/utils';
 
 export function PartnerCompareSection() {
   return (
@@ -98,7 +99,7 @@ function CompareInfographic() {
               {/* Car image - faded */}
               <div className="w-32 sm:w-40 lg:w-48 aspect-[4/3] rounded-xl overflow-hidden border border-border/30">
                 <img 
-                  src="/Marketing/m5.jpeg" 
+                  src={getStaticUrl("/Marketing/m5.jpeg")} 
                   alt="" 
                   className="w-full h-full object-cover opacity-50 grayscale"
                 />
@@ -133,7 +134,7 @@ function CompareInfographic() {
               {/* Car image - vibrant */}
               <div className="w-32 sm:w-40 lg:w-48 aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/40">
                 <img 
-                  src="/Marketing/m4.jpeg" 
+                  src={getStaticUrl("/Marketing/m4.jpeg")} 
                   alt="" 
                   className="w-full h-full object-cover"
                 />

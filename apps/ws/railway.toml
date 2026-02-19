@@ -3,7 +3,7 @@
 
 [build]
 builder = "railpack"
-buildCommand = "cd apps/ws && bun run build"
+buildCommand = "bun install && cd apps/ws && bun run build"
 
 [deploy]
 startCommand = "cd apps/ws && bun run start"

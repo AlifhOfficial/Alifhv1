@@ -7,6 +7,7 @@
 
 import { MousePointer2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
+import { getStaticUrl } from '@/utils';
 
 export function ProblemSection() {
   return (
@@ -74,7 +75,7 @@ function ProblemInfographic() {
             {/* Left car image */}
             <div className="w-28 sm:w-44 lg:w-56 aspect-[4/3] rounded-xl overflow-hidden border border-white/10 -rotate-3 opacity-60">
               <img 
-                src="/Marketing/m3.jpeg" 
+                src={getStaticUrl("/Marketing/m3.jpeg")} 
                 alt="" 
                 className="w-full h-full object-cover"
               />
@@ -83,7 +84,7 @@ function ProblemInfographic() {
             {/* Main car image - center */}
             <div className="relative w-52 sm:w-80 lg:w-[380px] aspect-[4/3] rounded-xl overflow-hidden border border-white/10 z-10">
               <img 
-                src="/Marketing/m5.jpeg" 
+                src={getStaticUrl("/Marketing/m5.jpeg")} 
                 alt="" 
                 className="w-full h-full object-cover opacity-70"
               />
@@ -92,7 +93,7 @@ function ProblemInfographic() {
             {/* Right car image */}
             <div className="w-28 sm:w-44 lg:w-56 aspect-[4/3] rounded-xl overflow-hidden border border-white/10 rotate-3 opacity-60">
               <img 
-                src="/Marketing/m7.jpeg" 
+                src={getStaticUrl("/Marketing/m7.jpeg")} 
                 alt="" 
                 className="w-full h-full object-cover"
               />

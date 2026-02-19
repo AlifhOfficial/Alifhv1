@@ -7,6 +7,7 @@
 
 import Image from 'next/image';
 import { Users, Shield, TrendingUp, Globe, Cpu, Leaf, Building2, CheckCircle2, Heart, Scale } from 'lucide-react';
+import { getStaticUrl } from '@/utils';
 
 // ============================================================================
 // Types
@@ -69,7 +70,7 @@ export function VisionPillarsSection() {
           {/* Image */}
           <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
             <Image
-              src="/Marketing/vision_page/pillar-society-trust.jpg"
+              src={getStaticUrl("/Marketing/vision_page/pillar-society-trust.jpg")}
               alt="Forward Society - Building trust in UAE automotive"
               fill
               className="object-cover"
@@ -126,7 +127,7 @@ export function VisionPillarsSection() {
           {/* Image */}
           <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
             <Image
-              src="/Marketing/vision_page/pillar-economy-growth.jpg"
+              src={getStaticUrl("/Marketing/vision_page/pillar-economy-growth.jpg")}
               alt="Forward Economy - Supporting UAE economic growth"
               fill
               className="object-cover"
@@ -183,7 +184,7 @@ export function VisionPillarsSection() {
           {/* Image */}
           <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
             <Image
-              src="/Marketing/vision_page/pillar-diplomacy-global.jpg"
+              src={getStaticUrl("/Marketing/vision_page/pillar-diplomacy-global.jpg")}
               alt="Forward Diplomacy - UAE as a global automotive hub"
               fill
               className="object-cover"
@@ -240,7 +241,7 @@ export function VisionPillarsSection() {
           {/* Image */}
           <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
             <Image
-              src="/Marketing/vision_page/pillar-ecosystem-digital.jpg"
+              src={getStaticUrl("/Marketing/vision_page/pillar-ecosystem-digital.jpg")}
               alt="Forward Ecosystem - Digital automotive infrastructure"
               fill
               className="object-cover"

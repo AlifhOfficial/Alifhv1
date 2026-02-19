@@ -7,6 +7,7 @@
 
 import Image from 'next/image';
 import { Heart, BanIcon, CheckCircle2, Clock } from 'lucide-react';
+import { getStaticUrl } from '@/utils';
 
 export function AboutPrinciplesSection() {
   return (
@@ -28,7 +29,7 @@ export function AboutPrinciplesSection() {
         {/* Image */}
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
-            src="/Abstract/pic5.png"
+            src={getStaticUrl("/Abstract/pic5.png")}
             alt="Our principles"
             fill
             className="object-cover"

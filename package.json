@@ -18,7 +18,10 @@
     "db:seed:all": "cd apps/web && bun ../../scripts/seed-all.ts",
     "db:seed:100": "cd apps/web && bun ../../scripts/seed-100-listings.ts",
     "db:seed:listings": "cd apps/web && bun ../../scripts/seed-listings-v2.ts",
-    "partners:setup": "cd apps/web && bun ../../scripts/setup-partners-and-staff.ts"
+    "partners:setup": "cd apps/web && bun ../../scripts/setup-partners-and-staff.ts",
+    "r2:migrate": "cd apps/web && bun scripts/migrate-public-to-r2.ts",
+    "r2:migrate:dry": "cd apps/web && bun scripts/migrate-public-to-r2.ts --dry-run",
+    "r2:watch": "cd apps/web && bun scripts/r2-watch.ts"
   },
   "workspaces": [
     "apps/web",

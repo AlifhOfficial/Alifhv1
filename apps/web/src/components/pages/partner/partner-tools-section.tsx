@@ -6,6 +6,7 @@
 'use client';
 
 import { Calendar, MessageCircle, BarChart3, Package, Filter } from 'lucide-react';
+import { getStaticUrl } from '@/utils';
 
 export function PartnerToolsSection() {
   return (
@@ -99,7 +100,7 @@ function MessagingInfographic() {
         <div className="w-full md:w-[80%] md:border-r border-border/20 p-3 sm:p-6 lg:p-14 flex items-center">
           <div className="relative w-full rounded-lg overflow-hidden border border-border/30 shadow-2xl">
             <video 
-              src="/Marketing/messegingui2.mp4" 
+              src={getStaticUrl("/Marketing/messegingui2.mp4")} 
               autoPlay
               loop
               muted

@@ -7,6 +7,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { getStaticUrl } from '@/utils';
 import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
@@ -78,7 +79,7 @@ export function HeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-8">
           <Image
-            src="/Marketing/Hero_img.png"
+            src={getStaticUrl("/Marketing/Hero_img.png")}
             alt="Revvup - UAE Car Marketplace"
             fill
             priority

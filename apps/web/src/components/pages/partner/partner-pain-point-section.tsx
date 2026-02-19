@@ -7,6 +7,7 @@
 
 import { CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
+import { getStaticUrl } from '@/utils';
 
 export function PartnerPainPointSection() {
   return (
@@ -121,17 +122,17 @@ function MarketplaceGameInfographic() {
               <div className="relative h-44 sm:h-56 lg:h-80 w-full flex items-center justify-center">
                 {/* Card 1 - back left */}
                 <div className="absolute left-1 sm:left-4 lg:left-8 top-6 sm:top-8 w-20 sm:w-40 lg:w-56 aspect-[4/3] rounded-lg overflow-hidden border border-white/10 shadow-lg -rotate-3 opacity-60 sm:opacity-70">
-                  <img src="/Marketing/m3.jpeg" alt="" className="w-full h-full object-cover" />
+                  <img src={getStaticUrl("/Marketing/m3.jpeg")} alt="" className="w-full h-full object-cover" />
                 </div>
                 
                 {/* Card 2 - back right */}
                 <div className="absolute right-1 sm:right-4 lg:right-8 top-6 sm:top-8 w-20 sm:w-40 lg:w-56 aspect-[4/3] rounded-lg overflow-hidden border border-white/10 shadow-lg rotate-3 opacity-60 sm:opacity-70">
-                  <img src="/Marketing/m5.jpeg" alt="" className="w-full h-full object-cover" />
+                  <img src={getStaticUrl("/Marketing/m5.jpeg")} alt="" className="w-full h-full object-cover" />
                 </div>
                 
                 {/* Card 3 - front center */}
                 <div className="absolute left-1/2 -translate-x-1/2 top-2 sm:top-0 w-24 sm:w-48 lg:w-72 aspect-[4/3] rounded-xl overflow-hidden border border-white/10 shadow-xl z-10">
-                  <img src="/Marketing/m8.jpeg" alt="" className="w-full h-full object-cover" />
+                  <img src={getStaticUrl("/Marketing/m8.jpeg")} alt="" className="w-full h-full object-cover" />
                 </div>
                 
                 {/* Moving mouse cursor */}
