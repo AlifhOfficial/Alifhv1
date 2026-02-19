@@ -10,18 +10,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getPartnerProfileByUserId, updatePartnerProfile } from '@alifh/database';
-import { createRateLimiter, getIdentifier, rateLimitResponse } from '@/lib/rate-limit';
+import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ACCOUNT } from '@/lib/rate-limit';
 import twilio from 'twilio';
 
 export const runtime = 'nodejs';
 
-// Rate limit: 5 attempts per 15 minutes per user
-const verifyLimiter = createRateLimiter({
-  windowSeconds: 15 * 60, // 15 minutes
-  maxRequests: 5,
-  keyPrefix: 'partner:admin-phone-verify',
-  description: 'Admin phone verification attempts',
-});
+const verifyLimiter = createRateLimiter(RATE_LIMITS_ACCOUNT.ADMIN_PHONE_VERIFY);
 
 const VerifySchema = z.object({
   phoneNumber: z.string().min(10),

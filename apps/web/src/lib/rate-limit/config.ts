@@ -547,26 +547,54 @@ export const RATE_LIMITS_GENERAL = {
     keyPrefix: 'general:read-expensive',
     description: 'Expensive read operations',
   },
+
+  /**
+   * Contact form submissions (public)
+   * 3 per hour per IP - prevents spam
+   */
+  CONTACT_FORM: {
+    windowSeconds: 60 * 60,
+    maxRequests: 3,
+    keyPrefix: 'general:contact-form',
+    description: 'Contact form submissions',
+  },
+
+  /**
+   * Feedback submissions
+   * 5 per day per user
+   */
+  FEEDBACK: {
+    windowSeconds: 24 * 60 * 60,
+    maxRequests: 5,
+    keyPrefix: 'general:feedback',
+    description: 'Feedback submissions',
+  },
 } as const;
 
 // ============================================================================
-// EXPORT ALL CONFIGS
+// ACCOUNT OPERATIONS
 // ============================================================================
 
-export const ALL_RATE_LIMITS = {
-  ...RATE_LIMITS_AUTH,
-  ...RATE_LIMITS_LISTINGS,
-  ...RATE_LIMITS_MESSAGING,
-  ...RATE_LIMITS_STORAGE,
-  ...RATE_LIMITS_BOOKINGS,
-  ...RATE_LIMITS_ENGAGEMENT,
-  ...RATE_LIMITS_PARTNER,
-  ...RATE_LIMITS_ADMIN,
-  ...RATE_LIMITS_KYC,
-  ...RATE_LIMITS_GENERAL,
-} as const;
+export const RATE_LIMITS_ACCOUNT = {
+  /**
+   * Account deletion
+   * 1 per day in prod, 3 in dev - prevents accidents
+   */
+  DELETE_ACCOUNT: {
+    windowSeconds: 24 * 60 * 60,
+    maxRequests: process.env.NODE_ENV === 'development' ? 3 : 1,
+    keyPrefix: 'account:delete',
+    description: 'Account deletion requests',
+  },
 
-/**
- * Type-safe rate limit key
- */
-export type RateLimitKey = keyof typeof ALL_RATE_LIMITS;
+  /**
+   * Admin phone verification
+   * 5 per 15 minutes per user
+   */
+  ADMIN_PHONE_VERIFY: {
+    windowSeconds: 15 * 60,
+    maxRequests: 5,
+    keyPrefix: 'account:admin-phone-verify',
+    description: 'Admin phone verification attempts',
+  },
+} as const;

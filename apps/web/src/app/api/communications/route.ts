@@ -9,15 +9,10 @@ import {
   createRateLimiter,
   getIdentifier,
   rateLimitResponse,
+  RATE_LIMITS_GENERAL,
 } from '@/lib/rate-limit';
 
-// Rate limit: 3 submissions per hour per IP
-const communicationsLimiter = createRateLimiter({
-  windowSeconds: 60 * 60, // 1 hour
-  maxRequests: 3,
-  keyPrefix: 'comms',
-  description: 'Contact form submissions',
-});
+const communicationsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.CONTACT_FORM);
 
 // Email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

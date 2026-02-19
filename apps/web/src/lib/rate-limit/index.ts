@@ -1,42 +1,29 @@
 /**
- * Rate Limiting - Standardized Implementation
- * 
- * Uses a simple in-memory Map for rate limiting.
- * TODO: Replace with @upstash/ratelimit for distributed rate limiting across instances.
- * 
+ * Rate Limiting — Upstash Redis (Distributed)
+ *
+ * Uses `@upstash/ratelimit` with sliding window algorithm.
+ * Shared across all Railway instances via Upstash Redis.
+ *
  * USAGE:
  * ```ts
  * import { createRateLimiter, RATE_LIMITS_AUTH } from '@/lib/rate-limit';
- * 
+ *
  * const authLimiter = createRateLimiter(RATE_LIMITS_AUTH.AUTH_GENERAL);
- * 
- * // In API route
- * const identifier = userId || ip; // User ID for auth, IP for public
- * const { success, remaining } = await authLimiter.check(identifier);
- * 
+ *
+ * const identifier = getIdentifier(request, userId);
+ * const { success } = await authLimiter.check(identifier);
+ *
  * if (!success) {
- *   return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+ *   return rateLimitResponse(result);
  * }
  * ```
- * 
+ *
  * @module lib/rate-limit
  */
 
+import { Ratelimit } from '@upstash/ratelimit';
+import { redis } from '@/lib/redis';
 import type { RateLimitConfig } from './config';
-
-// Simple in-memory rate limit store
-// TODO: Replace with @upstash/ratelimit for distributed rate limiting
-const rateLimitStore = new Map<string, { count: number; expiresAt: number }>();
-
-// Cleanup expired entries every 30 seconds
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of rateLimitStore) {
-    if (entry.expiresAt <= now) {
-      rateLimitStore.delete(key);
-    }
-  }
-}, 30_000);
 
 export * from './config';
 
@@ -59,86 +46,68 @@ interface RateLimitResult {
  */
 interface RateLimiter {
   check: (identifier: string) => Promise<RateLimitResult>;
-  reset: (identifier: string) => void;
+  reset: (identifier: string) => Promise<void>;
 }
 
 /**
- * Create a rate limiter instance
- * 
- * @param config - Rate limit configuration
+ * Create a distributed rate limiter backed by Upstash Redis.
+ *
+ * Uses sliding window algorithm for accurate limiting.
+ * Fail-open: if Redis is unreachable, requests are allowed through.
+ *
+ * @param config - Rate limit configuration from config.ts
  * @returns Rate limiter with check() and reset() methods
- * 
- * @example
- * ```ts
- * const authLimiter = createRateLimiter(RATE_LIMITS_AUTH.AUTH_GENERAL);
- * const { success } = await authLimiter.check('user-id');
- * ```
  */
 export function createRateLimiter(config: RateLimitConfig): RateLimiter {
   const { windowSeconds, maxRequests, keyPrefix } = config;
 
+  const rl = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(maxRequests, `${windowSeconds} s`),
+    prefix: `rl:${keyPrefix}`,
+    analytics: false,
+  });
+
   /**
-   * Check if request is allowed under rate limit
+   * Check if request is allowed under rate limit.
+   * Fail-open: Redis errors allow the request through.
    */
   async function check(identifier: string): Promise<RateLimitResult> {
-    const now = Date.now();
-    const windowStart = Math.floor(now / (windowSeconds * 1000)) * (windowSeconds * 1000);
-    const reset = windowStart + windowSeconds * 1000;
-    
-    const cacheKey = `${keyPrefix}:${identifier}:${windowStart}`;
-
-    // Get current entry
-    const entry = rateLimitStore.get(cacheKey);
-    const current = (entry && entry.expiresAt > now) ? entry.count : 0;
-
-    // Check if limit exceeded
-    if (current >= maxRequests) {
+    try {
+      const result = await rl.limit(identifier);
       return {
-        success: false,
-        remaining: 0,
-        reset,
+        success: result.success,
+        remaining: result.remaining,
+        reset: result.reset,
+        limit: result.limit,
+      };
+    } catch (error) {
+      console.warn(`[rate-limit] Redis error for ${keyPrefix}, allowing request:`, error);
+      return {
+        success: true,
+        remaining: maxRequests,
+        reset: Date.now() + windowSeconds * 1000,
         limit: maxRequests,
       };
     }
-
-    // Increment counter
-    const newCount = current + 1;
-    rateLimitStore.set(cacheKey, { count: newCount, expiresAt: now + windowSeconds * 1000 });
-
-    return {
-      success: true,
-      remaining: maxRequests - newCount,
-      reset,
-      limit: maxRequests,
-    };
   }
 
   /**
-   * Reset rate limit for an identifier
-   * Useful for testing or admin overrides
+   * Reset rate limit for an identifier (admin overrides / testing)
    */
-  function reset(identifier: string): void {
-    const now = Date.now();
-    const windowStart = Math.floor(now / (windowSeconds * 1000)) * (windowSeconds * 1000);
-    const cacheKey = `${keyPrefix}:${identifier}:${windowStart}`;
-    rateLimitStore.delete(cacheKey);
+  async function reset(identifier: string): Promise<void> {
+    try {
+      await rl.resetUsedTokens(identifier);
+    } catch {
+      // Fail silently
+    }
   }
 
   return { check, reset };
 }
 
 /**
- * Rate limit middleware helper
- * 
- * Returns standardized error response with headers
- * 
- * @example
- * ```ts
- * const result = await limiter.check(userId);
- * if (!result.success) {
- *   return rateLimitResponse(result);
- * }
- * ```
+ * Rate limit middleware helper — returns standardized 429 response with headers.
  */
 export function rateLimitResponse(result: RateLimitResult): Response {
   return new Response(
@@ -161,29 +130,18 @@ export function rateLimitResponse(result: RateLimitResult): Response {
 }
 
 /**
- * Get identifier from request
- * 
- * Priority:
- * 1. User ID (if authenticated)
- * 2. IP address (from headers)
- * 3. Fallback to 'anonymous'
- * 
- * @example
- * ```ts
- * const identifier = getIdentifier(request, userId);
- * const result = await limiter.check(identifier);
- * ```
+ * Get identifier from request.
+ *
+ * Priority: User ID → CF-Connecting-IP → X-Real-IP → X-Forwarded-For → 'anonymous'
  */
 export function getIdentifier(
   request: Request,
   userId?: string | null
 ): string {
-  // Use user ID if authenticated
   if (userId) {
     return `user:${userId}`;
   }
 
-  // Try to get IP from headers
   const forwarded = request.headers.get('x-forwarded-for');
   const realIp = request.headers.get('x-real-ip');
   const cfConnecting = request.headers.get('cf-connecting-ip');
@@ -194,35 +152,5 @@ export function getIdentifier(
     return `ip:${ip}`;
   }
 
-  // Fallback (should rarely happen)
   return 'anonymous';
-}
-
-/**
- * Combine multiple rate limiters with AND logic
- * All limiters must pass for request to succeed
- * 
- * @example
- * ```ts
- * const result = await combineRateLimiters(
- *   identifier,
- *   authLimiter,
- *   ipLimiter
- * );
- * ```
- */
-export async function combineRateLimiters(
-  identifier: string,
-  ...limiters: RateLimiter[]
-): Promise<RateLimitResult> {
-  for (const limiter of limiters) {
-    const result = await limiter.check(identifier);
-    if (!result.success) {
-      return result; // Return first failure
-    }
-  }
-
-  // All passed - return last result
-  const lastResult = await limiters[limiters.length - 1].check(identifier);
-  return lastResult;
 }

@@ -63,15 +63,10 @@ import {
   createRateLimiter,
   getIdentifier,
   rateLimitResponse,
+  RATE_LIMITS_ACCOUNT,
 } from '@/lib/rate-limit';
 
-// Very restrictive - 3 per day in dev, 1 in prod (prevent accidents/abuse)
-const deleteAccountLimiter = createRateLimiter({
-  windowSeconds: 24 * 60 * 60, // 1 day
-  maxRequests: process.env.NODE_ENV === 'development' ? 3 : 1,
-  keyPrefix: 'delete-account',
-  description: 'Account deletion requests',
-});
+const deleteAccountLimiter = createRateLimiter(RATE_LIMITS_ACCOUNT.DELETE_ACCOUNT);
 
 export const runtime = "nodejs";
 

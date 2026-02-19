@@ -5,15 +5,10 @@ import {
   createRateLimiter,
   getIdentifier,
   rateLimitResponse,
+  RATE_LIMITS_GENERAL,
 } from '@/lib/rate-limit';
 
-// 5 feedback submissions per day
-const feedbackLimiter = createRateLimiter({
-  windowSeconds: 24 * 60 * 60, // 1 day
-  maxRequests: 5,
-  keyPrefix: 'feedback',
-  description: 'Feedback submissions',
-});
+const feedbackLimiter = createRateLimiter(RATE_LIMITS_GENERAL.FEEDBACK);
 
 export async function POST(request: NextRequest) {
   try {
