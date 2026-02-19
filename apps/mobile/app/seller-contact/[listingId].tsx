@@ -10,10 +10,8 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   StyleSheet,
   View,
-  ScrollView,
   Pressable,
   Alert,
-  RefreshControl,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
@@ -31,6 +29,7 @@ import { useSearch } from '@/context/search-context';
 import { getListingDetailed, ListingDetailed } from '@/lib/listing-api';
 import { normalizeSellerData, SellerInfo, getSellerListings, SellerListingCard } from '@/lib/seller-api';
 import { createConversation } from '@/lib/messaging-api';
+import { ScreenContainer } from '@/components/layout/ScreenContainer';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { PhoneActionSheet, FinancingSheet, BookingSheet, SellerDescriptionSheet } from '@/components/sheets';
@@ -301,22 +300,15 @@ export default function SellerContactScreen() {
       {/* Top Safe Area Gradient - visible on scroll */}
       {showTopGradient && <TopSafeAreaGradient />}
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={[
-          styles.content, 
-          { paddingTop: insets.top + Spacing.lg, paddingBottom: insets.bottom + Spacing['3xl'] }
-        ]}
-        showsVerticalScrollIndicator={false}
+      <ScreenContainer
+        refreshing={isRefreshing}
+        onRefresh={() => fetchListing(true)}
+        horizontalPadding="lg"
+        verticalPadding={0}
+        tabBarClearance={false}
+        extraBottomPadding={Layout.bottomGradientExtension}
         onScroll={handleScroll}
-        scrollEventThrottle={16}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={() => fetchListing(true)}
-            tintColor={colors.primary}
-          />
-        }
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + Spacing.lg }]}
       >
         {/* Seller Hero */}
         <SellerHero seller={seller} colors={colors} topInset={insets.top} />
@@ -400,7 +392,7 @@ export default function SellerContactScreen() {
           onWebsite={handleWebsite}
           colors={colors}
         />
-      </ScrollView>
+      </ScreenContainer>
 
       {/* Bottom Safe Area Gradient */}
       <BottomSafeAreaGradient />
@@ -492,11 +484,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  scroll: {
-    flex: 1,
-  },
   content: {
-    padding: Spacing.lg,
     gap: Spacing.xl,
   },
   errorContainer: {

@@ -43,7 +43,7 @@ export const SellerLocation = memo(function SellerLocation({
             <HapticPressable
               style={[
                 localStyles.pill,
-                { backgroundColor: colors.fill },
+                { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder },
               ]}
               onPress={onViewMap}
             >
@@ -53,7 +53,7 @@ export const SellerLocation = memo(function SellerLocation({
             <HapticPressable
               style={[
                 localStyles.pill,
-                { backgroundColor: colors.fill },
+                { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder },
               ]}
               onPress={onGetDirections}
             >
@@ -66,7 +66,7 @@ export const SellerLocation = memo(function SellerLocation({
           <HapticPressable
             style={[
               localStyles.pill,
-              { backgroundColor: colors.fill },
+              { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder },
             ]}
             onPress={onWebsite}
           >
@@ -107,5 +107,6 @@ const localStyles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     borderRadius: Radius.full,
+    borderWidth: 1,
   },
 });

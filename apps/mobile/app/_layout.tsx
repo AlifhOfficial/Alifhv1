@@ -284,19 +284,9 @@ export default function RootLayout() {
     DancingScript_700Bold,
   });
 
-  // Minimum splash time to show branded loader (2 seconds)
-  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMinTimeElapsed(true);
-    }, 2000); // Show loader for at least 2 seconds
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Show branded boot screen until fonts are loaded AND minimum time has passed
-  if (!fontsLoaded || !minTimeElapsed) {
+  // Show branded boot screen until fonts are loaded
+  // No artificial delays - app proceeds as soon as fonts are ready
+  if (!fontsLoaded) {
     return (
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
         <BootScreen />

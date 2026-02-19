@@ -46,8 +46,11 @@ export const maxDuration = 60; // 60 seconds for large HEIC image processing
 const listingImageLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_GENERAL);
 
 /**
- * Generate organized storage key for listing images
+ * Generate organized storage keys for listing images (thumb + full pair)
  * Format: listings/{year}/{month}/{day}/{userId}/{vin}/{uniqueId}_{variant}.webp
+ * 
+ * IMPORTANT: Both thumb and full share the SAME uniqueId so that
+ * getThumbUrl() can derive the thumb key by replacing _full → _thumb.
  * 
  * Benefits:
  * - Time-based organization for easy browsing
@@ -55,7 +58,7 @@ const listingImageLimiter = createRateLimiter(RATE_LIMITS_STORAGE.UPLOAD_GENERAL
  * - VIN grouping keeps all vehicle images together
  * - Easy cleanup by prefix
  */
-function generateListingImageKey(userId: string, vin: string, variant: 'thumb' | 'full'): string {
+function generateListingImageKeys(userId: string, vin: string): { thumbKey: string; fullKey: string } {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -64,8 +67,12 @@ function generateListingImageKey(userId: string, vin: string, variant: 'thumb' |
   
   // Use first 8 chars of userId for shorter paths
   const userPrefix = userId.slice(0, 8);
+  const prefix = `listings/${year}/${month}/${day}/${userPrefix}/${vin}/${uniqueId}`;
   
-  return `listings/${year}/${month}/${day}/${userPrefix}/${vin}/${uniqueId}_${variant}.webp`;
+  return {
+    thumbKey: `${prefix}_thumb.webp`,
+    fullKey: `${prefix}_full.webp`,
+  };
 }
 
 export async function POST(req: NextRequest) {
@@ -113,8 +120,8 @@ export async function POST(req: NextRequest) {
     const processingTime = Date.now() - startTime;
     
     // Generate organized storage keys using VIN and user
-    const thumbKey = generateListingImageKey(user.id, vin, 'thumb');
-    const fullKey = generateListingImageKey(user.id, vin, 'full');
+    // Both share the same uniqueId so getThumbUrl() can derive thumb from full
+    const { thumbKey, fullKey } = generateListingImageKeys(user.id, vin);
     
     console.log("[upload-listing-image] Processing complete:", {
       originalFormat,
