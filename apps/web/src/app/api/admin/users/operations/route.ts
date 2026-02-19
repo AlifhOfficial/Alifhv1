@@ -27,7 +27,6 @@ import {
   verifyUserEmail,
   verifyUserPhone,
   adminDeleteUser,
-  invalidateUserSessions,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ADMIN } from '@/lib/rate-limit';
@@ -216,12 +215,6 @@ export async function POST(req: NextRequest) {
           { error: 'Unknown operation' },
           { status: 400 }
         );
-    }
-
-    // Invalidate target user's session cache for all operations that affect their session
-    const targetUserId = 'userId' in validated ? validated.userId : null;
-    if (targetUserId) {
-      invalidateUserSessions(targetUserId);
     }
 
     return NextResponse.json({

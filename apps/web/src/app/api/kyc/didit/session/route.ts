@@ -17,8 +17,6 @@ import {
   db,
   userProfile,
   eq,
-  invalidateUserProfile,
-  invalidateUserSession,
 } from '@alifh/database';
 
 export const runtime = 'nodejs';
@@ -95,10 +93,6 @@ export async function POST(req: NextRequest) {
         updatedAt: new Date(),
       })
       .where(eq(userProfile.userId, user.id));
-
-    // Invalidate user profile cache
-    invalidateUserProfile(user.id);
-    invalidateUserSession(user.id);
 
     return NextResponse.json({
       success: true,

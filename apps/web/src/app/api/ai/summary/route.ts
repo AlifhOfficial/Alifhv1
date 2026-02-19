@@ -13,8 +13,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { 
-  memoryCache,
-  CacheTTL,
   getListingDetailed, 
   getDealerBaseProfile, 
   getUserProfileByUserId,
@@ -30,9 +28,6 @@ import {
 const summaryLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_PUBLIC);
 
 export const runtime = 'nodejs';
-
-// Cache summaries for 24 hours — generated once per listing
-const SUMMARY_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
 export async function POST(req: NextRequest) {
   try {
@@ -51,13 +46,6 @@ export async function POST(req: NextRequest) {
         { error: 'Missing required field: listingId' },
         { status: 400 }
       );
-    }
-
-    // Check cache first
-    const cacheKey = `ai:summary:${listingId}`;
-    const cached = memoryCache.get(cacheKey);
-    if (cached) {
-      return NextResponse.json({ success: true, data: cached, cached: true });
     }
 
     // Fetch listing data
@@ -165,9 +153,6 @@ export async function POST(req: NextRequest) {
         sellerVerified,
       },
     };
-
-    // Cache the result
-    memoryCache.set(cacheKey, responseData, SUMMARY_CACHE_TTL);
 
     return NextResponse.json({ success: true, data: responseData });
   } catch (error) {

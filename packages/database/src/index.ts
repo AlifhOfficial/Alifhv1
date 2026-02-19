@@ -29,7 +29,7 @@ export * from './dbclient';
 export * from './schema';
 export * as googleReviews from './services/google-reviews';
 export * from './queries';
-export * from './caches';
+// TODO: Re-add cache exports after Upstash Redis migration (Phase 2)
 
 // Explicit admin query exports (required for proper bundling)
 export * from './queries/admin/user-management-query';

@@ -41,19 +41,4 @@ export {
   type SendMessageParams,
 } from './queries/message';
 
-// Cache exports for server-side usage
-export { memoryCache, CacheKeys, CacheTTL, CachePrefixes } from './caches/memory-cache';
-export { 
-  invalidateSearchCaches,
-  invalidateListingDetail,
-  invalidateListingCaches,
-  invalidateFavoritesCache,
-  invalidatePartnerProfile,
-  invalidatePartnerInventory,
-  invalidateUserProfile,
-  invalidateUserStats,
-  invalidateUserMyListings,
-  invalidateUserBookings,
-  invalidateUserListingsInSearch,
-  invalidateAllCaches,
-} from './caches/invalidation';
+// TODO: Add Upstash Redis cache exports here (Phase 2)

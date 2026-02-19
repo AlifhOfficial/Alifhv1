@@ -17,7 +17,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
-  CacheKeys,
   createAuditLogEntry,
   getActivePartnerStaffMembershipByUserIdAndPartnerId,
   getListingModerationContext,
@@ -26,11 +25,10 @@ import {
   updateCarListingByStaff,
   deleteCarListing,
   deleteCarListingByStaff,
-  invalidateListingCaches,
   updateListingAIModeration,
   type UpdateCarListingInput,
 } from '@alifh/database';
-import { memoryCache, getListingDetailed } from '@alifh/database';
+import { getListingDetailed } from '@alifh/database';
 import { getClientIp } from '@/lib/utils/get-client-ip';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
 import { moderateListing, type ModerationInput } from '@alifh/ai/moderation';
@@ -423,9 +421,6 @@ export async function PUT(
       );
     }
 
-    // Invalidate listing caches so edits reflect immediately
-    invalidateListingCaches(id, listing.partnerId || undefined, listing.userId);
-
     const updated = await getListingModerationContext(id);
     const now = new Date();
     const isPublic =
@@ -630,14 +625,6 @@ export async function DELETE(
         console.error('[listing-delete] Failed to cleanup images:', error);
       });
     }
-
-    // Invalidate listing caches so removal reflects immediately
-    // Pass userId for personal listings to update user stats
-    invalidateListingCaches(
-      id, 
-      listing.partnerId || undefined,
-      !listing.partnerId ? listing.userId : undefined
-    );
 
     void createAuditLogEntry({
       action: isAdmin ? 'listing.hard_delete' : 'listing.delete',

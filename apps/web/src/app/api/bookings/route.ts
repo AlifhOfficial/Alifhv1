@@ -13,10 +13,7 @@ import {
   createBooking,
   checkUserBookingRestrictions,
   runBookingMaintenance,
-  memoryCache,
   getPartnerBookingSettingsBatch,
-  CacheTTL,
-  invalidateUserBookings,
   type BookingStatus,
 } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_BOOKINGS } from '@/lib/rate-limit';
@@ -24,8 +21,6 @@ import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_BOOKIN
 export const runtime = 'nodejs';
 
 const bookingCreateLimiter = createRateLimiter(RATE_LIMITS_BOOKINGS.CREATE);
-
-const BOOKING_MAINTENANCE_TTL_SECONDS = 300;
 
 /**
  * GET /api/bookings
@@ -39,11 +34,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Best-effort cleanup (fire-and-forget, don't block response)
-    // Throttled to avoid write-heavy work on every request in serverless.
-    if (!memoryCache.get<boolean>('maintenance:booking')) {
-      memoryCache.set('maintenance:booking', true, BOOKING_MAINTENANCE_TTL_SECONDS);
-      runBookingMaintenance().catch(() => {});
-    }
+    runBookingMaintenance().catch(() => {});
 
     const { searchParams } = new URL(req.url);
     const statusParam = searchParams.get('status')?.split(',');
@@ -53,17 +44,6 @@ export async function GET(req: NextRequest) {
     const upcoming = searchParams.get('upcoming') === 'true';
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
-
-    // Build cache key from query params
-    const cacheKeyParams = `${status?.join(',') || 'all'}-${q || ''}-${sort}-${upcoming}-${limit}-${offset}`;
-    const bookingsCacheKey = `user:${user.id}:bookings:${cacheKeyParams}`;
-
-    // Check cache first
-    type CachedBookings = { bookings: unknown[]; total: number };
-    const cached = memoryCache.get<CachedBookings>(bookingsCacheKey);
-    if (cached) {
-      return NextResponse.json(cached);
-    }
 
     const result = await getUserBookings(user.id, {
       status,
@@ -97,12 +77,10 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    // Cache the result (2 min TTL)
     const response = {
       bookings: enrichedBookings,
       total: result.total,
     };
-    memoryCache.set(bookingsCacheKey, response, CacheTTL.userBookings);
 
     return NextResponse.json(response);
   } catch (error) {
@@ -133,10 +111,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Best-effort cleanup (fire-and-forget, don't block response)
-    if (!memoryCache.get<boolean>('maintenance:booking')) {
-      memoryCache.set('maintenance:booking', true, BOOKING_MAINTENANCE_TTL_SECONDS);
-      runBookingMaintenance().catch(() => {});
-    }
+    runBookingMaintenance().catch(() => {});
 
     const body = await req.json();
     const { listingId, scheduledDate, scheduledStartTime, scheduledEndTime, notes, specialRequests, numberOfAttendees } = body;
@@ -177,9 +152,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Invalidate user's bookings cache
-    invalidateUserBookings(user.id);
 
     return NextResponse.json({
       success: true,

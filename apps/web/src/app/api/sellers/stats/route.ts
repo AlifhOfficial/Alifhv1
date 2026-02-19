@@ -15,8 +15,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { 
-  memoryCache, 
-  CacheTTL,
   calculateUserStats,
   calculatePartnerStats,
   hasPublishedShowroom,
@@ -67,14 +65,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Check memory cache first
-    const cacheKey = `seller:stats:${type}:${id}`;
-    const cached = memoryCache.get(cacheKey);
-    if (cached) {
-      console.log(`[seller-stats] CACHE HIT for ${type}:${id} - ${(performance.now() - startTime).toFixed(0)}ms`);
-      return NextResponse.json(cached, { headers: CACHE_HEADERS });
-    }
-
     // Fetch stats based on type
     let stats;
     if (type === 'partner') {
@@ -88,8 +78,6 @@ export async function GET(req: NextRequest) {
       stats = await calculateUserStats(id);
     }
 
-    // Cache for 5 minutes
-    memoryCache.set(cacheKey, stats, CacheTTL.partnerStats);
     console.log(`[seller-stats] ${type}:${id} - ${(performance.now() - startTime).toFixed(0)}ms`);
 
     return NextResponse.json(stats, { headers: CACHE_HEADERS });

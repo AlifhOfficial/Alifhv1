@@ -23,7 +23,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
-import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile, invalidateUserSession, invalidateUserProfile, invalidateUserListingsInSearch, calculateUserStats, db, passkey, eq } from "@alifh/database";
+import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile, calculateUserStats, db, passkey, eq } from "@alifh/database";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { deleteFile } from "@/lib/storage";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_GENERAL } from '@/lib/rate-limit';
@@ -188,20 +188,6 @@ export async function PATCH(req: NextRequest) {
       deleteFile(oldAvatarKey).catch(e => {
         console.warn('[user-profile] Failed to delete old avatar:', oldAvatarKey, e);
       });
-    }
-
-    // Invalidate server-side profile cache
-    invalidateUserProfile(user.id);
-    
-    // Invalidate session cache so sidebar/navbar get fresh data
-    if ('avatar' in result.data || 'firstName' in result.data || 'lastName' in result.data || 'preferences' in result.data) {
-      invalidateUserSession(user.id);
-    }
-    
-    // Invalidate search caches when seller-visible fields change
-    // This ensures car cards show updated seller avatar/name
-    if ('avatar' in result.data || 'firstName' in result.data || 'lastName' in result.data) {
-      invalidateUserListingsInSearch(user.id);
     }
 
     const profileWithUrl = await attachAvatarUrl(updated);

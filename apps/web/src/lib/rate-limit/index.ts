@@ -1,8 +1,8 @@
 /**
  * Rate Limiting - Standardized Implementation
  * 
- * Built on top of memoryCache for distributed rate limiting.
- * Works in serverless and traditional environments.
+ * Uses a simple in-memory Map for rate limiting.
+ * TODO: Replace with @upstash/ratelimit for distributed rate limiting across instances.
  * 
  * USAGE:
  * ```ts
@@ -22,8 +22,21 @@
  * @module lib/rate-limit
  */
 
-import { memoryCache } from '@alifh/database';
 import type { RateLimitConfig } from './config';
+
+// Simple in-memory rate limit store
+// TODO: Replace with @upstash/ratelimit for distributed rate limiting
+const rateLimitStore = new Map<string, { count: number; expiresAt: number }>();
+
+// Cleanup expired entries every 30 seconds
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of rateLimitStore) {
+    if (entry.expiresAt <= now) {
+      rateLimitStore.delete(key);
+    }
+  }
+}, 30_000);
 
 export * from './config';
 
@@ -72,11 +85,11 @@ export function createRateLimiter(config: RateLimitConfig): RateLimiter {
     const windowStart = Math.floor(now / (windowSeconds * 1000)) * (windowSeconds * 1000);
     const reset = windowStart + windowSeconds * 1000;
     
-    // Create cache key: prefix:identifier:windowStart
     const cacheKey = `${keyPrefix}:${identifier}:${windowStart}`;
 
-    // Get current count
-    const current = memoryCache.get<number>(cacheKey) || 0;
+    // Get current entry
+    const entry = rateLimitStore.get(cacheKey);
+    const current = (entry && entry.expiresAt > now) ? entry.count : 0;
 
     // Check if limit exceeded
     if (current >= maxRequests) {
@@ -90,7 +103,7 @@ export function createRateLimiter(config: RateLimitConfig): RateLimiter {
 
     // Increment counter
     const newCount = current + 1;
-    memoryCache.set(cacheKey, newCount, windowSeconds);
+    rateLimitStore.set(cacheKey, { count: newCount, expiresAt: now + windowSeconds * 1000 });
 
     return {
       success: true,
@@ -108,7 +121,7 @@ export function createRateLimiter(config: RateLimitConfig): RateLimiter {
     const now = Date.now();
     const windowStart = Math.floor(now / (windowSeconds * 1000)) * (windowSeconds * 1000);
     const cacheKey = `${keyPrefix}:${identifier}:${windowStart}`;
-    memoryCache.delete(cacheKey);
+    rateLimitStore.delete(cacheKey);
   }
 
   return { check, reset };

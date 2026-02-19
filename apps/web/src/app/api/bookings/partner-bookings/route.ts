@@ -20,7 +20,6 @@ import {
   getPartnerBookings,
   getStaffListingsBookings,
   getPartnerBookingStats,
-  memoryCache,
   type BookingStatus,
 } from '@alifh/database';
 import {
@@ -33,8 +32,6 @@ import {
 const partnerBookingsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 export const runtime = 'nodejs';
-
-const PARTNER_BOOKING_STATS_TTL_SECONDS = 15;
 
 export async function GET(req: NextRequest) {
   try {
@@ -105,12 +102,7 @@ export async function GET(req: NextRequest) {
     // Fetch stats if requested
     let stats: Awaited<ReturnType<typeof getPartnerBookingStats>> | undefined;
     if (includeStats) {
-      const statsKey = `bookingStats:partner:${partnerId}`;
-      stats = memoryCache.get(statsKey) ?? undefined;
-      if (!stats) {
-        stats = await getPartnerBookingStats(partnerId);
-        memoryCache.set(statsKey, stats, PARTNER_BOOKING_STATS_TTL_SECONDS);
-      }
+      stats = await getPartnerBookingStats(partnerId);
     }
 
     return NextResponse.json({

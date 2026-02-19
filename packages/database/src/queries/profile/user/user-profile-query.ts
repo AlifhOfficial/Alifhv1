@@ -6,7 +6,6 @@
  * 
  * Performance optimizations:
  * - Combined profile + verification into single JOIN query (was 2 queries)
- * - Memory cache with 2min TTL for read-heavy operations
  * 
  * @module queries/profile/user-profile-query
  */
@@ -14,7 +13,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { eq, desc } from 'drizzle-orm';
 import { db } from '../../../dbclient';
-import { memoryCache, CacheKeys, CacheTTL, invalidateUserSessions } from '../../../caches/memory-cache';
 import { userProfile, kycRecord } from '../../../schema/profile';
 import { user } from '../../../schema/auth';
 
@@ -74,14 +72,6 @@ export type ExtendedUserProfile = {
  * Only fetches fields used in ProfileView UI
  */
 export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUserProfile | null> => {
-  const cacheKey = CacheKeys.userProfile(userId);
-  
-  // Check cache first (disabled - no-op)
-  const cached = memoryCache.get<ExtendedUserProfile>(cacheKey);
-  if (cached) {
-    return cached;
-  }
-
   // Single JOIN query - only select fields used in UI
   const [result] = await db
     .select({
@@ -139,9 +129,6 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
     kycRejectionReason,
   };
 
-  // Cache the result (disabled - no-op)
-  memoryCache.set(cacheKey, profile, CacheTTL.userProfile);
-
   return profile;
 };
 
@@ -188,10 +175,6 @@ export const updateUserProfileByUserId = async (
     .update(userProfile)
     .set({ ...cleanUpdates, updatedAt: new Date() })
     .where(eq(userProfile.userId, userId));
-
-  // Invalidate both profile cache and session cache (session contains profile data)
-  memoryCache.delete(CacheKeys.userProfile(userId));
-  invalidateUserSessions(userId);
 
   // Return fresh profile
   return getUserProfileByUserId(userId);

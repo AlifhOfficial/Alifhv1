@@ -10,7 +10,6 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../../../../dbclient';
 import { carListing } from '../../../../schema/listing';
-import { invalidateListingDetail, invalidateSearchCaches } from '../../../../caches/invalidation';
 import type { SpecialNotes } from './types';
 
 // ============================================================================
@@ -139,16 +138,6 @@ export async function updateListingAIModeration(
       .update(carListing)
       .set(updateData)
       .where(eq(carListing.id, listingId));
-    
-    // Invalidate caches when AI moderation changes listing status
-    // This is critical: the listing may have been fetched (and cached)
-    // with isPublic=false while in 'submitted' status. After auto-approval,
-    // the cached result becomes stale and would return 404.
-    if (autoApproved || autoRejected) {
-      invalidateListingDetail(listingId);
-      invalidateSearchCaches();
-      console.log(`[AI Moderation] Cache invalidated for ${listingId} (${autoApproved ? 'auto-approved' : 'auto-rejected'})`);
-    }
     
     return {
       success: true,

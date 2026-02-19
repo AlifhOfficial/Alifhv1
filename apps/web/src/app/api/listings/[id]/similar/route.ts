@@ -14,23 +14,17 @@
  * Returns empty array if insufficient quality matches.
  * Philosophy: Show nothing > show garbage.
  * 
- * Cache Strategy:
- * - CDN: 5 minutes (similar listings don't change frequently)
- * - Memory: 5 minutes (invalidated when listings change)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import {
   getSimilarListings,
   getListingDetailed,
-  memoryCache,
   type SimilarListingCard,
 } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
-// Cache settings
-const CACHE_TTL = 300; // 5 minutes
 const CDN_HEADERS = {
   'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
 } as const;
@@ -53,18 +47,6 @@ export async function GET(
   }
 
   try {
-    // Check cache first
-    const cacheKey = `similar:${id}`;
-    const cached = memoryCache.get<SimilarListingCard[]>(cacheKey);
-    
-    if (cached !== null) {
-      const response = NextResponse.json({ listings: cached, cached: true });
-      Object.entries(CDN_HEADERS).forEach(([key, value]) =>
-        response.headers.set(key, value)
-      );
-      return response;
-    }
-
     // Fetch the source listing to get matching criteria
     const listing = await getListingDetailed(id);
     
@@ -86,10 +68,7 @@ export async function GET(
       mileage: listing.mileage,
     });
 
-    // Cache the result
-    memoryCache.set(cacheKey, similar, CACHE_TTL);
-
-    const response = NextResponse.json({ listings: similar, cached: false });
+    const response = NextResponse.json({ listings: similar });
     Object.entries(CDN_HEADERS).forEach(([key, value]) =>
       response.headers.set(key, value)
     );

@@ -23,7 +23,6 @@ import {
   unsuspendListingAsAdmin,
   createAuditLogEntry,
   getListingModerationContext,
-  invalidateListingCaches,
 } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ADMIN } from '@/lib/rate-limit';
 
@@ -160,9 +159,6 @@ export async function POST(
     if (!after) {
       return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
     }
-
-    // Invalidate caches - include userId to clear user's my-listings cache
-    invalidateListingCaches(id, before?.partnerId || undefined, before?.userId || undefined);
 
     // Create audit log entry
     void createAuditLogEntry({

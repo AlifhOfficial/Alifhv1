@@ -11,25 +11,14 @@ import { createId } from '@paralleldrive/cuid2';
 import { eq } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { user, userProfile } from '../../schema';
-import { memoryCache, CacheKeys, CacheTTL } from '../../caches';
 
 // Essential user queries
 export const getUserById = async (id: string) => {
-  // Check cache first
-  const cacheKey = CacheKeys.userById(id);
-  const cached = memoryCache.get<typeof user.$inferSelect>(cacheKey);
-  if (cached) return cached;
-
   const [result] = await db
     .select()
     .from(user)
     .where(eq(user.id, id))
     .limit(1);
-  
-  // Cache the result
-  if (result) {
-    memoryCache.set(cacheKey, result, CacheTTL.userById);
-  }
     
   return result || null;
 };
@@ -69,9 +58,6 @@ export const createUser = async (data: CreateUserData) => {
 };
 
 export const updateUser = async (id: string, data: Partial<CreateUserData>) => {
-  // Invalidate cache before update
-  memoryCache.delete(CacheKeys.userById(id));
-  
   const [result] = await db
     .update(user)
     .set({
@@ -85,9 +71,6 @@ export const updateUser = async (id: string, data: Partial<CreateUserData>) => {
 };
 
 export const deleteUser = async (id: string) => {
-  // Invalidate cache before delete
-  memoryCache.delete(CacheKeys.userById(id));
-  
   await db
     .delete(user)
     .where(eq(user.id, id));
@@ -150,9 +133,6 @@ export const deleteUnverifiedUserByEmail = async (email: string): Promise<boolea
     return false;
   }
   
-  // Invalidate any cache
-  memoryCache.delete(CacheKeys.userById(unverifiedUser.id));
-  
   // Delete user (cascades to sessions, accounts, etc.)
   await db
     .delete(user)
@@ -185,9 +165,6 @@ export const getUserForStripeCustomer = async (email: string) => {
  * Called after successful email verification and Stripe customer creation
  */
 export const updateUserStripeCustomerId = async (userId: string, stripeCustomerId: string) => {
-  // Invalidate cache before update
-  memoryCache.delete(CacheKeys.userById(userId));
-  
   const [result] = await db
     .update(user)
     .set({

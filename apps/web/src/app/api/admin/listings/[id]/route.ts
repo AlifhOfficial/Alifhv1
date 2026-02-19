@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getClientIp } from '@/lib/utils/get-client-ip';
-import { createAuditLogEntry, deleteListingAsAdmin, getListingModerationContext, getListingImagesForCleanup, invalidateListingCaches } from '@alifh/database';
+import { createAuditLogEntry, deleteListingAsAdmin, getListingModerationContext, getListingImagesForCleanup } from '@alifh/database';
 import {
   createRateLimiter,
   getIdentifier,
@@ -64,14 +64,6 @@ export async function DELETE(
         console.error('[admin-delete] Failed to cleanup images:', error);
       });
     }
-
-    // Invalidate all listing caches using centralized function
-    // Pass userId for personal listings to update user stats
-    invalidateListingCaches(
-      id, 
-      before?.partnerId || undefined,
-      !before?.partnerId ? before?.userId : undefined
-    );
 
     void createAuditLogEntry({
       action: 'listing.hard_delete',

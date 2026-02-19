@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { removeStaffMember, getActivePartnerStaffMembershipByUserId, invalidateUserSession } from '@alifh/database';
+import { removeStaffMember, getActivePartnerStaffMembershipByUserId } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
   createRateLimiter,
@@ -76,9 +76,6 @@ export async function POST(req: NextRequest) {
       partnerId: membership.partnerId,
       reason: reason || 'Staff resigned',
     });
-
-    // Invalidate session cache so next request gets updated membership info
-    invalidateUserSession(user.id);
 
     return NextResponse.json({
       success: true,

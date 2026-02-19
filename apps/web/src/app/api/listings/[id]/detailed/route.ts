@@ -9,9 +9,7 @@
  * - Full specifications, features, and pricing insights
  * - Seller profile data (partner OR user) - NO stats (loaded separately via /api/sellers/stats)
  * 
- * Performance Optimizations:
- * - Query-level caching: getListingDetailed, getDealerBaseProfile, getStaffEffectivePhone, getUserProfileByUserId
- * - Response-level caching: Full response cached for 10min (invalidated via invalidateListingDetail)
+ * Performance:
  * - Stats are fetched separately via /api/sellers/stats to avoid blocking
  * 
  * Standards:
@@ -21,9 +19,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { 
-  memoryCache, 
-  CacheTTL,
-  CacheKeys,
   getListingDetailed, 
   getDealerBaseProfile, 
   getUserProfileByUserId,
@@ -42,7 +37,6 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// No browser/CDN caching - server handles caching with proper invalidation
 const CACHE_HEADERS = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, private',
   'Pragma': 'no-cache',
@@ -116,18 +110,6 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Response cache key (includes listing + sellerData)
-    // Invalidated via invalidateListingDetail() which clears both query and response caches
-    const responseCacheKey = CacheKeys.listingResponse(id);
-    
-    // Check response cache first (full response with seller data)
-    const cached = memoryCache.get(responseCacheKey);
-    if (cached) {
-      console.log(`[listing-detailed] CACHE HIT for ${id} - ${(performance.now() - startTime).toFixed(0)}ms`);
-      return NextResponse.json(cached, { headers: CACHE_HEADERS });
-    }
-
-    // Fetch from database
     const listing = await getListingDetailed(id);
 
     if (!listing) {
@@ -143,14 +125,11 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Fetch seller data (queries are individually cached)
     const sellerData = await fetchSellerData(listing);
 
     // Build response with listing + seller data
     const responseData = { listing, sellerData };
 
-    // Cache full response for 10 minutes (invalidated via invalidateListingDetail)
-    memoryCache.set(responseCacheKey, responseData, CacheTTL.listingDetail);
     logTiming('total');
 
     return NextResponse.json(responseData, { headers: CACHE_HEADERS });

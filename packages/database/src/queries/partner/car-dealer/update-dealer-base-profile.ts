@@ -11,10 +11,7 @@
 
 import { eq } from 'drizzle-orm';
 import { db } from '../../../dbclient';
-import { invalidateUserSessions } from '../../../caches/memory-cache';
-import { invalidateDealerBaseProfile, invalidatePartnerListingsInSearch } from '../../../caches/invalidation';
 import { partner } from '../../../schema/partner';
-import { partnerStaff } from '../../../schema/partner';
 
 export interface UpdateDealerBaseProfileData {
   // Basic Information
@@ -138,27 +135,6 @@ export async function updateDealerBaseProfile(
       // Timestamps (for cache-busting image URLs)
       updatedAt: partner.updatedAt,
     });
-
-  // Invalidate dealer profile cache after update
-  invalidateDealerBaseProfile(partnerId);
-  
-  // Invalidate search caches when partner-visible fields change
-  // This ensures car cards show updated partner logo/name
-  if (data.brandName !== undefined || data.logo !== undefined) {
-    invalidatePartnerListingsInSearch(partnerId);
-  }
-  
-  // Invalidate session cache for all staff if brand-related fields changed
-  // Use !== undefined to catch null values (logo removal)
-  if (data.brandName !== undefined || data.logo !== undefined) {
-    const staff = await db.query.partnerStaff.findMany({
-      where: eq(partnerStaff.partnerId, partnerId),
-      columns: { userId: true },
-    });
-    for (const s of staff) {
-      invalidateUserSessions(s.userId);
-    }
-  }
 
   return result;
 }

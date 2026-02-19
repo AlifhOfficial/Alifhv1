@@ -4,7 +4,6 @@
  * Ultra-optimized queries for the premium brand showroom experience.
  * 
  * Performance Optimizations:
- * - Aggressive caching with smart invalidation
  * - Prepared statements for repeated queries
  * - Minimal data selection (only what's needed)
  * - Index-optimized where clauses
@@ -16,7 +15,6 @@ import { eq, and, desc, sql } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 import { db } from '../../../dbclient';
 import { partner, partnerShowroom } from '../../../schema/partner';
-import { memoryCache, CacheKeys, CacheTTL, CachePrefixes } from '../../../caches/memory-cache';
 import type {
   ShowroomTeamMember,
   ShowroomAchievement,
@@ -24,23 +22,6 @@ import type {
   ShowroomService,
   ShowroomPressFeature,
 } from '../../../schema/partner';
-
-// ============================================================================
-// Cache Keys & TTL (extend existing cache infrastructure)
-// ============================================================================
-
-const ShowroomCacheKeys = {
-  byPartnerId: (partnerId: string) => `showroom:partner:${partnerId}`,
-  bySlug: (slug: string) => `showroom:slug:${slug}`,
-  publicBySlug: (slug: string) => `showroom:public:${slug}`,
-  list: (page: number, limit: number) => `showroom:list:${page}:${limit}`,
-};
-
-const ShowroomCacheTTL = {
-  full: 300,        // 5 min - full showroom data (admin view)
-  public: 600,      // 10 min - public showroom page (longer, heavily cached)
-  list: 300,        // 5 min - directory listing
-};
 
 // ============================================================================
 // Types
@@ -280,12 +261,6 @@ export type ShowroomUpdateInput = Partial<Omit<
  * @returns Boolean indicating if showroom is published
  */
 export async function hasPublishedShowroom(partnerId: string): Promise<boolean> {
-  const cacheKey = `showroom:exists:${partnerId}`;
-  
-  // Check cache first
-  const cached = memoryCache.get<boolean>(cacheKey);
-  if (cached !== undefined) return cached;
-  
   // Lightweight query - just check existence
   const result = await db
     .select({ id: partnerShowroom.id })
@@ -296,28 +271,16 @@ export async function hasPublishedShowroom(partnerId: string): Promise<boolean> 
     ))
     .limit(1);
   
-  const exists = result.length > 0;
-  
-  // Cache for 5 minutes
-  memoryCache.set(cacheKey, exists, ShowroomCacheTTL.full);
-  
-  return exists;
+  return result.length > 0;
 }
 
 /**
  * Get showroom by partner ID (for admin/editing)
- * Uses cache with 5 min TTL
  * 
  * @param partnerId - The partner's ID
  * @returns Full showroom data or null if not found
  */
 export async function getShowroomByPartnerId(partnerId: string): Promise<PartnerShowroomFull | null> {
-  const cacheKey = ShowroomCacheKeys.byPartnerId(partnerId);
-  
-  // Check cache first
-  const cached = memoryCache.get<PartnerShowroomFull>(cacheKey);
-  if (cached) return cached;
-  
   // Query database
   const result = await db
     .select()
@@ -327,28 +290,16 @@ export async function getShowroomByPartnerId(partnerId: string): Promise<Partner
   
   if (!result.length) return null;
   
-  const showroom = mapToShowroomFull(result[0]);
-  
-  // Cache result
-  memoryCache.set(cacheKey, showroom, ShowroomCacheTTL.full);
-  
-  return showroom;
+  return mapToShowroomFull(result[0]);
 }
 
 /**
  * Get showroom by slug (for admin/editing)
- * Uses cache with 5 min TTL
  * 
  * @param slug - The showroom's URL slug
  * @returns Full showroom data or null if not found
  */
 export async function getShowroomBySlug(slug: string): Promise<PartnerShowroomFull | null> {
-  const cacheKey = ShowroomCacheKeys.bySlug(slug);
-  
-  // Check cache first
-  const cached = memoryCache.get<PartnerShowroomFull>(cacheKey);
-  if (cached) return cached;
-  
   // Query database
   const result = await db
     .select()
@@ -358,18 +309,12 @@ export async function getShowroomBySlug(slug: string): Promise<PartnerShowroomFu
   
   if (!result.length) return null;
   
-  const showroom = mapToShowroomFull(result[0]);
-  
-  // Cache result
-  memoryCache.set(cacheKey, showroom, ShowroomCacheTTL.full);
-  
-  return showroom;
+  return mapToShowroomFull(result[0]);
 }
 
 /**
  * Get published showroom by slug (for public page)
  * Joins partner data for branding
- * Uses longer cache TTL (10 min) for public pages
  * 
  * PERFORMANCE: Single query with minimal joins, indexed on slug + isPublished
  * 
@@ -377,12 +322,6 @@ export async function getShowroomBySlug(slug: string): Promise<PartnerShowroomFu
  * @returns Public showroom data with partner info or null
  */
 export async function getPublishedShowroomBySlug(slug: string): Promise<PartnerShowroomPublic | null> {
-  const cacheKey = ShowroomCacheKeys.publicBySlug(slug);
-  
-  // Check cache first
-  const cached = memoryCache.get<PartnerShowroomPublic>(cacheKey);
-  if (cached) return cached;
-  
   // Single optimized query with partner join
   const result = await db
     .select({
@@ -434,9 +373,6 @@ export async function getPublishedShowroomBySlug(slug: string): Promise<PartnerS
     locationLng: row.partnerLocationLng,
   });
   
-  // Cache with longer TTL for public pages
-  memoryCache.set(cacheKey, showroom, ShowroomCacheTTL.public);
-  
   return showroom;
 }
 
@@ -448,12 +384,6 @@ export async function getPublishedShowroomBySlug(slug: string): Promise<PartnerS
  * @returns Public showroom data with partner info or null
  */
 export async function getPublishedShowroomByPartnerId(partnerId: string): Promise<PartnerShowroomPublic | null> {
-  const cacheKey = `showroom:public:partner:${partnerId}`;
-  
-  // Check cache first
-  const cached = memoryCache.get<PartnerShowroomPublic>(cacheKey);
-  if (cached) return cached;
-  
   // Single optimized query with partner join
   const result = await db
     .select({
@@ -503,9 +433,6 @@ export async function getPublishedShowroomByPartnerId(partnerId: string): Promis
     locationLng: row.partnerLocationLng,
   });
   
-  // Cache with longer TTL for public pages
-  memoryCache.set(cacheKey, showroom, ShowroomCacheTTL.public);
-  
   return showroom;
 }
 
@@ -521,12 +448,6 @@ export async function getPublishedShowrooms(
   page: number = 1,
   limit: number = 12
 ): Promise<{ showrooms: PartnerShowroomPublic[]; total: number }> {
-  const cacheKey = ShowroomCacheKeys.list(page, limit);
-  
-  // Check cache first
-  const cached = memoryCache.get<{ showrooms: PartnerShowroomPublic[]; total: number }>(cacheKey);
-  if (cached) return cached;
-  
   const offset = (page - 1) * limit;
   
   // Query with join and pagination
@@ -591,8 +512,6 @@ export async function getPublishedShowrooms(
     total: countResult[0]?.count || 0,
   };
   
-  memoryCache.set(cacheKey, result, ShowroomCacheTTL.list);
-  
   return result;
 }
 
@@ -620,12 +539,7 @@ export async function createShowroom(input: ShowroomCreateInput): Promise<Partne
     })
     .returning();
   
-  const showroom = mapToShowroomFull(created);
-  
-  // Cache the new showroom
-  memoryCache.set(ShowroomCacheKeys.byPartnerId(input.partnerId), showroom, ShowroomCacheTTL.full);
-  
-  return showroom;
+  return mapToShowroomFull(created);
 }
 
 /**
@@ -651,15 +565,7 @@ export async function updateShowroom(
     .where(eq(partnerShowroom.id, showroomId))
     .returning();
   
-  const showroom = mapToShowroomFull(updated);
-  
-  // Invalidate all related caches
-  invalidateShowroomCache(updated.partnerId, updated.slug);
-  
-  // Re-cache with fresh data
-  memoryCache.set(ShowroomCacheKeys.byPartnerId(updated.partnerId), showroom, ShowroomCacheTTL.full);
-  
-  return showroom;
+  return mapToShowroomFull(updated);
 }
 
 /**
@@ -678,13 +584,7 @@ export async function publishShowroom(showroomId: string): Promise<PartnerShowro
     .where(eq(partnerShowroom.id, showroomId))
     .returning();
   
-  const showroom = mapToShowroomFull(updated);
-  
-  // Invalidate and re-cache
-  invalidateShowroomCache(updated.partnerId, updated.slug);
-  memoryCache.set(ShowroomCacheKeys.byPartnerId(updated.partnerId), showroom, ShowroomCacheTTL.full);
-  
-  return showroom;
+  return mapToShowroomFull(updated);
 }
 
 /**
@@ -702,12 +602,7 @@ export async function unpublishShowroom(showroomId: string): Promise<PartnerShow
     .where(eq(partnerShowroom.id, showroomId))
     .returning();
   
-  const showroom = mapToShowroomFull(updated);
-  
-  // Invalidate all caches
-  invalidateShowroomCache(updated.partnerId, updated.slug);
-  
-  return showroom;
+  return mapToShowroomFull(updated);
 }
 
 /**
@@ -724,33 +619,6 @@ export async function incrementShowroomViews(showroomId: string): Promise<void> 
       lastViewedAt: new Date(),
     })
     .where(eq(partnerShowroom.id, showroomId));
-  
-  // Don't invalidate cache for view increments (analytics are eventually consistent)
-}
-
-// ============================================================================
-// Cache Invalidation
-// ============================================================================
-
-/**
- * Invalidate all showroom caches for a partner
- */
-function invalidateShowroomCache(partnerId: string, slug: string | null): void {
-  memoryCache.delete(ShowroomCacheKeys.byPartnerId(partnerId));
-  if (slug) {
-    memoryCache.delete(ShowroomCacheKeys.bySlug(slug));
-    memoryCache.delete(ShowroomCacheKeys.publicBySlug(slug));
-  }
-  // Invalidate list caches
-  memoryCache.deleteByPrefix('showroom:list:');
-}
-
-/**
- * Public invalidation function for use by other modules
- */
-export function invalidateShowroomCacheByPartnerId(partnerId: string): void {
-  memoryCache.deleteByPrefix(`showroom:partner:${partnerId}`);
-  memoryCache.deleteByPrefix('showroom:list:');
 }
 
 // ============================================================================

@@ -12,7 +12,6 @@ import {
   createAuditLogEntry,
   extendCarListingExpiry,
   getListingModerationContext,
-  invalidateListingCaches,
 } from '@alifh/database';
 import { getClientIp } from '@/lib/utils/get-client-ip';
 import {
@@ -83,9 +82,6 @@ export async function POST(
     if (result.success === false) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
-
-    // Invalidate all listing caches using centralized function
-    invalidateListingCaches(id, before?.partnerId || undefined);
 
     void createAuditLogEntry({
       action: 'listing.extend_expiry',

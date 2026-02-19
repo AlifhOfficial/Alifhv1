@@ -6,7 +6,6 @@
  * 
  * Performance optimizations:
  * - Select only needed columns (no heavy JSONB fields)
- * - Memory cache with 5 min TTL
  * - Ordered by createdAt ASC (first partner joined = first in list)
  * 
  * @module queries/partner/car-dealer/get-partners-list
@@ -15,7 +14,6 @@
 import { eq, asc } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { partner } from '../../../schema/partner';
-import { memoryCache, CacheKeys, CacheTTL } from '../../../caches/memory-cache';
 
 // ============================================================================
 // Types
@@ -52,17 +50,11 @@ export interface PartnerListItem {
 // Query
 // ============================================================================
 
-const PARTNERS_LIST_CACHE_KEY = 'partners:list:top50';
-
 /**
  * Fetch up to 50 active partners ordered by join date (oldest first)
  * Only returns partners with status = 'active'
  */
 export async function getPartnersList(): Promise<PartnerListItem[]> {
-  // Check cache first
-  const cached = memoryCache.get<PartnerListItem[]>(PARTNERS_LIST_CACHE_KEY);
-  if (cached) return cached;
-
   const results = await db
     .select({
       id: partner.id,
@@ -101,9 +93,6 @@ export async function getPartnersList(): Promise<PartnerListItem[]> {
     specialties: (r.specialties as string[] | null) ?? [],
     badges: (r.badges as string[] | null) ?? [],
   }));
-
-  // Cache for 5 minutes
-  memoryCache.set(PARTNERS_LIST_CACHE_KEY, normalized, CacheTTL.partnerMiniProfile);
 
   return normalized;
 }

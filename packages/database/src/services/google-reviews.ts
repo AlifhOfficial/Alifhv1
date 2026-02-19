@@ -7,7 +7,6 @@
 import { db } from '../index';
 import { partner } from '../schema/partner';
 import { eq, isNotNull, or, lt, sql } from 'drizzle-orm';
-import { memoryCache, CacheKeys } from '../caches/memory-cache';
 
 // ============================================================================
 // Types
@@ -256,9 +255,6 @@ export async function syncPartnerReviews(partnerId: string): Promise<SyncResult>
         googleReviewsSyncedAt: new Date(),
       })
       .where(eq(partner.id, partnerId));
-    
-    // Invalidate cache so profile shows updated data
-    memoryCache.delete(CacheKeys.partnerMiniProfile(partnerId));
     
     return result;
   } catch (error) {

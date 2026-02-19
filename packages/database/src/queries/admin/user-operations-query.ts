@@ -14,7 +14,6 @@ import { eq, sql } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { user, session } from '../../schema/auth';
 import { userProfile } from '../../schema/profile';
-import { invalidateUserSession } from '../../caches/auth-cache';
 
 // ============================================================================
 // Ban/Unban Operations
@@ -44,9 +43,6 @@ export async function banUser(input: {
 
   // Delete all sessions for this user (force logout)
   await db.delete(session).where(eq(session.userId, input.userId));
-  
-  // Invalidate session cache
-  invalidateUserSession(input.userId);
 
   return updated;
 }

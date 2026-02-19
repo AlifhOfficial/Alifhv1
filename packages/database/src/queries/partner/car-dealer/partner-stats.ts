@@ -1,7 +1,7 @@
 /**
  * Partner Stats Calculation Query
  * 
- * Calculates dynamic metrics with memory cache (5min TTL)
+ * Calculates dynamic metrics:
  * - inventoryCount: Count of active (published) listings
  * - totalSales: Count of sold listings
  * - responseTime: Average minutes to first response (business hours only: 9am-8pm GST)
@@ -18,14 +18,12 @@
  * - Prevents misleading stats from small sample sizes
  * 
  * Performance optimizations:
- * - Memory cache with 5min TTL (expensive aggregation queries)
  * - Combined listing stats into single query (2 counts in 1 query)
  * - Combined conversation stats into single query (counts + avg in 1 query)
  * - Reduced from 5 DB calls to 2 DB calls
  */
 
 import { db } from '../../../dbclient';
-import { memoryCache, CacheKeys, CacheTTL } from '../../../caches/memory-cache';
 import { carListing } from '../../../schema/listing';
 import { conversation } from '../../../schema/messaging';
 import { eq, and, sql, gt, isNotNull } from 'drizzle-orm';
@@ -45,14 +43,6 @@ export interface PartnerStats {
  * Expensive aggregation queries
  */
 export async function calculatePartnerStats(partnerId: string): Promise<PartnerStats> {
-  const cacheKey = CacheKeys.partnerStats(partnerId);
-  
-  // Check cache first (disabled - no-op)
-  const cached = memoryCache.get<PartnerStats>(cacheKey);
-  if (cached) {
-    return cached;
-  }
-
   try {
     const now = new Date();
 
@@ -164,9 +154,6 @@ export async function calculatePartnerStats(partnerId: string): Promise<PartnerS
       responseTime,
       responseRate,
     };
-
-    // Store in cache (disabled - no-op)
-    memoryCache.set(cacheKey, stats, CacheTTL.partnerStats);
 
     return stats;
   } catch (error) {

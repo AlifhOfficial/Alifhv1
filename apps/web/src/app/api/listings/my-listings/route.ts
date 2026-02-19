@@ -30,8 +30,6 @@ import {
   getListingStatsByUserId,
   getListingsByPartnerId,
   getListingsByUserId,
-  memoryCache,
-  CacheTTL,
 } from '@alifh/database';
 import {
   createRateLimiter,
@@ -43,9 +41,6 @@ import {
 const myListingsLimiter = createRateLimiter(RATE_LIMITS_GENERAL.READ_AUTH);
 
 export const runtime = 'nodejs';
-
-const EXPIRY_MAINTENANCE_TTL_SECONDS = 300;
-const LISTING_STATS_TTL_SECONDS = 15;
 
 // Debug flag: set DEBUG_LISTING_TIMING=true to log performance timings
 const DEBUG_TIMING = process.env.DEBUG_LISTING_TIMING === 'true';
@@ -90,11 +85,6 @@ export async function GET(req: NextRequest) {
     );
     const offset = parseInt(searchParams.get('offset') || '0');
     const partnerIdParam = searchParams.get('partnerId') || undefined;
-
-    // Build cache key from all query params (for personal listings only)
-    // Work listings use partner inventory cache instead
-    const cacheKeyParams = `${status || ''}-${moderationStatus || ''}-${lifecycleStatus || ''}-${listingType || ''}-${q || ''}-${sort || ''}-${limit}-${offset}-${includeStats}`;
-    const myCacheKey = `user:${user.id}:my-listings:${cacheKeyParams}`;
 
     // Validate status if provided
     const validLegacyStatuses = [
@@ -184,21 +174,10 @@ export async function GET(req: NextRequest) {
 
       const hasSessionAccess = user.partnerMemberships?.some((m) => m.partnerId === partnerId) === true;
       
-      // ⚡ OPTIMIZATION: Check maintenance key BEFORE auth DB lookup - skip work if cached
-      const maintenanceKey = `maintenance:expire:partner:${partnerId}`;
-      const needsMaintenance = !memoryCache.get<boolean>(maintenanceKey);
-      
-      // ⚡ OPTIMIZATION: Run auth check and maintenance in parallel if both needed
-      // This saves ~100-200ms by avoiding sequential DB calls
       if (!hasSessionAccess) {
         const [dbMembership] = await Promise.all([
           getActivePartnerStaffMembershipByUserIdAndPartnerId(user.id, partnerId),
-          // Fire-and-forget maintenance (don't block on it if auth check fails)
-          needsMaintenance 
-            ? expirePublishedListingsForPartner(partnerId).then(() => {
-                memoryCache.set(maintenanceKey, true, EXPIRY_MAINTENANCE_TTL_SECONDS);
-              }).catch(() => {}) // Swallow errors - maintenance is best-effort
-            : Promise.resolve()
+          expirePublishedListingsForPartner(partnerId).catch(() => {})
         ]);
         
         if (!dbMembership) {
@@ -207,11 +186,9 @@ export async function GET(req: NextRequest) {
             { status: 403 }
           );
         }
-      } else if (needsMaintenance) {
-        // User has session access - run maintenance in background (don't await)
-        expirePublishedListingsForPartner(partnerId)
-          .then(() => memoryCache.set(maintenanceKey, true, EXPIRY_MAINTENANCE_TTL_SECONDS))
-          .catch(() => {}); // Fire and forget
+      } else {
+        // Fire and forget maintenance
+        expirePublishedListingsForPartner(partnerId).catch(() => {});
       }
 
       // If staffMemberUserId is provided, filter to show only that staff member's listings
@@ -239,27 +216,9 @@ export async function GET(req: NextRequest) {
 
       if (includeStats) {
         if (staffMemberUserId) {
-          const statsKey = `listingStats:user:${staffMemberUserId}:work`;
-          const cachedStats = memoryCache.get<Awaited<ReturnType<typeof getListingStatsByUserId>>>(statsKey);
-          if (cachedStats) {
-            statsPromise = Promise.resolve(cachedStats);
-          } else {
-            statsPromise = getListingStatsByUserId(staffMemberUserId, { listingType: 'work' }).then(stats => {
-              memoryCache.set(statsKey, stats, LISTING_STATS_TTL_SECONDS);
-              return stats;
-            });
-          }
+          statsPromise = getListingStatsByUserId(staffMemberUserId, { listingType: 'work' });
         } else {
-          const statsKey = `listingStats:partner:${partnerId}`;
-          const cachedStats = memoryCache.get<Awaited<ReturnType<typeof getListingStatsByPartnerId>>>(statsKey);
-          if (cachedStats) {
-            statsPromise = Promise.resolve(cachedStats);
-          } else {
-            statsPromise = getListingStatsByPartnerId(partnerId).then(stats => {
-              memoryCache.set(statsKey, stats, LISTING_STATS_TTL_SECONDS);
-              return stats;
-            });
-          }
+          statsPromise = getListingStatsByPartnerId(partnerId);
         }
       }
 
@@ -283,35 +242,8 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // ⚡ OPTIMIZATION: Check cache first for personal listings
-    // Work listings are handled separately above and use partner inventory cache
-    type CachedResponse = { listings: unknown[]; total?: number; stats?: unknown };
-    const cached = memoryCache.get<CachedResponse>(myCacheKey);
-    if (cached) {
-      logTiming('cache-hit');
-      return NextResponse.json({
-        success: true,
-        data: cached.listings,
-        listings: cached.listings,
-        total: cached.total,
-        stats: cached.stats,
-        meta: {
-          count: cached.listings.length,
-          total: cached.total,
-          limit,
-          offset,
-        },
-      });
-    }
-
-    // ⚡ OPTIMIZATION: Fire-and-forget maintenance (don't block on expiry update)
-    const maintenanceKey = `maintenance:expire:user:${user.id}`;
-    if (!memoryCache.get<boolean>(maintenanceKey)) {
-      // Non-blocking: run in background just like work listings
-      expirePublishedListingsForUser(user.id)
-        .then(() => memoryCache.set(maintenanceKey, true, EXPIRY_MAINTENANCE_TTL_SECONDS))
-        .catch(() => {}); // Fire and forget - maintenance is best-effort
-    }
+    // Fire and forget maintenance
+    expirePublishedListingsForUser(user.id).catch(() => {});
 
     logTiming('pre-queries');
     
@@ -333,19 +265,11 @@ export async function GET(req: NextRequest) {
 
     let statsPromise: Promise<Awaited<ReturnType<typeof getListingStatsByUserId>> | undefined> = Promise.resolve(undefined);
     if (includeStats) {
-      const statsKey = `listingStats:user:${user.id}:${listingType ?? 'all'}`;
-      const cachedStats = memoryCache.get<Awaited<ReturnType<typeof getListingStatsByUserId>>>(statsKey);
-      if (cachedStats) {
-        if (DEBUG_TIMING) console.log(`[my-listings] stats-query: 0ms (cache hit)`);
-        statsPromise = Promise.resolve(cachedStats);
-      } else {
-        const statsStart = performance.now();
-        statsPromise = getListingStatsByUserId(user.id, { listingType }).then(stats => {
-          if (DEBUG_TIMING) console.log(`[my-listings] stats-query: ${(performance.now() - statsStart).toFixed(0)}ms`);
-          memoryCache.set(statsKey, stats, LISTING_STATS_TTL_SECONDS);
-          return stats;
-        });
-      }
+      const statsStart = performance.now();
+      statsPromise = getListingStatsByUserId(user.id, { listingType }).then(stats => {
+        if (DEBUG_TIMING) console.log(`[my-listings] stats-query: ${(performance.now() - statsStart).toFixed(0)}ms`);
+        return stats;
+      });
     }
 
     // Wait for both in parallel
@@ -353,9 +277,6 @@ export async function GET(req: NextRequest) {
     logTiming('queries-done');
 
     const { listings, total } = listingsResult;
-
-    // Cache the result for personal listings (2 min TTL)
-    memoryCache.set(myCacheKey, { listings, total, stats: statsToUse }, CacheTTL.userMyListings);
 
     return NextResponse.json({
       success: true,

@@ -118,12 +118,9 @@ export async function GET(
     }
 
     const { partnerId } = await params;
-    
-    // Check for cache bypass (after sync)
-    const skipCache = request.nextUrl.searchParams.get('fresh') === 'true';
 
     const queryStart = performance.now();
-    const profile = await getDealerBaseProfile(partnerId, skipCache);
+    const profile = await getDealerBaseProfile(partnerId);
     const queryTime = performance.now() - queryStart;
 
     if (!profile) {

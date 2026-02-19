@@ -13,7 +13,6 @@ import {
   createAuditLogEntry,
   hardDeleteCarListing,
   getListingModerationContext,
-  invalidateListingCaches,
   getListingImagesForCleanup,
 } from '@alifh/database';
 import { getClientIp } from '@/lib/utils/get-client-ip';
@@ -97,14 +96,6 @@ export async function DELETE(
         console.error('[hard-delete] Failed to cleanup images:', error);
       });
     }
-
-    // Invalidate all listing caches using centralized function
-    // Pass userId for personal listings to update user stats
-    invalidateListingCaches(
-      id, 
-      before?.partnerId || undefined,
-      !before?.partnerId ? user.id : undefined
-    );
 
     void createAuditLogEntry({
       action: 'listing.hard_delete',

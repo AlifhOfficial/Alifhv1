@@ -32,7 +32,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { memoryCache, CacheKeys, CacheTTL, getListingCards } from "@alifh/database";
+import { getListingCards } from "@alifh/database";
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_LISTINGS } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -91,31 +91,8 @@ export async function GET(req: NextRequest) {
           .slice(0, 100)
       : null;
 
-    // ⚡ MEMORY CACHE: Generate cache key based on request params
-    let cacheKey: string;
-    let cacheTTL: number;
-    let usesCdnCache = false; // Track if this request can use CDN caching
-    
-    if (ids?.length) {
-      // Batch request (favorites/superlikes) - 1min cache, no CDN (personalized)
-      cacheKey = CacheKeys.listingCardsBatch(ids);
-      cacheTTL = CacheTTL.listingCardsBatch;
-      usesCdnCache = false;
-    } else if (partnerId) {
-      // Partner inventory - 3min cache, can use CDN
-      cacheKey = CacheKeys.partnerInventory(partnerId, statusExplicit ? status : undefined);
-      cacheTTL = CacheTTL.partnerInventory;
-      usesCdnCache = true;
-    } else {
-      // Main browse/search - 2min cache, can use CDN
-      const filterKey = `${status}:${limit}:${offset}`;
-      cacheKey = CacheKeys.listingCards(filterKey);
-      cacheTTL = CacheTTL.listingCards;
-      usesCdnCache = true;
-    }
-
     // Select appropriate cache headers
-    const cacheHeaders = usesCdnCache ? CDN_CACHE_HEADERS : NO_CACHE_HEADERS;
+    const cacheHeaders = (ids?.length) ? NO_CACHE_HEADERS : CDN_CACHE_HEADERS;
 
     // In dev, bypass cache so new/updated listings reflect immediately.
     if (!isProd) {
@@ -135,17 +112,6 @@ export async function GET(req: NextRequest) {
       return response;
     }
 
-    // Cache check (disabled - no-op)
-    const cached = memoryCache.get<any>(cacheKey);
-    if (cached) {
-      const response = NextResponse.json(cached);
-      Object.entries(cacheHeaders).forEach(([key, value]) => 
-        response.headers.set(key, value)
-      );
-      response.headers.set('X-Cache', 'HIT');
-      return response;
-    }
-
     // Query database
     const listings = await getListingCards({
       ids: ids || undefined,
@@ -158,7 +124,6 @@ export async function GET(req: NextRequest) {
     // Calculate hasMore based on whether we got a full page of results
     const hasMore = listings.length === limit;
 
-    // Store results (disabled - no-op)
     const responseData = {
       data: listings,
       meta: {
@@ -168,8 +133,6 @@ export async function GET(req: NextRequest) {
         hasMore,
       },
     };
-    
-    memoryCache.set(cacheKey, responseData, cacheTTL);
     
     const response = NextResponse.json(responseData);
     

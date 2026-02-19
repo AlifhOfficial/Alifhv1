@@ -13,7 +13,6 @@ import {
   cancelBooking,
   rescheduleBooking,
   submitBookingFeedback,
-  invalidateUserBookings,
 } from '@alifh/database';
 import {
   createRateLimiter,
@@ -113,7 +112,6 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
           return NextResponse.json({ error: result.error }, { status: 400 });
         }
 
-        invalidateUserBookings(user.id);
         return NextResponse.json({ success: true, message: 'Booking cancelled' });
       }
 
@@ -138,7 +136,6 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
           return NextResponse.json({ error: result.error }, { status: 400 });
         }
 
-        invalidateUserBookings(user.id);
         return NextResponse.json({ success: true, message: 'Booking rescheduled' });
       }
 

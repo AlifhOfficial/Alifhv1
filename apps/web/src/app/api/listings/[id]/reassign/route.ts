@@ -23,7 +23,6 @@ import {
   getListingModerationContext,
   getActivePartnerStaffMembershipByUserIdAndPartnerId,
   reassignListingManager,
-  invalidateListingCaches,
 } from '@alifh/database';
 import {
   createRateLimiter,
@@ -123,9 +122,6 @@ export async function POST(
       newUserId,
       partnerId: listing.partnerId,
     });
-
-    // Invalidate caches
-    invalidateListingCaches(id, listing.partnerId);
 
     return NextResponse.json({
       success: true,

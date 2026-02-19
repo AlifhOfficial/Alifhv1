@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { hardDeleteDeletedCarListingsForUser, invalidateSearchCaches } from '@alifh/database';
+import { hardDeleteDeletedCarListingsForUser } from '@alifh/database';
 import { deleteMultipleListingsImages } from '@/lib/storage/listing-image-cleanup';
 
 export const runtime = 'nodejs';
@@ -43,9 +43,6 @@ export async function POST(req: NextRequest) {
       olderThanDays: olderThanDays ?? 0,
       listingType,
     });
-
-    // Single source of truth for cache invalidation
-    invalidateSearchCaches();
 
     // Delete images from R2 storage (async, don't block response)
     if (result.images.length > 0) {

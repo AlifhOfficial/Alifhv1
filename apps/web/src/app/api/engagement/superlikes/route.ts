@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { toggleSuperlikeForUser, invalidateFavoritesCache } from '@alifh/database';
+import { toggleSuperlikeForUser } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_ENGAGEMENT } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
@@ -54,9 +54,6 @@ export async function POST(req: NextRequest) {
 
     const { listingId, addedFrom } = validationResult.data;
     const result = await toggleSuperlikeForUser(user.id, listingId, addedFrom);
-
-    // Invalidate user's favorites cache (superlikes are part of it)
-    invalidateFavoritesCache(user.id);
 
     // Calculate remaining superlikes
     const remaining = (result.quota.maxSuperlikesPerMonth + (result.quota.premiumSuperlikesBonus || 0)) 

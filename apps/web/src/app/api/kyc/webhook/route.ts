@@ -23,7 +23,7 @@ import {
   buildDuplicateRejectionUpdate,
   type DiditSessionData,
 } from '@/lib/kyc/update-builder';
-import { db, kycRecord, userProfile, eq, invalidateUserProfile, invalidateUserSession, invalidateUserListingsInSearch } from '@alifh/database';
+import { db, kycRecord, userProfile, eq } from '@alifh/database';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -132,8 +132,6 @@ async function processCallbackSession(sessionId: string, status: string | null) 
           db.update(userProfile).set(profileUpdate).where(eq(userProfile.userId, record.userId)),
         ]);
         
-        invalidateUserProfile(record.userId);
-        invalidateUserSession(record.userId);
         return createResultHtml('duplicate', sessionId);
       }
     }
@@ -171,12 +169,6 @@ async function processCallbackSession(sessionId: string, status: string | null) 
     }
     await Promise.all(dbPromises);
 
-    invalidateUserProfile(record.userId);
-    invalidateUserSession(record.userId);
-    // Also invalidate listing caches that contain seller KYC status
-    if (isApproved || isRejected) {
-      invalidateUserListingsInSearch(record.userId);
-    }
     return createResultHtml(newStatus, sessionId, rejectionReason);
 
   } catch {
@@ -260,8 +252,6 @@ async function handleSessionCompleted(payload: DiditWebhookPayload) {
         db.update(userProfile).set(profileUpdate).where(eq(userProfile.userId, userId)),
       ]);
       
-      invalidateUserProfile(userId);
-      invalidateUserSession(userId);
       return; // Exit early - don't process as approved
     }
   }
@@ -291,11 +281,6 @@ async function handleSessionCompleted(payload: DiditWebhookPayload) {
     userId ? db.update(userProfile).set(profileUpdate).where(eq(userProfile.userId, userId)) : Promise.resolve(),
   ]);
 
-  if (userId) {
-    invalidateUserProfile(userId);
-    // Also invalidate listing caches that contain seller KYC status
-    invalidateUserListingsInSearch(userId);
-  }
 }
 
 /**
@@ -326,10 +311,6 @@ async function handleSessionInReview(payload: DiditWebhookPayload) {
     userId ? db.update(userProfile).set(profileUpdate).where(eq(userProfile.userId, userId)) : Promise.resolve(),
   ]);
 
-  if (userId) {
-    invalidateUserProfile(userId);
-    invalidateUserSession(userId);
-  }
 }
 
 /**

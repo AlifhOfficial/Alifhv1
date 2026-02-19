@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getAdminListings, getAdminListingStats, memoryCache } from '@alifh/database';
+import { getAdminListings, getAdminListingStats } from '@alifh/database';
 import {
   createRateLimiter,
   getIdentifier,
@@ -25,8 +25,6 @@ const CACHE_HEADERS_NO_CACHE = {
   'Cache-Control': 'no-store, no-cache, must-revalidate, private',
   'Pragma': 'no-cache',
 } as const;
-
-const ADMIN_LISTING_STATS_TTL_SECONDS = 15;
 
 export async function GET(req: NextRequest) {
   try {
@@ -65,12 +63,7 @@ export async function GET(req: NextRequest) {
 
     let stats: Awaited<ReturnType<typeof getAdminListingStats>> | undefined;
     if (includeStats) {
-      const statsKey = `admin:listings:stats:${type ?? 'all'}`;
-      stats = memoryCache.get(statsKey) ?? undefined;
-      if (!stats) {
-        stats = await getAdminListingStats({ type });
-        memoryCache.set(statsKey, stats, ADMIN_LISTING_STATS_TTL_SECONDS);
-      }
+      stats = await getAdminListingStats({ type });
     }
 
     const response = NextResponse.json({

@@ -31,7 +31,6 @@ import {
   getFavoriteStatusForListings,
   getFavoritesWithListings,
   getSuperlikeQuotaForUser,
-  memoryCache,
 } from '@alifh/database';
 import {
   createRateLimiter,
@@ -46,19 +45,9 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0; // User-specific data must bypass CDN caching
 
-// Cache TTL: 5 minutes (invalidated on favorite/superlike toggle)
-const FAVORITES_CACHE_TTL = 300;
-
 const CACHE_HEADERS_NO_CACHE = {
   'Cache-Control': 'private, no-store',
 } as const;
-
-// Helper to generate cache key for user's favorites status
-function getFavoritesStatusCacheKey(userId: string, includeListings: boolean): string {
-  return includeListings 
-    ? `favorites:status:full:${userId}` 
-    : `favorites:status:${userId}`;
-}
 
 export async function GET(req: NextRequest) {
   try {
@@ -94,17 +83,6 @@ export async function GET(req: NextRequest) {
     const rateLimitResult = await statusLimiter.check(identifier);
     if (!rateLimitResult.success) {
       return rateLimitResponse(rateLimitResult);
-    }
-
-    // Check cache first
-    const cacheKey = getFavoritesStatusCacheKey(user.id, includeListings);
-    const cached = memoryCache.get(cacheKey);
-    if (cached) {
-      const response = NextResponse.json(cached);
-      Object.entries(CACHE_HEADERS_NO_CACHE).forEach(([key, value]) => 
-        response.headers.set(key, value)
-      );
-      return response;
     }
 
     // ⚡ OPTIMIZED: Single query for favorites + listings OR just IDs
@@ -145,9 +123,6 @@ export async function GET(req: NextRequest) {
         periodStartDate: quota.periodStartDate,
       },
     };
-
-    // Cache for 5 minutes (invalidated on favorite/superlike toggle)
-    memoryCache.set(cacheKey, responseData, FAVORITES_CACHE_TTL);
 
     const response = NextResponse.json(responseData);
     

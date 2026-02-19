@@ -27,7 +27,7 @@ import { customSession } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
 import { stripe } from "@better-auth/stripe";
 import Twilio from "twilio";
-import { db, CacheKeys, CacheTTL, eq, and, sql, setSessionCacheInvalidator, sessionCache, invalidateUserSessions } from "@alifh/database";
+import { db, eq, and, sql } from "@alifh/database";
 import * as schema from "@alifh/database";
 import { UserRole } from "@/types/auth";
 import { emailService } from "@/lib/email";
@@ -44,20 +44,7 @@ const twilioClient = Twilio(
   process.env.TWILIO_AUTH_TOKEN!
 );
 
-// Register session cache invalidator with database package
-// This is called when profile/role updates happen - invalidates ALL caches for the user
-setSessionCacheInvalidator((key) => {
-  // Extract userId from key format "user:{userId}:session"
-  const match = key.match(/^user:(.+):session$/);
-  if (match) {
-    console.log('[setSessionCacheInvalidator] Invalidating session for user', match[1].slice(0, 8));
-    // Invalidate by userId - clears both userId-keyed and token-keyed caches
-    invalidateUserSessions(match[1]);
-  } else {
-    // Fallback: delete by exact key
-    sessionCache.delete(key);
-  }
-});
+// TODO: Add Upstash Redis session cache for distributed session management
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || process.env.NEXTAUTH_URL || "http://localhost:3000",
@@ -81,9 +68,7 @@ export const auth = betterAuth({
   session: {
     expiresIn: AUTH_CONFIG.SESSION.EXPIRES_IN,
     updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
-    // Cookie cache disabled - follows "Single Source of Truth = Server Memory Cache" philosophy
-    // Server-side sessionCache handles caching with proper invalidation
-    // See: packages/database/src/caches/README.md
+    // Cookie cache disabled - will use Upstash Redis for distributed session caching
     cookieCache: {
       enabled: false,
     },
@@ -203,34 +188,8 @@ export const auth = betterAuth({
       expiresIn: 600, // 10 minutes
     }),
     customSession(async ({ user, session }) => {
-      const cacheKey = CacheKeys.userSession(user.id);
-      
-      // Try in-memory cache first
-      const cached = sessionCache.get<{
-        role: string;
-        banned: boolean;
-        hasPartnerAccess: boolean;
-        isAlifhAdmin: boolean;
-        partnerMemberships: any[];
-        avatar?: string | null;
-        avatarUrl?: string | null;
-        firstName?: string | null;
-        lastName?: string | null;
-        useGeneratedAvatar?: boolean;
-      }>(cacheKey);
-
-      if (cached) {
-        // Cache hit - return cached data without logging (reduces console noise)
-        return {
-          user: {
-            ...user,
-            ...cached,
-          },
-          session,
-        };
-      }
-      
-      console.log('[customSession] Cache MISS for user', user.id.slice(0, 8), '- fetching fresh data');
+      // Always fetch fresh session data from DB
+      // TODO: Add Upstash Redis session cache for performance
 
       // OPTIMIZED: Single SQL query with LEFT JOINs instead of 3 parallel queries
       // This reduces 3 HTTP round-trips to Neon down to 1
@@ -347,9 +306,6 @@ export const auth = betterAuth({
         lastName: profileRecord?.lastName,
         useGeneratedAvatar,
       };
-      
-      // Cache in memory for 5 minutes
-      sessionCache.set(cacheKey, sessionData, CacheTTL.userSession);
 
       return {
         user: {
@@ -413,31 +369,11 @@ export const auth = betterAuth({
             .where(eq(schema.partner.id, partnerId));
           
           console.log(`[Stripe] Partner ${partnerId} subscribed to ${plan.name} plan`);
-          
-          // Invalidate session cache for all partner staff so they get fresh data
-          const staff = await db.query.partnerStaff.findMany({
-            where: eq(schema.partnerStaff.partnerId, partnerId),
-            columns: { userId: true },
-          });
-          for (const s of staff) {
-            invalidateUserSessions(s.userId);
-          }
-          console.log(`[Stripe] Invalidated ${staff.length} user sessions for partner ${partnerId}`);
+          // TODO: Invalidate Upstash Redis session cache for partner staff
         },
         onSubscriptionUpdate: async ({ subscription }) => {
           console.log(`[Stripe] Subscription ${subscription.id} updated: ${subscription.status}`);
-          
-          // Invalidate sessions when subscription status changes
-          const partnerId = subscription.referenceId;
-          if (partnerId) {
-            const staff = await db.query.partnerStaff.findMany({
-              where: eq(schema.partnerStaff.partnerId, partnerId),
-              columns: { userId: true },
-            });
-            for (const s of staff) {
-              invalidateUserSessions(s.userId);
-            }
-          }
+          // TODO: Invalidate Upstash Redis session cache for partner staff
         },
         onSubscriptionCancel: async ({ subscription }) => {
           // Downgrade partner to basic tier on cancellation
@@ -452,15 +388,7 @@ export const auth = betterAuth({
             .where(eq(schema.partner.id, partnerId));
           
           console.log(`[Stripe] Partner ${partnerId} subscription cancelled`);
-          
-          // Invalidate session cache for all partner staff
-          const staff = await db.query.partnerStaff.findMany({
-            where: eq(schema.partnerStaff.partnerId, partnerId),
-            columns: { userId: true },
-          });
-          for (const s of staff) {
-            invalidateUserSessions(s.userId);
-          }
+          // TODO: Invalidate Upstash Redis session cache for partner staff
         },
       },
     })] : []),
@@ -481,26 +409,25 @@ export const auth = betterAuth({
     },
   },
 
-  // Block banned users - uses cached session data from customSession
-  // The actual ban check happens in customSession which already queries user.banned
-  // This hook runs AFTER session creation, so we check sessionCache for efficiency
+  // Block banned users - check DB directly
+  // customSession already queries user.banned on every request
+  // The proxy blocks banned users via the session header
   denyList: {
     async check({ userId }) {
       if (!userId) return false;
       
-      // Check session cache first (populated by customSession)
-      const cacheKey = CacheKeys.userSession(userId);
-      const cached = sessionCache.get<{ banned: boolean; banReason?: string }>(cacheKey);
+      // Check DB directly for ban status
+      const result = await db.execute<{ banned: boolean }>(sql`
+        SELECT banned FROM "user" WHERE id = ${userId} LIMIT 1
+      `);
       
-      if (cached?.banned) {
+      if (result.rows?.[0]?.banned) {
         return {
           blocked: true,
           message: "Your account has been suspended.",
         };
       }
       
-      // No cache = first sign-in, customSession will handle it
-      // The proxy will block banned users on subsequent requests
       return false;
     },
   },

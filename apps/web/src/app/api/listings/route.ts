@@ -22,8 +22,6 @@ import {
   createAuditLogEntry,
   createCarListing,
   getActivePartnerStaffMembershipByUserIdAndPartnerId,
-  invalidateSearchCaches,
-  invalidateUserMyListings,
   db,
   carListing,
   updateListingAIModeration,
@@ -363,10 +361,6 @@ export async function POST(req: NextRequest) {
     }).catch((error) => {
       console.error('[Audit] Failed to write listing.create log:', error);
     });
-
-    // Invalidate listing caches so new inventory reflects immediately
-    invalidateSearchCaches();
-    invalidateUserMyListings(user.id);
 
     return NextResponse.json(
       {

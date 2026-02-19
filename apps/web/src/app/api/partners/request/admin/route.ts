@@ -24,7 +24,6 @@ import {
   reviewPartnerRequest,
   getPartnerRequestById,
   createPartnerFromRequest,
-  invalidateUserSessions,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
@@ -223,9 +222,6 @@ export async function POST(req: NextRequest) {
           userEmail: existingRequest.user?.email,
           userName: existingRequest.user?.name,
         }, user.id);
-        
-        // Invalidate user's session cache so they see their new partner membership
-        invalidateUserSessions(existingRequest.request.userId);
       } catch (error) {
         console.error('[partners/request/admin] Failed to create partner:', error);
         // Request was approved but partner creation failed - this needs manual intervention

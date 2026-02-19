@@ -9,7 +9,6 @@
 import { eq, and } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { partnerStaff, partner, user, userProfile } from '../../schema';
-import { memoryCache, CacheKeys, CacheTTL } from '../../caches/memory-cache';
 
 // ============================================================================
 // Types
@@ -203,8 +202,6 @@ export async function updateStaffProfileById(
  * Priority: 1. Work phone (if set and not using personal)
  *           2. Personal phone from user profile
  * 
- * Cached for 5 minutes - invalidated on staff profile updates via invalidateStaffPhone()
- * 
  * @param staffUserId - The user ID of the staff member
  * @param partnerId - The partner ID (for staff lookup)
  * @returns The effective phone number to display, or null
@@ -213,13 +210,6 @@ export async function getStaffEffectivePhone(
   staffUserId: string,
   partnerId: string
 ): Promise<{ phone: string | null; displayName: string | null }> {
-  // Check cache first
-  const cacheKey = CacheKeys.staffPhone(staffUserId, partnerId);
-  const cached = memoryCache.get<{ phone: string | null; displayName: string | null }>(cacheKey);
-  if (cached) {
-    return cached;
-  }
-
   const [result] = await db
     .select({
       workPhone: partnerStaff.workPhone,
@@ -241,9 +231,7 @@ export async function getStaffEffectivePhone(
     .limit(1);
 
   if (!result) {
-    const empty = { phone: null, displayName: null };
-    memoryCache.set(cacheKey, empty, CacheTTL.staffPhone);
-    return empty;
+    return { phone: null, displayName: null };
   }
 
   // Priority: work phone (if not using personal) → personal phone
@@ -254,15 +242,10 @@ export async function getStaffEffectivePhone(
   // Display name with fallback to user name
   const effectiveDisplayName = result.displayName ?? result.userName;
 
-  const response = { 
+  return { 
     phone: effectivePhone, 
     displayName: effectiveDisplayName 
   };
-  
-  // Cache for 5 minutes
-  memoryCache.set(cacheKey, response, CacheTTL.staffPhone);
-  
-  return response;
 }
 
 /**

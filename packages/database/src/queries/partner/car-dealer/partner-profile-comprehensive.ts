@@ -8,10 +8,7 @@
  * galleryImages, coverImage, showroomVideo) are deprecated in the form but kept in schema.
  * 
  * Performance optimizations:
- * - Server-side caching with 5 min TTL
- * - User→Partner mapping cached separately (10 min TTL)
  * - Single query for updates (no pre-fetch for partial updates)
- * - Cache invalidation on updates
  * 
  * @module queries/partner/car-dealer/partner-profile-comprehensive
  */
@@ -19,8 +16,7 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { partner, partnerStaff } from '../../../schema/partner';
-import { memoryCache, CacheKeys, CacheTTL } from '../../../caches/memory-cache';
-import { invalidatePartnerProfileComprehensive, invalidatePartnerListingsInSearch } from '../../../caches/invalidation';
+
 
 // ============================================================================
 // Types
@@ -218,22 +214,10 @@ const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
 /**
  * Get comprehensive partner profile by partner ID
  * Used for partner dashboard and showroom page
- * Cached for 5 minutes - invalidated on profile updates
  */
 export async function getPartnerProfileComprehensive(
-  partnerId: string,
-  skipCache = false
+  partnerId: string
 ): Promise<PartnerProfileComprehensive | null> {
-  const cacheKey = CacheKeys.partnerProfileComprehensive(partnerId);
-  
-  // Check cache first
-  if (!skipCache) {
-    const cached = memoryCache.get<PartnerProfileComprehensive>(cacheKey);
-    if (cached) {
-      return cached;
-    }
-  }
-  
   const queryStart = performance.now();
   
   try {
@@ -341,9 +325,6 @@ export async function getPartnerProfileComprehensive(
     notificationPreferences: result.notificationPreferences ?? DEFAULT_NOTIFICATION_PREFERENCES,
   };
   
-  // Cache the result
-  memoryCache.set(cacheKey, profile, CacheTTL.partnerProfileComprehensive);
-  
   return profile;
   } catch (error) {
     const queryTime = performance.now() - queryStart;
@@ -356,7 +337,6 @@ export async function getPartnerProfileComprehensive(
 /**
  * Update partner profile
  * Only updates allowed editable fields
- * Invalidates cache after successful update
  */
 export async function updatePartnerProfile(
   partnerId: string,
@@ -395,66 +375,43 @@ export async function updatePartnerProfile(
     const queryTime = performance.now() - queryStart;
     console.log(`[updatePartnerProfile] Update for ${partnerId.slice(0, 8)}... completed in ${queryTime.toFixed(2)}ms`);
     
-    // Invalidate all related caches
-    invalidatePartnerProfileComprehensive(partnerId);
-    
-    // Invalidate search caches when partner-visible fields change
-    // This ensures car cards show updated partner logo/name
-    if (cleanUpdates.brandName !== undefined || cleanUpdates.logo !== undefined) {
-      invalidatePartnerListingsInSearch(partnerId);
-    }
-    
   } catch (updateError) {
     console.error(`[updatePartnerProfile] Update FAILED for ${partnerId.slice(0, 8)}...`, updateError);
     throw updateError;
   }
   
-  // Return fresh profile (will re-cache)
-  return getPartnerProfileComprehensive(partnerId, true); // skipCache=true to get fresh data
+  // Return fresh profile
+  return getPartnerProfileComprehensive(partnerId);
 }
 
 /**
  * Get partner profile by user ID (for staff/owner access)
  * Looks up the partner through partnerStaff relationship
  * 
- * Caching strategy:
- * - User→PartnerId mapping cached for 10 min (rarely changes)
- * - Partner profile cached for 5 min (invalidated on updates)
  */
 export async function getPartnerProfileByUserId(
   userId: string
 ): Promise<PartnerProfileComprehensive | null> {
-  const mappingCacheKey = CacheKeys.userToPartnerId(userId);
+  const queryStart = performance.now();
   
-  // Check if we have cached user→partnerId mapping
-  let partnerId = memoryCache.get<string>(mappingCacheKey);
+  // Lookup partnerId from staff relationship
+  const [staffResult] = await db
+    .select({ partnerId: partnerStaff.partnerId })
+    .from(partnerStaff)
+    .where(eq(partnerStaff.userId, userId))
+    .limit(1);
   
-  if (!partnerId) {
-    const queryStart = performance.now();
-    
-    // Lookup partnerId from staff relationship
-    const [staffResult] = await db
-      .select({ partnerId: partnerStaff.partnerId })
-      .from(partnerStaff)
-      .where(eq(partnerStaff.userId, userId))
-      .limit(1);
-    
-    const queryTime = performance.now() - queryStart;
-    
-    if (!staffResult) {
-      console.log(`[getPartnerProfileByUserId] No partner found for user ${userId.slice(0, 8)}... (${queryTime.toFixed(2)}ms)`);
-      return null;
-    }
-    
-    partnerId = staffResult.partnerId;
-    
-    // Cache the mapping (10 min TTL - staff assignments rarely change)
-    memoryCache.set(mappingCacheKey, partnerId, CacheTTL.userToPartnerId);
-    
-    console.log(`[getPartnerProfileByUserId] Staff lookup for ${userId.slice(0, 8)}... → ${partnerId.slice(0, 8)}... (${queryTime.toFixed(2)}ms)`);
+  const queryTime = performance.now() - queryStart;
+  
+  if (!staffResult) {
+    console.log(`[getPartnerProfileByUserId] No partner found for user ${userId.slice(0, 8)}... (${queryTime.toFixed(2)}ms)`);
+    return null;
   }
   
-  // Now get the profile (will use cache if available)
+  const partnerId = staffResult.partnerId;
+  
+  console.log(`[getPartnerProfileByUserId] Staff lookup for ${userId.slice(0, 8)}... → ${partnerId.slice(0, 8)}... (${queryTime.toFixed(2)}ms)`);
+  
   return getPartnerProfileComprehensive(partnerId);
 }
 

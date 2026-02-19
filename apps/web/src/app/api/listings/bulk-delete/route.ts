@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db, carListing, inArray, invalidateListingCaches } from '@alifh/database';
+import { db, carListing, inArray } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { deleteMultipleListingsImages } from '@/lib/storage/listing-image-cleanup';
 
@@ -80,16 +80,6 @@ export async function POST(req: NextRequest) {
         console.error('[Bulk Delete Listings] Failed to cleanup images:', err);
       });
     }
-
-    // Invalidate caches for each deleted listing
-    // Include userId for personal listings to update user stats
-    listingsToDelete.forEach(listing => {
-      invalidateListingCaches(
-        listing.id, 
-        listing.partnerId || undefined,
-        !listing.partnerId ? listing.userId : undefined // Pass userId for personal listings
-      );
-    });
 
     return NextResponse.json({
       success: true,

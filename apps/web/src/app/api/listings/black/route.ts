@@ -11,12 +11,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getPublicBlackListings, memoryCache } from '@alifh/database';
+import { getPublicBlackListings } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
 const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
-const CACHE_TTL = 600; // 10 minutes - invalidated when listings change
 
 /**
  * Normalize storage URLs - convert R2 keys to full URLs
@@ -40,19 +39,6 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get('limit') || '50', 10);
     const offset = parseInt(searchParams.get('offset') || '0', 10);
-    
-    // Check cache first
-    const cacheKey = `listings:black:${limit}:${offset}`;
-    const cached = memoryCache.get(cacheKey);
-    if (cached) {
-      console.log(`[black] CACHE HIT - ${cacheKey}`);
-      return NextResponse.json(cached, {
-        headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, private',
-          'Pragma': 'no-cache',
-        },
-      });
-    }
 
     const result = await getPublicBlackListings({
       limit: Math.min(limit, 100), // Max 100 per request
@@ -76,10 +62,6 @@ export async function GET(req: NextRequest) {
         hasMore: offset + result.listings.length < result.total,
       },
     };
-
-    // Cache the response
-    memoryCache.set(cacheKey, responseData, CACHE_TTL);
-    console.log(`[black] cached: ${cacheKey}`);
 
     return NextResponse.json(responseData, {
       headers: {

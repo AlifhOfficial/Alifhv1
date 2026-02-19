@@ -22,7 +22,6 @@ import {
   carListing,
   partner,
   createAuditLogEntry,
-  invalidateListingCaches,
   getActivePartnerStaffMembershipByUserIdAndPartnerId,
   eq, sql,
 } from '@alifh/database';
@@ -209,9 +208,6 @@ export async function POST(
       userAgent: req.headers.get('user-agent') || undefined,
       severity: 'info',
     });
-
-    // Invalidate caches
-    await invalidateListingCaches(listingId, listing.partnerId);
 
     return NextResponse.json({
       success: true,

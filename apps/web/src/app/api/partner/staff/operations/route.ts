@@ -14,7 +14,6 @@ import {
   partnerStaff,
   eq,
   and,
-  invalidateUserSessions,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_PARTNER } from '@/lib/rate-limit';
@@ -198,13 +197,6 @@ export async function POST(req: NextRequest) {
           reason: 'Invite cancelled',
         });
         break;
-    }
-
-    // Invalidate session cache for the affected staff member
-    // This ensures their permissions/role changes take effect immediately
-    if (staffMember?.userId) {
-      invalidateUserSessions(staffMember.userId);
-      console.log(`[Staff Operations] Invalidated session for user ${staffMember.userId.slice(0, 8)} after ${validated.operation}`);
     }
 
     return NextResponse.json({

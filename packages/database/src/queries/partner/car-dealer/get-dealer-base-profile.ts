@@ -6,18 +6,15 @@
  * - Uses select() instead of query API for better performance
  * - Minimal normalization (arrays only) - string trimming done at write time
  * - No redundant spreads or transformations
- * - Memory cache with 5 min TTL (invalidated on profile updates)
  */
 
 import { eq } from 'drizzle-orm';
 import { db } from '../../../dbclient';
-import { memoryCache, CacheKeys, CacheTTL } from '../../../caches/memory-cache';
 import { partner } from '../../../schema/partner';
 
 /**
  * Car Dealer Base Profile - For listing cards/profile preview
  * Returns all essential dealer info (30+ fields)
- * Cached for 5 min - invalidated on profile updates
  */
 export type DealerBaseProfile = {
   id: string;
@@ -54,17 +51,7 @@ export type DealerBaseProfile = {
   updatedAt: Date | null; // Used for cache-busting image URLs
 };
 
-export async function getDealerBaseProfile(partnerId: string, skipCache = false): Promise<DealerBaseProfile | null> {
-  const cacheKey = CacheKeys.dealerBaseProfile(partnerId);
-  
-  // Check cache first
-  if (!skipCache) {
-    const cached = memoryCache.get<DealerBaseProfile>(cacheKey);
-    if (cached) {
-      return cached;
-    }
-  }
-
+export async function getDealerBaseProfile(partnerId: string): Promise<DealerBaseProfile | null> {
   // Use select() for better performance - only fetches specified columns
   const [result] = await db
     .select({
@@ -132,9 +119,6 @@ export async function getDealerBaseProfile(partnerId: string, skipCache = false)
     badges: result.badges ?? [],
     tags: result.tags ?? [],
   };
-
-  // Store in cache (5 min TTL - invalidated on profile updates)
-  memoryCache.set(cacheKey, profile, CacheTTL.dealerBaseProfile);
 
   return profile;
 }

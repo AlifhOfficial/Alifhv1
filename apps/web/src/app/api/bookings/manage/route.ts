@@ -14,16 +14,11 @@ import {
   getStaffListingsBookings,
   getStaffBookingStats,
   runBookingMaintenance,
-  memoryCache,
   type BookingStatus,
 } from '@alifh/database';
 import { createRateLimiter, getIdentifier, rateLimitResponse, RATE_LIMITS_BOOKINGS } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
-
-const BOOKING_MAINTENANCE_TTL_SECONDS = 300;
-const PARTNER_BOOKING_STATS_TTL_SECONDS = 15;
-const BOOKINGS_LIST_TTL_SECONDS = 5; // Short TTL for list freshness
 
 const bookingManageLimiter = createRateLimiter(RATE_LIMITS_BOOKINGS.MANAGE);
 
@@ -48,10 +43,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Best-effort cleanup (fire-and-forget, don't block response)
-    if (!memoryCache.get<boolean>('maintenance:booking')) {
-      memoryCache.set('maintenance:booking', true, BOOKING_MAINTENANCE_TTL_SECONDS);
-      runBookingMaintenance().catch(() => {});
-    }
+    runBookingMaintenance().catch(() => {});
 
     const { searchParams } = new URL(req.url);
     const statusParam = searchParams.get('status')?.split(',');
@@ -63,35 +55,16 @@ export async function GET(req: NextRequest) {
     const includeStats = searchParams.get('stats') === 'true';
 
     // Run bookings and stats queries in parallel for better performance
-    const bookingsKey = `bookings:staff:${user.id}:${membership.partnerId}:${status?.join(',') || 'all'}:${q || ''}:${sort}:${limit}:${offset}`;
-    
     const [result, stats] = await Promise.all([
-      // Bookings list (with short-lived cache)
-      (async () => {
-        let cachedBookings = memoryCache.get<Awaited<ReturnType<typeof getStaffListingsBookings>>>(bookingsKey);
-        if (!cachedBookings) {
-          cachedBookings = await getStaffListingsBookings(user.id, membership.partnerId, {
-            status,
-            q,
-            sort: sort as 'newest' | 'oldest',
-            limit,
-            offset,
-          });
-          memoryCache.set(bookingsKey, cachedBookings, BOOKINGS_LIST_TTL_SECONDS);
-        }
-        return cachedBookings;
-      })(),
-      // Stats (with caching)
+      getStaffListingsBookings(user.id, membership.partnerId, {
+        status,
+        q,
+        sort: sort as 'newest' | 'oldest',
+        limit,
+        offset,
+      }),
       includeStats
-        ? (async () => {
-            const statsKey = `bookingStats:staff:${user.id}:${membership.partnerId}`;
-            let cachedStats = memoryCache.get<Awaited<ReturnType<typeof getStaffBookingStats>>>(statsKey);
-            if (!cachedStats) {
-              cachedStats = await getStaffBookingStats(user.id, membership.partnerId);
-              memoryCache.set(statsKey, cachedStats, PARTNER_BOOKING_STATS_TTL_SECONDS);
-            }
-            return cachedStats;
-          })()
+        ? getStaffBookingStats(user.id, membership.partnerId)
         : Promise.resolve(null),
     ]);
 

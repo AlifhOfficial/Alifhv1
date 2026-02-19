@@ -7,7 +7,7 @@ import {
   isDealerStaff,
 } from "@/lib/auth/routing";
 import type { ExtendedUser } from "@/types/auth";
-import { sessionCache, CacheTTL } from "@alifh/database";
+// TODO: Add Upstash Redis session cache for distributed caching
 
 // Request-scoped session cache key
 const SESSION_HEADER_KEY = "x-auth-user";
@@ -164,34 +164,24 @@ export async function proxy(request: NextRequest) {
 
   // Fetch session once for all protected routes
   try {
-    const tokenKey = `token:${sessionToken.slice(0, 32)}`;
-    
-    // Check unified cache first (keyed by token for fast lookup)
-    let user: ExtendedUser | null = await sessionCache.get<ExtendedUser>(tokenKey);
-    
-    if (!user) {
-      // Cache miss - fetch from Better Auth
-      const session = await auth.api.getSession({
-        headers: request.headers,
-      });
+    // Fetch from Better Auth directly
+    // TODO: Add Upstash Redis session cache to avoid hitting DB on every request
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
 
-      if (!session?.user || !isExtendedUser(session.user)) {
-        if (isApiRoute) {
-          return NextResponse.next();
-        }
-        const signInUrl = new URL("/", request.url);
-        signInUrl.searchParams.set("auth", "signin");
-        signInUrl.searchParams.set("redirect", pathname);
-        return NextResponse.redirect(signInUrl);
+    if (!session?.user || !isExtendedUser(session.user)) {
+      if (isApiRoute) {
+        return NextResponse.next();
       }
-
-      // Normalize user to ensure extended fields have defaults
-      user = normalizeExtendedUser(session.user as Record<string, unknown>);
-      
-      // Cache by token AND register token->userId mapping for invalidation
-      // Uses CacheTTL.userSession (5 minutes) for consistency across the system
-      sessionCache.setWithMapping(tokenKey, user, user.id, CacheTTL.userSession);
+      const signInUrl = new URL("/", request.url);
+      signInUrl.searchParams.set("auth", "signin");
+      signInUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(signInUrl);
     }
+
+    // Normalize user to ensure extended fields have defaults
+    const user = normalizeExtendedUser(session.user as Record<string, unknown>);
 
     if (!user) {
       if (isApiRoute) {

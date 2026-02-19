@@ -37,7 +37,6 @@ import {
   session, 
   account, 
   eq, 
-  invalidateUserSessions,
   // Listings
   carListing,
   // Messaging
@@ -168,11 +167,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to mark account for deletion" }, { status: 500 });
     }
     
-    // =========================================================================
-    // STEP 12: Invalidate session cache
-    // =========================================================================
-    invalidateUserSessions(user.id);
-
     return NextResponse.json({
       success: true,
       message: "Account deleted successfully",

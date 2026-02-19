@@ -10,7 +10,6 @@ import {
   getUserStaffInvites,
   acceptStaffInvite,
   rejectStaffInvite,
-  invalidateUserSessions,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
@@ -91,8 +90,6 @@ export async function POST(req: NextRequest) {
         inviteId: validated.inviteId,
         userId: user.id,
       });
-      // Invalidate session so user sees their new partner membership
-      invalidateUserSessions(user.id);
     } else {
       result = await rejectStaffInvite({
         inviteId: validated.inviteId,
