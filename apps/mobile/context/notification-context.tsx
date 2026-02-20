@@ -18,17 +18,17 @@ import { API_BASE } from '@/lib/config';
 import { getSession } from '@/lib/auth-api';
 import { setCurrentPushToken } from '@/lib/push-token-store';
 
-// Detect Expo Go — notifications are not supported there since SDK 53
+// Detect Expo Go (notifications may have limited support)
 const isExpoGo = Constants.appOwnership === 'expo';
 
-// Conditionally import expo-notifications (crashes in Expo Go)
+// Try to import expo-notifications regardless of Expo Go
+// It may work on some devices/Android versions even in Expo Go
 let Notifications: typeof import('expo-notifications') | null = null;
-if (!isExpoGo) {
-  try {
-    Notifications = require('expo-notifications');
-  } catch (e) {
-    console.warn('[Notifications] expo-notifications not available:', e);
-  }
+try {
+  Notifications = require('expo-notifications');
+  console.log('[Notifications] expo-notifications loaded successfully');
+} catch (e) {
+  console.warn('[Notifications] expo-notifications not available:', e);
 }
 
 // ============================================================================
@@ -56,14 +56,15 @@ const NotificationContext = createContext<NotificationContextType | null>(null);
 // NOTIFICATION HANDLER CONFIG
 // ============================================================================
 
-// When app is in foreground, suppress push banners — user is already in the app
+// Configure foreground notification behavior
+// Don't show notifications when app is in foreground - only when closed/background
 if (Notifications) {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldPlaySound: false,
       shouldSetBadge: true,
-      shouldShowBanner: false,
-      shouldShowList: false,
+      shouldShowBanner: false,  // Don't show when app is in foreground
+      shouldShowList: false,    // Don't show in notification center when foregrounded
     }),
   });
 }
@@ -85,8 +86,18 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   // Register for push notifications
   const registerForPushNotifications = async (): Promise<string | null> => {
+    console.log('[Notifications] Starting registration...', {
+      isExpoGo,
+      isDevice: Device.isDevice,
+      platform: Platform.OS,
+      brand: Device.brand,
+      modelName: Device.modelName,
+      osVersion: Platform.Version,
+      notificationsAvailable: !!Notifications,
+    });
+
     if (!Notifications) {
-      console.log('[Notifications] Not available (Expo Go). Skipping push setup.');
+      console.log('[Notifications] expo-notifications module not available');
       return null;
     }
 
@@ -97,16 +108,19 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     // Check current permission status
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    console.log('[Notifications] Current permission status:', existingStatus);
     let finalStatus = existingStatus;
 
     // Request permission if not granted
     if (existingStatus !== 'granted') {
+      console.log('[Notifications] Requesting permissions...');
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
+      console.log('[Notifications] Permission request result:', status);
     }
 
     if (finalStatus !== 'granted') {
-      console.log('[Notifications] Permission not granted');
+      console.log('[Notifications] Permission not granted, final status:', finalStatus);
       setHasPermission(false);
       return null;
     }
@@ -114,15 +128,26 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     setHasPermission(true);
 
     try {
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
+      console.log('[Notifications] Getting push token with projectId:', projectId);
+      
       // Get Expo push token
       const tokenData = await Notifications.getExpoPushTokenAsync({
-        projectId: Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId,
+        projectId,
       });
       
       console.log('[Notifications] Got push token:', tokenData.data);
       return tokenData.data;
     } catch (error) {
       console.error('[Notifications] Failed to get push token:', error);
+      // Log more details about the error
+      if (error instanceof Error) {
+        console.error('[Notifications] Error details:', {
+          message: error.message,
+          name: error.name,
+          stack: error.stack,
+        });
+      }
       return null;
     }
   };
@@ -152,6 +177,18 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       return;
     }
 
+    const deviceInfo = {
+      token: expoPushToken,
+      platform: Platform.OS as 'ios' | 'android',
+      deviceId: Device.deviceName || undefined,
+      deviceName: Device.modelName || Device.deviceName || undefined,
+      osVersion: Platform.Version,
+      brand: Device.brand,
+      isExpoGo,
+    };
+    
+    console.log('[Notifications] Registering token with device info:', JSON.stringify(deviceInfo, null, 2));
+
     try {
       const response = await fetch(`${API_BASE}/api/push-tokens`, {
         method: 'POST',
@@ -168,11 +205,13 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to register: ${response.status}`);
+        const errorText = await response.text();
+        console.error('[Notifications] Registration failed:', response.status, errorText);
+        throw new Error(`Failed to register: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
-      console.log('[Notifications] Token registered:', result);
+      console.log('[Notifications] Token registered successfully:', result);
     } catch (error) {
       console.error('[Notifications] Failed to register token:', error);
     }

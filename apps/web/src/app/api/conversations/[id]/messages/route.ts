@@ -177,7 +177,9 @@ export async function POST(
           conversationId,
           undefined, // listingTitle
           senderAvatarUrl
-        ).catch(() => {}); // Non-blocking
+        ).catch((err) => {
+          console.error(`[Push] Failed to send notification to ${recipient.userId}:`, err);
+        });
       }
 
       return NextResponse.json({ message });

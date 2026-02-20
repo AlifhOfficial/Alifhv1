@@ -96,8 +96,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         projectId: 'cd8cffff-33b0-46d9-b584-08eb6448e6dc',
       },
       // Expose API URLs to the app via Constants.expoConfig.extra
-      apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000',
-      wsUrl: process.env.EXPO_PUBLIC_WS_URL || 'ws://localhost:3001',
+      // Default to production URLs (use EXPO_PUBLIC_USE_LOCAL_DEV=true for local dev)
+      apiUrl: process.env.EXPO_PUBLIC_API_URL || 'https://revvup.ae',
+      wsUrl: process.env.EXPO_PUBLIC_WS_URL || 'wss://ws.revvup.ae',
       cdnUrl: process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.revvup.ae',
     },
   };
