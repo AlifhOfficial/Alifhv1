@@ -2,17 +2,14 @@
  * API: Similar Listings
  * GET /api/listings/[id]/similar
  * 
- * Purpose: Get comparable vehicles for a listing
+ * Purpose: Get comparable vehicles in the same price range
  * Authentication: None required (public endpoint)
  * 
- * Returns 2-3 similar listings based on strict matching:
- * - Same make + model
- * - Same body type
- * - Price within ±10%
- * - Mileage within ±30%
+ * Returns up to 4 similar listings based on price-focused matching:
+ * - Price within ±15%
+ * - Same body type (soft preference, fallback to any)
  * 
- * Returns empty array if insufficient quality matches.
- * Philosophy: Show nothing > show garbage.
+ * Philosophy: Help users discover alternatives in their budget.
  * 
  */
 
@@ -56,15 +53,11 @@ export async function GET(
       );
     }
 
-    // Get similar listings with strict matching
+    // Get similar listings - price-focused discovery
     const similar = await getSimilarListings({
       excludeId: id,
-      make: listing.make,
-      model: listing.model,
-      bodyType: listing.bodyType,
-      fuelType: listing.fuelType,
       price: listing.price,
-      mileage: listing.mileage,
+      bodyType: listing.bodyType,
     });
 
     const response = NextResponse.json({ listings: similar });

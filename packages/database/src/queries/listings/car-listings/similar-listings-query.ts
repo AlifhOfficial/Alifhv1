@@ -1,19 +1,21 @@
 /**
- * Similar Listings Query - Optimized for Speed
+ * Similar Listings Query - Price-focused for Discovery
  * 
- * Strict matching logic to surface only genuinely comparable vehicles.
- * Returns empty array if insufficient quality matches.
+ * Lenient matching to surface cross-shopping opportunities.
+ * Shows cars in the same price range regardless of make/model.
  * 
- * Philosophy: Show nothing > show garbage. Revvup means trust.
+ * Philosophy: Help users discover alternatives in their budget.
  * 
- * Matching criteria (all hard filters, no ML fluff):
- * - Same make
- * - Same model  
- * - Same body type
- * - Price within ±10%
- * - Mileage within reasonable band (±30%)
- * - Same fuel type (soft preference, not required)
+ * Matching criteria (relaxed for more results):
+ * - Price within ±15% (hard requirement)
+ * - Same body type (soft preference - try first, fallback without)
  * - Exclude current listing
+ * - Sorted by qiScore for quality
+ * 
+ * Does NOT require:
+ * - Same make/model (users cross-shop brands)
+ * - Similar mileage (price matters more)
+ * - Same fuel type (not critical)
  * 
  * @module queries/listings/car-listings/similar-listings-query
  */
@@ -54,49 +56,45 @@ export interface SimilarListingCard {
 
 export interface SimilarListingsParams {
   excludeId: string;
-  make: string;
-  model: string;
-  bodyType?: string | null;
-  fuelType?: string | null;
   price: number;
-  mileage: number;
+  bodyType?: string | null;
+  // Optional: pass these for future stricter matching when data grows
+  make?: string;
+  model?: string;
+  mileage?: number;
+  fuelType?: string | null;
 }
 
 // ============================================================================
 // Constants
 // ============================================================================
 
-const MAX_RESULTS = 3;
-const MIN_RESULTS_TO_SHOW = 2; // Don't show section with just 1 card
-const PRICE_TOLERANCE = 0.10; // ±10%
-const MILEAGE_TOLERANCE = 0.30; // ±30%
+const MAX_RESULTS = 4;
+const MIN_RESULTS_TO_SHOW = 1; // Show even 1 result - users need discovery
+const PRICE_TOLERANCE = 0.15; // ±15% (relaxed from 10%)
 
 // ============================================================================
 // Query
 // ============================================================================
 
 /**
- * Get similar listings based on strict matching criteria.
+ * Get similar listings based on price range.
  * Returns empty array if fewer than MIN_RESULTS_TO_SHOW matches.
  * 
- * Query is optimized for indexed columns: make, model, bodyType, price, isPublic
+ * Query is optimized for indexed columns: price, bodyType, isPublic
  */
 export async function getSimilarListings(
   params: SimilarListingsParams
 ): Promise<SimilarListingCard[]> {
-  const { excludeId, make, model, bodyType, fuelType, price, mileage } = params;
+  const { excludeId, price, bodyType } = params;
   const now = new Date();
 
-  // Calculate price bounds (±10%)
+  // Calculate price bounds (±15%)
   const priceMin = Math.floor(price * (1 - PRICE_TOLERANCE));
   const priceMax = Math.ceil(price * (1 + PRICE_TOLERANCE));
 
-  // Calculate mileage bounds (±30%)
-  const mileageMin = Math.max(0, Math.floor(mileage * (1 - MILEAGE_TOLERANCE)));
-  const mileageMax = Math.ceil(mileage * (1 + MILEAGE_TOLERANCE));
-
-  // Build conditions - all indexed for speed
-  const conditions: SQL[] = [
+  // Build base conditions - price-focused
+  const baseConditions: SQL[] = [
     // Exclude current listing
     ne(carListing.id, excludeId),
     // Public visibility (approved + active + not expired)
@@ -104,26 +102,10 @@ export async function getSimilarListings(
     eq(carListing.lifecycleStatus, 'active'),
     eq(carListing.needsRemoderation, false),
     and(isNotNull(carListing.expiresAt), gt(carListing.expiresAt, now)),
-    // Strict matching
-    eq(carListing.make, make),
-    eq(carListing.model, model),
-    // Price range
+    // Price range (the main filter)
     gte(carListing.price, priceMin),
     lte(carListing.price, priceMax),
-    // Mileage range
-    gte(carListing.mileage, mileageMin),
-    lte(carListing.mileage, mileageMax),
   ];
-
-  // Body type (if available on source listing)
-  if (bodyType) {
-    conditions.push(eq(carListing.bodyType, bodyType));
-  }
-
-  // Fuel type is a soft preference - we try with it first, fallback without
-  const conditionsWithFuel = fuelType 
-    ? [...conditions, eq(carListing.fuelType, fuelType)]
-    : conditions;
 
   // Select fields optimized for card display
   const selectFields = {
@@ -148,31 +130,44 @@ export async function getSimilarListings(
     sellerUseGeneratedAvatar: sql<boolean | null>`(${userProfile.preferences}->>'useGeneratedAvatar')::boolean`,
   } as const;
 
-  // Try with fuel type preference first
-  let results = await db
-    .select(selectFields)
-    .from(carListing)
-    .leftJoin(partner, eq(partner.id, carListing.partnerId))
-    .leftJoin(user, eq(user.id, carListing.userId))
-    .leftJoin(userProfile, eq(userProfile.userId, user.id))
-    .where(and(...conditionsWithFuel))
-    .orderBy(desc(carListing.qiScore), desc(carListing.originalPublishedAt))
-    .limit(MAX_RESULTS);
+  let results: typeof selectFields extends infer T ? Array<{ [K in keyof T]: any }> : never = [];
 
-  // If not enough results with fuel type, try without
-  if (results.length < MIN_RESULTS_TO_SHOW && fuelType) {
+  // Try with body type first (same category = better match)
+  if (bodyType) {
     results = await db
       .select(selectFields)
       .from(carListing)
       .leftJoin(partner, eq(partner.id, carListing.partnerId))
       .leftJoin(user, eq(user.id, carListing.userId))
       .leftJoin(userProfile, eq(userProfile.userId, user.id))
-      .where(and(...conditions))
+      .where(and(...baseConditions, eq(carListing.bodyType, bodyType)))
       .orderBy(desc(carListing.qiScore), desc(carListing.originalPublishedAt))
       .limit(MAX_RESULTS);
   }
 
-  // Don't show section with just 1 lonely card - looks awkward
+  // If not enough with body type, try without (any body type in price range)
+  if (results.length < MAX_RESULTS) {
+    const alreadyIds = results.map(r => r.id);
+    const remaining = MAX_RESULTS - results.length;
+    
+    const moreResults = await db
+      .select(selectFields)
+      .from(carListing)
+      .leftJoin(partner, eq(partner.id, carListing.partnerId))
+      .leftJoin(user, eq(user.id, carListing.userId))
+      .leftJoin(userProfile, eq(userProfile.userId, user.id))
+      .where(and(
+        ...baseConditions,
+        // Exclude already fetched
+        ...(alreadyIds.length > 0 ? [sql`${carListing.id} NOT IN (${sql.join(alreadyIds.map(id => sql`${id}`), sql`, `)})`] : [])
+      ))
+      .orderBy(desc(carListing.qiScore), desc(carListing.originalPublishedAt))
+      .limit(remaining);
+    
+    results = [...results, ...moreResults];
+  }
+
+  // Show even 1 result - users need discovery options
   if (results.length < MIN_RESULTS_TO_SHOW) {
     return [];
   }
