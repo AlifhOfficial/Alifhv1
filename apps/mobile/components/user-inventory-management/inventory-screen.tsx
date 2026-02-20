@@ -28,6 +28,7 @@ import {
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
+import { getThumbUrl } from '@/lib/config';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -257,7 +258,8 @@ export function InventoryScreen() {
           ? formatExpiryCountdown(item.expiresAt)
           : null;
 
-      const displayImage = item.thumbnail || item.images?.[0];
+      const rawDisplayImage = item.thumbnail || item.images?.[0];
+      const displayImage = getThumbUrl(rawDisplayImage) || rawDisplayImage;
 
       return (
         <HapticPressable

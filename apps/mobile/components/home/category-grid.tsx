@@ -203,7 +203,7 @@ export const CategoryCard = memo(function CategoryCard({
   }
 
   return (
-    <View style={[styles.categoryCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+    <View style={[styles.categoryCard, { borderColor: colors.glassBorder, backgroundColor: colors.glassBackground }]}>
       {/* Header - Category Name & Subtitle */}
       <View style={styles.header}>
         <Heading size="small" style={[styles.categoryTitle, { color: colors.text }]}>{name}</Heading>
@@ -280,7 +280,7 @@ export const CategoryGrid = memo(function CategoryGrid({
   if (isLoading && categories.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={[styles.categoryCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+        <View style={[styles.categoryCard, { borderColor: colors.border }]}>
           <View style={styles.header}>
             <Skeleton width="50%" height={20} />
             <Skeleton width="70%" height={14} style={{ marginTop: Spacing.xs }} />

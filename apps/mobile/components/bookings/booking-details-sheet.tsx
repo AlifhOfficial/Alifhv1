@@ -349,7 +349,7 @@ export function BookingDetailsSheet({
         <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
           <View style={styles.detailRow}>
             {booking.partnerLogo ? (
-              <Image source={{ uri: booking.partnerLogo }} style={styles.partnerLogoLg} contentFit="contain" />
+              <Image source={{ uri: getThumbUrl(booking.partnerLogo) || booking.partnerLogo }} style={styles.partnerLogoLg} contentFit="contain" />
             ) : (
               <View style={[styles.dealerIconCircle, { backgroundColor: colors.surfaceSecondary }]}>
                 <Ionicons name="storefront-outline" size={Sizes.iconXs} color={colors.textSecondary} />

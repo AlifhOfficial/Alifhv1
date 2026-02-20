@@ -1,5 +1,6 @@
 // Home screen components
 export { HomeHeader } from './home-header';
+export { HomeDoodle } from './home-doodle';
 export { SavedTube } from './saved-tube';
 export { InventoryTube } from './inventory-tube';
 

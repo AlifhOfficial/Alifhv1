@@ -1,8 +1,8 @@
 /**
- * API: Storage File Upload
+ * API: Storage File Upload with Image Processing
  * POST /api/storage/upload
  * 
- * Purpose: Upload files to storage provider
+ * Purpose: Upload files to storage provider with automatic image optimization
  * Authentication: Required - only authenticated users can upload
  * 
  * Request Body (multipart/form-data):
@@ -12,20 +12,30 @@
  * - contentType: MIME type (optional)
  * - cacheControl: Cache header value (optional)
  * 
+ * Processing:
+ * - Images: Auto-detects HEIC, converts to WebP, resizes to 1600x1600 max
+ * - Non-images: Uploaded as-is
+ * 
  * Returns: { key, url, etag }
  * 
  * Standards:
  * - Returns 401 for unauthenticated requests
  * - Returns 400 for invalid file payload
+ * - Returns 413 for files too large
  * - Returns 500 for server errors
+ * 
+ * NOTE: For listing images, use /api/storage/upload-listing-image instead
+ * for dual-output (thumb + full) and better organization.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
 import { uploadFile } from "@/lib/storage";
+import { processSingleImage, ImageValidationError, isValidImageFormat, detectImageFormat } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
 
 export const runtime = "nodejs";
+export const maxDuration = 60; // 60 seconds for HEIC image processing
 
 const FileUploadSchema = z.object({
   directory: z.string().optional(),
@@ -75,17 +85,54 @@ export async function POST(req: NextRequest) {
     }
 
     const { directory, fileName: validatedFileName, contentType: validatedContentType, cacheControl } = metadataValidation.data;
-    const fileName = validatedFileName ?? file.name;
-    const contentType = validatedContentType || file.type || "application/octet-stream";
+    let fileName = validatedFileName ?? file.name;
+    let contentType = validatedContentType || file.type || "application/octet-stream";
 
     const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    
+    // Detect if this is an image and process it
+    const detectedFormat = detectImageFormat(buffer);
+    let processedData: Buffer | ArrayBuffer = buffer;
+    
+    if (isValidImageFormat(detectedFormat)) {
+      try {
+        // Process image: validate, HEIC conversion, resize, WebP output
+        const { buffer: processedBuffer } = await processSingleImage(buffer, {
+          maxWidth: 1600,
+          maxHeight: 1600,
+          quality: 82,
+          sharpen: 0.5,
+        });
+        
+        processedData = processedBuffer;
+        contentType = "image/webp";
+        // Update extension to .webp
+        fileName = typeof fileName === "string" 
+          ? fileName.replace(/\.[^.]+$/, ".webp") 
+          : "image.webp";
+          
+        console.log(`[storage/upload] Processed image: ${detectedFormat} → webp, ${buffer.length} → ${processedBuffer.length} bytes`);
+      } catch (err) {
+        // If processing fails, let validation error bubble up
+        if (err instanceof ImageValidationError) {
+          const status = err.code === 'FILE_TOO_LARGE' ? 413 
+            : err.code === 'TOO_MANY_PIXELS' ? 413 
+            : 400;
+          return NextResponse.json({ error: err.message }, { status });
+        }
+        // For other errors, log and continue with original
+        console.error("[storage/upload] Image processing failed, uploading original:", err);
+        processedData = arrayBuffer;
+      }
+    }
 
     const result = await uploadFile({
-      data: arrayBuffer,
+      data: processedData,
       contentType: typeof contentType === "string" ? contentType : "application/octet-stream",
       directory: typeof directory === "string" ? directory : undefined,
       fileName: typeof fileName === "string" ? fileName : undefined,
-      cacheControl: typeof cacheControl === "string" ? cacheControl : undefined,
+      cacheControl: typeof cacheControl === "string" ? cacheControl : "public, max-age=31536000, immutable",
     });
 
     return NextResponse.json({

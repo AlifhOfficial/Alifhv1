@@ -241,6 +241,8 @@ function RootLayoutNav() {
           <Stack.Screen name="notifications" />
           <Stack.Screen name="create-listing" />
           <Stack.Screen name="inventory" />
+          <Stack.Screen name="blk" />
+          <Stack.Screen name="partners" />
         </Stack>
       </View>
       

@@ -1,12 +1,7 @@
 /**
  * Revvup First Grid - Founding Partners Showcase
- * Horizontal scrolling partner cards with clean design
- * Light theme to complement the dark BLK grid
- * 
- * Now supports:
- * - API-driven data through props (PartnerListItem from partner-api)
- * - Loading states
- * - Empty state handling
+ * Premium horizontal scroll of partner avatars with dark luxury aesthetic
+ * Follows blk-grid-card and partner-grid patterns
  */
 
 import React, { memo, useCallback } from 'react';
@@ -14,7 +9,6 @@ import {
   View,
   StyleSheet,
   ScrollView,
-  Dimensions,
   ImageSourcePropType,
 } from 'react-native';
 import { ArrowRight } from 'lucide-react-native';
@@ -22,42 +16,21 @@ import { useRouter } from 'expo-router';
 
 import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { useSearch } from '@/context/search-context';
 import { HapticPressable, Heading, Supporting, Skeleton, SkeletonCircle, BrandAvatar } from '@/components/ui';
+import { RevvupLogo } from '@/components/ui/loaders';
 import { type PartnerListItem } from '@/lib/partner-api';
-
-// ============================================================================
-// FOUNDING PARTNERS SKELETON
-// ============================================================================
-
-const FoundingPartnersSkeleton = memo(function FoundingPartnersSkeleton() {
-  return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContainer}
-    >
-      {[1, 2, 3, 4, 5].map((i) => (
-        <View key={i} style={styles.partnerItem}>
-          <SkeletonCircle size={Sizes.avatarLg} />
-          <Skeleton width="80%" height={12} style={{ marginTop: Spacing.sm }} />
-        </View>
-      ))}
-    </ScrollView>
-  );
-});
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-/** Partner display data for founding partners grid */
 export interface FoundingPartnerItem {
   id: string;
   name: string;
   logo?: ImageSourcePropType | string | null;
 }
 
-/** Convert PartnerListItem from API to display format */
 export function partnerToFoundingItem(partner: PartnerListItem): FoundingPartnerItem {
   return {
     id: partner.id,
@@ -67,48 +40,55 @@ export function partnerToFoundingItem(partner: PartnerListItem): FoundingPartner
 }
 
 // ============================================================================
-// CONSTANTS
+// SKELETON
 // ============================================================================
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const FoundingPartnersSkeleton = memo(function FoundingPartnersSkeleton() {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.scrollContent}
+    >
+      {[1, 2, 3, 4, 5].map((i) => (
+        <View key={i} style={styles.partnerItem}>
+          <SkeletonCircle size={Sizes.avatarLg} />
+          <Skeleton width={50} height={12} style={styles.nameSkeleton} />
+        </View>
+      ))}
+    </ScrollView>
+  );
+});
 
 // ============================================================================
-// PARTNER CARD
+// PARTNER ITEM
 // ============================================================================
 
-interface PartnerCardProps {
+interface PartnerItemProps {
   partner: FoundingPartnerItem;
-  onPress?: (partnerId: string) => void;
+  onPress?: (partnerId: string, partnerName: string) => void;
 }
 
-const PartnerCard = memo(function PartnerCard({
+const PartnerItem = memo(function PartnerItem({
   partner,
   onPress,
-}: PartnerCardProps) {
+}: PartnerItemProps) {
   const { colors } = useTheme();
-
   const handlePress = useCallback(() => {
-    onPress?.(partner.id);
-  }, [partner.id, onPress]);
+    onPress?.(partner.id, partner.name);
+  }, [partner.id, partner.name, onPress]);
 
-  // Get logo as string URL
   const logoUrl = typeof partner.logo === 'string' ? partner.logo : null;
 
   return (
     <HapticPressable onPress={handlePress} style={styles.partnerItem}>
-      {/* Circular Avatar */}
-      <View style={styles.avatarWrapper}>
-        <BrandAvatar
-          src={logoUrl}
-          name={partner.name}
-          size="lg"
-          shape="round"
-          glass
-        />
-      </View>
-
-      {/* Partner Name */}
-      <Supporting size="small" style={[styles.partnerName, { color: colors.text }]}>
+      <BrandAvatar
+        src={logoUrl}
+        name={partner.name}
+        size="lg"
+        shape="round"
+      />
+      <Supporting size="small" style={[styles.partnerName, { color: colors.textTertiary }]} numberOfLines={1}>
         {partner.name}
       </Supporting>
     </HapticPressable>
@@ -116,16 +96,14 @@ const PartnerCard = memo(function PartnerCard({
 });
 
 // ============================================================================
-// REVVUP FIRST GRID COMPONENT
+// MAIN COMPONENT
 // ============================================================================
 
 interface RevvupFirstGridProps {
-  /** Founding partners to display - from API */
   partners?: FoundingPartnerItem[];
-  /** Loading state */
   isLoading?: boolean;
   onBrowseAllPress?: () => void;
-  onPartnerPress?: (partnerId: string) => void;
+  onPartnerPress?: (partnerId: string, partnerName: string) => void;
 }
 
 export const RevvupFirstGrid = memo(function RevvupFirstGrid({
@@ -136,47 +114,50 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
 }: RevvupFirstGridProps) {
   const { colors } = useTheme();
   const router = useRouter();
+  const { applySearch, clearSearch, clearFilterParams, resetSort } = useSearch();
 
   const handleBrowseAllPress = useCallback(() => {
     onBrowseAllPress?.();
-    // Navigate to partners list
-  }, [onBrowseAllPress]);
+    router.push('/partners' as any);
+  }, [onBrowseAllPress, router]);
 
-  const handlePartnerPress = useCallback((partnerId: string) => {
-    onPartnerPress?.(partnerId);
-    router.push(`/seller-contact/${partnerId}` as any);
-  }, [onPartnerPress, router]);
+  const handlePartnerPress = useCallback((partnerId: string, partnerName: string) => {
+    onPartnerPress?.(partnerId, partnerName);
+    clearSearch();
+    clearFilterParams();
+    resetSort();
+    applySearch({ partnerId, partnerName });
+    router.push('/browse' as any);
+  }, [onPartnerPress, applySearch, clearSearch, clearFilterParams, resetSort, router]);
 
-  // Don't render if no partners and not loading
   if (!isLoading && partners.length === 0) {
     return null;
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-      {/* Header */}
+    <View style={[styles.container, { borderColor: colors.glassBorder, backgroundColor: colors.glassBackground }]}>
+      {/* Header with Revvup Logo */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
-          <Heading size="medium" style={{ color: colors.text }}>Revvup first</Heading>
+          <View style={styles.logoContainer}>
+            <RevvupLogo size={28} color={colors.text} />
+          </View>
+          <Heading size="small" style={[styles.headerTitle, { color: colors.text }]}>Founding Partners</Heading>
         </View>
       </View>
 
-      {/* Founding Partners Tagline */}
-      <View style={styles.taglineRow}>
-        <Supporting size="medium" style={[styles.taglineText, { color: colors.textTertiary }]}>Founding Partners</Supporting>
-      </View>
-
-      {/* Horizontal Scrolling Partner Cards */}
+      {/* Partners Scroll */}
       {isLoading ? (
         <FoundingPartnersSkeleton />
       ) : (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContainer}
+          contentContainerStyle={styles.scrollContent}
+          style={styles.partnersScroll}
         >
           {partners.map((partner) => (
-            <PartnerCard
+            <PartnerItem
               key={partner.id}
               partner={partner}
               onPress={handlePartnerPress}
@@ -185,13 +166,11 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
         </ScrollView>
       )}
 
-      {/* Browse All Footer */}
+      {/* Footer */}
       <HapticPressable onPress={handleBrowseAllPress} style={styles.footer}>
-        <Heading size="small" style={[styles.browseAllText, { color: colors.text }]}>
-          Browse all
-        </Heading>
+        <Heading size="small" style={[styles.footerText, { color: colors.text }]}>Browse all</Heading>
         <View style={[styles.arrowCircle, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
-          <ArrowRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2.5} />
+          <ArrowRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
         </View>
       </HapticPressable>
     </View>
@@ -206,16 +185,15 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: Spacing.sm,
     borderRadius: Radius['2xl'],
-    overflow: 'hidden',
-    paddingBottom: Spacing['2xl'],
     borderWidth: 1,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing['2xl'],
+    paddingTop: Spacing.xl,
     paddingBottom: Spacing.sm,
   },
   brandRow: {
@@ -223,35 +201,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.md,
   },
-  taglineRow: {
-    paddingHorizontal: Spacing.xl,
-    paddingBottom: Spacing['2xl'],
+  logoContainer: {
+    opacity: 1,
   },
-  taglineText: {
+  headerTitle: {
   },
-  scrollContainer: {
+  partnersScroll: {
+  },
+  scrollContent: {
     paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing['2xl'],
-    gap: Spacing['3xl'],
+    paddingVertical: Spacing.lg,
+    gap: Spacing['2xl'],
   },
   partnerItem: {
     alignItems: 'center',
+    gap: Spacing.sm,
     minWidth: Sizes.avatarLg,
-  },
-  avatarWrapper: {
-    marginBottom: Spacing.sm,
   },
   partnerName: {
     textAlign: 'center',
+  },
+  nameSkeleton: {
+    marginTop: Spacing.sm,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.xl,
+    paddingVertical: Spacing.xl,
   },
-  browseAllText: {
+  footerText: {
   },
   arrowCircle: {
     width: Sizes.bubble,

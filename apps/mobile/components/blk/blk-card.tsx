@@ -164,7 +164,8 @@ export const BlkCard = memo(function BlkCard({
   const displaySellerName = partnerName || sellerName || 'Private Seller';
   const isVerified = partnerVerified || kycVerified;
   const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
-  const sellerAvatar = partnerLogo || sellerAvatarUrl;
+  const rawSellerAvatar = partnerLogo || sellerAvatarUrl;
+  const sellerAvatar = getThumbUrl(rawSellerAvatar) || rawSellerAvatar;
 
   // Handlers
   const handlePress = useCallback(() => {

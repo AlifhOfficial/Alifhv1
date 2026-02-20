@@ -162,6 +162,7 @@ export const partner = pgTable('partner', {
   index('partner_phone_idx').on(table.phone),
   index('partner_trade_license_idx').on(table.tradeLicense),
   index('partner_status_idx').on(table.status),
+  index('partner_status_createdAt_idx').on(table.status, table.createdAt), // Composite for list query
   index('partner_tier_idx').on(table.tier),
   index('partner_is_verified_idx').on(table.isVerified),
   index('partner_emirate_idx').on(table.emirate),

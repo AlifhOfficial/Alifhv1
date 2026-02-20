@@ -1,11 +1,18 @@
 /**
- * R2 Static Asset Upload API
+ * R2 Static Asset Upload API with Image Processing
  * Upload static assets (images, videos) to R2 via drag-drop GUI
+ * 
+ * Images are automatically processed to WebP for CDN optimization
+ * unless skipProcessing=true is passed (for pre-optimized assets)
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { R2StorageProvider } from "@/lib/storage/r2-provider";
+import { processSingleImage, ImageValidationError, detectImageFormat, isValidImageFormat } from "@/lib/storage/image-processing";
 import { getSessionUser } from "@/lib/auth/session-context";
+
+export const runtime = "nodejs";
+export const maxDuration = 60; // 60 seconds for HEIC image processing
 
 const ALLOWED_TYPES = [
   "image/jpeg",
@@ -33,6 +40,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get("file") as File | null;
     const folder = (formData.get("folder") as string) || "uploads";
     const customKey = formData.get("key") as string | null;
+    const skipProcessing = formData.get("skipProcessing") === "true"; // Allow bypassing for pre-optimized assets
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -50,18 +58,56 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Generate key
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const key = customKey || `static/${folder}/${sanitizedName}`;
-
     // Upload to R2
     const storage = new R2StorageProvider();
-    const buffer = await file.arrayBuffer();
+    const buffer = Buffer.from(await file.arrayBuffer());
+    
+    // Detect format and process images (unless SVG or skipProcessing)
+    const detectedFormat = detectImageFormat(buffer);
+    const isImage = isValidImageFormat(detectedFormat);
+    const isSvg = file.type === "image/svg+xml";
+    const isVideo = file.type.startsWith("video/");
+    
+    let processedData: Buffer | ArrayBuffer = buffer;
+    let finalContentType = file.type;
+    let finalFileName = file.name;
+    
+    // Process raster images to WebP (skip SVGs and videos)
+    if (isImage && !isSvg && !isVideo && !skipProcessing) {
+      try {
+        const { buffer: processedBuffer } = await processSingleImage(buffer, {
+          maxWidth: 1920,  // Full HD for static marketing assets
+          maxHeight: 1920,
+          quality: 85,
+          sharpen: 0.5,
+        });
+        
+        processedData = processedBuffer;
+        finalContentType = "image/webp";
+        finalFileName = file.name.replace(/\.[^.]+$/, ".webp");
+        
+        console.log(`[static-upload] Processed: ${detectedFormat} → webp, ${buffer.length} → ${processedBuffer.length} bytes`);
+      } catch (err) {
+        if (err instanceof ImageValidationError) {
+          const status = err.code === 'FILE_TOO_LARGE' ? 413 
+            : err.code === 'TOO_MANY_PIXELS' ? 413 
+            : 400;
+          return NextResponse.json({ error: err.message }, { status });
+        }
+        // For other errors, log and continue with original
+        console.error("[static-upload] Image processing failed, uploading original:", err);
+        processedData = buffer;
+      }
+    }
+    
+    // Generate key
+    const sanitizedName = finalFileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const key = customKey || `static/${folder}/${sanitizedName}`;
     
     const result = await storage.upload({
       key,
-      data: buffer,
-      contentType: file.type,
+      data: processedData,
+      contentType: finalContentType,
       cacheControl: "public, max-age=31536000, immutable",
     });
 
@@ -69,8 +115,9 @@ export async function POST(request: NextRequest) {
       success: true,
       key: result.key,
       url: result.url,
-      size: file.size,
-      type: file.type,
+      size: Buffer.isBuffer(processedData) ? processedData.length : file.size,
+      type: finalContentType,
+      processed: isImage && !isSvg && !isVideo && !skipProcessing,
     });
   } catch (error) {
     console.error("Upload error:", error);

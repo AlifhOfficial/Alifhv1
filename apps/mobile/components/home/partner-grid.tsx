@@ -272,8 +272,8 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
   }, [onCarPress, router]);
 
   // Use BLK styling when partner is BLK tier - always dark mode aesthetic
-  const cardBackground = partner.isBlk ? colors.oledBlack : colors.surface;
-  const cardBorder = partner.isBlk ? colors.glassBorderOnDark : colors.border;
+  const cardBackground = partner.isBlk ? colors.oledBlack : colors.glassBackground;
+  const cardBorder = partner.isBlk ? colors.glassBorderOnDark : colors.glassBorder;
   const textColor = partner.isBlk ? colors.oledWhite : colors.text;
   const textSecondary = partner.isBlk ? 'rgba(255,255,255,0.6)' : colors.textTertiary;
 

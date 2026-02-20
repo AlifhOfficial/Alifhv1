@@ -11,6 +11,7 @@ import { Image } from 'expo-image';
 import { CheckCircle2, Star, Clock } from 'lucide-react-native';
 
 import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { getThumbUrl } from '@/lib/config';
 import { Label, Heading, Supporting, Data, Text } from '@/components/ui';
 import type { SellerHeroProps } from './types';
 import { formatMemberSince } from './utils';
@@ -21,7 +22,10 @@ const AVATAR_SIZE = Sizes.avatarLg + Spacing.sm; // 56
 const LOGO_SIZE = Sizes.avatarLg + Spacing.lg; // 64
 
 export const SellerHero = memo(function SellerHero({ seller, colors, topInset }: SellerHeroProps) {
-  const hasHeroImage = seller.heroImage && seller.isDealer;
+  // Convert to CDN URLs
+  const heroImageUrl = seller.heroImage ? (getThumbUrl(seller.heroImage) || seller.heroImage) : null;
+  const avatarUrl = seller.avatar ? (getThumbUrl(seller.avatar) || seller.avatar) : null;
+  const hasHeroImage = heroImageUrl && seller.isDealer;
   
   return (
     <>
@@ -29,7 +33,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
       {hasHeroImage && (
         <View style={[localStyles.heroImageContainer, { marginTop: -(topInset + Spacing.lg) }]}>
           <Image
-            source={{ uri: seller.heroImage! }}
+            source={{ uri: heroImageUrl! }}
             style={localStyles.heroImage}
             contentFit="cover"
             transition={200}
@@ -90,9 +94,9 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           seller.isDealer ? localStyles.logo : localStyles.avatar, 
           { backgroundColor: colors.surfaceSecondary }
         ]}>
-          {seller.avatar ? (
+          {avatarUrl ? (
             <Image 
-              source={{ uri: seller.avatar }} 
+              source={{ uri: avatarUrl }} 
               style={localStyles.avatarImage} 
               contentFit="cover"
             />

@@ -1,0 +1,79 @@
+/**
+ * Partners Header - Mobile Native
+ * Matches messages-header style with absolute positioning
+ */
+
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Store } from 'lucide-react-native';
+import { Colors, Spacing, Layout, Sizes } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
+import { Data } from '@/components/ui';
+import { ProfileMenu } from '@/components/home/profile-menu';
+
+interface PartnersHeaderProps {
+  count?: number;
+}
+
+export function PartnersHeader({ count }: PartnersHeaderProps) {
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
+
+  return (
+    <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
+      {/* Profile Avatar */}
+      <ProfileMenu />
+
+      <View
+        style={[
+          styles.pillButton,
+          styles.glass,
+          {
+            borderColor: colors.glassBorder,
+            backgroundColor: colors.glassBackground,
+          },
+        ]}
+      >
+        <View style={styles.pillContent}>
+          <Store size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+          <Data size="small">Partners</Data>
+          {count !== undefined && count > 0 && (
+            <Data size="small" style={{ color: colors.textTertiary }}>({count})</Data>
+          )}
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Layout.screenPadding,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Layout.headerGap,
+  },
+  glass: {
+    borderWidth: 1,
+  },
+  pillButton: {
+    height: Sizes.pillHeight,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Sizes.pillRadius,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pillContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+});

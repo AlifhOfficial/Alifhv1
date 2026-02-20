@@ -9,6 +9,7 @@ import { CheckCircle2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { getThumbUrl } from '@/lib/config';
 import { Text, Data, Supporting, Label } from '@/components/ui';
 import { SellerData } from '@/lib/listing-api';
 
@@ -45,9 +46,10 @@ export const SellerCard = memo(function SellerCard({
     ? partner?.brandName || 'Dealer'
     : userProfile?.displayName || 'Private Seller';
   
-  const sellerLogo = isPartner
+  const rawSellerLogo = isPartner
     ? partner?.logo
     : userProfile?.avatarUrl;
+  const sellerLogo = getThumbUrl(rawSellerLogo) || rawSellerLogo;
   
   const isVerified = isPartner
     ? partner?.isVerified

@@ -11,7 +11,8 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, View, FlatList, RefreshControl, ImageBackground } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TopSafeAreaGradient } from '@/components/layout';
 
@@ -210,7 +211,12 @@ export default function HomeScreen() {
   }, [isLoading, loadedGrids.length]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <ImageBackground 
+      source={require('@/assets/images/bg2.png')} 
+      style={styles.container}
+      resizeMode="cover"
+    >
+      <BlurView intensity={40} tint={colorScheme} style={StyleSheet.absoluteFill} />
       <TopSafeAreaGradient />
       <HomeHeader />
       
@@ -233,12 +239,12 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor={colors.textPrimary}
+            tintColor={colors.text}
             progressViewOffset={contentTopPadding}
           />
         }
       />
-    </View>
+    </ImageBackground>
   );
 }
 

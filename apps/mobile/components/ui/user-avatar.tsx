@@ -14,6 +14,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Sizes, Spacing, Typography } from '@/constants/theme';
+import { getPublicUrl } from '@/lib/config';
 import { Body } from './text';
 
 // DiceBear style - fun robot characters with transparent backgrounds
@@ -95,8 +96,11 @@ export function UserAvatar({
   const displayName = name || 'User';
   const generatedAvatarUrl = getGeneratedAvatarUrl(displayName, pixelSize * 2);
 
+  // Convert storage key to CDN URL if needed
+  const resolvedSrc = src ? getPublicUrl(src) : null;
+
   // Determine what to show: image → generated robot → initials
-  const showImage = src && !imageError;
+  const showImage = resolvedSrc && !imageError;
   const showGenerated = !showImage && useGeneratedAvatar && !generatedError;
   const showInitials = !showImage && !showGenerated;
 
@@ -118,9 +122,9 @@ export function UserAvatar({
 
   return (
     <View style={containerStyle}>
-      {showImage && src && (
+      {showImage && resolvedSrc && (
         <Image
-          source={{ uri: src }}
+          source={{ uri: resolvedSrc }}
           style={styles.image}
           onError={() => setImageError(true)}
           resizeMode="cover"
