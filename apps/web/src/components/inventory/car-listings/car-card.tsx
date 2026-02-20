@@ -396,7 +396,7 @@ export function CarCard({
             </span>
             {!isBlackTierPartner && (partnerVerified || kycVerified) && (
               <CheckCircle2 
-                className="w-3.5 h-3.5 flex-shrink-0 -ml-1 text-blue-500" 
+                className="w-3.5 h-3.5 flex-shrink-0 text-blue-500" 
                 aria-label="Verified" 
               />
             )}
@@ -572,7 +572,7 @@ export function CarCard({
             </span>
             {!isBlackTierPartner && (partnerVerified || kycVerified) && (
               <CheckCircle2 
-                className="w-[18px] h-[18px] flex-shrink-0 -ml-1 text-blue-500" 
+                className="w-[18px] h-[18px] flex-shrink-0 text-blue-500" 
                 aria-label="Verified" 
               />
             )}

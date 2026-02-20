@@ -13,10 +13,9 @@
 
 'use client';
 
-import { useRef } from 'react';
-import { CarCard } from '@/components/inventory';
+import { useRef, useState, useEffect } from 'react';
+import { CarCardMinimal } from '@/components/inventory';
 import { useSimilarListings } from '@/hooks/listings';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/utils';
@@ -35,6 +34,21 @@ export function SimilarListings({
 }: SimilarListingsProps) {
   const { listings, isLoading } = useSimilarListings(listingId, { enabled });
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showArrows, setShowArrows] = useState(false);
+
+  // Check if content overflows container (needs scroll arrows)
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (scrollContainerRef.current) {
+        const { scrollWidth, clientWidth } = scrollContainerRef.current;
+        setShowArrows(scrollWidth > clientWidth + 10); // 10px buffer
+      }
+    };
+    
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow);
+    return () => window.removeEventListener('resize', checkOverflow);
+  }, [listings]);
 
   // Don't render anything if no listings and not loading
   if (!isLoading && listings.length === 0) {
@@ -43,7 +57,7 @@ export function SimilarListings({
 
   const scroll = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
-    const scrollAmount = 320; // Card width + gap
+    const scrollAmount = 300; // Card width + gap
     scrollContainerRef.current.scrollBy({
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth',
@@ -58,8 +72,8 @@ export function SimilarListings({
           Similar Price Range
         </h2>
         
-        {/* Desktop Nav Arrows */}
-        {!isLoading && listings.length > 2 && (
+        {/* Desktop Nav Arrows - only show when content overflows */}
+        {!isLoading && showArrows && (
           <div className="hidden sm:flex items-center gap-2">
             <Button
               variant="outline"
@@ -85,38 +99,31 @@ export function SimilarListings({
 
       {/* Loading State - Horizontal Skeleton */}
       {isLoading && (
-        <div className="flex gap-4 overflow-hidden">
+        <div className="flex gap-5 overflow-hidden">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex-shrink-0 w-[280px] sm:w-[300px]">
-              <SimilarListingSkeleton />
+            <div key={i} className="flex-shrink-0 w-[260px] sm:w-[280px]">
+              <CarCardMinimal.Skeleton />
             </div>
           ))}
         </div>
       )}
 
-      {/* Horizontal Scrollable Carousel */}
+      {/* Horizontal Scrollable Carousel - more breathable spacing */}
       {!isLoading && listings.length > 0 && (
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
+          className="flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"
         >
           {listings.map((listing) => (
             <div 
               key={listing.id} 
-              className="flex-shrink-0 w-[280px] sm:w-[300px] snap-start"
+              className="flex-shrink-0 w-[260px] sm:w-[280px] snap-start"
             >
-              <CarCard
+              <CarCardMinimal
                 id={listing.id}
                 make={listing.make}
                 model={listing.model}
-                year={listing.year}
-                trim={listing.trim}
-                price={listing.price}
-                mileage={listing.mileage}
-                emirate={listing.emirate}
-                specs={listing.specs}
                 thumbnail={listing.thumbnail}
-                qiScore={listing.qiScore}
                 isBlkListing={listing.isBlkListing}
                 partnerName={listing.partnerName ?? undefined}
                 partnerLogo={listing.partnerLogo}
@@ -130,18 +137,5 @@ export function SimilarListings({
         </div>
       )}
     </section>
-  );
-}
-
-/**
- * Skeleton for similar listing cards
- */
-function SimilarListingSkeleton() {
-  return (
-    <div className="space-y-3">
-      <Skeleton className="aspect-[16/10] w-full rounded-xl" />
-      <Skeleton className="h-5 w-3/4" />
-      <Skeleton className="h-4 w-1/2" />
-    </div>
   );
 }
