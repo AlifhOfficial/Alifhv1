@@ -26,6 +26,7 @@ import {
 } from '@/components/sheets';
 import { CarInfoSheet } from '@/components/sheets';
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
+import { BlkCard, BlkCardSkeleton } from '@/components/blk';
 import { LogoLoader, Body } from '@/components/ui';
 import { searchApi, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/search-api';
 import { Colors, Spacing, Layout, Typography, Sizes } from '@/constants/theme';
@@ -521,11 +522,19 @@ export default function BrowseScreen() {
       >
         {isLoading && (!listings || listings.length === 0) ? (
           viewMode === 'grid' ? (
-            <>
-              <CarCardMSkeleton />
-              <CarCardMSkeleton />
-              <CarCardMSkeleton />
-            </>
+            filterParams.isBlkListing ? (
+              <>
+                <BlkCardSkeleton />
+                <BlkCardSkeleton />
+                <BlkCardSkeleton />
+              </>
+            ) : (
+              <>
+                <CarCardMSkeleton />
+                <CarCardMSkeleton />
+                <CarCardMSkeleton />
+              </>
+            )
           ) : (
             <>
               <CarCardListSkeleton />
@@ -542,32 +551,58 @@ export default function BrowseScreen() {
         ) : (
           <>
             {viewMode === 'grid' ? (
-              // Grid View - Original Card Layout
-              listings.map((listing, index) => (
-                <CarCardM
-                  key={`${listing.id}-${index}`}
-                  id={listing.id}
-                  make={listing.make}
-                  model={listing.model}
-                  year={listing.year}
-                  trim={listing.trim}
-                  price={listing.price}
-                  mileage={listing.mileage}
-                  emirate={listing.emirate}
-                  specs={listing.specs}
-                  thumbnail={listing.thumbnail}
-                  isBlkListing={listing.isBlkListing}
-                  partnerName={listing.partnerName}
-                  partnerLogo={listing.partnerLogo}
-                  partnerVerified={listing.partnerVerified}
-                  isBlackTierPartner={listing.isBlackTierPartner}
-                  sellerName={listing.sellerName}
-                  sellerAvatarUrl={listing.sellerAvatarUrl}
-                  kycVerified={listing.sellerKycVerified}
-                  onPress={handleCardPress}
-                  onLongPress={handleCardLongPress}
-                />
-              ))
+              // Grid View - Use BlkCard for BLK listings, CarCardM otherwise
+              filterParams.isBlkListing ? (
+                listings.map((listing, index) => (
+                  <BlkCard
+                    key={`${listing.id}-${index}`}
+                    id={listing.id}
+                    make={listing.make}
+                    model={listing.model}
+                    year={listing.year}
+                    trim={listing.trim}
+                    price={listing.price}
+                    mileage={listing.mileage}
+                    emirate={listing.emirate}
+                    specs={listing.specs}
+                    thumbnail={listing.thumbnail}
+                    partnerName={listing.partnerName}
+                    partnerLogo={listing.partnerLogo}
+                    partnerVerified={listing.partnerVerified}
+                    isBlackTierPartner={listing.isBlackTierPartner}
+                    sellerName={listing.sellerName}
+                    sellerAvatarUrl={listing.sellerAvatarUrl}
+                    kycVerified={listing.sellerKycVerified}
+                    onPress={handleCardPress}
+                  />
+                ))
+              ) : (
+                listings.map((listing, index) => (
+                  <CarCardM
+                    key={`${listing.id}-${index}`}
+                    id={listing.id}
+                    make={listing.make}
+                    model={listing.model}
+                    year={listing.year}
+                    trim={listing.trim}
+                    price={listing.price}
+                    mileage={listing.mileage}
+                    emirate={listing.emirate}
+                    specs={listing.specs}
+                    thumbnail={listing.thumbnail}
+                    isBlkListing={listing.isBlkListing}
+                    partnerName={listing.partnerName}
+                    partnerLogo={listing.partnerLogo}
+                    partnerVerified={listing.partnerVerified}
+                    isBlackTierPartner={listing.isBlackTierPartner}
+                    sellerName={listing.sellerName}
+                    sellerAvatarUrl={listing.sellerAvatarUrl}
+                    kycVerified={listing.sellerKycVerified}
+                    onPress={handleCardPress}
+                    onLongPress={handleCardLongPress}
+                  />
+                ))
+              )
             ) : (
               // List View - Compact Layout
               listings.map((listing, index) => (

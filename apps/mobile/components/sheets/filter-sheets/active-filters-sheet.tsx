@@ -57,6 +57,9 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
   }, [onClose]);
 
   const handleRemoveChip = useCallback((chip: SearchChip) => {
+    // Skip locked chips
+    if (chip.locked) return;
+    
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
@@ -156,16 +159,20 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
               {chips.map((chip, idx) => (
                 <HapticPressable 
                   key={`${chip.key}-${chip.value}-${chip.index ?? idx}`}
-                  onPress={() => handleRemoveChip(chip)}
+                  onPress={chip.locked ? undefined : () => handleRemoveChip(chip)}
+                  disabled={chip.locked}
                   style={[
                     styles.chip,
                     { backgroundColor: colors.fillSecondary, borderColor: colors.border },
+                    chip.locked && { opacity: 0.7 },
                   ]}
                 >
                   <Body size="small" numberOfLines={1} style={styles.chipText}>
                     {chip.label}
                   </Body>
-                  <Ionicons name="close" size={Spacing.md} color={colors.textTertiary} />
+                  {!chip.locked && (
+                    <Ionicons name="close" size={Spacing.md} color={colors.textTertiary} />
+                  )}
                 </HapticPressable>
               ))}
             </View>

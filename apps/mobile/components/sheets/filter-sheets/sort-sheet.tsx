@@ -33,11 +33,13 @@ interface SortSheetProps {
   onClose: () => void;
   currentSort: SearchSortOption;
   onSortChange: (sort: SearchSortOption) => void;
+  forceDark?: boolean;
 }
 
-export function SortSheet({ visible, onClose, currentSort, onSortChange }: SortSheetProps) {
+export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDark }: SortSheetProps) {
   const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  // Force dark colors when on BLK tab
+  const colors = Colors[forceDark ? 'dark' : colorScheme];
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 

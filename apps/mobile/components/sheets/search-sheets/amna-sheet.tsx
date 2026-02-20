@@ -62,6 +62,7 @@ interface AmnaSheetProps {
   visible: boolean;
   onClose: () => void;
   onSearch?: (params: AmnaSearchParams) => void;
+  forceDark?: boolean;
 }
 
 // ============================================================================
@@ -86,9 +87,10 @@ function getRandomLoadingMessage(): string {
 // COMPONENT
 // ============================================================================
 
-export function AmnaSheet({ visible, onClose, onSearch }: AmnaSheetProps) {
+export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetProps) {
   const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  // Force dark colors when on BLK tab
+  const colors = Colors[forceDark ? 'dark' : colorScheme];
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const inputRef = useRef<TextInput>(null);

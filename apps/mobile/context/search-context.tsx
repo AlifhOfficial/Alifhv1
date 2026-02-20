@@ -61,6 +61,7 @@ export type SearchChip = {
   label: string;
   value: string;
   index?: number; // For array items
+  locked?: boolean; // If true, cannot be removed
 };
 
 // Keys that can be removed - includes compound keys for range filters
@@ -102,6 +103,13 @@ interface SearchContextValue {
   /** Subscribe to filter changes */
   subscribeToFilters: (callback: (params: FilterParams) => void) => () => void;
   
+  /** Lock a filter key so it cannot be removed (for dedicated screens like BLK) */
+  lockFilter: (key: keyof FilterParams) => void;
+  /** Unlock a filter key */
+  unlockFilter: (key: keyof FilterParams) => void;
+  /** Check if a filter is locked */
+  isFilterLocked: (key: keyof FilterParams) => boolean;
+  
   /** Trigger scroll to top (from tab bar double-tap) */
   triggerScrollToTop: () => void;
   /** Subscribe to scroll to top events (for browse screen) */
@@ -114,6 +122,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [searchParams, setSearchParams] = useState<SearchParams | null>(null);
   const [sortBy, setSortBy] = useState<SearchSortOption>('relevance');
   const [filterParams, setFilterParams] = useState<FilterParams>({});
+  const lockedFiltersRef = useRef<Set<keyof FilterParams>>(new Set());
   const listenersRef = useRef<Set<(params: SearchParams) => void>>(new Set());
   const sortListenersRef = useRef<Set<(sort: SearchSortOption) => void>>(new Set());
   const filterListenersRef = useRef<Set<(params: FilterParams) => void>>(new Set());
@@ -278,10 +287,10 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
       chips.push({ key: 'isNegotiable', label: 'Negotiable', value: 'true' });
     }
     if (filterParams.isBlkListing) {
-      chips.push({ key: 'isBlkListing', label: 'BLK', value: 'true' });
+      chips.push({ key: 'isBlkListing', label: 'BLK', value: 'true', locked: lockedFiltersRef.current.has('isBlkListing') });
     }
     if (filterParams.isBlackTierPartner) {
-      chips.push({ key: 'isBlackTierPartner', label: 'Black Tier', value: 'true' });
+      chips.push({ key: 'isBlackTierPartner', label: 'Black Tier', value: 'true', locked: lockedFiltersRef.current.has('isBlackTierPartner') });
     }
     if (filterParams.sellerType) {
       chips.push({ key: 'sellerType', label: filterParams.sellerType === 'dealer' ? 'Dealer' : 'Private', value: filterParams.sellerType });
@@ -384,11 +393,25 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const clearFilterParams = useCallback(() => {
-    setFilterParams({});
-    filterListenersRef.current.forEach(listener => listener({}));
+    // Preserve locked filters
+    setFilterParams(prev => {
+      const preserved: Partial<FilterParams> = {};
+      lockedFiltersRef.current.forEach(key => {
+        if (prev[key] !== undefined) {
+          (preserved as any)[key] = prev[key];
+        }
+      });
+      filterListenersRef.current.forEach(listener => listener(preserved as FilterParams));
+      return preserved as FilterParams;
+    });
   }, []);
 
   const removeFilterParam = useCallback((key: RemovableFilterKey, index?: number) => {
+    // Skip if this key is locked
+    if (lockedFiltersRef.current.has(key as keyof FilterParams)) {
+      return;
+    }
+    
     setFilterParams(prev => {
       const newParams = { ...prev };
       
@@ -439,6 +462,19 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Lock/unlock filters (for dedicated screens like BLK)
+  const lockFilter = useCallback((key: keyof FilterParams) => {
+    lockedFiltersRef.current.add(key);
+  }, []);
+
+  const unlockFilter = useCallback((key: keyof FilterParams) => {
+    lockedFiltersRef.current.delete(key);
+  }, []);
+
+  const isFilterLocked = useCallback((key: keyof FilterParams) => {
+    return lockedFiltersRef.current.has(key);
+  }, []);
+
   return (
     <SearchContext.Provider
       value={{
@@ -458,6 +494,9 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         clearFilterParams,
         removeFilterParam,
         subscribeToFilters,
+        lockFilter,
+        unlockFilter,
+        isFilterLocked,
         triggerScrollToTop,
         subscribeToScrollToTop,
       }}

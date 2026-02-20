@@ -47,6 +47,7 @@ interface SearchSheetProps {
   visible: boolean;
   onClose: () => void;
   onSearch?: (params: SearchParams) => void;
+  forceDark?: boolean;
 }
 
 interface SearchParams {
@@ -122,9 +123,10 @@ function triggerHaptic() {
 // MAIN COMPONENT
 // ============================================================================
 
-export function SearchSheet({ visible, onClose, onSearch }: SearchSheetProps) {
+export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchSheetProps) {
   const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  // Force dark colors when on BLK tab
+  const colors = Colors[forceDark ? 'dark' : colorScheme];
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);

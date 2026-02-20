@@ -211,7 +211,8 @@ export const BlkGridCard = memo(function BlkGridCard({
   const handleShopAllPress = useCallback(() => {
     onShopAllPress?.();
     // Navigate to BLK collection
-  }, [onShopAllPress]);
+    router.push('/blk' as any);
+  }, [onShopAllPress, router]);
 
   const handleCarPress = useCallback((id: string) => {
     onCarPress?.(id);
@@ -274,10 +275,10 @@ export const BlkGridCard = memo(function BlkGridCard({
         </ScrollView>
       )}
 
-      {/* Shop All Footer */}
+      {/* Collection Footer */}
       <HapticPressable onPress={handleShopAllPress} style={styles.footer}>
         <Heading size="small" style={styles.shopAllText}>
-          Shop all
+          The Collection
         </Heading>
         <View style={[styles.arrowCircle, { backgroundColor: Colors.dark.glassBackground, borderColor: Colors.dark.glassBorderOnDark }]}>
           <ArrowRight size={Sizes.iconSm} color="#FAFAFA" strokeWidth={2.5} />

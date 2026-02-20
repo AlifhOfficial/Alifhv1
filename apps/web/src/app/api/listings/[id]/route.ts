@@ -26,6 +26,7 @@ import {
   deleteCarListing,
   deleteCarListingByStaff,
   updateListingAIModeration,
+  MAJOR_CONTENT_EDIT_KEYS,
   type UpdateCarListingInput,
 } from '@alifh/database';
 import { getListingDetailed } from '@alifh/database';
@@ -464,19 +465,17 @@ export async function PUT(
     });
 
     // AI Auto-Moderation for USER-posted listings
-    // Trigger when user edits ANY content field (not just status changes)
-    // This ensures legitimate edits get auto-approved instead of stuck in review
-    const contentFields = Object.keys(body).filter(k => 
-      !['moderationStatus', 'lifecycleStatus', 'status'].includes(k)
+    // ONLY trigger when MAJOR content fields change (description, price)
+    // Minor edits (images, specs, extras, etc.) don't need re-moderation
+    const hasMajorContentChanges = MAJOR_CONTENT_EDIT_KEYS.some(
+      (key) => body[key] !== undefined
     );
-    
-    const hasContentChanges = contentFields.length > 0;
 
     const shouldRunAIModeration = 
       updated?.postedByRole === 'user' &&
-      hasContentChanges;
+      hasMajorContentChanges;
 
-    console.log(`[AI Check] postedByRole=${updated?.postedByRole}, moderationStatus=${updated?.moderationStatus}, editedFields=${contentFields.length}, shouldRun=${shouldRunAIModeration}`);
+    console.log(`[AI Check] postedByRole=${updated?.postedByRole}, moderationStatus=${updated?.moderationStatus}, hasMajorChanges=${hasMajorContentChanges}, shouldRun=${shouldRunAIModeration}`);
     
     if (shouldRunAIModeration && updated) {
       console.log(`[AI Moderation] Starting AI moderation for listing ${id}...`);

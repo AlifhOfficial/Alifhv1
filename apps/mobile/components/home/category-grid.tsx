@@ -22,14 +22,18 @@ import { useRouter } from 'expo-router';
 
 import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { useSearch } from '@/context/search-context';
 import { HapticPressable, Heading, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
 import { CarCardList } from '@/components/cards/car-card-list';
+import type { SearchParams as GridSearchParams } from '@/lib/search-api';
 
 // ============================================================================
 // CATEGORY CARD SKELETON
 // ============================================================================
 
 const CategoryCardSkeleton = memo(function CategoryCardSkeleton() {
+  const { colors } = useTheme();
+  
   return (
     <ScrollView
       horizontal
@@ -38,12 +42,12 @@ const CategoryCardSkeleton = memo(function CategoryCardSkeleton() {
     >
       {[1, 2].map((i) => (
         <View key={i} style={styles.cardWrapper}>
-          <View style={styles.skeletonCard}>
-            <Skeleton width={120} height={90} borderRadius={Radius.lg} style={{ backgroundColor: '#1A1A1A' }} />
+          <View style={[styles.skeletonCard, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}>
+            <Skeleton width={120} height={90} borderRadius={Radius.lg} />
             <View style={styles.skeletonCardContent}>
-              <Skeleton width="80%" height={14} style={{ backgroundColor: '#1A1A1A' }} />
-              <Skeleton width="40%" height={12} style={{ backgroundColor: '#1A1A1A' }} />
-              <Skeleton width="60%" height={12} style={{ backgroundColor: '#1A1A1A' }} />
+              <Skeleton width="80%" height={14} />
+              <Skeleton width="40%" height={12} />
+              <Skeleton width="60%" height={12} />
             </View>
           </View>
         </View>
@@ -97,6 +101,8 @@ interface CategoryCardProps {
   name: string;
   /** Subtitle explaining the category */
   subtitle?: string;
+  /** Search params from grid config for "Browse all" navigation */
+  searchParams?: GridSearchParams;
   /** Listings to display */
   listings: CategoryListingItem[];
   /** Loading state */
@@ -109,6 +115,7 @@ export const CategoryCard = memo(function CategoryCard({
   id,
   name,
   subtitle,
+  searchParams,
   listings,
   isLoading = false,
   onCategoryPress,
@@ -116,10 +123,74 @@ export const CategoryCard = memo(function CategoryCard({
 }: CategoryCardProps) {
   const { colors } = useTheme();
   const router = useRouter();
+  const { applySearch, clearSearch, clearFilterParams, updateFilterParams, resetSort } = useSearch();
 
   const handleCategoryPress = useCallback(() => {
     onCategoryPress?.(id);
-  }, [id, onCategoryPress]);
+    
+    // Clear ALL existing state first (search, filters, sort)
+    clearSearch();
+    clearFilterParams();
+    resetSort();
+    
+    // Apply search params from grid config
+    if (searchParams) {
+      // Extract filter params vs search params
+      // Note: sortBy, limit, page are internal params not used for browse navigation
+      const { make, model, sortBy, limit, page, ...filterParams } = searchParams;
+      
+      // Apply make/model to search context
+      if (make) {
+        const makeArray = Array.isArray(make) ? make : [make];
+        applySearch({ make: makeArray });
+      }
+      if (model) {
+        const modelArray = Array.isArray(model) ? model : [model];
+        applySearch({ model: modelArray });
+      }
+      
+      // Apply filter params (bodyType, fuelType, priceMin, priceMax, specs, etc.)
+      const mappedFilters: Record<string, unknown> = {};
+      
+      if (filterParams.bodyType) {
+        mappedFilters.bodyType = Array.isArray(filterParams.bodyType) 
+          ? filterParams.bodyType 
+          : [filterParams.bodyType];
+      }
+      if (filterParams.fuelType) {
+        mappedFilters.fuelType = Array.isArray(filterParams.fuelType)
+          ? filterParams.fuelType
+          : [filterParams.fuelType];
+      }
+      if (filterParams.specs) {
+        mappedFilters.specs = Array.isArray(filterParams.specs)
+          ? filterParams.specs
+          : [filterParams.specs];
+      }
+      if (filterParams.priceMin !== undefined) {
+        mappedFilters.priceMin = filterParams.priceMin;
+      }
+      if (filterParams.priceMax !== undefined) {
+        mappedFilters.priceMax = filterParams.priceMax;
+      }
+      if (filterParams.condition) {
+        mappedFilters.condition = filterParams.condition;
+      }
+      if (filterParams.isBlkListing !== undefined) {
+        mappedFilters.isBlkListing = filterParams.isBlkListing;
+      }
+      if (filterParams.isBlackTierPartner !== undefined) {
+        mappedFilters.isBlackTierPartner = filterParams.isBlackTierPartner;
+      }
+      
+      if (Object.keys(mappedFilters).length > 0) {
+        updateFilterParams(mappedFilters);
+      }
+    }
+    
+    // Navigate to browse screen
+    router.push('/browse' as any);
+  }, [id, searchParams, onCategoryPress, applySearch, clearSearch, clearFilterParams, updateFilterParams, resetSort, router]);
 
   const handleCarPress = useCallback((listingId: string) => {
     onCarPress?.(listingId);
@@ -132,10 +203,10 @@ export const CategoryCard = memo(function CategoryCard({
   }
 
   return (
-    <View style={[styles.categoryCard, { borderColor: colors.glassBorderOnDark, backgroundColor: colors.oledBlack }]}>
+    <View style={[styles.categoryCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
       {/* Header - Category Name & Subtitle */}
       <View style={styles.header}>
-        <Heading size="small" style={[styles.categoryTitle, { color: colors.oledWhite }]}>{name}</Heading>
+        <Heading size="small" style={[styles.categoryTitle, { color: colors.text }]}>{name}</Heading>
         {subtitle && (
           <Supporting size="small" style={[styles.categorySubtitle, { color: colors.textTertiary }]}>{subtitle}</Supporting>
         )}
@@ -175,9 +246,9 @@ export const CategoryCard = memo(function CategoryCard({
 
       {/* CTA Footer */}
       <HapticPressable onPress={handleCategoryPress} style={styles.footer}>
-        <Heading size="small" style={[styles.browseText, { color: colors.oledWhite }]}>Browse all</Heading>
-        <View style={[styles.arrowCircle, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorderOnDark }]}>
-          <ArrowRight size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2.5} />
+        <Heading size="small" style={[styles.browseText, { color: colors.text }]}>Browse all</Heading>
+        <View style={[styles.arrowCircle, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+          <ArrowRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2.5} />
         </View>
       </HapticPressable>
     </View>
@@ -209,14 +280,14 @@ export const CategoryGrid = memo(function CategoryGrid({
   if (isLoading && categories.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={[styles.categoryCard, { borderColor: colors.glassBorderOnDark, backgroundColor: colors.oledBlack }]}>
+        <View style={[styles.categoryCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
           <View style={styles.header}>
-            <Skeleton width="50%" height={20} style={{ backgroundColor: '#1A1A1A' }} />
-            <Skeleton width="70%" height={14} style={{ marginTop: Spacing.xs, backgroundColor: '#1A1A1A' }} />
+            <Skeleton width="50%" height={20} />
+            <Skeleton width="70%" height={14} style={{ marginTop: Spacing.xs }} />
           </View>
           <CategoryCardSkeleton />
           <View style={styles.footer}>
-            <Skeleton width="30%" height={16} style={{ backgroundColor: '#1A1A1A' }} />
+            <Skeleton width="30%" height={16} />
             <SkeletonCircle size={Sizes.bubble} />
           </View>
         </View>
@@ -285,8 +356,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     borderRadius: Radius['2xl'],
     borderWidth: 1,
-    borderColor: '#1A1A1A',
-    backgroundColor: '#0A0A0A',
     padding: Spacing.lg,
     gap: Spacing.xl,
   },

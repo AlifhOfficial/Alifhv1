@@ -18,13 +18,13 @@ import {
   ImageSourcePropType,
 } from 'react-native';
 import { Image, ImageSource } from 'expo-image';
-import { ArrowRight, Heart } from 'lucide-react-native';
+import { ArrowRight, Heart, CheckCircle2 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getThumbUrl } from '@/lib/config';
-import { HapticPressable, Heading, Data, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
+import { HapticPressable, Heading, Data, Supporting, Skeleton, SkeletonCircle, Label, BrandAvatar } from '@/components/ui';
 import { type PartnerListItem } from '@/lib/partner-api';
 import { type ListingCard } from '@/lib/search-api';
 
@@ -99,6 +99,8 @@ export function partnerToDisplayData(
     logo: partner.logoUrl || partner.logo,
     rating: partner.googleRating || partner.platformRating,
     reviewCount: partner.googleReviewCount || partner.platformReviewCount,
+    isVerified: partner.isVerified,
+    isBlk: partner.badges?.includes('blk') || partner.tier === 'black',
     listings: listings.map(l => ({
       id: l.id,
       price: l.price,
@@ -118,6 +120,8 @@ export interface PartnerDisplayData {
   logo?: ImageSourcePropType | string | null;
   rating?: number | null;
   reviewCount?: number | null;
+  isVerified?: boolean;
+  isBlk?: boolean;
   listings: PartnerListingItem[];
 }
 
@@ -181,14 +185,20 @@ function formatReviewCount(count: number): string {
 // PRODUCT CARD - White background with price & favorite
 // ============================================================================
 
+// Dark glass constants for BLK partners (forced dark mode)
+const BLK_GLASS_BACKGROUND = '#0D0D0D';
+const BLK_GLASS_BORDER = 'rgba(255,255,255,0.14)';
+
 interface ProductCardProps {
   listing: PartnerListingItem;
+  isBlk?: boolean;
   onPress?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
 }
 
 const ProductCard = memo(function ProductCard({
   listing,
+  isBlk,
   onPress,
   onFavoritePress,
 }: ProductCardProps) {
@@ -202,6 +212,11 @@ const ProductCard = memo(function ProductCard({
     onFavoritePress?.(listing.id);
   }, [listing.id, onFavoritePress]);
 
+  // Always use dark glass styling - product cards have white backgrounds
+  // so dark glass is needed for visibility in both light and dark modes
+  const glassBackground = BLK_GLASS_BACKGROUND;
+  const glassBorder = BLK_GLASS_BORDER;
+
   return (
     <HapticPressable onPress={handlePress} style={[styles.productCard, { backgroundColor: colors.oledWhite }]}>
       {/* White background product image */}
@@ -213,11 +228,11 @@ const ProductCard = memo(function ProductCard({
         transition={200}
       />
       {/* Price Badge - Top Left */}
-      <View style={[styles.priceBadge, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorderOnDark }]}>
+      <View style={[styles.priceBadge, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
         <Data size="mini" style={[styles.priceText, { color: colors.oledWhite }]}>{formatCompactPrice(listing.price)}</Data>
       </View>
       {/* Favorite Button - Bottom Right */}
-      <HapticPressable onPress={handleFavoritePress} style={[styles.favoriteButton, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorderOnDark }]}>
+      <HapticPressable onPress={handleFavoritePress} style={[styles.favoriteButton, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
         <Heart size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2} />
       </HapticPressable>
     </HapticPressable>
@@ -256,22 +271,37 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
     router.push(`/listing/${id}` as any);
   }, [onCarPress, router]);
 
+  // Use BLK styling when partner is BLK tier - always dark mode aesthetic
+  const cardBackground = partner.isBlk ? colors.oledBlack : colors.surface;
+  const cardBorder = partner.isBlk ? colors.glassBorderOnDark : colors.border;
+  const textColor = partner.isBlk ? colors.oledWhite : colors.text;
+  const textSecondary = partner.isBlk ? 'rgba(255,255,255,0.6)' : colors.textTertiary;
+
   return (
-    <View style={[styles.partnerCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+    <View style={[styles.partnerCard, { borderColor: cardBorder, backgroundColor: cardBackground }]}>
       {/* Header - Logo, Name & Rating */}
       <View style={styles.header}>
-        <View style={[styles.logoContainer, { backgroundColor: colors.surface }]}>
-          <Image
-            source={toImageSource(partner.logo)}
-            style={styles.logo}
-            contentFit="cover"
-            placeholder={IMAGE_BLURHASH}
-          />
-        </View>
+        <BrandAvatar
+          src={typeof partner.logo === 'string' ? partner.logo : null}
+          name={partner.name}
+          size="lg"
+          shape="round"
+          glass
+        />
         <View style={styles.headerInfo}>
-          <Heading size="small" style={[styles.partnerName, { color: colors.text }]}>{partner.name}</Heading>
+          <View style={styles.nameRow}>
+            <Heading size="small" style={[styles.partnerName, { color: textColor }]}>{partner.name}</Heading>
+            {!partner.isBlk && partner.isVerified && (
+              <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
+            )}
+            {partner.isBlk && (
+              <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder }]}>
+                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
+              </View>
+            )}
+          </View>
           {partner.rating && partner.reviewCount && (
-            <Data size="small" style={[styles.ratingText, { color: colors.textTertiary }]}>
+            <Data size="small" style={[styles.ratingText, { color: textSecondary }]}>
               {partner.rating} ★ ({formatReviewCount(partner.reviewCount)})
             </Data>
           )}
@@ -291,6 +321,7 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
             <ProductCard
               key={listing.id}
               listing={listing}
+              isBlk={partner.isBlk}
               onPress={handleCarPress}
               onFavoritePress={onFavoritePress}
             />
@@ -304,9 +335,12 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
 
       {/* Browse All Footer */}
       <HapticPressable onPress={handleShopAllPress} style={styles.footer}>
-        <Heading size="small" style={[styles.browseAllText, { color: colors.text }]}>Browse all</Heading>
-        <View style={[styles.arrowCircle, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
-          <ArrowRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2.5} />
+        <Heading size="small" style={[styles.browseAllText, { color: textColor }]}>Browse all</Heading>
+        <View style={[styles.arrowCircle, { 
+          backgroundColor: partner.isBlk ? BLK_GLASS_BACKGROUND : colors.glassBackground, 
+          borderColor: partner.isBlk ? BLK_GLASS_BORDER : colors.glassBorder 
+        }]}>
+          <ArrowRight size={Sizes.iconSm} color={partner.isBlk ? colors.oledWhite : colors.icon} strokeWidth={2.5} />
         </View>
       </HapticPressable>
     </View>
@@ -399,23 +433,23 @@ const styles = StyleSheet.create({
     paddingTop: Spacing['2xl'],
     paddingBottom: Spacing.xl,
   },
-  logoContainer: {
-    width: Sizes.avatarLg,
-    height: Sizes.avatarLg,
-    borderRadius: Sizes.avatarLg / 2,
-    overflow: 'hidden',
-  },
-  logo: {
-    width: Sizes.avatarLg,
-    height: Sizes.avatarLg,
-    borderRadius: Sizes.avatarLg / 2,
-  },
   headerInfo: {
     flex: 1,
     gap: Spacing.xs / 2,
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
   partnerName: {
     letterSpacing: -0.3,
+  },
+  blkBadge: {
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 2,
+    borderRadius: Radius.none,
+    borderWidth: 1,
   },
   ratingText: {
   },

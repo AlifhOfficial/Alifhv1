@@ -24,7 +24,6 @@ import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/context/theme-context';
 import { useListingFavorite } from '@/context/favorites-context';
 import { useAuth } from '@/context/auth-context';
-import { playFavChime, playSuperlikeChime } from '@/lib/chime';
 import { Colors } from '@/constants/theme';
 import { HapticPressable } from './haptic-pressable';
 import {
@@ -132,7 +131,6 @@ export function useFavoriteActions(
       // Still fire effects when toggling ON
       if (!isFavorite) {
         favConfetti.fire({ colors: FAVORITE_COLORS, count: 10 });
-        playFavChime();
       }
       return;
     }
@@ -146,7 +144,6 @@ export function useFavoriteActions(
     // Fire effects before toggle (for turning ON)
     if (!isFavorite) {
       favConfetti.fire({ colors: FAVORITE_COLORS, count: 10 });
-      playFavChime();
     }
 
     favoriteState.toggleFavorite().catch((err) => {
@@ -173,7 +170,6 @@ export function useFavoriteActions(
       options.onSuperlikePress(listingId);
       if (!isSuperliked) {
         superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
-        playSuperlikeChime();
       }
       return;
     }
@@ -219,7 +215,6 @@ export function useFavoriteActions(
   const handleConfirmSuperlike = useCallback(() => {
     setShowConfirmSheet(false);
     superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
-    playSuperlikeChime();
     favoriteState.toggleSuperlike().catch((err) => {
       if (err?.message === 'AUTH_REQUIRED') {
         showAuthSheet('saved');

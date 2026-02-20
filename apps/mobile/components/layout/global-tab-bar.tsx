@@ -54,6 +54,12 @@ const isBrowsePath = (path: string) => {
          normalized.includes('/browse');
 };
 
+// Check if pathname is on BLK tab
+const isBlkPath = (path: string) => {
+  const normalized = path.toLowerCase();
+  return normalized === '/blk' || normalized.endsWith('/blk');
+};
+
 // Check if pathname is on home tab
 const isHomePath = (path: string) => {
   return path === '/' || path === '/(tabs)' || path === '/(tabs)/index';
@@ -98,12 +104,15 @@ export function GlobalTabBar() {
 
   // Check if on browse tab first (always show on browse, regardless of context)
   const onBrowseTab = isBrowsePath(pathname);
+  
+  // Check if on BLK tab
+  const onBlkTab = isBlkPath(pathname);
 
   // ── Hard hide: never render on blocklisted screens ─────────────────────
   const shouldHide = HIDE_TAB_BAR_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'));
   
-  // Respect isTabBarVisible from context, but ALWAYS show on browse tab
-  const shouldHideByContext = !isTabBarVisible && !onBrowseTab;
+  // Respect isTabBarVisible from context, but ALWAYS show on browse/BLK tab
+  const shouldHideByContext = !isTabBarVisible && !onBrowseTab && !onBlkTab;
 
   // Sheet states
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -112,14 +121,14 @@ export function GlobalTabBar() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  // Check if current screen is NOT a main tab OR is on browse tab (show back button)
-  const showBackButton = !MAIN_TAB_PATHS.includes(pathname) || onBrowseTab;
+  // Check if current screen is NOT a main tab OR is on browse/BLK tab (show back button)
+  const showBackButton = !MAIN_TAB_PATHS.includes(pathname) || onBrowseTab || onBlkTab;
 
-  // Show search/sort bubbles on browse tab
+  // Show search/sort bubbles only on browse tab (BLK tab stays clean with just back button)
   const showSearchBubble = onBrowseTab;
 
-  // Show main tabs pill only when NOT on browse tab
-  const showMainTabs = !onBrowseTab;
+  // Show main tabs pill only when NOT on browse or BLK tab
+  const showMainTabs = !onBrowseTab && !onBlkTab;
 
   // Check if on home tab (show create bubble) - use robust matching
   const showCreateBubble = isHomePath(pathname);
@@ -377,13 +386,16 @@ export function GlobalTabBar() {
     <View style={styles.container}>
       <View style={[styles.tabBarContent, { paddingBottom: insets.bottom + Spacing.xs }]}>
         <View style={styles.navGroup}>
-          {/* Back bubble */}
+          {/* Back bubble - BLK styled on BLK tab */}
           <AnimatedPressable
             onPress={handleBack}
             style={[
               styles.backBubble,
               styles.glass,
-              {
+              onBlkTab ? {
+                borderColor: Colors.dark.blkBorder,
+                backgroundColor: Colors.dark.oledBlack,
+              } : {
                 borderColor: colors.glassBorder,
                 backgroundColor: colors.glassBackground,
               },
@@ -393,7 +405,7 @@ export function GlobalTabBar() {
           >
             <ChevronLeft
               size={Sizes.iconMd}
-              color={colors.text}
+              color={onBlkTab ? Colors.dark.blkText : colors.text}
               strokeWidth={2}
             />
           </AnimatedPressable>

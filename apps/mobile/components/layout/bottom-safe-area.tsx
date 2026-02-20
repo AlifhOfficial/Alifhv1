@@ -8,10 +8,14 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { usePathname } from 'expo-router';
 import type { ColorValue } from 'react-native';
 
 import { useTheme } from '@/context/theme-context';
 import { Colors, Layout } from '@/constants/theme';
+
+// Paths where the global bottom gradient should NOT render (they have their own)
+const HIDE_GRADIENT_PATHS = ['/blk'];
 
 /** Convert a hex color (#RGB or #RRGGBB) to rgba() with the given opacity */
 function hexToRgba(hex: string, alpha: number): string {
@@ -25,7 +29,13 @@ function hexToRgba(hex: string, alpha: number): string {
 export function BottomSafeAreaGradient() {
   const { colorScheme } = useTheme();
   const insets = useSafeAreaInsets();
+  const pathname = usePathname();
   const colors = Colors[colorScheme];
+
+  // Hide on screens that have their own bottom gradient
+  if (HIDE_GRADIENT_PATHS.includes(pathname)) {
+    return null;
+  }
 
   // Use rgba colors for consistent gradient rendering on both Android and iOS
   const isLightMode = colorScheme === 'light';

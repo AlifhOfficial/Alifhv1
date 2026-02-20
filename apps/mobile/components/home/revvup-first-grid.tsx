@@ -17,13 +17,12 @@ import {
   Dimensions,
   ImageSourcePropType,
 } from 'react-native';
-import { Image, ImageSource } from 'expo-image';
 import { ArrowRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { HapticPressable, Heading, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
+import { HapticPressable, Heading, Supporting, Skeleton, SkeletonCircle, BrandAvatar } from '@/components/ui';
 import { type PartnerListItem } from '@/lib/partner-api';
 
 // ============================================================================
@@ -40,7 +39,7 @@ const FoundingPartnersSkeleton = memo(function FoundingPartnersSkeleton() {
       {[1, 2, 3, 4, 5].map((i) => (
         <View key={i} style={styles.partnerItem}>
           <SkeletonCircle size={Sizes.avatarLg} />
-          <Skeleton width="80%" height={12} style={{ marginTop: Spacing.sm, backgroundColor: '#1A1A1A' }} />
+          <Skeleton width="80%" height={12} style={{ marginTop: Spacing.sm }} />
         </View>
       ))}
     </ScrollView>
@@ -72,19 +71,6 @@ export function partnerToFoundingItem(partner: PartnerListItem): FoundingPartner
 // ============================================================================
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const IMAGE_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
-
-// ============================================================================
-// UTILITIES
-// ============================================================================
-
-/** Convert image source to expo-image compatible format */
-function toImageSource(source: ImageSourcePropType | string | undefined | null): ImageSource | undefined {
-  if (!source) return undefined;
-  if (typeof source === 'string') return { uri: source };
-  // Handle number (require() assets) and other ImageSourcePropType values
-  return source as ImageSource;
-}
 
 // ============================================================================
 // PARTNER CARD
@@ -105,21 +91,24 @@ const PartnerCard = memo(function PartnerCard({
     onPress?.(partner.id);
   }, [partner.id, onPress]);
 
+  // Get logo as string URL
+  const logoUrl = typeof partner.logo === 'string' ? partner.logo : null;
+
   return (
     <HapticPressable onPress={handlePress} style={styles.partnerItem}>
       {/* Circular Avatar */}
-      <View style={[styles.avatarContainer, { backgroundColor: colors.surface }]}>
-        <Image
-          source={toImageSource(partner.logo)}
-          style={styles.avatar}
-          contentFit="cover"
-          placeholder={IMAGE_BLURHASH}
-          transition={200}
+      <View style={styles.avatarWrapper}>
+        <BrandAvatar
+          src={logoUrl}
+          name={partner.name}
+          size="lg"
+          shape="round"
+          glass
         />
       </View>
 
       {/* Partner Name */}
-      <Supporting size="small" style={[styles.partnerName, { color: colors.oledWhite }]} numberOfLines={1}>
+      <Supporting size="small" style={[styles.partnerName, { color: colors.text }]}>
         {partner.name}
       </Supporting>
     </HapticPressable>
@@ -164,11 +153,11 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.oledBlack, borderColor: colors.glassBorderOnDark }]}>
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
-          <Heading size="medium" style={{ color: colors.oledWhite }}>Revvup first</Heading>
+          <Heading size="medium" style={{ color: colors.text }}>Revvup first</Heading>
         </View>
       </View>
 
@@ -198,11 +187,11 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
 
       {/* Browse All Footer */}
       <HapticPressable onPress={handleBrowseAllPress} style={styles.footer}>
-        <Heading size="small" style={[styles.browseAllText, { color: colors.oledWhite }]}>
+        <Heading size="small" style={[styles.browseAllText, { color: colors.text }]}>
           Browse all
         </Heading>
-        <View style={[styles.arrowCircle, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorderOnDark }]}>
-          <ArrowRight size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2.5} />
+        <View style={[styles.arrowCircle, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+          <ArrowRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2.5} />
         </View>
       </HapticPressable>
     </View>
@@ -247,19 +236,10 @@ const styles = StyleSheet.create({
   },
   partnerItem: {
     alignItems: 'center',
-    width: Sizes.avatarLg + Spacing['2xl'],
+    minWidth: Sizes.avatarLg,
   },
-  avatarContainer: {
+  avatarWrapper: {
     marginBottom: Spacing.sm,
-    width: Sizes.avatarLg,
-    height: Sizes.avatarLg,
-    borderRadius: Sizes.avatarLg / 2,
-    overflow: 'hidden',
-  },
-  avatar: {
-    width: Sizes.avatarLg,
-    height: Sizes.avatarLg,
-    borderRadius: Sizes.avatarLg / 2,
   },
   partnerName: {
     textAlign: 'center',

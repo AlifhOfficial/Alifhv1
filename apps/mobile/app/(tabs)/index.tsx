@@ -110,6 +110,7 @@ const GridItem = React.memo(function GridItem({ gridState, partners }: GridItemP
           id={config.id}
           name={config.title}
           subtitle={config.subtitle}
+          searchParams={config.searchParams}
           listings={data.listings.map(l => ({
             id: l.id,
             make: l.make,

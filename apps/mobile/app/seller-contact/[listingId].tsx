@@ -167,9 +167,49 @@ export default function SellerContactScreen() {
         listingId,
         partnerId: listing.sellerData.partnerId ?? undefined,
       });
+      
+      // Build conversation data to pass to chat screen (avoids refetch)
+      const listingData = listing.listing;
+      const listingTitle = `${listingData.year} ${listingData.make} ${listingData.model}`;
+      const listingThumbnail = listingData.thumbnail || listingData.images?.[0] || null;
+      
+      const conversationData = {
+        id: response.conversationId,
+        type: listing.sellerData.partnerId ? 'listing' : 'direct',
+        status: 'active',
+        listingId,
+        partnerId: listing.sellerData.partnerId ?? null,
+        subject: null,
+        lastMessageAt: new Date().toISOString(),
+        lastMessagePreview: null,
+        messageCount: 0,
+        unreadCount: 0,
+        isArchived: false,
+        isMuted: false,
+        isPinned: false,
+        otherParticipant: {
+          id: otherUserId,
+          name: seller?.name ?? null,
+          avatarUrl: seller?.avatar ?? null,
+        },
+        listing: {
+          id: listingId,
+          title: listingTitle,
+          thumbnail: listingThumbnail,
+        },
+        partner: listing.sellerData.partnerId && listing.sellerData.partner ? {
+          id: listing.sellerData.partnerId,
+          name: listing.sellerData.partner.brandName ?? seller?.name ?? '',
+          logo: listing.sellerData.partner.logo ?? null,
+        } : null,
+      };
+      
       router.push({
         pathname: '/chat/[conversationId]',
-        params: { conversationId: response.conversationId },
+        params: { 
+          conversationId: response.conversationId,
+          conversationData: JSON.stringify(conversationData),
+        },
       });
     } catch (err) {
       console.error('Failed to start chat:', err);
@@ -177,7 +217,7 @@ export default function SellerContactScreen() {
     } finally {
       setIsChatLoading(false);
     }
-  }, [listing, listingId, isAuthenticated, router]);
+  }, [listing, listingId, seller, isAuthenticated, router]);
 
   const handleBookViewing = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
