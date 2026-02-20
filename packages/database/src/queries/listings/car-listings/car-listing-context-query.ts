@@ -22,6 +22,9 @@ export interface ListingModerationContext {
   expiresAt: Date | null;
   rejectionReason: string | null;
   suspensionReason: string | null;
+  // For re-moderation comparison
+  description: string | null;
+  price: number | null;
 }
 
 export async function getListingModerationContext(
@@ -44,6 +47,9 @@ export async function getListingModerationContext(
           ${carListing.specialNotes} -> 'moderation' ->> 'reason'
         )
       `,
+      // For re-moderation comparison
+      description: carListing.description,
+      price: carListing.price,
     })
     .from(carListing)
     .where(eq(carListing.id, listingId))

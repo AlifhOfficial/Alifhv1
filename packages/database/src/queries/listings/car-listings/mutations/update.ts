@@ -103,10 +103,24 @@ function buildUpdateData(input: UpdateCarListingInput, now: Date): Record<string
 
 /**
  * Check if input contains any MAJOR content edits that would trigger re-moderation.
+ * Only triggers when description or price ACTUALLY changed (not just present in payload).
  * Minor edits (extras, tags, specs, colors, etc.) do not trigger re-moderation.
  */
-function hasMajorContentEdits(input: UpdateCarListingInput): boolean {
-  return MAJOR_CONTENT_EDIT_KEYS.some((k) => (input as any)[k] !== undefined);
+function hasMajorContentEdits(
+  input: UpdateCarListingInput,
+  current: { description: string | null; price: number | null }
+): boolean {
+  // Check if description actually changed
+  if (input.description !== undefined) {
+    const oldDesc = current.description ?? '';
+    const newDesc = input.description ?? '';
+    if (oldDesc !== newDesc) return true;
+  }
+  // Check if price actually changed
+  if (input.price !== undefined) {
+    if (current.price !== input.price) return true;
+  }
+  return false;
 }
 
 /**
@@ -303,7 +317,7 @@ export async function updateCarListing(
 
   // User-posted listings: MAJOR edits while public trigger re-moderation (V1: hide on edit).
   // Minor edits (extras, tags, specs, colors, etc.) do NOT trigger re-moderation.
-  if (current.postedByRole === 'user' && isCurrentlyPublic && hasMajorContentEdits(input)) {
+  if (current.postedByRole === 'user' && isCurrentlyPublic && hasMajorContentEdits(input, current)) {
     updateData.moderationStatus = 'pending_review';
     // Don't update submittedAt - keep original submission date so listing doesn't appear as new
     updateData.lastModeratedAt = now;
@@ -427,7 +441,7 @@ export async function updateCarListingByStaff(
 
   // Only treat as an "edit" when content/lifecycle changes (not just moderation).
   // Use major content check + minor content keys for lastEditedAt
-  if (hasMajorContentEdits(input) || hasMinorContentEdits(input) || input.lifecycleStatus !== undefined) {
+  if (hasMajorContentEdits(input, current) || hasMinorContentEdits(input) || input.lifecycleStatus !== undefined) {
     updateData.lastEditedAt = now;
   }
 
@@ -439,7 +453,7 @@ export async function updateCarListingByStaff(
 
   // User-posted listings: MAJOR edits while public trigger re-moderation (V1: hide on edit).
   // Minor edits (extras, tags, specs, colors, etc.) do NOT trigger re-moderation.
-  if (current.postedByRole === 'user' && isCurrentlyPublic && hasMajorContentEdits(input)) {
+  if (current.postedByRole === 'user' && isCurrentlyPublic && hasMajorContentEdits(input, current)) {
     updateData.moderationStatus = 'pending_review';
     // Don't update submittedAt - keep original submission date so listing doesn't appear as new
     updateData.lastModeratedAt = now;

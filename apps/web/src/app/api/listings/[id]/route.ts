@@ -26,7 +26,6 @@ import {
   deleteCarListing,
   deleteCarListingByStaff,
   updateListingAIModeration,
-  MAJOR_CONTENT_EDIT_KEYS,
   type UpdateCarListingInput,
 } from '@alifh/database';
 import { getListingDetailed } from '@alifh/database';
@@ -465,11 +464,12 @@ export async function PUT(
     });
 
     // AI Auto-Moderation for USER-posted listings
-    // ONLY trigger when MAJOR content fields change (description, price)
+    // ONLY trigger when MAJOR content fields ACTUALLY change (description, price)
     // Minor edits (images, specs, extras, etc.) don't need re-moderation
-    const hasMajorContentChanges = MAJOR_CONTENT_EDIT_KEYS.some(
-      (key) => body[key] !== undefined
-    );
+    // Compare against old values to avoid re-moderation when form sends unchanged fields
+    const hasMajorContentChanges = 
+      (body.description !== undefined && body.description !== (listing.description ?? '')) ||
+      (body.price !== undefined && body.price !== listing.price);
 
     const shouldRunAIModeration = 
       updated?.postedByRole === 'user' &&
