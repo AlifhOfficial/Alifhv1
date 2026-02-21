@@ -224,7 +224,11 @@ export function WebSocketProvider({ children, userId }: WebSocketProviderProps) 
 
   // Connect/disconnect based on userId
   useEffect(() => {
-    if (!userId) return;
+    // If no userId (signed out), disconnect the WebSocket
+    if (!userId) {
+      manager.disconnect();
+      return;
+    }
 
     manager.connect(userId);
     const unsubscribe = manager.onConnectionChange(setIsConnected);

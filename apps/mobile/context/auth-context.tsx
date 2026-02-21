@@ -94,18 +94,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const { user: storedUser, session } = await AuthAPI.getSession();
       
       if (storedUser && session) {
-        // Set stored user immediately for quick UI
-        setUser(storedUser);
-        setIsAuthenticated(true);
-        
-        // Then refresh from server to get enriched data (avatarUrl, etc.)
+        // Validate with server BEFORE setting authenticated state
+        // This prevents race conditions where WebSocket connects with stale userId
         const result = await AuthAPI.refreshSession();
+        
         if (result.success && result.user) {
+          // Server validated - safe to set auth state
           setUser(result.user);
+          setIsAuthenticated(true);
+        } else {
+          // Server couldn't validate session (expired, invalidated, or database changed)
+          // Clear stale local session to prevent 401 errors on API calls
+          console.warn('[AuthContext] Server session invalid, clearing stale local session');
+          await AuthAPI.signOut();
+          setUser(null);
+          setIsAuthenticated(false);
         }
       }
     } catch (error) {
       console.error('[AuthContext] Failed to check session:', error);
+      // On error, clear any stale session
+      await AuthAPI.signOut().catch(() => {});
+      setUser(null);
+      setIsAuthenticated(false);
     } finally {
       setIsLoading(false);
     }
