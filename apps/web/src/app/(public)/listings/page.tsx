@@ -8,6 +8,9 @@ import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { ListingsView } from '@/components/listings/listings-view';
 
+// Cache page for 5 minutes at edge (Cloudflare), revalidate in background
+export const revalidate = 300;
+
 interface PageProps {
   searchParams: Promise<{
     [key: string]: string | string[] | undefined;

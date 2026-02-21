@@ -71,6 +71,20 @@ const nextConfig = {
           },
         ],
       },
+      // Cache listings page at Cloudflare edge for 5 minutes
+      {
+        source: '/listings',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=300, stale-while-revalidate=600',
+          },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'public, max-age=300',
+          },
+        ],
+      },
     ];
   },
   
