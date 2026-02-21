@@ -1,5 +1,5 @@
 /**
- * Database Audit Script (Standalone with Neon HTTP)
+ * Database Audit Script (Standalone with postgres-js)
  * 
  * This script performs deep database analysis:
  * - Table structure analysis
@@ -18,7 +18,7 @@ import { resolve } from 'path';
 // Load .env.local from root
 config({ path: resolve(__dirname, '../../../.env.local') });
 
-import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
 
 // ============================================================================
 // CONFIGURATION
@@ -32,7 +32,7 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-const sql = neon(DATABASE_URL);
+const sql = postgres(DATABASE_URL, { max: 1 });
 
 // ============================================================================
 // TYPES

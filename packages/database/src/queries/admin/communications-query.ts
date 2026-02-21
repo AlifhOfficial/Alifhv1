@@ -154,7 +154,8 @@ export async function markCommunicationRead(id: string): Promise<boolean> {
     .set({ isRead: true })
     .where(eq(communications.id, id));
 
-  return result.rowCount !== null && result.rowCount > 0;
+  const affectedRows = (result as any).count ?? (result as any).rowCount ?? 0;
+  return affectedRows > 0;
 }
 
 /**
@@ -167,7 +168,7 @@ export async function markCommunicationsRead(ids: string[]): Promise<number> {
     .set({ isRead: true })
     .where(inArray(communications.id, ids));
 
-  return result.rowCount || 0;
+  return (result as any).count ?? (result as any).rowCount ?? 0;
 }
 
 /**
@@ -201,7 +202,8 @@ export async function updateCommunicationStatus(
     .set(updateData)
     .where(eq(communications.id, id));
 
-  return result.rowCount !== null && result.rowCount > 0;
+  const affectedRows = (result as any).count ?? (result as any).rowCount ?? 0;
+  return affectedRows > 0;
 }
 
 /**
@@ -215,7 +217,8 @@ export async function addCommunicationNote(
     .set({ adminNote: note.trim() })
     .where(eq(communications.id, id));
 
-  return result.rowCount !== null && result.rowCount > 0;
+  const affectedRows = (result as any).count ?? (result as any).rowCount ?? 0;
+  return affectedRows > 0;
 }
 
 /**
@@ -225,7 +228,8 @@ export async function deleteCommunication(id: string): Promise<boolean> {
   const result = await db.delete(communications)
     .where(eq(communications.id, id));
 
-  return result.rowCount !== null && result.rowCount > 0;
+  const affectedRows = (result as any).count ?? (result as any).rowCount ?? 0;
+  return affectedRows > 0;
 }
 
 /**

@@ -223,8 +223,9 @@ export const auth = betterAuth({
         WHERE u.id = ${user.id}
       `);
       
-      const rows = result.rows;
-      if (!rows || rows.length === 0) {
+      // postgres-js returns rows directly (no .rows)
+      const rows = Array.isArray(result) ? result : [];
+      if (rows.length === 0) {
         return { user, session };
       }
       
@@ -421,7 +422,9 @@ export const auth = betterAuth({
         SELECT banned FROM "user" WHERE id = ${userId} LIMIT 1
       `);
       
-      if (result.rows?.[0]?.banned) {
+      // postgres-js returns rows directly (no .rows)
+      const rows = Array.isArray(result) ? result : [];
+      if (rows[0]?.banned) {
         return {
           blocked: true,
           message: "Your account has been suspended.",

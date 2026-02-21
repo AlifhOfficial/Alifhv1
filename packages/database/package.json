@@ -26,10 +26,10 @@
     "format": "bun x prettier --write src/**/*.ts"
   },
   "dependencies": {
-    "@neondatabase/serverless": "1.0.2",
     "@paralleldrive/cuid2": "3.0.4",
     "drizzle-orm": "0.45.1",
-    "pg": "8.16.0"
+    "pg": "8.16.0",
+    "postgres": "3.4.8"
   },
   "devDependencies": {
     "dotenv": "17.2.3",

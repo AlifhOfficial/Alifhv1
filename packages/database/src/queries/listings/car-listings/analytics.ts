@@ -135,7 +135,7 @@ export async function incrementImpressions(listingIds: string[]): Promise<number
     })
     .where(inArray(carListing.id, uniqueIds));
   
-  return result.rowCount ?? uniqueIds.length;
+  return (result as any).count ?? (result as any).rowCount ?? uniqueIds.length;
 }
 
 /**

@@ -617,12 +617,12 @@ export async function getPartnerBookingStats(partnerId: string): Promise<Booking
         cancelledBookings: sql<number>`count(*) filter (where ${booking.status} = 'cancelled')::int`,
         noShowBookings: sql<number>`count(*) filter (where ${booking.status} = 'no_show')::int`,
         todayBookings: sql<number>`count(*) filter (
-          where ${booking.scheduledStartTime} >= ${startOfToday}
-          and ${booking.scheduledStartTime} <= ${endOfToday}
+          where ${booking.scheduledStartTime} >= ${startOfToday.toISOString()}
+          and ${booking.scheduledStartTime} <= ${endOfToday.toISOString()}
           and ${booking.status} in ('pending', 'confirmed')
         )::int`,
         upcomingBookings: sql<number>`count(*) filter (
-          where ${booking.scheduledStartTime} >= ${now}
+          where ${booking.scheduledStartTime} >= ${now.toISOString()}
           and ${booking.status} in ('pending', 'confirmed')
         )::int`,
       })
@@ -666,12 +666,12 @@ export async function getStaffBookingStats(
         cancelledBookings: sql<number>`count(*) filter (where ${booking.status} = 'cancelled')::int`,
         noShowBookings: sql<number>`count(*) filter (where ${booking.status} = 'no_show')::int`,
         todayBookings: sql<number>`count(*) filter (
-          where ${booking.scheduledStartTime} >= ${startOfToday}
-          and ${booking.scheduledStartTime} <= ${endOfToday}
+          where ${booking.scheduledStartTime} >= ${startOfToday.toISOString()}
+          and ${booking.scheduledStartTime} <= ${endOfToday.toISOString()}
           and ${booking.status} in ('pending', 'confirmed')
         )::int`,
         upcomingBookings: sql<number>`count(*) filter (
-          where ${booking.scheduledStartTime} >= ${now}
+          where ${booking.scheduledStartTime} >= ${now.toISOString()}
           and ${booking.status} in ('pending', 'confirmed')
         )::int`,
       })
@@ -729,12 +729,12 @@ export async function checkUserBookingRestrictions(userId: string): Promise<Book
         recentCancellations: sql<number>`count(*) filter (
           where ${booking.status} = 'cancelled'
           and ${booking.cancelledBy} = 'user'
-          and ${booking.cancelledAt} >= ${thirtyDaysAgo}
+          and ${booking.cancelledAt} >= ${thirtyDaysAgo.toISOString()}
         )::int`,
         latestCancel: sql<Date | null>`max(${booking.cancelledAt}) filter (
           where ${booking.status} = 'cancelled'
           and ${booking.cancelledBy} = 'user'
-          and ${booking.cancelledAt} >= ${thirtyDaysAgo}
+          and ${booking.cancelledAt} >= ${thirtyDaysAgo.toISOString()}
         )`,
       })
       .from(booking)

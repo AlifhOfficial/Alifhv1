@@ -177,7 +177,7 @@ export async function getPublicBlackListings(options?: {
         eq(carListing.moderationStatus, 'approved'),
         eq(carListing.lifecycleStatus, 'active'),
         eq(carListing.needsRemoderation, false),
-        sql`${carListing.expiresAt} > ${now}`
+        sql`${carListing.expiresAt} > ${now.toISOString()}`
       )
     );
 
@@ -217,7 +217,7 @@ export async function getPublicBlackListings(options?: {
         eq(carListing.moderationStatus, 'approved'),
         eq(carListing.lifecycleStatus, 'active'),
         eq(carListing.needsRemoderation, false),
-        sql`${carListing.expiresAt} > ${now}`
+        sql`${carListing.expiresAt} > ${now.toISOString()}`
       )
     )
     // Use originalPublishedAt to prevent repost "bump to top" abuse

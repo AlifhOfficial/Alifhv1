@@ -195,7 +195,7 @@ export async function getAdminListingStats(options?: { type?: AdminListingTypeFi
           where ${carListing.moderationStatus} = 'approved'
             and ${carListing.lifecycleStatus} = 'active'
             and ${carListing.expiresAt} is not null
-            and ${carListing.expiresAt} > ${now}
+            and ${carListing.expiresAt} > ${now.toISOString()}
         )
       `,
       draft: sql<number>`count(*) filter (where ${carListing.moderationStatus} = 'draft' and ${carListing.lifecycleStatus} = 'active')`,

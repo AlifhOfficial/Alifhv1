@@ -194,7 +194,8 @@ export async function updateStaffProfileById(
     })
     .where(eq(partnerStaff.id, staffId));
 
-  return (result.rowCount ?? 0) > 0;
+  const affectedRows = (result as any).count ?? (result as any).rowCount ?? 0;
+  return affectedRows > 0;
 }
 
 /**

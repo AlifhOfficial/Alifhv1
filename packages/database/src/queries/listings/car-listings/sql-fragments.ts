@@ -22,7 +22,7 @@ import { carListing } from '../../../schema/listing';
  */
 export function isPublicSql(now?: Date): SQL<boolean> {
   const expiryCheck = now
-    ? sql`${carListing.expiresAt} > ${now}`
+    ? sql`${carListing.expiresAt} > ${now.toISOString()}`
     : sql`${carListing.expiresAt} > now()`;
 
   return sql<boolean>`

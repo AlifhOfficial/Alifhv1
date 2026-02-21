@@ -153,9 +153,9 @@ export async function getPartnerInventoryStats(partnerId: string): Promise<Partn
       totalValue: sql<number>`COALESCE(SUM(${carListing.price}) FILTER (WHERE ${carListing.moderationStatus} = 'approved' AND ${carListing.lifecycleStatus} = 'active'), 0)`,
       avgPrice: sql<number>`AVG(${carListing.price}) FILTER (WHERE ${carListing.moderationStatus} = 'approved' AND ${carListing.lifecycleStatus} = 'active')`,
       // Stale listings (30+ days old, not sold)
-      staleCount: sql<number>`COUNT(*) FILTER (WHERE ${carListing.moderationStatus} = 'approved' AND ${carListing.lifecycleStatus} = 'active' AND ${carListing.publishedAt} < ${thirtyDaysAgo} AND ${carListing.soldAt} IS NULL)`,
+      staleCount: sql<number>`COUNT(*) FILTER (WHERE ${carListing.moderationStatus} = 'approved' AND ${carListing.lifecycleStatus} = 'active' AND ${carListing.publishedAt} < ${thirtyDaysAgo.toISOString()} AND ${carListing.soldAt} IS NULL)`,
       // Expiring soon (within 7 days)
-      expiringCount: sql<number>`COUNT(*) FILTER (WHERE ${carListing.lifecycleStatus} = 'active' AND ${carListing.expiresAt} >= ${now} AND ${carListing.expiresAt} < ${sevenDaysFromNow})`,
+      expiringCount: sql<number>`COUNT(*) FILTER (WHERE ${carListing.lifecycleStatus} = 'active' AND ${carListing.expiresAt} >= ${now.toISOString()} AND ${carListing.expiresAt} < ${sevenDaysFromNow.toISOString()})`,
       // Pending approval
       pendingApprovalCount: sql<number>`COUNT(*) FILTER (WHERE ${carListing.moderationStatus} IN ('submitted', 'pending_review'))`,
       // Needs remoderation
@@ -200,8 +200,8 @@ export async function getPartnerSalesStats(partnerId: string): Promise<PartnerSa
     db
       .select({
         // This month
-        soldThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} >= ${monthStart})`,
-        revenueThisMonth: sql<number>`COALESCE(SUM(${carListing.soldPrice}) FILTER (WHERE ${carListing.soldAt} >= ${monthStart}), 0)`,
+        soldThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} >= ${monthStart.toISOString()})`,
+        revenueThisMonth: sql<number>`COALESCE(SUM(${carListing.soldPrice}) FILTER (WHERE ${carListing.soldAt} >= ${monthStart.toISOString()}), 0)`,
         // All time
         totalSoldAllTime: count(),
         revenueAllTime: sql<number>`COALESCE(SUM(${carListing.soldPrice}), 0)`,
@@ -412,17 +412,17 @@ export async function getPartnerInsightsBookingStats(partnerId: string): Promise
       // Pending bookings
       pendingBookings: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'pending')`,
       // Confirmed bookings (upcoming)
-      confirmedBookings: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'confirmed' AND ${booking.scheduledStartTime} >= ${now})`,
+      confirmedBookings: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'confirmed' AND ${booking.scheduledStartTime} >= ${now.toISOString()})`,
       // Completed this month
-      completedThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'completed' AND ${booking.scheduledStartTime} >= ${monthStart})`,
+      completedThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'completed' AND ${booking.scheduledStartTime} >= ${monthStart.toISOString()})`,
       // Bookings this week
-      bookingsThisWeek: sql<number>`COUNT(*) FILTER (WHERE ${booking.createdAt} >= ${weekStart})`,
+      bookingsThisWeek: sql<number>`COUNT(*) FILTER (WHERE ${booking.createdAt} >= ${weekStart.toISOString()})`,
       // For no-show rate: past bookings this month
-      totalPastBookingsMonth: sql<number>`COUNT(*) FILTER (WHERE ${booking.scheduledStartTime} >= ${monthStart} AND ${booking.scheduledStartTime} < ${now})`,
-      noShowCount: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'no_show' AND ${booking.scheduledStartTime} >= ${monthStart})`,
+      totalPastBookingsMonth: sql<number>`COUNT(*) FILTER (WHERE ${booking.scheduledStartTime} >= ${monthStart.toISOString()} AND ${booking.scheduledStartTime} < ${now.toISOString()})`,
+      noShowCount: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'no_show' AND ${booking.scheduledStartTime} >= ${monthStart.toISOString()})`,
       // For cancellation rate: bookings created this month
-      totalCreatedMonth: sql<number>`COUNT(*) FILTER (WHERE ${booking.createdAt} >= ${monthStart})`,
-      cancelledCount: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'cancelled' AND ${booking.createdAt} >= ${monthStart})`,
+      totalCreatedMonth: sql<number>`COUNT(*) FILTER (WHERE ${booking.createdAt} >= ${monthStart.toISOString()})`,
+      cancelledCount: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'cancelled' AND ${booking.createdAt} >= ${monthStart.toISOString()})`,
     })
     .from(booking)
     .where(eq(booking.partnerId, partnerId));
@@ -467,20 +467,20 @@ export async function getPartnerTrendStats(partnerId: string): Promise<PartnerTr
     // Listing trends: single query with conditional aggregation
     db
       .select({
-        listingsThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.createdAt} >= ${thisMonthStart})`,
-        listingsLastMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.createdAt} >= ${lastMonthStart} AND ${carListing.createdAt} < ${thisMonthStart})`,
-        salesThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${thisMonthStart})`,
-        salesLastMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${lastMonthStart} AND ${carListing.soldAt} < ${thisMonthStart})`,
-        soldThisWeek: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${thisWeekStart})`,
-        soldLastWeek: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${lastWeekStart} AND ${carListing.soldAt} < ${thisWeekStart})`,
+        listingsThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.createdAt} >= ${thisMonthStart.toISOString()})`,
+        listingsLastMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.createdAt} >= ${lastMonthStart.toISOString()} AND ${carListing.createdAt} < ${thisMonthStart.toISOString()})`,
+        salesThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${thisMonthStart.toISOString()})`,
+        salesLastMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${lastMonthStart.toISOString()} AND ${carListing.soldAt} < ${thisMonthStart.toISOString()})`,
+        soldThisWeek: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${thisWeekStart.toISOString()})`,
+        soldLastWeek: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${lastWeekStart.toISOString()} AND ${carListing.soldAt} < ${thisWeekStart.toISOString()})`,
       })
       .from(carListing)
       .where(eq(carListing.partnerId, partnerId)),
     // View trends: single query with conditional aggregation
     db
       .select({
-        viewsThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${listingView.createdAt} >= ${thisMonthStart})`,
-        viewsLastMonth: sql<number>`COUNT(*) FILTER (WHERE ${listingView.createdAt} >= ${lastMonthStart} AND ${listingView.createdAt} < ${thisMonthStart})`,
+        viewsThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${listingView.createdAt} >= ${thisMonthStart.toISOString()})`,
+        viewsLastMonth: sql<number>`COUNT(*) FILTER (WHERE ${listingView.createdAt} >= ${lastMonthStart.toISOString()} AND ${listingView.createdAt} < ${thisMonthStart.toISOString()})`,
       })
       .from(listingView)
       .innerJoin(carListing, eq(listingView.listingId, carListing.id))

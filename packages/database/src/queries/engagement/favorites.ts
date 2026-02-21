@@ -153,10 +153,12 @@ export async function getFavoriteStatusForListings(userId: string) {
   `);
   
   // Split results by type (already ordered by created_at DESC)
+  // postgres-js returns rows directly (no .rows)
   const favorites: string[] = [];
   const superlikes: string[] = [];
+  const rows = Array.isArray(results) ? results : [];
   
-  for (const row of results.rows as Array<{ listing_id: string; type: string }>) {
+  for (const row of rows as Array<{ listing_id: string; type: string }>) {
     if (row.type === 'fav') {
       favorites.push(row.listing_id);
     } else {
@@ -283,16 +285,18 @@ export async function getFavoritesWithListings(
       ) FROM favorite_listings) as listings
   `);
 
-  const row = results.rows[0] as {
+  // postgres-js returns rows directly (no .rows)
+  const rows = Array.isArray(results) ? results : [];
+  const row = rows[0] as {
     favorites: string[] | null;
     superlikes: string[] | null;
     listings: FavoriteListingData[] | null;
-  };
+  } | undefined;
 
   return {
-    favorites: row.favorites ?? [],
-    superlikes: row.superlikes ?? [],
-    listings: row.listings ?? [],
+    favorites: row?.favorites ?? [],
+    superlikes: row?.superlikes ?? [],
+    listings: row?.listings ?? [],
   };
 }
 

@@ -76,7 +76,8 @@ export async function unregisterPushToken(token: string): Promise<boolean> {
     .set({ isActive: false, updatedAt: new Date() })
     .where(eq(pushDeviceToken.token, token));
 
-  return (result.rowCount ?? 0) > 0;
+  const affectedRows = (result as any).count ?? (result as any).rowCount ?? 0;
+  return affectedRows > 0;
 }
 
 /**
@@ -148,7 +149,7 @@ export async function deactivateFailedTokens(maxAttempts: number = 5): Promise<n
       sql`CAST(${pushDeviceToken.failedAttempts} AS INTEGER) >= ${maxAttempts}`
     ));
 
-  return result.rowCount ?? 0;
+  return (result as any).count ?? (result as any).rowCount ?? 0;
 }
 
 /**

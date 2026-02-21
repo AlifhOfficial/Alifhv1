@@ -302,7 +302,7 @@ function buildStatsSelectFields(now: Date) {
         where ${carListing.moderationStatus} = 'approved'
           and ${carListing.lifecycleStatus} = 'active'
           and ${carListing.expiresAt} is not null
-          and ${carListing.expiresAt} > ${now}
+          and ${carListing.expiresAt} > ${now.toISOString()}
       )
     `,
     inReview: sql<number>`

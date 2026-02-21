@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "regions": ["dxb1"],
+
+  "installCommand": "bun install",
+  "buildCommand": "bun run build",
+  "outputDirectory": ".next"
+}

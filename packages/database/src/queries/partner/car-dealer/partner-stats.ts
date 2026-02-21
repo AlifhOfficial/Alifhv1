@@ -57,7 +57,7 @@ export async function calculatePartnerStats(partnerId: string): Promise<PartnerS
             AND ${carListing.lifecycleStatus} = 'active' 
             AND ${carListing.needsRemoderation} = false
             AND ${carListing.expiresAt} IS NOT NULL 
-            AND ${carListing.expiresAt} > ${now}
+            AND ${carListing.expiresAt} > ${now.toISOString()}
           )`.as('inventory_count'),
           totalSales: sql<number>`COUNT(*) FILTER (WHERE 
             ${carListing.lifecycleStatus} = 'sold'

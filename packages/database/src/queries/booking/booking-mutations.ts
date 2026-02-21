@@ -206,8 +206,8 @@ export async function runBookingMaintenance(options?: { retentionDays?: number }
     // Delete old cancelled/expired bookings
     await db.execute(sql`
       delete from booking
-      where (status = 'cancelled' and cancelled_at < ${cutoff})
-         or (status = 'expired' and updated_at < ${cutoff})
+      where (status = 'cancelled' and cancelled_at < ${cutoff.toISOString()})
+         or (status = 'expired' and updated_at < ${cutoff.toISOString()})
     `);
 
     // Delete orphan slots (slots not referenced by any booking)
