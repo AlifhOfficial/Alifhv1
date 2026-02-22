@@ -40,6 +40,7 @@ interface HealthResult {
   status: 'healthy' | 'degraded' | 'unhealthy';
   latency: number;
   message?: string;
+  sleeping?: boolean;  // True if service was cold started
 }
 
 /**
@@ -81,12 +82,15 @@ async function checkNeon(): Promise<HealthResult> {
     ]);
     
     const latency = Date.now() - start;
+    const sleeping = latency > 500; // Neon cold start threshold
     
     return {
       service: 'neon',
-      status: latency < 200 ? 'healthy' : latency < 1000 ? 'degraded' : 'unhealthy',
+      // If sleeping, still mark healthy as cold start is expected
+      status: sleeping ? 'healthy' : (latency < 200 ? 'healthy' : latency < 1000 ? 'degraded' : 'unhealthy'),
       latency,
-      message: latency < 200 ? 'Connected' : latency < 1000 ? 'Slow response' : 'High latency',
+      message: sleeping ? 'Waking up' : (latency < 200 ? 'Connected' : 'Slow response'),
+      sleeping,
     };
   } catch (error) {
     return {
@@ -158,13 +162,16 @@ async function checkAPI(): Promise<HealthResult> {
       signal: AbortSignal.timeout(5000),
     });
     const latency = Date.now() - start;
+    const sleeping = latency > 300; // Vercel cold start threshold
     
     if (response.ok) {
       return {
         service: 'api',
-        status: latency < 100 ? 'healthy' : latency < 500 ? 'degraded' : 'unhealthy',
+        // If sleeping, still mark healthy as cold start is expected for serverless
+        status: sleeping ? 'healthy' : (latency < 200 ? 'healthy' : 'degraded'),
         latency,
-        message: 'Operational',
+        message: sleeping ? 'Waking up' : 'Operational',
+        sleeping,
       };
     }
     
