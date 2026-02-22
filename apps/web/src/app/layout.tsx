@@ -5,6 +5,7 @@ import { QueryProvider } from '@/components/shared/providers/query-provider'
 import { AuthProvider } from '@/providers/auth-provider'
 import { GlobalChatProvider } from '@/components/shared/providers/global-chat-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { Analytics } from '@vercel/analytics/next'
 
 export const viewport: Viewport = {
   themeColor: '#000000',
@@ -85,6 +86,7 @@ export default function RootLayout({
             </QueryProvider>
           </AuthProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )
