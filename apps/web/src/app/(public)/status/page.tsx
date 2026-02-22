@@ -72,15 +72,6 @@ async function getStatusData() {
           uptimePercent90d: 100,
           history: [],
         },
-        {
-          name: 'api',
-          displayName: 'API',
-          currentStatus: 'healthy',
-          currentLatency: 0,
-          currentMessage: 'Operational',
-          uptimePercent90d: 100,
-          history: [],
-        },
       ],
       incidents: [],
     };
