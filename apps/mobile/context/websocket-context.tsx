@@ -48,7 +48,6 @@ class WebSocketManager {
   private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   private attempts = 0;
   private currentUserId: string | null = null;
-  private lastPingAt: number = 0;
   private connectionListeners = new Set<(connected: boolean) => void>();
 
   static getInstance(): WebSocketManager {
@@ -81,32 +80,20 @@ class WebSocketManager {
     this.currentUserId = userId;
 
     const url = `${WS_URL}/ws?userId=${userId}`;
-    const connectStart = Date.now();
-    console.log(`🔌 [WS] Connecting: ${url}`);
 
     try {
       const ws = new WebSocket(url);
       this.ws = ws;
 
       ws.onopen = () => {
-        const connectTime = Date.now() - connectStart;
-        console.log(`✅ [WS] Connected for user: ${userId} (${connectTime}ms)`);
         this.attempts = 0;
         this.notifyConnectionChange(true);
         this.startHeartbeat();
-        // Immediate ping to measure RTT
-        this.lastPingAt = Date.now();
-        this.send({ type: 'ping' });
       };
 
       ws.onmessage = (e) => {
         try {
           const msg = JSON.parse(typeof e.data === 'string' ? e.data : '') as WSMessage;
-          // Measure ping/pong latency
-          if (msg.type === 'pong' && this.lastPingAt) {
-            const rtt = Date.now() - this.lastPingAt;
-            console.log(`📶 [WS] RTT: ${rtt}ms`);
-          }
           this.handlers.forEach((h) => {
             try { h(msg); } catch (err) { console.error('[WS] Handler error:', err); }
           });
@@ -114,12 +101,10 @@ class WebSocketManager {
       };
 
       ws.onerror = () => {
-        console.warn('⚠️ [WS] Connection error');
         ws.close();
       };
 
       ws.onclose = () => {
-        console.log(`❌ [WS] Disconnected`);
         this.ws = null;
         this.notifyConnectionChange(false);
         this.stopHeartbeat();
@@ -127,13 +112,12 @@ class WebSocketManager {
         // Reconnect with exponential backoff (max 30s, 10 attempts)
         if (this.currentUserId === userId && this.attempts < 10) {
           const delay = Math.min(1000 * Math.pow(2, this.attempts), 30000);
-          console.log(`🔄 [WS] Reconnecting in ${delay}ms (attempt ${this.attempts + 1})`);
           this.attempts++;
           this.reconnectTimeout = setTimeout(() => this.connect(userId), delay);
         }
       };
-    } catch (error) {
-      console.warn('⚠️ [WS] Failed to create WebSocket:', error);
+    } catch {
+      // Silent fail
     }
   }
 
@@ -198,7 +182,6 @@ class WebSocketManager {
   private startHeartbeat(): void {
     this.stopHeartbeat();
     this.heartbeatInterval = setInterval(() => {
-      this.lastPingAt = Date.now();
       this.send({ type: 'ping' });
     }, 30000);
   }
