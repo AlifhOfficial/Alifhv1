@@ -22,6 +22,9 @@ export const metadata = {
   },
 };
 
+// ISR: Cache for 1 day - data fetched client-side
+export const revalidate = 86400;
+
 export default function BlackPage() {
   return <BlackDirectoryView />;
 }

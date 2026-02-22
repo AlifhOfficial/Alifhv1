@@ -98,7 +98,9 @@ function getSql(): NeonQueryFunction<false, false> {
 
 function getDb(): NeonHttpDatabase<typeof schema> {
   if (!_db) {
-    _db = drizzle(getSql(), { 
+    // Type assertion needed due to variance issues in drizzle-orm's NeonQueryFunction types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _db = drizzle(getSql() as any, { 
       schema,
       logger: process.env.DB_DEBUG === 'true',
     });

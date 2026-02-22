@@ -79,6 +79,9 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   return baseMetadata;
 }
 
+// ISR: Cache listings page shell for 1 day - data fetched client-side via API
+export const revalidate = 86400;
+
 export default function InventoryPage({ searchParams }: PageProps) {
   return (
     <Suspense fallback={<PageSkeleton />}>

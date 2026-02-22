@@ -91,6 +91,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+// ISR: Static page, cached until redeploy
+export const revalidate = false;
+
 export default async function ModelPage({ params }: PageProps) {
   const { brand: brandSlug, model: modelSlug } = await params;
   const brand = getBrandFromSlug(brandSlug);

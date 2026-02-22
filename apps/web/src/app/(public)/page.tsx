@@ -30,6 +30,9 @@ export const metadata: Metadata = {
   },
 };
 
+// ISR: Cache homepage for 1 day - content is static, rarely changes
+export const revalidate = 86400;
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">

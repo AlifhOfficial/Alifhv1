@@ -265,6 +265,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+// ISR: Static redirect pages, cached until redeploy
+export const revalidate = false;
+
 export default async function HubPage({ params }: PageProps) {
   const { brand: slug } = await params;
   

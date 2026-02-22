@@ -37,8 +37,8 @@ function getApiBaseUrl(): string {
     return 'http://localhost:3000';
   }
   
-  // Use production URL
-  return process.env.EXPO_PUBLIC_API_URL || 'https://revvup.ae';
+  // Use production URL - use www to avoid 307 redirect
+  return process.env.EXPO_PUBLIC_API_URL || 'https://www.revvup.ae';
 }
 
 function getWsUrl(): string {

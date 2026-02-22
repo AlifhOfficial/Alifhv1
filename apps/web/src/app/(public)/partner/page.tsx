@@ -66,6 +66,9 @@ const serviceSchema = {
   },
 };
 
+// ISR: Static page, cached until redeploy
+export const revalidate = false;
+
 export default function PartnerPage() {
   return (
     <div className="min-h-screen bg-background">

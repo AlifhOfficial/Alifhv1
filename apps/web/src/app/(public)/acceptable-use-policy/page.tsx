@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   },
 };
 
+// ISR: Static page, cached until redeploy
+export const revalidate = false;
+
 export default function AcceptableUsePolicyPage() {
   return (
     <div className="min-h-screen bg-background">

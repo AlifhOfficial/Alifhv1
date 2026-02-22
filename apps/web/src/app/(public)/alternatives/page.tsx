@@ -120,6 +120,9 @@ const articleSchema = {
   mainEntityOfPage: 'https://revvup.ae/alternatives',
 };
 
+// ISR: Static page, cached until redeploy
+export const revalidate = false;
+
 export default function AlternativesPage() {
   return (
     <>
