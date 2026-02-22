@@ -4,7 +4,7 @@
  * Real-time messaging with presence, typing, and broadcasts
  */
 
-import { db, userProfile, eq } from "@alifh/database";
+import { db, userProfile, eq, sql } from "@alifh/database";
 
 const PORT = parseInt(process.env.WS_PORT || "3001");
 
@@ -122,7 +122,7 @@ const server = Bun.serve<WSData>({
   port: PORT,
   hostname: "0.0.0.0",
 
-  fetch(req, server) {
+  async fetch(req, server) {
     const url = new URL(req.url);
 
     // WebSocket upgrade
@@ -145,7 +145,7 @@ const server = Bun.serve<WSData>({
       const dbStart = performance.now();
       let dbLatency = -1;
       try {
-        await db.execute('SELECT 1');
+        await db.execute(sql`SELECT 1`);
         dbLatency = Math.round((performance.now() - dbStart) * 100) / 100;
       } catch {
         dbLatency = -1; // DB unreachable
