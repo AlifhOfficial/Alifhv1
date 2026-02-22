@@ -48,6 +48,7 @@ class WebSocketManager {
   private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   private attempts = 0;
   private currentUserId: string | null = null;
+  private lastPingAt: number = 0;
   private connectionListeners = new Set<(connected: boolean) => void>();
 
   static getInstance(): WebSocketManager {
@@ -80,6 +81,7 @@ class WebSocketManager {
     this.currentUserId = userId;
 
     const url = `${WS_URL}/ws?userId=${userId}`;
+    const connectStart = Date.now();
     console.log(`🔌 [WS] Connecting: ${url}`);
 
     try {
@@ -87,15 +89,24 @@ class WebSocketManager {
       this.ws = ws;
 
       ws.onopen = () => {
-        console.log(`✅ [WS] Connected for user: ${userId}`);
+        const connectTime = Date.now() - connectStart;
+        console.log(`✅ [WS] Connected for user: ${userId} (${connectTime}ms)`);
         this.attempts = 0;
         this.notifyConnectionChange(true);
         this.startHeartbeat();
+        // Immediate ping to measure RTT
+        this.lastPingAt = Date.now();
+        this.send({ type: 'ping' });
       };
 
       ws.onmessage = (e) => {
         try {
           const msg = JSON.parse(typeof e.data === 'string' ? e.data : '') as WSMessage;
+          // Measure ping/pong latency
+          if (msg.type === 'pong' && this.lastPingAt) {
+            const rtt = Date.now() - this.lastPingAt;
+            console.log(`📶 [WS] RTT: ${rtt}ms`);
+          }
           this.handlers.forEach((h) => {
             try { h(msg); } catch (err) { console.error('[WS] Handler error:', err); }
           });
@@ -186,7 +197,10 @@ class WebSocketManager {
 
   private startHeartbeat(): void {
     this.stopHeartbeat();
-    this.heartbeatInterval = setInterval(() => this.send({ type: 'ping' }), 30000);
+    this.heartbeatInterval = setInterval(() => {
+      this.lastPingAt = Date.now();
+      this.send({ type: 'ping' });
+    }, 30000);
   }
 
   private stopHeartbeat(): void {

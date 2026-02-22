@@ -80,8 +80,9 @@ async function checkWebSocket(): Promise<ServiceStatus> {
     const latency = Date.now() - start;
     
     if (response.ok) {
+      // Thresholds adjusted for Cloudflare proxy (adds ~50ms overhead)
       return {
-        status: latency < 100 ? 'healthy' : latency < 500 ? 'degraded' : 'unhealthy',
+        status: latency < 200 ? 'healthy' : latency < 500 ? 'degraded' : 'unhealthy',
         latency,
         message: 'Connected',
       };
