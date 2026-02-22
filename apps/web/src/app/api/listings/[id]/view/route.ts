@@ -17,7 +17,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { recordListingViewBuffered, getViewBufferStats } from '@alifh/database';
-import { getSessionUser } from '@/lib/auth/session-context';
 
 export const runtime = 'nodejs';
 
@@ -37,8 +36,9 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Get user if authenticated (optional)
-    const user = await getSessionUser().catch(() => null);
+    // User ID from cookie header (no DB lookup - cookie is already signed by auth system)
+    // This is much faster than getSessionUser() which queries the database
+    const userIdFromCookie = req.cookies.get('better-auth.user_id')?.value ?? null;
 
 
     // Extract metadata from request
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     // Record the view (buffered - instant response, no DB wait)
     const viewId = recordListingViewBuffered({
       listingId,
-      userId: user?.id ?? null,
+      userId: userIdFromCookie,
       sessionId,
       ipAddress: ip,
       userAgent,

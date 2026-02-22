@@ -50,6 +50,10 @@
     --sidebar-accent-foreground: 0 0% 10%;
     --sidebar-border: 0 0% 90%;
     --sidebar-ring: 221.2 83.2% 53.3%;
+    
+    /* Glass (Pills, bubbles - solid backgrounds with subtle border) */
+    --glass-background: 0 0% 100%;
+    --glass-border: 0 0% 0% / 14%;
   }
 
   .dark {
@@ -95,6 +99,10 @@
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 16%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Glass (Pills, bubbles - solid backgrounds with subtle border) */
+    --glass-background: 0 0% 5%;
+    --glass-border: 0 0% 100% / 22%;
   }
 
   /* Charcoal Theme - macOS-inspired Design System */
@@ -198,6 +206,10 @@
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 0 0% 22%;
     --sidebar-ring: 217 91% 60%;
+    
+    /* Glass (Pills, bubbles - solid backgrounds with subtle border) */
+    --glass-background: 0 0% 12%;
+    --glass-border: 0 0% 100% / 22%;
   }
 }
 

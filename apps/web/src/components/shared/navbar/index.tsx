@@ -227,43 +227,51 @@ export function Navbar() {
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background">
         <div className="flex items-center justify-between h-14 sm:h-16 max-w-[1600px] mx-auto px-4 sm:px-6">
-            {/* Logo - suppressHydrationWarning prevents Safari hydration issues with theme-based visibility */}
-            <Link href="/" className="flex items-center z-50 mr-8" suppressHydrationWarning>
-              <Image
-                src="/assets/Revvup_logo_Black.svg"
-                alt="Revvup"
-                width={20}
-                height={20}
-                className="h-5 w-auto dark:hidden"
-                priority
+            {/* Left Group: Logo + Navigation */}
+            <div className="flex items-center gap-1.5 flex-1">
+              {/* Logo - suppressHydrationWarning prevents Safari hydration issues with theme-based visibility */}
+              <Link 
+                href="/" 
+                className="flex items-center justify-center z-50 size-8 rounded-full bg-glass border border-glass-border shrink-0" 
                 suppressHydrationWarning
-              />
-              <Image
-                src="/assets/Revvup_logo_White.svg"
-                alt="Revvup"
-                width={20}
-                height={20}
-                className="h-5 w-auto hidden dark:block"
-                priority
-                suppressHydrationWarning
-              />
-            </Link>
+              >
+                <Image
+                  src="/assets/Revvup_logo_Black.svg"
+                  alt="Revvup"
+                  width={16}
+                  height={16}
+                  className="size-4 dark:hidden"
+                  priority
+                  suppressHydrationWarning
+                />
+                <Image
+                  src="/assets/Revvup_logo_White.svg"
+                  alt="Revvup"
+                  width={16}
+                  height={16}
+                  className="size-4 hidden dark:block"
+                  priority
+                  suppressHydrationWarning
+                />
+              </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-1 flex-1">
+              {/* Desktop Navigation */}
               {navItems.map((item) => (
                 <div 
                   key={item.label}
+                  className="hidden lg:block"
                   onMouseEnter={() => item.submenu && !item.hideSubmenu && handleDropdownOpen(item.label)}
                   onMouseLeave={() => item.submenu && !item.hideSubmenu && handleDropdownClose()}
                 >
                   <Link
                     href={item.href}
-                    className={`px-4 py-2 text-[15px] font-semibold tracking-tight transition-colors rounded-md block ${
+                    className={cn(
+                      "h-8 px-3 text-[13px] font-semibold tracking-tight transition-colors rounded-full flex items-center",
+                      "bg-glass border border-glass-border",
                       pathname === item.href
                         ? "text-foreground"
                         : "text-muted-foreground hover:text-foreground"
-                    }`}
+                    )}
                   >
                     {item.label}
                   </Link>
@@ -272,7 +280,7 @@ export function Navbar() {
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               {/* Messaging - Only show when authenticated and mounted (prevents hydration mismatch) */}
               {mounted && isAuthenticated && user?.id && (
                 <NavbarMessaging userId={user.id} onOpenChat={openChat} />
@@ -290,7 +298,7 @@ export function Navbar() {
                     e.stopPropagation();
                     setShowThemeMenu(!showThemeMenu);
                   }}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
+                  className="size-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-full bg-glass border border-glass-border"
                   aria-label="Theme menu"
                   suppressHydrationWarning
                 >
@@ -352,10 +360,10 @@ export function Navbar() {
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="lg:hidden p-2.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 active:scale-95"
+                className="lg:hidden size-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-full bg-glass border border-glass-border active:scale-95"
                 aria-label="Menu"
               >
-                {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {showMobileMenu ? <X className="size-4" /> : <Menu className="size-4" />}
               </button>
             </div>
           </div>

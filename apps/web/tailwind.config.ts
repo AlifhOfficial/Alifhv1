@@ -68,6 +68,11 @@ const config: Config = {
   				primary: 'hsl(var(--sidebar-primary))',
   				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
   				ring: 'hsl(var(--sidebar-ring))'
+  			},
+  			glass: {
+  				DEFAULT: 'hsl(var(--glass-background))',
+  				background: 'hsl(var(--glass-background))',
+  				border: 'hsl(var(--glass-border))'
   			}
   		},
   		borderRadius: {

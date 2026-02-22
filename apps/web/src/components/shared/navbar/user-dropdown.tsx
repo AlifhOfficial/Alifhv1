@@ -118,27 +118,25 @@ export function ProfileMenu({
     };
     
     return (
-      <div className="relative flex items-center gap-2.5" data-menu-container>
-        <span className="text-[15px] font-bold tracking-tight text-foreground hidden sm:inline">
-          {firstName}
-        </span>
-        
+      <div className="relative flex items-center" data-menu-container>
         <button
           onClick={(e) => {
             e.stopPropagation();
             onToggleMenu(e);
           }}
-          className="relative"
+          className="h-8 flex items-center gap-2 pl-1 pr-3 rounded-full bg-glass border border-glass-border hover:opacity-90 transition-opacity"
           aria-label="Profile menu"
           data-menu-trigger
         >
           <UserAvatar
             src={avatarUrl}
             name={displayName}
-            size="sm"
-            className="hover:opacity-90 transition-opacity"
+            size="xs"
             useGeneratedAvatar={useGeneratedAvatar}
           />
+          <span className="text-[13px] font-semibold tracking-tight text-foreground hidden sm:inline">
+            {firstName}
+          </span>
         </button>
 
         {showMenu && (
@@ -231,7 +229,7 @@ export function ProfileMenu({
           e.stopPropagation();
           onToggleMenu(e);
         }}
-        className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
+        className="size-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-full bg-glass border border-glass-border"
         aria-label="Profile menu"
         data-menu-trigger
       >

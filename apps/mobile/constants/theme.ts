@@ -123,9 +123,9 @@ export const Colors = {
     iconMuted: '#A3A3A3',
     
     // GLASS (Pills, bubbles - solid backgrounds)
-    glassBorder: 'rgba(0,0,0,0.08)',
+    glassBorder: 'rgba(0,0,0,0.14)',
     glassBackground: '#FFFFFF',
-    glassBorderOnDark: 'rgba(255,255,255,0.14)', // For dark surfaces regardless of theme
+    glassBorderOnDark: 'rgba(255,255,255,0.22)', // For dark surfaces regardless of theme
     
     // INTERACTIVE
     fill: 'rgba(115, 115, 115, 0.16)',
@@ -209,9 +209,9 @@ export const Colors = {
     iconMuted: '#525252',
     
     // GLASS (Pills, bubbles - solid backgrounds)
-    glassBorder: 'rgba(255,255,255,0.14)',
+    glassBorder: 'rgba(255,255,255,0.22)',
     glassBackground: '#0D0D0D',
-    glassBorderOnDark: 'rgba(255,255,255,0.14)', // For dark surfaces regardless of theme
+    glassBorderOnDark: 'rgba(255,255,255,0.22)', // For dark surfaces regardless of theme
     
     // INTERACTIVE
     fill: 'rgba(115, 115, 115, 0.24)',
