@@ -75,11 +75,10 @@ export async function POST(request: NextRequest) {
     // Process raster images to WebP (skip SVGs and videos)
     if (isImage && !isSvg && !isVideo && !skipProcessing) {
       try {
+        // Uses centralized quality settings, only override size for marketing assets
         const { buffer: processedBuffer } = await processSingleImage(buffer, {
           maxWidth: 1920,  // Full HD for static marketing assets
           maxHeight: 1920,
-          quality: 85,
-          sharpen: 0.5,
         });
         
         processedData = processedBuffer;

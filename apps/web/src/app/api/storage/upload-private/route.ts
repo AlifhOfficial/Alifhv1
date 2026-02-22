@@ -89,11 +89,10 @@ export async function POST(req: NextRequest) {
     
     try {
       // processSingleImage handles format detection and validation internally
+      // Uses centralized quality settings, only override max size for private docs
       const { buffer: processedBuffer } = await processSingleImage(buffer, {
         maxWidth: 2048,
         maxHeight: 2048,
-        quality: 85,
-        sharpen: 0.5,
       });
       
       processedData = processedBuffer;

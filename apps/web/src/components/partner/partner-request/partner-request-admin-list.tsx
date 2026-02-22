@@ -26,7 +26,9 @@ import {
 export function PartnerRequestAdminList() {
   const [statusFilter, setStatusFilter] = useState<'pending' | 'approved' | 'rejected' | undefined>();
   const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [trialMonths, setTrialMonths] = useState<number>(3); // Default 3 months
   const [viewingDocument, setViewingDocument] = useState<string | null>(null);
   
   const { data, isLoading, refetch } = usePartnerRequestsAdmin({
@@ -40,14 +42,16 @@ export function PartnerRequestAdminList() {
   const { review, isReviewing } = usePartnerRequestReview();
   const { toast } = useToast();
 
-  const handleReview = (requestId: string, status: 'approved' | 'rejected', reason?: string) => {
+  const handleReview = (requestId: string, status: 'approved' | 'rejected', reason?: string, months?: number) => {
     review(
-      { requestId, status, rejectionReason: reason },
+      { requestId, status, rejectionReason: reason, trialMonths: months },
       {
         onSuccess: () => {
           toast({ title: `Application ${status}` });
           setRejectingId(null);
+          setApprovingId(null);
           setRejectionReason('');
+          setTrialMonths(3);
           refetch();
         },
         onError: (error) => {
@@ -261,18 +265,14 @@ export function PartnerRequestAdminList() {
                     )}
 
                     {/* Actions */}
-                    {request.status === 'pending' && !rejectingId && (
+                    {request.status === 'pending' && !rejectingId && !approvingId && (
                       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-6 border-t border-border/40">
                         <button
-                          onClick={() => handleReview(request.id, 'approved')}
+                          onClick={() => setApprovingId(request.id)}
                           disabled={isReviewing}
                           className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-all disabled:opacity-50"
                         >
-                          {isReviewing ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <CheckCircle2 className="w-4 h-4" />
-                          )}
+                          <CheckCircle2 className="w-4 h-4" />
                           Approve Application
                         </button>
                         <button
@@ -317,6 +317,58 @@ export function PartnerRequestAdminList() {
                             onClick={() => {
                               setRejectingId(null);
                               setRejectionReason('');
+                            }}
+                            className="px-6 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Approval Form - Set Trial Period */}
+                    {approvingId === request.id && (
+                      <div className="space-y-4 pt-6 border-t border-border/40">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-foreground">Free Trial Period</label>
+                          <p className="text-xs text-muted-foreground">
+                            Select how many months of free access to grant on Revvup Flow
+                          </p>
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {[0, 1, 2, 3, 6, 12].map((months) => (
+                              <button
+                                key={months}
+                                type="button"
+                                onClick={() => setTrialMonths(months)}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                  trialMonths === months
+                                    ? 'bg-green-500 text-white'
+                                    : 'bg-secondary/50 text-foreground hover:bg-secondary'
+                                }`}
+                              >
+                                {months === 0 ? 'No trial' : `${months} month${months > 1 ? 's' : ''}`}
+                              </button>
+                            ))}
+                          </div>
+                          {trialMonths > 0 && (
+                            <p className="text-xs text-green-500 mt-2">
+                              Partner will get {trialMonths} month{trialMonths > 1 ? 's' : ''} free access to Revvup Flow (no credit card required)
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                          <button
+                            onClick={() => handleReview(request.id, 'approved', undefined, trialMonths)}
+                            disabled={isReviewing}
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-all disabled:opacity-50"
+                          >
+                            {isReviewing && <Loader2 className="w-4 h-4 animate-spin" />}
+                            Confirm Approval
+                          </button>
+                          <button
+                            onClick={() => {
+                              setApprovingId(null);
+                              setTrialMonths(3);
                             }}
                             className="px-6 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                           >

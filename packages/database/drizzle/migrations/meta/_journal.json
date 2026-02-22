@@ -505,6 +505,13 @@
       "when": 1771725507083,
       "tag": "0071_square_dust",
       "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1771741484663,
+      "tag": "0072_luxuriant_forge",
+      "breakpoints": true
     }
   ]
 }

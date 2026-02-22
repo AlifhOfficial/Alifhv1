@@ -98,12 +98,8 @@ export async function POST(req: NextRequest) {
     if (isValidImageFormat(detectedFormat)) {
       try {
         // Process image: validate, HEIC conversion, resize, WebP output
-        const { buffer: processedBuffer } = await processSingleImage(buffer, {
-          maxWidth: 1600,
-          maxHeight: 1600,
-          quality: 82,
-          sharpen: 0.5,
-        });
+        // Uses centralized quality settings from image-processing.ts
+        const { buffer: processedBuffer } = await processSingleImage(buffer);
         
         processedData = processedBuffer;
         contentType = "image/webp";

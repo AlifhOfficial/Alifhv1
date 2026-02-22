@@ -41,6 +41,7 @@ const ReviewPartnerRequestSchema = z.object({
   status: z.enum(['approved', 'rejected']),
   rejectionReason: z.string().optional(),
   internalNotes: z.string().optional(),
+  trialMonths: z.number().min(0).max(24).optional(), // 0-24 months trial
 });
 
 // ============================================================================
@@ -153,7 +154,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { requestId, status, rejectionReason, internalNotes } = result.data;
+    const { requestId, status, rejectionReason, internalNotes, trialMonths } = result.data;
 
     // Validate rejection reason is provided for rejections
     if (status === 'rejected' && !rejectionReason) {
@@ -197,7 +198,7 @@ export async function POST(req: NextRequest) {
           userId: existingRequest.request.userId,
           userEmail: existingRequest.user?.email,
           userName: existingRequest.user?.name,
-        }, user.id);
+        }, user.id, trialMonths);
       } catch (error) {
         console.error('[partners/request/admin] Failed to create partner:', error);
         // Request was approved but partner creation failed - this needs manual intervention

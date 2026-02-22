@@ -95,7 +95,7 @@ export async function pickAndUploadListingImage(
     mediaTypes: ['images'],
     allowsMultipleSelection: allowMultiple,
     selectionLimit: maxImages,
-    quality: 0.9,
+    quality: 1, // Full quality - server handles all compression (avoids double compression)
     exif: false,
   });
 

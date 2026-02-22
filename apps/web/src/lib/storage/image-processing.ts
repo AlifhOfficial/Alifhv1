@@ -10,7 +10,7 @@
  * - Auto-rotate based on EXIF orientation
  * - Metadata stripped by default (EXIF, GPS, etc. removed for privacy/size)
  * - Light sharpening for crisp output
- * - Dual output: thumb (480w) + full (1600w)
+ * - Dual output: thumb (480w) + full (2000w)
  * - Safety guardrails: max file size, max megapixels
  * 
  * Note: GIF animations are NOT preserved - converted to single-frame WebP.
@@ -224,12 +224,12 @@ export interface ProcessImageOptions {
 
 /** Default options for full-size images */
 const DEFAULT_FULL_OPTIONS: Required<ProcessImageOptions> = {
-  maxWidth: 1600,
-  maxHeight: 1600,
+  maxWidth: 2000,
+  maxHeight: 2000,
   fit: 'inside',
   position: 'center',
-  quality: 82,
-  effort: 2,
+  quality: 78,
+  effort: 6,  // Max effort = best compression
   convertHeic: true,
   sharpen: 0.5,
 };
@@ -240,10 +240,10 @@ const DEFAULT_THUMB_OPTIONS: Required<ProcessImageOptions> = {
   maxHeight: 480,
   fit: 'inside',
   position: 'center',
-  quality: 75,
-  effort: 2,
+  quality: 72,
+  effort: 6,  // Max effort for smallest size
   convertHeic: true,
-  sharpen: 0.6, // Slightly more sharpening for thumbs to maintain crispness
+  sharpen: 0.6,
 };
 
 // ============================================================================
@@ -312,11 +312,12 @@ export async function processImage(
   // Note: Metadata (EXIF, GPS, etc.) is automatically stripped by Sharp
   // unless withMetadata() is called. We intentionally don't call it.
   
-  // Convert to WebP with optimized settings
+  // Convert to WebP with optimized settings for size
   pipeline = pipeline.webp({
     quality: opts.quality,
     effort: opts.effort,
-    smartSubsample: true, // Better chroma subsampling for edges
+    preset: 'photo',       // Optimized for photographic images
+    smartSubsample: true,  // Better chroma subsampling
   });
   
   // Use resolveWithObject to get dimensions without re-decoding
@@ -353,8 +354,8 @@ export interface ListingImageResult {
  * 
  * This is the main entry point for listing image uploads.
  * Validates the image, converts HEIC if needed, and outputs:
- * - thumb: 480w max, quality 75, ~30-90KB (for grid cards)
- * - full: 1600w max, quality 82, ~120-350KB (for detail page)
+ * - thumb: 480w max, quality 72, ~15-20KB (for grid cards)
+ * - full: 2000w max, quality 78, ~100-200KB (for detail page)
  * 
  * @param inputBuffer - Raw image buffer from upload
  * @returns Both processed versions ready for storage

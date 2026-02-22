@@ -400,8 +400,8 @@ export async function checkVin(
  *
  * Server processing includes:
  * - HEIC/HEIF auto-detection and conversion (can take 5-10s for large images)
- * - WebP conversion and compression
- * - Resize to max 2048x2048
+ * - WebP conversion with quality 78 (full) / 72 (thumb)
+ * - Generates thumb (480w, ~15-20KB) + full (2000w, ~100-200KB) versions
  *
  * @param fileUri  Local file URI from image picker (e.g. file:///...)
  * @param vin      VIN string (min 11 chars, used for R2 folder)

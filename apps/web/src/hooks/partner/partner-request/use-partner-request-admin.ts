@@ -70,6 +70,7 @@ export interface ReviewPartnerRequestInput {
   status: 'approved' | 'rejected';
   rejectionReason?: string;
   internalNotes?: string;
+  trialMonths?: number; // Number of trial months to grant (for approved requests)
 }
 
 // ============================================================================

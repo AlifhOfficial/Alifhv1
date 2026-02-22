@@ -14,8 +14,8 @@
  * - Auto-detects HEIC/HEIF by magic bytes (handles mobile mislabeling)
  * - Converts HEIC/HEIF to JPEG first using heic-convert
  * - Generates TWO WebP outputs:
- *   - thumb: 480w max, quality 75. ~30-90KB (for grid cards)
- *   - full: 1600w max, quality 82, ~120-350KB (for detail page)
+ *   - thumb: 480w max, quality 72, ~15-20KB (for grid cards)
+ *   - full: 2000w max, quality 78, ~100-200KB (for detail page)
  * - Light sharpening for crisp output
  * - Strips metadata for privacy/size
  * 

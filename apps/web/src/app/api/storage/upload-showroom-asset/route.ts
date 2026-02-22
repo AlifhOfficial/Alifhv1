@@ -37,22 +37,23 @@ const MAX_VIDEO_SIZE = 20 * 1024 * 1024; // 20MB for hero videos
 
 
 // Asset type configurations (for images - videos are passed through without processing)
-const ASSET_CONFIG: Record<ShowroomAssetType, { width: number; height: number; fit: 'cover' | 'inside'; quality: number }> = {
-  'hero-video-thumb': { width: 1920, height: 1080, fit: 'cover', quality: 85 },
-  'hero-image': { width: 1920, height: 1080, fit: 'cover', quality: 90 }, // Full HD hero
-  'hero-video': { width: 1920, height: 1080, fit: 'cover', quality: 85 }, // Match hero-image dimensions
-  'brand-story-video-thumb': { width: 1280, height: 720, fit: 'cover', quality: 85 },
-  'brand-story-video': { width: 1280, height: 720, fit: 'cover', quality: 85 }, // Match brand-story-video-thumb
-  'showroom-tour-video': { width: 1600, height: 1200, fit: 'inside', quality: 85 }, // Match gallery dimensions
-  'founder-image': { width: 800, height: 800, fit: 'cover', quality: 85 }, // Square headshot
-  'gallery': { width: 1600, height: 1200, fit: 'inside', quality: 85 }, // High-res gallery
-  'exterior': { width: 1600, height: 1200, fit: 'inside', quality: 85 },
-  'team-member': { width: 600, height: 600, fit: 'cover', quality: 85 }, // Square profile
-  'achievement': { width: 400, height: 400, fit: 'inside', quality: 80 }, // Badge/trophy
-  'client-logo': { width: 400, height: 200, fit: 'inside', quality: 80 }, // Logo (preserve aspect)
-  'testimonial': { width: 400, height: 400, fit: 'cover', quality: 85 }, // Customer photo
-  'press-logo': { width: 300, height: 100, fit: 'inside', quality: 80 }, // Publication logo
-  'seo-image': { width: 1200, height: 630, fit: 'cover', quality: 85 }, // OG image standard
+// Quality/sharpening now uses centralized defaults from image-processing.ts
+const ASSET_CONFIG: Record<ShowroomAssetType, { width: number; height: number; fit: 'cover' | 'inside' }> = {
+  'hero-video-thumb': { width: 1920, height: 1080, fit: 'cover' },
+  'hero-image': { width: 1920, height: 1080, fit: 'cover' }, // Full HD hero
+  'hero-video': { width: 1920, height: 1080, fit: 'cover' }, // Match hero-image dimensions
+  'brand-story-video-thumb': { width: 1280, height: 720, fit: 'cover' },
+  'brand-story-video': { width: 1280, height: 720, fit: 'cover' }, // Match brand-story-video-thumb
+  'showroom-tour-video': { width: 1600, height: 1200, fit: 'inside' }, // Match gallery dimensions
+  'founder-image': { width: 800, height: 800, fit: 'cover' }, // Square headshot
+  'gallery': { width: 1600, height: 1200, fit: 'inside' }, // High-res gallery
+  'exterior': { width: 1600, height: 1200, fit: 'inside' },
+  'team-member': { width: 600, height: 600, fit: 'cover' }, // Square profile
+  'achievement': { width: 400, height: 400, fit: 'inside' }, // Badge/trophy
+  'client-logo': { width: 400, height: 200, fit: 'inside' }, // Logo (preserve aspect)
+  'testimonial': { width: 400, height: 400, fit: 'cover' }, // Customer photo
+  'press-logo': { width: 300, height: 100, fit: 'inside' }, // Publication logo
+  'seo-image': { width: 1200, height: 630, fit: 'cover' }, // OG image standard
 };
 
 const VALID_ASSET_TYPES: ShowroomAssetType[] = [
@@ -205,15 +206,14 @@ export async function POST(req: NextRequest) {
           fileExtension = 'mp4';
       }
     } else {
-      // Process image with validation, HEIC conversion, sharpening and WebP output
+      // Process image with validation, HEIC conversion and WebP output
+      // Uses centralized quality from image-processing.ts, only override size/fit per asset type
       const config = ASSET_CONFIG[assetType as ShowroomAssetType];
       const { buffer: processed } = await processSingleImage(buffer, {
         maxWidth: config.width,
         maxHeight: config.height,
         fit: config.fit,
         position: 'center',
-        quality: config.quality,
-        sharpen: 0.5,
       });
       processedBuffer = processed;
       

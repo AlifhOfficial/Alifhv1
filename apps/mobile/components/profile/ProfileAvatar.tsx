@@ -86,7 +86,7 @@ export function ProfileAvatar({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.8,
+      quality: 1, // Full quality - server handles compression
     });
 
     if (!result.canceled && result.assets[0]) {
@@ -113,7 +113,7 @@ export function ProfileAvatar({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.8,
+      quality: 1, // Full quality - server handles compression
     });
 
     if (!result.canceled && result.assets[0]) {

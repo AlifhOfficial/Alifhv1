@@ -131,8 +131,8 @@ export function getAvatarUrl(key: string | null | undefined, cacheBuster?: numbe
  * Get thumbnail URL from a full-size image URL/key.
  * 
  * For listing images uploaded after Feb 2026, images are stored as pairs:
- * - Full: xxx_full.webp (1600w, ~120-350KB)
- * - Thumb: xxx_thumb.webp (480w, ~30-90KB)
+ * - Full: xxx_full.webp (2000w, ~100-200KB)
+ * - Thumb: xxx_thumb.webp (480w, ~15-20KB)
  * 
  * This function converts a full URL to its thumb equivalent.
  * Falls back to original URL for legacy images without _full suffix.

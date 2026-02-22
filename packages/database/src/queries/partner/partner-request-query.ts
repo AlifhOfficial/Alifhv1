@@ -36,6 +36,7 @@ export interface ReviewPartnerRequestInput {
   status: 'approved' | 'rejected';
   rejectionReason?: string;
   internalNotes?: string;
+  trialMonths?: number; // Number of months for free trial (optional, admin sets this)
 }
 
 // ============================================================================
@@ -220,10 +221,22 @@ export async function reviewPartnerRequest(input: ReviewPartnerRequestInput) {
  * The unique constraint is (partnerId, userId) - one person, one seat per company.
  * This allows the same user to be owner of Company A AND staff at Company B.
  */
-export async function createPartnerFromRequest(requestId: string, requestData: any, approvedBy: string) {
+export async function createPartnerFromRequest(
+  requestId: string, 
+  requestData: any, 
+  approvedBy: string,
+  trialMonths?: number
+) {
   const partnerId = createId();
   const staffId = createId();
   const now = new Date();
+  
+  // Calculate trial end date if trial months provided
+  let trialEndDate: Date | null = null;
+  if (trialMonths && trialMonths > 0) {
+    trialEndDate = new Date(now);
+    trialEndDate.setMonth(trialEndDate.getMonth() + trialMonths);
+  }
 
   // Create partner record (auto-verified on approval)
   const newPartnerResult = await db
@@ -238,10 +251,13 @@ export async function createPartnerFromRequest(requestId: string, requestData: a
       vatNumber: requestData.vatNumber,
       partnerType: requestData.partnerType,
       status: 'active',
-      tier: 'standard',
+      tier: 'standard', // All partners start on Flow (standard tier)
       email: requestData.userEmail || requestData.email,
       phone: requestData.userPhone || '+971000000000', // Default phone
       showroomCount: 1,
+      // Trial settings
+      trialEndDate: trialEndDate,
+      trialMonths: trialMonths || null,
       // Auto-verify on approval
       isVerified: true,
       verifiedAt: now,

@@ -95,7 +95,7 @@ export const PLANS: Record<PlanName, PlanConfig> = {
     displayName: 'Revvup Black',
     priceAED: 21000,
     description: 'Premium features for high-volume dealers',
-    freeMonths: 1, // 21k credits / 21k = 1 month
+    freeMonths: 0, // Black has no default trial - requires payment immediately
     features: [
       'Unlimited listings',
       '5 Black listing slots',

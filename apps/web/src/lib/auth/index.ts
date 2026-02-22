@@ -493,6 +493,50 @@ export const auth = betterAuth({
               (process.env.BETTER_AUTH_URL?.startsWith("https://") ?? true),
     },
   },
+
+  // Database hooks - create Stripe customer on user creation (covers OAuth sign-ups)
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          // Only create Stripe customer if Stripe is configured
+          if (!isStripeConfigured) return;
+          
+          try {
+            const stripeClient = getStripeClient();
+            
+            // Check if customer already exists
+            const existing = await stripeClient.customers.list({
+              email: user.email,
+              limit: 1,
+            });
+            
+            let customerId: string;
+            if (existing.data.length > 0) {
+              customerId = existing.data[0].id;
+            } else {
+              const customer = await stripeClient.customers.create({
+                email: user.email,
+                name: user.name || undefined,
+                metadata: { userId: user.id },
+              });
+              customerId = customer.id;
+            }
+            
+            // Update user with Stripe customer ID
+            await db.update(schema.user)
+              .set({ stripeCustomerId: customerId })
+              .where(eq(schema.user.id, user.id));
+            
+            console.log(`[Auth] Stripe customer ${customerId} created for user ${user.id}`);
+          } catch (error) {
+            console.error('[Auth] Failed to create Stripe customer:', error);
+            // Don't throw - user creation should still succeed
+          }
+        },
+      },
+    },
+  },
 });
 
 export type Session = typeof auth.$Infer.Session & {

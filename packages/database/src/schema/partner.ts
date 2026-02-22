@@ -106,6 +106,9 @@ export const partner = pgTable('partner', {
   }),
   subscriptionTier: text('subscription_tier').default('basic'),
   subscriptionExpiresAt: timestamp('subscription_expires_at'),
+  // Trial Management - Set by admin when approving partner request
+  trialEndDate: timestamp('trial_end_date'), // Exact trial end date set during approval
+  trialMonths: integer('trial_months'), // Number of months granted (for display)
   paymentTerms: text('payment_terms').default('net30'),
   notificationPreferences: jsonb('notification_preferences').$type<{
     emailNewLead: boolean;
