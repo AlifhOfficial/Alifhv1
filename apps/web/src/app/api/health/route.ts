@@ -5,7 +5,6 @@
  * - Database (Neon)
  * - WebSocket Server
  * - Bun Runtime
- * - API Server
  */
 
 import { NextResponse } from 'next/server';
@@ -31,7 +30,6 @@ interface HealthCheckResponse {
     database: ServiceStatus;
     websocket: ServiceStatus;
     runtime: ServiceStatus;
-    api: ServiceStatus;
   };
 }
 
@@ -137,20 +135,7 @@ function checkRuntime(): ServiceStatus {
   }
 }
 
-/**
- * Check API server health
- */
-function checkAPI(): ServiceStatus {
-  return {
-    status: 'healthy',
-    message: 'Operational',
-    details: {
-      nodeVersion: process.version,
-      platform: process.platform,
-      arch: process.arch,
-    },
-  };
-}
+
 
 /**
  * GET /api/health
@@ -159,16 +144,15 @@ export async function GET() {
   const startTime = Date.now();
   
   // Run all health checks in parallel
-  const [database, websocket, runtime, api] = await Promise.all([
+  const [database, websocket, runtime] = await Promise.all([
     checkDatabase(),
     checkWebSocket(),
     checkRuntime(),
-    Promise.resolve(checkAPI()),
   ]);
   
   // Determine overall status
-  // Only database and runtime are critical - WebSocket is supplementary, API is always healthy
-  const services = { database, websocket, runtime, api };
+  // Only database and runtime are critical - WebSocket is supplementary
+  const services = { database, websocket, runtime };
   const criticalServices = [database, runtime];
   const criticalStatuses = criticalServices.map(s => s.status);
   

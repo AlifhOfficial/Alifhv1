@@ -31,12 +31,8 @@ const WS_HEALTH_URL = process.env.NEXT_PUBLIC_WS_URL
   ? `${process.env.NEXT_PUBLIC_WS_URL.replace('ws://', 'http://').replace('wss://', 'https://')}/health`
   : 'http://localhost:3001/health';
 
-const API_HEALTH_URL = process.env.NEXT_PUBLIC_APP_URL
-  ? `${process.env.NEXT_PUBLIC_APP_URL}/api/ping`
-  : 'http://localhost:3000/api/ping';
-
 interface HealthResult {
-  service: 'vercel' | 'neon' | 'websocket' | 'api';
+  service: 'vercel' | 'neon' | 'websocket';
   status: 'healthy' | 'degraded' | 'unhealthy';
   latency: number;
   message?: string;
@@ -151,46 +147,6 @@ async function checkWebSocket(): Promise<HealthResult> {
   }
 }
 
-/**
- * Check API endpoint
- */
-async function checkAPI(): Promise<HealthResult> {
-  const start = Date.now();
-  try {
-    const response = await fetch(API_HEALTH_URL, {
-      method: 'GET',
-      signal: AbortSignal.timeout(5000),
-    });
-    const latency = Date.now() - start;
-    const sleeping = latency > 300; // Vercel cold start threshold
-    
-    if (response.ok) {
-      return {
-        service: 'api',
-        // If sleeping, still mark healthy as cold start is expected for serverless
-        status: sleeping ? 'healthy' : (latency < 200 ? 'healthy' : 'degraded'),
-        latency,
-        message: sleeping ? 'Waking up' : 'Operational',
-        sleeping,
-      };
-    }
-    
-    return {
-      service: 'api',
-      status: 'unhealthy',
-      latency,
-      message: `HTTP ${response.status}`,
-    };
-  } catch (error) {
-    return {
-      service: 'api',
-      status: 'unhealthy',
-      latency: Date.now() - start,
-      message: error instanceof Error ? error.message : 'Unreachable',
-    };
-  }
-}
-
 export async function GET(req: NextRequest) {
   const startTime = performance.now();
 
@@ -216,7 +172,6 @@ export async function GET(req: NextRequest) {
       checkVercel(),
       checkNeon(),
       checkWebSocket(),
-      checkAPI(),
     ]);
 
     // Store results in database

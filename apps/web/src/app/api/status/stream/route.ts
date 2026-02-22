@@ -44,7 +44,6 @@ async function getCurrentStatus(): Promise<StatusUpdate> {
       { name: 'vercel', status: 'healthy', latency: null },
       { name: 'neon', status: 'healthy', latency: null },
       { name: 'websocket', status: 'healthy', latency: null },
-      { name: 'api', status: 'healthy', latency: null },
     ],
     timestamp: new Date().toISOString(),
   };

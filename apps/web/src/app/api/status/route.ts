@@ -16,7 +16,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-type ServiceName = 'vercel' | 'neon' | 'websocket' | 'api';
+type ServiceName = 'vercel' | 'neon' | 'websocket';
 type ServiceStatus = 'healthy' | 'degraded' | 'unhealthy';
 
 interface DayStatus {
@@ -55,7 +55,6 @@ const SERVICE_DISPLAY_NAMES: Record<ServiceName, string> = {
   vercel: 'Web Application',
   neon: 'Database',
   websocket: 'WebSocket Server',
-  api: 'API Services',
 };
 
 /**
@@ -64,7 +63,7 @@ const SERVICE_DISPLAY_NAMES: Record<ServiceName, string> = {
 async function getCurrentStatus(): Promise<Map<ServiceName, { status: ServiceStatus; latency: number | null; message: string | null }>> {
   const results = new Map<ServiceName, { status: ServiceStatus; latency: number | null; message: string | null }>();
   
-  const services: ServiceName[] = ['vercel', 'neon', 'websocket', 'api'];
+  const services: ServiceName[] = ['vercel', 'neon', 'websocket'];
   
   for (const service of services) {
     const latest = await db
@@ -214,7 +213,7 @@ export async function GET(req: NextRequest) {
     
     // Build service data with history
     const services: ServiceData[] = [];
-    const serviceNames: ServiceName[] = ['vercel', 'neon', 'websocket', 'api'];
+    const serviceNames: ServiceName[] = ['vercel', 'neon', 'websocket'];
     
     for (const name of serviceNames) {
       const current = currentStatus.get(name)!;
