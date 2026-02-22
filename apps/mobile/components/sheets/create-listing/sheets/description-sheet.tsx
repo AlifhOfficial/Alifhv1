@@ -23,7 +23,7 @@ import { getProgress, SHEET_STEPS } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-const MAX_DESCRIPTION = 700;
+const MAX_DESCRIPTION = 2000;
 
 const QUICK_TEMPLATES = [
   'Single owner, full service history.',

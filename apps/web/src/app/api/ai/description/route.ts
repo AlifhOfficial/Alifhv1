@@ -6,7 +6,7 @@
  * Authentication: Required
  * 
  * Returns:
- * - description: Generated text (max 700 chars)
+ * - description: Generated text (max 2000 chars)
  * - characterCount: Actual length
  * - highlights: Key selling points extracted
  */

@@ -247,14 +247,14 @@ export async function generateDescription(
         { role: 'user', content: userPrompt },
       ],
       temperature: 0.7, // Some creativity for varied regenerations
-      max_tokens: 200, // ~600 chars max
+      max_tokens: 600, // ~2000 chars max
     });
     
     const description = response.choices[0]?.message?.content?.trim() || '';
     
-    // Ensure we don't exceed 700 chars (hard limit)
-    const finalDescription = description.length > 700 
-      ? description.slice(0, 697) + '...'
+    // Ensure we don't exceed 2000 chars (hard limit)
+    const finalDescription = description.length > 2000 
+      ? description.slice(0, 1997) + '...'
       : description;
     
     return {

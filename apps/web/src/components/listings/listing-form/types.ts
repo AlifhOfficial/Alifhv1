@@ -159,7 +159,7 @@ export const publishStepSchema = z.object({
   videoUrl: z.string().url().optional().nullable().or(z.literal('')),
   
   // Content (AI generates ~600 chars, max 700)
-  description: z.string().max(700, 'Description too long (max 700 characters)').optional().nullable(),
+  description: z.string().max(2000, 'Description too long (max 2000 characters)').optional().nullable(),
   
   // Owner Notes (MAX 10 bullet points)
   ownerRemarks: z.array(

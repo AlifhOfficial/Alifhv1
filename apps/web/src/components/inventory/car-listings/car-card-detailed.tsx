@@ -479,7 +479,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
           <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
             Description
           </p>
-          <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+          <p className="text-sm font-medium text-muted-foreground leading-relaxed whitespace-pre-line">
             {listing.description}
           </p>
         </div>

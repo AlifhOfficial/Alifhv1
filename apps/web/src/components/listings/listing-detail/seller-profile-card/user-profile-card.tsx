@@ -62,7 +62,7 @@ export function UserProfileCard({ sellerData }: UserProfileCardProps) {
 
       {/* Description */}
       {profile?.description && (
-        <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+        <p className="text-sm text-muted-foreground leading-relaxed font-medium whitespace-pre-line">
           {profile.description}
         </p>
       )}

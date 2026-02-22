@@ -40,7 +40,6 @@ export function ListingsView({
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('list'); // Default to list
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(defaultFiltersOpen);
-  const desktopScrollRef = useRef<HTMLDivElement>(null);
 
   const { isSignedIn } = useUser();
 
@@ -76,14 +75,10 @@ export function ListingsView({
     },
   });
 
-  // Scroll to top when page changes
+  // Scroll to top when pagination changes
   const prevPageRef = useRef(currentPage);
   useEffect(() => {
     if (prevPageRef.current !== currentPage && !isFetching) {
-      // Desktop: scroll the container div, Mobile: scroll window
-      if (desktopScrollRef.current) {
-        desktopScrollRef.current.scrollTo({ top: 0, behavior: 'instant' });
-      }
       window.scrollTo({ top: 0, behavior: 'instant' });
       prevPageRef.current = currentPage;
     }
@@ -103,24 +98,26 @@ export function ListingsView({
           {/* Mobile Layout (no resizable) */}
           <div className="lg:hidden">
             {/* TOP: Sticky Search Header */}
-            <ListingsHeader
-              params={params}
-              facets={facets}
-              meta={meta}
-              activeFilterCount={activeFilterCount}
-              isLoading={isLoading}
-              listings={listings}
-              embedded={embedded}
-              sidebarOpen={false}
-              onSidebarToggle={setSidebarOpen}
-              mobileFiltersOpen={mobileFiltersOpen}
-              onMobileFiltersToggle={setMobileFiltersOpen}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              setFilters={setFilters}
-              clearFilters={clearFilters}
-              setSort={setSort}
-            />
+            <div className="sticky top-14 sm:top-16 z-40 bg-background pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6">
+              <ListingsHeader
+                params={params}
+                facets={facets}
+                meta={meta}
+                activeFilterCount={activeFilterCount}
+                isLoading={isLoading}
+                listings={listings}
+                embedded={embedded}
+                sidebarOpen={false}
+                onSidebarToggle={setSidebarOpen}
+                mobileFiltersOpen={mobileFiltersOpen}
+                onMobileFiltersToggle={setMobileFiltersOpen}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                setFilters={setFilters}
+                clearFilters={clearFilters}
+                setSort={setSort}
+              />
+            </div>
 
             {/* Content */}
             <main className="py-3 sm:py-6">
@@ -149,11 +146,11 @@ export function ListingsView({
             )}
           </div>
 
-          {/* Desktop Layout - Fixed height with scrollable content */}
-          <div className="hidden lg:flex gap-6 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)]">
-            {/* LEFT: Sidebar - fixed, doesn't scroll */}
+          {/* Desktop Layout - Uses window scroll for native back/forward restoration */}
+          <div className="hidden lg:flex gap-6">
+            {/* LEFT: Sidebar - sticky */}
             {sidebarOpen && (
-              <div className="shrink-0 h-full overflow-y-auto scrollbar-hide">
+              <div className="shrink-0 sticky top-16 self-start max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-hide">
                 <ListingsSidebar
                   params={params}
                   facets={facets}
@@ -168,27 +165,29 @@ export function ListingsView({
               </div>
             )}
 
-            {/* RIGHT: Search Header + Content - scrollable */}
-            <div ref={desktopScrollRef} className="flex-1 min-w-0 h-full overflow-y-auto scrollbar-hide">
-              {/* TOP: Sticky Search Header - stickiness handled by the header itself */}
-              <ListingsHeader
-                params={params}
-                facets={facets}
-                meta={meta}
-                activeFilterCount={activeFilterCount}
-                isLoading={isLoading}
-                listings={listings}
-                embedded={embedded}
-                sidebarOpen={sidebarOpen}
-                onSidebarToggle={setSidebarOpen}
-                mobileFiltersOpen={mobileFiltersOpen}
-                onMobileFiltersToggle={setMobileFiltersOpen}
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-                setFilters={setFilters}
-                clearFilters={clearFilters}
-                setSort={setSort}
-              />
+            {/* RIGHT: Search Header + Content */}
+            <div className="flex-1 min-w-0">
+              {/* TOP: Search Header - sticky below navbar */}
+              <div className="sticky top-14 sm:top-16 z-40 bg-background pb-2">
+                <ListingsHeader
+                  params={params}
+                  facets={facets}
+                  meta={meta}
+                  activeFilterCount={activeFilterCount}
+                  isLoading={isLoading}
+                  listings={listings}
+                  embedded={embedded}
+                  sidebarOpen={sidebarOpen}
+                  onSidebarToggle={setSidebarOpen}
+                  mobileFiltersOpen={mobileFiltersOpen}
+                  onMobileFiltersToggle={setMobileFiltersOpen}
+                  viewMode={viewMode}
+                  onViewModeChange={setViewMode}
+                  setFilters={setFilters}
+                  clearFilters={clearFilters}
+                  setSort={setSort}
+                />
+              </div>
 
               {/* BOTTOM: Content */}
               <main className="py-4 sm:py-6">
@@ -205,7 +204,7 @@ export function ListingsView({
                 />
               </main>
 
-              {/* Pagination - inside scrollable area */}
+              {/* Pagination */}
               {!isLoading && !isFetching && listings.length > 0 && (
                 <ListingsPagination
                   currentPage={currentPage}

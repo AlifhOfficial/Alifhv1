@@ -137,7 +137,7 @@ const EditableField = React.memo(function EditableField({
               </div>
             </div>
           ) : (
-            <p className="text-sm font-medium text-foreground">
+            <p className={cn("text-sm font-medium text-foreground", multiline && "whitespace-pre-line")}>
               {value || <span className="text-muted-foreground/50">Tap to add</span>}
             </p>
           )}

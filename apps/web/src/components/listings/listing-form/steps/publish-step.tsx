@@ -64,16 +64,16 @@ function mapKeysToImages(keys: string[]): ListingImage[] {
     .map((key, order) => ({ key, order }));
 }
 
-// Remove emojis and normalize text (prevent shouting)
+// Remove emojis and normalize text (prevent shouting, preserve line breaks)
 function normalizeText(text: string): string {
   // Remove emojis
   const noEmoji = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, '');
   
-  // Convert to lowercase first, then capitalize first letter of each sentence
+  // Convert to lowercase first, then capitalize first letter of each sentence/paragraph
   const lower = noEmoji.toLowerCase();
   
-  // Capitalize first letter of text and after sentence endings
-  return lower.replace(/(^|[.!?]\s*)([a-z])/g, (_, prefix, letter) => {
+  // Capitalize first letter of text, after sentence endings, and after newlines
+  return lower.replace(/(^|[.!?]\s*|\n\s*)([a-z])/gm, (_, prefix, letter) => {
     return prefix + letter.toUpperCase();
   });
 }
@@ -286,7 +286,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
 
         <div className="rounded-xl bg-sidebar-accent/30 p-5 mt-3 space-y-6">
 
-        <FieldWrapper label="Description" hint={`${(data.description || '').length}/700`} error={errors.description}>
+        <FieldWrapper label="Description" hint={`${(data.description || '').length}/2000`} error={errors.description}>
           <div className="space-y-3">
             {/* AI Generate / Regenerate Buttons */}
             <div className="flex items-center gap-3">
@@ -350,8 +350,8 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               value={data.description || ''}
               onChange={(e) => updateField('description', normalizeText(e.target.value))}
               placeholder="Click 'AI Generate' to create a professional description based on your car details, or write your own."
-              rows={5}
-              maxLength={700}
+              rows={8}
+              maxLength={2000}
               className={cn(
                 "w-full bg-transparent border-2 border-sidebar-border rounded-xl focus:border-primary",
                 "outline-none transition-colors px-4 py-3 text-sm font-medium text-sidebar-foreground resize-none",

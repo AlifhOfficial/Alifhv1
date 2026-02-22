@@ -157,8 +157,8 @@ export function ListingsContent({
     );
   }
 
-  // Show skeletons when loading or fetching new data
-  const showSkeletons = isLoading || isFetching;
+  // Show skeletons ONLY on initial load, not on refetch (to preserve scroll position)
+  const showSkeletons = isLoading && listings.length === 0;
 
   // Results - immediate skeleton swap, no fade animations
   return (

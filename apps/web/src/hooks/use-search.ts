@@ -146,9 +146,10 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   } = useQuery({
     queryKey,
     queryFn: () => fetchSearch(params),
-    staleTime: 0, // Always fetch fresh - server handles caching
-    gcTime: 30 * 1000, // Keep previous data for 30s during navigation
+    staleTime: 60 * 1000, // Consider data fresh for 1 minute
+    gcTime: 5 * 60 * 1000, // Keep data in cache for 5 minutes (for back navigation)
     refetchOnWindowFocus: false,
+    refetchOnMount: false, // Don't refetch on mount if we have cached data
     placeholderData: (previousData) => previousData, // Keep previous data visible while fetching
   });
 

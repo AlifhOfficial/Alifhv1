@@ -59,7 +59,7 @@ export function PartnerProfileCard({ sellerData }: PartnerProfileCardProps) {
       {partner.description && (
         <div className="space-y-2">
           <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">About</p>
-          <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+          <p className="text-sm text-muted-foreground leading-relaxed font-medium whitespace-pre-line">
             {partner.description}
           </p>
         </div>

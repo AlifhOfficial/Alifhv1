@@ -20,7 +20,7 @@ import { Typography, Spacing, Radius, Layout } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors, EditingField, ProfileFormData } from './types';
 
-const MAX_BIO_LENGTH = 700;
+const MAX_BIO_LENGTH = 2000;
 
 interface BioSectionProps {
   bio: string;
