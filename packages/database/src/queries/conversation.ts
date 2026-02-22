@@ -233,11 +233,18 @@ export async function getUserConversations(
     includeArchived?: boolean;
     partnerIds?: string[];
     partnerScope?: 'only' | 'exclude';
+    conversationId?: string; // Filter to specific conversation
   } = {}
 ): Promise<ConversationWithDetails[]> {
-  const { limit = 50, offset = 0, includeArchived = false, partnerIds, partnerScope } = options;
+  const { limit = 50, offset = 0, includeArchived = false, partnerIds, partnerScope, conversationId } = options;
 
   const whereConditions = [];
+  
+  // Filter by specific conversation ID if provided
+  if (conversationId) {
+    whereConditions.push(eq(conversation.id, conversationId));
+  }
+  
   if (!includeArchived) {
     whereConditions.push(eq(conversationParticipant.isArchived, false));
   }
@@ -295,8 +302,13 @@ export async function getUserConversations(
         LIMIT 1
       )`,
       otherParticipantName: sql<string | null>`(
-        SELECT u.name FROM conversation_participant cp2 
+        SELECT COALESCE(
+          NULLIF(TRIM(CONCAT_WS(' ', up.first_name, up.last_name)), ''),
+          u.name
+        )
+        FROM conversation_participant cp2 
         JOIN "user" u ON u.id = cp2.user_id
+        LEFT JOIN user_profile up ON up.user_id = cp2.user_id
         WHERE cp2.conversation_id = ${conversation.id} 
         AND cp2.user_id != ${userId} 
         LIMIT 1
@@ -422,8 +434,12 @@ export async function getConversation(
   conversationId: string,
   userId: string
 ): Promise<ConversationWithDetails | null> {
-  const conversations = await getUserConversations(userId, { limit: 1 });
-  return conversations.find((c) => c.id === conversationId) || null;
+  const conversations = await getUserConversations(userId, { 
+    limit: 1, 
+    conversationId,
+    includeArchived: true, // Allow fetching archived conversations when accessing directly
+  });
+  return conversations[0] || null;
 }
 
 /**
