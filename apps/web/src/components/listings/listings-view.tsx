@@ -98,7 +98,7 @@ export function ListingsView({
           {/* Mobile Layout (no resizable) */}
           <div className="lg:hidden">
             {/* TOP: Sticky Search Header */}
-            <div className="sticky top-14 sm:top-16 z-40 bg-background pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6">
+            <div className="sticky top-14 sm:top-16 z-30 bg-background pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6">
               <ListingsHeader
                 params={params}
                 facets={facets}
@@ -168,7 +168,7 @@ export function ListingsView({
             {/* RIGHT: Search Header + Content */}
             <div className="flex-1 min-w-0">
               {/* TOP: Search Header - sticky below navbar */}
-              <div className="sticky top-14 sm:top-16 z-40 bg-background pb-2">
+              <div className="sticky top-14 sm:top-16 z-30 bg-background pb-2">
                 <ListingsHeader
                   params={params}
                   facets={facets}

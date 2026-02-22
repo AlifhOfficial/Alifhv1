@@ -153,6 +153,7 @@
         "@react-three/fiber": "9.5.0",
         "@tanstack/react-query": "5.90.12",
         "@upstash/redis": "1.36.2",
+        "@vercel/edge-config": "1.4.3",
         "better-auth": "1.4.7",
         "boring-avatars": "2.0.4",
         "class-variance-authority": "0.7.1",
@@ -1395,6 +1396,10 @@
     "@use-gesture/core": ["@use-gesture/core@10.3.1", "", {}, "sha512-WcINiDt8WjqBdUXye25anHiNxPc0VOrlT8F6LLkU6cycrOGUDyY/yyFmsg3k8i5OLvv25llc0QC45GhR/C8llw=="],
 
     "@use-gesture/react": ["@use-gesture/react@10.3.1", "", { "dependencies": { "@use-gesture/core": "10.3.1" }, "peerDependencies": { "react": ">= 16.8.0" } }, "sha512-Yy19y6O2GJq8f7CHf7L0nxL8bf4PZCPaVOCgJrusOeFHY1LvHgYXnmnXg6N5iwAnbgbZCDjo60SiM6IPJi9C5g=="],
+
+    "@vercel/edge-config": ["@vercel/edge-config@1.4.3", "", { "dependencies": { "@vercel/edge-config-fs": "0.1.0" }, "peerDependencies": { "@opentelemetry/api": "^1.7.0", "next": ">=1" }, "optionalPeers": ["@opentelemetry/api", "next"] }, "sha512-8vTDATodRrH49wMzKEjZ8/5H2qs1aPkD0uRK585f/Fx4YN2wfHfY/3td9OFrh+gdnCq07z8A5f0hoY6xhBcPkg=="],
+
+    "@vercel/edge-config-fs": ["@vercel/edge-config-fs@0.1.0", "", {}, "sha512-NRIBwfcS0bUoUbRWlNGetqjvLSwgYH/BqKqDN7vK1g32p7dN96k0712COgaz6VFizAm9b0g6IG6hR6+hc0KCPg=="],
 
     "@webgpu/types": ["@webgpu/types@0.1.69", "", {}, "sha512-RPmm6kgRbI8e98zSD3RVACvnuktIja5+yLgDAkTmxLr90BEwdTXRQWNLF3ETTTyH/8mKhznZuN5AveXYFEsMGQ=="],
 
