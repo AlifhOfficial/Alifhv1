@@ -23,10 +23,22 @@ export default function GoogleCallbackPage() {
         // Get the current URL to check for errors
         const url = new URL(window.location.href);
         const error = url.searchParams.get('error');
+        const errorDescription = url.searchParams.get('error_description');
         
         if (error) {
           setStatus('error');
-          setMessage(error === 'access_denied' ? 'Sign in was cancelled' : 'Sign in failed');
+          
+          // Provide user-friendly error messages
+          let errorMessage = 'Sign in failed';
+          if (error === 'access_denied') {
+            errorMessage = 'Sign in was cancelled';
+          } else if (error === 'state_mismatch') {
+            errorMessage = 'Session expired. Please close this window and try again.';
+          } else if (errorDescription) {
+            errorMessage = errorDescription;
+          }
+          
+          setMessage(errorMessage);
           
           if (isPopup) {
             window.opener.postMessage({
@@ -35,7 +47,7 @@ export default function GoogleCallbackPage() {
               error: error,
             }, window.location.origin);
             
-            setTimeout(() => window.close(), 1500);
+            setTimeout(() => window.close(), 2500);
           }
           return;
         }
