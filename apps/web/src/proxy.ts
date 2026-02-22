@@ -20,6 +20,7 @@ const BYPASS_SITE_PASSWORD = [
   '/staging-login',      // The password entry page
   '/api/',               // All API routes (mobile app, webhooks, etc.)
   '/api/staging-auth',   // The password verification endpoint
+  '/status',             // Public status page
   '/_next/',             // Next.js assets
   '/favicon.ico',
   '/robots.txt',
@@ -72,6 +73,7 @@ const PUBLIC_API_ROUTES = [
   '/api/listings/black',  // Black listings public view
   '/api/sellers/stats',   // Public seller stats
   '/api/showroom',        // Public showroom views
+  '/api/status',          // Public status API & SSE stream
   '/api/storage/status',  // Storage status check
   '/api/communications',  // Public communications
   '/api/dev/',            // Dev tools (email-log)
@@ -118,6 +120,34 @@ function normalizeExtendedUser(user: Record<string, unknown>): ExtendedUser {
 // Next.js 16+ proxy function
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const hostname = request.headers.get('host') || '';
+  
+  // ==========================================================================
+  // Subdomain Routing: status.revvup.ae
+  // ==========================================================================
+  if (hostname.startsWith('status.')) {
+    // Rewrite root to /status page
+    if (pathname === '/' || pathname === '') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/status';
+      return NextResponse.rewrite(url);
+    }
+    
+    // Allow API routes for SSE and data
+    if (pathname.startsWith('/api/status')) {
+      return NextResponse.next();
+    }
+    
+    // Allow static assets
+    if (pathname.startsWith('/_next/') || pathname.startsWith('/favicon')) {
+      return NextResponse.next();
+    }
+    
+    // Redirect any other paths to status root
+    const url = request.nextUrl.clone();
+    url.pathname = '/status';
+    return NextResponse.redirect(url);
+  }
   
   // Site password protection - gates entire site when SITE_PASSWORD is set
   const sitePasswordResponse = checkSitePassword(request);

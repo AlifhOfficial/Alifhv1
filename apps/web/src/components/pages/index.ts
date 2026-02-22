@@ -11,3 +11,6 @@ export * from './showroom';
 
 // Legal Pages
 export * from './legal';
+
+// Status Page
+export * from './status';

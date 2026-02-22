@@ -1,0 +1,8 @@
+*
+!package.ws.json
+!bun.lock
+!packages/database/package.json
+!packages/database/src/
+!apps/ws/package.json
+!apps/ws/src/
+!apps/ws/tsconfig.json

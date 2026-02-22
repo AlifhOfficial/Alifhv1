@@ -17,5 +17,6 @@ export * from './admin';
 export * from './feedback';
 export * from './communications';
 export * from './notifications';
+export * from './status';
 
 export * from './relations';
