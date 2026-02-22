@@ -110,13 +110,24 @@ async function checkWebSocket(): Promise<HealthResult> {
     });
     const latency = Date.now() - start;
     
+    // Get server-side processing time from Server-Timing header
+    const serverTiming = response.headers.get('Server-Timing');
+    let serverProcessMs = 0;
+    if (serverTiming) {
+      const match = serverTiming.match(/process;dur=([\d.]+)/);
+      if (match) serverProcessMs = parseFloat(match[1]);
+    }
+    
+    // Network overhead = total latency minus server processing
+    const networkOverheadMs = latency - serverProcessMs;
+    
     if (response.ok) {
       return {
         service: 'websocket',
-        // Allow higher latency for Fly.io cold starts (300-400ms is normal)
+        // Allow higher latency for cross-provider networking
         status: latency < 500 ? 'healthy' : latency < 1000 ? 'degraded' : 'unhealthy',
         latency,
-        message: 'Connected',
+        message: `Server: ${serverProcessMs.toFixed(1)}ms, Network: ${networkOverheadMs.toFixed(0)}ms`,
       };
     }
     

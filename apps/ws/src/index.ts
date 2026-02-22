@@ -136,8 +136,33 @@ const server = Bun.serve<WSData>({
       return ok ? new Response(undefined, { status: 101 }) : new Response("Upgrade failed", { status: 400 });
     }
 
-    // Health check
+    // Health check - with timing breakdown
     if (url.pathname === "/health") {
+      const start = performance.now();
+      const activeConnections = Array.from(presence.values()).reduce((sum, state) => sum + state.connections, 0);
+      const processTime = performance.now() - start;
+      
+      return new Response(JSON.stringify({
+        status: "ok",
+        timing: {
+          requestReceivedAt: new Date().toISOString(),
+          processTimeMs: Math.round(processTime * 100) / 100,
+          uptimeSeconds: Math.round(process.uptime()),
+        },
+        stats: {
+          uniqueUsers: presence.size,
+          activeConnections,
+        },
+      }), {
+        headers: { 
+          'Content-Type': 'application/json',
+          'Server-Timing': `process;dur=${processTime.toFixed(2)}`,
+        },
+      });
+    }
+
+    // Detailed stats endpoint (separate from health)
+    if (url.pathname === "/stats") {
       const activeConnections = Array.from(presence.values()).reduce((sum, state) => sum + state.connections, 0);
       return Response.json({
         status: "healthy",
@@ -145,11 +170,6 @@ const server = Bun.serve<WSData>({
         uptime: process.uptime(),
         uniqueUsers: presence.size,
         activeConnections,
-        presenceDetails: Array.from(presence.entries()).map(([userId, state]) => ({
-          userId,
-          connections: state.connections,
-          isOnline: state.connections > 0,
-        })),
       });
     }
 
