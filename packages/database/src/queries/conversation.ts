@@ -567,6 +567,8 @@ export async function getConversationParticipantsWithProfiles(
       firstName: userProfile.firstName,
       lastName: userProfile.lastName,
       avatar: userProfile.avatar,
+      // Fallback to user.name if profile doesn't have name
+      userName: user.name,
     })
     .from(conversationParticipant)
     .innerJoin(user, eq(user.id, conversationParticipant.userId))
@@ -580,7 +582,8 @@ export async function getConversationParticipantsWithProfiles(
 
   return participants.map(p => ({
     userId: p.userId,
-    name: [p.firstName, p.lastName].filter(Boolean).join(' ') || null,
+    // Use profile name first, then fall back to user.name from auth table
+    name: [p.firstName, p.lastName].filter(Boolean).join(' ') || p.userName || null,
     avatarUrl: p.avatar,
     lastReadAt: p.lastReadAt,
   }));

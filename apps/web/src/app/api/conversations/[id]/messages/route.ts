@@ -156,7 +156,7 @@ export async function POST(
       const otherParticipants = participants.filter(p => p.userId !== user.id);
       // Get sender's profile from participants list
       const senderProfile = participants.find(p => p.userId === user.id);
-      const senderName = senderProfile?.name || user.firstName || 'Someone';
+      const senderName = senderProfile?.name || user.name || user.firstName || 'Someone';
       // Resolve avatar storage key to full public URL
       const rawAvatar = senderProfile?.avatarUrl;
       const r2PublicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;

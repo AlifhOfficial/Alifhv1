@@ -157,7 +157,9 @@ export async function fetchConversation(conversationId: string): Promise<Convers
     throw new Error(error.error || 'Failed to fetch conversation');
   }
 
-  return response.json();
+  // API returns { conversation } - extract the conversation object
+  const data = await response.json();
+  return data.conversation;
 }
 
 /**
