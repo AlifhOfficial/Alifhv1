@@ -140,6 +140,17 @@ const server = Bun.serve<WSData>({
     if (url.pathname === "/health") {
       const start = performance.now();
       const activeConnections = Array.from(presence.values()).reduce((sum, state) => sum + state.connections, 0);
+      
+      // Test DB latency (Fly → Neon)
+      const dbStart = performance.now();
+      let dbLatency = -1;
+      try {
+        await db.execute('SELECT 1');
+        dbLatency = Math.round((performance.now() - dbStart) * 100) / 100;
+      } catch {
+        dbLatency = -1; // DB unreachable
+      }
+      
       const processTime = performance.now() - start;
       
       return new Response(JSON.stringify({
@@ -147,6 +158,7 @@ const server = Bun.serve<WSData>({
         timing: {
           requestReceivedAt: new Date().toISOString(),
           processTimeMs: Math.round(processTime * 100) / 100,
+          dbLatencyMs: dbLatency,
           uptimeSeconds: Math.round(process.uptime()),
         },
         stats: {
@@ -156,7 +168,7 @@ const server = Bun.serve<WSData>({
       }), {
         headers: { 
           'Content-Type': 'application/json',
-          'Server-Timing': `process;dur=${processTime.toFixed(2)}`,
+          'Server-Timing': `process;dur=${processTime.toFixed(2)}, db;dur=${dbLatency}`,
         },
       });
     }
