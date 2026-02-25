@@ -233,7 +233,7 @@ const DEFAULT_FULL_OPTIONS: Required<ProcessImageOptions> = {
   fit: 'inside',
   position: 'center',
   quality: 78,
-  effort: 6,           // Max effort = best compression
+  effort: 4,           // Balanced: fast + good compression (6 is ~30% slower)
   convertHeic: true,
   sharpenSigma: 0.6,   // Subtle sharpening for full images
   saturationBoost: 1.02, // Slight boost to counter compression flatness
@@ -246,7 +246,7 @@ const DEFAULT_THUMB_OPTIONS: Required<ProcessImageOptions> = {
   fit: 'inside',
   position: 'center',
   quality: 72,
-  effort: 6,           // Max effort for smallest size
+  effort: 4,           // Balanced: fast + good compression
   convertHeic: true,
   sharpenSigma: 0.8,   // Stronger sharpening for thumbs (more downscaled = more detail loss)
   saturationBoost: 1.03, // Slightly more boost for small images

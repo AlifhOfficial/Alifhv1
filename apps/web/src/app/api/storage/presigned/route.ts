@@ -20,9 +20,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getSessionUser } from '@/lib/auth/session-context';
+import { getR2Client, getR2Bucket } from '@/lib/storage/r2-client';
 import { createId } from '@paralleldrive/cuid2';
 
 export const runtime = 'nodejs';
@@ -154,23 +155,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // R2 config
-    const bucketName = process.env.R2_BUCKET_NAME;
-    const accessKeyId = process.env.R2_ACCESS_KEY_ID;
-    const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
-    const accountId = process.env.R2_ACCOUNT_ID;
-    const endpoint = process.env.R2_ENDPOINT || `https://${accountId}.r2.cloudflarestorage.com`;
-
-    if (!bucketName || !accessKeyId || !secretAccessKey || !endpoint) {
-      console.error('[presigned] R2 not configured');
-      return NextResponse.json({ error: 'Storage not configured' }, { status: 500 });
-    }
-
-    const client = new S3Client({
-      region: 'auto',
-      endpoint,
-      credentials: { accessKeyId, secretAccessKey },
-    });
+    // Get singleton R2 client (reuses TCP connections)
+    const client = getR2Client();
+    const bucketName = getR2Bucket();
 
     const ext = allowedTypes[contentType];
     const rawKey = generateRawKey(type as UploadType, user.id, ext, { vin, partnerId, imageType, assetType }, isVideo);

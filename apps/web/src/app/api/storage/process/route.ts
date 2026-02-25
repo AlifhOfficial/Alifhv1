@@ -23,9 +23,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Client, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { uploadFile, deleteFile } from '@/lib/storage';
+import { uploadFile } from '@/lib/storage';
+import { getR2Client, getR2Bucket, getCdnUrl } from '@/lib/storage/r2-client';
 import { 
   processListingImages, 
   processSingleImage,
@@ -137,23 +138,10 @@ export async function POST(req: NextRequest) {
     // Parse the raw key to understand what type of processing needed
     const parsed = parseRawKey(rawKey);
     
-    // Get R2 config
-    const bucketName = process.env.R2_BUCKET_NAME;
-    const accessKeyId = process.env.R2_ACCESS_KEY_ID;
-    const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
-    const accountId = process.env.R2_ACCOUNT_ID;
-    const endpoint = process.env.R2_ENDPOINT || `https://${accountId}.r2.cloudflarestorage.com`;
-    const cdnUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
-
-    if (!bucketName || !accessKeyId || !secretAccessKey || !endpoint) {
-      return NextResponse.json({ error: 'Storage not configured' }, { status: 500 });
-    }
-
-    const client = new S3Client({
-      region: 'auto',
-      endpoint,
-      credentials: { accessKeyId, secretAccessKey },
-    });
+    // Get singleton R2 client (reuses TCP connections)
+    const client = getR2Client();
+    const bucketName = getR2Bucket();
+    const cdnUrl = getCdnUrl();
 
     // Read raw file from R2
     const getCmd = new GetObjectCommand({ Bucket: bucketName, Key: rawKey });
