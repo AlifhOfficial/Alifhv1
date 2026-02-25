@@ -29,7 +29,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const IMAGE_GAP = Spacing.xs;
 const GRID_COLUMNS = 3;
 const IMAGE_SIZE = (SCREEN_WIDTH - Spacing.lg * 2 - Spacing.md * 2 - IMAGE_GAP * (GRID_COLUMNS - 1)) / GRID_COLUMNS;
-const MAX_IMAGES = 20;
+const MAX_IMAGES = 30;
 
 // ─────────────────────────────────────────────────────────────────────────────
 

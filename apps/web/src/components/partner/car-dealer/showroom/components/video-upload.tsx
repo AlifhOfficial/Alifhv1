@@ -118,63 +118,27 @@ export function VideoUpload({
             className="flex items-center justify-center w-full h-full cursor-pointer hover:bg-muted/50 transition-colors"
           >
             {isUploading ? (
-              <div className="flex flex-col items-center gap-3 text-muted-foreground">
+              <div className="flex flex-col items-center gap-2 text-muted-foreground">
                 {/* Progress ring */}
-                <div className="relative w-12 h-12">
-                  <svg className="w-12 h-12 transform -rotate-90">
-                    <circle
-                      cx="24"
-                      cy="24"
-                      r="20"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      fill="none"
-                      className="opacity-20"
-                    />
-                    <circle
-                      cx="24"
-                      cy="24"
-                      r="20"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeDasharray={125.6}
-                      strokeDashoffset={125.6 - (125.6 * (uploadProgress || 0)) / 100}
-                      className="text-primary transition-all duration-300"
-                    />
+                <div className="relative w-10 h-10">
+                  <svg className="w-10 h-10 transform -rotate-90">
+                    <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="2" fill="none" className="opacity-20" />
+                    <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="2" fill="none" strokeDasharray={100.5} strokeDashoffset={100.5 - (100.5 * (uploadProgress || 0)) / 100} className="text-primary transition-all duration-300" />
                   </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
-                    {uploadProgress || 0}%
-                  </span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium">{uploadProgress || 0}%</span>
                 </div>
-                <div className="text-center">
-                  <p className="text-xs font-medium">Uploading video...</p>
-                  <p className="text-[10px] text-muted-foreground/60 mt-0.5">
-                    Please don't close this page
-                  </p>
-                </div>
+                <p className="text-[10px]">Uploading...</p>
               </div>
             ) : (
-              <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                <div className="p-3 rounded-full bg-muted/50">
-                  <Upload className="w-5 h-5" />
-                </div>
-                <span className="text-sm font-medium">{label}</span>
-                <span className="text-[10px] text-muted-foreground/60">MP4, WebM, MOV • Max 50MB</span>
-                <span className="text-[10px] text-muted-foreground/40">Compress to 720p/1080p first • WebM preferred</span>
+              <div className="flex flex-col items-center gap-1 text-muted-foreground">
+                <Upload className="w-5 h-5" />
+                <span className="text-xs">{label}</span>
+                <span className="text-[10px] text-muted-foreground/50">Max 50MB • 720p/1080p</span>
               </div>
             )}
           </button>
         )}
       </div>
-      
-      {/* Helper text when video is saved */}
-      {hasSavedVideo && !isUploading && (
-        <p className="text-[11px] text-muted-foreground/60 flex items-center gap-1">
-          <CheckCircle2 className="w-3 h-3 text-green-500" />
-          Served via CDN for fast global delivery
-        </p>
-      )}
     </div>
   );
 }

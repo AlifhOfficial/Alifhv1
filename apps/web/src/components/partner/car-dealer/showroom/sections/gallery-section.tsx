@@ -8,6 +8,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { getPublicUrl } from '@/utils';
+import { uploadShowroomImage } from '@/lib/storage';
 import { Plus, X, Loader2 } from 'lucide-react';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import { EditableField, VideoUpload, VideoEmbedPreview } from '../components';
@@ -105,9 +106,17 @@ export function GallerySection({
                       toast({ title: `Only uploading ${remaining} images (max 12)`, variant: 'default' });
                     }
                     
+                    // Check file sizes (15MB max each)
+                    const maxSize = 15 * 1024 * 1024;
+                    const oversized = toUpload.filter(f => f.size > maxSize);
+                    if (oversized.length > 0) {
+                      toast({ title: `${oversized.length} image(s) too large (max 15MB each)`, variant: 'destructive' });
+                      return;
+                    }
+                    
                     setImageUploading('showroomImages');
                     try {
-                      // Upload in parallel batches of 3 for speed while respecting rate limits
+                      // Upload via presigned pipeline in parallel batches of 3
                       const batchSize = 3;
                       const uploadedKeys: string[] = [];
                       
@@ -115,19 +124,8 @@ export function GallerySection({
                         const batch = toUpload.slice(i, i + batchSize);
                         const results = await Promise.all(
                           batch.map(async (file) => {
-                            const fd = new FormData();
-                            fd.append('file', file);
-                            fd.append('type', 'gallery');
-                            fd.append('partnerId', partnerId);
-
-                            const res = await fetch('/api/storage/upload-showroom-asset', {
-                              method: 'POST',
-                              body: fd,
-                              credentials: 'include',
-                            });
-                            if (!res.ok) throw new Error();
-                            const data = await res.json();
-                            return data.key;
+                            const result = await uploadShowroomImage(file, partnerId, 'gallery');
+                            return result.key;
                           })
                         );
                         uploadedKeys.push(...results);

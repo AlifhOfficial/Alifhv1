@@ -3,11 +3,11 @@
  * Revvup Design System + Inter font
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, StyleSheet, Platform, ScrollView } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Bell, Sun, Moon, Bookmark, Package, CalendarDays } from 'lucide-react-native';
+import { Sun, Moon, Bookmark, Package, CalendarDays } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 
@@ -15,8 +15,7 @@ import { ProfileMenu } from './profile-menu';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
-import { Body, Data } from '@/components/ui';
-import { fetchUnreadCount } from '@/lib/notifications-api';
+import { Data } from '@/components/ui';
 
 export function HomeHeader() {
   const { colorScheme, toggleTheme } = useTheme();
@@ -24,28 +23,12 @@ export function HomeHeader() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const [unreadCount, setUnreadCount] = useState(0);
-
-  // Fetch unread count once when authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setUnreadCount(0);
-      return;
-    }
-    fetchUnreadCount()
-      .then(setUnreadCount)
-      .catch(() => {});
-  }, [isAuthenticated]);
 
   const handleToggleTheme = () => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     toggleTheme();
-  };
-
-  const handleNotificationPress = () => {
-    router.push('/notifications' as any);
   };
 
   const handleSavedPress = () => {
@@ -81,7 +64,7 @@ export function HomeHeader() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
-      {/* Left: Profile + Notifications + Saved + Inventory + Bookings (Scrollable) */}
+      {/* Left: Profile + Saved + Inventory + Bookings (Scrollable) */}
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false}
@@ -93,33 +76,24 @@ export function HomeHeader() {
           style={[
             styles.iconButton,
             styles.glass,
-            {
+            { 
               borderColor: colors.glassBorder,
               backgroundColor: colors.glassBackground,
-            },
+            }
           ]}
         >
           <HapticPressable
             style={styles.iconButtonInner}
-            onPress={handleNotificationPress}
+            onPress={handleToggleTheme}
             hitSlop={Layout.hitSlop}
           >
             {({ pressed }) => (
-              <View>
-                <Bell 
-                  size={Sizes.iconSm} 
-                  color={colors.icon}
-                  strokeWidth={2}
-                  style={{ opacity: pressed ? 0.7 : 1 }}
-                />
-                {unreadCount > 0 && (
-                  <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-                    <Body size="small" style={styles.badgeText}>
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </Body>
-                  </View>
-                )}
-              </View>
+              <ThemeIcon 
+                size={Sizes.iconSm} 
+                color={colors.icon}
+                strokeWidth={2}
+                style={{ opacity: pressed ? 0.7 : 1 }}
+              />
             )}
           </HapticPressable>
         </View>
@@ -198,31 +172,6 @@ export function HomeHeader() {
             )}
           </HapticPressable>
         </View>
-        <View
-          style={[
-            styles.iconButton,
-            styles.glass,
-            { 
-              borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
-            }
-          ]}
-        >
-          <HapticPressable
-            style={styles.iconButtonInner}
-            onPress={handleToggleTheme}
-            hitSlop={Layout.hitSlop}
-          >
-            {({ pressed }) => (
-              <ThemeIcon 
-                size={Sizes.iconSm} 
-                color={colors.icon}
-                strokeWidth={2}
-                style={{ opacity: pressed ? 0.7 : 1 }}
-              />
-            )}
-          </HapticPressable>
-        </View>
       </ScrollView>
     </View>
   );
@@ -283,22 +232,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
-  },
-  badge: {
-    position: 'absolute',
-    top: -Spacing.xs,
-    right: -Spacing.xs,
-    minWidth: Spacing.md,
-    height: Spacing.md,
-    borderRadius: Spacing.md / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.xs / 2,
-  },
-  badgeText: {
-    color: '#FFFFFF',
-    fontFamily: 'Inter_700Bold',
-    fontSize: 8,
-    lineHeight: 10,
   },
 });

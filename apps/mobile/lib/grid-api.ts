@@ -11,6 +11,7 @@
 
 import { searchApi, type ListingCard, type SearchParams } from './search-api';
 import { getPartnersList, type PartnerListItem } from './partner-api';
+import { getShowroomsList, type ShowroomCardData } from './showroom-api';
 import { 
   BODY_TYPES, 
   CAR_MAKES, 
@@ -72,6 +73,13 @@ export interface PartnerGridConfig extends GridConfig {
   partnerId?: string;
 }
 
+/** Showroom showcase grid config */
+export interface ShowroomGridConfig extends GridConfig {
+  type: 'showroom';
+  partnerId?: string;
+  partnerName?: string;
+}
+
 /** Price range grid config */
 export interface PriceRangeGridConfig extends GridConfig {
   type: 'price_range';
@@ -85,7 +93,8 @@ export type AnyGridConfig =
   | CategoryGridConfig 
   | MakeGroupGridConfig 
   | PartnerGridConfig
-  | PriceRangeGridConfig;
+  | PriceRangeGridConfig
+  | ShowroomGridConfig;
 
 /** Grid data result */
 export interface GridData {
@@ -93,6 +102,7 @@ export interface GridData {
   listings: ListingCard[];
   partner?: PartnerListItem;
   partners?: PartnerListItem[];
+  showroom?: ShowroomCardData;
   total?: number;
   hasMore?: boolean;
 }
@@ -387,6 +397,19 @@ export function createPopularGridConfig(): GridConfig {
   };
 }
 
+/** Generate showroom showcase grid config */
+export function createShowroomGridConfig(partnerId?: string, partnerName?: string): ShowroomGridConfig {
+  return {
+    id: 'showroom-showcase',
+    type: 'showroom',
+    title: 'Showroom Spotlight',
+    subtitle: 'Visit our premium showrooms',
+    isRevvupBranded: true,
+    partnerId,
+    partnerName,
+  };
+}
+
 /** Generate hidden gems grid config (low mileage, good prices) */
 export function createHiddenGemsGridConfig(): GridConfig {
   return {
@@ -497,6 +520,20 @@ export async function fetchGridData(config: AnyGridConfig): Promise<GridData> {
     return result;
   }
 
+  // Handle showroom grids - fetch first published showroom
+  if (config.type === 'showroom') {
+    try {
+      const showroomData = await getShowroomsList(1, 1);
+      if (showroomData.showrooms.length > 0) {
+        result.showroom = showroomData.showrooms[0];
+      }
+    } catch (err) {
+      console.error('[fetchGridData] Failed to fetch showroom:', err);
+    }
+    setCache(cacheKey, result);
+    return result;
+  }
+
   // Fetch listings for other grid types
   if (config.searchParams) {
     try {
@@ -554,7 +591,10 @@ export function generateHomeGridSequence(): AnyGridConfig[] {
   // 2. Founding Partners
   sequence.push(createFoundingPartnersGridConfig());
   
-  // 3. Discovery/Meaningful categories first
+  // 3. Showroom Spotlight
+  sequence.push(createShowroomGridConfig());
+  
+  // 4. Discovery/Meaningful categories first
   sequence.push(createNewestGridConfig()); // Just Listed - most important
   sequence.push(createPopularGridConfig()); // Most Popular
   sequence.push(createHiddenGemsGridConfig()); // Hidden Gems
@@ -623,4 +663,5 @@ export default {
   createNewestGridConfig,
   createPopularGridConfig,
   createHiddenGemsGridConfig,
+  createShowroomGridConfig,
 };

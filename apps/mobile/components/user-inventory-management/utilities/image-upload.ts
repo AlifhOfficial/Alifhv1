@@ -82,7 +82,7 @@ async function requestMediaPermission(): Promise<boolean> {
 export async function pickAndUploadListingImage(
   options: PickAndUploadOptions,
 ): Promise<PickAndUploadResult> {
-  const { vin, allowMultiple = false, maxImages = 20, onProgress } = options;
+  const { vin, allowMultiple = false, maxImages = 30, onProgress } = options;
 
   // 1. Request permission
   const granted = await requestMediaPermission();

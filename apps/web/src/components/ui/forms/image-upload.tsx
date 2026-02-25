@@ -1,6 +1,9 @@
 /**
  * Image Upload Component - Revvup Design System
  * Multi-image upload with preview and drag-and-drop
+ * 
+ * Uses presigned URL pipeline for fast uploads:
+ * 1. Get presigned URL → 2. Upload to R2 → 3. Process → CDN URL
  */
 
 'use client';
@@ -8,51 +11,49 @@
 import { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { getPublicUrl } from '@/utils/storage';
+import { uploadListingImage, type ListingUploadResult } from '@/lib/storage';
 import { Button } from './button';
 
 interface ImageUploadProps {
   value?: string[];
   onChange: (urls: string[]) => void;
   maxImages?: number;
-  directory?: string;
   label?: string;
   description?: string;
   /**
-   * Use optimized listing image endpoint with Sharp/WebP conversion
-   * When true, uses /api/storage/upload-listing-image for better quality & smaller files
+   * VIN for organizing images in R2 storage
+   * Required - images stored under listings/{date}/{vin}/
    */
-  optimized?: boolean;
+  vin: string;
   /**
    * Delete images from storage when removed from the list
-   * When true, calls DELETE /api/storage/delete to remove from R2
-   * @default true for optimized uploads
+   * @default true
    */
   deleteOnRemove?: boolean;
-  /**
-   * VIN for organizing images in R2 storage
-   * Required for optimized uploads - images stored under listings/{vin}-xxx/
-   */
-  vin?: string;
 }
 
 export function ImageUpload({ 
   value = [], 
   onChange, 
-  maxImages = 10,
-  directory = 'listings',
+  maxImages = 30,
   label = 'Upload Images',
   description = 'Add up to ' + maxImages + ' images',
-  optimized = false,
   deleteOnRemove = true,
   vin,
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [deleting, setDeleting] = useState<number | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
+    
+    if (!vin || vin.length < 11) {
+      alert('Valid VIN is required for image uploads');
+      return;
+    }
 
     const remainingSlots = maxImages - value.length;
     if (remainingSlots <= 0) {
@@ -63,7 +64,6 @@ export function ImageUpload({
     const filesToUpload = Array.from(files).slice(0, remainingSlots);
     
     // Basic client-side type check (server does magic byte detection for full validation)
-    // Accept any image/* type - common formats + HEIC/HEIF which browsers may report differently
     const invalidFiles = filesToUpload.filter(f => 
       !f.type.startsWith('image/') && f.type !== '' && f.type !== 'application/octet-stream'
     );
@@ -73,86 +73,40 @@ export function ImageUpload({
       return;
     }
 
-    // Validate file sizes (max 10MB per image)
-    const maxSize = 10 * 1024 * 1024;
+    // Validate file sizes (max 30MB per image - presigned pipeline handles large files)
+    const maxSize = 30 * 1024 * 1024;
     const oversizedFiles = filesToUpload.filter(f => f.size > maxSize);
     
     if (oversizedFiles.length > 0) {
-      alert('Each image must be less than 10MB');
+      alert('Each image must be less than 30MB');
       return;
     }
 
     setUploading(true);
+    setUploadProgress(0);
 
     try {
-      const uploadPromises = filesToUpload.map(async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        // Use optimized endpoint for listing images (Sharp/WebP conversion)
-        // Falls back to generic upload for non-listing images
-        const endpoint = optimized 
-          ? '/api/storage/upload-listing-image'
-          : '/api/storage/upload';
-        
-        if (optimized && vin) {
-          // Pass VIN for organized storage: listings/{vin}-xxx/
-          formData.append('vin', vin);
-        }
-        
-        if (!optimized) {
-          // Only needed for generic endpoint
-          formData.append('directory', directory);
-          formData.append('contentType', file.type);
-          formData.append('cacheControl', 'public, max-age=31536000, immutable');
-        }
-
-        // Add timeout for uploads (HEIC conversion can take 10-15s)
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
-
-        try {
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            body: formData,
-            credentials: 'include',
-            signal: controller.signal,
-          });
-
-          clearTimeout(timeoutId);
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            // Provide user-friendly error messages
-            if (response.status === 413) {
-              throw new Error('Image is too large. Please use an image under 10MB.');
-            }
-            if (response.status === 401) {
-              throw new Error('Please sign in to upload images.');
-            }
-            throw new Error(errorData.error || `Upload failed: ${response.statusText}`);
-          }
-
-          const data = await response.json();
-          // Store the storage KEY (not full CDN URL) for domain portability
-          // getPublicUrl() resolves keys to full URLs at render time
-          return data.key || data.url;
-        } catch (err: any) {
-          clearTimeout(timeoutId);
-          if (err.name === 'AbortError') {
-            throw new Error('Upload timed out. Please check your connection and try again.');
-          }
-          throw err;
-        }
-      });
-
-      const uploadedUrls = await Promise.all(uploadPromises);
-      onChange([...value, ...uploadedUrls]);
+      // Upload files sequentially for better progress tracking
+      const uploadedKeys: string[] = [];
+      for (let i = 0; i < filesToUpload.length; i++) {
+        const file = filesToUpload[i];
+        const result = await uploadListingImage(file, vin, (percent) => {
+          // Calculate overall progress across all files
+          const baseProgress = (i / filesToUpload.length) * 100;
+          const fileProgress = (percent / filesToUpload.length);
+          setUploadProgress(Math.round(baseProgress + fileProgress));
+        });
+        // Store the full-size key (thumb can be derived from it)
+        uploadedKeys.push(result.fullKey);
+      }
+      
+      onChange([...value, ...uploadedKeys]);
     } catch (error: any) {
       console.error('Upload error:', error);
       alert(error.message || 'Failed to upload images. Please try again.');
     } finally {
       setUploading(false);
+      setUploadProgress(0);
       if (inputRef.current) {
         inputRef.current.value = '';
       }
@@ -302,25 +256,23 @@ export function ImageUpload({
             disabled={uploading}
           />
 
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-2">
             {uploading ? (
               <>
-                <Loader2 className="w-12 h-12 text-primary animate-spin" />
-                <p className="text-sm font-medium text-foreground">Uploading...</p>
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                <p className="text-sm text-muted-foreground">
+                  {uploadProgress > 60 ? 'Processing...' : `${uploadProgress}%`}
+                </p>
               </>
             ) : (
               <>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Upload className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground mb-1">
-                    Drop images here or click to browse
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    JPG, PNG or WebP up to 10MB • {value.length}/{maxImages} images
-                  </p>
-                </div>
+                <Upload className="w-6 h-6 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  Drop or tap • {value.length}/{maxImages}
+                </p>
+                <p className="text-[10px] text-muted-foreground/50">
+                  HEIC may take 5-10s to process
+                </p>
               </>
             )}
           </div>

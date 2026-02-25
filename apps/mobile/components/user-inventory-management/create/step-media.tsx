@@ -40,7 +40,7 @@ const IMAGES_PER_ROW = 3;
 const IMAGE_SIZE =
   (SCREEN_WIDTH - 2 * Layout.screenPadding - GRID_PADDING * 2 - IMAGE_GAP * (IMAGES_PER_ROW - 1)) /
   IMAGES_PER_ROW;
-const MAX_IMAGES = 20;
+const MAX_IMAGES = 30;
 const MAX_DESCRIPTION = 2000;
 const MAX_NOTES = 10;
 

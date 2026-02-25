@@ -7,6 +7,7 @@
 
 import React from 'react';
 import { Plus, Users } from 'lucide-react';
+import { uploadShowroomImage } from '@/lib/storage';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import type { ShowroomTeamMember } from '@alifh/database';
 import { EditableField, TeamMemberCard } from '../components';
@@ -85,22 +86,16 @@ export function TeamSection({
               onUpdate={(updates) => updateTeamMember(member.id, updates)}
               onRemove={() => removeTeamMember(member.id)}
               onImageUpload={async (file) => {
+                // Check file size (15MB max)
+                if (file.size > 15 * 1024 * 1024) {
+                  toast({ title: 'Image too large. Max 15MB', variant: 'destructive' });
+                  return;
+                }
+                
                 setImageUploading(`team-${member.id}`);
                 try {
-                  const fd = new FormData();
-                  fd.append('file', file);
-                  fd.append('type', 'team-member');
-                  fd.append('partnerId', partnerId);
-
-                  const res = await fetch('/api/storage/upload-showroom-asset', {
-                    method: 'POST',
-                    body: fd,
-                    credentials: 'include',
-                  });
-                  if (!res.ok) throw new Error();
-                  const data = await res.json();
-
-                  await updateTeamMember(member.id, { image: data.key });
+                  const result = await uploadShowroomImage(file, partnerId, 'team-member');
+                  await updateTeamMember(member.id, { image: result.key });
                 } catch {
                   toast({ title: 'Upload failed', variant: 'destructive' });
                 } finally {

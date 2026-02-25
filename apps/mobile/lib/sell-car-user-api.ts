@@ -6,7 +6,7 @@
  *   • Edit listing      (PUT /api/listings/[id])
  *   • My Listings       (GET /api/listings/my-listings + stats)
  *   • Lifecycle actions (mark-sold, extend, archive, delete)
- *   • Image upload      (POST /api/storage/upload-listing-image)
+ *   • Image upload      (presigned URL pipeline: /api/storage/presigned + /api/storage/process)
  *   • VIN check         (GET /api/listings/check-vin)
  *
  * Each public function returns data already transformed for native UI
@@ -392,15 +392,19 @@ export async function checkVin(
 }
 
 // ============================================================================
-// API — IMAGE UPLOAD
+// API — IMAGE UPLOAD (Presigned URL Pipeline)
 // ============================================================================
 
 /**
- * Upload a listing image (auto-converts to WebP on server).
- * POST /api/storage/upload-listing-image
+ * Upload a listing image using presigned URL pipeline.
+ * 
+ * Flow:
+ * 1. POST /api/storage/presigned → get upload URL
+ * 2. PUT directly to R2 (fast, bypasses Vercel limit)
+ * 3. POST /api/storage/process → get processed CDN URLs
  *
  * Server processing includes:
- * - HEIC/HEIF auto-detection and conversion (can take 5-10s for large images)
+ * - HEIC/HEIF auto-detection and conversion
  * - WebP conversion with quality 78 (full) / 72 (thumb)
  * - Generates thumb (480w, ~15-20KB) + full (2000w, ~100-200KB) versions
  *
@@ -413,12 +417,9 @@ export async function uploadListingImage(
   vin: string,
   fileName?: string,
 ): Promise<ImageUploadResult> {
-  const formData = new FormData();
-
-  // React Native FormData accepts { uri, type, name }
   const name = fileName ?? fileUri.split('/').pop() ?? 'photo.jpg';
   
-  // Detect MIME type from extension (server also detects via magic bytes)
+  // Detect MIME type from extension
   const ext = name.split('.').pop()?.toLowerCase() ?? '';
   const mimeTypes: Record<string, string> = {
     'jpg': 'image/jpeg',
@@ -428,41 +429,51 @@ export async function uploadListingImage(
     'heic': 'image/heic',
     'heif': 'image/heif',
   };
-  const mimeType = mimeTypes[ext] || 'image/jpeg';
+  const contentType = mimeTypes[ext] || 'image/jpeg';
   
-  formData.append('file', {
-    uri: fileUri,
-    type: mimeType,
-    name,
-  } as any);
-  formData.append('vin', vin);
-
-  // Longer timeout for image uploads (HEIC conversion can take 10-15s on slow connections)
-  const res = await authFetch('/api/storage/upload-listing-image', {
+  // Step 1: Get presigned upload URL
+  const presignedRes = await authFetch('/api/storage/presigned', {
     method: 'POST',
-    body: formData,
-    timeoutMs: 60000, // 60 seconds for large HEIC images
+    body: JSON.stringify({ type: 'listing', contentType, vin }),
   });
-
-  if (!res.ok) {
-    // Provide user-friendly error messages
-    if (res.status === 413) {
-      throw new Error('Image is too large. Please use an image under 10MB.');
-    }
-    if (res.status === 400) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.error || 'Invalid image format. Please use JPEG, PNG, WebP, or HEIC.');
-    }
-    if (res.status === 401) {
-      throw new Error('Please sign in to upload images.');
-    }
-    await handleError(res, 'Image upload failed. Please try again.');
+  
+  if (!presignedRes.ok) {
+    const err = await presignedRes.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to get upload URL');
   }
-
-  const data = await res.json();
+  
+  const { uploadUrl, rawKey, maxSize } = await presignedRes.json();
+  
+  // Step 2: Upload directly to R2
+  // For React Native, we need to read the file and upload
+  const uploadRes = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': contentType },
+    body: await fetch(fileUri).then(r => r.blob()),
+  });
+  
+  if (!uploadRes.ok) {
+    throw new Error('Upload failed. Please try again.');
+  }
+  
+  // Step 3: Process the uploaded image
+  const processRes = await authFetch('/api/storage/process', {
+    method: 'POST',
+    body: JSON.stringify({ rawKey }),
+    timeoutMs: 60000, // 60s for HEIC processing
+  });
+  
+  if (!processRes.ok) {
+    const err = await processRes.json().catch(() => ({}));
+    throw new Error(err.error || 'Processing failed');
+  }
+  
+  const data = await processRes.json();
+  
+  // Return the full-size URL (thumb can be derived)
   return {
-    url: data.url,
-    absoluteUrl: toAbsoluteUrl(data.url)!,
+    url: data.fullKey,
+    absoluteUrl: data.fullUrl,
   };
 }
 

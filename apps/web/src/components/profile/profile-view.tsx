@@ -12,6 +12,7 @@ import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/providers/auth-provider';
 import { authClient } from '@/lib/auth/client';
+import { uploadAvatar as uploadAvatarImage } from '@/lib/storage';
 import { 
   Loader2, 
   Camera,
@@ -164,7 +165,7 @@ export function ProfileView() {
   };
 
   // Avatar upload
-  const uploadAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
@@ -174,26 +175,19 @@ export function ProfileView() {
       toast({ title: 'Only image files are allowed', variant: 'destructive' });
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: 'Max 5MB', variant: 'destructive' });
+    if (file.size > 15 * 1024 * 1024) {
+      toast({ title: 'Max 15MB', variant: 'destructive' });
       return;
     }
 
     setAvatarUploading(true);
     try {
-      const fd = new FormData();
-      fd.append('file', file);
-      if (profile?.avatar) {
-        fd.append('previousKey', profile.avatar);
-      }
-      const res = await fetch('/api/storage/upload-avatar', { method: 'POST', body: fd, credentials: 'include' });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      const result = await uploadAvatarImage(file);
       // updateProfile handles session refresh automatically via mutation onSuccess
-      await updateProfile({ avatar: data.key });
+      await updateProfile({ avatar: result.key });
       toast({ title: 'Photo updated' });
-    } catch {
-      toast({ title: 'Upload failed', variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: err.message || 'Upload failed', variant: 'destructive' });
     } finally {
       setAvatarUploading(false);
     }
@@ -452,7 +446,7 @@ export function ProfileView() {
               accept="image/*" 
               className="hidden" 
               id="avatar" 
-              onChange={uploadAvatar} 
+              onChange={handleAvatarUpload} 
               disabled={avatarUploading}
             />
             <label 

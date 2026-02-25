@@ -368,7 +368,7 @@ export async function verifyPhoneOTP(
 }
 
 // ============================================================================
-// AVATAR UPLOAD
+// AVATAR UPLOAD (Presigned URL Pipeline)
 // ============================================================================
 
 export interface AvatarUploadResult {
@@ -378,9 +378,9 @@ export interface AvatarUploadResult {
 }
 
 /**
- * Upload avatar image
+ * Upload avatar image using presigned URL pipeline
  * @param uri - Local file URI
- * @param previousKey - Optional key of previous avatar to replace
+ * @param previousKey - Optional key of previous avatar (unused, kept for backwards compat)
  */
 export async function uploadAvatar(
   uri: string,
@@ -389,10 +389,7 @@ export async function uploadAvatar(
   try {
     const session = await getStoredSession();
     
-    // Create form data
-    const formData = new FormData();
-    
-    // Get file info from URI - server detects format by magic bytes
+    // Get file info from URI
     const filename = uri.split('/').pop() || 'avatar.jpg';
     const ext = filename.split('.').pop()?.toLowerCase() || '';
     const mimeTypes: Record<string, string> = {
@@ -403,44 +400,56 @@ export async function uploadAvatar(
       'heic': 'image/heic',
       'heif': 'image/heif',
     };
-    const type = mimeTypes[ext] || 'image/jpeg';
+    const contentType = mimeTypes[ext] || 'image/jpeg';
     
-    // Append file - React Native FormData format
-    formData.append('file', {
-      uri,
-      name: filename,
-      type,
-    } as any);
-    
-    if (previousKey) {
-      formData.append('previousKey', previousKey);
-    }
-
-    const response = await fetch(`${API_BASE}${PROFILE_ENDPOINTS.UPLOAD_AVATAR}`, {
+    // Step 1: Get presigned URL
+    const presignedRes = await fetch(`${API_BASE}/api/storage/presigned`, {
       method: 'POST',
       headers: {
-        'Origin': API_BASE,
+        'Content-Type': 'application/json',
         ...(session?.token ? { 'Authorization': `Bearer ${session.token}` } : {}),
-        // Don't set Content-Type - let FormData set it with boundary
       },
-      body: formData,
+      body: JSON.stringify({ type: 'avatar', contentType }),
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error('[Profile API] Avatar upload failed:', data);
-      return {
-        success: false,
-        error: data?.error || 'Failed to upload photo',
-      };
+    
+    if (!presignedRes.ok) {
+      const err = await presignedRes.json().catch(() => ({}));
+      return { success: false, error: err.error || 'Failed to get upload URL' };
     }
-
+    
+    const { uploadUrl, rawKey } = await presignedRes.json();
+    
+    // Step 2: Upload directly to R2
+    const fileBlob = await fetch(uri).then(r => r.blob());
+    const uploadRes = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': contentType },
+      body: fileBlob,
+    });
+    
+    if (!uploadRes.ok) {
+      return { success: false, error: 'Upload failed. Please try again.' };
+    }
+    
+    // Step 3: Process the uploaded image
+    const processRes = await fetch(`${API_BASE}/api/storage/process`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(session?.token ? { 'Authorization': `Bearer ${session.token}` } : {}),
+      },
+      body: JSON.stringify({ rawKey }),
+    });
+    
+    if (!processRes.ok) {
+      const err = await processRes.json().catch(() => ({}));
+      return { success: false, error: err.error || 'Processing failed' };
+    }
+    
+    const data = await processRes.json();
     console.log('[Profile API] Avatar uploaded:', data.key);
-    return {
-      success: true,
-      key: data.key,
-    };
+    
+    return { success: true, key: data.key };
   } catch (error) {
     console.error('[Profile API] Avatar upload error:', error);
     return {

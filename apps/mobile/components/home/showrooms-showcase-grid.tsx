@@ -1,6 +1,12 @@
 /**
  * Showrooms Showcase Grid
- * Single video background with brand name overlay
+ * Single video/image background with brand name overlay
+ * Displays real showroom data from API
+ * 
+ * Follows Revvup Design System patterns:
+ * - Uses theme tokens only (no hardcoded colors)
+ * - Matches BLK/Partner grid styling
+ * - Glass CTA button with ChevronRight
  */
 
 import React, { memo, useCallback } from 'react';
@@ -8,110 +14,135 @@ import {
   View,
   StyleSheet,
 } from 'react-native';
-import { Video, ResizeMode, AVPlaybackSource } from 'expo-av';
+import { Image } from 'expo-image';
+import { Video, ResizeMode } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowRight } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { useSearch } from '@/context/search-context';
-import { HapticPressable, Heading, Supporting } from '@/components/ui';
+import { HapticPressable, Heading, Supporting, Skeleton } from '@/components/ui';
+import { type ShowroomCardData } from '@/lib/showroom-api';
 
 // ============================================================================
-// LOCAL VIDEO ASSETS
+// CONSTANTS
 // ============================================================================
 
-const SHOWROOM_VIDEOS = {
-  hero2: require('@/assets/Videos/hero2.mp4'),
-  revvuphero2: require('@/assets/Videos/revvuphero2.mp4'),
-  rs7350: require('@/assets/Videos/rs7350.mp4'),
-};
-
-interface ShowroomVideoData {
-  id: string;
-  name: string;
-  video: AVPlaybackSource;
-}
-
-const SHOWROOM_DATA: ShowroomVideoData[] = [
-  { id: 'sr-1', name: 'Al Quoz Luxury Motors', video: SHOWROOM_VIDEOS.hero2 },
-  { id: 'sr-2', name: 'Emirates Prestige', video: SHOWROOM_VIDEOS.revvuphero2 },
-  { id: 'sr-3', name: 'Capital Motors', video: SHOWROOM_VIDEOS.rs7350 },
-];
+// Aspect ratio for showroom card (4:5 - tall portrait, cinematic feel)
+const CARD_ASPECT = 4 / 5;
+const BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 
 // ============================================================================
 // SHOWROOMS SHOWCASE GRID
 // ============================================================================
 
 interface ShowroomsShowcaseGridProps {
-  onViewAllPress?: () => void;
-  limit?: number;
-  offset?: number;
-  /** Partner ID to filter by when navigating */
-  partnerId?: string;
-  /** Partner name for display in browse */
-  partnerName?: string;
+  /** Showroom data from API */
+  showroom?: ShowroomCardData | null;
+  /** Loading state */
+  isLoading?: boolean;
+  /** Callback when card is pressed */
+  onPress?: () => void;
 }
 
 export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
-  onViewAllPress,
-  limit,
-  offset = 0,
-  partnerId,
-  partnerName,
+  showroom,
+  isLoading,
+  onPress,
 }: ShowroomsShowcaseGridProps) {
-  const { colors } = useTheme();
-  const { applySearch, clearSearch, clearFilterParams, resetSort } = useSearch();
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
   const router = useRouter();
-  const start = offset % SHOWROOM_DATA.length;
-  const displayShowrooms = limit ? SHOWROOM_DATA.slice(start, start + limit) : SHOWROOM_DATA;
-  // Use first showroom's video as background
-  const backgroundVideo = displayShowrooms[0]?.video;
 
-  const handleViewAllPress = useCallback(() => {
-    onViewAllPress?.();
-    if (partnerId) {
-      clearSearch();
-      clearFilterParams();
-      resetSort();
-      applySearch({ partnerId, partnerName: partnerName || displayShowrooms[0]?.name });
-      router.push('/browse' as any);
+  const handlePress = useCallback(() => {
+    if (onPress) {
+      onPress();
+      return;
     }
-  }, [onViewAllPress, partnerId, partnerName, displayShowrooms, applySearch, clearSearch, clearFilterParams, resetSort, router]);
+    // Navigate to showroom page
+    if (showroom?.slug) {
+      router.push(`/showroom/${showroom.slug}` as any);
+    } else if (showroom?.partnerId) {
+      router.push(`/showroom/${showroom.partnerId}` as any);
+    }
+  }, [onPress, showroom, router]);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <View style={[styles.container, styles.skeletonContainer]}>
+        <Skeleton 
+          width="100%" 
+          height={200} 
+          borderRadius={Radius['2xl']} 
+          style={styles.skeletonFill}
+        />
+      </View>
+    );
+  }
+
+  // No data state
+  if (!showroom) {
+    return null;
+  }
+
+  // Determine media source - video first, then image fallback
+  const hasVideo = !!showroom.heroVideoFileUrl || !!showroom.heroVideoUrl;
+  const videoSource = showroom.heroVideoFileUrl || showroom.heroVideoUrl;
+  const imageSource = showroom.heroImageUrl || showroom.partner.heroImageUrl;
+
+  // Card always uses dark theme for visibility
+  const cardBg = colors.oledBlack;
+  const cardBorder = colors.glassBorderOnDark;
+  const textColor = colors.oledWhite;
+  const textSecondary = colors.textTertiary;
 
   return (
-    <View style={[styles.wrapper, { borderColor: colors.glassBorderOnDark }]}>
-      {/* Video Background */}
-      <Video
-        source={backgroundVideo}
-        style={styles.videoBg}
-        resizeMode={ResizeMode.COVER}
-        shouldPlay
-        isLooping
-        isMuted
-      />
-      {/* Dark tint */}
-      <View style={styles.tintOverlay} />
+    <View style={[styles.container, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+      {/* Media Background - Video or Image */}
+      {hasVideo && videoSource ? (
+        <Video
+          source={{ uri: videoSource }}
+          style={styles.mediaBg}
+          resizeMode={ResizeMode.COVER}
+          shouldPlay
+          isLooping
+          isMuted
+        />
+      ) : imageSource ? (
+        <Image
+          source={{ uri: imageSource }}
+          style={styles.mediaBg}
+          contentFit="cover"
+          placeholder={{ blurhash: BLURHASH }}
+          transition={150}
+        />
+      ) : (
+        <View style={[styles.mediaBg, { backgroundColor: colors.surface }]} />
+      )}
+
+      {/* Gradient overlay for text readability */}
       <LinearGradient
-        colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.7)']}
-        locations={[0, 0.5, 1]}
+        colors={['transparent', colors.overlay]}
+        locations={[0.4, 1]}
         style={styles.gradient}
       />
 
-      {/* Content */}
+      {/* Content - Bottom aligned */}
       <View style={styles.content}>
-        {/* Header - Brand name + signature */}
-        <View style={styles.header}>
-          <Heading size="small" style={styles.brandName}>{displayShowrooms[0]?.name}</Heading>
-          <Supporting size="medium" style={styles.signatureText}>Showroom</Supporting>
-        </View>
-
-        {/* CTA Footer */}
-        <HapticPressable onPress={handleViewAllPress} style={styles.footer}>
-          <Heading size="small" style={styles.browseText}>Visit Showroom</Heading>
-          <View style={styles.arrowCircle}>
-            <ArrowRight size={Sizes.iconSm} color="#000000" strokeWidth={2.5} />
+        {/* Footer CTA */}
+        <HapticPressable onPress={handlePress} style={styles.footer}>
+          <View style={styles.footerText}>
+            <Heading size="small" style={{ color: textColor }}>
+              {showroom.partner.brandName}
+            </Heading>
+            <Supporting size="small" style={{ color: textSecondary }}>
+              {showroom.heroTagline || 'Visit showroom'}
+            </Supporting>
+          </View>
+          <View style={[styles.arrowBtn, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorderOnDark }]}>
+            <ChevronRight size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2} />
           </View>
         </HapticPressable>
       </View>
@@ -124,56 +155,46 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
 // ============================================================================
 
 const styles = StyleSheet.create({
-  wrapper: {
-    marginHorizontal: Spacing.sm,
+  container: {
+    marginHorizontal: Layout.screenPadding,
     borderRadius: Radius['2xl'],
-    overflow: 'hidden',
-    minHeight: 400,
     borderWidth: 1,
+    overflow: 'hidden',
+    aspectRatio: CARD_ASPECT,
   },
-  videoBg: {
-    ...StyleSheet.absoluteFillObject,
-    width: '100%',
-    height: '100%',
+  skeletonContainer: {
+    borderWidth: 0,
   },
-  tintOverlay: {
+  skeletonFill: {
+    flex: 1,
+  },
+  mediaBg: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.4)',
   },
   gradient: {
     ...StyleSheet.absoluteFillObject,
   },
   content: {
     flex: 1,
-    padding: Spacing.xl,
-    justifyContent: 'space-between',
-  },
-  header: {
-    marginBottom: Spacing.xl,
-  },
-  brandName: {
-    color: '#FFFFFF',
-    letterSpacing: -0.3,
-  },
-  signatureText: {
-    color: 'rgba(255,255,255,0.6)',
-    marginTop: 2,
+    padding: Spacing.lg,
+    justifyContent: 'flex-end',
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: Spacing['2xl'],
+    justifyContent: 'space-between',
   },
-  browseText: {
-    color: '#FFFFFF',
+  footerText: {
+    flex: 1,
+    gap: Spacing.xs,
   },
-  arrowCircle: {
+  arrowBtn: {
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
+    borderWidth: 1,
     alignItems: 'center',
+    justifyContent: 'center',
   },
 });
+

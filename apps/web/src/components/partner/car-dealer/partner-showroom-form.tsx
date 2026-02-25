@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { cn } from '@/utils';
 import { usePartnerShowroom, type ShowroomUpdateData, type PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import { useToast } from '@/hooks/use-toast';
+import { uploadShowroomImage, uploadShowroomVideo } from '@/lib/storage';
 import {
   ArrowLeft,
   Loader2,
@@ -93,41 +94,30 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
     setEditingField(null);
   };
 
-  // Upload image
+  // Upload image via presigned URL pipeline (HEIC→WebP conversion, CDN caching)
   const uploadImage = async (file: File, type: string, field: keyof PartnerShowroom) => {
-    // Basic check - server does magic byte detection for full validation
-    if (!file.type.startsWith('image/') && file.type !== '' && file.type !== 'application/octet-stream') {
+    // Basic check - allow common image types
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+    if (!validTypes.includes(file.type) && !file.type.startsWith('image/')) {
       toast({ title: 'Only image files are allowed', variant: 'destructive' });
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: 'Max 10MB', variant: 'destructive' });
+    
+    // 15MB limit for images (will be compressed server-side)
+    const maxSize = 15 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast({ title: 'Image too large. Max 15MB allowed', variant: 'destructive' });
       return;
     }
 
     setImageUploading(field);
     try {
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('type', type);
-      fd.append('partnerId', partnerId);
-      if (form[field]) fd.append('previousKey', String(form[field]));
-
-      const res = await fetch('/api/storage/upload-showroom-asset', {
-        method: 'POST',
-        body: fd,
-        credentials: 'include',
-      });
-      if (!res.ok) throw new Error('Upload failed');
-      const data = await res.json();
-
-      // Update local form state immediately for instant feedback
-      setForm(f => ({ ...f, [field]: data.key }));
-      
-      await updateShowroom({ [field]: data.key } as any);
+      const result = await uploadShowroomImage(file, partnerId, type);
+      setForm(f => ({ ...f, [field]: result.key }));
+      await updateShowroom({ [field]: result.key } as any);
       toast({ title: 'Image uploaded' });
-    } catch {
-      toast({ title: 'Upload failed', variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: err.message || 'Upload failed', variant: 'destructive' });
     } finally {
       setImageUploading(null);
     }
@@ -143,7 +133,7 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
     }
   };
 
-  // Upload video via direct R2 upload (bypasses Vercel's 4.5MB limit)
+  // Upload video via presigned URL (direct to CDN, no processing)
   const uploadVideo = async (file: File, type: string, field: keyof PartnerShowroom) => {
     const validTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
     if (!validTypes.includes(file.type)) {
@@ -152,11 +142,10 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
     }
     
     // 50MB limit to control CDN bandwidth costs
-    // Recommend users compress to 720p/1080p WebM before upload
-    const maxSize = 50 * 1024 * 1024; // 50MB
+    const maxSize = 50 * 1024 * 1024;
     if (file.size > maxSize) {
       toast({ 
-        title: 'Video too large (max 50MB). Compress to 720p/1080p first using HandBrake or similar.', 
+        title: 'Video too large (max 50MB). Compress to 720p/1080p first.', 
         variant: 'destructive' 
       });
       return;
@@ -166,57 +155,13 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
     setUploadProgress(0);
     
     try {
-      // Step 1: Get presigned upload URL from our API
-      const presignRes = await fetch('/api/storage/presigned-upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          type,
-          partnerId,
-          contentType: file.type,
-          previousKey: form[field] || undefined,
-        }),
+      const result = await uploadShowroomVideo(file, partnerId, type, (progress) => {
+        setUploadProgress(progress);
       });
       
-      if (!presignRes.ok) {
-        const err = await presignRes.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to get upload URL');
-      }
-      
-      const { uploadUrl, key } = await presignRes.json();
-      
-      // Step 2: Upload directly to R2 using presigned URL
-      const xhr = new XMLHttpRequest();
-      
-      await new Promise<void>((resolve, reject) => {
-        xhr.upload.addEventListener('progress', (e) => {
-          if (e.lengthComputable) {
-            const percent = Math.round((e.loaded / e.total) * 100);
-            setUploadProgress(percent);
-          }
-        });
-        
-        xhr.addEventListener('load', () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve();
-          } else {
-            reject(new Error('Upload to storage failed'));
-          }
-        });
-        
-        xhr.addEventListener('error', () => reject(new Error('Upload failed')));
-        xhr.addEventListener('abort', () => reject(new Error('Upload cancelled')));
-        
-        xhr.open('PUT', uploadUrl);
-        xhr.setRequestHeader('Content-Type', file.type);
-        xhr.send(file);
-      });
-
-      // Step 3: Save the key to database
-      setForm(f => ({ ...f, [field]: key }));
-      await updateShowroom({ [field]: key } as any);
-      toast({ title: 'Video uploaded successfully' });
+      setForm(f => ({ ...f, [field]: result.key }));
+      await updateShowroom({ [field]: result.key } as any);
+      toast({ title: 'Video uploaded' });
     } catch (err: any) {
       toast({ title: err.message || 'Video upload failed', variant: 'destructive' });
     } finally {

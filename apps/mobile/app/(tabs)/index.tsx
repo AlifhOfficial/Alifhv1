@@ -22,6 +22,7 @@ import {
   RevvupFirstGrid,
   CategoryCard,
   PartnerShowcaseCard,
+  ShowroomsShowcaseGrid,
 } from '@/components/home';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Layout, Sizes, Radius } from '@/constants/theme';
@@ -127,6 +128,15 @@ const GridItem = React.memo(function GridItem({ gridState, partners }: GridItemP
             thumbnail: l.thumbnail,
             isBlkListing: l.isBlkListing,
           }))}
+        />
+      );
+
+    case 'showroom':
+      // Showroom showcase with video background from API data
+      return (
+        <ShowroomsShowcaseGrid 
+          showroom={data?.showroom} 
+          isLoading={isLoading && !data} 
         />
       );
 

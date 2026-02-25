@@ -238,7 +238,6 @@ function RootLayoutNav() {
           <Stack.Screen name="profile" />
           <Stack.Screen name="settings" />
           <Stack.Screen name="chat/[conversationId]" />
-          <Stack.Screen name="notifications" />
           <Stack.Screen name="create-listing" />
           <Stack.Screen name="inventory" />
           <Stack.Screen name="blk" />

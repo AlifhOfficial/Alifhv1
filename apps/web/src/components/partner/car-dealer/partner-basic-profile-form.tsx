@@ -9,6 +9,7 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { usePartnerProfile } from '@/hooks/partner/car-dealer/use-partner-profile';
 import { usePartnerStats } from '@/hooks/partner/car-dealer/use-partner-stats';
+import { uploadPartnerImage } from '@/lib/storage';
 import { 
   ArrowLeft,
   Camera,
@@ -288,7 +289,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     setEditingField(null);
   };
 
-  // Image upload
+  // Image upload - uses presigned URL pipeline for fast uploads
   const uploadImage = async (
     e: React.ChangeEvent<HTMLInputElement>,
     field: 'logo' | 'heroImage'
@@ -302,33 +303,22 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       toast({ title: 'Only image files are allowed', variant: 'destructive' });
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: 'Max 10MB', variant: 'destructive' });
+    if (file.size > 20 * 1024 * 1024) {
+      toast({ title: 'Max 20MB', variant: 'destructive' });
       return;
     }
 
     const setUploading = field === 'logo' ? setLogoUploading : setBannerUploading;
     setUploading(true);
     try {
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('type', field === 'heroImage' ? 'hero' : 'logo');
-      fd.append('partnerId', partnerId);
-      if (form[field]) fd.append('previousKey', form[field]!);
+      const imageType = field === 'heroImage' ? 'hero' : 'logo';
+      const result = await uploadPartnerImage(file, partnerId, imageType);
       
-      const res = await fetch('/api/storage/upload-partner-image', { 
-        method: 'POST', 
-        body: fd, 
-        credentials: 'include' 
-      });
-      if (!res.ok) throw new Error('Upload failed');
-      const data = await res.json();
-      
-      await updateProfile({ [field]: data.key });
-      updateField({ [field]: data.key });
+      await updateProfile({ [field]: result.key });
+      updateField({ [field]: result.key });
       toast({ title: `${field === 'logo' ? 'Logo' : 'Banner'} updated` });
-    } catch {
-      toast({ title: 'Upload failed', variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: err.message || 'Upload failed', variant: 'destructive' });
     } finally {
       setUploading(false);
     }

@@ -269,10 +269,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
         <ImageUpload
           value={imageKeys}
           onChange={setImages}
-          maxImages={20}
-          directory="listings"
-          label={undefined}
-          optimized={true}
+          maxImages={30}
           deleteOnRemove={true}
           vin={data.vin}
         />
