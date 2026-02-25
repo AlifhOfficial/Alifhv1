@@ -274,7 +274,7 @@ export const Layout = {
   
   // Gradient overlays (extend beyond safe area)
   topGradientExtension: scale(60),
-  bottomGradientExtension: scale(70),
+  bottomGradientExtension: scale(30),
   
   // Hit targets (Apple HIG: 44pt minimum)
   hitTarget: scale(44),

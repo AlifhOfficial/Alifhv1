@@ -301,6 +301,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xs,
+    gap: Spacing['2xl'],
   },
   presetsRow: {
     flexDirection: 'row',

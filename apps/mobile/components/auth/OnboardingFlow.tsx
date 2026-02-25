@@ -16,6 +16,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -197,6 +198,8 @@ export function OnboardingFlow({ onComplete, onBack }: OnboardingFlowProps) {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.oledBlack }]}>
+      {/* Force light status bar content for OLED black onboarding screens */}
+      <StatusBar style="light" />
       <Animated.View key={currentStep} entering={entering} exiting={exiting} style={styles.screen}>
         {currentStep === 'name' && (
           <NameStep

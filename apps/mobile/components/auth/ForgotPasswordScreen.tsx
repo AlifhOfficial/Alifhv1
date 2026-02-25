@@ -12,7 +12,7 @@ import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated'
 import Svg, { Path, Circle } from 'react-native-svg';
 
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { Heading, Body, Data, ButtonText, Supporting } from '@/components/ui';
 import { onboardingStyles } from './onboarding-styles';
 
@@ -25,7 +25,7 @@ interface ForgotPasswordScreenProps {
 }
 
 // Check icon for success state
-function CheckIcon({ color, size = 32 }: { color: string; size?: number }) {
+function CheckIcon({ color, size = Sizes.bubble }: { color: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="12" r="10" stroke={color} strokeWidth={1.5} opacity={0.3} />
@@ -88,7 +88,7 @@ export function ForgotPasswordScreen({
               onPress={onBack}
               style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
-              <Ionicons name="chevron-back" size={24} color={colors.oledWhite} />
+              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.oledWhite} />
             </HapticPressable>
             <View style={{ flex: 1 }} />
             <View style={onboardingStyles.skipButton} />
@@ -103,7 +103,7 @@ export function ForgotPasswordScreen({
                   { backgroundColor: `${colors.success}15` },
                 ]}
               >
-                <CheckIcon color={colors.success} size={36} />
+                <CheckIcon color={colors.success} size={Sizes.bubble} />
               </View>
             </Animated.View>
 
@@ -164,7 +164,7 @@ export function ForgotPasswordScreen({
               onPress={onBack}
               style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
-              <Ionicons name="chevron-back" size={24} color={colors.oledWhite} />
+              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.oledWhite} />
             </HapticPressable>
             <View style={{ flex: 1 }} />
             <View style={onboardingStyles.skipButton} />
@@ -216,6 +216,7 @@ export function ForgotPasswordScreen({
                 placeholder="your@email.com"
                 placeholderTextColor={colors.textTertiary}
                 keyboardType="email-address"
+                keyboardAppearance="dark"
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoComplete="email"

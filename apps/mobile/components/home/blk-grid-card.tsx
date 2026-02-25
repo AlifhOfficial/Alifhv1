@@ -6,14 +6,14 @@
 import React, { memo, useCallback } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Image } from 'expo-image';
-import { Heart, ChevronRight } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { getThumbUrl } from '@/lib/config';
-import { HapticPressable, Heading, Supporting, Skeleton, Data } from '@/components/ui';
+import { HapticPressable, Heading, Supporting, Skeleton, Data, FavoriteButton } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -75,13 +75,16 @@ const ProductItem = memo(function ProductItem({ listing, colors, onPress, onFavo
           AED {formatPrice(listing.price)}
         </Data>
       </View>
-      {/* Favorite Button - Bottom Right */}
-      <HapticPressable
-        onPress={() => onFavorite?.(listing.id)}
-        style={[styles.favBtn, { backgroundColor: BLK_GLASS_BACKGROUND, borderColor: BLK_GLASS_BORDER }]}
-      >
-        <Heart size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2} />
-      </HapticPressable>
+      {/* Favorite Button - Bottom Right (connected to API) */}
+      <View style={[styles.favBtn, { backgroundColor: BLK_GLASS_BACKGROUND, borderColor: BLK_GLASS_BORDER }]}>
+        <FavoriteButton
+          listingId={listing.id}
+          size={Sizes.iconSm}
+          onPress={onFavorite}
+          isBlkListing={true}
+          inactiveColor={colors.oledWhite}
+        />
+      </View>
     </HapticPressable>
   );
 });

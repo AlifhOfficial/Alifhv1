@@ -154,51 +154,51 @@ export function YearMileageFilterSheet({
       bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
-      <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={[styles.header, { borderBottomColor: colors.border }]}>
-          <View style={styles.headerTopRow}>
-            <HapticPressable
-              onPress={onClose}
-              hitSlop={Spacing.md}
-              style={styles.cancelButton}
+      {/* Fixed Header */}
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+        <View style={styles.headerTopRow}>
+          <HapticPressable
+            onPress={onClose}
+            hitSlop={Spacing.md}
+            style={styles.cancelButton}
+          >
+            <Body size="medium" tone="secondary">Cancel</Body>
+          </HapticPressable>
+          
+          <Heading size="small">Year & Mileage</Heading>
+          
+          <HapticPressable
+            style={[
+              styles.applyButton,
+              { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
+            ]}
+            onPress={handleApply}
+          >
+            <ButtonText
+              size="small"
+              style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
             >
-              <Body size="medium" tone="secondary">Cancel</Body>
-            </HapticPressable>
-            
-            <Heading size="small">Year & Mileage</Heading>
-            
-            <HapticPressable
-              style={[
-                styles.applyButton,
-                { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
-              ]}
-              onPress={handleApply}
-            >
-              <ButtonText
-                size="small"
-                style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
-              >
-                Apply
-              </ButtonText>
-            </HapticPressable>
-          </View>
-
-          {/* Selection Summary */}
-          {hasValue && (
-            <View style={styles.selectionSummary}>
-              <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
-                {[localYearMin && `From ${localYearMin}`, localYearMax && `To ${localYearMax}`, localMileageMax && `Under ${parseInt(localMileageMax).toLocaleString()} km`].filter(Boolean).join(' · ')}
-              </Body>
-              <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Supporting size="small" style={{ color: colors.error }}>
-                  Clear
-                </Supporting>
-              </HapticPressable>
-            </View>
-          )}
+              Apply
+            </ButtonText>
+          </HapticPressable>
         </View>
 
+        {/* Selection Summary */}
+        {hasValue && (
+          <View style={styles.selectionSummary}>
+            <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+              {[localYearMin && `From ${localYearMin}`, localYearMax && `To ${localYearMax}`, localMileageMax && `Under ${parseInt(localMileageMax).toLocaleString()} km`].filter(Boolean).join(' · ')}
+            </Body>
+            <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
+              <Supporting size="small" style={{ color: colors.error }}>
+                Clear
+              </Supporting>
+            </HapticPressable>
+          </View>
+        )}
+      </View>
+
+      <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Year Section */}
         <View style={styles.section}>
           <Label size="small" tone="muted" style={{ marginBottom: Spacing.md }}>
@@ -341,12 +341,13 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
   },
   header: {
     flexShrink: 0,
+    paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: Spacing.md,
   },
   headerTopRow: {
     flexDirection: 'row',
@@ -363,6 +364,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xs,
+    gap: Spacing['2xl'],
   },
   section: {
     marginBottom: Spacing.xl,

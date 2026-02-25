@@ -19,10 +19,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Path, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { HapticPressable, ConfettiBurst, type ConfettiBurstRef } from '@/components/ui';
 import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
-import { onboardingStyles } from './onboarding-styles';
+import { onboardingStyles, ONBOARDING_LAYOUT } from './onboarding-styles';
 
 interface AuthSuccessScreenProps {
   userName?: string;
@@ -31,7 +31,7 @@ interface AuthSuccessScreenProps {
 }
 
 // Animated checkmark icon
-function SuccessIcon({ color, size = 64 }: { color: string; size?: number }) {
+function SuccessIcon({ color, size = ONBOARDING_LAYOUT.successIconSize }: { color: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 64 64" fill="none">
       <Defs>
@@ -131,7 +131,7 @@ export function AuthSuccessScreen({
         <View style={onboardingStyles.centerContent}>
           {/* Animated success icon */}
           <Animated.View style={[onboardingStyles.iconContainer, iconAnimatedStyle]}>
-            <SuccessIcon color={colors.success} size={80} />
+            <SuccessIcon color={colors.success} size={ONBOARDING_LAYOUT.successIconSize} />
           </Animated.View>
 
           {/* Greeting */}

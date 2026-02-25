@@ -10,10 +10,10 @@ import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated'
 import Svg, { Path, Circle } from 'react-native-svg';
 
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Radius } from '@/constants/theme';
 import { HapticPressable, ButtonLoader } from '@/components/ui';
 import { Heading, Body, Data, ButtonText, Supporting } from '@/components/ui';
-import { onboardingStyles } from './onboarding-styles';
+import { onboardingStyles, ONBOARDING_LAYOUT } from './onboarding-styles';
 
 interface EmailSentStepProps {
   email: string;
@@ -27,7 +27,7 @@ interface EmailSentStepProps {
 }
 
 // Mail icon for success state
-function MailIcon({ color, size = 32 }: { color: string; size?: number }) {
+function MailIcon({ color, size = Sizes.bubble }: { color: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -42,7 +42,7 @@ function MailIcon({ color, size = 32 }: { color: string; size?: number }) {
 }
 
 // Checkmark icon
-function CheckIcon({ color, size = 20 }: { color: string; size?: number }) {
+function CheckIcon({ color, size = Sizes.iconMd }: { color: string; size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
@@ -95,7 +95,7 @@ export function EmailSentStep({
             onPress={onBack}
             style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
           >
-            <Ionicons name="chevron-back" size={24} color={colors.oledWhite} />
+            <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.oledWhite} />
           </HapticPressable>
 
           <View style={onboardingStyles.progressContainer}>
@@ -106,7 +106,7 @@ export function EmailSentStep({
                   onboardingStyles.progressBar,
                   {
                     backgroundColor:
-                      index < currentStep ? colors.primary : `${colors.oledWhite}20`,
+                      index < currentStep ? colors.primary : colors.glassBorderOnDark,
                   },
                 ]}
               />
@@ -123,10 +123,10 @@ export function EmailSentStep({
             <View
               style={[
                 onboardingStyles.emailSentIcon,
-                { backgroundColor: `${colors.primary}15` },
+                { backgroundColor: colors.primaryLight },
               ]}
             >
-              <MailIcon color={colors.primary} size={36} />
+              <MailIcon color={colors.primary} size={ONBOARDING_LAYOUT.emailIconSize} />
             </View>
           </Animated.View>
 

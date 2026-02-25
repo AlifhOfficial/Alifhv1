@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { HapticPressable, ButtonLoader } from '@/components/ui';
 import { Heading, Body, Data, ButtonText, Supporting } from '@/components/ui';
 import { onboardingStyles, ONBOARDING_LAYOUT } from './onboarding-styles';
@@ -66,7 +66,7 @@ export function NameStep({
               onPress={onBack}
               style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
-              <Ionicons name="chevron-back" size={24} color={colors.oledWhite} />
+              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.oledWhite} />
             </HapticPressable>
 
             <View style={onboardingStyles.progressContainer}>
@@ -77,7 +77,7 @@ export function NameStep({
                     onboardingStyles.progressBar,
                     {
                       backgroundColor:
-                        index < currentStep ? colors.primary : `${colors.oledWhite}20`,
+                        index < currentStep ? colors.primary : colors.glassBorderOnDark,
                     },
                   ]}
                 />
@@ -118,6 +118,7 @@ export function NameStep({
                 onChangeText={setName}
                 placeholder="Your first name"
                 placeholderTextColor={colors.textTertiary}
+                keyboardAppearance="dark"
                 autoCapitalize="words"
                 autoCorrect={false}
                 autoComplete="name"

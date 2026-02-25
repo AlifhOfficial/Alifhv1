@@ -6,14 +6,14 @@
 import React, { memo, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
-import { ChevronRight, Heart, CheckCircle2 } from 'lucide-react-native';
+import { ChevronRight, CheckCircle2 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { getThumbUrl } from '@/lib/config';
-import { HapticPressable, Heading, Data, Supporting, Skeleton, Label } from '@/components/ui';
+import { HapticPressable, Heading, Data, Supporting, Skeleton, Label, FavoriteButton } from '@/components/ui';
 import { type PartnerListItem } from '@/lib/partner-api';
 import { type ListingCard } from '@/lib/search-api';
 
@@ -72,9 +72,10 @@ interface ProductCardProps {
   colors: typeof Colors.light;
   onPress: (id: string) => void;
   onFavorite?: (id: string) => void;
+  isBlkPartner?: boolean;
 }
 
-const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavorite }: ProductCardProps) {
+const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavorite, isBlkPartner }: ProductCardProps) {
   const imageUri = getThumbUrl(listing.thumbnail) || listing.thumbnail;
 
   return (
@@ -91,12 +92,15 @@ const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavo
           AED {formatPrice(listing.price)}
         </Data>
       </View>
-      <HapticPressable
-        onPress={() => onFavorite?.(listing.id)}
-        style={[styles.favBtn, { backgroundColor: GLASS_BG, borderColor: GLASS_BORDER }]}
-      >
-        <Heart size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2} />
-      </HapticPressable>
+      <View style={[styles.favBtn, { backgroundColor: GLASS_BG, borderColor: GLASS_BORDER }]}>
+        <FavoriteButton
+          listingId={listing.id}
+          size={Sizes.iconSm}
+          onPress={onFavorite}
+          isBlkListing={isBlkPartner}
+          inactiveColor={colors.oledWhite}
+        />
+      </View>
     </HapticPressable>
   );
 });
@@ -197,6 +201,7 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
               colors={colors}
               onPress={handleCarPress}
               onFavorite={onFavoritePress}
+              isBlkPartner={partner.isBlk}
             />
           ))}
         </ScrollView>

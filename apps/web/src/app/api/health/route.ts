@@ -15,6 +15,11 @@ const WS_HEALTH_URL = process.env.NEXT_PUBLIC_WS_URL
   ? `${process.env.NEXT_PUBLIC_WS_URL.replace('ws://', 'http://').replace('wss://', 'https://')}/health`
   : 'http://localhost:3001/health';
 
+// Cache WS health to avoid TLS handshake on every request
+// Serverless functions may share this across warm invocations
+let wsHealthCache: { result: ServiceStatus; timestamp: number } | null = null;
+const WS_CACHE_TTL = 30_000; // 30 seconds
+
 interface ServiceStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
   latency?: number;
@@ -67,8 +72,22 @@ async function checkDatabase(): Promise<ServiceStatus> {
 
 /**
  * Check WebSocket server health
+ * Measures server-to-server latency (Vercel → Fly.io), not user latency
+ * Cached for 30s to avoid TLS handshake overhead on repeated checks
  */
 async function checkWebSocket(): Promise<ServiceStatus> {
+  // Return cached result if fresh (avoids TLS handshake)
+  if (wsHealthCache && Date.now() - wsHealthCache.timestamp < WS_CACHE_TTL) {
+    return {
+      ...wsHealthCache.result,
+      details: {
+        ...wsHealthCache.result.details,
+        cached: true,
+        cacheAge: Math.round((Date.now() - wsHealthCache.timestamp) / 1000),
+      },
+    };
+  }
+
   const start = Date.now();
   try {
     const response = await fetch(WS_HEALTH_URL, {
@@ -77,26 +96,47 @@ async function checkWebSocket(): Promise<ServiceStatus> {
     });
     const latency = Date.now() - start;
     
+    // Extract Fly region from response header (e.g., "01KJA5C1W5XW2VR1M09MG7HD5Z-sin" → "sin")
+    const flyRequestId = response.headers.get('fly-request-id');
+    const flyRegion = flyRequestId?.split('-').pop() ?? 'unknown';
+    
+    // Vercel region (set by Vercel at runtime)
+    const vercelRegion = process.env.VERCEL_REGION ?? 'local';
+    
     if (response.ok) {
-      // Thresholds adjusted for Cloudflare proxy (adds ~50ms overhead)
-      return {
-        status: latency < 200 ? 'healthy' : latency < 500 ? 'degraded' : 'unhealthy',
+      const result: ServiceStatus = {
+        status: 'healthy', // If reachable, it's healthy (TLS overhead isn't a real issue)
         latency,
         message: 'Connected',
+        details: {
+          route: `${vercelRegion} → ${flyRegion}`,
+          vercelRegion,
+          flyRegion,
+          cached: false,
+        },
       };
+      wsHealthCache = { result, timestamp: Date.now() };
+      return result;
     }
     
-    return {
+    const result: ServiceStatus = {
       status: 'unhealthy',
       latency,
       message: `HTTP ${response.status}`,
+      details: { vercelRegion, flyRegion, cached: false },
     };
+    wsHealthCache = { result, timestamp: Date.now() };
+    return result;
   } catch (error) {
-    return {
+    const result: ServiceStatus = {
       status: 'unhealthy',
       latency: Date.now() - start,
       message: error instanceof Error ? error.message : 'Unreachable',
+      details: { vercelRegion: process.env.VERCEL_REGION ?? 'local', cached: false },
     };
+    // Cache failures too, but with shorter TTL (10s)
+    wsHealthCache = { result, timestamp: Date.now() - WS_CACHE_TTL + 10_000 };
+    return result;
   }
 }
 

@@ -78,7 +78,7 @@ export function ModelFilterSheet({
       setIsLoadingFacets(true);
       searchApi
         .getFacets(filterContext)
-        .then((result) => setFacets(result?.model ?? []))
+        .then((result) => setFacets([]))
         .catch(console.error)
         .finally(() => setIsLoadingFacets(false));
     }
@@ -364,6 +364,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xs,
+    gap: Spacing['2xl'],
   },
   searchContainer: {
     flexDirection: 'row',

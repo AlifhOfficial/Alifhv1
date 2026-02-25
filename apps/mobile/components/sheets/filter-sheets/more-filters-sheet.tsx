@@ -202,7 +202,21 @@ export function MoreFiltersSheet({
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setLocalFilters({});
-    onApply({});
+    // Must explicitly pass undefined for each key to clear them in context
+    onApply({
+      condition: undefined,
+      isBlkListing: undefined,
+      isBlackTierPartner: undefined,
+      isNegotiable: undefined,
+      specs: undefined,
+      bodyType: undefined,
+      fuelType: undefined,
+      transmission: undefined,
+      exteriorColor: undefined,
+      interiorColor: undefined,
+      engineSize: undefined,
+      sellerType: undefined,
+    });
     bottomSheetRef.current?.dismiss();
   }, [onApply]);
 
@@ -370,51 +384,51 @@ export function MoreFiltersSheet({
       bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
-      <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={[styles.header, { borderBottomColor: colors.border }]}>
-          <View style={styles.headerTopRow}>
-            <HapticPressable
-              onPress={onClose}
-              hitSlop={Spacing.md}
-              style={styles.cancelButton}
+      {/* Fixed Header */}
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+        <View style={styles.headerTopRow}>
+          <HapticPressable
+            onPress={onClose}
+            hitSlop={Spacing.md}
+            style={styles.cancelButton}
+          >
+            <Body size="medium" tone="secondary">Cancel</Body>
+          </HapticPressable>
+          
+          <Heading size="small">Filters</Heading>
+          
+          <HapticPressable
+            style={[
+              styles.applyButton,
+              { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
+            ]}
+            onPress={handleApply}
+          >
+            <ButtonText
+              size="small"
+              style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
             >
-              <Body size="medium" tone="secondary">Cancel</Body>
-            </HapticPressable>
-            
-            <Heading size="small">Filters</Heading>
-            
-            <HapticPressable
-              style={[
-                styles.applyButton,
-                { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
-              ]}
-              onPress={handleApply}
-            >
-              <ButtonText
-                size="small"
-                style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
-              >
-                Apply
-              </ButtonText>
-            </HapticPressable>
-          </View>
-
-          {/* Selection Summary */}
-          {hasValue && (
-            <View style={styles.selectionSummary}>
-              <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
-                {activeCount} filter{activeCount !== 1 ? 's' : ''} selected
-              </Body>
-              <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Supporting size="small" style={{ color: colors.error }}>
-                  Clear
-                </Supporting>
-              </HapticPressable>
-            </View>
-          )}
+              Apply
+            </ButtonText>
+          </HapticPressable>
         </View>
 
+        {/* Selection Summary */}
+        {hasValue && (
+          <View style={styles.selectionSummary}>
+            <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+              {activeCount} filter{activeCount !== 1 ? 's' : ''} selected
+            </Body>
+            <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
+              <Supporting size="small" style={{ color: colors.error }}>
+                Clear
+              </Supporting>
+            </HapticPressable>
+          </View>
+        )}
+      </View>
+
+      <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Popular Section */}
         {renderSection(
           'Popular',
@@ -447,7 +461,7 @@ export function MoreFiltersSheet({
           'Regional Specs',
           'specs',
           renderChipOptions(
-            facets?.specs?.map(s => ({ value: s.value, label: s.label })) || [
+            facets?.specs?.map(s => ({ value: s.value, label: s.label || s.value })) || [
               { value: 'gcc', label: 'GCC Specs' },
               { value: 'american', label: 'American Specs' },
               { value: 'european', label: 'European Specs' },
@@ -470,7 +484,7 @@ export function MoreFiltersSheet({
             BODY_TYPES,
             localFilters.bodyType,
             (value) => handleToggleArray('bodyType', value),
-            facets?.bodyType
+            facets?.bodyTypes
           ),
           localFilters.bodyType?.length ?? 0
         )}
@@ -483,7 +497,7 @@ export function MoreFiltersSheet({
             FUEL_TYPES,
             localFilters.fuelType,
             (value) => handleToggleArray('fuelType', value),
-            facets?.fuelType
+            facets?.fuelTypes
           ),
           localFilters.fuelType?.length ?? 0
         )}
@@ -496,7 +510,7 @@ export function MoreFiltersSheet({
             TRANSMISSION_TYPES,
             localFilters.transmission,
             (value) => handleToggleArray('transmission', value),
-            facets?.transmission
+            facets?.transmissions
           ),
           localFilters.transmission?.length ?? 0
         )}
@@ -509,7 +523,7 @@ export function MoreFiltersSheet({
             EXTERIOR_COLORS,
             localFilters.exteriorColor,
             (value) => handleToggleArray('exteriorColor', value),
-            facets?.exteriorColor
+            undefined
           ),
           localFilters.exteriorColor?.length ?? 0
         )}
@@ -522,7 +536,7 @@ export function MoreFiltersSheet({
             INTERIOR_COLORS,
             localFilters.interiorColor,
             (value) => handleToggleArray('interiorColor', value),
-            facets?.interiorColor
+            undefined
           ),
           localFilters.interiorColor?.length ?? 0
         )}
@@ -535,7 +549,7 @@ export function MoreFiltersSheet({
             ENGINE_SIZES,
             localFilters.engineSize,
             (value) => handleToggleArray('engineSize', value),
-            facets?.engineSize
+            undefined
           ),
           localFilters.engineSize?.length ?? 0
         )}
@@ -547,7 +561,7 @@ export function MoreFiltersSheet({
           <View style={styles.chipsRow}>
             {SELLER_TYPE_OPTIONS.map(option => {
               const isSelected = localFilters.sellerType === option.value;
-              const facet = facets?.sellerType?.find(f => f.value === option.value);
+              const facet = facets?.sellerTypes?.find((f: FacetBucket) => f.value === option.value);
               const count = facet?.count ?? 0;
               return (
                 <HapticPressable
@@ -606,9 +620,9 @@ const styles = StyleSheet.create({
   },
   header: {
     flexShrink: 0,
+    paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: Spacing.md,
   },
   headerTopRow: {
     flexDirection: 'row',
@@ -625,6 +639,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xs,
+    gap: Spacing['2xl'],
   },
   section: {
     marginBottom: Spacing.sm,
@@ -644,11 +659,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_600SemiBold',
   },
   badge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 2,
+    width: Spacing['2xl'],
+    height: Spacing['2xl'],
     borderRadius: Radius.full,
-    minWidth: Spacing['2xl'],
     alignItems: 'center',
+    justifyContent: 'center',
   },
   sectionContent: {
     paddingBottom: Spacing.md,

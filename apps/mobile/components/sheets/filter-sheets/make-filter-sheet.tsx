@@ -63,7 +63,7 @@ export function MakeFilterSheet({
       searchApi
         .getFacets(filterContext)
         .then((result) => {
-          setFacets(result?.make ?? []);
+          setFacets(result?.makes ?? []);
         })
         .catch(console.error)
         .finally(() => setIsLoadingFacets(false));
@@ -313,6 +313,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xs,
+    gap: Spacing['2xl'],
   },
   searchContainer: {
     flexDirection: 'row',

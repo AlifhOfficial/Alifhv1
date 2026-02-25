@@ -9,16 +9,19 @@
  */
 
 import { StyleSheet } from 'react-native';
-import { Spacing, Radius, Typography, Layout } from '@/constants/theme';
+import { Spacing, Radius, Typography, Layout, Sizes } from '@/constants/theme';
 
 /**
- * Onboarding layout constants
+ * Onboarding layout constants - derived from theme tokens
  */
 export const ONBOARDING_LAYOUT = {
-  inputHeight: 56,
-  buttonHeight: 56,
-  progressHeight: 3,
-  stepIndicatorSize: 8,
+  inputHeight: Sizes.actionButtonLg + Spacing.sm, // 56
+  buttonHeight: Sizes.actionButtonLg + Spacing.sm, // 56
+  progressHeight: Spacing.xs - 1, // 3
+  otpBoxWidth: Sizes.actionButtonLg, // 48
+  otpBoxHeight: Sizes.actionButtonLg + Spacing.md - 2, // 58
+  successIconSize: Sizes.avatarLg + Spacing['2xl'], // 80
+  emailIconSize: Sizes.bubble, // 36
 } as const;
 
 /**
@@ -143,8 +146,8 @@ export const onboardingStyles = StyleSheet.create({
     gap: Spacing.sm,
   },
   requirementDot: {
-    width: 6,
-    height: 6,
+    width: Spacing.sm - 2, // 6
+    height: Spacing.sm - 2, // 6
     borderRadius: Radius.full,
   },
 
@@ -173,19 +176,19 @@ export const onboardingStyles = StyleSheet.create({
     gap: Spacing.sm,
   },
   codeBox: {
-    width: 48,
-    height: 58,
+    width: ONBOARDING_LAYOUT.otpBoxWidth,
+    height: ONBOARDING_LAYOUT.otpBoxHeight,
     borderRadius: Radius.xl,
-    borderWidth: 1.5,
+    borderWidth: StyleSheet.hairlineWidth * 2,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
   },
   codeCursor: {
     position: 'absolute',
-    width: 2,
-    height: 24,
-    borderRadius: 1,
+    width: StyleSheet.hairlineWidth * 3,
+    height: Spacing['2xl'],
+    borderRadius: StyleSheet.hairlineWidth,
   },
   codeHiddenInput: {
     position: 'absolute',
@@ -244,8 +247,8 @@ export const onboardingStyles = StyleSheet.create({
   // EMAIL SENT
   // ═══════════════════════════════════════════════════
   emailSentIcon: {
-    width: 80,
-    height: 80,
+    width: ONBOARDING_LAYOUT.successIconSize,
+    height: ONBOARDING_LAYOUT.successIconSize,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',

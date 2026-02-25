@@ -1,7 +1,7 @@
 /**
  * ActiveFiltersSheet - Bottom Sheet displaying all active search filters
  * Uses @gorhom/bottom-sheet modal for proper gesture handling
- * Shows filter chips with remove buttons, clear all functionality
+ * Shows filter chips grouped by category with remove buttons, clear all functionality
  */
 
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
@@ -12,10 +12,26 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type SearchChip, type SearchParams, type RemovableFilterKey } from '@/context/search-context';
-import { Heading, Body } from '@/components/ui';
+import { Heading, Body, Label, Supporting } from '@/components/ui';
+
+// Category order and labels for grouping chips
+const CATEGORY_CONFIG: { key: string; label: string; keys: string[] }[] = [
+  { key: 'search', label: 'Search', keys: ['q'] },
+  { key: 'vehicle', label: 'Vehicle', keys: ['make', 'model', 'trim'] },
+  { key: 'price', label: 'Price', keys: ['price', 'priceMin', 'priceMax'] },
+  { key: 'year', label: 'Year', keys: ['year', 'yearMin', 'yearMax'] },
+  { key: 'mileage', label: 'Mileage', keys: ['mileage', 'mileageMin', 'mileageMax'] },
+  { key: 'location', label: 'Location', keys: ['emirate'] },
+  { key: 'seller', label: 'Seller', keys: ['sellerType', 'partnerId', 'sellerId', 'partnerName'] },
+  { key: 'specs', label: 'Specs', keys: ['bodyType', 'fuelType', 'transmission', 'specs', 'engineSize'] },
+  { key: 'color', label: 'Color', keys: ['exteriorColor', 'interiorColor'] },
+  { key: 'features', label: 'Features', keys: ['tags', 'extras'] },
+  { key: 'condition', label: 'Condition', keys: ['condition', 'isBlkListing', 'isBlackTierPartner', 'isNegotiable'] },
+  { key: 'sort', label: 'Sort', keys: ['sort'] },
+];
 
 interface ActiveFiltersSheetProps {
   visible: boolean;
@@ -39,6 +55,33 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
   } = useSearch();
 
   const chips = getSearchChips();
+
+  // Group chips by category
+  const groupedChips = useMemo(() => {
+    const groups: { category: string; label: string; chips: SearchChip[] }[] = [];
+    const usedChips = new Set<number>();
+
+    for (const config of CATEGORY_CONFIG) {
+      const categoryChips: SearchChip[] = [];
+      chips.forEach((chip, idx) => {
+        if (config.keys.includes(chip.key) && !usedChips.has(idx)) {
+          categoryChips.push(chip);
+          usedChips.add(idx);
+        }
+      });
+      if (categoryChips.length > 0) {
+        groups.push({ category: config.key, label: config.label, chips: categoryChips });
+      }
+    }
+
+    // Add any remaining chips to "Other"
+    const remainingChips = chips.filter((_, idx) => !usedChips.has(idx));
+    if (remainingChips.length > 0) {
+      groups.push({ category: 'other', label: 'Other', chips: remainingChips });
+    }
+
+    return groups;
+  }, [chips]);
 
   const snapPoints = useMemo(() => ['50%', '80%'], []);
 
@@ -102,6 +145,8 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
     []
   );
 
+  const hasFilters = chips.length > 0;
+
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
@@ -110,109 +155,127 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
+      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       detached
       bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={[styles.header, { borderBottomColor: colors.border }]}>
-          <Heading size="medium">Active Filters</Heading>
-          <View style={styles.headerActions}>
-            {chips.length > 1 && (
-              <HapticPressable 
-                onPress={handleClearAll} 
-                hitSlop={Spacing.md}
-              >
-                <Body size="small" style={{ color: colors.error }}>
-                  Clear all
-                </Body>
-              </HapticPressable>
-            )}
-            <HapticPressable
-              onPress={onClose}
-              hitSlop={Spacing.md}
-              style={[
-                styles.iconButton,
-                { backgroundColor: colors.fillSecondary },
-              ]}
-            >
-              <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
-            </HapticPressable>
-          </View>
+      {/* Fixed Header */}
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+        <View style={styles.headerTopRow}>
+          <HapticPressable
+            onPress={onClose}
+            hitSlop={Spacing.md}
+            style={styles.cancelButton}
+          >
+            <Body size="medium" tone="secondary">Cancel</Body>
+          </HapticPressable>
+          
+          <Heading size="small">Active Filters</Heading>
+          
+          <View style={styles.placeholder} />
         </View>
 
-        <BottomSheetScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {chips.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Body tone="tertiary">No active filters</Body>
-            </View>
-          ) : (
-            <View style={styles.chipGrid}>
-              {chips.map((chip, idx) => (
-                <HapticPressable 
-                  key={`${chip.key}-${chip.value}-${chip.index ?? idx}`}
-                  onPress={chip.locked ? undefined : () => handleRemoveChip(chip)}
-                  disabled={chip.locked}
-                  style={[
-                    styles.chip,
-                    { backgroundColor: colors.fillSecondary, borderColor: colors.border },
-                    chip.locked && { opacity: 0.7 },
-                  ]}
-                >
-                  <Body size="small" numberOfLines={1} style={styles.chipText}>
-                    {chip.label}
-                  </Body>
-                  {!chip.locked && (
-                    <Ionicons name="close" size={Spacing.md} color={colors.textTertiary} />
-                  )}
-                </HapticPressable>
-              ))}
-            </View>
-          )}
-        </BottomSheetScrollView>
-
-        <View style={{ height: insets.bottom + Spacing.md }} />
+        {/* Selection Summary */}
+        {hasFilters && (
+          <View style={styles.selectionSummary}>
+            <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+              {chips.length} filter{chips.length !== 1 ? 's' : ''} active
+            </Body>
+            <HapticPressable onPress={handleClearAll} hitSlop={Layout.hitSlopSmall}>
+              <Supporting size="small" style={{ color: colors.error }}>
+                Clear all
+              </Supporting>
+            </HapticPressable>
+          </View>
+        )}
       </View>
+
+      <BottomSheetScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {!hasFilters ? (
+          <View style={styles.emptyState}>
+            <Body tone="muted">No active filters</Body>
+          </View>
+        ) : (
+          groupedChips.map((group) => (
+            <View key={group.category} style={styles.categorySection}>
+              <Label size="small" tone="muted" style={styles.categoryLabel}>
+                {group.label.toUpperCase()}
+              </Label>
+              <View style={styles.chipGrid}>
+                {group.chips.map((chip, idx) => (
+                  <HapticPressable 
+                    key={`${chip.key}-${chip.value}-${chip.index ?? idx}`}
+                    onPress={chip.locked ? undefined : () => handleRemoveChip(chip)}
+                    disabled={chip.locked}
+                    style={[
+                      styles.chip,
+                      { backgroundColor: colors.fillSecondary, borderColor: colors.border },
+                      chip.locked && { opacity: 0.7 },
+                    ]}
+                  >
+                    <Body size="small" numberOfLines={1} style={styles.chipText}>
+                      {chip.label}
+                    </Body>
+                    {!chip.locked && (
+                      <Ionicons name="close" size={Spacing.md} color={colors.textTertiary} />
+                    )}
+                  </HapticPressable>
+                ))}
+              </View>
+            </View>
+          ))
+        )}
+
+        <View style={{ height: insets.bottom + Spacing['3xl'] }} />
+      </BottomSheetScrollView>
     </BottomSheetModal>
   );
 }
 
 const styles = StyleSheet.create({
   sheetContainer: {
-    marginHorizontal: Spacing.lg,
+    marginHorizontal: Spacing.md,
   },
-  container: {
-    flex: 1,
-    overflow: 'hidden',
+  background: {
+    borderRadius: Radius['3xl'],
+  },
+  handleIndicator: {
+    width: Sizes.bubble,
+    height: Spacing.xs,
+    borderRadius: Radius.full,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexShrink: 0,
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.xs,
     paddingBottom: Spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  headerActions: {
+  headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    justifyContent: 'space-between',
+    marginBottom: Spacing.sm,
   },
-  iconButton: {
-    width: Spacing['3xl'],
-    height: Spacing['3xl'],
-    borderRadius: Radius.full,
+  cancelButton: {
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
+  },
+  placeholder: {
+    width: Spacing.xl * 3,
+  },
+  selectionSummary: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.xs,
+    gap: Spacing['2xl'],
   },
   scrollView: {
     flex: 1,
@@ -226,17 +289,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing['3xl'],
   },
+  categorySection: {
+    marginBottom: Spacing.lg,
+  },
+  categoryLabel: {
+    marginBottom: Spacing.sm,
+  },
   chipGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
     paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: Spacing.md,
     borderRadius: Radius.full,
     borderWidth: 1,
   },

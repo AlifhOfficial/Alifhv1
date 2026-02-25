@@ -57,7 +57,7 @@ export function LocationFilterSheet({
       setIsLoadingFacets(true);
       searchApi
         .getFacets(filterContext)
-        .then((result) => setOptions(result?.emirate ?? []))
+        .then((result) => setOptions(result?.emirates ?? []))
         .catch(console.error)
         .finally(() => setIsLoadingFacets(false));
     }
@@ -137,51 +137,51 @@ export function LocationFilterSheet({
       bottomInset={insets.bottom + Spacing.xl}
       style={styles.sheetContainer}
     >
-      <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={[styles.header, { borderBottomColor: colors.border }]}>
-          <View style={styles.headerTopRow}>
-            <HapticPressable
-              onPress={onClose}
-              hitSlop={Spacing.md}
-              style={styles.cancelButton}
+      {/* Fixed Header */}
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+        <View style={styles.headerTopRow}>
+          <HapticPressable
+            onPress={onClose}
+            hitSlop={Spacing.md}
+            style={styles.cancelButton}
+          >
+            <Body size="medium" tone="secondary">Cancel</Body>
+          </HapticPressable>
+          
+          <Heading size="small">Location</Heading>
+          
+          <HapticPressable
+            style={[
+              styles.applyButton,
+              { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
+            ]}
+            onPress={handleApply}
+          >
+            <ButtonText
+              size="small"
+              style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
             >
-              <Body size="medium" tone="secondary">Cancel</Body>
-            </HapticPressable>
-            
-            <Heading size="small">Location</Heading>
-            
-            <HapticPressable
-              style={[
-                styles.applyButton,
-                { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
-              ]}
-              onPress={handleApply}
-            >
-              <ButtonText
-                size="small"
-                style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
-              >
-                Apply
-              </ButtonText>
-            </HapticPressable>
-          </View>
-
-          {/* Selection Summary */}
-          {hasValue && (
-            <View style={styles.selectionSummary}>
-              <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
-                {localSelected.join(', ')}
-              </Body>
-              <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Supporting size="small" style={{ color: colors.error }}>
-                  Clear
-                </Supporting>
-              </HapticPressable>
-            </View>
-          )}
+              Apply
+            </ButtonText>
+          </HapticPressable>
         </View>
 
+        {/* Selection Summary */}
+        {hasValue && (
+          <View style={styles.selectionSummary}>
+            <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+              {localSelected.join(', ')}
+            </Body>
+            <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
+              <Supporting size="small" style={{ color: colors.error }}>
+                Clear
+              </Supporting>
+            </HapticPressable>
+          </View>
+        )}
+      </View>
+
+      <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Options List */}
         <View style={styles.listContainer}>
           {options.map((option) => {
@@ -244,9 +244,9 @@ const styles = StyleSheet.create({
   },
   header: {
     flexShrink: 0,
+    paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: Spacing.md,
   },
   headerTopRow: {
     flexDirection: 'row',
@@ -263,9 +263,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xs,
+    gap: Spacing['2xl'],
   },
   listContainer: {
     gap: Spacing.xs,
+    marginTop: Spacing.md,
     marginBottom: Spacing.xl,
   },
   listItem: {

@@ -4,8 +4,7 @@
  * Triggered by long-press on CarCardM.
  * Sharp reads, bold takes, no filler.
  * 
- * Colors used smartly — outlines only, no fills or gradients.
- * Flags only show when genuinely warranted.
+ * Flow: Context → Take → Analysis → Flags → Seller → Tips
  * 
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling.
  */
@@ -21,6 +20,9 @@ import {
   Crosshair,
   Flame,
   AlertTriangle,
+  Info,
+  User,
+  Lightbulb,
 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
@@ -33,11 +35,11 @@ import { getListingSummary, type ListingSummary } from '@/lib/summary-api';
 // ============================================================================
 
 const DEAL_RATING_CONFIG = {
-  steal: { label: 'STEAL', outlineColor: '#10B981' },
-  solid: { label: 'SOLID', outlineColor: '#3B82F6' },
-  fair: { label: 'FAIR', outlineColor: '#8B8B8B' },
-  steep: { label: 'STEEP', outlineColor: '#F59E0B' },
-  unclear: { label: '—', outlineColor: '#8B8B8B' },
+  steal: { label: 'STEAL', color: '#10B981' },
+  solid: { label: 'SOLID', color: '#3B82F6' },
+  fair: { label: 'FAIR', color: '#737373' },
+  steep: { label: 'STEEP', color: '#F59E0B' },
+  unclear: { label: '—', color: '#737373' },
 } as const;
 
 // ============================================================================
@@ -135,6 +137,17 @@ export function CarInfoSheet({
 
   const dealConfig = summary ? DEAL_RATING_CONFIG[summary.dealRating] : null;
 
+  // Build context metrics array
+  const contextMetrics = summary?.context ? [
+    `${summary.context.mileage.toLocaleString()} km`,
+    summary.context.specs,
+    summary.context.condition === 'new' ? 'New' : null,
+    summary.context.emirate,
+    summary.context.transmission,
+    summary.context.fuelType,
+    summary.context.featureCount ? `${summary.context.featureCount} features` : null,
+  ].filter(Boolean) : [];
+
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
@@ -154,193 +167,214 @@ export function CarInfoSheet({
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.content}>
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerTitle}>
-              <Zap size={Sizes.iconSm} color={colors.text} fill={colors.text} />
-              <Heading size="medium">DarkWeave</Heading>
-            </View>
-            <HapticPressable 
-              onPress={onClose} 
-              hitSlop={Spacing.md}
-              style={[styles.iconButton, { backgroundColor: colors.fillSecondary }]}
-            >
-              <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
-            </HapticPressable>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerTitle}>
+            <Zap size={Sizes.iconSm} color={colors.text} fill={colors.text} />
+            <Heading size="medium">DarkWeave</Heading>
           </View>
+          <HapticPressable 
+            onPress={onClose} 
+            hitSlop={Spacing.md}
+            style={[styles.closeButton, { backgroundColor: colors.fillSecondary }]}
+          >
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
+          </HapticPressable>
+        </View>
 
-          {/* Car Title + Price (shown immediately) */}
-          <View style={styles.carHeader}>
-            {carTitle ? (
-              <Heading size="small">{carTitle}</Heading>
-            ) : null}
-            <View style={styles.priceRow}>
-              {formattedPrice ? (
-                <Data size="large" style={{ color: colors.primary }}>{formattedPrice}</Data>
-              ) : null}
-              {/* Deal Rating Badge — outline only */}
-              {dealConfig ? (
-                <View style={[styles.dealBadge, { borderColor: dealConfig.outlineColor }]}>
-                  <Label size="small" style={{ color: dealConfig.outlineColor, letterSpacing: 1 }}>
-                    {dealConfig.label}
+        {/* Car Title + Price + Deal Badge */}
+        <View style={styles.carHeader}>
+          {carTitle ? <Heading size="small">{carTitle}</Heading> : null}
+          <View style={styles.priceRow}>
+            {formattedPrice && (
+              <Data size="large" style={{ color: colors.primary }}>{formattedPrice}</Data>
+            )}
+            {dealConfig && (
+              <View style={[styles.dealBadge, { borderColor: dealConfig.color }]}>
+                <Label size="small" style={{ color: dealConfig.color, letterSpacing: 1 }}>
+                  {dealConfig.label}
+                </Label>
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Loading State */}
+        {isLoading && (
+          <View style={styles.centeredState}>
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Supporting size="small" style={{ color: colors.textSecondary }}>
+              Weaving the thread...
+            </Supporting>
+          </View>
+        )}
+
+        {/* Error State */}
+        {error && !isLoading && (
+          <View style={styles.centeredState}>
+            <Zap size={Sizes.iconLg} color={colors.textTertiary} />
+            <Supporting size="small" style={{ color: colors.textSecondary }}>
+              {error}
+            </Supporting>
+          </View>
+        )}
+
+        {/* DarkWeave Insight Content */}
+        {summary && !isLoading && (
+          <View style={styles.insightContainer}>
+            
+            {/* ─── Step 1: Context Metrics (Data Points) ─── */}
+            {contextMetrics.length > 0 && (
+              <View style={styles.flowSection}>
+                <View style={styles.flowHeader}>
+                  <View style={[styles.flowIcon, { backgroundColor: colors.fillSecondary }]}>
+                    <Info size={Sizes.iconXs} color={colors.textSecondary} />
+                  </View>
+                  <Label size="small" style={{ color: colors.textTertiary, letterSpacing: 0.5 }}>
+                    DATA CONSIDERED
                   </Label>
                 </View>
-              ) : null}
-            </View>
-          </View>
-
-          {/* Loading State */}
-          {isLoading && (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="small" color={colors.primary} />
-              <Supporting size="medium" style={{ color: colors.textSecondary }}>
-                Weaving the thread...
-              </Supporting>
-            </View>
-          )}
-
-          {/* Error State */}
-          {error && !isLoading && (
-            <View style={styles.errorContainer}>
-              <Zap size={Spacing.xl} color={colors.textTertiary} />
-              <Supporting size="medium" style={{ color: colors.textSecondary }}>
-                {error}
-              </Supporting>
-            </View>
-          )}
-
-          {/* DarkWeave Insight Content */}
-          {summary && !isLoading && (
-            <>
-              {/* Context — meaningful data DarkWeave studied */}
-              {summary.context && (
-                <View style={[styles.contextBar, { borderColor: colors.border }]}>
-                  <View style={styles.contextMetrics}>
-                    {[
-                      `${summary.context.mileage.toLocaleString()} km`,
-                      summary.context.specs,
-                      summary.context.condition === 'new' ? 'New' : null,
-                      summary.context.emirate,
-                      summary.context.transmission,
-                      summary.context.fuelType,
-                      summary.context.featureCount ? `${summary.context.featureCount} features` : null,
-                    ].filter(Boolean).map((metric, i, arr) => (
-                      <React.Fragment key={i}>
+                <View style={[styles.flowContent, { borderLeftColor: colors.border }]}>
+                  <View style={styles.metricsWrap}>
+                    {contextMetrics.map((metric, i) => (
+                      <View key={i} style={[styles.metricChip, { backgroundColor: colors.fillSecondary }]}>
                         <Label size="small" style={{ color: colors.textSecondary }}>{metric}</Label>
-                        {i < arr.length - 1 && (
-                          <Label size="small" style={{ color: colors.textTertiary }}>·</Label>
-                        )}
-                      </React.Fragment>
+                      </View>
                     ))}
                   </View>
                 </View>
-              )}
+              </View>
+            )}
 
-              {/* Dark Take — The Headline */}
-              {summary.darkTake ? (
-                <View style={[styles.darkTake, { backgroundColor: colors.fillSecondary, borderColor: colors.border }]}>
-                  <Flame size={Spacing.lg} color="#FF6B35" fill="#FF6B35" style={{ marginTop: 2 }} />
-                  <Body size="medium" style={{ flex: 1, color: colors.text, fontWeight: '600' }}>
+            {/* ─── Step 2: Dark Take (The Headline) ─── */}
+            {summary.darkTake && (
+              <View style={styles.flowSection}>
+                <View style={styles.flowHeader}>
+                  <View style={[styles.flowIcon, { backgroundColor: 'rgba(255, 107, 53, 0.12)' }]}>
+                    <Flame size={Sizes.iconXs} color="#FF6B35" />
+                  </View>
+                  <Label size="small" style={{ color: colors.textTertiary, letterSpacing: 0.5 }}>
+                    THE TAKE
+                  </Label>
+                </View>
+                <View style={[styles.flowContent, { borderLeftColor: colors.border }]}>
+                  <Body size="medium" style={{ color: colors.text, fontWeight: '600' }}>
                     {summary.darkTake}
                   </Body>
                 </View>
-              ) : null}
+              </View>
+            )}
 
-              {/* Machine Notes */}
-              <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Crosshair size={Sizes.iconXs + 1} color={colors.textSecondary} />
-                  <Label size="medium" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>
+            {/* ─── Step 3: Machine Notes (The Read) ─── */}
+            {(summary.machineNotes ?? []).length > 0 && (
+              <View style={styles.flowSection}>
+                <View style={styles.flowHeader}>
+                  <View style={[styles.flowIcon, { backgroundColor: colors.fillSecondary }]}>
+                    <Crosshair size={Sizes.iconXs} color={colors.textSecondary} />
+                  </View>
+                  <Label size="small" style={{ color: colors.textTertiary, letterSpacing: 0.5 }}>
                     THE READ
                   </Label>
                 </View>
-                {(summary.machineNotes ?? []).map((note, i) => (
-                  <View key={i} style={styles.bulletRow}>
-                    <View style={[styles.bulletDot, { backgroundColor: colors.primary }]} />
-                    <Body size="medium" style={{ flex: 1, color: colors.text }}>
-                      {note}
-                    </Body>
-                  </View>
-                ))}
+                <View style={[styles.flowContent, { borderLeftColor: colors.border }]}>
+                  {(summary.machineNotes ?? []).map((note, i) => (
+                    <View key={i} style={styles.bulletRow}>
+                      <View style={[styles.bulletDot, { backgroundColor: colors.primary }]} />
+                      <Body size="small" style={{ flex: 1, color: colors.text }}>
+                        {note}
+                      </Body>
+                    </View>
+                  ))}
+                </View>
               </View>
+            )}
 
-              {/* Things Worth Noting — only shows if AI found genuine flags */}
-              {(summary.flags ?? []).length > 0 ? (
-                <View style={styles.section}>
-                  <View style={styles.sectionHeader}>
-                    <Zap size={Sizes.iconXs + 1} color={colors.textSecondary} />
-                    <Label size="medium" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>
-                      WORTH NOTING
-                    </Label>
+            {/* ─── Step 4: Flags (Worth Noting) ─── */}
+            {(summary.flags ?? []).length > 0 && (
+              <View style={styles.flowSection}>
+                <View style={styles.flowHeader}>
+                  <View style={[styles.flowIcon, { backgroundColor: 'rgba(245, 158, 11, 0.12)' }]}>
+                    <AlertTriangle size={Sizes.iconXs} color="#F59E0B" />
                   </View>
+                  <Label size="small" style={{ color: colors.textTertiary, letterSpacing: 0.5 }}>
+                    WORTH NOTING
+                  </Label>
+                </View>
+                <View style={[styles.flowContent, { borderLeftColor: colors.border }]}>
                   {(summary.flags ?? []).map((flag, i) => {
-                    const outlineColor = flag.type === 'red' ? '#F59E0B' : '#10B981';
+                    const flagColor = flag.type === 'red' ? '#F59E0B' : '#10B981';
                     return (
-                      <View key={i} style={[styles.flagRow, { borderLeftColor: outlineColor }]}>
-                        <Body size="medium" style={{ flex: 1, color: colors.text }}>
+                      <View key={i} style={[styles.flagItem, { borderLeftColor: flagColor }]}>
+                        <Body size="small" style={{ color: colors.text }}>
                           {flag.text}
                         </Body>
                       </View>
                     );
                   })}
                 </View>
-              ) : null}
+              </View>
+            )}
 
-              {/* Seller Read */}
-              <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Zap size={Sizes.iconXs} color={colors.text} fill={colors.text} />
-                  <Label size="medium" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>
+            {/* ─── Step 5: Seller Read ─── */}
+            {summary.sellerVibe && (
+              <View style={styles.flowSection}>
+                <View style={styles.flowHeader}>
+                  <View style={[styles.flowIcon, { backgroundColor: colors.fillSecondary }]}>
+                    <User size={Sizes.iconXs} color={colors.textSecondary} />
+                  </View>
+                  <Label size="small" style={{ color: colors.textTertiary, letterSpacing: 0.5 }}>
                     {sellerName ? sellerName.toUpperCase() : 'SELLER'}
                   </Label>
-                  {summary.context?.sellerRating ? (
-                    <View style={[styles.ratingBadge, { borderColor: colors.border }]}>
+                  {summary.context?.sellerRating && (
+                    <View style={[styles.ratingBadge, { backgroundColor: colors.fillSecondary }]}>
                       <Label size="small" style={{ color: colors.text }}>
                         {summary.context.sellerRating.toFixed(1)}
                       </Label>
-                      {summary.context.sellerReviewCount ? (
+                      {summary.context.sellerReviewCount && (
                         <Label size="small" style={{ color: colors.textTertiary }}>
-                          ({summary.context.sellerReviewCount})
+                          · {summary.context.sellerReviewCount}
                         </Label>
-                      ) : null}
+                      )}
                     </View>
-                  ) : null}
+                  )}
                 </View>
-                <Body size="medium" style={{ color: colors.text, paddingLeft: Spacing.xs }}>
-                  {summary.sellerVibe}
-                </Body>
+                <View style={[styles.flowContent, { borderLeftColor: colors.border }]}>
+                  <Body size="small" style={{ color: colors.text }}>
+                    {summary.sellerVibe}
+                  </Body>
+                </View>
               </View>
+            )}
 
-              {/* Good to Know */}
-              {summary.negotiationTip ? (
-                <View style={[styles.negotiationTip, { borderColor: colors.border, backgroundColor: colors.fillSecondary }]}>
-                  <Zap size={Sizes.iconXs - 1} color={colors.text} fill={colors.text} style={{ marginTop: 2 }} />
-                  <View style={{ flex: 1 }}>
-                    <Label size="small" style={{ color: colors.textSecondary, letterSpacing: 0.5, marginBottom: 2 }}>
-                      GOOD TO KNOW
-                    </Label>
-                    <Body size="medium" style={{ color: colors.text }}>
-                      {summary.negotiationTip}
-                    </Body>
+            {/* ─── Step 6: Negotiation Tip ─── */}
+            {summary.negotiationTip && (
+              <View style={styles.flowSection}>
+                <View style={styles.flowHeader}>
+                  <View style={[styles.flowIcon, { backgroundColor: 'rgba(16, 185, 129, 0.12)' }]}>
+                    <Lightbulb size={Sizes.iconXs} color="#10B981" />
                   </View>
+                  <Label size="small" style={{ color: colors.textTertiary, letterSpacing: 0.5 }}>
+                    GOOD TO KNOW
+                  </Label>
                 </View>
-              ) : null}
-
-              {/* Disclaimer */}
-              <View style={[styles.disclaimer, { backgroundColor: 'rgba(245, 158, 11, 0.06)', borderColor: 'rgba(245, 158, 11, 0.15)' }]}>
-                <View style={styles.disclaimerRow}>
-                  <AlertTriangle size={Sizes.iconXs - 1} color="#F59E0B" />
-                  <Supporting size="small" style={{ color: colors.textSecondary }}>
-                    AI-generated · may not be accurate · do your own check
-                  </Supporting>
+                <View style={[styles.flowContent, styles.flowContentLast]}>
+                  <Body size="small" style={{ color: colors.text }}>
+                    {summary.negotiationTip}
+                  </Body>
                 </View>
               </View>
-            </>
-          )}
-        </View>
+            )}
 
-        <View style={{ height: insets.bottom + Spacing.md }} />
+            {/* ─── Disclaimer ─── */}
+            <View style={styles.disclaimer}>
+              <Supporting size="small" style={{ color: colors.textTertiary, textAlign: 'center' }}>
+                AI-generated · may not be accurate · do your own check
+              </Supporting>
+            </View>
+          </View>
+        )}
+
+        <View style={{ height: insets.bottom + Spacing.lg }} />
       </BottomSheetScrollView>
     </BottomSheetModal>
   );
@@ -358,34 +392,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
   },
-  content: {
-    flex: 1,
-    paddingHorizontal: Spacing.lg,
-  },
+
+  // ─── Header ───
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: Spacing.lg,
-    paddingHorizontal: Spacing.xs,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing['2xl'],
   },
   headerTitle: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  iconButton: {
+  closeButton: {
     width: Spacing['3xl'],
     height: Spacing['3xl'],
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  // ─── Car Header ───
   carHeader: {
-    gap: Spacing.xs,
-    marginBottom: Spacing.lg,
+    gap: Spacing.sm,
+    paddingBottom: Spacing['3xl'],
   },
   priceRow: {
     flexDirection: 'row',
@@ -393,105 +427,99 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   dealBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 3,
+    paddingVertical: Spacing.xs,
     borderRadius: Radius.sm,
-    borderWidth: 1,
+    borderWidth: 1.5,
   },
-  loadingContainer: {
+
+  // ─── Loading / Error States ───
+  centeredState: {
     alignItems: 'center',
-    gap: Spacing.md,
-    paddingVertical: Spacing['3xl'],
+    gap: Spacing.lg,
+    paddingVertical: Spacing['5xl'],
   },
-  errorContainer: {
-    alignItems: 'center',
-    gap: Spacing.md,
-    paddingVertical: Spacing['3xl'],
-  },
-  darkTake: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+
+  // ─── Insight Container ───
+  insightContainer: {
     gap: Spacing.sm,
-    padding: Spacing.md,
+  },
+
+  // ─── Flow Tree Structure ───
+  flowSection: {
+    paddingBottom: Spacing.lg,
+  },
+  flowHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  flowIcon: {
+    width: Spacing['2xl'],
+    height: Spacing['2xl'],
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flowContent: {
+    marginLeft: Spacing.md,
+    paddingLeft: Spacing.lg,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.sm,
+    borderLeftWidth: 1,
+  },
+  flowContentLast: {
+    borderLeftWidth: 0,
+  },
+
+  // ─── Context Metrics ───
+  metricsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  metricChip: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
     borderRadius: Radius.md,
-    borderWidth: 1,
-    marginBottom: Spacing.xl,
   },
-  section: {
-    marginBottom: Spacing.xl,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
-  },
+
+  // ─── Bullet Points ───
   bulletRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.sm,
     paddingVertical: Spacing.xs,
-    paddingLeft: Spacing.xs,
   },
   bulletDot: {
-    width: Spacing.xs,
-    height: Spacing.xs,
-    borderRadius: Spacing.xs / 2,
-    marginTop: Spacing.sm,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    marginTop: 6,
   },
-  flagRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
+
+  // ─── Flags ───
+  flagItem: {
     borderLeftWidth: 2,
+    paddingLeft: Spacing.md,
+    paddingVertical: Spacing.xs,
     marginBottom: Spacing.xs,
   },
-  negotiationTip: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
-    padding: Spacing.md,
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    marginBottom: Spacing.lg,
-  },
-  disclaimer: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Radius.md,
-    borderWidth: 1,
-  },
-  disclaimerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.xs,
-  },
+
+  // ─── Rating Badge ───
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs / 2,
-    borderRadius: Radius.sm,
-    borderWidth: 1,
+    paddingVertical: Spacing.xs,
+    borderRadius: Radius.md,
     marginLeft: 'auto',
   },
-  contextBar: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    paddingVertical: Spacing.sm,
-    marginBottom: Spacing.lg,
-  },
-  contextMetrics: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: Spacing.xs,
+
+  // ─── Disclaimer ───
+  disclaimer: {
+    paddingTop: Spacing['2xl'],
+    paddingBottom: Spacing.md,
   },
 });

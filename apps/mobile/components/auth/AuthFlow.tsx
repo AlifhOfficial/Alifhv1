@@ -3,8 +3,10 @@
  * Manages the complete authentication flow with smooth transitions
  */
 
-import React, { useState, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { StyleSheet, View, Platform } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import * as NavigationBar from 'expo-navigation-bar';
 import Animated, { 
   FadeIn, 
   FadeOut, 
@@ -42,7 +44,21 @@ export function AuthFlow({
   onSkip,
   initialScreen = 'welcome' 
 }: AuthFlowProps) {
-  const { colors } = useTheme();
+  const { colors, colorScheme } = useTheme();
+
+  // Force dark navigation bar on Android for OLED black auth screens
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      NavigationBar.setBackgroundColorAsync(colors.oledBlack);
+      NavigationBar.setButtonStyleAsync('light');
+    }
+    // Restore on unmount based on theme
+    return () => {
+      if (Platform.OS === 'android') {
+        NavigationBar.setStyle(colorScheme === 'dark' ? 'dark' : 'light');
+      }
+    };
+  }, [colorScheme, colors.oledBlack]);
 
   const [currentScreen, setCurrentScreen] = useState<AuthScreen>(initialScreen);
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
@@ -212,9 +228,22 @@ export function AuthFlow({
     setError(null);
     
     try {
-      // TODO: Implement Google OAuth for mobile
-      // This requires expo-auth-session or similar
-      setError('Google sign in coming soon');
+      const result = await AuthAPI.signInWithGoogle();
+      
+      if (!result.success) {
+        setError(result.error || 'Google sign in failed');
+        return;
+      }
+      
+      // Google sign in successful - update state and complete
+      if (result.user) {
+        setUserId(result.user.id);
+        setUserName(result.user.name || '');
+        setEmail(result.user.email);
+        
+        // Navigate to success screen
+        setCurrentScreen('success');
+      }
     } catch (err: any) {
       setError(err?.message || 'Google sign in failed. Please try again.');
     } finally {
@@ -367,6 +396,8 @@ export function AuthFlow({
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Force light status bar content for OLED black auth screens */}
+      <StatusBar style="light" />
       {renderScreen()}
     </View>
   );

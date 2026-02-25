@@ -771,3 +771,106 @@ export async function listPasskeys(): Promise<{ success: boolean; passkeys: Arra
     };
   }
 }
+
+// ============================================================================
+// SOCIAL AUTH (Google)
+// ============================================================================
+
+/**
+ * Sign in with Google using expo-web-browser
+ * Opens a browser window to complete Google OAuth, then redirects back to the app
+ */
+export async function signInWithGoogle(): Promise<AuthResult> {
+  try {
+    // Import expo-web-browser dynamically to avoid issues if not installed
+    const WebBrowser = await import('expo-web-browser');
+    const { makeRedirectUri } = await import('expo-auth-session');
+    
+    // Ensure browser redirect session is warmed up (improves UX on iOS)
+    await WebBrowser.warmUpAsync();
+    
+    // Build the auth URL
+    const authUrl = `${API_BASE}${AUTH_ENDPOINTS.GOOGLE_SIGN_IN}`;
+    
+    // The redirect URI that the browser will return to
+    // Using expo's scheme-based redirect
+    const redirectUri = makeRedirectUri({
+      scheme: 'revvup',
+      path: 'auth/callback',
+    });
+    
+    console.log('[Auth] Starting Google OAuth');
+    console.log('[Auth] Auth URL:', authUrl);
+    console.log('[Auth] Redirect URI:', redirectUri);
+    
+    // Open the browser and wait for it to return
+    const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
+    
+    // Clean up browser session
+    await WebBrowser.coolDownAsync();
+    
+    console.log('[Auth] Browser result:', result.type);
+    
+    if (result.type === 'cancel' || result.type === 'dismiss') {
+      return { success: false, error: 'Sign in was cancelled' };
+    }
+    
+    if (result.type !== 'success' || !result.url) {
+      return { success: false, error: 'Google sign in failed' };
+    }
+    
+    // Parse the callback URL to get session data
+    const url = new URL(result.url);
+    const params = new URLSearchParams(url.search);
+    
+    // Check for errors
+    const error = params.get('error');
+    if (error) {
+      return { success: false, error: error === 'cancelled' ? 'Sign in was cancelled' : error };
+    }
+    
+    // Check for success
+    const success = params.get('success');
+    if (success !== 'true') {
+      return { success: false, error: 'Google sign in failed' };
+    }
+    
+    // Extract session data
+    const token = params.get('token');
+    const expiresAt = params.get('expiresAt');
+    const userId = params.get('userId');
+    const userName = params.get('userName');
+    const userEmail = params.get('userEmail');
+    const userImage = params.get('userImage');
+    
+    if (!token || !expiresAt || !userId || !userEmail) {
+      return { success: false, error: 'Invalid session data received' };
+    }
+    
+    // Build user and session objects
+    const user: AuthUser = {
+      id: userId,
+      name: userName || '',
+      email: userEmail,
+      image: userImage || null,
+      emailVerified: true, // Google emails are verified
+    };
+    
+    const session: AuthSession = {
+      token,
+      expiresAt,
+    };
+    
+    // Store the session
+    await storeSession(session, user);
+    
+    console.log('[Auth] Google sign in successful');
+    return { success: true, user, session };
+  } catch (error: any) {
+    console.error('[Auth] Google sign in error:', error);
+    return {
+      success: false,
+      error: error?.message || 'Google sign in failed. Please try again.',
+    };
+  }
+}

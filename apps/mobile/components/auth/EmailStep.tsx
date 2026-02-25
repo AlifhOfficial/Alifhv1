@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { HapticPressable, ButtonLoader } from '@/components/ui';
 import { Heading, Body, Data, ButtonText, Supporting } from '@/components/ui';
 import { onboardingStyles } from './onboarding-styles';
@@ -75,7 +75,7 @@ export function EmailStep({
               onPress={onBack}
               style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
-              <Ionicons name="chevron-back" size={24} color={colors.oledWhite} />
+              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.oledWhite} />
             </HapticPressable>
 
             <View style={onboardingStyles.progressContainer}>
@@ -86,7 +86,7 @@ export function EmailStep({
                     onboardingStyles.progressBar,
                     {
                       backgroundColor:
-                        index < currentStep ? colors.primary : `${colors.oledWhite}20`,
+                        index < currentStep ? colors.primary : colors.glassBorderOnDark,
                     },
                   ]}
                 />
@@ -146,6 +146,7 @@ export function EmailStep({
                 placeholder="your@email.com"
                 placeholderTextColor={colors.textTertiary}
                 keyboardType="email-address"
+                keyboardAppearance="dark"
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoComplete="email"
