@@ -18,7 +18,7 @@ import { useTheme } from '@/context/theme-context';
 import * as AuthAPI from '@/lib/auth-api';
 import { WelcomeScreen } from './WelcomeScreen';
 import { SignInScreen } from './SignInScreen';
-import { SignUpScreen } from './SignUpScreen';
+import { OnboardingFlow } from './OnboardingFlow';
 import { OTPScreen } from './OTPScreen';
 import { AuthSuccessScreen } from './AuthSuccessScreen';
 import { ForgotPasswordScreen } from './ForgotPasswordScreen';
@@ -241,6 +241,15 @@ export function AuthFlow({
     onComplete({ id: userId, name: userName, email });
   }, [onComplete, userId, userName, email]);
 
+  // Handle onboarding flow completion
+  const handleOnboardingComplete = useCallback((user?: { id: string; name: string; email: string }) => {
+    if (user) {
+      onComplete(user);
+    } else {
+      onComplete({ id: userId, name: userName, email });
+    }
+  }, [onComplete, userId, userName, email]);
+
   // Animation config based on direction
   const entering = direction === 'forward' ? SlideInRight.duration(300) : SlideInLeft.duration(300);
   const exiting = direction === 'forward' ? SlideOutLeft.duration(300) : SlideOutRight.duration(300);
@@ -292,14 +301,9 @@ export function AuthFlow({
             exiting={exiting}
             style={styles.screenContainer}
           >
-            <SignUpScreen
+            <OnboardingFlow
+              onComplete={handleOnboardingComplete}
               onBack={goBack}
-              onSignUp={handleSignUp}
-              onGoogleSignUp={handleGoogleAuth}
-              onAppleSignUp={handleAppleAuth}
-              onSwitchToSignIn={() => navigateTo('signin', 'back')}
-              isLoading={isLoading}
-              error={error}
             />
           </Animated.View>
         );

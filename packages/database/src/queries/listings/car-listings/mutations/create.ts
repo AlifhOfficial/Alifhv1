@@ -86,6 +86,7 @@ export async function createCarListing(input: CreateCarListingInput): Promise<st
     id: listingId,
     userId: input.userId,
     vin: input.vin ?? null,
+    vinVisibility: input.vinVisibility ?? 'public', // Default to public for trust
     slug: null, // Will be generated later if needed
     postedByStaffId: input.postedByRole === 'staff' ? input.userId : null,
     postedByRole: input.postedByRole,
@@ -123,6 +124,7 @@ export async function createCarListing(input: CreateCarListingInput): Promise<st
       tags: input.tags ?? [],
       videoUrl: input.videoUrl ?? null,
       partnerVerified: false, // New listings start unverified
+      vinVisibility: input.vinVisibility ?? 'public',
     }),
     viewCount: 0,
     favouriteCount: 0,

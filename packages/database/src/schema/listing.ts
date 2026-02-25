@@ -18,6 +18,7 @@ import {
   LISTING_LIFECYCLE_STATUSES,
   LISTING_POSTED_BY_ROLES,
   SELLER_TYPES,
+  VIN_VISIBILITY_OPTIONS,
   VEHICLE_CONDITION_VALUES,
   BODY_TYPE_VALUES,
   FUEL_TYPE_VALUES,
@@ -52,6 +53,13 @@ export const listingPostedByRoleEnum = pgEnum('listing_posted_by_role', LISTING_
  * - 'dealer' = staff posting (postedByRole: 'staff')
  */
 export const sellerTypeEnum = pgEnum('seller_type', SELLER_TYPES);
+
+/**
+ * VIN visibility - controls whether VIN is shown publicly
+ * - 'public' = VIN shown on listing (default, builds trust)
+ * - 'private' = VIN verified but hidden from public view
+ */
+export const vinVisibilityEnum = pgEnum('vin_visibility', VIN_VISIBILITY_OPTIONS);
 
 export const vehicleConditionEnum = pgEnum('vehicle_condition', VEHICLE_CONDITION_VALUES);
 
@@ -90,6 +98,13 @@ export const seatingCapacityEnum = pgEnum('seating_capacity', SEATING_CAPACITY_V
 export const carListing = pgTable('car_listing', {
   id: text('id').primaryKey(),
   vin: text('vin').unique(),
+  /**
+   * Controls whether VIN is shown publicly on the listing.
+   * VIN is still stored and used for anti-abuse regardless of this setting.
+   * - 'public' = VIN shown to all users (default, recommended for trust)
+   * - 'private' = VIN verified badge shown, but actual VIN hidden
+   */
+  vinVisibility: vinVisibilityEnum('vin_visibility').default('public').notNull(),
   slug: text('slug').unique(), // URL-friendly identifier: toyota-camry-2024-abc123
   partnerId: text('partner_id').references(() => partner.id, { onDelete: 'cascade' }),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),

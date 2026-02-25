@@ -2,17 +2,25 @@
  * Auth Components - Export all authentication screens and utilities
  */
 
-// Screens
-export { WelcomeScreen } from './WelcomeScreen';
-export { SignInScreen } from './SignInScreen';
-export { SignUpScreen } from './SignUpScreen';
+// Main Flow
+export { AuthFlow } from './AuthFlow';
+
+// Shared Screens (used by both sign-in and onboarding)
 export { OTPScreen } from './OTPScreen';
 export { AuthSuccessScreen } from './AuthSuccessScreen';
 export { ForgotPasswordScreen } from './ForgotPasswordScreen';
-export { AuthFlow } from './AuthFlow';
 
-// Shared styles and utilities
+// Individual Screens
+export { WelcomeScreen } from './WelcomeScreen';
+export { SignInScreen } from './SignInScreen';
+
+// Onboarding Flow (Step-by-step sign-up)
+export { OnboardingFlow } from './OnboardingFlow';
+export { NameStep } from './NameStep';
+export { EmailStep } from './EmailStep';
+export { PasswordStep } from './PasswordStep';
+export { EmailSentStep } from './EmailSentStep';
+
+// Shared styles
 export { authStyles, AUTH_LAYOUT } from './auth-styles';
-
-// Icons
-export * from './icons';
+export { onboardingStyles, ONBOARDING_LAYOUT } from './onboarding-styles';

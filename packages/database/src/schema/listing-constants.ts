@@ -46,6 +46,17 @@ export const SELLER_TYPES = [
 export type SellerType = (typeof SELLER_TYPES)[number];
 
 // ============================================================================
+// VIN VISIBILITY - Controls whether VIN is shown publicly
+// ============================================================================
+
+export const VIN_VISIBILITY_OPTIONS = [
+  'public',   // VIN shown on listing
+  'private',  // VIN verified but hidden from public view
+] as const;
+
+export type VinVisibility = (typeof VIN_VISIBILITY_OPTIONS)[number];
+
+// ============================================================================
 // VEHICLE CONDITION - New vs Used
 // ============================================================================
 

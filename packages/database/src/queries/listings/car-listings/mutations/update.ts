@@ -50,6 +50,7 @@ function buildUpdateData(input: UpdateCarListingInput, now: Date): Record<string
   if (input.trim !== undefined) updateData.trim = input.trim;
   if (input.description !== undefined) updateData.description = input.description;
   if (input.vin !== undefined) updateData.vin = input.vin;
+  if (input.vinVisibility !== undefined) updateData.vinVisibility = input.vinVisibility;
   if (input.condition !== undefined) updateData.condition = input.condition;
 
   // Pricing
@@ -269,6 +270,7 @@ export async function updateCarListing(
       tags: carListing.tags,
       videoUrl: carListing.videoUrl,
       partnerVerified: carListing.partnerVerified,
+      vinVisibility: carListing.vinVisibility,
     })
     .from(carListing)
     .where(and(eq(carListing.id, listingId), eq(carListing.userId, userId)))
@@ -301,6 +303,7 @@ export async function updateCarListing(
       tags: input.tags ?? current.tags,
       videoUrl: input.videoUrl ?? current.videoUrl,
       partnerVerified: current.partnerVerified ?? false, // Admin-controlled, not user-editable
+      vinVisibility: input.vinVisibility ?? current.vinVisibility ?? 'public',
     });
   }
 
@@ -406,6 +409,7 @@ export async function updateCarListingByStaff(
       tags: carListing.tags,
       videoUrl: carListing.videoUrl,
       partnerVerified: carListing.partnerVerified,
+      vinVisibility: carListing.vinVisibility,
     })
     .from(carListing)
     .where(eq(carListing.id, listingId))
@@ -436,6 +440,7 @@ export async function updateCarListingByStaff(
       tags: input.tags ?? current.tags,
       videoUrl: input.videoUrl ?? current.videoUrl,
       partnerVerified: current.partnerVerified ?? false, // Admin-controlled, not user-editable
+      vinVisibility: input.vinVisibility ?? current.vinVisibility ?? 'public',
     });
   }
 

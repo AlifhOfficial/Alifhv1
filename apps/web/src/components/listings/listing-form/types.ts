@@ -28,6 +28,7 @@ import {
   POWER_RANGE_VALUES,
   WARRANTY_TYPE_VALUES,
   EXPORT_STATUS_VALUES,
+  VIN_VISIBILITY_OPTIONS,
 } from '@alifh/database/listing-constants';
 
 // ============================================================================
@@ -80,6 +81,7 @@ export const vinStepSchema = z.object({
     .length(17, 'VIN must be exactly 17 characters')
     .regex(VIN_PATTERN, 'Invalid VIN (cannot contain I, O, or Q)')
     .transform(v => v.toUpperCase()),
+  vinVisibility: z.enum(VIN_VISIBILITY_OPTIONS as unknown as [string, ...string[]]).default('public'),
   make: z.string().min(1, 'Make is required'),
   model: z.string()
     .min(1, 'Model is required')
@@ -285,6 +287,7 @@ export function getDefaultFormValues(): Partial<ListingFormData> {
     currency: 'AED',
     isNegotiable: true,
     condition: 'used',
+    vinVisibility: 'public',
     specs: 'gcc',
     steeringSide: 'left',
     exportStatus: 'local_only',

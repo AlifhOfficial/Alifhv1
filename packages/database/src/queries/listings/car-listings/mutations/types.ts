@@ -11,6 +11,7 @@ import type {
   ListingPostedByRole,
   ListingModerationStatus,
   ListingLifecycleStatus,
+  VinVisibility,
 } from '../../../../schema/listing-constants';
 
 // Re-export for convenience
@@ -38,6 +39,7 @@ export interface CreateCarListingInput {
   
   // Optional basic info
   vin?: string;
+  vinVisibility?: VinVisibility; // 'public' | 'private' - controls if VIN is shown publicly
   trim?: string;
   description?: string;
   condition?: 'new' | 'used'; // defaults to 'used'
@@ -99,6 +101,7 @@ export interface UpdateCarListingInput {
   trim?: string;
   description?: string;
   vin?: string;
+  vinVisibility?: VinVisibility; // 'public' | 'private' - controls if VIN is shown publicly
   condition?: 'new' | 'used';
   
   // Pricing

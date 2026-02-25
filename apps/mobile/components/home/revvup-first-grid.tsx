@@ -11,10 +11,10 @@ import {
   ScrollView,
   ImageSourcePropType,
 } from 'react-native';
-import { ArrowRight } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Spacing, Radius, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { HapticPressable, Heading, Supporting, Skeleton, SkeletonCircle, BrandAvatar } from '@/components/ui';
@@ -87,6 +87,7 @@ const PartnerItem = memo(function PartnerItem({
         name={partner.name}
         size="lg"
         shape="round"
+        backgroundColor={colors.surface}
       />
       <Supporting size="small" style={[styles.partnerName, { color: colors.textTertiary }]} numberOfLines={1}>
         {partner.name}
@@ -135,14 +136,15 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
   }
 
   return (
-    <View style={[styles.container, { borderColor: colors.glassBorder, backgroundColor: colors.glassBackground }]}>
+    <View style={[styles.container, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}>
       {/* Header with Revvup Logo */}
       <View style={styles.header}>
-        <View style={styles.brandRow}>
-          <View style={styles.logoContainer}>
-            <RevvupLogo size={28} color={colors.text} />
-          </View>
-          <Heading size="small" style={[styles.headerTitle, { color: colors.text }]}>Founding Partners</Heading>
+        <View style={[styles.avatar, { backgroundColor: colors.oledBlack }]}>
+          <RevvupLogo size={20} color={colors.oledWhite} />
+        </View>
+        <View style={styles.headerInfo}>
+          <Heading size="mini" style={{ color: colors.text }}>Founding Partners</Heading>
+          <Supporting size="small" style={{ color: colors.textTertiary }}>Our Trusted Dealers</Supporting>
         </View>
       </View>
 
@@ -168,9 +170,9 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
 
       {/* Footer */}
       <HapticPressable onPress={handleBrowseAllPress} style={styles.footer}>
-        <Heading size="small" style={[styles.footerText, { color: colors.text }]}>Browse all</Heading>
-        <View style={[styles.arrowCircle, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
-          <ArrowRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
+        <Heading size="mini" style={[styles.footerText, { color: colors.text }]}>Browse all</Heading>
+        <View style={[styles.arrowCircle, { backgroundColor: colors.fill }]}>
+          <ChevronRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
         </View>
       </HapticPressable>
     </View>
@@ -183,35 +185,35 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: Spacing.sm,
+    marginHorizontal: Layout.screenPadding,
     borderRadius: Radius['2xl'],
     borderWidth: 1,
     overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.sm,
-  },
-  brandRow: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
+    padding: Spacing.lg,
   },
-  logoContainer: {
-    opacity: 1,
+  avatar: {
+    width: Sizes.avatarMd,
+    height: Sizes.avatarMd,
+    borderRadius: Sizes.avatarMd / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
-  headerTitle: {
+  headerInfo: {
+    flex: 1,
   },
   partnersScroll: {
   },
   scrollContent: {
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.lg,
-    gap: Spacing['2xl'],
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing.lg,
+    gap: Spacing.xl,
   },
   partnerItem: {
     alignItems: 'center',
@@ -228,8 +230,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.xl,
+    padding: Spacing.lg,
+    paddingTop: Spacing.md,
   },
   footerText: {
   },
@@ -237,7 +239,6 @@ const styles = StyleSheet.create({
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

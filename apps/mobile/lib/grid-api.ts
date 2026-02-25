@@ -554,7 +554,12 @@ export function generateHomeGridSequence(): AnyGridConfig[] {
   // 2. Founding Partners
   sequence.push(createFoundingPartnersGridConfig());
   
-  // 3. Interleave categories, makes, and price ranges
+  // 3. Discovery/Meaningful categories first
+  sequence.push(createNewestGridConfig()); // Just Listed - most important
+  sequence.push(createPopularGridConfig()); // Most Popular
+  sequence.push(createHiddenGemsGridConfig()); // Hidden Gems
+  
+  // 4. Interleave make groups, body types, and price ranges
   const makeGroups: MakeGroupKey[] = ['german', 'japanese', 'italian', 'american', 'british', 'korean', 'electric'];
   const bodyTypes = BODY_TYPES.slice(0, 6); // First 6 body types
   const priceRanges: PriceRangeKey[] = ['luxury', 'premium', 'mid_range', 'affordable'];
@@ -581,11 +586,6 @@ export function generateHomeGridSequence(): AnyGridConfig[] {
     if (i % 2 === 0 && i / 2 < priceRanges.length) {
       sequence.push(createPriceRangeGridConfig(priceRanges[Math.floor(i / 2)]));
     }
-    
-    // Add variety grids
-    if (i === 2) sequence.push(createNewestGridConfig());
-    if (i === 4) sequence.push(createPopularGridConfig());
-    if (i === 6) sequence.push(createHiddenGemsGridConfig());
   }
   
   return sequence;

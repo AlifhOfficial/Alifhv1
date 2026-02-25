@@ -240,6 +240,7 @@ export async function POST(req: NextRequest) {
       
       // Optional fields
       vin: body.vin || undefined,
+      vinVisibility: body.vinVisibility || 'public', // Default to public for trust
       trim: body.trim || undefined,
       description: body.description || undefined,
       condition:

@@ -85,6 +85,7 @@ export interface SpecialNotes {
 export interface CarDetailedData {
   id: string;
   vin: string | null;
+  vinVisibility: 'public' | 'private';
   slug: string | null;
   userId: string;
   postedByRole: 'user' | 'staff';
@@ -169,6 +170,7 @@ function buildDetailedSelectFields(includeExpiry: boolean) {
   return {
     id: carListing.id,
     vin: carListing.vin,
+    vinVisibility: carListing.vinVisibility,
     slug: carListing.slug,
     userId: carListing.userId,
     postedByRole: carListing.postedByRole,

@@ -1,33 +1,28 @@
 /**
  * Auth Success Screen
- * Clean, minimal success confirmation with confetti using design system tokens
+ * OLED black themed success confirmation with confetti
  */
 
-import React, { useEffect, useState } from 'react';
-import { View, Dimensions } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import React, { useEffect, useRef } from 'react';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { 
-  FadeIn, 
+import Animated, {
+  FadeIn,
   FadeInDown,
+  FadeInUp,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withDelay,
+  withSequence,
   withTiming,
-  Easing,
 } from 'react-native-reanimated';
-import { CheckCircle2 } from 'lucide-react-native';
+import Svg, { Path, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 
-import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing } from '@/constants/theme';
-import { Heading, Body, ButtonText } from '@/components/ui';
-import { authStyles } from './auth-styles';
-import { ArrowRightIcon } from './icons';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const CONFETTI_COUNT = 50;
-const CONFETTI_COLORS = ['#0066FF', '#34C759', '#FF9500', '#FF2D55', '#AF52DE', '#5856D6'];
+import { HapticPressable, ConfettiBurst, type ConfettiBurstRef } from '@/components/ui';
+import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
+import { onboardingStyles } from './onboarding-styles';
 
 interface AuthSuccessScreenProps {
   userName?: string;
@@ -35,165 +30,154 @@ interface AuthSuccessScreenProps {
   autoRedirectDelay?: number;
 }
 
+// Animated checkmark icon
+function SuccessIcon({ color, size = 64 }: { color: string; size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 64 64" fill="none">
+      <Defs>
+        <LinearGradient id="successGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <Stop offset="0%" stopColor={color} />
+          <Stop offset="100%" stopColor={`${color}CC`} />
+        </LinearGradient>
+      </Defs>
+      <Circle cx="32" cy="32" r="30" fill="url(#successGradient)" opacity={0.15} />
+      <Circle cx="32" cy="32" r="24" stroke={color} strokeWidth={2} opacity={0.3} />
+      <Path
+        d="M22 32L28 38L42 24"
+        stroke={color}
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
 export function AuthSuccessScreen({
   userName,
   onContinue,
   autoRedirectDelay,
 }: AuthSuccessScreenProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const colors = Colors.dark; // OLED black theme
   const insets = useSafeAreaInsets();
+  const confettiRef = useRef<ConfettiBurstRef>(null);
 
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
-  
   const iconScale = useSharedValue(0);
-  const buttonScale = useSharedValue(0.95);
+  const iconRotation = useSharedValue(-10);
 
   useEffect(() => {
-    iconScale.value = withDelay(150, withSpring(1, { damping: 12, stiffness: 180 }));
-    buttonScale.value = withDelay(500, withSpring(1, { damping: 14, stiffness: 150 }));
+    // Trigger confetti and icon animation
+    const timer = setTimeout(() => {
+      confettiRef.current?.fire();
+    }, 400);
 
+    iconScale.value = withDelay(
+      200,
+      withSpring(1, {
+        damping: 12,
+        stiffness: 180,
+      })
+    );
+
+    iconRotation.value = withDelay(
+      200,
+      withSequence(
+        withTiming(5, { duration: 150 }),
+        withSpring(0, { damping: 10 })
+      )
+    );
+
+    // Auto redirect if specified
     if (autoRedirectDelay) {
-      const timer = setTimeout(handleContinue, autoRedirectDelay);
-      return () => clearTimeout(timer);
+      const redirectTimer = setTimeout(onContinue, autoRedirectDelay);
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(redirectTimer);
+      };
     }
-  }, []);
+
+    return () => clearTimeout(timer);
+  }, [autoRedirectDelay, onContinue]);
 
   const iconAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: iconScale.value }],
+    transform: [
+      { scale: iconScale.value },
+      { rotate: `${iconRotation.value}deg` },
+    ],
   }));
 
-  const buttonAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: buttonScale.value }],
-  }));
-
-  const handleContinue = () => {
-    setShowConfetti(true);
-    setIsExiting(true);
-    
-    // Wait for confetti to start, then exit
-    setTimeout(() => {
-      onContinue();
-    }, 800);
+  // Get time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
   };
 
   const firstName = userName?.split(' ')[0];
 
   return (
-    <View style={[authStyles.container, { backgroundColor: colors.background }]}>
-      {/* Confetti Layer */}
-      {showConfetti && <ConfettiExplosion />}
-      
-      <View style={[
-        authStyles.content, 
-        { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }
-      ]}>
-        {/* Centered Content */}
-        <View style={authStyles.centerSection}>
-          {/* Success Check */}
-          <Animated.View entering={FadeIn.duration(300)} style={authStyles.iconSection}>
-            <Animated.View style={iconAnimatedStyle}>
-              <CheckCircle2 size={80} color={colors.success} strokeWidth={1.5} />
-            </Animated.View>
+    <View style={[onboardingStyles.container, { backgroundColor: colors.oledBlack }]}>
+      {/* Confetti */}
+      <ConfettiBurst ref={confettiRef} />
+
+      <View
+        style={[
+          onboardingStyles.content,
+          { paddingTop: insets.top + Spacing.sm, paddingBottom: insets.bottom + Spacing['2xl'] },
+        ]}
+      >
+        {/* Center Content */}
+        <View style={onboardingStyles.centerContent}>
+          {/* Animated success icon */}
+          <Animated.View style={[onboardingStyles.iconContainer, iconAnimatedStyle]}>
+            <SuccessIcon color={colors.success} size={80} />
           </Animated.View>
 
-          {/* Title */}
-          <Animated.View 
-            entering={FadeInDown.delay(200).duration(400)} 
-            style={[authStyles.titleSection, { alignItems: 'center' }]}
-          >
-            <Heading size="large" style={{ textAlign: 'center' }}>
-              {firstName ? `Welcome, ${firstName}` : "You're in"}
+          {/* Greeting */}
+          <Animated.View entering={FadeInDown.delay(300).duration(400)}>
+            <Supporting
+              size="small"
+              style={{ color: colors.primary, textAlign: 'center', marginBottom: Spacing.sm }}
+            >
+              {getGreeting()}
+            </Supporting>
+          </Animated.View>
+
+          {/* Welcome message */}
+          <Animated.View entering={FadeInDown.delay(400).duration(400)}>
+            <Heading size="large" style={[onboardingStyles.welcomeTitle, { color: colors.oledWhite }]}>
+              {firstName ? `Welcome back, ${firstName}!` : "You're in!"}
             </Heading>
-            <Body size="large" tone="secondary" style={authStyles.subtitle}>
-              {"Let's find your next car"}
+          </Animated.View>
+
+          {/* Subtitle */}
+          <Animated.View entering={FadeInDown.delay(500).duration(400)}>
+            <Body
+              size="small"
+              style={[onboardingStyles.welcomeSubtitle, { color: colors.textSecondary }]}
+            >
+              Ready to find your next ride?
             </Body>
           </Animated.View>
         </View>
 
-        {/* Continue Button - Bottom Right */}
-        <Animated.View entering={FadeInDown.delay(400).duration(400)} style={authStyles.buttonSection}>
-          <Animated.View style={buttonAnimatedStyle}>
-            <HapticPressable
-              onPress={handleContinue}
-              disabled={isExiting}
-              style={({ pressed }) => [
-                authStyles.continueButton,
-                { backgroundColor: colors.primary, opacity: isExiting ? 0.7 : pressed ? 0.9 : 1 }
-              ]}
-            >
-              <ButtonText style={{ color: colors.primaryForeground }}>Time to Revv</ButtonText>
-              <ArrowRightIcon color={colors.primaryForeground} />
-            </HapticPressable>
-          </Animated.View>
+        {/* Continue Button */}
+        <Animated.View entering={FadeInUp.delay(600).duration(400)} style={onboardingStyles.buttonSection}>
+          <HapticPressable
+            onPress={onContinue}
+            style={({ pressed }) => [
+              onboardingStyles.continueButton,
+              {
+                backgroundColor: colors.primary,
+                opacity: pressed ? 0.9 : 1,
+              },
+            ]}
+          >
+            <ButtonText style={{ color: colors.primaryForeground }}>Let's Go</ButtonText>
+          </HapticPressable>
         </Animated.View>
       </View>
     </View>
-  );
-}
-
-function ConfettiExplosion() {
-  return (
-    <View style={authStyles.confettiContainer} pointerEvents="none">
-      {Array.from({ length: CONFETTI_COUNT }).map((_, index) => (
-        <ConfettiPiece key={index} index={index} />
-      ))}
-    </View>
-  );
-}
-
-function ConfettiPiece({ index }: { index: number }) {
-  const color = CONFETTI_COLORS[index % CONFETTI_COLORS.length];
-  const startX = SCREEN_WIDTH * 0.8; // Start from button area (bottom right)
-  const startY = SCREEN_HEIGHT * 0.75;
-  
-  // Random end positions
-  const endX = Math.random() * SCREEN_WIDTH;
-  const endY = -100 - Math.random() * 200;
-  const rotation = Math.random() * 720 - 360;
-  const delay = Math.random() * 150;
-  const duration = 800 + Math.random() * 400;
-  
-  const translateX = useSharedValue(startX);
-  const translateY = useSharedValue(startY);
-  const rotate = useSharedValue(0);
-  const opacity = useSharedValue(1);
-  const scale = useSharedValue(0);
-
-  useEffect(() => {
-    scale.value = withDelay(delay, withSpring(1, { damping: 8 }));
-    translateX.value = withDelay(delay, withTiming(endX, { duration, easing: Easing.out(Easing.quad) }));
-    translateY.value = withDelay(delay, withTiming(endY, { duration, easing: Easing.out(Easing.quad) }));
-    rotate.value = withDelay(delay, withTiming(rotation, { duration, easing: Easing.out(Easing.quad) }));
-    opacity.value = withDelay(delay + duration * 0.6, withTiming(0, { duration: duration * 0.4 }));
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { rotate: `${rotate.value}deg` },
-      { scale: scale.value },
-    ],
-    opacity: opacity.value,
-  }));
-
-  const size = 8 + Math.random() * 6;
-  const isCircle = index % 3 === 0;
-
-  return (
-    <Animated.View
-      style={[
-        authStyles.confettiPiece,
-        {
-          width: size,
-          height: isCircle ? size : size * 1.5,
-          backgroundColor: color,
-          borderRadius: isCircle ? size / 2 : 2,
-        },
-        animatedStyle,
-      ]}
-    />
   );
 }

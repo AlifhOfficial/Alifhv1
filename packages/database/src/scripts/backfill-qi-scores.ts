@@ -79,6 +79,7 @@ async function main() {
         tags: carListing.tags,
         videoUrl: carListing.videoUrl,
         partnerVerified: carListing.partnerVerified,
+        vinVisibility: carListing.vinVisibility,
       })
       .from(carListing)
       .where(isNull(carListing.qiScore))
@@ -95,6 +96,7 @@ async function main() {
         tags: listing.tags,
         videoUrl: listing.videoUrl,
         partnerVerified: listing.partnerVerified ?? false,
+        vinVisibility: listing.vinVisibility ?? 'public',
       });
 
       if (!isDryRun) {

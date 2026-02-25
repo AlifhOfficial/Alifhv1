@@ -14,6 +14,7 @@ import {
   Pressable,
   ActivityIndicator,
   ScrollView,
+  Switch,
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
@@ -338,6 +339,30 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
             </HapticPressable>
           )}
 
+          {/* VIN Visibility Toggle - Only show when VIN is verified */}
+          {form.vinVerified && (
+            <View style={[styles.vinVisibilityRow, { backgroundColor: colors.fillSecondary }]}>
+              <View style={{ flex: 1 }}>
+                <Body size="small" style={{ color: colors.text }}>Show VIN on listing</Body>
+                <Supporting size="mini" tone="muted">
+                  {form.showVin 
+                    ? '✓ 15% ranking boost • Buyers trust visible VINs' 
+                    : '"VIN Verified" badge shown — no ranking boost'
+                  }
+                </Supporting>
+              </View>
+              <Switch
+                value={form.showVin}
+                onValueChange={(value) => {
+                  updateForm({ showVin: value });
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                trackColor={{ false: colors.border, true: colors.primaryMuted }}
+                thumbColor={form.showVin ? colors.primary : colors.textMuted}
+              />
+            </View>
+          )}
+
           <View style={[styles.vinNote, { backgroundColor: colors.fillSecondary }]}>
             <Info size={Sizes.iconXs} color={colors.textMuted} />
             <Supporting size="mini" tone="muted" style={{ flex: 1 }}>
@@ -469,6 +494,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.md,
+  },
+  vinVisibilityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: Radius.md,
+    marginTop: Spacing.sm,
   },
   // Inline picker
   selectButton: {

@@ -22,7 +22,12 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-export function TopSafeAreaGradient() {
+interface TopSafeAreaGradientProps {
+  /** Use OLED colors (pure black/white) instead of theme background */
+  useOled?: boolean;
+}
+
+export function TopSafeAreaGradient({ useOled = false }: TopSafeAreaGradientProps = {}) {
   const { colorScheme } = useTheme();
   const insets = useSafeAreaInsets();
   const colors = Colors[colorScheme];
@@ -32,7 +37,7 @@ export function TopSafeAreaGradient() {
   // Use rgba colors for consistent gradient rendering on both Android and iOS
   const isLightMode = colorScheme === 'light';
   const gradientColors = useMemo((): readonly [ColorValue, ColorValue, ...ColorValue[]] => {
-    const bg = colors.background;
+    const bg = useOled ? (isLightMode ? colors.oledWhite : colors.oledBlack) : colors.background;
     return isLightMode ? [
       hexToRgba(bg, 0.9),
       hexToRgba(bg, 0.7),
@@ -46,7 +51,7 @@ export function TopSafeAreaGradient() {
       hexToRgba(bg, 0.3),
       hexToRgba(bg, 0),
     ] as const;
-  }, [colors.background, isLightMode]);
+  }, [colors.background, colors.oledWhite, colors.oledBlack, isLightMode, useOled]);
 
   return (
     <View style={styles.container} pointerEvents="none">

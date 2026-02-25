@@ -155,6 +155,11 @@ const server = Bun.serve<WSData>({
       
       return new Response(JSON.stringify({
         status: "ok",
+        fly: {
+          region: process.env.FLY_REGION ?? null,
+          appName: process.env.FLY_APP_NAME ?? null,
+          machineId: process.env.FLY_MACHINE_ID ?? null,
+        },
         timing: {
           requestReceivedAt: new Date().toISOString(),
           processTimeMs: Math.round(processTime * 100) / 100,

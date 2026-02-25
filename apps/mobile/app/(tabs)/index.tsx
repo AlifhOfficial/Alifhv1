@@ -11,12 +11,14 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, View, FlatList, RefreshControl, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TopSafeAreaGradient } from '@/components/layout';
 
 import {
   HomeHeader,
+  GreetingNote,
+  BackgroundDoodle,
   BlkGridCard,
   RevvupFirstGrid,
   CategoryCard,
@@ -35,6 +37,8 @@ import { type PartnerListItem } from '@/lib/partner-api';
 // ============================================================================
 
 const HEADER_HEIGHT = Layout.headerPadding + Sizes.bubble + Spacing.md;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const TOP_SPACING = SCREEN_HEIGHT * 0.2; // 20% of screen height
 
 // ============================================================================
 // HOME SCREEN SKELETON (Initial Loading State)
@@ -136,11 +140,9 @@ const GridItem = React.memo(function GridItem({ gridState, partners }: GridItemP
         data.listings || []
       );
       return (
-        <View style={styles.partnerContainer}>
-          <PartnerShowcaseCard
-            partner={displayData}
-          />
-        </View>
+        <PartnerShowcaseCard
+          partner={displayData}
+        />
       );
 
     default:
@@ -198,8 +200,15 @@ export default function HomeScreen() {
     <View style={styles.bottomSpacer} />
   ), []);
 
-  // Header component (empty, actual header is absolute positioned)
-  const renderHeader = useCallback(() => null, []);
+  // Header component with greeting
+  const renderHeader = useCallback(() => (
+    <View>
+      <View style={{ height: TOP_SPACING }} />
+      <View style={styles.greetingContainer}>
+        <GreetingNote />
+      </View>
+    </View>
+  ), []);
 
   // Empty state skeleton (initial loading)
   const renderEmpty = useCallback(() => {
@@ -210,8 +219,9 @@ export default function HomeScreen() {
   }, [isLoading, loadedGrids.length]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <TopSafeAreaGradient />
+    <View style={[styles.container, { backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack }]}>
+      <BackgroundDoodle />
+      <TopSafeAreaGradient useOled />
       <HomeHeader />
       
       <FlatList
@@ -253,14 +263,14 @@ const styles = StyleSheet.create({
   listContent: {
     gap: Spacing.lg,
   },
-  partnerContainer: {
-    paddingHorizontal: Spacing.sm,
+  greetingContainer: {
+    marginBottom: Spacing.md,
   },
   bottomSpacer: {
     height: Layout.tabBarHeight + Spacing['3xl'],
   },
   skeletonContainer: {
     gap: Spacing.lg,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: Layout.screenPadding,
   },
 });

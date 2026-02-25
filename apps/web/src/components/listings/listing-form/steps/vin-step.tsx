@@ -8,7 +8,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { CheckCircle2, Zap } from 'lucide-react';
+import { CheckCircle2, Zap, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/utils';
 import { Combobox } from '../combobox';
 import { VINInput } from '../vin-input';
@@ -141,6 +141,48 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
             onDecode={handleVINDecode}
             excludeListingId={excludeListingId}
           />
+          
+          {/* VIN Visibility Toggle */}
+          <div className="flex items-center justify-between pt-3 border-t border-border/20">
+            <div className="flex items-center gap-3">
+              {data.vinVisibility === 'public' ? (
+                <div className="p-2 bg-green-500/10 rounded-full">
+                  <Eye className="w-4 h-4 text-green-500" />
+                </div>
+              ) : (
+                <div className="p-2 bg-sidebar-accent rounded-full">
+                  <EyeOff className="w-4 h-4 text-sidebar-foreground/70" />
+                </div>
+              )}
+              <div>
+                <p className="text-sm font-semibold text-sidebar-foreground">
+                  Show VIN on listing
+                </p>
+                <p className="text-xs text-sidebar-foreground/70">
+                  {data.vinVisibility === 'public' 
+                    ? '✓ 15% ranking boost · Buyers trust visible VINs'
+                    : 'VIN Verified badge shown — no ranking boost'}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={data.vinVisibility === 'public'}
+              onClick={() => updateField('vinVisibility', data.vinVisibility === 'public' ? 'private' : 'public')}
+              className={cn(
+                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors",
+                data.vinVisibility === 'public' ? 'bg-green-500' : 'bg-sidebar-accent'
+              )}
+            >
+              <span
+                className={cn(
+                  "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition-transform",
+                  data.vinVisibility === 'public' ? 'translate-x-5' : 'translate-x-0'
+                )}
+              />
+            </button>
+          </div>
           
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
             <div className="flex items-center gap-1.5">

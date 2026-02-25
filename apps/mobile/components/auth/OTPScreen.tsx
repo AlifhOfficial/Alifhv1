@@ -1,24 +1,20 @@
 /**
  * OTP Verification Screen
- * Clean, minimal iOS-style OTP input using design system tokens
+ * OLED black themed OTP input for sign-in verification
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  View, 
-  TextInput, 
-} from 'react-native';
+import { View, TextInput } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { HapticPressable } from '@/components/ui';
 import { InlineLoader } from '@/components/ui/loaders';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
-import { useTheme } from '@/context/theme-context';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing } from '@/constants/theme';
-import { Display, Body, Heading, Data, Supporting } from '@/components/ui';
-import { authStyles } from './auth-styles';
-import { ChevronLeftIcon } from './icons';
+import { Heading, Body, Data, Supporting } from '@/components/ui';
+import { onboardingStyles } from './onboarding-styles';
 
 interface OTPScreenProps {
   email: string;
@@ -39,8 +35,7 @@ export function OTPScreen({
   isLoading = false,
   error,
 }: OTPScreenProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const colors = Colors.dark; // OLED black theme
   const insets = useSafeAreaInsets();
 
   const [code, setCode] = useState('');
@@ -51,7 +46,7 @@ export function OTPScreen({
   // Resend timer
   useEffect(() => {
     if (resendTimer > 0) {
-      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      const timer = setTimeout(() => setResendTimer((t) => t - 1), 1000);
       return () => clearTimeout(timer);
     } else {
       setCanResend(true);
@@ -63,7 +58,13 @@ export function OTPScreen({
     if (code.length === CODE_LENGTH && !isLoading) {
       onVerify(code);
     }
-  }, [code]);
+  }, [code, isLoading, onVerify]);
+
+  // Focus input on mount
+  useEffect(() => {
+    const timer = setTimeout(() => inputRef.current?.focus(), 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleCodeChange = (text: string) => {
     const cleaned = text.replace(/[^0-9]/g, '').slice(0, CODE_LENGTH);
@@ -83,66 +84,85 @@ export function OTPScreen({
   };
 
   return (
-    <View style={[authStyles.container, { backgroundColor: colors.background }]}>
-      <KeyboardAvoidingView 
-        behavior="padding"
-        style={authStyles.keyboardView}
-      >
-        <View style={[
-          authStyles.content, 
-          { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }
-        ]}>
+    <View style={[onboardingStyles.container, { backgroundColor: colors.oledBlack }]}>
+      <KeyboardAvoidingView behavior="padding" style={onboardingStyles.keyboardView}>
+        <View
+          style={[
+            onboardingStyles.content,
+            { paddingTop: insets.top + Spacing.sm, paddingBottom: insets.bottom + Spacing['2xl'] },
+          ]}
+        >
           {/* Header */}
-          <Animated.View entering={FadeIn.duration(300)} style={authStyles.header}>
+          <Animated.View entering={FadeIn.duration(300)} style={onboardingStyles.header}>
             <HapticPressable
               onPress={onBack}
-              style={({ pressed }) => [authStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
+              style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
-              <ChevronLeftIcon color={colors.text} />
+              <Ionicons name="chevron-back" size={24} color={colors.oledWhite} />
             </HapticPressable>
+            <View style={{ flex: 1 }} />
+            <View style={onboardingStyles.skipButton} />
           </Animated.View>
 
-          {/* Title */}
-          <Animated.View entering={FadeInDown.delay(100).duration(400)} style={authStyles.titleSection}>
-            <Display size="large">Enter code</Display>
-            <Body tone="secondary" style={authStyles.subtitle}>
+          {/* Hero Section */}
+          <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
+            <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
+              Verify your email
+            </Supporting>
+            <Heading size="large" style={[onboardingStyles.title, { color: colors.oledWhite }]}>
+              Enter the code
+            </Heading>
+            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.textSecondary }]}>
               Sent to {email}
             </Body>
           </Animated.View>
 
           {/* Error */}
           {error && (
-            <Animated.View 
-              entering={FadeIn.duration(200)} 
-              style={[authStyles.errorBox, { backgroundColor: colors.errorMuted }]}
+            <Animated.View
+              entering={FadeIn.duration(200)}
+              style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
             >
-              <Body size="small" tone="error" style={authStyles.errorText}>{error}</Body>
+              <Body size="small" tone="error" style={onboardingStyles.errorText}>
+                {error}
+              </Body>
             </Animated.View>
           )}
 
           {/* Code Input */}
-          <Animated.View entering={FadeInDown.delay(150).duration(400)} style={authStyles.codeSection}>
-            <HapticPressable onPress={focusInput} style={authStyles.codeBoxes}>
+          <Animated.View entering={FadeInDown.delay(200).duration(400)} style={onboardingStyles.codeSection}>
+            <HapticPressable onPress={focusInput} style={onboardingStyles.codeBoxes}>
               {Array.from({ length: CODE_LENGTH }).map((_, index) => {
                 const digit = code[index] || '';
                 const isActive = index === code.length;
-                
+                const isFilled = index < code.length;
+
                 return (
                   <View
                     key={index}
                     style={[
-                      authStyles.codeBox,
-                      { 
-                        backgroundColor: colors.input,
-                        borderColor: error ? colors.error : isActive ? colors.primary : colors.border,
-                      }
+                      onboardingStyles.codeBox,
+                      {
+                        backgroundColor: isFilled
+                          ? `${colors.primary}15`
+                          : `${colors.oledWhite}08`,
+                        borderColor: error
+                          ? colors.error
+                          : isActive
+                          ? colors.primary
+                          : isFilled
+                          ? colors.primary
+                          : `${colors.oledWhite}15`,
+                      },
                     ]}
                   >
-                    <Heading size="large">{digit}</Heading>
+                    <Heading size="medium" style={{ color: colors.oledWhite }}>
+                      {digit}
+                    </Heading>
                     {isActive && !isLoading && (
-                      <Animated.View 
+                      <Animated.View
                         entering={FadeIn.duration(150)}
-                        style={[authStyles.codeCursor, { backgroundColor: colors.primary }]} 
+                        style={[onboardingStyles.codeCursor, { backgroundColor: colors.primary }]}
                       />
                     )}
                   </View>
@@ -158,37 +178,45 @@ export function OTPScreen({
               keyboardType="number-pad"
               maxLength={CODE_LENGTH}
               autoFocus
-              style={authStyles.codeHiddenInput}
+              style={onboardingStyles.codeHiddenInput}
               editable={!isLoading}
             />
           </Animated.View>
 
           {/* Loading */}
           {isLoading && (
-            <Animated.View entering={FadeIn.duration(150)} style={authStyles.loadingSection}>
+            <Animated.View
+              entering={FadeIn.duration(150)}
+              style={{ alignItems: 'center', marginTop: Spacing['2xl'] }}
+            >
               <InlineLoader size="sm" />
             </Animated.View>
           )}
 
-          {/* Resend */}
-          <Animated.View entering={FadeIn.delay(250).duration(300)} style={authStyles.resendSection}>
-            {canResend ? (
-              <HapticPressable onPress={handleResend} disabled={isLoading}>
-                <Data tone="primary">Resend code</Data>
-              </HapticPressable>
-            ) : (
-              <Supporting size="small" tone="muted">
-                Resend in {resendTimer}s
-              </Supporting>
-            )}
-          </Animated.View>
+          {/* Resend & Help */}
+          <View style={onboardingStyles.buttonSection}>
+            {/* Resend */}
+            <Animated.View entering={FadeIn.delay(300).duration(300)} style={onboardingStyles.resendSection}>
+              {canResend ? (
+                <HapticPressable onPress={handleResend} disabled={isLoading}>
+                  <Data size="small" style={{ color: colors.primary }}>
+                    Resend code
+                  </Data>
+                </HapticPressable>
+              ) : (
+                <Supporting size="small" style={{ color: colors.textTertiary }}>
+                  Resend in {resendTimer}s
+                </Supporting>
+              )}
+            </Animated.View>
 
-          {/* Help text */}
-          <Animated.View entering={FadeIn.delay(350).duration(300)} style={authStyles.helpSection}>
-            <Supporting size="small" tone="muted" style={authStyles.helpText}>
-              Check your spam folder if you don't see it
-            </Supporting>
-          </Animated.View>
+            {/* Help text */}
+            <Animated.View entering={FadeIn.delay(400).duration(300)}>
+              <Supporting size="mini" style={[onboardingStyles.helpText, { color: colors.textTertiary }]}>
+                Check your spam folder if you don't see it
+              </Supporting>
+            </Animated.View>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </View>

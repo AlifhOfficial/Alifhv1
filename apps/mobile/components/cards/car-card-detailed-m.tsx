@@ -119,6 +119,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           emirate={listing.emirate}
           city={listing.city}
           vin={listing.vin}
+          vinVisibility={listing.vinVisibility}
         />
 
         {/* 3. Description (optional) */}

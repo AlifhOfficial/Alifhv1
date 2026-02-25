@@ -17,10 +17,10 @@ import {
   Dimensions,
   ImageSourcePropType,
 } from 'react-native';
-import { ArrowRight } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Spacing, Radius, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { HapticPressable, Heading, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
@@ -80,6 +80,8 @@ export interface CategoryData {
   id: string;
   name: string;
   slug?: string;
+  subtitle?: string;
+  searchParams?: GridSearchParams;
   listings: CategoryListingItem[];
 }
 
@@ -123,7 +125,7 @@ export const CategoryCard = memo(function CategoryCard({
 }: CategoryCardProps) {
   const { colors } = useTheme();
   const router = useRouter();
-  const { applySearch, clearSearch, clearFilterParams, updateFilterParams, resetSort } = useSearch();
+  const { applySearch, clearSearch, clearFilterParams, updateFilterParams, resetSort, applySort } = useSearch();
 
   const handleCategoryPress = useCallback(() => {
     onCategoryPress?.(id);
@@ -136,8 +138,12 @@ export const CategoryCard = memo(function CategoryCard({
     // Apply search params from grid config
     if (searchParams) {
       // Extract filter params vs search params
-      // Note: sortBy, limit, page are internal params not used for browse navigation
       const { make, model, sortBy, limit, page, ...filterParams } = searchParams;
+      
+      // Apply sortBy if present
+      if (sortBy) {
+        applySort(sortBy as any);
+      }
       
       // Apply make/model to search context
       if (make) {
@@ -173,6 +179,9 @@ export const CategoryCard = memo(function CategoryCard({
       if (filterParams.priceMax !== undefined) {
         mappedFilters.priceMax = filterParams.priceMax;
       }
+      if (filterParams.mileageMax !== undefined) {
+        mappedFilters.mileageMax = filterParams.mileageMax;
+      }
       if (filterParams.condition) {
         mappedFilters.condition = filterParams.condition;
       }
@@ -190,7 +199,7 @@ export const CategoryCard = memo(function CategoryCard({
     
     // Navigate to browse screen
     router.push('/browse' as any);
-  }, [id, searchParams, onCategoryPress, applySearch, clearSearch, clearFilterParams, updateFilterParams, resetSort, router]);
+  }, [id, searchParams, onCategoryPress, applySearch, applySort, clearSearch, clearFilterParams, updateFilterParams, resetSort, router]);
 
   const handleCarPress = useCallback((listingId: string) => {
     onCarPress?.(listingId);
@@ -203,10 +212,10 @@ export const CategoryCard = memo(function CategoryCard({
   }
 
   return (
-    <View style={[styles.categoryCard, { borderColor: colors.glassBorder, backgroundColor: colors.glassBackground }]}>
+    <View style={[styles.categoryCard, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}>
       {/* Header - Category Name & Subtitle */}
       <View style={styles.header}>
-        <Heading size="small" style={[styles.categoryTitle, { color: colors.text }]}>{name}</Heading>
+        <Heading size="mini" style={[styles.categoryTitle, { color: colors.text }]}>{name}</Heading>
         {subtitle && (
           <Supporting size="small" style={[styles.categorySubtitle, { color: colors.textTertiary }]}>{subtitle}</Supporting>
         )}
@@ -246,9 +255,9 @@ export const CategoryCard = memo(function CategoryCard({
 
       {/* CTA Footer */}
       <HapticPressable onPress={handleCategoryPress} style={styles.footer}>
-        <Heading size="small" style={[styles.browseText, { color: colors.text }]}>Browse all</Heading>
-        <View style={[styles.arrowCircle, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
-          <ArrowRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2.5} />
+        <Heading size="mini" style={[styles.browseText, { color: colors.text }]}>Browse all</Heading>
+        <View style={[styles.arrowCircle, { backgroundColor: colors.fill }]}>
+          <ChevronRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
         </View>
       </HapticPressable>
     </View>
@@ -276,8 +285,19 @@ export const CategoryGrid = memo(function CategoryGrid({
 }: CategoryGridProps) {
   const { colors } = useTheme();
   
+  // Sort categories to ensure "recently listed" appears first
+  const sortedCategories = React.useMemo(() => {
+    return [...categories].sort((a, b) => {
+      const aIsRecent = a.name.toLowerCase().includes('recent') || a.slug?.toLowerCase().includes('recent');
+      const bIsRecent = b.name.toLowerCase().includes('recent') || b.slug?.toLowerCase().includes('recent');
+      if (aIsRecent && !bIsRecent) return -1;
+      if (!aIsRecent && bIsRecent) return 1;
+      return 0;
+    });
+  }, [categories]);
+  
   // Loading state with no data
-  if (isLoading && categories.length === 0) {
+  if (isLoading && sortedCategories.length === 0) {
     return (
       <View style={styles.container}>
         <View style={[styles.categoryCard, { borderColor: colors.border }]}>
@@ -296,17 +316,19 @@ export const CategoryGrid = memo(function CategoryGrid({
   }
 
   // No categories
-  if (categories.length === 0) {
+  if (sortedCategories.length === 0) {
     return null;
   }
 
   return (
     <View style={styles.container}>
-      {categories.map((category) => (
+      {sortedCategories.map((category) => (
         <CategoryCard
           key={category.id}
           id={category.id}
           name={category.name}
+          subtitle={category.subtitle}
+          searchParams={category.searchParams}
           listings={category.listings}
           onCategoryPress={onCategoryPress}
           onCarPress={onCarPress}
@@ -325,18 +347,15 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
   },
   categoryCard: {
-    marginHorizontal: Spacing.sm,
+    marginHorizontal: Layout.screenPadding,
     borderRadius: Radius['2xl'],
     overflow: 'hidden',
-    paddingBottom: Spacing['2xl'],
     borderWidth: 1,
   },
   header: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing['2xl'],
-    paddingBottom: Spacing.xl,
+    padding: Spacing.lg,
   },
   categoryTitle: {
     letterSpacing: -0.3,
@@ -368,8 +387,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.xl,
+    padding: Spacing.lg,
+    paddingTop: Spacing.md,
   },
   browseText: {
   },
@@ -377,7 +396,6 @@ const styles = StyleSheet.create({
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

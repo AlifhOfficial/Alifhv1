@@ -1,6 +1,0 @@
-[build]
-builder = "railpack"
-buildCommand = "bun run build:web"
-
-[deploy]
-startCommand = "cd apps/web && bun run start"

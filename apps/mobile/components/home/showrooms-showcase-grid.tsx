@@ -11,9 +11,11 @@ import {
 import { Video, ResizeMode, AVPlaybackSource } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 
 import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { useSearch } from '@/context/search-context';
 import { HapticPressable, Heading, Supporting } from '@/components/ui';
 
 // ============================================================================
@@ -46,14 +48,22 @@ interface ShowroomsShowcaseGridProps {
   onViewAllPress?: () => void;
   limit?: number;
   offset?: number;
+  /** Partner ID to filter by when navigating */
+  partnerId?: string;
+  /** Partner name for display in browse */
+  partnerName?: string;
 }
 
 export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
   onViewAllPress,
   limit,
   offset = 0,
+  partnerId,
+  partnerName,
 }: ShowroomsShowcaseGridProps) {
   const { colors } = useTheme();
+  const { applySearch, clearSearch, clearFilterParams, resetSort } = useSearch();
+  const router = useRouter();
   const start = offset % SHOWROOM_DATA.length;
   const displayShowrooms = limit ? SHOWROOM_DATA.slice(start, start + limit) : SHOWROOM_DATA;
   // Use first showroom's video as background
@@ -61,7 +71,14 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
 
   const handleViewAllPress = useCallback(() => {
     onViewAllPress?.();
-  }, [onViewAllPress]);
+    if (partnerId) {
+      clearSearch();
+      clearFilterParams();
+      resetSort();
+      applySearch({ partnerId, partnerName: partnerName || displayShowrooms[0]?.name });
+      router.push('/browse' as any);
+    }
+  }, [onViewAllPress, partnerId, partnerName, displayShowrooms, applySearch, clearSearch, clearFilterParams, resetSort, router]);
 
   return (
     <View style={[styles.wrapper, { borderColor: colors.glassBorderOnDark }]}>

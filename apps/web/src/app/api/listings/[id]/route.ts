@@ -265,6 +265,7 @@ export async function PUT(
     if (body.condition !== undefined) updateData.condition = body.condition;
     if (body.description !== undefined) updateData.description = body.description;
     if (body.vin !== undefined) updateData.vin = body.vin;
+    if (body.vinVisibility !== undefined) updateData.vinVisibility = body.vinVisibility;
     if (body.price !== undefined) updateData.price = body.price;
     if (body.currency !== undefined) updateData.currency = body.currency;
     if (body.isNegotiable !== undefined) updateData.isNegotiable = body.isNegotiable;

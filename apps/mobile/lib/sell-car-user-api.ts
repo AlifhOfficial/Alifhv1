@@ -29,6 +29,7 @@ export type UserListingSubmitStatus = 'draft' | 'published';
 export interface ListingFormPayload {
   // ── Step 1: VIN & Identity ──────────────────────────────────────────
   vin?: string | null;
+  vinVisibility?: 'public' | 'private'; // Controls if VIN shown publicly (default: public)
   make: string;
   model: string;
   year: number;

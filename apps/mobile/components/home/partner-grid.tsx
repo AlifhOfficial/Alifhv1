@@ -1,123 +1,30 @@
 /**
- * Partner Grid - Partner-Specific Inventory
- * Clean dark card with white product thumbnails
- * Vertical layout - partner cards stacked below each other
- * 
- * Now supports:
- * - API-driven data through props (PartnerListItem from partner-api)
- * - Loading states
- * - Empty state handling
+ * Partner Grid - Partner Showcase
+ * Clean container cards with product thumbnails
  */
 
 import React, { memo, useCallback } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-  ImageSourcePropType,
-} from 'react-native';
-import { Image, ImageSource } from 'expo-image';
-import { ArrowRight, Heart, CheckCircle2 } from 'lucide-react-native';
+import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { Image } from 'expo-image';
+import { ChevronRight, Heart, CheckCircle2 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { useSearch } from '@/context/search-context';
 import { getThumbUrl } from '@/lib/config';
-import { HapticPressable, Heading, Data, Supporting, Skeleton, SkeletonCircle, Label, BrandAvatar } from '@/components/ui';
+import { HapticPressable, Heading, Data, Supporting, Skeleton, Label } from '@/components/ui';
 import { type PartnerListItem } from '@/lib/partner-api';
 import { type ListingCard } from '@/lib/search-api';
-
-// ============================================================================
-// PARTNER PRODUCTS SKELETON
-// ============================================================================
-
-const PartnerProductsSkeleton = memo(function PartnerProductsSkeleton() {
-  return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.productsContainer}
-    >
-      {[1, 2, 3].map((i) => (
-        <Skeleton 
-          key={i}
-          width={PRODUCT_CARD_WIDTH} 
-          height={PRODUCT_CARD_HEIGHT} 
-          borderRadius={Radius.xl}
-        />
-      ))}
-    </ScrollView>
-  );
-});
-
-// ============================================================================
-// PARTNER SHOWCASE SKELETON (Full card)
-// ============================================================================
-
-export const PartnerShowcaseCardSkeleton = memo(function PartnerShowcaseCardSkeleton() {
-  const { colors } = useTheme();
-  
-  return (
-    <View style={[styles.partnerCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
-      {/* Header skeleton */}
-      <View style={styles.header}>
-        <SkeletonCircle size={Sizes.avatarLg} />
-        <View style={styles.headerInfo}>
-          <Skeleton width="60%" height={16} />
-          <Skeleton width="40%" height={12} />
-        </View>
-      </View>
-      
-      {/* Products skeleton */}
-      <PartnerProductsSkeleton />
-      
-      {/* Footer skeleton */}
-      <View style={styles.footer}>
-        <Skeleton width="30%" height={16} />
-        <SkeletonCircle size={Sizes.bubble} />
-      </View>
-    </View>
-  );
-});
-
-// ============================================================================
-// HELPER: Convert API data to display format
-// ============================================================================
-
-/**
- * Convert PartnerListItem + listings to PartnerDisplayData
- * Used by home screen to transform API response for PartnerShowcaseCard
- */
-export function partnerToDisplayData(
-  partner: PartnerListItem,
-  listings: ListingCard[]
-): PartnerDisplayData {
-  return {
-    id: partner.id,
-    name: partner.brandName,
-    logo: partner.logoUrl || partner.logo,
-    rating: partner.googleRating || partner.platformRating,
-    reviewCount: partner.googleReviewCount || partner.platformReviewCount,
-    isVerified: partner.isVerified,
-    isBlk: partner.badges?.includes('blk') || partner.tier === 'black',
-    listings: listings.map(l => ({
-      id: l.id,
-      price: l.price,
-      thumbnail: l.thumbnail,
-    })),
-  };
-}
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-/** Partner data for display - supports both API and mock data */
 export interface PartnerDisplayData {
   id: string;
   name: string;
-  logo?: ImageSourcePropType | string | null;
+  logo?: string | null;
   rating?: number | null;
   reviewCount?: number | null;
   isVerified?: boolean;
@@ -125,11 +32,10 @@ export interface PartnerDisplayData {
   listings: PartnerListingItem[];
 }
 
-/** Listing item for partner grid */
 export interface PartnerListingItem {
   id: string;
   price: number;
-  thumbnail?: ImageSourcePropType | string | null;
+  thumbnail?: string | null;
 }
 
 // ============================================================================
@@ -137,102 +43,58 @@ export interface PartnerListingItem {
 // ============================================================================
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH - (Spacing.sm * 2);
-const PRODUCT_CARD_WIDTH = CARD_WIDTH * 0.42;
-const PRODUCT_CARD_HEIGHT = PRODUCT_CARD_WIDTH * (4 / 5);
-const IMAGE_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
+const PRODUCT_WIDTH = 180;
+const PRODUCT_ASPECT = 5 / 4;
+const BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
+
+// Dark glass for product overlays
+const GLASS_BG = '#0D0D0D';
+const GLASS_BORDER = 'rgba(255,255,255,0.14)';
 
 // ============================================================================
 // UTILITIES
 // ============================================================================
 
-/** Convert image source to expo-image compatible format with thumb optimization */
-function toImageSource(source: ImageSourcePropType | string | undefined | null): ImageSource | undefined {
-  if (!source) return undefined;
-  if (typeof source === 'string') {
-    // Apply thumb URL conversion for string URLs
-    const thumbUrl = getThumbUrl(source) || source;
-    return { uri: thumbUrl };
-  }
-  // Handle number (require() assets) and other ImageSourcePropType values
-  return source as ImageSource;
-}
+const formatPrice = (n: number) => {
+  if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
+  if (n >= 1e3) return `${Math.round(n / 1e3)}K`;
+  return n.toString();
+};
+
+const formatReviews = (n: number) => n >= 1e3 ? `${(n / 1e3).toFixed(1)}K` : n.toString();
 
 // ============================================================================
-// FORMAT UTILITIES
+// PRODUCT CARD
 // ============================================================================
-
-function formatCompactPrice(amount: number): string {
-  if (amount >= 1000000) {
-    const millions = amount / 1000000;
-    return millions % 1 === 0 ? `${millions}M` : `${millions.toFixed(1)}M`;
-  }
-  if (amount >= 1000) {
-    const thousands = amount / 1000;
-    return thousands % 1 === 0 ? `${thousands}K` : `${thousands.toFixed(0)}K`;
-  }
-  return amount.toString();
-}
-
-function formatReviewCount(count: number): string {
-  if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}K`;
-  }
-  return count.toString();
-}
-
-// ============================================================================
-// PRODUCT CARD - White background with price & favorite
-// ============================================================================
-
-// Dark glass constants for BLK partners (forced dark mode)
-const BLK_GLASS_BACKGROUND = '#0D0D0D';
-const BLK_GLASS_BORDER = 'rgba(255,255,255,0.14)';
 
 interface ProductCardProps {
   listing: PartnerListingItem;
-  isBlk?: boolean;
-  onPress?: (id: string) => void;
-  onFavoritePress?: (id: string) => void;
+  colors: typeof Colors.light;
+  onPress: (id: string) => void;
+  onFavorite?: (id: string) => void;
 }
 
-const ProductCard = memo(function ProductCard({
-  listing,
-  isBlk,
-  onPress,
-  onFavoritePress,
-}: ProductCardProps) {
-  const { colors } = useTheme();
-
-  const handlePress = useCallback(() => {
-    onPress?.(listing.id);
-  }, [listing.id, onPress]);
-
-  const handleFavoritePress = useCallback(() => {
-    onFavoritePress?.(listing.id);
-  }, [listing.id, onFavoritePress]);
-
-  // Always use dark glass styling - product cards have white backgrounds
-  // so dark glass is needed for visibility in both light and dark modes
-  const glassBackground = BLK_GLASS_BACKGROUND;
-  const glassBorder = BLK_GLASS_BORDER;
+const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavorite }: ProductCardProps) {
+  const imageUri = getThumbUrl(listing.thumbnail) || listing.thumbnail;
 
   return (
-    <HapticPressable onPress={handlePress} style={[styles.productCard, { backgroundColor: colors.oledWhite }]}>
-      {/* White background product image */}
+    <HapticPressable onPress={() => onPress(listing.id)} style={[styles.product, { backgroundColor: colors.oledWhite }]}>
       <Image
-        source={toImageSource(listing.thumbnail)}
+        source={imageUri ? { uri: imageUri } : undefined}
         style={styles.productImage}
         contentFit="cover"
-        placeholder={IMAGE_BLURHASH}
-        transition={200}
+        placeholder={{ blurhash: BLURHASH }}
+        transition={150}
       />
-      {/* Price Badge - Top Left */}
-      <View style={[styles.priceBadge, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
-        <Data size="mini" style={[styles.priceText, { color: colors.oledWhite }]}>{formatCompactPrice(listing.price)}</Data>
+      <View style={[styles.priceBadge, { backgroundColor: GLASS_BG, borderColor: GLASS_BORDER }]}>
+        <Data size="mini" style={{ color: colors.oledWhite }}>
+          AED {formatPrice(listing.price)}
+        </Data>
       </View>
-      {/* Favorite Button - Bottom Right */}
-      <HapticPressable onPress={handleFavoritePress} style={[styles.favoriteButton, { backgroundColor: glassBackground, borderColor: glassBorder }]}>
+      <HapticPressable
+        onPress={() => onFavorite?.(listing.id)}
+        style={[styles.favBtn, { backgroundColor: GLASS_BG, borderColor: GLASS_BORDER }]}
+      >
         <Heart size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2} />
       </HapticPressable>
     </HapticPressable>
@@ -245,52 +107,69 @@ const ProductCard = memo(function ProductCard({
 
 interface PartnerShowcaseCardProps {
   partner: PartnerDisplayData;
-  /** Loading state */
-  isLoading?: boolean;
-  onShopAllPress?: (partnerId: string) => void;
+  colors?: typeof Colors.light;
+  onPress?: (partnerId: string) => void;
   onCarPress?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
 }
 
 export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
   partner,
-  isLoading,
-  onShopAllPress,
+  colors: colorsProp,
+  onPress,
   onCarPress,
   onFavoritePress,
 }: PartnerShowcaseCardProps) {
-  const { colors } = useTheme();
+  const { colorScheme } = useTheme();
+  const colors = colorsProp || Colors[colorScheme];
   const router = useRouter();
+  const { applySearch, clearSearch, clearFilterParams, resetSort } = useSearch();
 
-  const handleShopAllPress = useCallback(() => {
-    onShopAllPress?.(partner.id);
-  }, [partner.id, onShopAllPress]);
+  const handleCarPress = useCallback(
+    (id: string) => {
+      onCarPress?.(id);
+      router.push(`/listing/${id}` as any);
+    },
+    [onCarPress, router]
+  );
 
-  const handleCarPress = useCallback((id: string) => {
-    onCarPress?.(id);
-    router.push(`/listing/${id}` as any);
-  }, [onCarPress, router]);
+  const handlePress = useCallback(() => {
+    onPress?.(partner.id);
+    clearSearch();
+    clearFilterParams();
+    resetSort();
+    applySearch({ partnerId: partner.id, partnerName: partner.name });
+    router.push('/browse' as any);
+  }, [onPress, partner.id, partner.name, applySearch, clearSearch, clearFilterParams, resetSort, router]);
 
-  // Use BLK styling when partner is BLK tier - always dark mode aesthetic
-  const cardBackground = partner.isBlk ? colors.oledBlack : colors.glassBackground;
-  const cardBorder = partner.isBlk ? colors.glassBorderOnDark : colors.glassBorder;
+  const cardBg = partner.isBlk ? colors.oledBlack : colors.surfaceSecondary;
+  const cardBorder = partner.isBlk ? colors.glassBorderOnDark : colors.border;
   const textColor = partner.isBlk ? colors.oledWhite : colors.text;
   const textSecondary = partner.isBlk ? 'rgba(255,255,255,0.6)' : colors.textTertiary;
 
   return (
-    <View style={[styles.partnerCard, { borderColor: cardBorder, backgroundColor: cardBackground }]}>
-      {/* Header - Logo, Name & Rating */}
+    <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+      {/* Header */}
       <View style={styles.header}>
-        <BrandAvatar
-          src={typeof partner.logo === 'string' ? partner.logo : null}
-          name={partner.name}
-          size="lg"
-          shape="round"
-          glass
-        />
+        {partner.logo ? (
+          <View style={[styles.avatar, { backgroundColor: colors.surface }]}>
+            <Image
+              source={{ uri: getThumbUrl(partner.logo) || partner.logo }}
+              style={styles.avatarImage}
+              contentFit="cover"
+              transition={150}
+            />
+          </View>
+        ) : (
+          <View style={[styles.avatar, { backgroundColor: colors.surface }]}>
+            <Heading size="mini" style={{ color: textColor }}>
+              {partner.name.charAt(0).toUpperCase()}
+            </Heading>
+          </View>
+        )}
         <View style={styles.headerInfo}>
           <View style={styles.nameRow}>
-            <Heading size="small" style={[styles.partnerName, { color: textColor }]}>{partner.name}</Heading>
+            <Heading size="mini" style={{ color: textColor }}>{partner.name}</Heading>
             {!partner.isBlk && partner.isVerified && (
               <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
             )}
@@ -301,46 +180,40 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
             )}
           </View>
           {partner.rating && partner.reviewCount && (
-            <Data size="small" style={[styles.ratingText, { color: textSecondary }]}>
-              {partner.rating} ★ ({formatReviewCount(partner.reviewCount)})
+            <Data size="small" style={{ color: textSecondary }}>
+              {partner.rating} ★ ({formatReviews(partner.reviewCount)})
             </Data>
           )}
         </View>
       </View>
 
-      {/* Product Thumbnails - Horizontal Scroll */}
-      {isLoading && partner.listings.length === 0 ? (
-        <PartnerProductsSkeleton />
-      ) : partner.listings.length > 0 ? (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.productsContainer}
-        >
+      {/* Products */}
+      {partner.listings.length > 0 ? (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.productsScroll}>
           {partner.listings.slice(0, 4).map((listing) => (
             <ProductCard
               key={listing.id}
               listing={listing}
-              isBlk={partner.isBlk}
+              colors={colors}
               onPress={handleCarPress}
-              onFavoritePress={onFavoritePress}
+              onFavorite={onFavoritePress}
             />
           ))}
         </ScrollView>
       ) : (
         <View style={styles.emptyProducts}>
-          <Supporting size="small" style={[styles.emptyText, { color: colors.textMuted }]}>No listings available</Supporting>
+          <Supporting size="small" style={{ color: colors.textMuted }}>No listings</Supporting>
         </View>
       )}
 
-      {/* Browse All Footer */}
-      <HapticPressable onPress={handleShopAllPress} style={styles.footer}>
-        <Heading size="small" style={[styles.browseAllText, { color: textColor }]}>Browse all</Heading>
-        <View style={[styles.arrowCircle, { 
-          backgroundColor: partner.isBlk ? BLK_GLASS_BACKGROUND : colors.glassBackground, 
-          borderColor: partner.isBlk ? BLK_GLASS_BORDER : colors.glassBorder 
+      {/* Footer */}
+      <HapticPressable onPress={handlePress} style={styles.footer}>
+        <Heading size="mini" style={{ color: textColor }}>Browse all</Heading>
+        <View style={[styles.arrowBtn, { 
+          backgroundColor: partner.isBlk ? GLASS_BG : colors.fill,
+          ...(partner.isBlk && { borderColor: GLASS_BORDER, borderWidth: 1 })
         }]}>
-          <ArrowRight size={Sizes.iconSm} color={partner.isBlk ? colors.oledWhite : colors.icon} strokeWidth={2.5} />
+          <ChevronRight size={Sizes.iconSm} color={partner.isBlk ? colors.oledWhite : colors.icon} strokeWidth={2} />
         </View>
       </HapticPressable>
     </View>
@@ -348,13 +221,11 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
 });
 
 // ============================================================================
-// PARTNER GRID COMPONENT
+// PARTNER GRID
 // ============================================================================
 
 interface PartnerGridProps {
-  /** Partners to display - from API */
   partners: PartnerDisplayData[];
-  /** Loading state */
   isLoading?: boolean;
   onPartnerPress?: (partnerId: string) => void;
   onCarPress?: (id: string) => void;
@@ -368,21 +239,17 @@ export const PartnerGrid = memo(function PartnerGrid({
   onCarPress,
   onFavoritePress,
 }: PartnerGridProps) {
-  const { colors } = useTheme();
-  
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <View style={[styles.partnerCard, styles.loadingCard, { backgroundColor: colors.surface }]}>
-          <View style={[styles.loadingContent, { backgroundColor: colors.surface }]} />
+        <View style={styles.skeletonWrapper}>
+          <Skeleton width={SCREEN_WIDTH - (Layout.screenPadding * 2)} height={280} borderRadius={Radius['2xl']} />
         </View>
       </View>
     );
   }
 
-  if (!partners || partners.length === 0) {
-    return null;
-  }
+  if (!partners?.length) return null;
 
   return (
     <View style={styles.container}>
@@ -390,7 +257,7 @@ export const PartnerGrid = memo(function PartnerGrid({
         <PartnerShowcaseCard
           key={partner.id}
           partner={partner}
-          onShopAllPress={onPartnerPress}
+          onPress={onPartnerPress}
           onCarPress={onCarPress}
           onFavoritePress={onFavoritePress}
         />
@@ -400,38 +267,56 @@ export const PartnerGrid = memo(function PartnerGrid({
 });
 
 // ============================================================================
+// HELPER: Convert API data to display format
+// ============================================================================
+
+export function partnerToDisplayData(partner: PartnerListItem, listings: ListingCard[]): PartnerDisplayData {
+  return {
+    id: partner.id,
+    name: partner.brandName,
+    logo: partner.logoUrl || partner.logo,
+    rating: partner.googleRating || partner.platformRating,
+    reviewCount: partner.googleReviewCount || partner.platformReviewCount,
+    isVerified: partner.isVerified,
+    isBlk: partner.badges?.includes('blk') || partner.tier === 'black',
+    listings: listings.map(l => ({ id: l.id, price: l.price, thumbnail: l.thumbnail })),
+  };
+}
+
+// ============================================================================
 // STYLES
 // ============================================================================
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: Spacing.sm,
     gap: Spacing.lg,
   },
-  partnerCard: {
-    width: CARD_WIDTH,
+  skeletonWrapper: {
+    marginHorizontal: Layout.screenPadding,
+  },
+  card: {
+    marginHorizontal: Layout.screenPadding,
     borderRadius: Radius['2xl'],
-    overflow: 'hidden',
-    paddingBottom: Spacing['2xl'],
     borderWidth: 1,
-  },
-  loadingCard: {
-    height: 280,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingContent: {
-    width: '80%',
-    height: 20,
-    borderRadius: Radius.md,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing['2xl'],
-    paddingBottom: Spacing.xl,
+    padding: Spacing.lg,
+  },
+  avatar: {
+    width: Sizes.avatarMd,
+    height: Sizes.avatarMd,
+    borderRadius: Sizes.avatarMd / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   headerInfo: {
     flex: 1,
@@ -442,32 +327,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.xs,
   },
-  partnerName: {
-    letterSpacing: -0.3,
-  },
   blkBadge: {
     paddingHorizontal: Spacing.xs,
     paddingVertical: 2,
     borderRadius: Radius.none,
     borderWidth: 1,
   },
-  ratingText: {
-  },
-  productsContainer: {
-    paddingHorizontal: Spacing.xl,
+  productsScroll: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing.lg,
     gap: Spacing.md,
   },
   emptyProducts: {
-    height: PRODUCT_CARD_HEIGHT,
+    height: PRODUCT_WIDTH * PRODUCT_ASPECT,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
+    marginHorizontal: Spacing.lg,
   },
-  emptyText: {
-  },
-  productCard: {
-    width: PRODUCT_CARD_WIDTH,
-    height: PRODUCT_CARD_HEIGHT,
+  product: {
+    width: PRODUCT_WIDTH,
+    aspectRatio: PRODUCT_ASPECT,
     borderRadius: Radius.xl,
     overflow: 'hidden',
   },
@@ -484,9 +364,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     borderWidth: 1,
   },
-  priceText: {
-  },
-  favoriteButton: {
+  favBtn: {
     position: 'absolute',
     bottom: Spacing.sm,
     right: Spacing.sm,
@@ -494,24 +372,21 @@ const styles = StyleSheet.create({
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
     borderWidth: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.xl,
+    padding: Spacing.lg,
+    paddingTop: Spacing.md,
   },
-  browseAllText: {
-  },
-  arrowCircle: {
+  arrowBtn: {
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    borderWidth: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
 });

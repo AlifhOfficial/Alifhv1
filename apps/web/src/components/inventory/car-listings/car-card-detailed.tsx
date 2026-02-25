@@ -468,7 +468,14 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
         {listing.vin && (
           <div className="flex items-baseline gap-2.5">
             <span className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground/70">VIN</span>
-            <span className="font-mono text-sm font-medium text-muted-foreground/80">{listing.vin}</span>
+            {listing.vinVisibility === 'public' ? (
+              <span className="font-mono text-sm font-medium text-muted-foreground/80">{listing.vin}</span>
+            ) : (
+              <span className="flex items-center gap-1.5 text-sm font-medium text-primary">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Verified
+              </span>
+            )}
           </div>
         )}
       </div>

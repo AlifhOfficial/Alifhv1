@@ -103,19 +103,21 @@ export interface QiScoreInput {
   tags: string[] | null;
   videoUrl: string | null;
   partnerVerified: boolean;
+  vinVisibility: 'public' | 'private' | null;
 }
 
 /**
- * Compute Quality Index score for a listing (0-70 scale)
+ * Compute Quality Index score for a listing (0-80 scale)
  * 
  * Pre-computed on create/edit to avoid expensive runtime calculations.
  * This score is stored in qiScore column and used for relevance sorting.
  * 
- * Components (70 points total):
+ * Components (80 points total):
  * - Photos (25): 10+ images = full score
  * - Description (15): 250+ chars = full score  
  * - Completeness (20): extras, tags, video presence
  * - Trust (10): partner verified bonus
+ * - VIN Transparency (10): public VIN = ~15% ranking boost
  */
 export function computeQiScore(input: QiScoreInput): number {
   const images = input.images ?? [];
@@ -139,7 +141,11 @@ export function computeQiScore(input: QiScoreInput): number {
   // Trust: 0-10 points
   const trust = input.partnerVerified ? 10 : 0;
   
-  return Math.round((photoScore + descScore + completeness + trust) * 100) / 100;
+  // VIN Transparency: 0-10 points (~15% boost for public VIN)
+  // This encourages sellers to show their VIN for buyer trust
+  const vinTransparency = input.vinVisibility === 'public' ? 10 : 0;
+  
+  return Math.round((photoScore + descScore + completeness + trust + vinTransparency) * 100) / 100;
 }
 
 /**
@@ -152,4 +158,5 @@ export const QI_SCORE_KEYS = [
   'extras',
   'tags',
   'videoUrl',
+  'vinVisibility',
 ] as const;

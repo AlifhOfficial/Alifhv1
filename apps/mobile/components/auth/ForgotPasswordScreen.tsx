@@ -1,25 +1,20 @@
 /**
  * Forgot Password Screen
- * Clean, minimal password reset using design system tokens
+ * OLED black themed password reset
  */
 
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text as RNText,
-  TextInput, 
-} from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, TextInput } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { HapticPressable, ButtonLoader } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { CheckCircle2 } from 'lucide-react-native';
+import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
+import Svg, { Path, Circle } from 'react-native-svg';
 
-import { useTheme } from '@/context/theme-context';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing } from '@/constants/theme';
-import { Display, Body, Data, ButtonText } from '@/components/ui';
-import { authStyles } from './auth-styles';
-import { ChevronLeftIcon } from './icons';
+import { Heading, Body, Data, ButtonText, Supporting } from '@/components/ui';
+import { onboardingStyles } from './onboarding-styles';
 
 interface ForgotPasswordScreenProps {
   onBack: () => void;
@@ -29,6 +24,28 @@ interface ForgotPasswordScreenProps {
   success?: boolean;
 }
 
+// Check icon for success state
+function CheckIcon({ color, size = 32 }: { color: string; size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="10" stroke={color} strokeWidth={1.5} opacity={0.3} />
+      <Path
+        d="M8 12L11 15L16 9"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+// Simple email validation
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
 export function ForgotPasswordScreen({
   onBack,
   onSubmit,
@@ -36,67 +53,95 @@ export function ForgotPasswordScreen({
   error,
   success = false,
 }: ForgotPasswordScreenProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const colors = Colors.dark; // OLED black theme
   const insets = useSafeAreaInsets();
+  const inputRef = useRef<TextInput>(null);
 
   const [email, setEmail] = useState('');
+  const isValid = isValidEmail(email);
+
+  useEffect(() => {
+    if (!success) {
+      const timer = setTimeout(() => inputRef.current?.focus(), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   const handleSubmit = async () => {
-    if (!email || isLoading) return;
-    await onSubmit(email);
+    if (!isValid || isLoading) return;
+    await onSubmit(email.toLowerCase().trim());
   };
-
-  const isValid = email.length > 0 && email.includes('@');
 
   // Success state
   if (success) {
     return (
-      <View style={[authStyles.container, { backgroundColor: colors.background }]}>
-        <View style={[
-          authStyles.content, 
-          { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }
-        ]}>
+      <View style={[onboardingStyles.container, { backgroundColor: colors.oledBlack }]}>
+        <View
+          style={[
+            onboardingStyles.content,
+            { paddingTop: insets.top + Spacing.sm, paddingBottom: insets.bottom + Spacing['2xl'] },
+          ]}
+        >
           {/* Header */}
-          <Animated.View entering={FadeIn.duration(300)} style={authStyles.header}>
+          <Animated.View entering={FadeIn.duration(300)} style={onboardingStyles.header}>
             <HapticPressable
               onPress={onBack}
-              style={({ pressed }) => [authStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
+              style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
-              <ChevronLeftIcon color={colors.text} />
+              <Ionicons name="chevron-back" size={24} color={colors.oledWhite} />
             </HapticPressable>
+            <View style={{ flex: 1 }} />
+            <View style={onboardingStyles.skipButton} />
           </Animated.View>
 
-          {/* Success Content */}
-          <View style={authStyles.centerSection}>
-            <Animated.View entering={FadeIn.duration(300)} style={authStyles.successIcon}>
-              <CheckCircle2 size={64} color={colors.success} strokeWidth={1.5} />
+          {/* Center Content */}
+          <View style={onboardingStyles.centerContent}>
+            <Animated.View entering={FadeInDown.delay(100).duration(500)} style={onboardingStyles.iconContainer}>
+              <View
+                style={[
+                  onboardingStyles.emailSentIcon,
+                  { backgroundColor: `${colors.success}15` },
+                ]}
+              >
+                <CheckIcon color={colors.success} size={36} />
+              </View>
             </Animated.View>
 
-            <Animated.View 
-              entering={FadeInDown.delay(150).duration(400)} 
-              style={[authStyles.titleSection, { alignItems: 'center' }]}
-            >
-              <Display size="large">
-                Check your email<RNText style={{ color: colors.success }}>.</RNText>
-              </Display>
-              <Body tone="secondary" style={authStyles.subtitle}>
-                {"We've sent a reset link to"}
+            <Animated.View entering={FadeInDown.delay(200).duration(400)}>
+              <Heading size="large" style={[onboardingStyles.welcomeTitle, { color: colors.oledWhite }]}>
+                Check your email
+              </Heading>
+            </Animated.View>
+
+            <Animated.View entering={FadeInDown.delay(300).duration(400)}>
+              <Body size="small" style={[onboardingStyles.welcomeSubtitle, { color: colors.textSecondary }]}>
+                We've sent a reset link to
               </Body>
-              <Data tone="primary" style={{ marginTop: Spacing.xs }}>{email}</Data>
+            </Animated.View>
+
+            <Animated.View
+              entering={FadeInDown.delay(400).duration(400)}
+              style={[onboardingStyles.emailHighlight, { backgroundColor: `${colors.oledWhite}08` }]}
+            >
+              <Data size="small" style={{ color: colors.oledWhite }}>
+                {email}
+              </Data>
             </Animated.View>
           </View>
 
           {/* Back Button */}
-          <Animated.View entering={FadeInDown.delay(300).duration(400)} style={authStyles.buttonSection}>
+          <Animated.View entering={FadeInUp.delay(500).duration(400)} style={onboardingStyles.buttonSection}>
             <HapticPressable
               onPress={onBack}
               style={({ pressed }) => [
-                authStyles.submitButton,
-                { backgroundColor: colors.primary, opacity: pressed ? 0.9 : 1, width: '100%' }
+                onboardingStyles.continueButton,
+                {
+                  backgroundColor: colors.primary,
+                  opacity: pressed ? 0.9 : 1,
+                },
               ]}
             >
-              <ButtonText style={{ color: colors.primaryForeground }}>Back to sign in</ButtonText>
+              <ButtonText style={{ color: colors.primaryForeground }}>Back to Sign In</ButtonText>
             </HapticPressable>
           </Animated.View>
         </View>
@@ -105,104 +150,116 @@ export function ForgotPasswordScreen({
   }
 
   return (
-    <View style={[authStyles.container, { backgroundColor: colors.background }]}>
-      <KeyboardAvoidingView 
-        behavior="padding"
-        style={authStyles.keyboardView}
-      >
-        <View style={[
-          authStyles.content, 
-          { paddingTop: insets.top, paddingBottom: insets.bottom + Spacing['2xl'] }
-        ]}>
+    <View style={[onboardingStyles.container, { backgroundColor: colors.oledBlack }]}>
+      <KeyboardAvoidingView behavior="padding" style={onboardingStyles.keyboardView}>
+        <View
+          style={[
+            onboardingStyles.content,
+            { paddingTop: insets.top + Spacing.sm, paddingBottom: insets.bottom + Spacing['2xl'] },
+          ]}
+        >
           {/* Header */}
-          <Animated.View entering={FadeIn.duration(300)} style={authStyles.header}>
+          <Animated.View entering={FadeIn.duration(300)} style={onboardingStyles.header}>
             <HapticPressable
               onPress={onBack}
-              style={({ pressed }) => [authStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
+              style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
-              <ChevronLeftIcon color={colors.text} />
+              <Ionicons name="chevron-back" size={24} color={colors.oledWhite} />
             </HapticPressable>
+            <View style={{ flex: 1 }} />
+            <View style={onboardingStyles.skipButton} />
           </Animated.View>
 
-          {/* Title */}
-          <Animated.View entering={FadeInDown.delay(100).duration(400)} style={authStyles.titleSection}>
-            <Display size="large">
-              Reset password<RNText style={{ color: colors.primary }}>.</RNText>
-            </Display>
-            <Body tone="secondary" style={authStyles.subtitle}>
-              {"We'll send you a reset link"}
+          {/* Hero Section */}
+          <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
+            <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
+              Forgot password?
+            </Supporting>
+            <Heading size="large" style={[onboardingStyles.title, { color: colors.oledWhite }]}>
+              Reset your password
+            </Heading>
+            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.textSecondary }]}>
+              We'll send you a reset link
             </Body>
           </Animated.View>
 
           {/* Error */}
           {error && (
-            <Animated.View 
-              entering={FadeIn.duration(200)} 
-              style={[authStyles.errorBox, { backgroundColor: colors.errorMuted }]}
+            <Animated.View
+              entering={FadeIn.duration(200)}
+              style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
             >
-              <Body size="small" tone="error" style={authStyles.errorText}>{error}</Body>
+              <Body size="small" tone="error" style={onboardingStyles.errorText}>
+                {error}
+              </Body>
             </Animated.View>
           )}
 
-          {/* Form */}
-          <Animated.View entering={FadeInDown.delay(150).duration(400)} style={authStyles.form}>
-            <View style={authStyles.inputGroup}>
-              <Data size="mini" tone="secondary" style={authStyles.inputLabel}>Email</Data>
-              <View style={[
-                authStyles.inputWrapper, 
-                { backgroundColor: colors.input, borderColor: colors.border }
-              ]}>
-                <TextInput
-                  style={[authStyles.inputInner, { color: colors.text }]}
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="your@email.com"
-                  placeholderTextColor={colors.textTertiary}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  autoComplete="email"
-                  textContentType="emailAddress"
-                  selectionColor={colors.primary}
-                  underlineColorAndroid="transparent"
-                  autoFocus
-                  editable={!isLoading}
-                />
-              </View>
+          {/* Input */}
+          <Animated.View entering={FadeInDown.delay(200).duration(400)} style={onboardingStyles.inputSection}>
+            <View
+              style={[
+                onboardingStyles.inputWrapper,
+                {
+                  backgroundColor: `${colors.oledWhite}08`,
+                  borderColor: email.length > 0
+                    ? isValid ? colors.primary : `${colors.oledWhite}30`
+                    : `${colors.oledWhite}15`,
+                },
+              ]}
+            >
+              <TextInput
+                ref={inputRef}
+                style={[onboardingStyles.inputInner, { color: colors.oledWhite }]}
+                value={email}
+                onChangeText={setEmail}
+                placeholder="your@email.com"
+                placeholderTextColor={colors.textTertiary}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="email"
+                textContentType="emailAddress"
+                selectionColor={colors.primary}
+                underlineColorAndroid="transparent"
+                editable={!isLoading}
+                returnKeyType="done"
+                onSubmitEditing={handleSubmit}
+              />
             </View>
+          </Animated.View>
 
-            {/* Submit Button */}
+          {/* Buttons */}
+          <Animated.View entering={FadeInDown.delay(300).duration(400)} style={onboardingStyles.buttonSection}>
             <HapticPressable
               onPress={handleSubmit}
               disabled={!isValid || isLoading}
               style={({ pressed }) => [
-                authStyles.submitButton,
-                { 
-                  backgroundColor: (!isValid || isLoading) ? colors.surface : colors.primary,
-                  opacity: pressed ? 0.9 : 1 
-                }
+                onboardingStyles.continueButton,
+                {
+                  backgroundColor: isValid ? colors.primary : `${colors.oledWhite}10`,
+                  opacity: pressed ? 0.9 : 1,
+                },
               ]}
             >
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <ButtonText
-                  style={{ color: (!isValid || isLoading) ? colors.textTertiary : colors.primaryForeground }}
-                >
-                  Send reset link
+                <ButtonText style={{ color: isValid ? colors.primaryForeground : colors.textTertiary }}>
+                  Send Reset Link
                 </ButtonText>
               )}
             </HapticPressable>
-          </Animated.View>
 
-          {/* Footer */}
-          <Animated.View entering={FadeIn.delay(250).duration(300)} style={authStyles.footer}>
-            <Body size="small" tone="secondary">
-              Remember your password?{' '}
-            </Body>
-            <HapticPressable onPress={onBack}>
-              <Data tone="primary">Sign in</Data>
-            </HapticPressable>
+            {/* Back to sign in */}
+            <Animated.View entering={FadeIn.delay(400).duration(300)} style={onboardingStyles.footer}>
+              <Body size="small" style={{ color: colors.textSecondary }}>
+                Remember your password?{' '}
+              </Body>
+              <HapticPressable onPress={onBack}>
+                <Data size="small" style={{ color: colors.primary }}>Sign in</Data>
+              </HapticPressable>
+            </Animated.View>
           </Animated.View>
         </View>
       </KeyboardAvoidingView>

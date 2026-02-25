@@ -16,6 +16,7 @@ export interface CreateListingFormData {
   // Step 1 — Vehicle Identity
   vin: string;
   vinVerified: boolean; // true once VIN passes uniqueness check
+  showVin: boolean;     // true = show VIN publicly, false = "VIN Verified" badge only
   make: string;
   model: string;
   year: string; // kept as string for TextInput binding
@@ -59,6 +60,7 @@ export interface CreateListingFormData {
 export const EMPTY_FORM: CreateListingFormData = {
   vin: '',
   vinVerified: false,
+  showVin: true, // Default to public for trust
   make: '',
   model: '',
   year: '',
@@ -180,6 +182,7 @@ export function formToPayload(
 
   return {
     vin: form.vin,
+    vinVisibility: form.showVin ? 'public' : 'private',
     make: form.make,
     model: form.model,
     year: parseInt(form.year, 10),
