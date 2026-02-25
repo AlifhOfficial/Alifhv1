@@ -80,6 +80,7 @@ export {
   recordVinPublication,
   updateVinHistoryOnDelete,
   updateVinHistoryOnSold,
+  updateVinHistoryOnExtend,
   getVinPublicationStats,
   makeVinHistoryId,
   VIN_REPOST_COOLDOWN_DAYS,

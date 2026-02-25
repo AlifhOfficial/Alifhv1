@@ -131,18 +131,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Server-side VIN uniqueness check (safety net for unique constraint)
-    // Exclude soft-deleted listings - those VINs can be reused
+    // Only block VIN for active listings - sold/expired/archived/deleted are free
     let formattedVIN: string | undefined;
     if (body.vin) {
       formattedVIN = body.vin.toUpperCase().trim();
       
-      // Check if VIN is used by an active (non-deleted) listing
+      // Check if VIN is used by an active listing
       const existingActive = await db
         .select({ id: carListing.id })
         .from(carListing)
         .where(and(
           eq(carListing.vin, formattedVIN),
-          ne(carListing.lifecycleStatus, 'deleted')
+          eq(carListing.lifecycleStatus, 'active')
         ))
         .limit(1);
       
@@ -153,14 +153,14 @@ export async function POST(req: NextRequest) {
         );
       }
       
-      // Clear VIN from soft-deleted listings to avoid unique constraint violation
+      // Clear VIN from non-active listings to avoid unique constraint violation
       // This runs only when we're about to create with this VIN
       await db
         .update(carListing)
         .set({ vin: null })
         .where(and(
           eq(carListing.vin, formattedVIN),
-          eq(carListing.lifecycleStatus, 'deleted')
+          ne(carListing.lifecycleStatus, 'active')
         ));
     }
 

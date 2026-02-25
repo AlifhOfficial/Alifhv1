@@ -148,16 +148,22 @@ export const BlkGridCard = memo(function BlkGridCard({
 
   if (!isLoading && !listings.length) return null;
 
+  // BLK collection always uses dark theme
+  const cardBg = colors.oledBlack;
+  const cardBorder = colors.glassBorderOnDark;
+  const textColor = colors.oledWhite;
+  const textSecondary = 'rgba(255,255,255,0.6)';
+
   return (
-    <View style={[styles.container, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+    <View style={[styles.container, { backgroundColor: cardBg, borderColor: cardBorder }]}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={[styles.avatar, { backgroundColor: colors.oledBlack }]}>
+        <View style={[styles.avatar, { backgroundColor: BLK_GLASS_BACKGROUND, borderColor: BLK_GLASS_BORDER, borderWidth: 1 }]}>
           <Heading size="mini" style={{ color: colors.oledWhite }}>BLK</Heading>
         </View>
         <View style={styles.headerText}>
-          <Heading size="mini" style={{ color: colors.text }}>BLK Collection</Heading>
-          <Supporting size="small" style={{ color: colors.textTertiary }}>Premium Cars</Supporting>
+          <Heading size="mini" style={{ color: textColor }}>BLK Collection</Heading>
+          <Supporting size="small" style={{ color: textSecondary }}>Premium Cars</Supporting>
         </View>
       </View>
 
@@ -180,9 +186,9 @@ export const BlkGridCard = memo(function BlkGridCard({
 
       {/* Footer */}
       <HapticPressable onPress={handleShopAll} style={styles.footer}>
-        <Heading size="mini" style={{ color: colors.text }}>Shop all</Heading>
-        <View style={[styles.arrowBtn, { backgroundColor: colors.fill }]}>
-          <ChevronRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
+        <Heading size="mini" style={{ color: textColor }}>Shop all</Heading>
+        <View style={[styles.arrowBtn, { backgroundColor: BLK_GLASS_BACKGROUND, borderColor: BLK_GLASS_BORDER, borderWidth: 1 }]}>
+          <ChevronRight size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2} />
         </View>
       </HapticPressable>
     </View>

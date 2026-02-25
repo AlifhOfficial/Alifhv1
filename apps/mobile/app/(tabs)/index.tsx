@@ -18,7 +18,6 @@ import { TopSafeAreaGradient } from '@/components/layout';
 import {
   HomeHeader,
   GreetingNote,
-  BackgroundDoodle,
   BlkGridCard,
   RevvupFirstGrid,
   CategoryCard,
@@ -220,7 +219,6 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack }]}>
-      <BackgroundDoodle />
       <TopSafeAreaGradient useOled />
       <HomeHeader />
       

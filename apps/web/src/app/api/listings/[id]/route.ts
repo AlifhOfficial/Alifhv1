@@ -26,6 +26,9 @@ import {
   deleteCarListing,
   deleteCarListingByStaff,
   updateListingAIModeration,
+  db,
+  carListing,
+  eq, and, ne,
   type UpdateCarListingInput,
 } from '@alifh/database';
 import { getListingDetailed } from '@alifh/database';
@@ -254,18 +257,71 @@ export async function PUT(
       ? body.thumbnail 
       : (body.images && body.images.length > 0 ? body.images[0] : undefined);
 
+    // VIN uniqueness check when admin is changing VIN
+    // Non-admins cannot change VIN (enforced below)
+    if (isAdmin && body.vin !== undefined) {
+      const formattedVIN = body.vin?.toUpperCase().trim() || null;
+      
+      if (formattedVIN) {
+        // Check if this VIN is used by another active listing (not this one)
+        const existingActive = await db
+          .select({ id: carListing.id })
+          .from(carListing)
+          .where(and(
+            eq(carListing.vin, formattedVIN),
+            eq(carListing.lifecycleStatus, 'active'),
+            ne(carListing.id, id) // Exclude current listing
+          ))
+          .limit(1);
+        
+        if (existingActive.length > 0) {
+          return NextResponse.json(
+            { error: 'This VIN is already in use by another listing' },
+            { status: 409 }
+          );
+        }
+        
+        // Clear VIN from non-active listings to avoid unique constraint violation
+        await db
+          .update(carListing)
+          .set({ vin: null })
+          .where(and(
+            eq(carListing.vin, formattedVIN),
+            ne(carListing.lifecycleStatus, 'active'),
+            ne(carListing.id, id)
+          ));
+      }
+    }
+
     // Prepare update data
     const updateData: UpdateCarListingInput = {};
 
+    // IMMUTABLE FIELDS: These cannot be changed after creation (except by admin)
+    // - make, model, year: Core vehicle identity
+    // - vin, vinVisibility: Anti-abuse (prevents QI score gaming by toggling visibility)
+    // Client-side enforces this too, but we enforce server-side as safety net.
+    const immutableFields = ['make', 'model', 'year', 'vin', 'vinVisibility'] as const;
+    if (!isAdmin) {
+      for (const field of immutableFields) {
+        if (body[field] !== undefined) {
+          return NextResponse.json(
+            { error: `Cannot modify ${field} after listing creation. Contact support if you need to fix this.` },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     // Only include fields that are present in the request
-    if (body.make !== undefined) updateData.make = body.make;
-    if (body.model !== undefined) updateData.model = body.model;
-    if (body.year !== undefined) updateData.year = body.year;
+    // Admin can modify immutable fields
+    if (isAdmin && body.make !== undefined) updateData.make = body.make;
+    if (isAdmin && body.model !== undefined) updateData.model = body.model;
+    if (isAdmin && body.year !== undefined) updateData.year = body.year;
     if (body.trim !== undefined) updateData.trim = body.trim;
     if (body.condition !== undefined) updateData.condition = body.condition;
     if (body.description !== undefined) updateData.description = body.description;
-    if (body.vin !== undefined) updateData.vin = body.vin;
-    if (body.vinVisibility !== undefined) updateData.vinVisibility = body.vinVisibility;
+    if (isAdmin && body.vin !== undefined) updateData.vin = body.vin;
+    if (isAdmin && body.vinVisibility !== undefined) updateData.vinVisibility = body.vinVisibility;
     if (body.price !== undefined) updateData.price = body.price;
     if (body.currency !== undefined) updateData.currency = body.currency;
     if (body.isNegotiable !== undefined) updateData.isNegotiable = body.isNegotiable;

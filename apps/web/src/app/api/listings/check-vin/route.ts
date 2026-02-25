@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
     // Build conditions for DB query
     const conditions = [
       eq(carListing.vin, formattedVIN),
-      ne(carListing.lifecycleStatus, 'deleted'), // Allow reuse of VINs from deleted listings
+      eq(carListing.lifecycleStatus, 'active'), // Only block active listings
     ];
     
     // Exclude the current listing when editing

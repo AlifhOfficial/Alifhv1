@@ -8,7 +8,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, TrendingUp, ShieldCheck, Info } from 'lucide-react';
 import { cn } from '@/utils';
 import { Combobox } from '../combobox';
 import { VINInput } from '../vin-input';
@@ -127,7 +127,10 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
       {/* VIN Entry Section */}
       <section>
         <div className="flex items-baseline justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground">Vehicle Identification</h3>
+          <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground">
+            Vehicle Identification
+            <span className="text-red-500 ml-0.5">*</span>
+          </h3>
           <span className="text-xs text-sidebar-foreground/70">Protects buyers & verifies specs</span>
         </div>
         
@@ -148,10 +151,10 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               <p className="text-sm font-semibold text-sidebar-foreground">
                 Show VIN on listing
               </p>
-              <p className="text-xs text-sidebar-foreground/70">
+              <p className="text-xs text-sidebar-foreground/70 flex items-center gap-1">
                 {data.vinVisibility === 'public' 
-                  ? '✓ 15% ranking boost · Buyers trust visible VINs'
-                  : 'VIN Verified badge shown — no ranking boost'}
+                  ? <><TrendingUp className="w-3 h-3" /> Includes 15% ranking boost</>
+                  : <><ShieldCheck className="w-3 h-3" /> VIN verified badge shown instead</>}
               </p>
             </div>
             <button
@@ -172,6 +175,11 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               />
             </button>
           </div>
+          
+          {/* Permanent Decision Notice */}
+          <p className="text-xs text-sidebar-foreground/50 mt-2 flex items-center gap-1">
+            <Info className="w-3 h-3" /> This setting is permanent for this listing.
+          </p>
         </div>
       </section>
       

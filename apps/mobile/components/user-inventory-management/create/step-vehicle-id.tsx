@@ -350,6 +350,9 @@ export function StepVehicleId({ form, updateForm, colors }: StepProps) {
                     : '"VIN Verified" badge shown — no ranking boost'
                   }
                 </Supporting>
+                <Supporting size="mini" tone="muted" style={{ marginTop: 4, opacity: 0.6 }}>
+                  This choice is permanent and cannot be changed later.
+                </Supporting>
               </View>
               <Switch
                 value={form.showVin}

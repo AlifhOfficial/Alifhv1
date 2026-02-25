@@ -312,6 +312,49 @@ export async function updateVinHistoryOnSold(input: {
 }
 
 /**
+ * Update VIN history when a listing is extended
+ * Resets originalPublishedAt to give fresh ranking after full lifecycle (24 days)
+ */
+export async function updateVinHistoryOnExtend(input: {
+  vin: string;
+  userId: string;
+  listingId: string;
+  extendedAt: Date;
+}): Promise<void> {
+  const { vin, userId, listingId, extendedAt } = input;
+  
+  if (!vin) return;
+
+  const normalizedVin = vin.toUpperCase().trim();
+
+  // Reset originalPublishedAt and record extension in history
+  await db
+    .update(vinPublicationHistory)
+    .set({
+      originalPublishedAt: extendedAt, // Fresh timestamp for ranking
+      listingHistory: sql`
+        (
+          SELECT jsonb_agg(
+            CASE 
+              WHEN elem->>'listingId' = ${listingId}
+              THEN elem || ${JSON.stringify({ extendedAt: extendedAt.toISOString() })}::jsonb
+              ELSE elem
+            END
+          )
+          FROM jsonb_array_elements(${vinPublicationHistory.listingHistory}) elem
+        )
+      `,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(vinPublicationHistory.vin, normalizedVin),
+        eq(vinPublicationHistory.userId, userId)
+      )
+    );
+}
+
+/**
  * Get VIN publication stats for a user (for admin/analytics)
  */
 export async function getVinPublicationStats(userId: string): Promise<{

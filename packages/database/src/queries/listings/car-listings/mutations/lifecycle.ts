@@ -10,7 +10,7 @@ import { eq, and, isNotNull, lte, inArray, sql } from 'drizzle-orm';
 import { db } from '../../../../dbclient';
 import { carListing } from '../../../../schema/listing';
 import { addDays, EXTENSION_WINDOW_MS } from './helpers';
-import { updateVinHistoryOnSold } from './vin-history';
+import { updateVinHistoryOnSold, updateVinHistoryOnExtend } from './vin-history';
 
 /**
  * Expire all published listings for a specific user
@@ -61,6 +61,9 @@ export async function expirePublishedListingsForPartner(partnerId: string): Prom
  * Supports both direct ownership (userId) and partner ownership (partnerId)
  * Only available within 2 days of expiry
  * Uses optimistic locking via extensionCount to prevent race conditions
+ * 
+ * Also resets publishedAt and originalPublishedAt to give fresh ranking position
+ * after completing a full listing lifecycle (24 days).
  */
 export async function extendCarListingExpiry(input: {
   listingId: string;
@@ -80,6 +83,7 @@ export async function extendCarListingExpiry(input: {
       id: carListing.id,
       userId: carListing.userId,
       partnerId: carListing.partnerId,
+      vin: carListing.vin,
       lifecycleStatus: carListing.lifecycleStatus,
       expiresAt: carListing.expiresAt,
       extensionCount: carListing.extensionCount,
@@ -127,6 +131,9 @@ export async function extendCarListingExpiry(input: {
     .update(carListing)
     .set({
       expiresAt: newExpiresAt,
+      // Reset publish timestamps for fresh ranking position after full 24-day cycle
+      publishedAt: now,
+      originalPublishedAt: now,
       extensionCount: sql<number>`${carListing.extensionCount} + 1`,
       extensionHistory: sql<any>`
         coalesce(${carListing.extensionHistory}, '[]'::jsonb) || ${JSON.stringify([extensionEvent])}::jsonb
@@ -147,6 +154,16 @@ export async function extendCarListingExpiry(input: {
   if (updated.length === 0) {
     // Either listing was deleted or another request already extended it
     return { success: false, error: 'Extension failed - listing may have been modified' };
+  }
+
+  // Update VIN history to reset originalPublishedAt for fresh ranking
+  if (listing.vin) {
+    await updateVinHistoryOnExtend({
+      vin: listing.vin,
+      userId: listing.userId,
+      listingId: input.listingId,
+      extendedAt: now,
+    });
   }
 
   return { success: true, expiresAt: updated[0].expiresAt };

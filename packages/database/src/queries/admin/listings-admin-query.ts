@@ -12,7 +12,7 @@ import { carListing } from '../../schema/listing';
 import { user } from '../../schema/auth';
 import { partner } from '../../schema/partner';
 import { getListingModerationContext, type ListingModerationContext } from '../listings/car-listings/car-listing-context-query';
-import { recordVinPublication } from '../listings/car-listings/mutations/vin-history';
+import { recordVinPublication, updateVinHistoryCurrentListing } from '../listings/car-listings/mutations/vin-history';
 
 export type AdminListingTypeFilter = 'user' | 'partner';
 
@@ -307,6 +307,13 @@ export async function approveListingAsAdmin(listingId: string, adminUserId: stri
             publishedAt,
           });
           updateData.originalPublishedAt = vinResult.originalPublishedAt;
+          
+          // Update VIN history with current listing ID
+          await updateVinHistoryCurrentListing({
+            vin: row.vin,
+            userId: row.userId,
+            listingId,
+          });
           
           if (vinResult.isRepost) {
             if (vinResult.cooldownReset) {
