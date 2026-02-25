@@ -170,7 +170,7 @@ export function GallerySection({
               onUpload={(file) => uploadVideo(file, 'showroom-tour-video', 'showroomVideoTourFile')}
               onRemove={() => removeVideo('showroomVideoTourFile')}
               aspectRatio="aspect-video"
-              label="Upload tour video (MP4, WebM, MOV)"
+              label="Tour video • Max 50MB (compress to 1080p)"
               isUploading={videoUploading === 'showroomVideoTourFile'}
               uploadProgress={uploadProgress}
             />

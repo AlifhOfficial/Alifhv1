@@ -80,7 +80,7 @@ export function StorySection({
               onUpload={(file) => uploadVideo(file, 'brand-story-video', 'brandStoryVideoFile')}
               onRemove={() => removeVideo('brandStoryVideoFile')}
               aspectRatio="aspect-video"
-              label="Upload story video (MP4, WebM, MOV)"
+              label="Story video • Max 50MB (compress to 1080p)"
               isUploading={videoUploading === 'brandStoryVideoFile'}
               uploadProgress={uploadProgress}
             />

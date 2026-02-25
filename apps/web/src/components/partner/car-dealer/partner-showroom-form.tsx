@@ -143,7 +143,7 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
     }
   };
 
-  // Upload video with compression
+  // Upload video via direct R2 upload (bypasses Vercel's 4.5MB limit)
   const uploadVideo = async (file: File, type: string, field: keyof PartnerShowroom) => {
     const validTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
     if (!validTypes.includes(file.type)) {
@@ -151,9 +151,14 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
       return;
     }
     
-    const maxSize = 20 * 1024 * 1024; // 20MB
+    // 50MB limit to control CDN bandwidth costs
+    // Recommend users compress to 720p/1080p WebM before upload
+    const maxSize = 50 * 1024 * 1024; // 50MB
     if (file.size > maxSize) {
-      toast({ title: 'Video too large. Max 20MB allowed', variant: 'destructive' });
+      toast({ 
+        title: 'Video too large (max 50MB). Compress to 720p/1080p first using HandBrake or similar.', 
+        variant: 'destructive' 
+      });
       return;
     }
 
@@ -161,17 +166,30 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
     setUploadProgress(0);
     
     try {
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('type', type);
-      fd.append('partnerId', partnerId);
-      fd.append('mediaType', 'video');
-      if (form[field]) fd.append('previousKey', String(form[field]));
-
-      // Use XMLHttpRequest for progress tracking
+      // Step 1: Get presigned upload URL from our API
+      const presignRes = await fetch('/api/storage/presigned-upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          type,
+          partnerId,
+          contentType: file.type,
+          previousKey: form[field] || undefined,
+        }),
+      });
+      
+      if (!presignRes.ok) {
+        const err = await presignRes.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to get upload URL');
+      }
+      
+      const { uploadUrl, key } = await presignRes.json();
+      
+      // Step 2: Upload directly to R2 using presigned URL
       const xhr = new XMLHttpRequest();
       
-      const uploadPromise = new Promise<{ key: string }>((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         xhr.upload.addEventListener('progress', (e) => {
           if (e.lengthComputable) {
             const percent = Math.round((e.loaded / e.total) * 100);
@@ -181,29 +199,26 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
         
         xhr.addEventListener('load', () => {
           if (xhr.status >= 200 && xhr.status < 300) {
-            resolve(JSON.parse(xhr.responseText));
+            resolve();
           } else {
-            reject(new Error('Upload failed'));
+            reject(new Error('Upload to storage failed'));
           }
         });
         
         xhr.addEventListener('error', () => reject(new Error('Upload failed')));
         xhr.addEventListener('abort', () => reject(new Error('Upload cancelled')));
         
-        xhr.open('POST', '/api/storage/upload-showroom-asset');
-        xhr.withCredentials = true;
-        xhr.send(fd);
+        xhr.open('PUT', uploadUrl);
+        xhr.setRequestHeader('Content-Type', file.type);
+        xhr.send(file);
       });
 
-      const data = await uploadPromise;
-
-      // Update local form state immediately for instant feedback
-      setForm(f => ({ ...f, [field]: data.key }));
-      
-      await updateShowroom({ [field]: data.key } as any);
+      // Step 3: Save the key to database
+      setForm(f => ({ ...f, [field]: key }));
+      await updateShowroom({ [field]: key } as any);
       toast({ title: 'Video uploaded successfully' });
-    } catch {
-      toast({ title: 'Video upload failed', variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: err.message || 'Video upload failed', variant: 'destructive' });
     } finally {
       setVideoUploading(null);
       setUploadProgress(0);

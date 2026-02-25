@@ -160,7 +160,8 @@ export function VideoUpload({
                   <Upload className="w-5 h-5" />
                 </div>
                 <span className="text-sm font-medium">{label}</span>
-                <span className="text-[10px] text-muted-foreground/60">MP4, WebM, MOV • Max 20MB</span>
+                <span className="text-[10px] text-muted-foreground/60">MP4, WebM, MOV • Max 50MB</span>
+                <span className="text-[10px] text-muted-foreground/40">Compress to 720p/1080p first • WebM preferred</span>
               </div>
             )}
           </button>
@@ -171,7 +172,7 @@ export function VideoUpload({
       {hasSavedVideo && !isUploading && (
         <p className="text-[11px] text-muted-foreground/60 flex items-center gap-1">
           <CheckCircle2 className="w-3 h-3 text-green-500" />
-          Video saved to cloud storage
+          Served via CDN for fast global delivery
         </p>
       )}
     </div>

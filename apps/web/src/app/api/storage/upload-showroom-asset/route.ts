@@ -33,7 +33,9 @@ export const maxDuration = 60; // 60 seconds timeout for large uploads
 
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
 const MAX_IMAGE_SIZE = 15 * 1024 * 1024; // 15MB for high-quality showroom images
-const MAX_VIDEO_SIZE = 20 * 1024 * 1024; // 20MB for hero videos
+// Note: Videos should use /api/storage/presigned-upload which bypasses Vercel body limits
+// This route is kept as fallback for videos under 4.5MB but presigned upload is preferred
+const MAX_VIDEO_SIZE = 20 * 1024 * 1024; // 20MB (though Vercel limits to 4.5MB)
 
 
 // Asset type configurations (for images - videos are passed through without processing)
@@ -230,14 +232,13 @@ export async function POST(req: NextRequest) {
       extension: fileExtension,
     });
     
-    // Upload to R2
+    // Upload to R2 with aggressive CDN caching
+    // Both images and videos use immutable caching since keys contain unique IDs
     const result = await uploadFile({
       data: processedBuffer,
       contentType,
       key,
-      cacheControl: isVideo 
-        ? 'public, max-age=604800' // 1 week for videos
-        : 'public, max-age=31536000, immutable', // 1 year for images
+      cacheControl: 'public, max-age=31536000, immutable', // 1 year, immutable for CDN edge caching
     });
     
     // Delete old image if provided (async, don't block response)
