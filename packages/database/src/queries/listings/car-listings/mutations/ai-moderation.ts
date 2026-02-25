@@ -10,6 +10,7 @@
 import { eq } from 'drizzle-orm';
 import { db } from '../../../../dbclient';
 import { carListing } from '../../../../schema/listing';
+import { recordVinPublication, updateVinHistoryCurrentListing } from './vin-history';
 import type { SpecialNotes } from './types';
 
 // ============================================================================
@@ -85,12 +86,43 @@ export async function updateListingAIModeration(
   }
   
   try {
-    // Get current listing to merge specialNotes
+    // Get current listing to merge specialNotes and get VIN for anti-abuse
     const [current] = await db
-      .select({ specialNotes: carListing.specialNotes })
+      .select({ 
+        specialNotes: carListing.specialNotes,
+        vin: carListing.vin,
+        userId: carListing.userId,
+      })
       .from(carListing)
       .where(eq(carListing.id, listingId))
       .limit(1);
+    
+    // Determine originalPublishedAt for anti-abuse sorting
+    // If same VIN was previously published by this user, inherit original date
+    let originalPublishedAt: Date | undefined;
+    if (autoApproved && current?.userId) {
+      if (current.vin) {
+        try {
+          const vinResult = await recordVinPublication({
+            vin: current.vin,
+            userId: current.userId,
+            listingId,
+            publishedAt: now,
+          });
+          originalPublishedAt = vinResult.originalPublishedAt;
+          
+          if (vinResult.isRepost) {
+            console.log(`[anti-abuse] AI approval: VIN repost detected: ${current.vin} by user ${current.userId}. Using original date: ${originalPublishedAt.toISOString()}`);
+          }
+        } catch (err) {
+          console.error('[ai-moderation] VIN history lookup failed:', err);
+          originalPublishedAt = now;
+        }
+      } else {
+        // No VIN - use current timestamp
+        originalPublishedAt = now;
+      }
+    }
     
     // Build AI moderation metadata
     const aiModerationMeta = {
@@ -123,6 +155,7 @@ export async function updateListingAIModeration(
     if (autoApproved) {
       updateData.approvedAt = now;
       updateData.publishedAt = publishedAt;
+      updateData.originalPublishedAt = originalPublishedAt;
       updateData.expiresAt = expiresAt;
       updateData.rejectionReason = null;
     }
@@ -138,6 +171,19 @@ export async function updateListingAIModeration(
       .update(carListing)
       .set(updateData)
       .where(eq(carListing.id, listingId));
+    
+    // Update VIN history with current_listing_id now that listing is approved
+    if (autoApproved && current?.vin && current?.userId) {
+      try {
+        await updateVinHistoryCurrentListing({
+          vin: current.vin,
+          userId: current.userId,
+          listingId,
+        });
+      } catch (err) {
+        console.error('[ai-moderation] Failed to update VIN history current listing:', err);
+      }
+    }
     
     return {
       success: true,
