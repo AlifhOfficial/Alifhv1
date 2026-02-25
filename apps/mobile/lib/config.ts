@@ -192,7 +192,7 @@ export const AUTH_ENDPOINTS = {
   PASSWORD_RESET: '/api/auth/password-reset-validated',
   GET_SESSION: '/api/auth/get-session',
   // Social auth
-  GOOGLE_SIGN_IN: '/api/auth/signin/social?provider=google&callbackURL=/auth/google/mobile-callback',
+  GOOGLE_SIGN_IN: '/auth/google/mobile-start',
   // Phone verification
   PHONE_SEND_OTP: '/api/auth/phone-number/send-otp',
   PHONE_VERIFY: '/api/auth/phone-number/verify',
