@@ -111,8 +111,26 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
     const sellerData = await fetchSellerData(listing);
 
-    // Build response with listing + seller data
-    const responseData = { listing, sellerData };
+    // Filter sensitive data based on visibility settings
+    // VIN: Only expose if vinVisibility is 'public'
+    const filteredListing = {
+      ...listing,
+      vin: listing.vinVisibility === 'public' ? listing.vin : null,
+    };
+
+    // User profile phone: Only expose if seller opted to show phone
+    if (sellerData.type === 'user' && sellerData.userProfile) {
+      const showPhone = sellerData.userProfile.privacySettings?.showPhone !== false;
+      if (!showPhone) {
+        sellerData.userProfile = {
+          ...sellerData.userProfile,
+          phone: null,
+        };
+      }
+    }
+
+    // Build response with filtered listing + seller data
+    const responseData = { listing: filteredListing, sellerData };
 
     logTiming('total');
 

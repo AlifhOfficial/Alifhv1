@@ -107,6 +107,8 @@ export interface ListingDetailedData {
   updatedAt?: string;
   lastEditedAt?: string | null;
   approvedAt?: string | null;
+  publishedAt?: string | null;
+  originalPublishedAt?: string | null;
 }
 
 export interface SellerData {

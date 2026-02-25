@@ -156,7 +156,8 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
         <ListingTimestamp
           createdAt={listing.createdAt}
           lastEditedAt={listing.lastEditedAt}
-          publishedAt={listing.approvedAt}
+          publishedAt={listing.publishedAt}
+          originalPublishedAt={listing.originalPublishedAt}
         />
 
         {/* 7. Seller Section — merged profile + contact action */}
