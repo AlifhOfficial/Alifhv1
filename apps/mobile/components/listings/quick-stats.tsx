@@ -79,34 +79,29 @@ export const QuickStats = memo(function QuickStats({
         </View>
       </View>
 
-      {/* VIN - Copyable (if public) or Verified badge (if private) */}
-      {vin && (
-        vinVisibility === 'public' ? (
-          <HapticPressable onPress={handleCopyVin} style={styles.vinRow}>
-            {({ pressed }) => (
-              <>
-                <Data size="mini" tone="muted">VIN</Data>
-                <Data size="medium" style={[styles.vinValue, { opacity: pressed ? 0.7 : 1 }]}>
-                  {vin}
-                </Data>
-                {copied ? (
-                  <Check size={Sizes.iconXs} color={colors.success} strokeWidth={2.5} />
-                ) : (
-                  <Copy size={Sizes.iconXs} color={colors.textTertiary} strokeWidth={1.75} />
-                )}
-              </>
-            )}
-          </HapticPressable>
-        ) : (
-          <View style={styles.vinRow}>
-            <Data size="mini" tone="muted">VIN</Data>
-            <View style={styles.verifiedBadge}>
-              <Check size={Sizes.iconXs} color={colors.primary} strokeWidth={2.5} />
-              <Data size="medium" style={{ color: colors.primary }}>Verified</Data>
-            </View>
-          </View>
-        )
-      )}
+      {/* VIN - Copyable (if public) or simple Verified text (if private) */}
+      {vin ? (
+        <HapticPressable onPress={handleCopyVin} style={styles.vinRow}>
+          {({ pressed }) => (
+            <>
+              <Data size="mini" tone="muted">VIN</Data>
+              <Data size="medium" style={[styles.vinValue, { opacity: pressed ? 0.7 : 1 }]}>
+                {vin}
+              </Data>
+              {copied ? (
+                <Check size={Sizes.iconXs} color={colors.success} strokeWidth={2.5} />
+              ) : (
+                <Copy size={Sizes.iconXs} color={colors.textTertiary} strokeWidth={1.75} />
+              )}
+            </>
+          )}
+        </HapticPressable>
+      ) : vinVisibility === 'private' ? (
+        <View style={styles.vinRow}>
+          <Data size="mini" tone="muted">VIN</Data>
+          <Data size="medium" style={{ color: colors.success }}>Verified</Data>
+        </View>
+      ) : null}
     </View>
   );
 });
@@ -141,10 +136,5 @@ const styles = StyleSheet.create({
   vinValue: {
     fontVariant: ['tabular-nums'],
     letterSpacing: 0.5,
-  },
-  verifiedBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
   },
 });
