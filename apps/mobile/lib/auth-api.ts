@@ -789,15 +789,16 @@ export async function signInWithGoogle(): Promise<AuthResult> {
     // Ensure browser redirect session is warmed up (improves UX on iOS)
     await WebBrowser.warmUpAsync();
     
-    // Build the auth URL
-    const authUrl = `${API_BASE}${AUTH_ENDPOINTS.GOOGLE_SIGN_IN}`;
-    
     // The redirect URI that the browser will return to
     // Using expo's scheme-based redirect
     const redirectUri = makeRedirectUri({
       scheme: 'revvup',
       path: 'auth/callback',
     });
+    
+    // Build the auth URL with the redirect URI passed as a parameter
+    // This tells the callback page where to redirect back to
+    const authUrl = `${API_BASE}${AUTH_ENDPOINTS.GOOGLE_SIGN_IN}?redirect=${encodeURIComponent(redirectUri)}`;
     
     console.log('[Auth] Starting Google OAuth');
     console.log('[Auth] Auth URL:', authUrl);

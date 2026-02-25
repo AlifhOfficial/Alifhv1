@@ -14,17 +14,19 @@ import { redirect } from "next/navigation";
 export default async function GoogleMobileCallbackPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; error_description?: string }>;
+  searchParams: Promise<{ error?: string; error_description?: string; redirect?: string }>;
 }) {
   const params = await searchParams;
-  const scheme = "revvup";
+  
+  // Use the passed redirect URI or fall back to revvup:// scheme
+  const baseRedirect = params.redirect || "revvup://auth/callback";
   
   // Handle OAuth errors
   if (params.error) {
     const errorMessage = params.error === 'access_denied' 
       ? 'cancelled' 
       : params.error_description || params.error;
-    return redirect(`${scheme}://auth/callback?error=${encodeURIComponent(errorMessage)}`);
+    return redirect(`${baseRedirect}?error=${encodeURIComponent(errorMessage)}`);
   }
   
   try {
@@ -34,7 +36,7 @@ export default async function GoogleMobileCallbackPage({
     });
     
     if (!session?.user || !session?.session) {
-      return redirect(`${scheme}://auth/callback?error=${encodeURIComponent('No session found')}`);
+      return redirect(`${baseRedirect}?error=${encodeURIComponent('No session found')}`);
     }
     
     // Build redirect URL with session data
@@ -50,9 +52,9 @@ export default async function GoogleMobileCallbackPage({
       userImage: session.user.image || '',
     });
     
-    return redirect(`${scheme}://auth/callback?${callbackParams.toString()}`);
+    return redirect(`${baseRedirect}?${callbackParams.toString()}`);
   } catch (error) {
     console.error('[GoogleMobileCallback] Error getting session:', error);
-    return redirect(`${scheme}://auth/callback?error=${encodeURIComponent('Failed to get session')}`);
+    return redirect(`${baseRedirect}?error=${encodeURIComponent('Failed to get session')}`);
   }
 }
