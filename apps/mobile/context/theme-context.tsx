@@ -82,17 +82,22 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // - iOS keyboard/alerts: Appearance.setColorScheme() - safe on iOS only
   // - Edge-to-edge: Handled natively via edgeToEdgeEnabled + enforceContrast in app.json
   //
+  // PERF: Defer native calls to avoid blocking theme switch animation
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      // Nav bar button colors (light/dark icons) for 3-button navigation
-      // Has no effect on gesture navigation - Android provides no API for that
-      NavigationBar.setStyle(colorScheme === 'dark' ? 'dark' : 'light');
-    }
-    if (Platform.OS === 'ios') {
-      // Keyboard, alerts, action sheets, pickers
-      Appearance.setColorScheme(themeMode === 'system' ? null : themeMode);
-    }
+    // Defer native bridge calls so UI updates first
+    const frameId = requestAnimationFrame(() => {
+      if (Platform.OS === 'android') {
+        // Nav bar button colors (light/dark icons) for 3-button navigation
+        // Has no effect on gesture navigation - Android provides no API for that
+        NavigationBar.setStyle(colorScheme === 'dark' ? 'dark' : 'light');
+      }
+      if (Platform.OS === 'ios') {
+        // Keyboard, alerts, action sheets, pickers
+        Appearance.setColorScheme(themeMode === 'system' ? null : themeMode);
+      }
+    });
+    return () => cancelAnimationFrame(frameId);
   }, [themeMode, colorScheme]);
 
   const toggleTheme = useCallback(() => {

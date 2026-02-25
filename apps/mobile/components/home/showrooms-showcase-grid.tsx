@@ -22,6 +22,7 @@ import { useRouter } from 'expo-router';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { useSearch } from '@/context/search-context';
 import { HapticPressable, Heading, Supporting, Skeleton } from '@/components/ui';
 import { type ShowroomCardData } from '@/lib/showroom-api';
 
@@ -29,8 +30,8 @@ import { type ShowroomCardData } from '@/lib/showroom-api';
 // CONSTANTS
 // ============================================================================
 
-// Aspect ratio for showroom card (4:5 - tall portrait, cinematic feel)
-const CARD_ASPECT = 4 / 5;
+// Aspect ratio for showroom card (3:4 - tall portrait, cinematic feel)
+const CARD_ASPECT = 3 / 4;
 const BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 
 // ============================================================================
@@ -54,19 +55,22 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const router = useRouter();
+  const { applySearch, clearSearch, clearFilterParams, resetSort } = useSearch();
 
   const handlePress = useCallback(() => {
     if (onPress) {
       onPress();
       return;
     }
-    // Navigate to showroom page
-    if (showroom?.slug) {
-      router.push(`/showroom/${showroom.slug}` as any);
-    } else if (showroom?.partnerId) {
-      router.push(`/showroom/${showroom.partnerId}` as any);
+    // Navigate to browse with partner filter
+    if (showroom?.partnerId) {
+      clearSearch();
+      clearFilterParams();
+      resetSort();
+      applySearch({ partnerId: showroom.partnerId, partnerName: showroom.partner.brandName });
+      router.push('/browse' as any);
     }
-  }, [onPress, showroom, router]);
+  }, [onPress, showroom, applySearch, clearSearch, clearFilterParams, resetSort, router]);
 
   // Loading state
   if (isLoading) {
@@ -92,11 +96,9 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
   const videoSource = showroom.heroVideoFileUrl || showroom.heroVideoUrl;
   const imageSource = showroom.heroImageUrl || showroom.partner.heroImageUrl;
 
-  // Card always uses dark theme for visibility
-  const cardBg = colors.oledBlack;
-  const cardBorder = colors.glassBorderOnDark;
-  const textColor = colors.oledWhite;
-  const textSecondary = colors.textTertiary;
+  // Use theme colors - text stays white for visibility over media
+  const cardBg = colors.surface;
+  const cardBorder = colors.border;
 
   return (
     <View style={[styles.container, { backgroundColor: cardBg, borderColor: cardBorder }]}>
@@ -134,14 +136,15 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
         {/* Footer CTA */}
         <HapticPressable onPress={handlePress} style={styles.footer}>
           <View style={styles.footerText}>
-            <Heading size="small" style={{ color: textColor }}>
+            <Heading size="small" style={{ color: colors.oledWhite }}>
               {showroom.partner.brandName}
             </Heading>
-            <Supporting size="small" style={{ color: textSecondary }}>
+            <Supporting size="small" style={{ color: colors.textTertiary }}>
               {showroom.heroTagline || 'Visit showroom'}
             </Supporting>
           </View>
-          <View style={[styles.arrowBtn, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorderOnDark }]}>
+          {/* Always use dark glass style since button is over video */}
+          <View style={[styles.arrowBtn, { backgroundColor: Colors.dark.glassBackground, borderColor: colors.glassBorderOnDark }]}>
             <ChevronRight size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2} />
           </View>
         </HapticPressable>

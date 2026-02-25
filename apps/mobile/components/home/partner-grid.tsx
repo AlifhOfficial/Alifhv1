@@ -147,7 +147,7 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
   }, [onPress, partner.id, partner.name, applySearch, clearSearch, clearFilterParams, resetSort, router]);
 
   const cardBg = partner.isBlk ? colors.oledBlack : colors.surfaceSecondary;
-  const cardBorder = partner.isBlk ? colors.glassBorderOnDark : colors.border;
+  const cardBorder = partner.isBlk ? colors.glassBorderOnDark : colors.glassBorder;
   const textColor = partner.isBlk ? colors.oledWhite : colors.text;
   const textSecondary = partner.isBlk ? 'rgba(255,255,255,0.6)' : colors.textTertiary;
 

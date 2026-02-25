@@ -78,6 +78,8 @@ export interface ShowroomGridConfig extends GridConfig {
   type: 'showroom';
   partnerId?: string;
   partnerName?: string;
+  /** Index in the showroom list (0-based) */
+  showroomIndex?: number;
 }
 
 /** Price range grid config */
@@ -398,15 +400,14 @@ export function createPopularGridConfig(): GridConfig {
 }
 
 /** Generate showroom showcase grid config */
-export function createShowroomGridConfig(partnerId?: string, partnerName?: string): ShowroomGridConfig {
+export function createShowroomGridConfig(index: number = 0): ShowroomGridConfig {
   return {
-    id: 'showroom-showcase',
+    id: `showroom-showcase-${index}`,
     type: 'showroom',
     title: 'Showroom Spotlight',
     subtitle: 'Visit our premium showrooms',
     isRevvupBranded: true,
-    partnerId,
-    partnerName,
+    showroomIndex: index,
   };
 }
 
@@ -520,12 +521,14 @@ export async function fetchGridData(config: AnyGridConfig): Promise<GridData> {
     return result;
   }
 
-  // Handle showroom grids - fetch first published showroom
+  // Handle showroom grids - fetch showroom at specified index
   if (config.type === 'showroom') {
+    const showroomIndex = (config as ShowroomGridConfig).showroomIndex || 0;
     try {
-      const showroomData = await getShowroomsList(1, 1);
-      if (showroomData.showrooms.length > 0) {
-        result.showroom = showroomData.showrooms[0];
+      // Fetch enough showrooms to get the one at index (page 1, limit = index + 1)
+      const showroomData = await getShowroomsList(1, showroomIndex + 1);
+      if (showroomData.showrooms.length > showroomIndex) {
+        result.showroom = showroomData.showrooms[showroomIndex];
       }
     } catch (err) {
       console.error('[fetchGridData] Failed to fetch showroom:', err);
@@ -585,21 +588,28 @@ export async function fetchGridsBatch(configs: AnyGridConfig[]): Promise<GridDat
 export function generateHomeGridSequence(): AnyGridConfig[] {
   const sequence: AnyGridConfig[] = [];
   
-  // 1. BLK Signature Collection (premium)
+  // 1. Showroom Spotlight (top priority)
+  sequence.push(createShowroomGridConfig(0));
+  
+  // 2. BLK Signature Collection (premium)
   sequence.push(createBlkGridConfig());
   
-  // 2. Founding Partners
+  // 3. Founding Partners
   sequence.push(createFoundingPartnersGridConfig());
   
-  // 3. Showroom Spotlight
-  sequence.push(createShowroomGridConfig());
+  // 4. Second showroom (index 1)
+  sequence.push(createShowroomGridConfig(1));
   
-  // 4. Discovery/Meaningful categories first
+  // 5. Discovery/Meaningful categories
   sequence.push(createNewestGridConfig()); // Just Listed - most important
   sequence.push(createPopularGridConfig()); // Most Popular
+  
+  // 6. Third showroom (index 2)
+  sequence.push(createShowroomGridConfig(2));
+  
   sequence.push(createHiddenGemsGridConfig()); // Hidden Gems
   
-  // 4. Interleave make groups, body types, and price ranges
+  // 7. Interleave make groups, body types, and price ranges
   const makeGroups: MakeGroupKey[] = ['german', 'japanese', 'italian', 'american', 'british', 'korean', 'electric'];
   const bodyTypes = BODY_TYPES.slice(0, 6); // First 6 body types
   const priceRanges: PriceRangeKey[] = ['luxury', 'premium', 'mid_range', 'affordable'];

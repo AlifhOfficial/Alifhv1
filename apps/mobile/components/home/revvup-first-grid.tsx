@@ -136,7 +136,7 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
   }
 
   return (
-    <View style={[styles.container, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}>
+    <View style={[styles.container, { borderColor: colors.glassBorder, backgroundColor: colors.surfaceSecondary }]}>
       {/* Header with Revvup Logo */}
       <View style={styles.header}>
         <View style={[styles.avatar, { backgroundColor: colors.oledBlack }]}>
