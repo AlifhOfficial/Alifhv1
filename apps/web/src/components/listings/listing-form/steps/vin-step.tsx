@@ -8,7 +8,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { CheckCircle2, Zap, Eye, EyeOff } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/utils';
 import { Combobox } from '../combobox';
 import { VINInput } from '../vin-input';
@@ -144,26 +144,15 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
           
           {/* VIN Visibility Toggle */}
           <div className="flex items-center justify-between pt-3 border-t border-border/20">
-            <div className="flex items-center gap-3">
-              {data.vinVisibility === 'public' ? (
-                <div className="p-2 bg-green-500/10 rounded-full">
-                  <Eye className="w-4 h-4 text-green-500" />
-                </div>
-              ) : (
-                <div className="p-2 bg-sidebar-accent rounded-full">
-                  <EyeOff className="w-4 h-4 text-sidebar-foreground/70" />
-                </div>
-              )}
-              <div>
-                <p className="text-sm font-semibold text-sidebar-foreground">
-                  Show VIN on listing
-                </p>
-                <p className="text-xs text-sidebar-foreground/70">
-                  {data.vinVisibility === 'public' 
-                    ? '✓ 15% ranking boost · Buyers trust visible VINs'
-                    : 'VIN Verified badge shown — no ranking boost'}
-                </p>
-              </div>
+            <div>
+              <p className="text-sm font-semibold text-sidebar-foreground">
+                Show VIN on listing
+              </p>
+              <p className="text-xs text-sidebar-foreground/70">
+                {data.vinVisibility === 'public' 
+                  ? '✓ 15% ranking boost · Buyers trust visible VINs'
+                  : 'VIN Verified badge shown — no ranking boost'}
+              </p>
             </div>
             <button
               type="button"
@@ -182,14 +171,6 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
                 )}
               />
             </button>
-          </div>
-          
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
-            <div className="flex items-center gap-1.5">
-              <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-500 shrink-0" />
-              <span className="font-semibold text-purple-500">Experimental</span>
-            </div>
-            <span className="text-sidebar-foreground/70">— Some VINs may not decode, especially Japanese-made vehicles.</span>
           </div>
         </div>
       </section>

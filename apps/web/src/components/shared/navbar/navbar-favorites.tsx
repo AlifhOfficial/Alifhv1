@@ -124,7 +124,7 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
           e.stopPropagation();
           handleToggle();
         }}
-        className="size-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-full bg-glass border border-glass-border"
+        className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
         aria-label="Favorites"
       >
         <Heart className="size-4" />
