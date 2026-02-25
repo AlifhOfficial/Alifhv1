@@ -9,7 +9,9 @@
  * - HEIC → JPEG conversion before Sharp processing
  * - Auto-rotate based on EXIF orientation
  * - Metadata stripped by default (EXIF, GPS, etc. removed for privacy/size)
- * - Light sharpening for crisp output
+ * - Advanced unsharp mask sharpening for crisp output
+ * - Lanczos3 kernel for best downscale quality
+ * - Subtle color boost to compensate for compression
  * - Dual output: thumb (480w) + full (2000w)
  * - Safety guardrails: max file size, max megapixels
  * 
@@ -216,8 +218,10 @@ export interface ProcessImageOptions {
   effort?: number;
   /** Whether to auto-convert HEIC */
   convertHeic?: boolean;
-  /** Sharpening amount (0 = none, 0.5-1.0 = light, 1.5+ = aggressive) */
-  sharpen?: number;
+  /** Sharpening sigma (0 = none, 0.5-1.0 = subtle, 1.0-2.0 = strong) */
+  sharpenSigma?: number;
+  /** Saturation boost (1.0 = none, 1.02 = subtle, 1.05 = noticeable) */
+  saturationBoost?: number;
   // Note: Metadata (EXIF, GPS, etc.) is always stripped for privacy/size.
   // Sharp doesn't preserve metadata unless explicitly asked.
 }
@@ -229,9 +233,10 @@ const DEFAULT_FULL_OPTIONS: Required<ProcessImageOptions> = {
   fit: 'inside',
   position: 'center',
   quality: 78,
-  effort: 6,  // Max effort = best compression
+  effort: 6,           // Max effort = best compression
   convertHeic: true,
-  sharpen: 0.5,
+  sharpenSigma: 0.6,   // Subtle sharpening for full images
+  saturationBoost: 1.02, // Slight boost to counter compression flatness
 };
 
 /** Default options for thumbnail images */
@@ -241,9 +246,10 @@ const DEFAULT_THUMB_OPTIONS: Required<ProcessImageOptions> = {
   fit: 'inside',
   position: 'center',
   quality: 72,
-  effort: 6,  // Max effort for smallest size
+  effort: 6,           // Max effort for smallest size
   convertHeic: true,
-  sharpen: 0.6,
+  sharpenSigma: 0.8,   // Stronger sharpening for thumbs (more downscaled = more detail loss)
+  saturationBoost: 1.03, // Slightly more boost for small images
 };
 
 // ============================================================================
@@ -300,13 +306,28 @@ export async function processImage(
     .resize(opts.maxWidth, opts.maxHeight, {
       fit: opts.fit,
       position: opts.position,
-      withoutEnlargement: true, // Don't upscale smaller images
-      fastShrinkOnLoad: true,   // Use shrink-on-load for faster processing
+      withoutEnlargement: true,   // Don't upscale smaller images
+      fastShrinkOnLoad: true,     // Use shrink-on-load for faster processing
+      kernel: 'lanczos3',         // Best quality downscaling kernel
     });
   
-  // Apply light sharpening after resize (makes cars look crisp)
-  if (opts.sharpen && opts.sharpen > 0) {
-    pipeline = pipeline.sharpen(opts.sharpen);
+  // Apply advanced unsharp mask sharpening (better than simple sharpen)
+  // sigma: blur radius, m1/m2: flat/jagged thresholds, x1/y2/y3: slope params
+  if (opts.sharpenSigma && opts.sharpenSigma > 0) {
+    pipeline = pipeline.sharpen({
+      sigma: opts.sharpenSigma,
+      m1: 0,    // Flat areas: no sharpening (avoids noise amplification)
+      m2: 3,    // Jagged areas: moderate sharpening
+      x1: 2,    // Threshold for flat detection
+      y2: 10,   // Max sharpening for mid-contrast
+      y3: 5,    // Sharpening for high-contrast edges
+    });
+  }
+  
+  // Subtle saturation boost to counter compression flatness
+  // Makes cars look more vibrant without being oversaturated
+  if (opts.saturationBoost && opts.saturationBoost > 1) {
+    pipeline = pipeline.modulate({ saturation: opts.saturationBoost });
   }
   
   // Note: Metadata (EXIF, GPS, etc.) is automatically stripped by Sharp
