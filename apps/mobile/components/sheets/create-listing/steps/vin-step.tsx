@@ -1,10 +1,9 @@
 /**
- * VinSheet — Enter and verify vehicle identification number
+ * VinStepContent — Enter and verify VIN
  *
- * User enters VIN (17 chars), we verify uniqueness and optionally
- * decode to auto-fill make/model/year.
+ * Content-only component for the unified flow.
  *
- * @module components/sheets/create-listing/sheets/vin-sheet
+ * @module components/sheets/create-listing/steps/vin-step
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
@@ -13,14 +12,14 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 import { Check, AlertCircle, Info } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting } from '@/components/ui';
 import { checkVin } from '@/lib/sell-car-user-api';
+import { validateVin } from '../types';
 
-import { CreateFlowSheet, CreateFlowScrollContent } from '../base-sheet';
-import type { SheetStepProps } from '../types';
-import { validateVin, getProgress, SHEET_STEPS } from '../types';
+import type { StepContentProps } from '../create-listing-flow';
+import { StepContainer } from '../step-container';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -40,14 +39,7 @@ function getStatusColor(status: VinStatus, colors: Record<string, string>): stri
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function VinSheet({
-  visible,
-  data,
-  onUpdate,
-  onNext,
-  onBack,
-  onClose,
-}: SheetStepProps) {
+export function VinStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const [localVin, setLocalVin] = useState(data.vin || '');
@@ -55,16 +47,14 @@ export function VinSheet({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const lastChecked = useRef<string>('');
 
-  // Reset when sheet opens
+  // Keep in sync with data
   useEffect(() => {
-    if (visible) {
-      setLocalVin(data.vin || '');
+    if (data.vin !== localVin && data.vin) {
+      setLocalVin(data.vin);
       setStatus(data.vinVerified ? 'verified' : 'idle');
-      setErrorMsg(null);
     }
-  }, [visible]);
+  }, [data.vin, data.vinVerified]);
 
-  // ── Verify VIN at 17 chars ──
   const verifyVin = useCallback(
     async (vin: string) => {
       if (vin.length !== 17 || vin === lastChecked.current) return;
@@ -103,7 +93,7 @@ export function VinSheet({
         if (result.nhtsa?.model) onUpdate({ model: result.nhtsa.model });
         if (result.nhtsa?.year) onUpdate({ year: result.nhtsa.year });
         if (result.nhtsa?.trim) onUpdate({ trim: result.nhtsa.trim });
-      } catch (err) {
+      } catch {
         setStatus('invalid');
         setErrorMsg('Failed to verify VIN. Please try again.');
         onUpdate({ vinVerified: false });
@@ -135,100 +125,75 @@ export function VinSheet({
     [status, onUpdate, verifyVin]
   );
 
-  const handleNext = useCallback(() => {
-    if (status === 'verified') {
-      onNext();
-    } else if (localVin.length === 17) {
-      verifyVin(localVin);
-    }
-  }, [status, localVin, onNext, verifyVin]);
-
-  const stepIndex = SHEET_STEPS.findIndex((s) => s.id === 'vin');
-  const progress = getProgress(stepIndex + 1);
-
   const borderColor = getStatusColor(status, colors);
-  const isValid = status === 'verified';
 
   return (
-    <CreateFlowSheet
-      visible={visible}
-      onClose={onClose}
-      title="VIN"
-      showBack={!!onBack}
-      onBack={onBack}
-      primaryLabel={isValid ? 'Next' : 'Verify'}
-      primaryDisabled={localVin.length !== 17 || status === 'checking'}
-      onPrimary={handleNext}
-      progress={progress}
-    >
-      <CreateFlowScrollContent>
-        {/* VIN Input */}
-        <View style={styles.inputWrapper}>
-          <BottomSheetTextInput
-            style={[
-              styles.vinInput,
-              {
-                backgroundColor: colors.fillSecondary,
-                color: colors.text,
-                borderColor,
-              },
-            ]}
-            placeholder="e.g. WVWZZZ3CZWE123456"
-            placeholderTextColor={colors.textMuted}
-            value={localVin}
-            onChangeText={handleVinChange}
-            autoCapitalize="characters"
-            autoCorrect={false}
-            maxLength={17}
-            keyboardType="ascii-capable"
-            returnKeyType="done"
-            onSubmitEditing={handleNext}
-          />
+    <StepContainer>
+      {/* VIN Input */}
+      <View style={styles.inputWrapper}>
+        <BottomSheetTextInput
+          style={[
+            styles.vinInput,
+            {
+              backgroundColor: colors.fillSecondary,
+              color: colors.text,
+              borderColor,
+            },
+          ]}
+          placeholder="e.g. WVWZZZ3CZWE123456"
+          placeholderTextColor={colors.textMuted}
+          value={localVin}
+          onChangeText={handleVinChange}
+          autoCapitalize="characters"
+          autoCorrect={false}
+          maxLength={17}
+          keyboardType="ascii-capable"
+          returnKeyType="done"
+        />
 
-          {/* Status indicator */}
-          <View style={styles.statusIcon}>
-            {status === 'checking' ? (
-              <ActivityIndicator size="small" color={colors.text} />
-            ) : status === 'verified' ? (
-              <Check size={Sizes.iconSm} color={colors.success ?? '#10B981'} strokeWidth={2} />
-            ) : status === 'taken' || status === 'invalid' ? (
-              <AlertCircle size={Sizes.iconSm} color={colors.error ?? '#EF4444'} strokeWidth={2} />
-            ) : null}
-          </View>
-        </View>
-
-        {/* Character count */}
-        <View style={styles.countRow}>
-          <Supporting size="small" tone="muted">
-            {localVin.length}/17 characters
-          </Supporting>
-          {status === 'verified' && (
-            <Supporting size="small" style={{ color: colors.success ?? '#10B981' }}>
-              ✓ VIN verified
-            </Supporting>
-          )}
-        </View>
-
-        {/* Error message */}
-        {errorMsg && (
-          <View style={[styles.errorBox, { backgroundColor: (colors.error ?? '#EF4444') + '15' }]}>
+        {/* Status indicator */}
+        <View style={styles.statusIcon}>
+          {status === 'checking' ? (
+            <ActivityIndicator size="small" color={colors.text} />
+          ) : status === 'verified' ? (
+            <Check size={Sizes.iconSm} color={colors.success ?? '#10B981'} strokeWidth={2} />
+          ) : status === 'taken' || status === 'invalid' ? (
             <AlertCircle size={Sizes.iconSm} color={colors.error ?? '#EF4444'} strokeWidth={2} />
-            <Body size="small" style={{ color: colors.error ?? '#EF4444', flex: 1 }}>
-              {errorMsg}
-            </Body>
-          </View>
-        )}
-
-        {/* Helper */}
-        <View style={[styles.helperBox, { backgroundColor: colors.fillSecondary }]}>
-          <Info size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-          <Supporting size="small" tone="muted" style={{ flex: 1 }}>
-            Find your VIN on the driver's door jamb, dashboard, or vehicle registration.
-            We'll auto-fill your car's details.
-          </Supporting>
+          ) : null}
         </View>
-      </CreateFlowScrollContent>
-    </CreateFlowSheet>
+      </View>
+
+      {/* Character count */}
+      <View style={styles.countRow}>
+        <Supporting size="small" tone="muted">
+          {localVin.length}/17 characters
+        </Supporting>
+        {status === 'verified' && (
+          <Supporting size="small" style={{ color: colors.success ?? '#10B981' }}>
+            ✓ VIN verified
+          </Supporting>
+        )}
+      </View>
+
+      {/* Error message */}
+      {errorMsg && (
+        <View style={[styles.errorBox, { backgroundColor: (colors.error ?? '#EF4444') + '15' }]}>
+          <AlertCircle size={Sizes.iconSm} color={colors.error ?? '#EF4444'} strokeWidth={2} />
+          <Body size="small" style={{ color: colors.error ?? '#EF4444', flex: 1 }}>
+            {errorMsg}
+          </Body>
+        </View>
+      )}
+
+      {/* Helper */}
+      <View style={[styles.helperBox, { backgroundColor: colors.fillSecondary }]}>
+        <Info size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
+        <Supporting size="small" tone="muted" style={{ flex: 1 }}>
+          Find your VIN on the driver's door jamb, dashboard, or vehicle registration.
+          We'll auto-fill your car's details.
+        </Supporting>
+      </View>
+    </StepContainer>
   );
 }
 
@@ -279,4 +244,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default VinSheet;
+export default VinStepContent;

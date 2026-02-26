@@ -4,13 +4,20 @@
  * Simple, fast image uploads via presigned URLs.
  * Bypasses Vercel's 4.5MB limit by uploading directly to R2.
  * 
- * Flow:
- * 1. Get presigned URL from /api/storage/presigned
- * 2. PUT directly to R2 (instant, no server bottleneck)
- * 3. Process via /api/storage/process → get CDN URL(s)
+ * Pipeline:
+ * 1. Compress client-side (10-20MB → ~1-2MB) via browser-image-compression
+ * 2. Get presigned URL from /api/storage/presigned
+ * 3. PUT directly to R2 (instant, no server bottleneck)
+ * 4. Process via /api/storage/process → get CDN URL(s)
+ * 
+ * Target sizes after server processing:
+ * - Thumbnail: ~20KB (480w, q55)
+ * - Full: ~50KB (1400w, q58)
  * 
  * All images served via cdn.revvup.ae with 1-year caching.
  */
+
+import { compressImageForUpload } from './image-compression-client';
 
 // ============================================================================
 // Types
@@ -84,15 +91,21 @@ export type UploadResult = ListingUploadResult | SingleUploadResult;
 export async function uploadImage(options: UploadOptions): Promise<UploadResult> {
   const { type, file, vin, partnerId, imageType, assetType, onProgress } = options;
 
-  // Step 1: Get presigned URL
-  onProgress?.(5);
+  // Step 1: Client-side compression (10-20MB → ~1-2MB)
+  onProgress?.(2);
+  const compressedFile = await compressImageForUpload(file, {
+    onProgress: (p) => onProgress?.(2 + Math.round(p * 0.18)), // 2-20%
+  });
+  
+  // Step 2: Get presigned URL
+  onProgress?.(22);
   
   const presignedRes = await fetch('/api/storage/presigned', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       type,
-      contentType: file.type,
+      contentType: compressedFile.type,
       vin,
       partnerId,
       imageType,
@@ -107,26 +120,26 @@ export async function uploadImage(options: UploadOptions): Promise<UploadResult>
 
   const { uploadUrl, rawKey, maxSize, requiresProcessing } = await presignedRes.json();
 
-  // Validate file size
-  if (file.size > maxSize) {
+  // Validate file size (should always pass after compression)
+  if (compressedFile.size > maxSize) {
     const maxMB = Math.round(maxSize / 1024 / 1024);
     throw new Error(`File too large. Maximum ${maxMB}MB allowed.`);
   }
 
-  // Step 2: Upload directly to R2
-  onProgress?.(10);
+  // Step 3: Upload directly to R2
+  onProgress?.(25);
   
   const uploadRes = await fetch(uploadUrl, {
     method: 'PUT',
-    headers: { 'Content-Type': file.type },
-    body: file,
+    headers: { 'Content-Type': compressedFile.type },
+    body: compressedFile,
   });
 
   if (!uploadRes.ok) {
     throw new Error('Upload failed. Please try again.');
   }
 
-  onProgress?.(60);
+  onProgress?.(70);
 
   // Step 3: Process the image (if needed)
   if (!requiresProcessing) {

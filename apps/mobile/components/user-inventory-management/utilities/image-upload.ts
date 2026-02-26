@@ -1,10 +1,14 @@
 /**
  * Image Upload Utility — User Inventory Management
  *
- * Wraps expo-image-picker + sellCarUserApi.uploadImage / deleteImage
- * into a single-call convenience function for the create & edit flows.
+ * Wraps expo-image-picker + compression + upload into a single-call convenience.
+ * 
+ * Pipeline:
+ * 1. Pick images via expo-image-picker
+ * 2. Compress client-side (10-20MB → ~1-2MB) for fast upload
+ * 3. Upload to R2 via presigned URL
+ * 4. Server processes to final WebP (thumb ~20KB, full ~50KB)
  *
- * All images are uploaded to R2 via the server which converts to WebP.
  * The returned URL is a CDN-served public path.
  */
 
@@ -17,6 +21,7 @@ import {
   type ImageUploadResult,
 } from '@/lib/sell-car-user-api';
 import { CDN_BASE, API_BASE } from '@/lib/config';
+import { compressImageForUpload } from '@/lib/image-compression';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -90,12 +95,12 @@ export async function pickAndUploadListingImage(
     return { success: false, images: [], errors: ['Permission denied'] };
   }
 
-  // 2. Launch picker
+  // 2. Launch picker (max quality - we'll compress after)
   const pickerResult = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ['images'],
     allowsMultipleSelection: allowMultiple,
     selectionLimit: maxImages,
-    quality: 1, // Full quality - server handles all compression (avoids double compression)
+    quality: 1, // Full quality - we compress client-side for control
     exif: false,
   });
 
@@ -106,29 +111,47 @@ export async function pickAndUploadListingImage(
   const assets = pickerResult.assets;
   const uploaded: ImageUploadResult[] = [];
   const errors: string[] = [];
+  let completedCount = 0;
 
-  // 3. Upload sequentially (avoids overwhelming the server)
-  for (let i = 0; i < assets.length; i++) {
-    const asset = assets[i];
-    try {
-      const result = await uploadListingImage(asset.uri, vin, asset.fileName ?? undefined);
-      uploaded.push(result);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } catch (err: any) {
-      // User-friendly error messages
-      const message = err.message ?? `Failed to upload image ${i + 1}`;
-      errors.push(message);
-      
-      // Show alert for timeout errors (user may want to retry)
-      if (message.includes('timed out') || message.includes('connection')) {
-        Alert.alert(
-          'Upload Problem',
-          `Image ${i + 1} failed: ${message}`,
-          [{ text: 'OK' }],
-        );
+  // 3. Compress and upload in parallel batches
+  const BATCH_SIZE = 3;
+  
+  for (let batchStart = 0; batchStart < assets.length; batchStart += BATCH_SIZE) {
+    const batch = assets.slice(batchStart, batchStart + BATCH_SIZE);
+    
+    const results = await Promise.allSettled(
+      batch.map(async (asset) => {
+        // Compress first (10-20MB → ~1-2MB)
+        const compressed = await compressImageForUpload(asset.uri);
+        
+        // Then upload the compressed version
+        const result = await uploadListingImage(compressed.uri, vin, asset.fileName ?? undefined);
+        completedCount++;
+        onProgress?.(completedCount, assets.length);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        return result;
+      })
+    );
+
+    // Process results
+    results.forEach((result, idx) => {
+      if (result.status === 'fulfilled') {
+        uploaded.push(result.value);
+      } else {
+        const globalIdx = batchStart + idx;
+        const message = result.reason?.message ?? `Failed to upload image ${globalIdx + 1}`;
+        errors.push(message);
       }
-    }
-    onProgress?.(i + 1, assets.length);
+    });
+  }
+
+  // Show summary alert if there were errors
+  if (errors.length > 0 && uploaded.length > 0) {
+    Alert.alert(
+      'Some Uploads Failed',
+      `${uploaded.length} uploaded, ${errors.length} failed.`,
+      [{ text: 'OK' }],
+    );
   }
 
   return {

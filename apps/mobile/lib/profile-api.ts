@@ -389,18 +389,18 @@ export async function uploadAvatar(
   try {
     const session = await getStoredSession();
     
-    // Get file info from URI
-    const filename = uri.split('/').pop() || 'avatar.jpg';
-    const ext = filename.split('.').pop()?.toLowerCase() || '';
-    const mimeTypes: Record<string, string> = {
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'png': 'image/png',
-      'webp': 'image/webp',
-      'heic': 'image/heic',
-      'heif': 'image/heif',
-    };
-    const contentType = mimeTypes[ext] || 'image/jpeg';
+    // Import compression dynamically to avoid circular deps
+    const { compressImageForUpload } = await import('@/lib/image-compression');
+    
+    // Compress first (10-20MB → ~1-2MB)
+    // Avatar images are square-cropped by picker, so width-only resize is fine
+    const compressed = await compressImageForUpload(uri, {
+      maxWidth: 512,
+      quality: 0.8,
+    });
+    
+    // Get file info from compressed URI
+    const contentType = 'image/jpeg'; // Always JPEG after compression
     
     // Step 1: Get presigned URL
     const presignedRes = await fetch(`${API_BASE}/api/storage/presigned`, {
@@ -419,8 +419,8 @@ export async function uploadAvatar(
     
     const { uploadUrl, rawKey } = await presignedRes.json();
     
-    // Step 2: Upload directly to R2
-    const fileBlob = await fetch(uri).then(r => r.blob());
+    // Step 2: Upload compressed image directly to R2
+    const fileBlob = await fetch(compressed.uri).then(r => r.blob());
     const uploadRes = await fetch(uploadUrl, {
       method: 'PUT',
       headers: { 'Content-Type': contentType },

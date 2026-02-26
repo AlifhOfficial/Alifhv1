@@ -1,9 +1,9 @@
 /**
- * AppearanceSheet — Body type and colors
+ * AppearanceStepContent — Body type and colors
  *
- * Visual chip selection for body type, exterior and interior colors.
+ * Content-only component for the unified flow.
  *
- * @module components/sheets/create-listing/sheets/appearance-sheet
+ * @module components/sheets/create-listing/steps/appearance-step
  */
 
 import React, { useCallback } from 'react';
@@ -13,13 +13,12 @@ import { Car, Palette } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting, Label } from '@/components/ui';
+import { Body, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
 import { BODY_TYPES, EXTERIOR_COLORS, INTERIOR_COLORS } from '@/lib/filter-constants';
 
-import { CreateFlowSheet, CreateFlowScrollContent } from '../base-sheet';
-import type { SheetStepProps } from '../types';
-import { getProgress, SHEET_STEPS } from '../types';
+import type { StepContentProps } from '../create-listing-flow';
+import { StepContainer } from '../step-container';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -72,15 +71,7 @@ function ColorChip({
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function AppearanceSheet({
-  visible,
-  data,
-  onUpdate,
-  onNext,
-  onSkip,
-  onBack,
-  onClose,
-}: SheetStepProps) {
+export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
@@ -108,95 +99,79 @@ export function AppearanceSheet({
     [data.interiorColor, onUpdate]
   );
 
-  const stepIndex = SHEET_STEPS.findIndex((s) => s.id === 'appearance');
-  const progress = getProgress(stepIndex + 1);
-
-  const hasAnySelection = data.bodyType || data.exteriorColor || data.interiorColor;
-
   return (
-    <CreateFlowSheet
-      visible={visible}
-      onClose={onClose}
-      title="Appearance"
-      showBack
-      onBack={onBack}
-      primaryLabel={hasAnySelection ? 'Next' : 'Skip'}
-      onPrimary={hasAnySelection ? onNext : onSkip}
-      progress={progress}
-    >
-      <CreateFlowScrollContent>
-        {/* Body Type */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Car size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-            <Label size="small">Body Type</Label>
-          </View>
-          <View style={styles.chipWrap}>
-            {BODY_TYPES.map((type) => {
-              const isSelected = data.bodyType === type.value;
-              return (
-                <HapticPressable
-                  key={type.value}
-                  onPress={() => handleBodyType(type.value)}
-                  style={[
-                    styles.chip,
-                    {
-                      backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
-                      borderColor: isSelected ? colors.text : colors.border,
-                    },
-                  ]}
+    <StepContainer>
+      {/* Body Type */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Car size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
+          <Label size="small">Body Type</Label>
+        </View>
+        <View style={styles.chipWrap}>
+          {BODY_TYPES.map((type) => {
+            const isSelected = data.bodyType === type.value;
+            return (
+              <HapticPressable
+                key={type.value}
+                onPress={() => handleBodyType(type.value)}
+                style={[
+                  styles.chip,
+                  {
+                    backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
+                    borderColor: isSelected ? colors.text : colors.border,
+                  },
+                ]}
+              >
+                <Body
+                  size="small"
+                  style={{ color: isSelected ? colors.background : colors.text }}
                 >
-                  <Body
-                    size="small"
-                    style={{ color: isSelected ? colors.background : colors.text }}
-                  >
-                    {type.label}
-                  </Body>
-                </HapticPressable>
-              );
-            })}
-          </View>
+                  {type.label}
+                </Body>
+              </HapticPressable>
+            );
+          })}
         </View>
+      </View>
 
-        {/* Exterior Color */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Palette size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-            <Label size="small">Exterior Color</Label>
-          </View>
-          <View style={styles.chipWrap}>
-            {EXTERIOR_COLORS.map((color) => (
-              <ColorChip
-                key={color.value}
-                color={color}
-                isSelected={data.exteriorColor === color.value}
-                onPress={() => handleExteriorColor(color.value)}
-                themeColors={colors}
-              />
-            ))}
-          </View>
+      {/* Exterior Color */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Palette size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
+          <Label size="small">Exterior Color</Label>
         </View>
+        <View style={styles.chipWrap}>
+          {EXTERIOR_COLORS.map((color) => (
+            <ColorChip
+              key={color.value}
+              color={color}
+              isSelected={data.exteriorColor === color.value}
+              onPress={() => handleExteriorColor(color.value)}
+              themeColors={colors}
+            />
+          ))}
+        </View>
+      </View>
 
-        {/* Interior Color */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Palette size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-            <Label size="small">Interior Color</Label>
-          </View>
-          <View style={styles.chipWrap}>
-            {INTERIOR_COLORS.map((color) => (
-              <ColorChip
-                key={color.value}
-                color={color}
-                isSelected={data.interiorColor === color.value}
-                onPress={() => handleInteriorColor(color.value)}
-                themeColors={colors}
-              />
-            ))}
-          </View>
+      {/* Interior Color */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Palette size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
+          <Label size="small">Interior Color</Label>
         </View>
-      </CreateFlowScrollContent>
-    </CreateFlowSheet>
+        <View style={styles.chipWrap}>
+          {INTERIOR_COLORS.map((color) => (
+            <ColorChip
+              key={color.value}
+              color={color}
+              isSelected={data.interiorColor === color.value}
+              onPress={() => handleInteriorColor(color.value)}
+              themeColors={colors}
+            />
+          ))}
+        </View>
+      </View>
+    </StepContainer>
   );
 }
 
@@ -228,7 +203,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.xs,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
+    paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
     borderWidth: 1,
   },
@@ -240,4 +215,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AppearanceSheet;
+export default AppearanceStepContent;

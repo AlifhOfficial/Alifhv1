@@ -30,10 +30,9 @@ export { SuperlikeConfirmationSheet, SuperlikeQuotaExhaustedSheet } from './supe
 // Auth sheet
 export { AuthSheet, type AuthSheetProps } from './auth-sheet';
 
-// Create listing sheets (micro-step wizard)
+// Create listing (step-based wizard)
 export {
   CreateListingFlow,
-  BaseSheet,
   EMPTY_DATA,
   SHEET_STEPS,
   type CreateListingData,

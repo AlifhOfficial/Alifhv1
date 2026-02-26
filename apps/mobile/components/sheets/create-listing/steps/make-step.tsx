@@ -1,14 +1,15 @@
 /**
- * MakeSheet — Select car manufacturer
+ * MakeStepContent — Select car manufacturer
  *
- * Clean, searchable list following proven sheet patterns.
+ * Simple FlatList with search header.
  *
- * @module components/sheets/create-listing/sheets/make-sheet
+ * @module components/sheets/create-listing/steps/make-step
  */
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { BottomSheetFlatList, BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check } from 'lucide-react-native';
 
@@ -18,9 +19,7 @@ import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
 import { CAR_MAKES } from '@/lib/filter-constants';
 
-import { CreateFlowSheet, CreateFlowListContent } from '../base-sheet';
-import type { SheetStepProps } from '../types';
-import { getProgress, SHEET_STEPS } from '../types';
+import type { StepContentProps } from '../create-listing-flow';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -31,49 +30,31 @@ const POPULAR_MAKES = [
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function MakeSheet({
-  visible,
-  data,
-  onUpdate,
-  onNext,
-  onBack,
-  onClose,
-}: SheetStepProps) {
+export function MakeStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
 
-  // Reset search when sheet opens
-  useEffect(() => {
-    if (visible) setQuery('');
-  }, [visible]);
-
-  // Filter and sort: selected → popular → alphabetical
-  const filteredMakes = useMemo(() => {
+  // Build flat list: Popular first, then all makes alphabetically
+  const makes = useMemo((): string[] => {
     const q = query.trim().toLowerCase();
-    let makes = [...CAR_MAKES];
 
     if (q) {
-      makes = makes.filter((m) => m.toLowerCase().includes(q));
-    } else {
-      makes.sort((a, b) => {
-        if (a === data.make) return -1;
-        if (b === data.make) return 1;
-        const aIdx = POPULAR_MAKES.indexOf(a);
-        const bIdx = POPULAR_MAKES.indexOf(b);
-        if (aIdx !== -1 && bIdx === -1) return -1;
-        if (bIdx !== -1 && aIdx === -1) return 1;
-        if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
-        return a.localeCompare(b);
-      });
+      return CAR_MAKES.filter((m) => m.toLowerCase().includes(q));
     }
-    return makes;
-  }, [query, data.make]);
+
+    // No search: Popular first, then rest alphabetically (excluding popular dupes)
+    const allSorted = [...CAR_MAKES]
+      .filter((m) => !POPULAR_MAKES.includes(m))
+      .sort((a, b) => a.localeCompare(b));
+    
+    return [...POPULAR_MAKES, ...allSorted];
+  }, [query]);
 
   const handleSelect = useCallback(
     (make: string) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      // Clear model when make changes
       if (make !== data.make) {
         onUpdate({ make, model: '', trim: '' });
       } else {
@@ -83,20 +64,16 @@ export function MakeSheet({
     [data.make, onUpdate]
   );
 
-  const stepIndex = SHEET_STEPS.findIndex((s) => s.id === 'make');
-  const progress = getProgress(stepIndex + 1);
-
-  // ── Render ──
-
-
-
   const renderItem = useCallback(
-    ({ item: make }: { item: string }) => {
+    ({ item: make, index }: { item: string; index: number }) => {
       const isSelected = make === data.make;
-      const isPopular = !query && POPULAR_MAKES.includes(make);
+      const isPopular = !query && index < POPULAR_MAKES.length;
 
       return (
-        <HapticPressable onPress={() => handleSelect(make)} style={styles.item}>
+        <HapticPressable
+          onPress={() => handleSelect(make)}
+          style={[styles.item, { borderBottomColor: colors.border }]}
+        >
           <View style={styles.itemContent}>
             <Body
               size="medium"
@@ -111,33 +88,18 @@ export function MakeSheet({
               <Supporting size="small" tone="muted">Popular</Supporting>
             )}
           </View>
-          <View style={[
-            styles.radio,
-            { borderColor: isSelected ? colors.textMuted : colors.border },
-          ]}>
-            {isSelected && (
-              <View style={[styles.radioInner, { backgroundColor: colors.textMuted }]} />
-            )}
-          </View>
+          {isSelected && (
+            <Check size={Sizes.iconMd} color={colors.primary} strokeWidth={2.5} />
+          )}
         </HapticPressable>
       );
     },
     [data.make, colors, handleSelect, query]
   );
 
-  return (
-    <CreateFlowSheet
-      visible={visible}
-      onClose={onClose}
-      title="Make"
-      showBack
-      onBack={onBack}
-      primaryLabel="Next"
-      primaryDisabled={!data.make}
-      onPrimary={onNext}
-      progress={progress}
-    >
-      <View style={styles.searchWrapper}>
+  const ListHeader = useCallback(
+    () => (
+      <View style={[styles.searchWrapper, { backgroundColor: colors.surface }]}>
         <View style={[styles.searchBox, { backgroundColor: colors.fillSecondary }]}>
           <Search size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
           <BottomSheetTextInput
@@ -148,6 +110,7 @@ export function MakeSheet({
             onChangeText={setQuery}
             autoCorrect={false}
             autoCapitalize="none"
+            returnKeyType="search"
           />
           {query.length > 0 && (
             <HapticPressable onPress={() => setQuery('')} hitSlop={Layout.hitSlopSmall}>
@@ -156,17 +119,28 @@ export function MakeSheet({
           )}
         </View>
       </View>
-      <CreateFlowListContent
-        data={filteredMakes}
-        keyExtractor={(item) => item}
-        renderItem={renderItem}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Body size="medium" tone="secondary">No makes found</Body>
-          </View>
-        }
-      />
-    </CreateFlowSheet>
+    ),
+    [colors, query]
+  );
+
+  return (
+    <BottomSheetFlatList
+      data={makes}
+      keyExtractor={(item: string) => item}
+      renderItem={renderItem}
+      ListHeaderComponent={ListHeader}
+      contentContainerStyle={[
+        styles.listContent,
+        { paddingBottom: insets.bottom + Spacing['3xl'] },
+      ]}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+      ListEmptyComponent={
+        <View style={styles.emptyState}>
+          <Body size="medium" tone="secondary">No makes found for "{query}"</Body>
+        </View>
+      }
+    />
   );
 }
 
@@ -175,8 +149,8 @@ export function MakeSheet({
 const styles = StyleSheet.create({
   searchWrapper: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.sm,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.md,
   },
   searchBox: {
     flexDirection: 'row',
@@ -192,29 +166,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
     paddingVertical: 0,
   },
+  listContent: {
+    paddingHorizontal: Spacing.lg,
+  },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   itemContent: {
     flex: 1,
     gap: 2,
-  },
-  radio: {
-    width: Sizes.iconMd,
-    height: Sizes.iconMd,
-    borderRadius: Radius.full,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioInner: {
-    width: Spacing.sm + 2,
-    height: Spacing.sm + 2,
-    borderRadius: Radius.full,
   },
   emptyState: {
     alignItems: 'center',
@@ -222,4 +186,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MakeSheet;
+export default MakeStepContent;

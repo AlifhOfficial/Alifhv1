@@ -1,25 +1,24 @@
 /**
- * YearSheet — Select vehicle year
+ * YearStepContent — Select vehicle year
  *
- * Scrollable year picker from current+1 to 1970.
- * Following proven sheet patterns.
+ * Content-only component for the unified flow.
  *
- * @module components/sheets/create-listing/sheets/year-sheet
+ * @module components/sheets/create-listing/steps/year-step
  */
 
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { BottomSheetFlatList, BottomSheetFlatListMethods } from '@gorhom/bottom-sheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Calendar } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
 
-import { CreateFlowSheet, CreateFlowListContent } from '../base-sheet';
-import type { SheetStepProps } from '../types';
-import { getProgress, SHEET_STEPS } from '../types';
+import type { StepContentProps } from '../create-listing-flow';
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -34,24 +33,17 @@ function generateYears(): string[] {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function YearSheet({
-  visible,
-  data,
-  onUpdate,
-  onNext,
-  onBack,
-  onClose,
-}: SheetStepProps) {
+export function YearStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const listRef = useRef<FlatList>(null);
+  const insets = useSafeAreaInsets();
+  const listRef = useRef<BottomSheetFlatListMethods>(null);
   const years = useMemo(() => generateYears(), []);
-
   const currentYear = new Date().getFullYear();
 
-  // Scroll to selected year when sheet opens
+  // Scroll to selected year on mount
   useEffect(() => {
-    if (visible && data.year) {
+    if (data.year) {
       const index = years.indexOf(data.year);
       if (index !== -1) {
         setTimeout(() => {
@@ -63,7 +55,7 @@ export function YearSheet({
         }, 300);
       }
     }
-  }, [visible]);
+  }, [data.year, years]);
 
   const handleSelect = useCallback(
     (year: string) => {
@@ -72,11 +64,6 @@ export function YearSheet({
     },
     [onUpdate]
   );
-
-  const stepIndex = SHEET_STEPS.findIndex((s) => s.id === 'year');
-  const progress = getProgress(stepIndex + 1);
-
-  // ── Render ──
 
   const renderHeader = useMemo(
     () => (
@@ -110,22 +97,18 @@ export function YearSheet({
               {year}
             </Body>
             {isRecent && (
-              <Supporting size="small" tone="muted">
-                Recent
-              </Supporting>
+              <Supporting size="small" tone="muted">Recent</Supporting>
             )}
             {isClassic && (
-              <Supporting size="small" tone="muted">
-                Classic
-              </Supporting>
+              <Supporting size="small" tone="muted">Classic</Supporting>
             )}
           </View>
           <View style={[
             styles.radio,
-            { borderColor: isSelected ? colors.textMuted : colors.border },
+            { borderColor: isSelected ? colors.primary : colors.border },
           ]}>
             {isSelected && (
-              <View style={[styles.radioInner, { backgroundColor: colors.textMuted }]} />
+              <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />
             )}
           </View>
         </HapticPressable>
@@ -135,38 +118,29 @@ export function YearSheet({
   );
 
   return (
-    <CreateFlowSheet
-      visible={visible}
-      onClose={onClose}
-      title="Year"
-      showBack
-      onBack={onBack}
-      primaryLabel="Next"
-      primaryDisabled={!data.year}
-      onPrimary={onNext}
-      progress={progress}
-    >
-      <CreateFlowListContent
-        listRef={listRef}
-        data={years}
-        keyExtractor={(item) => item}
-        renderItem={renderItem}
-        ListHeaderComponent={renderHeader}
-        getItemLayout={(_: string[] | null | undefined, index: number) => ({
-          length: 56 + Spacing.xs,
-          offset: (56 + Spacing.xs) * index,
-          index,
-        })}
-        onScrollToIndexFailed={(info: { index: number; highestMeasuredFrameIndex: number; averageItemLength: number }) => {
-          setTimeout(() => {
-            listRef.current?.scrollToIndex({
-              index: info.index,
-              animated: true,
-            });
-          }, 100);
-        }}
-      />
-    </CreateFlowSheet>
+    <BottomSheetFlatList
+      ref={listRef}
+      data={years}
+      keyExtractor={(item: string) => item}
+      renderItem={renderItem}
+      ListHeaderComponent={renderHeader}
+      contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Spacing['3xl'] }]}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+      getItemLayout={(_: string[] | null | undefined, index: number) => ({
+        length: 56 + Spacing.xs,
+        offset: (56 + Spacing.xs) * index,
+        index,
+      })}
+      onScrollToIndexFailed={(info: { index: number }) => {
+        setTimeout(() => {
+          listRef.current?.scrollToIndex({
+            index: info.index,
+            animated: true,
+          });
+        }, 100);
+      }}
+    />
   );
 }
 
@@ -182,12 +156,15 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     marginBottom: Spacing.md,
   },
+  listContent: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
+  },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
     minHeight: 56,
   },
   itemContent: {
@@ -208,4 +185,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default YearSheet;
+export default YearStepContent;

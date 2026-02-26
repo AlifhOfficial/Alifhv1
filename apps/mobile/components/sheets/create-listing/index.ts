@@ -1,8 +1,8 @@
 /**
- * Sheet-Based Create Listing — Main Export
+ * Step-Based Create Listing — Main Export
  *
- * Micro-step wizard for creating listings.
- * Each sheet handles one atomic action.
+ * Single-modal wizard with swappable step content.
+ * No sheet switching = no glitches.
  *
  * Usage:
  * ```tsx
@@ -45,34 +45,5 @@ export {
   type SheetStepProps,
 } from './types';
 
-// Base sheet (for custom sheets)
-export {
-  BaseSheet,
-  CreateFlowSheet,
-  FlowScrollContent,
-  FlowListContent,
-  CreateFlowScrollContent,
-  CreateFlowListContent,
-} from './base-sheet';
-
 // Response sheet (for errors, success, warnings)
 export { ResponseSheet, type ResponseType, type ResponseSheetProps } from './response-sheet';
-
-// Individual sheets (for advanced usage)
-export {
-  VinSheet,
-  MakeSheet,
-  ModelSheet,
-  YearSheet,
-  TrimSheet,
-  MileageSheet,
-  SpecsRegionSheet,
-  AppearanceSheet,
-  PowertrainSheet,
-  ExtrasSheet,
-  PriceSheet,
-  LocationSheet,
-  PhotosSheet,
-  DescriptionSheet,
-  ReviewSheet,
-} from './sheets';

@@ -1,8 +1,12 @@
 /**
  * Shared Image Processing Utilities
  * 
- * Provides HEIC detection/conversion and optimized Sharp processing
- * Used by all storage upload routes for consistent image handling
+ * Provides HEIC detection/conversion and optimized Sharp processing.
+ * Used by all storage upload routes for consistent image handling.
+ * 
+ * Target Output Sizes:
+ * - Thumbnail: ~20KB (480w, q35) - for grid cards, carousels
+ * - Full: ~50KB (1200w, q42) - for detail pages, zoom
  * 
  * Features:
  * - Magic-byte format detection (more reliable than MIME)
@@ -12,7 +16,6 @@
  * - Advanced unsharp mask sharpening for crisp output
  * - Lanczos3 kernel for best downscale quality
  * - Subtle color boost to compensate for compression
- * - Dual output: thumb (480w) + full (2000w)
  * - Safety guardrails: max file size, max megapixels
  * 
  * Note: GIF animations are NOT preserved - converted to single-frame WebP.
@@ -21,6 +24,7 @@
 
 import sharp from "sharp";
 import convert from "heic-convert";
+import { THUMB_CONFIG, FULL_CONFIG, MAX_MEGAPIXELS as CONFIG_MAX_MP } from "@alifh/image-config";
 
 // ============================================================================
 // Safety Guardrails - Prevent crashes from oversized uploads
@@ -226,30 +230,38 @@ export interface ProcessImageOptions {
   // Sharp doesn't preserve metadata unless explicitly asked.
 }
 
-/** Default options for full-size images */
+/**
+ * Full-size options - for detail pages.
+ * Target: ~50KB per image (1200w, q42).
+ * Uses shared config from @alifh/image-config for consistency.
+ */
 const DEFAULT_FULL_OPTIONS: Required<ProcessImageOptions> = {
-  maxWidth: 2000,
-  maxHeight: 2000,
+  maxWidth: FULL_CONFIG.maxWidth,
+  maxHeight: FULL_CONFIG.maxHeight,
   fit: 'inside',
   position: 'center',
-  quality: 78,
-  effort: 4,           // Balanced: fast + good compression (6 is ~30% slower)
+  quality: FULL_CONFIG.quality,
+  effort: FULL_CONFIG.effort,
   convertHeic: true,
-  sharpenSigma: 0.6,   // Subtle sharpening for full images
-  saturationBoost: 1.02, // Slight boost to counter compression flatness
+  sharpenSigma: FULL_CONFIG.sharpenSigma,
+  saturationBoost: FULL_CONFIG.saturationBoost,
 };
 
-/** Default options for thumbnail images */
+/**
+ * Thumbnail options - for grid cards, carousels.
+ * Target: ~20KB per image (480w, q35).
+ * Uses shared config from @alifh/image-config for consistency.
+ */
 const DEFAULT_THUMB_OPTIONS: Required<ProcessImageOptions> = {
-  maxWidth: 480,
-  maxHeight: 480,
+  maxWidth: THUMB_CONFIG.maxWidth,
+  maxHeight: THUMB_CONFIG.maxHeight,
   fit: 'inside',
   position: 'center',
-  quality: 72,
-  effort: 4,           // Balanced: fast + good compression
+  quality: THUMB_CONFIG.quality,
+  effort: THUMB_CONFIG.effort,
   convertHeic: true,
-  sharpenSigma: 0.8,   // Stronger sharpening for thumbs (more downscaled = more detail loss)
-  saturationBoost: 1.03, // Slightly more boost for small images
+  sharpenSigma: THUMB_CONFIG.sharpenSigma,
+  saturationBoost: THUMB_CONFIG.saturationBoost,
 };
 
 // ============================================================================
