@@ -154,7 +154,7 @@ export function NewListingView({ userId, initialData, draftId }: NewListingViewP
 
       // If editing a draft, update it; otherwise create new
       const url = draftId ? `/api/listings/${draftId}` : '/api/listings';
-      const method = draftId ? 'PATCH' : 'POST';
+      const method = draftId ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
