@@ -20,7 +20,7 @@ export interface ListingData {
   /** AI moderation info for pending review listings */
   aiModeration?: {
     reasoning?: string;
-    flags?: string[];
+    flags?: Array<string | { code: string; severity?: string; message?: string }>;
     confidence?: number;
   } | null;
   expiresAt?: Date | string | null;

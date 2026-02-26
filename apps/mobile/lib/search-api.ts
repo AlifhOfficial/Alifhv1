@@ -37,7 +37,7 @@ export interface SearchFacets {
   bodyTypes?: FacetBucket[];
   fuelTypes?: FacetBucket[];
   transmissions?: FacetBucket[];
-  emirates?: FacetBucket[];
+  emirate?: FacetBucket[];
   specs?: FacetBucket[];
   sellerTypes?: FacetBucket[];
   conditions?: FacetBucket[];

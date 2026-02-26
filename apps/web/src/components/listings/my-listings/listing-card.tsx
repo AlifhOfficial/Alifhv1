@@ -356,10 +356,39 @@ export function ListingCard({
           )}
 
           {/* AI Moderation Reason for Pending Review */}
-          {isInReview && listing.aiModeration?.reasoning && (
-            <div className="mt-1.5 sm:mt-2 px-2 py-1 sm:py-1.5 rounded-md bg-blue-500/5 border border-blue-500/10">
-              <p className="text-[10px] sm:text-[11px] text-blue-600 line-clamp-2">
-                <span className="font-semibold">Under Review:</span> {listing.aiModeration.reasoning}
+          {isInReview && (listing.aiModeration?.reasoning || (listing.aiModeration?.flags && listing.aiModeration.flags.length > 0)) && (
+            <div className="mt-1.5 sm:mt-2 px-2.5 py-2 sm:py-2.5 rounded-lg bg-blue-500/5 border border-blue-500/10 space-y-2">
+              {/* Reasoning */}
+              {listing.aiModeration?.reasoning && (
+                <div className="flex items-start gap-2">
+                  <span className="text-[10px] sm:text-[11px] text-blue-600">
+                    <span className="font-semibold">Review Reason:</span>{' '}
+                    <span className="text-blue-600/80">{listing.aiModeration.reasoning}</span>
+                  </span>
+                </div>
+              )}
+              {/* Flags */}
+              {listing.aiModeration?.flags && listing.aiModeration.flags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {listing.aiModeration.flags.map((flag, index) => {
+                    const label = typeof flag === 'object' 
+                      ? (flag.message || flag.code || '').replace(/_/g, ' ')
+                      : typeof flag === 'string' ? flag.replace(/_/g, ' ') : '';
+                    if (!label) return null;
+                    return (
+                      <span 
+                        key={index}
+                        className="inline-block px-1.5 py-0.5 text-[9px] sm:text-[10px] font-medium bg-amber-500/10 text-amber-600 rounded"
+                      >
+                        {label}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+              {/* Info */}
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground">
+                Our team will review within 24 hours
               </p>
             </div>
           )}

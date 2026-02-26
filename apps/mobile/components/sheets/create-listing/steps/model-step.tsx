@@ -35,12 +35,25 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
     return [...getModelsForMake(data.make)].sort();
   }, [data.make]);
 
-  // Filter models by search
+  // Filter models by search - selected first
   const models = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return allModels;
-    return allModels.filter((m) => m.toLowerCase().includes(q));
-  }, [query, allModels]);
+    
+    if (q) {
+      // When searching, still show selected first
+      const filtered = allModels.filter((m) => m.toLowerCase().includes(q));
+      if (data.model && filtered.includes(data.model)) {
+        return [data.model, ...filtered.filter(m => m !== data.model)];
+      }
+      return filtered;
+    }
+    
+    // No search: selected first, then rest
+    if (data.model && allModels.includes(data.model)) {
+      return [data.model, ...allModels.filter(m => m !== data.model)];
+    }
+    return allModels;
+  }, [query, allModels, data.model]);
 
   const handleSelect = useCallback(
     (model: string) => {

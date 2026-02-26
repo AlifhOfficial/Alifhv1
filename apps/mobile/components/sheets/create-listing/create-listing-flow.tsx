@@ -91,8 +91,8 @@ const STEP_CONTENT: Record<SheetStepId, React.ComponentType<StepContentProps>> =
 export interface StepContentProps {
   data: CreateListingData;
   onUpdate: (updates: Partial<CreateListingData>) => void;
-  /** Called when listing is successfully submitted. `approved` indicates if AI moderation passed. */
-  onSubmitSuccess?: (listingId: string, approved: boolean) => void;
+  /** Called when listing is successfully submitted. `approved` indicates if AI moderation passed. `isDraft` if saved as draft. */
+  onSubmitSuccess?: (listingId: string, approved: boolean, isDraft?: boolean) => void;
   onGoToStep?: (index: number) => void;
   /** If editing existing listing, this is the ID */
   editingListingId?: string;
@@ -233,16 +233,19 @@ export function CreateListingFlow({
 
   // ── Success handler ──
   const handleSuccess = useCallback(
-    (listingId: string, approved: boolean) => {
+    (listingId: string, approved: boolean, isDraft?: boolean) => {
       onSuccess?.(listingId);
       bottomSheetRef.current?.dismiss();
       
       if (approved) {
         // AI moderation passed - show listing detail
         router.replace(`/listing/${listingId}`);
+      } else if (isDraft) {
+        // Saved as draft - go to inventory drafts tab
+        router.replace('/inventory?tab=draft');
       } else {
         // Flagged for review - go to inventory (In Review tab)
-        router.replace('/inventory');
+        router.replace('/inventory?tab=in_review');
       }
     },
     [onSuccess, router]

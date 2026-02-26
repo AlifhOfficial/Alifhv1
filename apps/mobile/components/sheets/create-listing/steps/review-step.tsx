@@ -32,7 +32,7 @@ function toAbsoluteUrl(url: string): string {
 }
 
 interface ReviewStepContentProps extends StepContentProps {
-  onSubmitSuccess?: (listingId: string, approved: boolean) => void;
+  onSubmitSuccess?: (listingId: string, approved: boolean, isDraft?: boolean) => void;
   onGoToStep?: (stepIndex: number) => void;
   editingListingId?: string;
 }
@@ -89,14 +89,14 @@ export function ReviewStepContent({
         // Update existing draft
         const result = await updateListing(editingListingId, payload);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        // Drafts go to inventory (not live)
-        onSubmitSuccess?.(result.id, false);
+        // Drafts go to inventory drafts tab
+        onSubmitSuccess?.(result.id, false, true);
       } else {
         // Create new draft
         const result = await createListing(payload);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        // Drafts go to inventory (not live)
-        onSubmitSuccess?.(result.id, false);
+        // Drafts go to inventory drafts tab
+        onSubmitSuccess?.(result.id, false, true);
       }
     } catch (err: any) {
       setError(err.message ?? 'Something went wrong.');

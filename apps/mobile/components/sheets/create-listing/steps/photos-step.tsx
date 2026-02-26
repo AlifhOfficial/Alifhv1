@@ -143,7 +143,9 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
           <View style={styles.uploadingContent}>
             <ActivityIndicator size="small" color={colors.text} />
             <Body size="medium" tone="secondary">
-              Uploading {uploadProgress.done}/{uploadProgress.total}...
+              {uploadProgress.total > 0
+                ? `Uploading ${uploadProgress.done} of ${uploadProgress.total}...`
+                : 'Preparing...'}
             </Body>
           </View>
         ) : (

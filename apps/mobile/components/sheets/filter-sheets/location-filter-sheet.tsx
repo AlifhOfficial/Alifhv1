@@ -57,11 +57,19 @@ export function LocationFilterSheet({
       setIsLoadingFacets(true);
       searchApi
         .getFacets(filterContext)
-        .then((result) => setOptions(result?.emirates ?? []))
+        .then((result) => setOptions(result?.emirate ?? []))
         .catch(console.error)
         .finally(() => setIsLoadingFacets(false));
     }
   }, [visible, filterContext]);
+
+  // Sort options: selected first, then by count
+  const sortedOptions = useMemo(() => {
+    const selectedSet = new Set(localSelected);
+    const selectedOpts = options.filter(o => selectedSet.has(o.value));
+    const rest = options.filter(o => !selectedSet.has(o.value));
+    return [...selectedOpts, ...rest];
+  }, [options, localSelected]);
 
   const snapPoints = useMemo(() => ['60%', '94%'], []);
 
@@ -184,7 +192,7 @@ export function LocationFilterSheet({
       <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Options List */}
         <View style={styles.listContainer}>
-          {options.map((option) => {
+          {sortedOptions.map((option) => {
             const isSelected = localSelected.includes(option.value);
 
             return (

@@ -161,6 +161,12 @@ export interface MyListingCard {
   isBlkListing: boolean;
   partnerId: string | null;
   rejectionReason: string | null;
+  /** AI moderation info for pending review listings */
+  aiModeration?: {
+    reasoning?: string;
+    flags?: Array<string | { code: string; severity?: string; message?: string }>;
+    confidence?: number;
+  } | null;
 }
 
 /** Stats returned when includeStats=true */
@@ -394,6 +400,7 @@ function transformMyListingCard(raw: any): MyListingCard {
     isBlkListing: raw.isBlkListing ?? false,
     partnerId: raw.partnerId ?? null,
     rejectionReason: raw.rejectionReason ?? null,
+    aiModeration: raw.aiModeration ?? null,
   };
 }
 

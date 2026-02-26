@@ -36,21 +36,32 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
 
-  // Build flat list: Popular first, then all makes alphabetically
+  // Build flat list: Selected first, then Popular, then rest alphabetically
   const makes = useMemo((): string[] => {
     const q = query.trim().toLowerCase();
+    const selectedMake = data.make;
 
     if (q) {
-      return CAR_MAKES.filter((m) => m.toLowerCase().includes(q));
+      // When searching, still show selected first
+      const filtered = CAR_MAKES.filter((m) => m.toLowerCase().includes(q));
+      if (selectedMake && filtered.some(m => m === selectedMake)) {
+        return [selectedMake, ...filtered.filter(m => m !== selectedMake)];
+      }
+      return filtered;
     }
 
-    // No search: Popular first, then rest alphabetically (excluding popular dupes)
+    // No search: Selected first, then Popular, then rest alphabetically
     const allSorted = [...CAR_MAKES]
-      .filter((m) => !POPULAR_MAKES.includes(m))
+      .filter((m) => !POPULAR_MAKES.includes(m) && m !== selectedMake)
       .sort((a, b) => a.localeCompare(b));
     
+    const popularWithoutSelected = POPULAR_MAKES.filter(m => m !== selectedMake);
+    
+    if (selectedMake) {
+      return [selectedMake, ...popularWithoutSelected, ...allSorted];
+    }
     return [...POPULAR_MAKES, ...allSorted];
-  }, [query]);
+  }, [query, data.make]);
 
   const handleSelect = useCallback(
     (make: string) => {

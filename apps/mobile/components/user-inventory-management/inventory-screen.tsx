@@ -29,7 +29,7 @@ import {
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { getThumbUrl } from '@/lib/config';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -57,6 +57,7 @@ import {
   type MyListingCard,
   type MyListingsStats,
   type MyListingsFilter,
+  type DeleteListingResponse,
 } from '@/lib/sell-car-user-api';
 import {
   formatListingStatus,
@@ -76,6 +77,7 @@ import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { TopSafeAreaGradient } from '@/components/layout';
 import { DeleteListingSheet } from './sub-operations/delete-listing-sheet';
 import { ListingStatsSheet } from './sub-operations/listing-stats-sheet';
+import { PendingReviewReasonSheet } from './sub-operations/pending-review-reason-sheet';
 import { ProfileMenu } from '@/components/home/profile-menu';
 import { CreateListingFlow } from '@/components/sheets/create-listing/create-listing-flow';
 import type { CreateListingData } from '@/components/sheets/create-listing/types';
@@ -131,9 +133,18 @@ export function InventoryScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { tab } = useLocalSearchParams<{ tab?: string }>();
+
+  // Determine initial tab from URL param
+  const initialTab = useMemo(() => {
+    if (tab && STATUS_TABS.some(t => t.key === tab)) {
+      return tab as MyListingsFilter;
+    }
+    return 'all';
+  }, [tab]);
 
   // ── Data State ───────────────────────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState<MyListingsFilter>('all');
+  const [activeTab, setActiveTab] = useState<MyListingsFilter>(initialTab);
   const [listings, setListings] = useState<MyListingCard[]>([]);
   const [stats, setStats] = useState<MyListingsStats | null>(null);
   const [total, setTotal] = useState(0);
@@ -141,6 +152,11 @@ export function InventoryScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Sync active tab when URL param changes
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
   // ── Sheet State ──────────────────────────────────────────────────────────
   const [selectedListing, setSelectedListing] = useState<MyListingCard | null>(null);
@@ -151,6 +167,7 @@ export function InventoryScreen() {
   const [showDelete, setShowDelete] = useState(false);
   const [hardDeleteMode, setHardDeleteMode] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showReviewReason, setShowReviewReason] = useState(false);
   const [showEditFlow, setShowEditFlow] = useState(false);
   const [editInitialData, setEditInitialData] = useState<Partial<CreateListingData> | undefined>(undefined);
   const [editingListingId, setEditingListingId] = useState<string | null>(null);
@@ -288,6 +305,7 @@ export function InventoryScreen() {
         break;
       }
       case 'view_stats': setShowStats(true); break;
+      case 'view_review_reason': setShowReviewReason(true); break;
       case 'mark_sold': setShowMarkSold(true); break;
       case 'extend': setShowExtend(true); break;
       case 'archive':
@@ -298,6 +316,17 @@ export function InventoryScreen() {
   }, [selectedListing]);
 
   const handleSubOpSuccess = useCallback(() => fetchListings({ refresh: true }), [fetchListings]);
+
+  /** Handle delete success: navigate to 'deleted' tab for soft-deletes */
+  const handleDeleteSuccess = useCallback((result: DeleteListingResponse) => {
+    if (result.action === 'soft_deleted' && activeTab !== 'deleted') {
+      // Navigate to deleted tab so user can see where listing went
+      setActiveTab('deleted');
+    } else {
+      // Hard delete or already on deleted tab - just refresh
+      fetchListings({ refresh: true });
+    }
+  }, [activeTab, fetchListings]);
 
   const selectedTitle = useMemo(
     () =>
@@ -636,7 +665,7 @@ export function InventoryScreen() {
           <DeleteListingSheet
             visible={showDelete}
             onClose={() => setShowDelete(false)}
-            onSuccess={handleSubOpSuccess}
+            onSuccess={handleDeleteSuccess}
             listingId={selectedListing.id}
             listingTitle={selectedTitle}
             listingThumbnail={selectedListing.thumbnail}
@@ -650,6 +679,13 @@ export function InventoryScreen() {
             viewCount={selectedListing.viewCount ?? 0}
             favouriteCount={selectedListing.favouriteCount ?? 0}
             superlikeCount={selectedListing.superlikeCount ?? 0}
+          />
+          <PendingReviewReasonSheet
+            visible={showReviewReason}
+            onClose={() => setShowReviewReason(false)}
+            listingTitle={selectedTitle}
+            listingThumbnail={selectedListing.thumbnail}
+            aiModeration={selectedListing.aiModeration}
           />
         </>
       )}

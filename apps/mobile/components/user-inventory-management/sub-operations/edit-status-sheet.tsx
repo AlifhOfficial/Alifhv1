@@ -30,6 +30,7 @@ import {
   Trash2,
   AlertTriangle,
   BarChart3,
+  HelpCircle,
 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
@@ -44,6 +45,7 @@ import { formatListingStatus, getStatusColor } from '../utilities/listing-helper
 export type EditStatusAction =
   | 'edit'
   | 'view_stats'
+  | 'view_review_reason'
   | 'mark_sold'
   | 'extend'
   | 'archive'
@@ -95,7 +97,17 @@ const ACTION_ROWS: ActionRow[] = [
     label: 'View Stats',
     icon: BarChart3,
     color: (c) => c.text,
-    visible: ({ lifecycleStatus }) => lifecycleStatus !== 'expired',
+    // Only show stats for listings that were/are live (approved)
+    visible: ({ moderationStatus }) => moderationStatus === 'approved',
+  },
+  {
+    key: 'view_review_reason',
+    label: 'Why In Review?',
+    icon: HelpCircle,
+    color: (c) => c.warning,
+    // Only show for listings currently pending review
+    visible: ({ moderationStatus }) =>
+      moderationStatus === 'submitted' || moderationStatus === 'pending_review',
   },
   {
     key: 'mark_sold',
