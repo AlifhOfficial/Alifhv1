@@ -219,8 +219,6 @@ export const AUTH_ENDPOINTS = {
 // Profile endpoints
 export const PROFILE_ENDPOINTS = {
   USER_PROFILE: '/api/profile/user/user-profile',
-  PRESIGNED: '/api/storage/presigned',
-  PROCESS: '/api/storage/process',
   DELETE_ACCOUNT: '/api/profile/user/delete-account',
 } as const;
 

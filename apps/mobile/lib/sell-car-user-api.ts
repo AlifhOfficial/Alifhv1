@@ -6,7 +6,7 @@
  *   • Edit listing      (PUT /api/listings/[id])
  *   • My Listings       (GET /api/listings/my-listings + stats)
  *   • Lifecycle actions (mark-sold, extend, archive, delete)
- *   • Image upload      (presigned URL pipeline: /api/storage/presigned + /api/storage/process)
+ *   • Image upload      (client-side compression + direct R2 upload)
  *   • VIN check         (GET /api/listings/check-vin)
  *
  * Each public function returns data already transformed for native UI
@@ -421,96 +421,14 @@ export async function checkVin(
 }
 
 // ============================================================================
-// API — IMAGE UPLOAD (Presigned URL Pipeline)
+// API — DIRECT IMAGE UPLOAD (Client-Side Compression)
 // ============================================================================
 
 /**
- * Upload a listing image using presigned URL pipeline.
- * 
- * Flow:
- * 1. POST /api/storage/presigned → get upload URL
- * 2. PUT directly to R2 (fast, bypasses Vercel limit)
- * 3. POST /api/storage/process → get processed CDN URLs
- *
- * Server processing includes:
- * - HEIC/HEIF auto-detection and conversion
- * - WebP conversion with quality 78 (full) / 72 (thumb)
- * - Generates thumb (480w, ~15-20KB) + full (2000w, ~100-200KB) versions
- *
- * @param fileUri  Local file URI from image picker (e.g. file:///...)
- * @param vin      VIN string (min 11 chars, used for R2 folder)
- * @param fileName Optional filename override
- */
-export async function uploadListingImage(
-  fileUri: string,
-  vin: string,
-  fileName?: string,
-): Promise<ImageUploadResult> {
-  const name = fileName ?? fileUri.split('/').pop() ?? 'photo.jpg';
-  
-  // Detect MIME type from extension
-  const ext = name.split('.').pop()?.toLowerCase() ?? '';
-  const mimeTypes: Record<string, string> = {
-    'jpg': 'image/jpeg',
-    'jpeg': 'image/jpeg',
-    'png': 'image/png',
-    'webp': 'image/webp',
-    'heic': 'image/heic',
-    'heif': 'image/heif',
-  };
-  const contentType = mimeTypes[ext] || 'image/jpeg';
-  
-  // Step 1: Get presigned upload URL
-  const presignedRes = await authFetch('/api/storage/presigned', {
-    method: 'POST',
-    body: JSON.stringify({ type: 'listing', contentType, vin }),
-  });
-  
-  if (!presignedRes.ok) {
-    const err = await presignedRes.json().catch(() => ({}));
-    throw new Error(err.error || 'Failed to get upload URL');
-  }
-  
-  const { uploadUrl, rawKey, maxSize } = await presignedRes.json();
-  
-  // Step 2: Upload directly to R2
-  // For React Native, we need to read the file and upload
-  const uploadRes = await fetch(uploadUrl, {
-    method: 'PUT',
-    headers: { 'Content-Type': contentType },
-    body: await fetch(fileUri).then(r => r.blob()),
-  });
-  
-  if (!uploadRes.ok) {
-    throw new Error('Upload failed. Please try again.');
-  }
-  
-  // Step 3: Process the uploaded image
-  const processRes = await authFetch('/api/storage/process', {
-    method: 'POST',
-    body: JSON.stringify({ rawKey }),
-    timeoutMs: 60000, // 60s for HEIC processing
-  });
-  
-  if (!processRes.ok) {
-    const err = await processRes.json().catch(() => ({}));
-    throw new Error(err.error || 'Processing failed');
-  }
-  
-  const data = await processRes.json();
-  
-  // Return the full-size URL (thumb can be derived)
-  return {
-    url: data.fullKey,
-    absoluteUrl: data.fullUrl,
-  };
-}
-
-/**
- * Delete a previously uploaded listing image from R2.
+ * Delete a listing image from R2.
  * DELETE /api/storage/delete
  *
- * @param key  R2 object key (e.g. "listings/VIN/image.webp")
+ * @param key  R2 object key (e.g. "listings/2026/02/xxx_full.jpg")
  */
 export async function deleteListingImage(key: string): Promise<void> {
   const res = await authFetch('/api/storage/delete', {
@@ -520,10 +438,6 @@ export async function deleteListingImage(key: string): Promise<void> {
 
   if (!res.ok) await handleError(res, 'Image delete failed');
 }
-
-// ============================================================================
-// API — DIRECT IMAGE UPLOAD (Client-Side Compression, No Server Processing)
-// ============================================================================
 
 /**
  * Get presigned URLs for direct listing image upload.
@@ -921,8 +835,8 @@ export const sellCarUserApi = {
   // VIN
   checkVin,
 
-  // Images
-  uploadImage: uploadListingImage,
+  // Images (direct upload with client-side compression)
+  uploadImage: uploadListingImageDirect,
   deleteImage: deleteListingImage,
 
   // CRUD

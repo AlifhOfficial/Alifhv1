@@ -7,22 +7,10 @@ export {
   type BrandImageType,
 } from "./keys";
 
-// Client-side upload utilities (presigned URL pipeline - legacy)
-export {
-  uploadImage,
-  uploadListingImage,
-  uploadAvatar,
-  uploadPartnerImage,
-  uploadShowroomImage,
-  uploadShowroomVideo,
-  type UploadType,
-  type UploadOptions,
-  type UploadResult,
-  type ListingUploadResult,
-  type SingleUploadResult,
-} from "./upload-client";
+// Video upload (showroom only - goes direct, no compression)
+export { uploadShowroomVideo } from "./upload-client";
 
-// Direct upload utilities (client-side compression, no server processing)
+// Direct upload utilities (client-side compression + direct R2 upload)
 export {
   uploadListingImageDirect,
   uploadAvatarDirect,
@@ -33,6 +21,8 @@ export {
   compressAndUploadAvatar,
   compressAndUploadPartnerImage,
   compressAndUploadShowroomImage,
+  type ListingUploadResult,
+  type SingleUploadResult,
   type DirectListingUploadResult,
   type DirectSingleUploadResult,
 } from "./upload-client";

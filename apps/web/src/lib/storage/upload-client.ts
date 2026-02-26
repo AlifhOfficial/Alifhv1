@@ -1,13 +1,14 @@
 /**
- * Unified Image Upload Client
+ * Image Upload Client
  * 
- * Simple, fast image uploads via presigned URLs.
- * Bypasses Vercel's 4.5MB limit by uploading directly to R2.
+ * Fast client-side compression + direct R2 upload.
+ * Bypasses Vercel's 4.5MB limit and eliminates server processing.
  * 
- * Flow:
- * 1. Get presigned URL from /api/storage/presigned
- * 2. PUT directly to R2 (instant, no server bottleneck)
- * 3. Process via /api/storage/process → get CDN URL(s)
+ * Architecture:
+ * 1. Client compresses image (browser-image-compression)
+ * 2. Get presigned URL from /api/storage/direct
+ * 3. PUT directly to R2 (instant, no server bottleneck)
+ * 4. CDN URL immediately available
  * 
  * All images served via cdn.revvup.ae with 1-year caching.
  */
@@ -15,25 +16,6 @@
 // ============================================================================
 // Types
 // ============================================================================
-
-export type UploadType = 'listing' | 'avatar' | 'partner' | 'showroom';
-
-export interface UploadOptions {
-  /** Upload type */
-  type: UploadType;
-  /** File to upload */
-  file: File;
-  /** VIN - required for listing uploads */
-  vin?: string;
-  /** Partner ID - required for partner and showroom uploads */
-  partnerId?: string;
-  /** Image type for partner uploads: 'logo' | 'hero' */
-  imageType?: 'logo' | 'hero';
-  /** Asset type for showroom uploads */
-  assetType?: string;
-  /** Progress callback (0-100) */
-  onProgress?: (percent: number) => void;
-}
 
 export interface ListingUploadResult {
   thumbKey: string;
@@ -49,162 +31,9 @@ export interface SingleUploadResult {
   height?: number;
 }
 
-export type UploadResult = ListingUploadResult | SingleUploadResult;
-
 // ============================================================================
-// Main Upload Function
+// Video Upload (Showroom only - no compression needed)
 // ============================================================================
-
-/**
- * Upload an image using the presigned URL pipeline.
- * 
- * @example Listing image (returns thumb + full)
- * const result = await uploadImage({
- *   type: 'listing',
- *   file: imageFile,
- *   vin: '1HGCM82633A123456',
- * });
- * console.log(result.thumbUrl, result.fullUrl);
- * 
- * @example Avatar
- * const result = await uploadImage({
- *   type: 'avatar',
- *   file: imageFile,
- * });
- * console.log(result.url);
- * 
- * @example Partner logo
- * const result = await uploadImage({
- *   type: 'partner',
- *   file: imageFile,
- *   partnerId: 'abc123',
- *   imageType: 'logo',
- * });
- */
-export async function uploadImage(options: UploadOptions): Promise<UploadResult> {
-  const { type, file, vin, partnerId, imageType, assetType, onProgress } = options;
-
-  // Step 1: Get presigned URL
-  onProgress?.(5);
-  
-  const presignedRes = await fetch('/api/storage/presigned', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      type,
-      contentType: file.type,
-      vin,
-      partnerId,
-      imageType,
-      assetType,
-    }),
-  });
-
-  if (!presignedRes.ok) {
-    const error = await presignedRes.json();
-    throw new Error(error.error || 'Failed to get upload URL');
-  }
-
-  const { uploadUrl, rawKey, maxSize, requiresProcessing } = await presignedRes.json();
-
-  // Validate file size
-  if (file.size > maxSize) {
-    const maxMB = Math.round(maxSize / 1024 / 1024);
-    throw new Error(`File too large. Maximum ${maxMB}MB allowed.`);
-  }
-
-  // Step 2: Upload directly to R2
-  onProgress?.(10);
-  
-  const uploadRes = await fetch(uploadUrl, {
-    method: 'PUT',
-    headers: { 'Content-Type': file.type },
-    body: file,
-  });
-
-  if (!uploadRes.ok) {
-    throw new Error('Upload failed. Please try again.');
-  }
-
-  onProgress?.(60);
-
-  // Step 3: Process the image (if needed)
-  if (!requiresProcessing) {
-    // Video uploads go direct - no processing needed
-    const cdnUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || '';
-    return {
-      key: rawKey,
-      url: `${cdnUrl}/${rawKey}`,
-    } as SingleUploadResult;
-  }
-
-  const processRes = await fetch('/api/storage/process', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ rawKey }),
-  });
-
-  onProgress?.(95);
-
-  if (!processRes.ok) {
-    const error = await processRes.json();
-    throw new Error(error.error || 'Processing failed');
-  }
-
-  const result = await processRes.json();
-  onProgress?.(100);
-
-  return result;
-}
-
-// ============================================================================
-// Convenience Functions
-// ============================================================================
-
-/**
- * Upload a listing image. Returns thumb + full URLs.
- */
-export async function uploadListingImage(
-  file: File,
-  vin: string,
-  onProgress?: (percent: number) => void
-): Promise<ListingUploadResult> {
-  return uploadImage({ type: 'listing', file, vin, onProgress }) as Promise<ListingUploadResult>;
-}
-
-/**
- * Upload an avatar image. Returns single URL.
- */
-export async function uploadAvatar(
-  file: File,
-  onProgress?: (percent: number) => void
-): Promise<SingleUploadResult> {
-  return uploadImage({ type: 'avatar', file, onProgress }) as Promise<SingleUploadResult>;
-}
-
-/**
- * Upload a partner image (logo or hero). Returns single URL.
- */
-export async function uploadPartnerImage(
-  file: File,
-  partnerId: string,
-  imageType: 'logo' | 'hero',
-  onProgress?: (percent: number) => void
-): Promise<SingleUploadResult> {
-  return uploadImage({ type: 'partner', file, partnerId, imageType, onProgress }) as Promise<SingleUploadResult>;
-}
-
-/**
- * Upload a showroom image. Returns single URL.
- */
-export async function uploadShowroomImage(
-  file: File,
-  partnerId: string,
-  assetType: string,
-  onProgress?: (percent: number) => void
-): Promise<SingleUploadResult> {
-  return uploadImage({ type: 'showroom', file, partnerId, assetType, onProgress }) as Promise<SingleUploadResult>;
-}
 
 /**
  * Upload a showroom video. Direct to CDN (no processing).
