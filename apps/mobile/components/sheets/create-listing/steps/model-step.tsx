@@ -81,9 +81,22 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
     [data.model, colors, handleSelect]
   );
 
-  const ListHeader = useCallback(
-    () => (
-      <View style={[styles.searchWrapper, { backgroundColor: colors.surface }]}>
+  // No make selected state
+  if (!data.make) {
+    return (
+      <View style={styles.noMakeState}>
+        <AlertCircle size={Sizes.iconLg} color={colors.textMuted} strokeWidth={1.5} />
+        <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
+          Please select a make first
+        </Body>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      {/* Search - outside FlatList to prevent focus loss */}
+      <View style={[styles.searchWrapper, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View style={[styles.searchBox, { backgroundColor: colors.fillSecondary }]}>
           <Search size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
           <BottomSheetTextInput
@@ -106,53 +119,41 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
           {allModels.length} models
         </Supporting>
       </View>
-    ),
-    [colors, query, data.make, allModels.length]
-  );
 
-  // No make selected state
-  if (!data.make) {
-    return (
-      <View style={styles.noMakeState}>
-        <AlertCircle size={Sizes.iconLg} color={colors.textMuted} strokeWidth={1.5} />
-        <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
-          Please select a make first
-        </Body>
-      </View>
-    );
-  }
-
-  return (
-    <BottomSheetFlatList
-      data={models}
-      keyExtractor={(item: string) => item}
-      renderItem={renderItem}
-      ListHeaderComponent={ListHeader}
-      contentContainerStyle={[
-        styles.listContent,
-        { paddingBottom: insets.bottom + Spacing['3xl'] },
-      ]}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-      ListEmptyComponent={
-        <View style={styles.emptyState}>
-          <Body size="medium" tone="secondary">
-            {query ? `No models found for "${query}"` : 'No models available'}
-          </Body>
-        </View>
-      }
-    />
+      <BottomSheetFlatList
+        data={models}
+        keyExtractor={(item: string) => item}
+        renderItem={renderItem}
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingBottom: insets.bottom + Spacing['3xl'] },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Body size="medium" tone="secondary">
+              {query ? `No models found for "${query}"` : 'No models available'}
+            </Body>
+          </View>
+        }
+      />
+    </View>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   searchWrapper: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
     gap: Spacing.xs,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   searchBox: {
     flexDirection: 'row',

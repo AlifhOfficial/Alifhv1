@@ -252,11 +252,19 @@ export interface SinglePresignedUrl {
 // TYPES — API Responses (raw → transformed)
 // ============================================================================
 
+/** AI moderation result returned with new listings */
+export interface AIModerationResult {
+  decision: 'approve' | 'flag';
+  approved: boolean;
+}
+
 export interface CreateListingResponse {
   id: string;
   slug: string | null;
   moderationStatus: ModerationStatus;
   lifecycleStatus: LifecycleStatus;
+  /** AI moderation result (only for user-posted published listings) */
+  moderation: AIModerationResult | null;
 }
 
 export interface UpdateListingResponse {
@@ -604,6 +612,10 @@ export async function uploadShowroomImageDirect(
  *
  * For regular users the listing enters moderation (moderationStatus = 'submitted').
  * Drafts (status = 'draft') stay in draft without moderation.
+ * 
+ * Returns moderation result for published user listings:
+ * - approved: true → listing is live, navigate to detail page
+ * - approved: false → listing flagged for review, navigate to inventory
  */
 export async function createListing(
   payload: ListingFormPayload,
@@ -616,11 +628,14 @@ export async function createListing(
   if (!res.ok) await handleError(res, 'Failed to create listing');
 
   const data = await res.json();
+  const listingData = data.data || data;
+  
   return {
-    id: data.id,
-    slug: data.slug ?? null,
-    moderationStatus: data.moderationStatus ?? 'submitted',
-    lifecycleStatus: data.lifecycleStatus ?? 'active',
+    id: listingData.id,
+    slug: listingData.slug ?? null,
+    moderationStatus: listingData.moderationStatus ?? 'submitted',
+    lifecycleStatus: listingData.lifecycleStatus ?? 'active',
+    moderation: listingData.moderation ?? null,
   };
 }
 
@@ -768,8 +783,7 @@ export async function toggleArchiveListing(
   archive: boolean,
 ): Promise<UpdateListingResponse> {
   return updateListing(listingId, {
-    // The API interprets this and sets lifecycleStatus accordingly
-    status: archive ? 'draft' : 'published',
+    lifecycleStatus: archive ? 'archived' : 'active',
   } as any);
 }
 

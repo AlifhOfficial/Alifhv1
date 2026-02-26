@@ -10,9 +10,8 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
-import { Tag, Info } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -55,26 +54,23 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
   return (
     <StepContainer>
       {/* Input */}
-      <View style={styles.inputRow}>
-        <Tag size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-        <BottomSheetTextInput
-          style={[
-            styles.input,
-            {
-              backgroundColor: colors.fillSecondary,
-              color: colors.text,
-              borderColor: colors.border,
-            },
-          ]}
-          placeholder="e.g. Sport, AMG, M-Sport..."
-          placeholderTextColor={colors.textMuted}
-          value={localTrim}
-          onChangeText={handleChange}
-          autoCapitalize="words"
-          autoCorrect={false}
-          returnKeyType="done"
-        />
-      </View>
+      <BottomSheetTextInput
+        style={[
+          styles.input,
+          {
+            backgroundColor: colors.fillSecondary,
+            color: colors.text,
+            borderColor: colors.border,
+          },
+        ]}
+        placeholder="e.g. Sport, AMG, M-Sport..."
+        placeholderTextColor={colors.textMuted}
+        value={localTrim}
+        onChangeText={handleChange}
+        autoCapitalize="words"
+        autoCorrect={false}
+        returnKeyType="done"
+      />
 
       {/* Quick picks */}
       <View style={styles.section}>
@@ -108,8 +104,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Hint */}
       <View style={[styles.hintBox, { backgroundColor: colors.fillSecondary }]}>
-        <Info size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-        <Supporting size="small" tone="muted" style={{ flex: 1 }}>
+        <Supporting size="small" tone="muted">
           Trim is optional but helps buyers identify your exact variant.
         </Supporting>
       </View>
@@ -120,13 +115,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
   input: {
-    flex: 1,
     height: 48,
     borderWidth: 1,
     borderRadius: Radius.lg,
@@ -136,7 +125,7 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: Spacing.sm,
-    marginTop: Spacing.lg,
+    marginTop: Spacing.xl,
   },
   chipWrap: {
     flexDirection: 'row',
@@ -150,12 +139,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   hintBox: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
     padding: Spacing.md,
     borderRadius: Radius.lg,
-    marginTop: Spacing.lg,
+    marginTop: Spacing.xl,
   },
 });
 

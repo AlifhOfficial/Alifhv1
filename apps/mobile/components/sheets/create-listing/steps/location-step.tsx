@@ -9,9 +9,8 @@
 import React, { useCallback, useRef } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { MapPin, Building2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -47,10 +46,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Emirate Selection */}
       <View style={styles.section}>
-        <View style={styles.labelRow}>
-          <MapPin size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-          <Label size="small">Emirate</Label>
-        </View>
+        <Label size="small">Emirate</Label>
         <View style={styles.chipsWrap}>
           {UAE_EMIRATES.map((emirate) => {
             const isActive = data.emirate === emirate.value;
@@ -81,7 +77,6 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {/* City Input (Optional) */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Building2 size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
           <Label size="small">City / Area</Label>
           <Supporting size="small" tone="muted">
             Optional
@@ -110,7 +105,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {data.emirate && (
         <View style={[styles.summaryBox, { backgroundColor: colors.fillSecondary }]}>
           <Supporting size="small" tone="secondary">
-            📍 {data.emirate}{data.city ? `, ${data.city}` : ''}
+            {data.emirate}{data.city ? `, ${data.city}` : ''}
           </Supporting>
         </View>
       )}
@@ -123,6 +118,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
 const styles = StyleSheet.create({
   section: {
     gap: Spacing.sm,
+    marginBottom: Spacing.xl,
   },
   labelRow: {
     flexDirection: 'row',

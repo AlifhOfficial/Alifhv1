@@ -6,16 +6,18 @@
  * @module components/sheets/create-listing/steps/description-step
  */
 
-import React, { useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
-import { FileText, Lightbulb } from 'lucide-react-native';
+import { Sparkles, RefreshCw } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
+import { API_BASE } from '@/lib/config';
+import { getSession } from '@/lib/auth-api';
 
 import { StepContainer } from '../step-container';
 import type { StepContentProps } from '../create-listing-flow';
@@ -24,18 +26,13 @@ import type { StepContentProps } from '../create-listing-flow';
 
 const MAX_DESCRIPTION = 2000;
 
-const QUICK_TEMPLATES = [
-  'Single owner, full service history.',
-  'Excellent condition, well maintained.',
-  'Low mileage, accident-free.',
-  'Recently serviced, new tires.',
-];
-
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
 
   const handleChange = useCallback(
     (text: string) => {
@@ -45,55 +42,109 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
     [onUpdate]
   );
 
-  const handleTemplate = useCallback(
-    (template: string) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      const current = data.description || '';
-      const newDesc = current ? `${current} ${template}` : template;
-      const trimmed = newDesc.slice(0, MAX_DESCRIPTION);
-      onUpdate({ description: trimmed });
-    },
-    [data.description, onUpdate]
-  );
+  // AI Description Generator
+  const generateAIDescription = useCallback(async (isRegenerate = false) => {
+    if (!data.make || !data.model || !data.year) {
+      setGenerateError('Complete vehicle details first');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      return;
+    }
+
+    setIsGenerating(true);
+    setGenerateError(null);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    try {
+      // Get auth session for Bearer token
+      const { session } = await getSession();
+      if (!session?.token) {
+        throw new Error('Please sign in first');
+      }
+
+      const response = await fetch(`${API_BASE}/api/ai/description`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.token}`,
+        },
+        body: JSON.stringify({
+          make: data.make,
+          model: data.model,
+          year: data.year,
+          trim: data.trim,
+          mileage: data.mileage,
+          specs: data.specs,
+          bodyType: data.bodyType,
+          fuelType: data.fuelType,
+          transmission: data.transmission,
+          engineSize: data.engineSize,
+          cylinders: data.cylinders,
+          exteriorColor: data.exteriorColor,
+          interiorColor: data.interiorColor,
+          price: data.price,
+          isNegotiable: data.isNegotiable,
+          emirate: data.emirate,
+          extras: data.extras,
+          previousDescription: isRegenerate ? data.description : null,
+          regenerateReason: isRegenerate ? 'different_angle' : null,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('[AI Description] Response error:', response.status, errorData);
+        throw new Error(errorData.error || `Failed (${response.status})`);
+      }
+
+      const result = await response.json();
+      if (result.success && result.data?.description) {
+        onUpdate({ description: result.data.description });
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else {
+        throw new Error(result.error || 'No description returned');
+      }
+    } catch (err) {
+      console.error('[AI Description] Error:', err);
+      setGenerateError(err instanceof Error ? err.message : 'Failed to generate');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [data, onUpdate]);
 
   const description = data.description || '';
   const charCount = description.length;
   const isNearLimit = charCount > MAX_DESCRIPTION - 50;
+  const hasDescription = description.length > 0;
 
   return (
     <StepContainer>
-      {/* Quick templates */}
-      <View style={styles.section}>
-        <View style={styles.labelRow}>
-          <Lightbulb size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-          <Supporting size="small" tone="muted">
-            Quick add
-          </Supporting>
-        </View>
-        <View style={styles.chipsWrap}>
-          {QUICK_TEMPLATES.map((template, index) => (
-            <HapticPressable
-              key={index}
-              onPress={() => handleTemplate(template)}
-              style={[
-                styles.chip,
-                { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
-              ]}
-            >
-              <Body size="small" numberOfLines={1} style={{ color: colors.text }}>
-                {template}
-              </Body>
-            </HapticPressable>
-          ))}
-        </View>
-      </View>
-
       {/* Text Input */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <FileText size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
           <Label size="small">Description</Label>
+          <HapticPressable
+            onPress={() => generateAIDescription(hasDescription)}
+            disabled={isGenerating}
+            style={styles.aiLink}
+          >
+            {isGenerating ? (
+              <ActivityIndicator size={12} color={colors.primary} />
+            ) : hasDescription ? (
+              <RefreshCw size={14} color={colors.primary} strokeWidth={2} />
+            ) : (
+              <Sparkles size={14} color={colors.primary} strokeWidth={2} />
+            )}
+            <Body size="small" style={{ color: colors.primary, fontFamily: 'Inter_600SemiBold' }}>
+              {isGenerating ? 'Generating...' : hasDescription ? 'Regenerate' : 'AI Generate'}
+            </Body>
+          </HapticPressable>
         </View>
+        {generateError && (
+          <Supporting size="small" style={{ color: colors.error }}>
+            {generateError}
+          </Supporting>
+        )}
         <BottomSheetTextInput
           style={[
             styles.textArea,
@@ -115,19 +166,11 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
         <View style={styles.charCount}>
           <Supporting
             size="small"
-            style={{ color: isNearLimit ? colors.warning ?? '#F59E0B' : colors.textMuted }}
+            style={{ color: isNearLimit ? colors.warning : colors.textMuted }}
           >
             {charCount}/{MAX_DESCRIPTION}
           </Supporting>
         </View>
-      </View>
-
-      {/* Tips */}
-      <View style={[styles.tipsBox, { backgroundColor: colors.fillSecondary }]}>
-        <Supporting size="small" tone="muted" style={{ flex: 1 }}>
-          Good descriptions include: service history, upgrades, reason for selling,
-          and any issues the buyer should know about.
-        </Supporting>
       </View>
     </StepContainer>
   );
@@ -142,35 +185,25 @@ const styles = StyleSheet.create({
   labelRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    justifyContent: 'space-between',
   },
-  chipsWrap: {
+  aiLink: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
     gap: Spacing.xs,
   },
-  chip: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-    maxWidth: '100%',
-  },
   textArea: {
-    minHeight: 140,
+    minHeight: 400,
     borderWidth: 1,
     borderRadius: Radius.lg,
     padding: Spacing.md,
     fontSize: 16,
     fontFamily: 'Inter_400Regular',
     lineHeight: 24,
+    textAlignVertical: 'top',
   },
   charCount: {
     alignItems: 'flex-end',
-  },
-  tipsBox: {
-    padding: Spacing.md,
-    borderRadius: Radius.md,
   },
 });
 

@@ -16,7 +16,7 @@
  * - Returns 500 for server errors
  */
 
-import { NextRequest, NextResponse, after } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
   createAuditLogEntry,
@@ -294,6 +294,9 @@ export async function POST(req: NextRequest) {
 
     // AI Auto-Moderation for USER-posted listings only
     // Staff/dealer listings skip moderation as they are already trusted
+    // Run synchronously so client can handle result appropriately
+    let aiModeration: { decision: 'approve' | 'flag'; approved: boolean } | null = null;
+    
     if (postedByRole === 'user' && moderationStatus === 'submitted') {
       const moderationInput: ModerationInput = {
         make: input.make,
@@ -325,17 +328,22 @@ export async function POST(req: NextRequest) {
         ownerRemarks: input.specialNotes?.ownerRemarks || null,
       };
 
-      // Use after() to ensure AI moderation completes after response is sent
-      after(async () => {
-        try {
-          const result = await moderateListing(moderationInput);
-          await updateListingAIModeration(listingId, result);
-          console.log(`[AI Moderation] Listing ${listingId}: ${result.decision} (confidence: ${result.confidence})`);
-        } catch (error) {
-          console.error(`[AI Moderation] Failed for listing ${listingId}:`, error);
-          // On failure, listing stays as 'submitted' for manual review
-        }
-      });
+      try {
+        const result = await moderateListing(moderationInput);
+        await updateListingAIModeration(listingId, result);
+        console.log(`[AI Moderation] Listing ${listingId}: ${result.decision} (confidence: ${result.confidence})`);
+        aiModeration = {
+          decision: result.decision,
+          approved: result.decision === 'approve',
+        };
+      } catch (error) {
+        console.error(`[AI Moderation] Failed for listing ${listingId}:`, error);
+        // On failure, listing stays as 'submitted' for manual review
+        aiModeration = {
+          decision: 'flag',
+          approved: false,
+        };
+      }
     }
 
     void createAuditLogEntry({
@@ -360,6 +368,7 @@ export async function POST(req: NextRequest) {
         success: true,
         data: {
           id: listingId,
+          moderation: aiModeration,
         },
       },
       { status: 201 }

@@ -16,7 +16,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { ChevronLeft } from 'lucide-react-native';
+import { ChevronLeft, X } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -44,10 +44,12 @@ import {
   AppearanceStepContent,
   PowertrainStepContent,
   ExtrasStepContent,
+  HighlightsStepContent,
   PriceStepContent,
   LocationStepContent,
   PhotosStepContent,
   DescriptionStepContent,
+  NotesStepContent,
   ReviewStepContent,
 } from './steps';
 
@@ -58,6 +60,8 @@ interface CreateListingFlowProps {
   onClose: () => void;
   onSuccess?: (listingId: string) => void;
   initialData?: Partial<CreateListingData>;
+  /** If provided, the flow will UPDATE instead of CREATE */
+  listingId?: string;
 }
 
 // ─── Step Content Map ────────────────────────────────────────────────────────
@@ -73,18 +77,23 @@ const STEP_CONTENT: Record<SheetStepId, React.ComponentType<StepContentProps>> =
   'appearance': AppearanceStepContent,
   'powertrain': PowertrainStepContent,
   'extras': ExtrasStepContent,
+  'highlights': HighlightsStepContent,
   'price': PriceStepContent,
   'location': LocationStepContent,
   'photos': PhotosStepContent,
   'description': DescriptionStepContent,
+  'notes': NotesStepContent,
   'review': ReviewStepContent,
 };
 
 export interface StepContentProps {
   data: CreateListingData;
   onUpdate: (updates: Partial<CreateListingData>) => void;
-  onSubmitSuccess?: (listingId: string) => void;
+  /** Called when listing is successfully submitted. `approved` indicates if AI moderation passed. */
+  onSubmitSuccess?: (listingId: string, approved: boolean) => void;
   onGoToStep?: (index: number) => void;
+  /** If editing existing listing, this is the ID */
+  editingListingId?: string;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -94,6 +103,7 @@ export function CreateListingFlow({
   onClose,
   onSuccess,
   initialData,
+  listingId,
 }: CreateListingFlowProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
@@ -205,10 +215,17 @@ export function CreateListingFlow({
 
   // ── Success handler ──
   const handleSuccess = useCallback(
-    (listingId: string) => {
+    (listingId: string, approved: boolean) => {
       onSuccess?.(listingId);
       bottomSheetRef.current?.dismiss();
-      router.replace('/inventory');
+      
+      if (approved) {
+        // AI moderation passed - show listing detail
+        router.replace(`/listing/${listingId}`);
+      } else {
+        // Flagged for review - go to inventory (In Review tab)
+        router.replace('/inventory');
+      }
     },
     [onSuccess, router]
   );
@@ -285,16 +302,26 @@ export function CreateListingFlow({
 
           {/* Header */}
           <View style={[styles.header, { borderBottomColor: colors.border }]}>
-            <HapticPressable onPress={handleClose} hitSlop={Spacing.md} style={styles.headerLeft}>
-              <Body size="medium" tone="secondary">Cancel</Body>
-            </HapticPressable>
-
-            <View style={styles.headerCenter}>
+            <View style={styles.headerLeft}>
+              <HapticPressable
+                onPress={handleClose}
+                hitSlop={Spacing.md}
+                style={[styles.circleButton, { backgroundColor: colors.fillSecondary }]}
+              >
+                <X size={Sizes.iconSm} color={colors.textSecondary} strokeWidth={2} />
+              </HapticPressable>
               {currentStepIndex > 0 && (
-                <HapticPressable onPress={goToPrevStep} hitSlop={Spacing.sm} style={styles.backChevron}>
-                  <ChevronLeft size={Sizes.iconMd} color={colors.textSecondary} />
+                <HapticPressable
+                  onPress={goToPrevStep}
+                  hitSlop={Spacing.md}
+                  style={[styles.circleButton, { backgroundColor: colors.fillSecondary }]}
+                >
+                  <ChevronLeft size={Sizes.iconSm} color={colors.textSecondary} strokeWidth={2} />
                 </HapticPressable>
               )}
+            </View>
+
+            <View style={styles.headerCenter}>
               <Heading size="small">{currentStep?.label || 'Create Listing'}</Heading>
             </View>
 
@@ -322,6 +349,7 @@ export function CreateListingFlow({
               onUpdate={updateData}
               onSubmitSuccess={handleSuccess}
               onGoToStep={goToStep}
+              editingListingId={listingId}
             />
           )}
         </View>
@@ -362,11 +390,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerLeft: {
-    minWidth: 60,
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    minWidth: 80,
+  },
+  circleButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerCenter: {
     flexDirection: 'row',
@@ -377,7 +413,8 @@ const styles = StyleSheet.create({
     marginLeft: -Spacing.xs,
   },
   headerRight: {
-    minWidth: 60,
+    minWidth: 80,
+    alignItems: 'flex-end',
   },
   nextButton: {
     paddingVertical: Spacing.sm,

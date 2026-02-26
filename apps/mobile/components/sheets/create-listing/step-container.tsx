@@ -12,7 +12,8 @@ import { StyleSheet, View } from 'react-native';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 
 interface StepContainerProps {
   children: React.ReactNode;
@@ -31,11 +32,13 @@ export function StepContainer({
   bottomPadding = Spacing['3xl'],
   noPadding = false,
 }: StepContainerProps) {
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
 
   return (
     <BottomSheetScrollView
-      style={styles.scrollView}
+      style={[styles.scrollView, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }]}
       contentContainerStyle={[
         styles.content,
         !noPadding && styles.withPadding,

@@ -53,8 +53,15 @@ export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProp
         throw new Error(errorMessage);
       }
 
-      // Staff listings are auto-approved, redirect to active listings
-      router.push('/staff-dashboard/work-listings?tab=active');
+      const result = await response.json();
+      const listingId = result.data?.id;
+
+      // Staff listings are auto-approved, navigate to the listing detail
+      if (listingId) {
+        router.push(`/listing/${listingId}`);
+      } else {
+        router.push('/staff-dashboard/work-listings?tab=active');
+      }
     } catch (err) {
       console.error('Error creating listing:', err);
       setError(err instanceof Error ? err.message : 'Failed to create listing');

@@ -53,6 +53,7 @@ import {
 } from '@/components/ui';
 import {
   getMyListings,
+  getListingForEdit,
   type MyListingCard,
   type MyListingsStats,
   type MyListingsFilter,
@@ -76,6 +77,8 @@ import { TopSafeAreaGradient } from '@/components/layout';
 import { DeleteListingSheet } from './sub-operations/delete-listing-sheet';
 import { ListingStatsSheet } from './sub-operations/listing-stats-sheet';
 import { ProfileMenu } from '@/components/home/profile-menu';
+import { CreateListingFlow } from '@/components/sheets/create-listing/create-listing-flow';
+import type { CreateListingData } from '@/components/sheets/create-listing/types';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -148,6 +151,16 @@ export function InventoryScreen() {
   const [showDelete, setShowDelete] = useState(false);
   const [hardDeleteMode, setHardDeleteMode] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showEditFlow, setShowEditFlow] = useState(false);
+  const [editInitialData, setEditInitialData] = useState<Partial<CreateListingData> | undefined>(undefined);
+  const [editingListingId, setEditingListingId] = useState<string | null>(null);
+
+  // Handler to open create flow (fresh, no initial data)
+  const openCreateFlow = useCallback(() => {
+    setEditInitialData(undefined);
+    setEditingListingId(null);
+    setShowEditFlow(true);
+  }, []);
 
   const flatListRef = useRef<FlatList>(null);
 
@@ -217,9 +230,57 @@ export function InventoryScreen() {
     setShowEditStatus(true);
   }, []);
 
-  const handleEditStatusAction = useCallback((action: EditStatusAction) => {
+  const handleEditStatusAction = useCallback(async (action: EditStatusAction) => {
     switch (action) {
-      case 'edit': break; // TODO
+      case 'edit': {
+        if (!selectedListing) break;
+        try {
+          const listing = await getListingForEdit(selectedListing.id);
+          // Map API data to CreateListingData format
+          const initialData: Partial<CreateListingData> = {
+            vin: listing.vin || '',
+            vinVerified: true, // If they have a listing, VIN was verified
+            vinVisibility: listing.vinVisibility || 'public',
+            make: listing.make || '',
+            model: listing.model || '',
+            year: listing.year?.toString() || '',
+            trim: listing.trim || '',
+            mileage: listing.mileage?.toString() || '',
+            specs: listing.specs || 'gcc',
+            steeringSide: listing.steeringSide || 'left',
+            bodyType: listing.bodyType || '',
+            exteriorColor: listing.exteriorColor || '',
+            interiorColor: listing.interiorColor || '',
+            doors: listing.doors?.toString() || '',
+            seatingCapacity: listing.seatingCapacity?.toString() || '',
+            fuelType: listing.fuelType || '',
+            transmission: listing.transmission || '',
+            engineSize: listing.engineSize || '',
+            engineType: listing.engineType || '',
+            cylinders: listing.cylinders?.toString() || '',
+            powerRange: listing.powerRange || '',
+            fuelEconomy: listing.fuelEconomy || '',
+            torque: listing.torque || '',
+            warrantyType: listing.warrantyType || '',
+            exportStatus: listing.exportStatus || 'local_only',
+            extras: listing.extras || [],
+            tags: listing.tags || [],
+            price: listing.price?.toString() || '',
+            isNegotiable: listing.isNegotiable ?? false,
+            emirate: listing.emirate || '',
+            city: listing.city || '',
+            images: listing.images || [],
+            description: listing.description || '',
+            specialNotes: Array.isArray(listing.specialNotes) ? listing.specialNotes : [],
+          };
+          setEditInitialData(initialData);
+          setEditingListingId(selectedListing.id);
+          setShowEditFlow(true);
+        } catch (err) {
+          console.error('Failed to load listing for edit:', err);
+        }
+        break;
+      }
       case 'view_stats': setShowStats(true); break;
       case 'mark_sold': setShowMarkSold(true); break;
       case 'extend': setShowExtend(true); break;
@@ -228,7 +289,7 @@ export function InventoryScreen() {
       case 'delete': setHardDeleteMode(false); setShowDelete(true); break;
       case 'hard_delete': setHardDeleteMode(true); setShowDelete(true); break;
     }
-  }, []);
+  }, [selectedListing]);
 
   const handleSubOpSuccess = useCallback(() => fetchListings({ refresh: true }), [fetchListings]);
 
@@ -369,7 +430,7 @@ export function InventoryScreen() {
         </Body>
         {isAll && (
           <HapticPressable
-            onPress={() => router.push('/create-listing')}
+            onPress={openCreateFlow}
             style={[styles.emptyBtn, { backgroundColor: colors.primary }]}
           >
             <Plus size={Sizes.iconSm} color="#FFFFFF" />
@@ -587,17 +648,36 @@ export function InventoryScreen() {
         </>
       )}
 
+      {/* Edit Listing Flow (for drafts and editing) */}
+      <CreateListingFlow
+        visible={showEditFlow}
+        onClose={() => {
+          setShowEditFlow(false);
+          setEditInitialData(undefined);
+          setEditingListingId(null);
+        }}
+        onSuccess={() => {
+          setShowEditFlow(false);
+          setEditInitialData(undefined);
+          setEditingListingId(null);
+          fetchListings({ refresh: true });
+        }}
+        initialData={editInitialData}
+        listingId={editingListingId ?? undefined}
+      />
+
       {/* ─────────────────────── Bottom Safe Area ────────────────────────── */}
       <BottomSafeAreaGradient />
 
       {/* ─────────────────────── FAB: Create Listing ─────────────────────── */}
       <HapticPressable
-        onPress={() => router.push('/create-listing')}
+        onPress={openCreateFlow}
         style={[
           styles.fab,
+          styles.glass,
           {
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
+            backgroundColor: colors.glassBackground,
+            borderColor: colors.glassBorder,
             bottom: insets.bottom + Spacing.xl,
           },
         ]}

@@ -97,9 +97,10 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
     [data.make, colors, handleSelect, query]
   );
 
-  const ListHeader = useCallback(
-    () => (
-      <View style={[styles.searchWrapper, { backgroundColor: colors.surface }]}>
+  return (
+    <View style={styles.container}>
+      {/* Search - outside FlatList to prevent focus loss */}
+      <View style={[styles.searchWrapper, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View style={[styles.searchBox, { backgroundColor: colors.fillSecondary }]}>
           <Search size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
           <BottomSheetTextInput
@@ -119,38 +120,38 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
           )}
         </View>
       </View>
-    ),
-    [colors, query]
-  );
 
-  return (
-    <BottomSheetFlatList
-      data={makes}
-      keyExtractor={(item: string) => item}
-      renderItem={renderItem}
-      ListHeaderComponent={ListHeader}
-      contentContainerStyle={[
-        styles.listContent,
-        { paddingBottom: insets.bottom + Spacing['3xl'] },
-      ]}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-      ListEmptyComponent={
-        <View style={styles.emptyState}>
-          <Body size="medium" tone="secondary">No makes found for "{query}"</Body>
-        </View>
-      }
-    />
+      <BottomSheetFlatList
+        data={makes}
+        keyExtractor={(item: string) => item}
+        renderItem={renderItem}
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingBottom: insets.bottom + Spacing['3xl'] },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Body size="medium" tone="secondary">No makes found for "{query}"</Body>
+          </View>
+        }
+      />
+    </View>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   searchWrapper: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   searchBox: {
     flexDirection: 'row',

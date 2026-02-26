@@ -65,32 +65,34 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
   return (
     <StepContainer>
       {/* Price Input */}
-      <View
-        style={[
-          styles.inputBox,
-          { backgroundColor: colors.fillSecondary, borderColor: colors.border },
-        ]}
-      >
-        <Body size="large" tone="secondary">
-          AED
-        </Body>
-        <BottomSheetTextInput
-          style={[styles.input, { color: colors.text }]}
-          placeholder="0"
-          placeholderTextColor={colors.textMuted}
-          value={data.price || ''}
-          onChangeText={handleChange}
-          keyboardType="number-pad"
-          returnKeyType="done"
-        />
-      </View>
+      <View style={styles.section}>
+        <View
+          style={[
+            styles.inputBox,
+            { backgroundColor: colors.fillSecondary, borderColor: colors.border },
+          ]}
+        >
+          <Body size="large" tone="secondary">
+            AED
+          </Body>
+          <BottomSheetTextInput
+            style={[styles.input, { color: colors.text }]}
+            placeholder="0"
+            placeholderTextColor={colors.textMuted}
+            value={data.price || ''}
+            onChangeText={handleChange}
+            keyboardType="number-pad"
+            returnKeyType="done"
+          />
+        </View>
 
-      {/* Formatted display */}
-      {data.price && priceNum > 0 && (
-        <Data size="large" style={{ color: colors.text, textAlign: 'center' }}>
-          AED {priceNum.toLocaleString()}
-        </Data>
-      )}
+        {/* Formatted display */}
+        {data.price && priceNum > 0 && (
+          <Data size="large" style={{ color: colors.text, textAlign: 'center' }}>
+            AED {priceNum.toLocaleString()}
+          </Data>
+        )}
+      </View>
 
       {/* Quick presets */}
       <View style={styles.section}>
@@ -146,6 +148,10 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+  section: {
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
   inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -161,9 +167,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_700Bold',
     paddingVertical: Spacing.sm,
     textAlign: 'left',
-  },
-  section: {
-    gap: Spacing.sm,
   },
   presetsRow: {
     flexDirection: 'row',
@@ -182,6 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: Spacing.md,
     borderRadius: Radius.lg,
+    marginTop: Spacing.md,
   },
   toggleText: {
     flex: 1,

@@ -9,9 +9,8 @@
 import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Cog, Fuel, Zap } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -54,11 +53,8 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Transmission */}
       <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Cog size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-          <Label size="small">Transmission</Label>
-        </View>
-        <View style={styles.optionRow}>
+        <Label size="small">Transmission</Label>
+        <View style={styles.chipWrap}>
           {TRANSMISSION_TYPES.map((type) => {
             const isSelected = data.transmission === type.value;
             return (
@@ -66,7 +62,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
                 key={type.value}
                 onPress={() => handleTransmission(type.value)}
                 style={[
-                  styles.optionCard,
+                  styles.chip,
                   {
                     backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
                     borderColor: isSelected ? colors.text : colors.border,
@@ -74,7 +70,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="medium"
+                  size="small"
                   style={{ color: isSelected ? colors.background : colors.text }}
                 >
                   {type.label}
@@ -87,10 +83,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Fuel Type */}
       <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Fuel size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-          <Label size="small">Fuel Type</Label>
-        </View>
+        <Label size="small">Fuel Type</Label>
         <View style={styles.chipWrap}>
           {FUEL_TYPES.map((fuel) => {
             const isSelected = data.fuelType === fuel.value;
@@ -120,10 +113,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Engine Size */}
       <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Zap size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-          <Label size="small">Engine Size</Label>
-        </View>
+        <Label size="small">Engine Size</Label>
         <View style={styles.chipWrap}>
           {ENGINE_SIZES.map((size) => {
             const isSelected = data.engineSize === size.value;
@@ -159,24 +149,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
 const styles = StyleSheet.create({
   section: {
     gap: Spacing.sm,
-    marginBottom: Spacing.lg,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  optionRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  optionCard: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.md,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
+    marginBottom: Spacing.xl,
   },
   chipWrap: {
     flexDirection: 'row',

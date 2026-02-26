@@ -16,6 +16,7 @@ export interface CreateListingData {
   // Vehicle Identity
   vin: string;
   vinVerified: boolean;
+  vinVisibility: 'public' | 'private';
   make: string;
   model: string;
   year: string;
@@ -58,6 +59,7 @@ export interface CreateListingData {
 export const EMPTY_DATA: CreateListingData = {
   vin: '',
   vinVerified: false,
+  vinVisibility: 'public',
   make: '',
   model: '',
   year: '',
@@ -114,12 +116,14 @@ export const SHEET_STEPS = [
   { id: 'appearance', label: 'Appearance', required: false, group: 'specs' },
   { id: 'powertrain', label: 'Powertrain', required: false, group: 'specs' },
   { id: 'extras', label: 'Extras', required: false, group: 'specs' },
+  { id: 'highlights', label: 'Highlights', required: false, group: 'specs' },
 
   // Price & Media (price + emirate + photos required)
   { id: 'price', label: 'Price', required: true, group: 'listing' },
   { id: 'location', label: 'Location', required: true, group: 'listing' },
   { id: 'photos', label: 'Photos', required: true, group: 'listing' },
   { id: 'description', label: 'Description', required: false, group: 'listing' },
+  { id: 'notes', label: 'Notes', required: false, group: 'listing' },
 
   // Final
   { id: 'review', label: 'Review', required: true, group: 'final' },
@@ -209,6 +213,7 @@ export function dataToPayload(
 
   return {
     vin: data.vin,
+    vinVisibility: data.vinVisibility,
     make: data.make,
     model: data.model,
     year: parseInt(data.year, 10),

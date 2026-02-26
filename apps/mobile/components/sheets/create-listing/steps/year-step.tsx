@@ -6,14 +6,14 @@
  * @module components/sheets/create-listing/steps/year-step
  */
 
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { BottomSheetFlatList, BottomSheetFlatListMethods } from '@gorhom/bottom-sheet';
+import { BottomSheetFlatList, BottomSheetFlatListMethods, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Calendar } from 'lucide-react-native';
+import { Search, X, Check } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -31,6 +31,9 @@ function generateYears(): string[] {
   return years;
 }
 
+const ALL_YEARS = generateYears();
+const currentYear = new Date().getFullYear();
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function YearStepContent({ data, onUpdate }: StepContentProps) {
@@ -38,12 +41,18 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const listRef = useRef<BottomSheetFlatListMethods>(null);
-  const years = useMemo(() => generateYears(), []);
-  const currentYear = new Date().getFullYear();
+  const [query, setQuery] = useState('');
 
-  // Scroll to selected year on mount
+  // Filter years based on search query
+  const years = useMemo(() => {
+    const q = query.trim();
+    if (!q) return ALL_YEARS;
+    return ALL_YEARS.filter((year) => year.includes(q));
+  }, [query]);
+
+  // Scroll to selected year on mount (only when no search active)
   useEffect(() => {
-    if (data.year) {
+    if (data.year && !query) {
       const index = years.indexOf(data.year);
       if (index !== -1) {
         setTimeout(() => {
@@ -55,26 +64,15 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
         }, 300);
       }
     }
-  }, [data.year, years]);
+  }, [data.year, years, query]);
 
   const handleSelect = useCallback(
     (year: string) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       onUpdate({ year });
+      setQuery(''); // Clear search after selection
     },
     [onUpdate]
-  );
-
-  const renderHeader = useMemo(
-    () => (
-      <View style={[styles.infoRow, { backgroundColor: colors.fillSecondary }]}>
-        <Calendar size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-        <Supporting size="medium" tone="muted">
-          {currentYear + 1} to 1970 available
-        </Supporting>
-      </View>
-    ),
-    [colors, currentYear]
   );
 
   const renderItem = useCallback(
@@ -103,58 +101,95 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
               <Supporting size="small" tone="muted">Classic</Supporting>
             )}
           </View>
-          <View style={[
-            styles.radio,
-            { borderColor: isSelected ? colors.primary : colors.border },
-          ]}>
-            {isSelected && (
-              <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />
-            )}
-          </View>
+          {isSelected && (
+            <Check size={Sizes.iconMd} color={colors.primary} strokeWidth={2.5} />
+          )}
         </HapticPressable>
       );
     },
-    [data.year, colors, handleSelect, currentYear]
+    [data.year, colors, handleSelect]
   );
 
   return (
-    <BottomSheetFlatList
-      ref={listRef}
-      data={years}
-      keyExtractor={(item: string) => item}
-      renderItem={renderItem}
-      ListHeaderComponent={renderHeader}
-      contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Spacing['3xl'] }]}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-      getItemLayout={(_: string[] | null | undefined, index: number) => ({
-        length: 56 + Spacing.xs,
-        offset: (56 + Spacing.xs) * index,
-        index,
-      })}
-      onScrollToIndexFailed={(info: { index: number }) => {
-        setTimeout(() => {
-          listRef.current?.scrollToIndex({
-            index: info.index,
-            animated: true,
-          });
-        }, 100);
-      }}
-    />
+    <View style={styles.container}>
+      {/* Search - outside FlatList to prevent focus loss */}
+      <View style={[styles.searchWrapper, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        <View style={[styles.searchBox, { backgroundColor: colors.fillSecondary }]}>
+          <Search size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
+          <BottomSheetTextInput
+            style={[styles.searchInput, { color: colors.text }]}
+            placeholder="Search year..."
+            placeholderTextColor={colors.textMuted}
+            value={query}
+            onChangeText={setQuery}
+            keyboardType="number-pad"
+            autoCorrect={false}
+            returnKeyType="search"
+          />
+          {query.length > 0 && (
+            <HapticPressable onPress={() => setQuery('')} hitSlop={Layout.hitSlopSmall}>
+              <X size={Spacing.lg} color={colors.textMuted} strokeWidth={2} />
+            </HapticPressable>
+          )}
+        </View>
+      </View>
+
+      <BottomSheetFlatList
+        ref={listRef}
+        data={years}
+        keyExtractor={(item: string) => item}
+        renderItem={renderItem}
+        contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + Spacing['3xl'] }]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        getItemLayout={(_: string[] | null | undefined, index: number) => ({
+          length: 56 + Spacing.xs,
+          offset: (56 + Spacing.xs) * index,
+          index,
+        })}
+        onScrollToIndexFailed={(info: { index: number }) => {
+          setTimeout(() => {
+            listRef.current?.scrollToIndex({
+              index: info.index,
+              animated: true,
+            });
+          }, 100);
+        }}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Body size="medium" tone="secondary">No year found for "{query}"</Body>
+          </View>
+        }
+      />
+    </View>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  infoRow: {
+  container: {
+    flex: 1,
+  },
+  searchWrapper: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.lg,
-    marginBottom: Spacing.md,
+    gap: Spacing.sm,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'Inter_400Regular',
+    paddingVertical: Spacing.xs,
   },
   listContent: {
     paddingHorizontal: Spacing.lg,
@@ -170,18 +205,9 @@ const styles = StyleSheet.create({
   itemContent: {
     gap: 2,
   },
-  radio: {
-    width: Sizes.iconMd,
-    height: Sizes.iconMd,
-    borderRadius: Radius.full,
-    borderWidth: 1.5,
+  emptyState: {
+    paddingVertical: Spacing['2xl'],
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioInner: {
-    width: Spacing.sm + 2,
-    height: Spacing.sm + 2,
-    borderRadius: Radius.full,
   },
 });
 

@@ -1,9 +1,10 @@
 /**
- * SpecsRegionStepContent — Regional specs and steering side
+ * HighlightsStepContent — Listing highlight tags
  *
  * Content-only component for the unified flow.
+ * Allows selection of up to 3 highlight tags for the listing.
  *
- * @module components/sheets/create-listing/steps/specs-region-step
+ * @module components/sheets/create-listing/steps/highlights-step
  */
 
 import React, { useCallback } from 'react';
@@ -14,50 +15,64 @@ import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
-import { SPECS_TYPES, STEERING_SIDES } from '@/lib/filter-constants';
+import { LISTING_TAGS } from '@/lib/filter-constants';
 
 import { StepContainer } from '../step-container';
 import type { StepContentProps } from '../create-listing-flow';
 
+const MAX_TAGS = 3;
+
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
+export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
-  const handleSpecsChange = useCallback(
+  const toggleTag = useCallback(
     (value: string) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      onUpdate({ specs: value });
+      const current = data.tags || [];
+      if (current.includes(value)) {
+        onUpdate({ tags: current.filter((v) => v !== value) });
+      } else if (current.length < MAX_TAGS) {
+        onUpdate({ tags: [...current, value] });
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      }
     },
-    [onUpdate]
+    [data.tags, onUpdate]
   );
 
-  const handleSteeringChange = useCallback(
-    (value: string) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      onUpdate({ steeringSide: value });
-    },
-    [onUpdate]
-  );
+  const tags = data.tags || [];
 
   return (
     <StepContainer>
-      {/* Regional Specs */}
       <View style={styles.section}>
-        <Label size="small">Regional Specs</Label>
+        <View style={styles.headerRow}>
+          <Label size="small">Highlight Tags</Label>
+          <Supporting size="small" tone="muted">
+            Select up to {MAX_TAGS}
+          </Supporting>
+        </View>
+        <Supporting size="small" tone="secondary" style={styles.description}>
+          Help buyers find your listing with relevant highlights
+        </Supporting>
+        
         <View style={styles.chipWrap}>
-          {SPECS_TYPES.map((spec) => {
-            const isSelected = data.specs === spec.value;
+          {LISTING_TAGS.map((tag) => {
+            const isSelected = tags.includes(tag.value);
+            const isDisabled = !isSelected && tags.length >= MAX_TAGS;
             return (
               <HapticPressable
-                key={spec.value}
-                onPress={() => handleSpecsChange(spec.value)}
+                key={tag.value}
+                onPress={() => toggleTag(tag.value)}
+                disabled={isDisabled}
                 style={[
                   styles.chip,
                   {
                     backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
                     borderColor: isSelected ? colors.text : colors.border,
+                    opacity: isDisabled ? 0.5 : 1,
                   },
                 ]}
               >
@@ -65,52 +80,28 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
                   size="small"
                   style={{ color: isSelected ? colors.background : colors.text }}
                 >
-                  {spec.label}
+                  {tag.label}
                 </Body>
               </HapticPressable>
             );
           })}
         </View>
-      </View>
 
-      {/* Steering Side */}
-      <View style={styles.section}>
-        <Label size="small">Steering Side</Label>
-        <View style={styles.chipWrap}>
-          {STEERING_SIDES.map((side) => {
-            const isSelected = data.steeringSide === side.value;
-            return (
-              <HapticPressable
-                key={side.value}
-                onPress={() => handleSteeringChange(side.value)}
-                style={[
-                  styles.chip,
-                  {
-                    backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
-                    borderColor: isSelected ? colors.text : colors.border,
-                  },
-                ]}
-              >
-                <Body
-                  size="small"
-                  style={{ color: isSelected ? colors.background : colors.text }}
-                >
-                  {side.label}
-                </Body>
-              </HapticPressable>
-            );
-          })}
-        </View>
+        {tags.length >= MAX_TAGS && (
+          <Supporting size="small" tone="muted" style={styles.hint}>
+            Remove a tag to add another
+          </Supporting>
+        )}
       </View>
 
       {/* Summary */}
-      <View style={[styles.summaryBox, { backgroundColor: colors.fillSecondary }]}>
-        <Supporting size="small" tone="muted">
-          {SPECS_TYPES.find((s) => s.value === data.specs)?.label ?? 'GCC'} specs
-          {' · '}
-          {STEERING_SIDES.find((s) => s.value === data.steeringSide)?.label ?? 'Left'}-hand drive
-        </Supporting>
-      </View>
+      {tags.length > 0 && (
+        <View style={[styles.summaryBox, { backgroundColor: colors.fillSecondary }]}>
+          <Supporting size="small" tone="secondary">
+            {tags.length} highlight{tags.length !== 1 ? 's' : ''} selected
+          </Supporting>
+        </View>
+      )}
     </StepContainer>
   );
 }
@@ -122,16 +113,29 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     marginBottom: Spacing.xl,
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  description: {
+    marginBottom: Spacing.sm,
+  },
   chipWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.xs,
   },
   chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
     borderWidth: 1,
+  },
+  hint: {
+    marginTop: Spacing.sm,
   },
   summaryBox: {
     padding: Spacing.md,
@@ -140,4 +144,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SpecsRegionStepContent;
+export default HighlightsStepContent;

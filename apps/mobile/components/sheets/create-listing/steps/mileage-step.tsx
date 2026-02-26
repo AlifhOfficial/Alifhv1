@@ -10,9 +10,8 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
-import { Gauge, Info } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Data } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -72,7 +71,6 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
           { backgroundColor: colors.fillSecondary, borderColor: colors.border },
         ]}
       >
-        <Gauge size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
         <BottomSheetTextInput
           style={[styles.input, { color: colors.text }]}
           placeholder="Enter mileage"
@@ -130,8 +128,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Info */}
       <View style={[styles.infoBox, { backgroundColor: colors.fillSecondary }]}>
-        <Info size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-        <Supporting size="small" tone="muted" style={{ flex: 1 }}>
+        <Supporting size="small" tone="muted">
           Odometer reading in kilometers. Vehicles under 5,000 km are marked as "new condition".
         </Supporting>
       </View>
@@ -184,12 +181,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   infoBox: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
     padding: Spacing.md,
     borderRadius: Radius.lg,
-    marginTop: Spacing.lg,
+    marginTop: Spacing.xl,
   },
 });
 

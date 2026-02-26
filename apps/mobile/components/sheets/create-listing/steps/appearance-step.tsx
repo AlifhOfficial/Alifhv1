@@ -9,9 +9,8 @@
 import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Car, Palette } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -103,10 +102,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Body Type */}
       <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Car size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-          <Label size="small">Body Type</Label>
-        </View>
+        <Label size="small">Body Type</Label>
         <View style={styles.chipWrap}>
           {BODY_TYPES.map((type) => {
             const isSelected = data.bodyType === type.value;
@@ -136,10 +132,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Exterior Color */}
       <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Palette size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-          <Label size="small">Exterior Color</Label>
-        </View>
+        <Label size="small">Exterior Color</Label>
         <View style={styles.chipWrap}>
           {EXTERIOR_COLORS.map((color) => (
             <ColorChip
@@ -155,10 +148,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Interior Color */}
       <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Palette size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-          <Label size="small">Interior Color</Label>
-        </View>
+        <Label size="small">Interior Color</Label>
         <View style={styles.chipWrap}>
           {INTERIOR_COLORS.map((color) => (
             <ColorChip
@@ -180,12 +170,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
 const styles = StyleSheet.create({
   section: {
     gap: Spacing.sm,
-    marginBottom: Spacing.lg,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
+    marginBottom: Spacing.xl,
   },
   chipWrap: {
     flexDirection: 'row',

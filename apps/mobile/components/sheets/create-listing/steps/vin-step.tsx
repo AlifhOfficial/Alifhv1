@@ -2,19 +2,20 @@
  * VinStepContent — Enter and verify VIN
  *
  * Content-only component for the unified flow.
+ * VIN is required to prevent abuse. Users can control visibility.
  *
  * @module components/sheets/create-listing/steps/vin-step
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Switch } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
-import { Check, AlertCircle, Info } from 'lucide-react-native';
+import { CheckCircle2, AlertCircle } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting } from '@/components/ui';
+import { Body, Supporting, Label } from '@/components/ui';
 import { checkVin } from '@/lib/sell-car-user-api';
 import { validateVin } from '../types';
 
@@ -156,9 +157,9 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
           {status === 'checking' ? (
             <ActivityIndicator size="small" color={colors.text} />
           ) : status === 'verified' ? (
-            <Check size={Sizes.iconSm} color={colors.success ?? '#10B981'} strokeWidth={2} />
+            <CheckCircle2 size={Sizes.iconSm} color={colors.success} strokeWidth={2} />
           ) : status === 'taken' || status === 'invalid' ? (
-            <AlertCircle size={Sizes.iconSm} color={colors.error ?? '#EF4444'} strokeWidth={2} />
+            <AlertCircle size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
           ) : null}
         </View>
       </View>
@@ -166,31 +167,50 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       {/* Character count */}
       <View style={styles.countRow}>
         <Supporting size="small" tone="muted">
-          {localVin.length}/17 characters
+          {localVin.length}/17
         </Supporting>
         {status === 'verified' && (
-          <Supporting size="small" style={{ color: colors.success ?? '#10B981' }}>
-            ✓ VIN verified
+          <Supporting size="small" style={{ color: colors.success }}>
+            Verified
           </Supporting>
         )}
       </View>
 
       {/* Error message */}
       {errorMsg && (
-        <View style={[styles.errorBox, { backgroundColor: (colors.error ?? '#EF4444') + '15' }]}>
-          <AlertCircle size={Sizes.iconSm} color={colors.error ?? '#EF4444'} strokeWidth={2} />
-          <Body size="small" style={{ color: colors.error ?? '#EF4444', flex: 1 }}>
+        <View style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
+          <AlertCircle size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
+          <Body size="small" style={{ color: colors.error, flex: 1 }}>
             {errorMsg}
           </Body>
         </View>
       )}
 
-      {/* Helper */}
-      <View style={[styles.helperBox, { backgroundColor: colors.fillSecondary }]}>
-        <Info size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-        <Supporting size="small" tone="muted" style={{ flex: 1 }}>
-          Find your VIN on the driver's door jamb, dashboard, or vehicle registration.
-          We'll auto-fill your car's details.
+      {/* VIN Visibility Toggle */}
+      <View style={[styles.visibilitySection, { backgroundColor: colors.fillSecondary }]}>
+        <View style={styles.visibilityContent}>
+          <Label size="small">Show VIN publicly</Label>
+          <Supporting size="small" tone="muted" style={data.vinVisibility === 'private' ? { color: colors.warning } : undefined}>
+            {data.vinVisibility === 'public'
+              ? '+15% ranking boost'
+              : "You'll lose 15% ranking boost"}
+          </Supporting>
+        </View>
+        <Switch
+          value={data.vinVisibility === 'public'}
+          onValueChange={(value) => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            onUpdate({ vinVisibility: value ? 'public' : 'private' });
+          }}
+          trackColor={{ false: colors.fillSecondary, true: colors.success + '80' }}
+          thumbColor={data.vinVisibility === 'public' ? colors.success : colors.textMuted}
+        />
+      </View>
+
+      {/* Info */}
+      <View style={[styles.infoBox, { backgroundColor: colors.fillSecondary }]}>
+        <Supporting size="small" tone="muted">
+          Find your VIN on the driver's door jamb, dashboard, or vehicle registration. This setting is permanent for this listing.
         </Supporting>
       </View>
     </StepContainer>
@@ -234,13 +254,23 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     marginTop: Spacing.md,
   },
-  helperBox: {
+  visibilitySection: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: Spacing.md,
     borderRadius: Radius.lg,
-    marginTop: Spacing.lg,
+    marginTop: Spacing.xl,
+  },
+  visibilityContent: {
+    flex: 1,
+    gap: 2,
+    marginRight: Spacing.md,
+  },
+  infoBox: {
+    padding: Spacing.md,
+    borderRadius: Radius.lg,
+    marginTop: Spacing.md,
   },
 });
 

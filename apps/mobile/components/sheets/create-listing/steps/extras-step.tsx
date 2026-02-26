@@ -1,32 +1,33 @@
 /**
- * ExtrasStepContent — Vehicle features and tags
+ * ExtrasStepContent — Vehicle features/extras
  *
  * Content-only component for the unified flow.
+ * Only handles vehicle extras - highlight tags are in a separate step.
  *
  * @module components/sheets/create-listing/steps/extras-step
  */
 
-import React, { useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
-import { Sparkles, Tag, Check } from 'lucide-react-native';
+import { Plus, X } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
-import { VEHICLE_EXTRAS, LISTING_TAGS } from '@/lib/filter-constants';
+import { VEHICLE_EXTRAS } from '@/lib/filter-constants';
 
 import { StepContainer } from '../step-container';
 import type { StepContentProps } from '../create-listing-flow';
-
-const MAX_TAGS = 3;
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const [customExtra, setCustomExtra] = useState('');
 
   const toggleExtra = useCallback(
     (value: string) => {
@@ -41,38 +42,32 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
     [data.extras, onUpdate]
   );
 
-  const toggleTag = useCallback(
-    (value: string) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      const current = data.tags || [];
-      if (current.includes(value)) {
-        onUpdate({ tags: current.filter((v) => v !== value) });
-      } else if (current.length < MAX_TAGS) {
-        onUpdate({ tags: [...current, value] });
-      } else {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-      }
-    },
-    [data.tags, onUpdate]
-  );
+  const addCustomExtra = useCallback(() => {
+    const trimmed = customExtra.trim();
+    if (!trimmed) return;
+    
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const current = data.extras || [];
+    if (!current.includes(trimmed)) {
+      onUpdate({ extras: [...current, trimmed] });
+    }
+    setCustomExtra('');
+  }, [customExtra, data.extras, onUpdate]);
 
   const extras = data.extras || [];
-  const tags = data.tags || [];
-  const hasSelection = extras.length > 0 || tags.length > 0;
 
   return (
     <StepContainer>
-      {/* Vehicle Extras */}
       <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Sparkles size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
+        <View style={styles.headerRow}>
           <Label size="small">Vehicle Extras</Label>
           {extras.length > 0 && (
-            <Supporting size="small" style={{ color: colors.text }}>
+            <Supporting size="small" tone="secondary">
               {extras.length} selected
             </Supporting>
           )}
         </View>
+
         <View style={styles.chipWrap}>
           {VEHICLE_EXTRAS.map((extra) => {
             const isSelected = extras.includes(extra.value);
@@ -83,49 +78,8 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text + '15' : colors.surfaceSecondary,
-                    borderColor: isSelected ? colors.text : colors.border,
-                  },
-                ]}
-              >
-                <Body
-                  size="small"
-                  style={{
-                    color: isSelected ? colors.text : colors.textSecondary,
-                    fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
-                  }}
-                >
-                  {extra.label}
-                </Body>
-                {isSelected && <Check size={12} color={colors.text} strokeWidth={2} />}
-              </HapticPressable>
-            );
-          })}
-        </View>
-      </View>
-
-      {/* Listing Tags */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Tag size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
-          <Label size="small">Highlight Tags</Label>
-          <Supporting size="small" tone="muted">Max {MAX_TAGS}</Supporting>
-        </View>
-        <View style={styles.chipWrap}>
-          {LISTING_TAGS.map((tag) => {
-            const isSelected = tags.includes(tag.value);
-            const isDisabled = !isSelected && tags.length >= MAX_TAGS;
-            return (
-              <HapticPressable
-                key={tag.value}
-                onPress={() => toggleTag(tag.value)}
-                disabled={isDisabled}
-                style={[
-                  styles.tagChip,
-                  {
                     backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
                     borderColor: isSelected ? colors.text : colors.border,
-                    opacity: isDisabled ? 0.5 : 1,
                   },
                 ]}
               >
@@ -133,27 +87,60 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                   size="small"
                   style={{ color: isSelected ? colors.background : colors.text }}
                 >
-                  {tag.label}
+                  {extra.label}
                 </Body>
               </HapticPressable>
             );
           })}
         </View>
-        {tags.length >= MAX_TAGS && (
-          <Supporting size="small" tone="muted">Remove a tag to add another</Supporting>
-        )}
       </View>
 
-      {/* Summary */}
-      {hasSelection && (
-        <View style={[styles.summaryBox, { backgroundColor: colors.fillSecondary }]}>
-          <Supporting size="small" tone="secondary">
-            {extras.length > 0 && `${extras.length} extras`}
-            {extras.length > 0 && tags.length > 0 && ' • '}
-            {tags.length > 0 && `${tags.length} tags`}
-          </Supporting>
+      {/* Custom extras input */}
+      <View style={styles.section}>
+        <Label size="small">Add Custom Extra</Label>
+        <View style={[styles.inputRow, { backgroundColor: colors.fillSecondary }]}>
+          <BottomSheetTextInput
+            style={[styles.input, { color: colors.text }]}
+            placeholder="e.g. Custom exhaust..."
+            placeholderTextColor={colors.textMuted}
+            value={customExtra}
+            onChangeText={setCustomExtra}
+            onSubmitEditing={addCustomExtra}
+            returnKeyType="done"
+          />
+          <HapticPressable
+            onPress={addCustomExtra}
+            disabled={!customExtra.trim()}
+            style={[
+              styles.addButton,
+              { backgroundColor: customExtra.trim() ? colors.primary : colors.fillSecondary },
+            ]}
+          >
+            <Plus size={Sizes.iconSm} color={customExtra.trim() ? colors.primaryForeground : colors.textMuted} strokeWidth={2} />
+          </HapticPressable>
         </View>
-      )}
+
+        {/* Custom extras list */}
+        {extras.filter((e) => !VEHICLE_EXTRAS.some((v) => v.value === e)).length > 0 && (
+          <View style={styles.customList}>
+            {extras
+              .filter((e) => !VEHICLE_EXTRAS.some((v) => v.value === e))
+              .map((extra) => (
+                <View
+                  key={extra}
+                  style={[styles.customChip, { backgroundColor: colors.text }]}
+                >
+                  <Body size="small" style={{ color: colors.background }}>
+                    {extra}
+                  </Body>
+                  <HapticPressable onPress={() => toggleExtra(extra)} hitSlop={Layout.hitSlopSmall}>
+                    <X size={14} color={colors.background} strokeWidth={2} />
+                  </HapticPressable>
+                </View>
+              ))}
+          </View>
+        )}
+      </View>
     </StepContainer>
   );
 }
@@ -163,12 +150,12 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
 const styles = StyleSheet.create({
   section: {
     gap: Spacing.sm,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
-  sectionHeader: {
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    justifyContent: 'space-between',
   },
   chipWrap: {
     flexDirection: 'row',
@@ -178,22 +165,46 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
     borderWidth: 1,
   },
-  tagChip: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.full,
-    borderWidth: 1,
-  },
-  summaryBox: {
-    padding: Spacing.md,
-    borderRadius: Radius.lg,
+  inputRow: {
+    flexDirection: 'row',
     alignItems: 'center',
+    borderRadius: Radius.lg,
+    paddingLeft: Spacing.md,
+    gap: Spacing.sm,
+  },
+  input: {
+    flex: 1,
+    fontSize: 15,
+    fontFamily: 'Inter_400Regular',
+    paddingVertical: Spacing.md,
+  },
+  addButton: {
+    width: 40,
+    height: 40,
+    borderRadius: Radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.xs,
+  },
+  customList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.xs,
+    marginTop: Spacing.xs,
+  },
+  customChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingLeft: Spacing.md,
+    paddingRight: Spacing.sm,
+    paddingVertical: Spacing.sm,
+    borderRadius: Radius.full,
   },
 });
 
