@@ -11,6 +11,7 @@ import { getThumbUrl } from '@/utils/storage';
 import { formatDistanceToNow } from 'date-fns';
 import type { Message } from '@/hooks/messaging';
 import { X } from 'lucide-react';
+import { LocationBubble } from './location-bubble';
 
 interface MessageBubbleProps {
   message: Message;
@@ -38,10 +39,18 @@ export function MessageBubble({
   listing,
   compact = false,
 }: MessageBubbleProps) {
-  const { sender, text, mediaUrl, mediaType, createdAt, isEdited, isSystemMessage } = message;
+  const { sender, text, mediaUrl, mediaType, mediaMetadata, createdAt, isEdited, isSystemMessage } = message;
   
   // Check if this is a temporary optimistic message
   const isOptimistic = message.id.startsWith('temp-');
+
+  // Extract location data if present
+  const locationData = mediaType === 'location' && mediaMetadata ? {
+    latitude: (mediaMetadata as { latitude?: number }).latitude,
+    longitude: (mediaMetadata as { longitude?: number }).longitude,
+    address: (mediaMetadata as { address?: string }).address,
+    placeName: (mediaMetadata as { placeName?: string }).placeName,
+  } : null;
 
   // System message (centered, muted)
   if (isSystemMessage) {
@@ -133,6 +142,20 @@ export function MessageBubble({
                 alt="Attached"
                 className="rounded-lg mb-2 max-w-full h-auto"
               />
+            )}
+
+            {/* Location (if any) */}
+            {locationData?.latitude && locationData?.longitude && (
+              <div className="mb-2">
+                <LocationBubble
+                  latitude={locationData.latitude}
+                  longitude={locationData.longitude}
+                  address={locationData.address}
+                  placeName={locationData.placeName}
+                  isOwn={isOwn}
+                  compact={compact}
+                />
+              </div>
             )}
 
             {/* Text */}

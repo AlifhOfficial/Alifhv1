@@ -268,3 +268,33 @@ export async function getUnreadCount(): Promise<number> {
   const data = await response.json();
   return data.totalUnread || 0;
 }
+
+// ============================================================================
+// LOCATION MESSAGES
+// ============================================================================
+
+export interface LocationData {
+  latitude: number;
+  longitude: number;
+  address?: string;
+  placeName?: string;
+}
+
+/**
+ * Send a location message
+ */
+export async function sendLocationMessage(
+  conversationId: string,
+  location: LocationData
+): Promise<SendMessageResponse> {
+  return sendMessage(conversationId, {
+    text: location.address || 'Shared location',
+    mediaType: 'location',
+    mediaMetadata: {
+      latitude: location.latitude,
+      longitude: location.longitude,
+      address: location.address,
+      placeName: location.placeName,
+    },
+  });
+}

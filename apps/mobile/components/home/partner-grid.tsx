@@ -147,12 +147,11 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
   }, [onPress, partner.id, partner.name, applySearch, clearSearch, clearFilterParams, resetSort, router]);
 
   const cardBg = partner.isBlk ? colors.oledBlack : colors.surfaceSecondary;
-  const cardBorder = partner.isBlk ? colors.glassBorderOnDark : colors.glassBorder;
   const textColor = partner.isBlk ? colors.oledWhite : colors.text;
   const textSecondary = partner.isBlk ? 'rgba(255,255,255,0.6)' : colors.textTertiary;
 
   return (
-    <View style={[styles.card, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+    <View style={[styles.card, { backgroundColor: cardBg }]}>
       {/* Header */}
       <View style={styles.header}>
         {partner.logo ? (
@@ -302,7 +301,6 @@ const styles = StyleSheet.create({
   card: {
     marginHorizontal: Layout.screenPadding,
     borderRadius: Radius['2xl'],
-    borderWidth: 1,
     overflow: 'hidden',
   },
   header: {

@@ -133,11 +133,17 @@ export const message = pgTable('message', {
   mediaType: messageMediaTypeEnum('media_type'),
   mediaThumbnail: text('media_thumbnail'), // Thumbnail for images/videos
   mediaMetadata: jsonb('media_metadata').$type<{
+    // File/Media metadata
     fileName?: string;
     fileSize?: number;
     duration?: number; // For audio/video
     width?: number;    // For images/video
     height?: number;
+    // Location metadata (when mediaType === 'location')
+    latitude?: number;
+    longitude?: number;
+    address?: string;      // Reverse geocoded address
+    placeName?: string;    // Name of place (e.g., "Revvup HQ")
   }>(),
   
   // System Message (automated messages)

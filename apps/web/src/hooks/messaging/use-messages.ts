@@ -66,6 +66,33 @@ async function postMessage(conversationId: string, text: string): Promise<{ mess
   return res.json();
 }
 
+interface LocationData {
+  latitude: number;
+  longitude: number;
+  address?: string;
+  placeName?: string;
+}
+
+async function postLocationMessage(conversationId: string, location: LocationData): Promise<{ message: Message }> {
+  const res = await fetch(`/api/conversations/${conversationId}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({
+      text: location.address || 'Shared location',
+      mediaType: 'location',
+      mediaMetadata: {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        address: location.address,
+        placeName: location.placeName,
+      },
+    }),
+  });
+  if (!res.ok) throw new Error('Failed to send location');
+  return res.json();
+}
+
 // ============================================================================
 // useMessages - Main Hook
 // ============================================================================
@@ -362,6 +389,99 @@ export function useSendMessage() {
 
   return {
     sendMessage: mutation.mutateAsync,
+    isSending: mutation.isPending,
+    error: mutation.error?.message,
+  };
+}
+
+// ============================================================================
+// useSendLocationMessage - Location Message Send
+// ============================================================================
+
+export function useSendLocationMessage() {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: ({ conversationId, location }: { conversationId: string; senderId: string; location: LocationData }) =>
+      postLocationMessage(conversationId, location),
+
+    onMutate: async ({ conversationId, senderId, location }) => {
+      await queryClient.cancelQueries({ queryKey: ['messages', conversationId] });
+      const previous = queryClient.getQueryData(['messages', conversationId]);
+
+      // Optimistic message
+      const tempMsg: Message = {
+        id: `temp-${Date.now()}`,
+        conversationId,
+        senderId,
+        text: location.address || 'Shared location',
+        mediaUrl: null,
+        mediaType: 'location',
+        mediaThumbnail: null,
+        mediaMetadata: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+          address: location.address,
+          placeName: location.placeName,
+        },
+        isSystemMessage: false,
+        systemMessageType: null,
+        deliveredAt: null,
+        readAt: null,
+        isEdited: false,
+        editedAt: null,
+        isDeleted: false,
+        createdAt: new Date(),
+        sender: { id: senderId, name: null, avatarUrl: null },
+      };
+
+      queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: [
+            { ...old.pages[0], messages: [tempMsg, ...old.pages[0].messages] },
+            ...old.pages.slice(1),
+          ],
+        };
+      });
+
+      return { previous };
+    },
+
+    onSuccess: (data, { conversationId }) => {
+      // Replace temp with real
+      queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
+        if (!old) return old;
+        const filtered = old.pages[0].messages.filter(m => !m.id.startsWith('temp-') && m.id !== data.message.id);
+        return {
+          ...old,
+          pages: [{ ...old.pages[0], messages: [data.message, ...filtered] }, ...old.pages.slice(1)],
+        };
+      });
+
+      // Update conversation preview
+      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
+        const data2 = old as { conversations?: Array<{ id: string; lastMessageAt?: unknown; lastMessagePreview?: string }> };
+        if (!data2?.conversations) return old;
+        return {
+          ...data2,
+          conversations: data2.conversations.map(c =>
+            c.id === conversationId
+              ? { ...c, lastMessageAt: data.message.createdAt, lastMessagePreview: '📍 Location' }
+              : c
+          ),
+        };
+      });
+    },
+
+    onError: (_err, { conversationId }, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(['messages', conversationId], ctx.previous);
+    },
+  });
+
+  return {
+    sendLocationMessage: mutation.mutateAsync,
     isSending: mutation.isPending,
     error: mutation.error?.message,
   };

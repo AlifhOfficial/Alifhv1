@@ -14,7 +14,7 @@ import {
 import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import { HapticPressable } from '@/components/ui';
-import { Send } from 'lucide-react-native';
+import { Send, MapPin } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Typography, Sizes, Layout, Shadows } from '@/constants/theme';
@@ -26,6 +26,7 @@ interface MessageInputProps {
   placeholder?: string;
   initialText?: string;
   resetKey?: string;
+  onRequestLocation?: () => void;
 }
 
 const MIN_HEIGHT = Sizes.actionButtonMd;
@@ -38,6 +39,7 @@ export function MessageInput({
   placeholder = 'Type a message...',
   initialText,
   resetKey,
+  onRequestLocation,
 }: MessageInputProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
@@ -160,6 +162,29 @@ export function MessageInput({
         animatedContainerStyle,
       ]}
     >
+        {/* Location Button */}
+        {onRequestLocation && (
+          <HapticPressable
+            haptic="light"
+            onPress={onRequestLocation}
+            disabled={disabled}
+            style={[
+              styles.actionButton,
+              styles.glass,
+              {
+                backgroundColor: colors.glassBackground,
+                borderColor: colors.glassBorder,
+              },
+            ]}
+          >
+            <MapPin
+              size={Sizes.iconSm}
+              color={colors.textMuted}
+              strokeWidth={2}
+            />
+          </HapticPressable>
+        )}
+
         <Animated.View
           style={[
             styles.inputWrapper,
@@ -242,6 +267,14 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     textAlignVertical: 'center',
     maxHeight: MAX_HEIGHT,
+  },
+  actionButton: {
+    width: Sizes.bubbleMd,
+    height: Sizes.bubbleMd,
+    borderRadius: Sizes.bubbleMd / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.xs,
   },
   sendWrapper: {
     width: Sizes.bubbleMd,

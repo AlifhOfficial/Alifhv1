@@ -512,6 +512,13 @@
       "when": 1771741484663,
       "tag": "0072_luxuriant_forge",
       "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1772140283980,
+      "tag": "0073_curved_tyger_tiger",
+      "breakpoints": true
     }
   ]
 }

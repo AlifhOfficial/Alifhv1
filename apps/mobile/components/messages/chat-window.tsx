@@ -26,10 +26,12 @@ import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { ChatHeader } from './chat-header';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
+import { LocationPickerSheet } from './location-picker-sheet';
 import { useMessages } from './hooks/useMessages';
 import { Body, Data, Supporting, Skeleton } from '@/components/ui';
 import { TopSafeAreaGradient } from '@/components/layout';
-import { markConversationAsRead, type Message, type Conversation } from '@/lib/messaging-api';
+import { markConversationAsRead, sendLocationMessage, type Message, type Conversation } from '@/lib/messaging-api';
+import type { LocationResult } from '@/hooks/use-location';
 
 const PANEL_WIDTH = Spacing['5xl'] + Spacing['3xl']; // ~80
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -182,7 +184,27 @@ export function ChatWindow({
     [sendMessage, messages.length]
   );
 
+  // Location sharing with confirmation sheet
+  const [isLocationSheetOpen, setIsLocationSheetOpen] = useState(false);
 
+  const handleOpenLocationSheet = useCallback(() => {
+    setIsLocationSheetOpen(true);
+  }, []);
+
+  const handleConfirmLocation = useCallback(async (location: LocationResult) => {
+    try {
+      await sendLocationMessage(conversationId, location);
+      // Use refresh to get the new message from server
+      refresh();
+      // Scroll to bottom
+      setTimeout(() => {
+        listRef.current?.scrollToOffset({ offset: 0, animated: false });
+      }, 50);
+    } catch (err) {
+      console.error('[ChatWindow] Failed to send location:', err);
+      throw err; // Re-throw so sheet knows it failed
+    }
+  }, [conversationId, refresh]);
 
   // Handle infinite scroll
   const handleEndReached = useCallback(() => {
@@ -395,8 +417,16 @@ export function ChatWindow({
       <MessageInput
         onSend={handleSend}
         onTyping={sendTyping}
+        onRequestLocation={handleOpenLocationSheet}
         disabled={false}
         resetKey={conversationId}
+      />
+
+      {/* Location Picker Sheet */}
+      <LocationPickerSheet
+        visible={isLocationSheetOpen}
+        onClose={() => setIsLocationSheetOpen(false)}
+        onConfirm={handleConfirmLocation}
       />
     </KeyboardAvoidingView>
   );

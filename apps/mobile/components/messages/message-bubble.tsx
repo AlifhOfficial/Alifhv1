@@ -11,6 +11,7 @@ import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { getThumbUrl } from '@/lib/config';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Body, Data, Supporting } from '@/components/ui';
+import { LocationBubble } from './location-bubble';
 import type { Message } from '@/lib/messaging-api';
 
 interface MessageBubbleProps {
@@ -35,10 +36,18 @@ export function MessageBubble({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
-  const { sender, text, mediaUrl, mediaType, isEdited, isSystemMessage } = message;
+  const { sender, text, mediaUrl, mediaType, mediaMetadata, isEdited, isSystemMessage } = message;
 
   // Check if optimistic message (sending state)
   const isOptimistic = message.id.startsWith('temp-');
+
+  // Extract location data if present
+  const locationData = mediaType === 'location' && mediaMetadata ? {
+    latitude: (mediaMetadata as { latitude?: number }).latitude,
+    longitude: (mediaMetadata as { longitude?: number }).longitude,
+    address: (mediaMetadata as { address?: string }).address,
+    placeName: (mediaMetadata as { placeName?: string }).placeName,
+  } : null;
 
   // System message (centered, muted)
   if (isSystemMessage) {
@@ -132,6 +141,17 @@ export function MessageBubble({
               source={{ uri: mediaUrl }}
               style={styles.mediaImage}
               resizeMode="cover"
+            />
+          )}
+
+          {/* Location */}
+          {locationData?.latitude && locationData?.longitude && (
+            <LocationBubble
+              latitude={locationData.latitude}
+              longitude={locationData.longitude}
+              address={locationData.address}
+              placeName={locationData.placeName}
+              isOwn={isOwn}
             />
           )}
 

@@ -42,7 +42,7 @@ const CategoryCardSkeleton = memo(function CategoryCardSkeleton() {
     >
       {[1, 2].map((i) => (
         <View key={i} style={styles.cardWrapper}>
-          <View style={[styles.skeletonCard, { borderColor: colors.glassBorder, backgroundColor: colors.surfaceSecondary }]}>
+          <View style={[styles.skeletonCard, { backgroundColor: colors.surfaceSecondary }]}>
             <Skeleton width={120} height={90} borderRadius={Radius.lg} />
             <View style={styles.skeletonCardContent}>
               <Skeleton width="80%" height={14} />
@@ -212,7 +212,7 @@ export const CategoryCard = memo(function CategoryCard({
   }
 
   return (
-    <View style={[styles.categoryCard, { borderColor: colors.glassBorder, backgroundColor: colors.surfaceSecondary }]}>
+    <View style={[styles.categoryCard, { backgroundColor: colors.surfaceSecondary }]}>
       {/* Header - Category Name & Subtitle */}
       <View style={styles.header}>
         <Heading size="mini" style={[styles.categoryTitle, { color: colors.text }]}>{name}</Heading>
@@ -300,7 +300,7 @@ export const CategoryGrid = memo(function CategoryGrid({
   if (isLoading && sortedCategories.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={[styles.categoryCard, { borderColor: colors.glassBorder }]}>
+        <View style={[styles.categoryCard]}>
           <View style={styles.header}>
             <Skeleton width="50%" height={20} />
             <Skeleton width="70%" height={14} style={{ marginTop: Spacing.xs }} />
@@ -350,7 +350,6 @@ const styles = StyleSheet.create({
     marginHorizontal: Layout.screenPadding,
     borderRadius: Radius['2xl'],
     overflow: 'hidden',
-    borderWidth: 1,
   },
   header: {
     flexDirection: 'column',
@@ -374,7 +373,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     borderRadius: Radius['2xl'],
-    borderWidth: 1,
     padding: Spacing.lg,
     gap: Spacing.xl,
   },

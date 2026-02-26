@@ -11,9 +11,11 @@ import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
-import { useMessages, useSendMessage, useMarkAsRead } from '@/hooks/messaging';
+import { LocationPickerDialog } from './location-picker-dialog';
+import { useMessages, useSendMessage, useSendLocationMessage, useMarkAsRead } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
 import { format, formatDistanceToNow, isSameDay } from 'date-fns';
+import type { LocationResult } from '@/hooks/use-location';
 
 interface ChatWindowProps {
   conversationId: string;
@@ -65,7 +67,11 @@ export function ChatWindow({
   });
 
   const { sendMessage, isSending } = useSendMessage();
+  const { sendLocationMessage, isSending: isSendingLocation } = useSendLocationMessage();
   const { markAsRead } = useMarkAsRead();
+
+  // Location picker dialog state
+  const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const lastMessageIdRef = useRef<string | null>(null);
@@ -171,6 +177,14 @@ export function ChatWindow({
 
   const handleSend = async (text: string) => {
     await sendMessage({ conversationId, senderId: userId, text });
+  };
+
+  const handleOpenLocationDialog = () => {
+    setIsLocationDialogOpen(true);
+  };
+
+  const handleConfirmLocation = async (location: LocationResult) => {
+    await sendLocationMessage({ conversationId, senderId: userId, location });
   };
 
   // Display
@@ -311,9 +325,17 @@ export function ChatWindow({
       <MessageInput
         onSend={handleSend}
         onTyping={(isTyping) => otherParticipant?.id && sendTyping(otherParticipant.id, isTyping)}
+        onRequestLocation={handleOpenLocationDialog}
         disabled={isSending}
         initialText={!isLoading && messages.length === 0 ? defaultText : undefined}
         resetKey={conversationId}
+      />
+
+      {/* Location Picker Dialog */}
+      <LocationPickerDialog
+        isOpen={isLocationDialogOpen}
+        onClose={() => setIsLocationDialogOpen(false)}
+        onConfirm={handleConfirmLocation}
       />
     </div>
   );

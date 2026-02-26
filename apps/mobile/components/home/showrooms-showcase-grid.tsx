@@ -98,10 +98,9 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
 
   // Use theme colors - text stays white for visibility over media
   const cardBg = colors.surface;
-  const cardBorder = colors.border;
 
   return (
-    <View style={[styles.container, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+    <View style={[styles.container, { backgroundColor: cardBg }]}>
       {/* Media Background - Video or Image */}
       {hasVideo && videoSource ? (
         <Video
@@ -161,7 +160,6 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: Layout.screenPadding,
     borderRadius: Radius['2xl'],
-    borderWidth: 1,
     overflow: 'hidden',
     aspectRatio: CARD_ASPECT,
   },

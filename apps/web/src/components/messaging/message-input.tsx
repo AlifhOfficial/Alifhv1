@@ -6,7 +6,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback, KeyboardEvent, ChangeEvent } from 'react';
-import { Send } from 'lucide-react';
+import { Send, MapPin } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 interface MessageInputProps {
@@ -18,6 +18,7 @@ interface MessageInputProps {
   resetKey?: string;
   /** Compact mode for floating chat windows */
   compact?: boolean;
+  onRequestLocation?: () => void;
 }
 
 export function MessageInput({
@@ -28,6 +29,7 @@ export function MessageInput({
   initialText,
   resetKey,
   compact = false,
+  onRequestLocation,
 }: MessageInputProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -191,6 +193,24 @@ export function MessageInput({
         'flex items-center bg-sidebar border border-border/40 rounded-xl min-w-0 overflow-hidden w-full',
         compact ? 'p-1' : 'p-1 sm:p-1.5'
       )}>
+        {/* Location Button */}
+        {onRequestLocation && (
+          <button
+            type="button"
+            onClick={onRequestLocation}
+            disabled={disabled}
+            className={cn(
+              'rounded-lg transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed',
+              compact ? 'p-1.5' : 'p-1.5 sm:p-2',
+              'text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50'
+            )}
+            aria-label="Share location"
+            title="Share location"
+          >
+            <MapPin className={compact ? 'w-4 h-4' : 'w-4 h-4 sm:w-[18px] sm:h-[18px]'} />
+          </button>
+        )}
+
         {/* Text Input */}
         <textarea
           ref={textareaRef}

@@ -50,11 +50,17 @@ export interface SendMessageParams {
   mediaType?: 'image' | 'audio' | 'video' | 'document' | 'location';
   mediaThumbnail?: string;
   mediaMetadata?: {
+    // File/Media metadata
     fileName?: string;
     fileSize?: number;
     duration?: number;
     width?: number;
     height?: number;
+    // Location metadata (when mediaType === 'location')
+    latitude?: number;
+    longitude?: number;
+    address?: string;
+    placeName?: string;
   };
   isSystemMessage?: boolean;
   systemMessageType?: string;

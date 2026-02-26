@@ -153,12 +153,11 @@ export const BlkGridCard = memo(function BlkGridCard({
 
   // BLK collection always uses dark theme
   const cardBg = colors.oledBlack;
-  const cardBorder = colors.glassBorderOnDark;
   const textColor = colors.oledWhite;
   const textSecondary = 'rgba(255,255,255,0.6)';
 
   return (
-    <View style={[styles.container, { backgroundColor: cardBg, borderColor: cardBorder }]}>
+    <View style={[styles.container, { backgroundColor: cardBg }]}>
       {/* Header */}
       <View style={styles.header}>
         <View style={[styles.avatar, { backgroundColor: BLK_GLASS_BACKGROUND, borderColor: BLK_GLASS_BORDER, borderWidth: 1 }]}>
@@ -206,7 +205,6 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: Layout.screenPadding,
     borderRadius: Radius['2xl'],
-    borderWidth: 1,
     overflow: 'hidden',
   },
   header: {

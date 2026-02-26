@@ -136,7 +136,7 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
   }
 
   return (
-    <View style={[styles.container, { borderColor: colors.glassBorder, backgroundColor: colors.surfaceSecondary }]}>
+    <View style={[styles.container, { backgroundColor: colors.surfaceSecondary }]}>
       {/* Header with Revvup Logo */}
       <View style={styles.header}>
         <View style={[styles.avatar, { backgroundColor: colors.oledBlack }]}>
@@ -187,7 +187,6 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: Layout.screenPadding,
     borderRadius: Radius['2xl'],
-    borderWidth: 1,
     overflow: 'hidden',
   },
   header: {

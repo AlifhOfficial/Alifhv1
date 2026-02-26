@@ -5,16 +5,18 @@
 
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, X, Minus, Maximize2 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { MessageBubble } from '@/components/messaging/message-bubble';
 import { MessageInput } from '@/components/messaging/message-input';
-import { useMessages, useSendMessage, useMarkAsRead, type Conversation } from '@/hooks/messaging';
+import { LocationPickerDialog } from '@/components/messaging/location-picker-dialog';
+import { useMessages, useSendMessage, useSendLocationMessage, useMarkAsRead, type Conversation } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
 import { format, isSameDay } from 'date-fns';
+import type { LocationResult } from '@/hooks/use-location';
 
 // Simple time ago formatter (1m, 5m, 1h, 12h, 1d, etc)
 function formatTimeAgo(date: Date | string | null): string | null {
@@ -74,7 +76,11 @@ export function FloatingChatWindow({
   });
 
   const { sendMessage, isSending } = useSendMessage();
+  const { sendLocationMessage, isSending: isSendingLocation } = useSendLocationMessage();
   const { markAsRead } = useMarkAsRead();
+
+  // Location picker dialog state
+  const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const lastMessageIdRef = useRef<string | null>(null);
@@ -339,9 +345,19 @@ export function FloatingChatWindow({
             <MessageInput
               onSend={handleSend}
               onTyping={(isTyping) => otherParticipant?.id && sendTyping(otherParticipant.id, isTyping)}
+              onRequestLocation={() => setIsLocationDialogOpen(true)}
               disabled={isSending}
               resetKey={conversation.id}
               compact
+            />
+
+            {/* Location Picker Dialog */}
+            <LocationPickerDialog
+              isOpen={isLocationDialogOpen}
+              onClose={() => setIsLocationDialogOpen(false)}
+              onConfirm={async (location: LocationResult) => {
+                await sendLocationMessage({ conversationId: conversation.id, senderId: userId, location });
+              }}
             />
           </>
         )}
