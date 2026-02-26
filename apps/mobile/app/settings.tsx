@@ -160,7 +160,7 @@ export default function SettingsScreen() {
           onVerified={() => {
             loadProfile();
           }}
-          onStatusChange={() => {
+          onRefreshProfile={() => {
             loadProfile();
           }}
         />

@@ -184,9 +184,6 @@ export function ReviewStepContent({
         </View>
       )}
 
-      {/* Spacer */}
-      <View style={{ flex: 1 }} />
-
       {/* Actions */}
       <View style={styles.actions}>
         <HapticPressable

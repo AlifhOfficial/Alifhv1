@@ -296,32 +296,30 @@ export async function PUT(
     // Prepare update data
     const updateData: UpdateCarListingInput = {};
 
-    // IMMUTABLE FIELDS: These cannot be changed after creation (except by admin)
+    // IMMUTABLE FIELDS: These cannot be changed after submission (except by admin or for drafts)
     // - make, model, year: Core vehicle identity
     // - vin, vinVisibility: Anti-abuse (prevents QI score gaming by toggling visibility)
-    // Client-side enforces this too, but we enforce server-side as safety net.
+    // Client-side enforces this too; server silently ignores these fields for non-drafts.
+    // EXCEPTION: Drafts can modify all fields since they haven't been published yet.
     const immutableFields = ['make', 'model', 'year', 'vin', 'vinVisibility'] as const;
-    if (!isAdmin) {
+    const isDraft = listing.moderationStatus === 'draft';
+    // For non-drafts, silently strip immutable fields (non-blocking - client handles validation)
+    if (!isAdmin && !isDraft) {
       for (const field of immutableFields) {
-        if (body[field] !== undefined) {
-          return NextResponse.json(
-            { error: `Cannot modify ${field} after listing creation. Contact support if you need to fix this.` },
-            { status: 400 }
-          );
-        }
+        delete body[field];
       }
     }
 
     // Only include fields that are present in the request
-    // Admin can modify immutable fields
-    if (isAdmin && body.make !== undefined) updateData.make = body.make;
-    if (isAdmin && body.model !== undefined) updateData.model = body.model;
-    if (isAdmin && body.year !== undefined) updateData.year = body.year;
+    // Admin or draft owner can modify immutable fields (non-drafts have them stripped above)
+    if (body.make !== undefined) updateData.make = body.make;
+    if (body.model !== undefined) updateData.model = body.model;
+    if (body.year !== undefined) updateData.year = body.year;
     if (body.trim !== undefined) updateData.trim = body.trim;
     if (body.condition !== undefined) updateData.condition = body.condition;
     if (body.description !== undefined) updateData.description = body.description;
-    if (isAdmin && body.vin !== undefined) updateData.vin = body.vin;
-    if (isAdmin && body.vinVisibility !== undefined) updateData.vinVisibility = body.vinVisibility;
+    if (body.vin !== undefined) updateData.vin = body.vin;
+    if (body.vinVisibility !== undefined) updateData.vinVisibility = body.vinVisibility;
     if (body.price !== undefined) updateData.price = body.price;
     if (body.currency !== undefined) updateData.currency = body.currency;
     if (body.isNegotiable !== undefined) updateData.isNegotiable = body.isNegotiable;
