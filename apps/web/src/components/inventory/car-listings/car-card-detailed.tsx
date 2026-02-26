@@ -95,7 +95,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
     [imageArray]
   );
   
-  // Full URLs for lightbox (high-res viewing)
+  // Full URLs for main carousel and lightbox (high quality display)
   const fullImages = useMemo(() => 
     validImages.length > 0 
       ? validImages.map(img => getPublicUrl(img) || img)
@@ -103,7 +103,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
     [validImages]
   );
   
-  // Thumb URLs for carousel and grid (optimized for bandwidth)
+  // Thumb URLs for tiny thumbnails only (64x48px display)
   const thumbImages = useMemo(() => 
     validImages.length > 0 
       ? validImages.map(img => getThumbUrl(img) || getPublicUrl(img) || img)
@@ -112,16 +112,18 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
   );
   
   // Ensure currentIndex is always valid
-  const safeCurrentIndex = Math.min(Math.max(0, currentIndex), thumbImages.length - 1);
-  const currentImage = thumbImages[safeCurrentIndex] || '/assets/cars/placeholder.avif';
+  const safeCurrentIndex = Math.min(Math.max(0, currentIndex), fullImages.length - 1);
+  
+  // Main carousel uses full images for quality
+  const currentImage = fullImages[safeCurrentIndex] || '/assets/cars/placeholder.avif';
 
   const next = useCallback(() => {
-    setCurrentIndex((i) => (i + 1) % thumbImages.length);
-  }, [thumbImages.length]);
+    setCurrentIndex((i) => (i + 1) % fullImages.length);
+  }, [fullImages.length]);
 
   const prev = useCallback(() => {
-    setCurrentIndex((i) => (i - 1 + thumbImages.length) % thumbImages.length);
-  }, [thumbImages.length]);
+    setCurrentIndex((i) => (i - 1 + fullImages.length) % fullImages.length);
+  }, [fullImages.length]);
 
   // Handle image click from grid - opens lightbox at that index
   const handleGridImageClick = useCallback((index: number) => {
