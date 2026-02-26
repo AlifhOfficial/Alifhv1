@@ -53,20 +53,20 @@ export interface ListingImagePair {
 // Compression Configs — Matched with mobile, realistic targets
 // ============================================================================
 
-/** Listing thumbs: 480px, max 50KB - good quality previews */
+/** Listing thumbs: 400px, max 35KB - smaller dims = better quality per KB */
 const LISTING_THUMB_CONFIG: CompressionConfig = {
-  maxWidth: 480,
-  maxHeight: 480,
-  maxSizeKB: 50,
-  quality: 0.8,
+  maxWidth: 400,
+  maxHeight: 400,
+  maxSizeKB: 35,
+  quality: 0.9,
 };
 
-/** Listing full: 1400px, max 100KB - high quality detail */
+/** Listing full: 1200px, max 100KB */
 const LISTING_FULL_CONFIG: CompressionConfig = {
-  maxWidth: 1400,
-  maxHeight: 1400,
+  maxWidth: 1200,
+  maxHeight: 1200,
   maxSizeKB: 100,
-  quality: 0.8,
+  quality: 0.85,
 };
 
 /** Avatar: 512px square, max 40KB */
@@ -85,10 +85,10 @@ const PARTNER_CONFIGS: Record<PartnerImageType, CompressionConfig> = {
 
 /** Showroom configs by asset type */
 const SHOWROOM_CONFIGS: Record<ShowroomAssetType, CompressionConfig> = {
-  'hero-image': { maxWidth: 1920, maxHeight: 1080, maxSizeKB: 200, quality: 0.75 },
-  'founder-image': { maxWidth: 800, maxHeight: 1000, maxSizeKB: 100, quality: 0.75 },
-  'gallery': { maxWidth: 1600, maxHeight: 1200, maxSizeKB: 150, quality: 0.7 },
-  'team-member': { maxWidth: 600, maxHeight: 600, maxSizeKB: 60, quality: 0.7 },
+  'hero-image': { maxWidth: 1920, maxHeight: 1080, maxSizeKB: 250, quality: 0.8 },
+  'founder-image': { maxWidth: 800, maxHeight: 1000, maxSizeKB: 120, quality: 0.8 },
+  'gallery': { maxWidth: 1600, maxHeight: 1200, maxSizeKB: 180, quality: 0.8 },
+  'team-member': { maxWidth: 600, maxHeight: 600, maxSizeKB: 80, quality: 0.8 },
 };
 
 // ============================================================================

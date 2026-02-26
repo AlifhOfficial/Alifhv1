@@ -41,8 +41,8 @@ type UploadType = 'listing' | 'avatar' | 'showroom' | 'partner';
 
 // Max sizes for pre-compressed images (allow some headroom above targets)
 const MAX_SIZES = {
-  listing_thumb: 80 * 1024,      // 80KB (target 50KB)
-  listing_full: 150 * 1024,      // 150KB (target 100KB)
+  listing_thumb: 120 * 1024,     // 120KB (target 80KB)
+  listing_full: 200 * 1024,      // 200KB (target 150KB)
   avatar: 60 * 1024,             // 60KB (target 40KB)
   showroom: 250 * 1024,          // 250KB
   partner_logo: 60 * 1024,       // 60KB (target 40KB)

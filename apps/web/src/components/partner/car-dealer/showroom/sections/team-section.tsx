@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { Plus, Users } from 'lucide-react';
-import { uploadShowroomImage } from '@/lib/storage';
+import { compressAndUploadShowroomImage } from '@/lib/storage';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import type { ShowroomTeamMember } from '@alifh/database';
 import { EditableField, TeamMemberCard } from '../components';
@@ -94,7 +94,7 @@ export function TeamSection({
                 
                 setImageUploading(`team-${member.id}`);
                 try {
-                  const result = await uploadShowroomImage(file, partnerId, 'team-member');
+                  const result = await compressAndUploadShowroomImage(file, partnerId, 'team-member');
                   await updateTeamMember(member.id, { image: result.key });
                 } catch {
                   toast({ title: 'Upload failed', variant: 'destructive' });

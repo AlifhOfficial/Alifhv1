@@ -8,7 +8,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { getPublicUrl } from '@/utils';
-import { uploadShowroomImage } from '@/lib/storage';
+import { compressAndUploadShowroomImage } from '@/lib/storage';
 import { Plus, X, Loader2 } from 'lucide-react';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import { EditableField, VideoUpload, VideoEmbedPreview } from '../components';
@@ -124,7 +124,7 @@ export function GallerySection({
                         const batch = toUpload.slice(i, i + batchSize);
                         const results = await Promise.all(
                           batch.map(async (file) => {
-                            const result = await uploadShowroomImage(file, partnerId, 'gallery');
+                            const result = await compressAndUploadShowroomImage(file, partnerId, 'gallery');
                             return result.key;
                           })
                         );

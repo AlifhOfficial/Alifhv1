@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { cn } from '@/utils';
 import { usePartnerShowroom, type ShowroomUpdateData, type PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import { useToast } from '@/hooks/use-toast';
-import { uploadShowroomImage, uploadShowroomVideo } from '@/lib/storage';
+import { compressAndUploadShowroomImage, uploadShowroomVideo } from '@/lib/storage';
 import {
   ArrowLeft,
   Loader2,
@@ -94,8 +94,8 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
     setEditingField(null);
   };
 
-  // Upload image via presigned URL pipeline (HEIC→WebP conversion, CDN caching)
-  const uploadImage = async (file: File, type: string, field: keyof PartnerShowroom) => {
+  // Upload image via client-side compression + direct CDN upload
+  const uploadImage = async (file: File, type: 'hero-image' | 'founder-image' | 'gallery' | 'team-member', field: keyof PartnerShowroom) => {
     // Basic check - allow common image types
     const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
     if (!validTypes.includes(file.type) && !file.type.startsWith('image/')) {
@@ -103,7 +103,7 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
       return;
     }
     
-    // 15MB limit for images (will be compressed server-side)
+    // 15MB limit for source images (will be compressed client-side)
     const maxSize = 15 * 1024 * 1024;
     if (file.size > maxSize) {
       toast({ title: 'Image too large. Max 15MB allowed', variant: 'destructive' });
@@ -112,7 +112,7 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
 
     setImageUploading(field);
     try {
-      const result = await uploadShowroomImage(file, partnerId, type);
+      const result = await compressAndUploadShowroomImage(file, partnerId, type);
       setForm(f => ({ ...f, [field]: result.key }));
       await updateShowroom({ [field]: result.key } as any);
       toast({ title: 'Image uploaded' });
