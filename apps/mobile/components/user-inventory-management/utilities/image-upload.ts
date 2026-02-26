@@ -152,26 +152,30 @@ export async function pickAndUploadListingImage(
   const uploaded: ImageUploadResult[] = [];
   const errors: string[] = [];
 
-  // 3. Compress all images in parallel (native C++, fast)
+  // 3. Compress images in batches to avoid memory overflow
   let compressedCount = 0;
   const compressed: Array<{ uri: string; pair: ListingImagePair } | { uri: string; error: string }> = [];
+  const compressionBatchSize = 3; // Process 3 at a time to avoid OOM
 
   try {
-    const compressionResults = await Promise.all(
-      assets.map(async (asset) => {
-        try {
-          const pair = await compressListingImage(asset.uri);
-          compressedCount++;
-          onProgress?.('compressing', compressedCount, assets.length);
-          return { uri: asset.uri, pair };
-        } catch (err: any) {
-          compressedCount++;
-          onProgress?.('compressing', compressedCount, assets.length);
-          return { uri: asset.uri, error: err.message || 'Compression failed' };
-        }
-      }),
-    );
-    compressed.push(...compressionResults);
+    for (let i = 0; i < assets.length; i += compressionBatchSize) {
+      const batch = assets.slice(i, i + compressionBatchSize);
+      const batchResults = await Promise.all(
+        batch.map(async (asset) => {
+          try {
+            const pair = await compressListingImage(asset.uri);
+            compressedCount++;
+            onProgress?.('compressing', compressedCount, assets.length);
+            return { uri: asset.uri, pair };
+          } catch (err: any) {
+            compressedCount++;
+            onProgress?.('compressing', compressedCount, assets.length);
+            return { uri: asset.uri, error: err.message || 'Compression failed' };
+          }
+        }),
+      );
+      compressed.push(...batchResults);
+    }
   } catch (err: any) {
     return { success: false, images: [], errors: ['Compression failed: ' + (err.message || 'Unknown error')] };
   }

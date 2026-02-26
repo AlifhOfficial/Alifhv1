@@ -53,20 +53,20 @@ export interface ListingImagePair {
 // Compression Configs — Matched with mobile, realistic targets
 // ============================================================================
 
-/** Listing thumbs: 480px, max 50KB - crisp previews */
+/** Listing thumbs: 600px, max 70KB - crisp on retina */
 const LISTING_THUMB_CONFIG: CompressionConfig = {
-  maxWidth: 480,
-  maxHeight: 480,
-  maxSizeKB: 50,
-  quality: 0.9,
+  maxWidth: 600,
+  maxHeight: 600,
+  maxSizeKB: 70,
+  quality: 0.92,
 };
 
-/** Listing full: 1400px, max 150KB - sharp detail */
+/** Listing full: 1400px, max 120KB - sharp detail */
 const LISTING_FULL_CONFIG: CompressionConfig = {
   maxWidth: 1400,
   maxHeight: 1400,
-  maxSizeKB: 150,
-  quality: 0.88,
+  maxSizeKB: 120,
+  quality: 0.78,
 };
 
 /** Avatar: 512px square, max 50KB */
