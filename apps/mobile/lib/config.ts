@@ -131,8 +131,8 @@ export function getAvatarUrl(key: string | null | undefined, cacheBuster?: numbe
  * Get thumbnail URL from a full-size image URL/key.
  * 
  * For listing images uploaded after Feb 2026, images are stored as pairs:
- * - Full: xxx_full.webp (2000w, ~100-200KB)
- * - Thumb: xxx_thumb.webp (480w, ~15-20KB)
+ * - Full: xxx_full.webp or xxx_full.jpg (1400w)
+ * - Thumb: xxx_thumb.webp or xxx_thumb.jpg (480w, ~20-35KB)
  * 
  * This function converts a full URL to its thumb equivalent.
  * Falls back to original URL for legacy images without _full suffix.
@@ -152,6 +152,11 @@ export function getThumbUrl(url: string | null | undefined): string | null {
     return fullUrl.replace('_full.webp', '_thumb.webp');
   }
   
+  // Convert _full.jpg to _thumb.jpg (direct upload format)
+  if (fullUrl.includes('_full.jpg')) {
+    return fullUrl.replace('_full.jpg', '_thumb.jpg');
+  }
+  
   // Legacy image - return as-is (no thumb version exists)
   return fullUrl;
 }
@@ -167,10 +172,18 @@ export function getListingImageUrls(url: string | null | undefined): { thumb: st
   const publicUrl = getPublicUrl(url);
   if (!publicUrl) return { thumb: null, full: null };
   
-  // Check if this is a dual-output image
+  // Check if this is a dual-output image (webp format)
   if (publicUrl.includes('_full.webp')) {
     return {
       thumb: publicUrl.replace('_full.webp', '_thumb.webp'),
+      full: publicUrl,
+    };
+  }
+  
+  // Check if this is a dual-output image (jpg format - direct upload)
+  if (publicUrl.includes('_full.jpg')) {
+    return {
+      thumb: publicUrl.replace('_full.jpg', '_thumb.jpg'),
       full: publicUrl,
     };
   }

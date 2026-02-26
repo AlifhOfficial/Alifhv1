@@ -39,12 +39,12 @@ export const runtime = 'nodejs';
 
 type UploadType = 'listing' | 'avatar' | 'showroom';
 
-// Max sizes for pre-compressed images (generous to allow quality variance)
+// Max sizes for pre-compressed images (allow some headroom above targets)
 const MAX_SIZES = {
-  listing_thumb: 100 * 1024,     // 100KB (allow some headroom)
-  listing_full: 250 * 1024,      // 250KB (allow some headroom)
-  avatar: 100 * 1024,            // 100KB
-  showroom: 300 * 1024,          // 300KB
+  listing_thumb: 50 * 1024,      // 50KB (target 25KB)
+  listing_full: 100 * 1024,      // 100KB (target 70KB)
+  avatar: 50 * 1024,             // 50KB
+  showroom: 250 * 1024,          // 250KB
 };
 
 // Allowed compressed image types

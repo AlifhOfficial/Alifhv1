@@ -129,6 +129,11 @@ export function getThumbUrl(url: string | null | undefined, cacheBuster?: string
     return fullUrl.replace('_full.webp', '_thumb.webp');
   }
   
+  // Convert _full.jpg to _thumb.jpg (direct upload format)
+  if (fullUrl.includes('_full.jpg')) {
+    return fullUrl.replace('_full.jpg', '_thumb.jpg');
+  }
+  
   // Legacy image - return as-is (no thumb version exists)
   return fullUrl;
 }
@@ -147,10 +152,18 @@ export function getListingImageUrls(url: string | null | undefined): { thumb: st
   const publicUrl = getPublicUrl(url);
   if (!publicUrl) return { thumb: null, full: null };
   
-  // Check if this is a dual-output image
+  // Check if this is a dual-output image (webp format)
   if (publicUrl.includes('_full.webp')) {
     return {
       thumb: publicUrl.replace('_full.webp', '_thumb.webp'),
+      full: publicUrl,
+    };
+  }
+  
+  // Check if this is a dual-output image (jpg format - direct upload)
+  if (publicUrl.includes('_full.jpg')) {
+    return {
+      thumb: publicUrl.replace('_full.jpg', '_thumb.jpg'),
       full: publicUrl,
     };
   }
