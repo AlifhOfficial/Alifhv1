@@ -38,7 +38,7 @@ export default function EditListingPage({ params }: PageProps) {
           return;
         }
         const data = await res.json();
-        // API returns { listing, sellerData } - extract listing
+        // API returns listing directly (or data.listing for some endpoints)
         setListing(data.listing || data);
       } catch (err) {
         setError('Failed to load listing');
@@ -49,47 +49,10 @@ export default function EditListingPage({ params }: PageProps) {
     if (id) fetchListing();
   }, [id]);
 
-  if (isLoading || loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!session) {
-    redirect(`/?auth=signin&redirect=/user-dashboard/listings/${id}/edit`);
-  }
-
-  if (error || !listing) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <h1 className="text-2xl font-semibold">Listing Not Found</h1>
-        <p className="text-muted-foreground">{error || 'The listing you are looking for does not exist.'}</p>
-        <a 
-          href="/user-dashboard/listings/my-listings" 
-          className="px-4 py-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-        >
-          Back to My Listings
-        </a>
-      </div>
-    );
-  }
-
-  // Check ownership (or admin)
-  const isAdmin = (session as any).role === 'admin' || (session as any).role === 'super_admin';
-  const isOwner = listing.userId === session.id;
-
-  if (!isOwner && !isAdmin) {
-    redirect('/access-denied');
-  }
-
-  // For drafts, use the full creation flow (no field restrictions)
-  const isDraft = listing.moderationStatus === 'draft';
-
   // Transform listing data to form format for drafts
+  // NOTE: useMemo MUST be called before any early returns to satisfy Rules of Hooks
   const draftInitialData = useMemo(() => {
-    if (!isDraft) return undefined;
+    if (!listing || listing.moderationStatus !== 'draft') return undefined;
     
     return {
       id: listing.id,
@@ -131,7 +94,46 @@ export default function EditListingPage({ params }: PageProps) {
       ownerRemarks: listing.specialNotes?.ownerRemarks || [],
       partnerId: listing.partnerId || undefined,
     } satisfies Partial<ListingFormData> & { id: string };
-  }, [isDraft, listing]);
+  }, [listing]);
+
+  // Early returns AFTER all hooks
+  if (isLoading || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    redirect(`/?auth=signin&redirect=/user-dashboard/listings/${id}/edit`);
+  }
+
+  if (error || !listing) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <h1 className="text-2xl font-semibold">Listing Not Found</h1>
+        <p className="text-muted-foreground">{error || 'The listing you are looking for does not exist.'}</p>
+        <a 
+          href="/user-dashboard/listings/my-listings" 
+          className="px-4 py-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          Back to My Listings
+        </a>
+      </div>
+    );
+  }
+
+  // Check ownership (or admin)
+  const isAdmin = (session as any).role === 'admin' || (session as any).role === 'super_admin';
+  const isOwner = listing.userId === session.id;
+
+  if (!isOwner && !isAdmin) {
+    redirect('/access-denied');
+  }
+
+  // For drafts, use the full creation flow (no field restrictions)
+  const isDraft = listing.moderationStatus === 'draft';
 
   // Drafts: full creation flow (no restrictions)
   // Published: edit flow (with locked fields)
