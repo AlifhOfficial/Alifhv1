@@ -519,26 +519,33 @@ export async function PUT(
     });
 
     // AI Auto-Moderation for USER-posted listings
-    // ONLY trigger when MAJOR content fields ACTUALLY change (description, price)
-    // Minor edits (images, specs, extras, etc.) don't need re-moderation
-    // Compare against old values to avoid re-moderation when form sends unchanged fields
+    // Two scenarios:
+    // 1. Draft being published for the first time → Run synchronously (return result to client)
+    // 2. Already published listing with major content changes → Run async (fire and forget)
+    const wasDraft = listing.moderationStatus === 'draft';
+    const isBeingPublished = updated?.moderationStatus === 'submitted';
+    const isFirstTimePublish = wasDraft && isBeingPublished;
+
+    // Major content changes only matter for existing published listings
     const hasMajorContentChanges = 
       (body.description !== undefined && body.description !== (listing.description ?? '')) ||
       (body.price !== undefined && body.price !== listing.price);
 
     const shouldRunAIModeration = 
       updated?.postedByRole === 'user' &&
-      hasMajorContentChanges;
+      (isFirstTimePublish || hasMajorContentChanges);
 
-    console.log(`[AI Check] postedByRole=${updated?.postedByRole}, moderationStatus=${updated?.moderationStatus}, hasMajorChanges=${hasMajorContentChanges}, shouldRun=${shouldRunAIModeration}`);
+    console.log(`[AI Check] postedByRole=${updated?.postedByRole}, wasDraft=${wasDraft}, isBeingPublished=${isBeingPublished}, hasMajorChanges=${hasMajorContentChanges}, shouldRun=${shouldRunAIModeration}`);
     
+    // Initialize moderation result for response
+    let aiModeration: { decision: 'approve' | 'flag'; approved: boolean } | null = null;
+
     if (shouldRunAIModeration && updated) {
       console.log(`[AI Moderation] Starting AI moderation for listing ${id}...`);
       // Get full listing data for AI moderation
       const fullListing = await getListingDetailed(id);
       console.log(`[AI Moderation] Got full listing: ${!!fullListing}`);
       if (fullListing) {
-        // AI Moderation (fire and forget)
         const moderationInput: ModerationInput = {
           make: fullListing.make,
           model: fullListing.model,
@@ -567,14 +574,35 @@ export async function PUT(
           ownerRemarks: fullListing.specialNotes?.ownerRemarks || null,
         };
 
-        moderateListing(moderationInput)
-          .then(async (result) => {
+        if (isFirstTimePublish) {
+          // First-time publish: Run synchronously so client gets result
+          try {
+            const result = await moderateListing(moderationInput);
             await updateListingAIModeration(id, result);
-            console.log(`[AI Moderation] Listing ${id} (resubmit): ${result.decision} (confidence: ${result.confidence})`);
-          })
-          .catch((error) => {
+            console.log(`[AI Moderation] Listing ${id} (first publish): ${result.decision} (confidence: ${result.confidence})`);
+            aiModeration = {
+              decision: result.decision,
+              approved: result.decision === 'approve',
+            };
+          } catch (error) {
             console.error(`[AI Moderation] Failed for listing ${id}:`, error);
-          });
+            // On failure, treat as flagged for manual review
+            aiModeration = {
+              decision: 'flag',
+              approved: false,
+            };
+          }
+        } else {
+          // Re-submission with major changes: Fire and forget
+          moderateListing(moderationInput)
+            .then(async (result) => {
+              await updateListingAIModeration(id, result);
+              console.log(`[AI Moderation] Listing ${id} (resubmit): ${result.decision} (confidence: ${result.confidence})`);
+            })
+            .catch((error) => {
+              console.error(`[AI Moderation] Failed for listing ${id}:`, error);
+            });
+        }
       }
     }
 
@@ -582,6 +610,7 @@ export async function PUT(
       success: true,
       data: {
         id,
+        moderation: aiModeration,
       },
     });
   } catch (error) {
