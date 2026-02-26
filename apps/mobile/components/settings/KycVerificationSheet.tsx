@@ -134,6 +134,9 @@ export function KycVerificationSheet({
       setStatus('loading');
       setError(null);
 
+      // Cancel any existing stale session first to get a fresh one
+      await cancelVerification();
+
       const result = await startVerificationSession();
 
       if (!result.success) {

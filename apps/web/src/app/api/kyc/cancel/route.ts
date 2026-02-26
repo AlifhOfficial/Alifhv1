@@ -1,14 +1,15 @@
 /**
  * Cancel KYC Verification
  * 
- * Cancels a pending KYC verification and allows user to start fresh.
+ * Cancels any non-approved KYC verification and allows user to start fresh.
+ * More aggressive than before - clears ANY record that isn't approved.
  * 
  * POST /api/kyc/cancel
  */
 
 import { NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { db, kycRecord, userProfile, eq, and } from '@alifh/database';
+import { db, kycRecord, userProfile, eq, and, ne } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
@@ -19,6 +20,7 @@ export async function POST() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Cancel ALL non-approved records (pending, rejected, or any stuck state)
     const result = await db
       .update(kycRecord)
       .set({
@@ -31,30 +33,31 @@ export async function POST() {
       .where(
         and(
           eq(kycRecord.userId, user.id),
-          eq(kycRecord.status, 'pending')
+          ne(kycRecord.status, 'approved'),
+          ne(kycRecord.status, 'cancelled')
         )
       )
       .returning({ id: kycRecord.id });
 
-    if (result.length === 0) {
-      return NextResponse.json({ 
-        success: true, 
-        message: 'No pending verification to cancel' 
-      });
-    }
-
-    // 3. Reset userProfile kycStatus back to 'none' so UI shows "Get verified" again
+    // ALWAYS reset userProfile kycStatus to 'none' (unless already approved/verified)
     await db
       .update(userProfile)
       .set({
         kycStatus: 'none',
         updatedAt: new Date(),
       })
-      .where(eq(userProfile.userId, user.id));
+      .where(
+        and(
+          eq(userProfile.userId, user.id),
+          ne(userProfile.kycStatus, 'approved')
+        )
+      );
 
     return NextResponse.json({ 
       success: true,
-      message: 'Verification cancelled successfully'
+      message: result.length > 0 
+        ? 'Verification cancelled successfully' 
+        : 'Ready for fresh verification'
     });
 
   } catch {
