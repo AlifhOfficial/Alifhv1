@@ -217,7 +217,36 @@ export interface ImageUploadResult {
   absoluteUrl: string; // Full URL (transformed for native <Image/>)
 }
 
+/** Result from direct listing upload (thumb + full pair) */
+export interface DirectListingUploadResult {
+  thumbKey: string;
+  thumbUrl: string;
+  fullKey: string;
+  fullUrl: string;
+}
 
+/** Result from direct single image upload (avatar, showroom) */
+export interface DirectSingleUploadResult {
+  key: string;
+  url: string;
+}
+
+/** Presigned URLs for listing upload (thumb + full) */
+export interface ListingPresignedUrls {
+  thumbUploadUrl: string;
+  thumbKey: string;
+  thumbUrl: string;
+  fullUploadUrl: string;
+  fullKey: string;
+  fullUrl: string;
+}
+
+/** Presigned URL for single upload */
+export interface SinglePresignedUrl {
+  uploadUrl: string;
+  key: string;
+  url: string;
+}
 
 // ============================================================================
 // TYPES — API Responses (raw → transformed)
@@ -490,6 +519,165 @@ export async function deleteListingImage(key: string): Promise<void> {
   });
 
   if (!res.ok) await handleError(res, 'Image delete failed');
+}
+
+// ============================================================================
+// API — DIRECT IMAGE UPLOAD (Client-Side Compression, No Server Processing)
+// ============================================================================
+
+/**
+ * Get presigned URLs for direct listing image upload.
+ * Client must pre-compress images before calling this.
+ * 
+ * @param vin - VIN string (min 11 chars)
+ * @returns Presigned URLs for thumb and full uploads
+ */
+export async function getListingUploadUrls(vin: string): Promise<ListingPresignedUrls> {
+  const res = await authFetch('/api/storage/direct', {
+    method: 'POST',
+    body: JSON.stringify({ type: 'listing', vin }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to get upload URLs');
+  }
+
+  return res.json();
+}
+
+/**
+ * Upload a pre-compressed blob to a presigned URL.
+ * Used internally by direct upload functions.
+ */
+async function uploadToPresigned(uploadUrl: string, blob: Blob): Promise<void> {
+  const res = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'image/jpeg' },
+    body: blob,
+  });
+
+  if (!res.ok) {
+    throw new Error('Upload failed. Please try again.');
+  }
+}
+
+/**
+ * Direct upload a pre-compressed listing image pair (thumb + full).
+ * 
+ * Flow:
+ * 1. Get presigned URLs for thumb + full
+ * 2. Upload both in parallel
+ * 3. Return CDN URLs (immediately ready)
+ * 
+ * @param thumbUri - Local URI of compressed thumbnail
+ * @param fullUri - Local URI of compressed full image
+ * @param vin - VIN string
+ * @returns CDN URLs for both images
+ */
+export async function uploadListingImageDirect(
+  thumbUri: string,
+  fullUri: string,
+  vin: string,
+): Promise<DirectListingUploadResult> {
+  // Get presigned URLs
+  const urls = await getListingUploadUrls(vin);
+
+  // Convert URIs to blobs
+  const [thumbBlob, fullBlob] = await Promise.all([
+    fetch(thumbUri).then(r => r.blob()),
+    fetch(fullUri).then(r => r.blob()),
+  ]);
+
+  // Upload both in parallel
+  await Promise.all([
+    uploadToPresigned(urls.thumbUploadUrl, thumbBlob),
+    uploadToPresigned(urls.fullUploadUrl, fullBlob),
+  ]);
+
+  return {
+    thumbKey: urls.thumbKey,
+    thumbUrl: urls.thumbUrl,
+    fullKey: urls.fullKey,
+    fullUrl: urls.fullUrl,
+  };
+}
+
+/**
+ * Get presigned URL for direct avatar upload.
+ */
+export async function getAvatarUploadUrl(): Promise<SinglePresignedUrl> {
+  const res = await authFetch('/api/storage/direct', {
+    method: 'POST',
+    body: JSON.stringify({ type: 'avatar' }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to get upload URL');
+  }
+
+  return res.json();
+}
+
+/**
+ * Direct upload a pre-compressed avatar.
+ * 
+ * @param uri - Local URI of compressed avatar image
+ * @returns CDN URL
+ */
+export async function uploadAvatarDirect(uri: string): Promise<DirectSingleUploadResult> {
+  const urls = await getAvatarUploadUrl();
+  const blob = await fetch(uri).then(r => r.blob());
+  await uploadToPresigned(urls.uploadUrl, blob);
+
+  return {
+    key: urls.key,
+    url: urls.url,
+  };
+}
+
+/**
+ * Get presigned URL for direct showroom image upload.
+ */
+export async function getShowroomUploadUrl(
+  partnerId: string,
+  assetType: string,
+): Promise<SinglePresignedUrl> {
+  const res = await authFetch('/api/storage/direct', {
+    method: 'POST',
+    body: JSON.stringify({ type: 'showroom', partnerId, assetType }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to get upload URL');
+  }
+
+  return res.json();
+}
+
+/**
+ * Direct upload a pre-compressed showroom image.
+ * 
+ * @param uri - Local URI of compressed image
+ * @param partnerId - Partner ID
+ * @param assetType - Type of showroom asset
+ * @returns CDN URL
+ */
+export async function uploadShowroomImageDirect(
+  uri: string,
+  partnerId: string,
+  assetType: string,
+): Promise<DirectSingleUploadResult> {
+  const urls = await getShowroomUploadUrl(partnerId, assetType);
+  const blob = await fetch(uri).then(r => r.blob());
+  await uploadToPresigned(urls.uploadUrl, blob);
+
+  return {
+    key: urls.key,
+    url: urls.url,
+  };
 }
 
 // ============================================================================

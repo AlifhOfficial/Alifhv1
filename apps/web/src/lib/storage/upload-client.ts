@@ -274,3 +274,290 @@ export async function uploadShowroomVideo(
     url: `${cdnUrl}/${rawKey}`,
   };
 }
+
+// ============================================================================
+// Direct Upload Functions (Client-Side Compression, No Server Processing)
+// ============================================================================
+
+export interface DirectListingUploadResult {
+  thumbKey: string;
+  thumbUrl: string;
+  fullKey: string;
+  fullUrl: string;
+}
+
+export interface DirectSingleUploadResult {
+  key: string;
+  url: string;
+}
+
+/**
+ * Get presigned URLs for direct listing image upload.
+ * Client must pre-compress images before calling this.
+ */
+async function getListingUploadUrls(vin: string): Promise<{
+  thumbUploadUrl: string;
+  thumbKey: string;
+  thumbUrl: string;
+  fullUploadUrl: string;
+  fullKey: string;
+  fullUrl: string;
+}> {
+  const res = await fetch('/api/storage/direct', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'listing', vin }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to get upload URLs');
+  }
+
+  return res.json();
+}
+
+/**
+ * Upload a pre-compressed file to a presigned URL.
+ */
+async function uploadToPresigned(uploadUrl: string, file: File | Blob): Promise<void> {
+  const res = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'image/jpeg' },
+    body: file,
+  });
+
+  if (!res.ok) {
+    throw new Error('Upload failed. Please try again.');
+  }
+}
+
+/**
+ * Direct upload pre-compressed listing images (thumb + full).
+ * 
+ * Flow:
+ * 1. Compress client-side using image-compress.ts
+ * 2. Call this function with compressed files
+ * 3. Get presigned URLs and upload both in parallel
+ * 4. URLs are immediately CDN-ready
+ * 
+ * @param thumbFile - Pre-compressed thumbnail file (~20-25KB)
+ * @param fullFile - Pre-compressed full-size file (~45-55KB)
+ * @param vin - VIN string for folder organization
+ * @returns CDN URLs for both images
+ */
+export async function uploadListingImageDirect(
+  thumbFile: File | Blob,
+  fullFile: File | Blob,
+  vin: string,
+): Promise<DirectListingUploadResult> {
+  const urls = await getListingUploadUrls(vin);
+
+  // Upload both in parallel
+  await Promise.all([
+    uploadToPresigned(urls.thumbUploadUrl, thumbFile),
+    uploadToPresigned(urls.fullUploadUrl, fullFile),
+  ]);
+
+  return {
+    thumbKey: urls.thumbKey,
+    thumbUrl: urls.thumbUrl,
+    fullKey: urls.fullKey,
+    fullUrl: urls.fullUrl,
+  };
+}
+
+/**
+ * Get presigned URL for direct avatar upload.
+ */
+async function getAvatarUploadUrl(): Promise<{ uploadUrl: string; key: string; url: string }> {
+  const res = await fetch('/api/storage/direct', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'avatar' }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to get upload URL');
+  }
+
+  return res.json();
+}
+
+/**
+ * Direct upload a pre-compressed avatar.
+ * 
+ * @param file - Pre-compressed avatar file (~15-20KB)
+ * @returns CDN URL
+ */
+export async function uploadAvatarDirect(file: File | Blob): Promise<DirectSingleUploadResult> {
+  const urls = await getAvatarUploadUrl();
+  await uploadToPresigned(urls.uploadUrl, file);
+
+  return {
+    key: urls.key,
+    url: urls.url,
+  };
+}
+
+/**
+ * Get presigned URL for direct showroom image upload.
+ */
+async function getShowroomUploadUrl(
+  partnerId: string,
+  assetType: string,
+): Promise<{ uploadUrl: string; key: string; url: string }> {
+  const res = await fetch('/api/storage/direct', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'showroom', partnerId, assetType }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to get upload URL');
+  }
+
+  return res.json();
+}
+
+/**
+ * Direct upload a pre-compressed showroom image.
+ * 
+ * @param file - Pre-compressed showroom image
+ * @param partnerId - Partner ID
+ * @param assetType - Type of showroom asset
+ * @returns CDN URL
+ */
+export async function uploadShowroomImageDirect(
+  file: File | Blob,
+  partnerId: string,
+  assetType: string,
+): Promise<DirectSingleUploadResult> {
+  const urls = await getShowroomUploadUrl(partnerId, assetType);
+  await uploadToPresigned(urls.uploadUrl, file);
+
+  return {
+    key: urls.key,
+    url: urls.url,
+  };
+}
+
+// ============================================================================
+// High-Level Convenience Functions (Compress + Upload in one call)
+// ============================================================================
+
+import { 
+  compressListingImage, 
+  compressAvatar as compressAvatarImage, 
+  compressShowroomImage 
+} from './image-compress';
+
+/**
+ * Compress and upload a listing image in one call.
+ * Handles compression + parallel upload automatically.
+ * 
+ * @param file - Original image file from input
+ * @param vin - VIN string
+ * @param onProgress - Progress callback (0-100)
+ * @returns CDN URLs for thumb + full
+ * 
+ * @example
+ * const result = await compressAndUploadListingImage(file, vin, (p) => setProgress(p));
+ * console.log(result.thumbUrl, result.fullUrl);
+ */
+export async function compressAndUploadListingImage(
+  file: File,
+  vin: string,
+  onProgress?: (percent: number) => void,
+): Promise<DirectListingUploadResult> {
+  onProgress?.(5);
+  
+  // Compress (parallel thumb + full)
+  const { thumb, full } = await compressListingImage(file);
+  onProgress?.(40);
+  
+  // Upload (parallel)
+  const result = await uploadListingImageDirect(thumb.file, full.file, vin);
+  onProgress?.(100);
+  
+  return result;
+}
+
+/**
+ * Compress and upload multiple listing images in parallel.
+ * 
+ * @param files - Array of image files
+ * @param vin - VIN string
+ * @param onProgress - Progress callback (completed, total)
+ * @param concurrency - Max concurrent uploads (default: 5)
+ * @returns Array of upload results
+ */
+export async function compressAndUploadListingImages(
+  files: File[],
+  vin: string,
+  onProgress?: (completed: number, total: number) => void,
+  concurrency: number = 5,
+): Promise<DirectListingUploadResult[]> {
+  let completed = 0;
+
+  // Process a single file: compress + upload
+  const processFile = async (file: File): Promise<DirectListingUploadResult> => {
+    const { thumb, full } = await compressListingImage(file);
+    const result = await uploadListingImageDirect(thumb.file, full.file, vin);
+    completed++;
+    onProgress?.(completed, files.length);
+    return result;
+  };
+
+  // Process in batches for controlled concurrency
+  const results: DirectListingUploadResult[] = [];
+  
+  for (let i = 0; i < files.length; i += concurrency) {
+    const batch = files.slice(i, i + concurrency);
+    const batchResults = await Promise.all(batch.map(processFile));
+    results.push(...batchResults);
+  }
+
+  return results;
+}
+
+/**
+ * Compress and upload an avatar image.
+ */
+export async function compressAndUploadAvatar(
+  file: File,
+  onProgress?: (percent: number) => void,
+): Promise<DirectSingleUploadResult> {
+  onProgress?.(10);
+  
+  const compressed = await compressAvatarImage(file);
+  onProgress?.(50);
+  
+  const result = await uploadAvatarDirect(compressed.file);
+  onProgress?.(100);
+  
+  return result;
+}
+
+/**
+ * Compress and upload a showroom image.
+ */
+export async function compressAndUploadShowroomImage(
+  file: File,
+  partnerId: string,
+  assetType: 'hero-image' | 'founder-image' | 'gallery' | 'team-member',
+  onProgress?: (percent: number) => void,
+): Promise<DirectSingleUploadResult> {
+  onProgress?.(10);
+  
+  const compressed = await compressShowroomImage(file, assetType);
+  onProgress?.(50);
+  
+  const result = await uploadShowroomImageDirect(compressed.file, partnerId, assetType);
+  onProgress?.(100);
+  
+  return result;
+}
+

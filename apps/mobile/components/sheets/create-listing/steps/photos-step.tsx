@@ -71,7 +71,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
         vin: data.vin,
         allowMultiple: true,
         maxImages: MAX_IMAGES - data.images.length,
-        onProgress: (done, total) => setUploadProgress({ done, total }),
+        onProgress: (phase, done, total) => setUploadProgress({ done, total }),
       });
 
       if (result.success && result.images.length > 0) {

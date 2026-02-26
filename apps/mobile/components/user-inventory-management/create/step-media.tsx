@@ -115,7 +115,7 @@ export function StepMedia({ form, updateForm, colors }: StepProps) {
         vin: form.vin,
         allowMultiple: true,
         maxImages: MAX_IMAGES - form.images.length,
-        onProgress: (done, total) => setUploadProgress({ done, total }),
+        onProgress: (phase, done, total) => setUploadProgress({ done, total }),
       });
 
       if (result.success && result.images.length > 0) {

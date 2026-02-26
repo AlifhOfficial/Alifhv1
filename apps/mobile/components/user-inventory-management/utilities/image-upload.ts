@@ -1,21 +1,26 @@
 /**
  * Image Upload Utility — User Inventory Management
  *
- * Wraps expo-image-picker + sellCarUserApi.uploadImage / deleteImage
- * into a single-call convenience function for the create & edit flows.
+ * WhatsApp-like speed using:
+ * 1. Client-side native compression (react-native-compressor)
+ * 2. Parallel uploads (5 concurrent)
+ * 3. Direct R2 storage (no server processing)
  *
- * All images are uploaded to R2 via the server which converts to WebP.
- * The returned URL is a CDN-served public path.
+ * Targets:
+ * - Thumb: 480px, ~20-25KB
+ * - Full: 1400px, ~45-55KB
+ * - Total time: ~3-5s for 10 images
  */
 
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import { Alert, Platform } from 'react-native';
 import {
-  uploadListingImage,
+  uploadListingImageDirect,
   deleteListingImage,
-  type ImageUploadResult,
+  type DirectListingUploadResult,
 } from '@/lib/sell-car-user-api';
+import { compressListingImage, type ListingImagePair } from '@/lib/image-compress';
 import { CDN_BASE, API_BASE } from '@/lib/config';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -29,10 +34,18 @@ export interface PickAndUploadOptions {
    * @default false
    */
   allowMultiple?: boolean;
-  /** Max number of images when allowMultiple=true. @default 20 */
+  /** Max number of images when allowMultiple=true. @default 30 */
   maxImages?: number;
-  /** Callback for progress tracking (index, total) */
-  onProgress?: (uploaded: number, total: number) => void;
+  /** Callback for progress tracking (phase, completed, total) */
+  onProgress?: (phase: 'compressing' | 'uploading', completed: number, total: number) => void;
+  /** Concurrent upload limit. @default 5 */
+  concurrency?: number;
+}
+
+export interface ImageUploadResult {
+  url: string;       // Full-size CDN key
+  absoluteUrl: string; // Full URL for native <Image/>
+  thumbUrl: string;  // Thumbnail CDN URL
 }
 
 export interface PickAndUploadResult {
@@ -60,19 +73,51 @@ async function requestMediaPermission(): Promise<boolean> {
   return true;
 }
 
+// ─── Parallel Execution with Concurrency Limit ───────────────────────────────
+
+/**
+ * Execute async tasks in parallel with a concurrency limit.
+ * Returns results in the same order as input.
+ */
+async function parallelLimit<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let currentIndex = 0;
+
+  const worker = async () => {
+    while (currentIndex < items.length) {
+      const index = currentIndex++;
+      results[index] = await fn(items[index], index);
+    }
+  };
+
+  // Start `limit` workers
+  const workers = Array.from({ length: Math.min(limit, items.length) }, () => worker());
+  await Promise.all(workers);
+
+  return results;
+}
+
 // ─── Pick & Upload ───────────────────────────────────────────────────────────
 
 /**
- * Opens the image picker, lets the user select image(s),
- * uploads each to R2 via the listing-image endpoint,
- * and returns the resulting CDN URLs.
+ * Opens the image picker, compresses images client-side,
+ * uploads in parallel to R2, and returns CDN URLs.
+ *
+ * Speed: ~3-5 seconds for 10 images (vs ~45s with server processing)
  *
  * Usage:
  * ```ts
  * const result = await pickAndUploadListingImage({
  *   vin: 'WBAPH5C55BA237842',
  *   allowMultiple: true,
- *   onProgress: (done, total) => setProgress(`${done}/${total}`),
+ *   onProgress: (phase, done, total) => {
+ *     setStatus(phase === 'compressing' ? 'Optimizing...' : 'Uploading...');
+ *     setProgress(done / total);
+ *   },
  * });
  * if (result.success) {
  *   setImages(prev => [...prev, ...result.images]);
@@ -82,7 +127,7 @@ async function requestMediaPermission(): Promise<boolean> {
 export async function pickAndUploadListingImage(
   options: PickAndUploadOptions,
 ): Promise<PickAndUploadResult> {
-  const { vin, allowMultiple = false, maxImages = 30, onProgress } = options;
+  const { vin, allowMultiple = false, maxImages = 30, onProgress, concurrency = 5 } = options;
 
   // 1. Request permission
   const granted = await requestMediaPermission();
@@ -95,7 +140,7 @@ export async function pickAndUploadListingImage(
     mediaTypes: ['images'],
     allowsMultipleSelection: allowMultiple,
     selectionLimit: maxImages,
-    quality: 1, // Full quality - server handles all compression (avoids double compression)
+    quality: 1, // Full quality - we compress client-side
     exif: false,
   });
 
@@ -107,28 +152,90 @@ export async function pickAndUploadListingImage(
   const uploaded: ImageUploadResult[] = [];
   const errors: string[] = [];
 
-  // 3. Upload sequentially (avoids overwhelming the server)
-  for (let i = 0; i < assets.length; i++) {
-    const asset = assets[i];
-    try {
-      const result = await uploadListingImage(asset.uri, vin, asset.fileName ?? undefined);
-      uploaded.push(result);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } catch (err: any) {
-      // User-friendly error messages
-      const message = err.message ?? `Failed to upload image ${i + 1}`;
-      errors.push(message);
-      
-      // Show alert for timeout errors (user may want to retry)
-      if (message.includes('timed out') || message.includes('connection')) {
-        Alert.alert(
-          'Upload Problem',
-          `Image ${i + 1} failed: ${message}`,
-          [{ text: 'OK' }],
+  // 3. Compress all images in parallel (native C++, fast)
+  let compressedCount = 0;
+  const compressed: Array<{ uri: string; pair: ListingImagePair } | { uri: string; error: string }> = [];
+
+  try {
+    const compressionResults = await Promise.all(
+      assets.map(async (asset) => {
+        try {
+          const pair = await compressListingImage(asset.uri);
+          compressedCount++;
+          onProgress?.('compressing', compressedCount, assets.length);
+          return { uri: asset.uri, pair };
+        } catch (err: any) {
+          compressedCount++;
+          onProgress?.('compressing', compressedCount, assets.length);
+          return { uri: asset.uri, error: err.message || 'Compression failed' };
+        }
+      }),
+    );
+    compressed.push(...compressionResults);
+  } catch (err: any) {
+    return { success: false, images: [], errors: ['Compression failed: ' + (err.message || 'Unknown error')] };
+  }
+
+  // 4. Filter successful compressions
+  const toUpload = compressed.filter((c): c is { uri: string; pair: ListingImagePair } => 'pair' in c);
+  const compressionErrors = compressed.filter((c): c is { uri: string; error: string } => 'error' in c);
+  compressionErrors.forEach((c, i) => errors.push(`Image ${i + 1}: ${c.error}`));
+
+  if (toUpload.length === 0) {
+    return { success: false, images: [], errors };
+  }
+
+  // 5. Upload in parallel with concurrency limit
+  let uploadedCount = 0;
+
+  const uploadResults = await parallelLimit(
+    toUpload,
+    concurrency,
+    async (item, index) => {
+      try {
+        const result = await uploadListingImageDirect(
+          item.pair.thumb.uri,
+          item.pair.full.uri,
+          vin,
         );
+        uploadedCount++;
+        onProgress?.('uploading', uploadedCount, toUpload.length);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        return { success: true as const, result };
+      } catch (err: any) {
+        uploadedCount++;
+        onProgress?.('uploading', uploadedCount, toUpload.length);
+        return { success: false as const, error: err.message || `Upload failed` };
       }
+    },
+  );
+
+  // 6. Collect results
+  uploadResults.forEach((res, i) => {
+    if (res.success) {
+      uploaded.push({
+        url: res.result.fullKey,
+        absoluteUrl: res.result.fullUrl,
+        thumbUrl: res.result.thumbUrl,
+      });
+    } else {
+      errors.push(`Image ${i + 1}: ${res.error}`);
     }
-    onProgress?.(i + 1, assets.length);
+  });
+
+  // Show alert if some failed
+  if (errors.length > 0 && uploaded.length > 0) {
+    Alert.alert(
+      'Partial Upload',
+      `${uploaded.length} images uploaded, ${errors.length} failed.`,
+      [{ text: 'OK' }],
+    );
+  } else if (errors.length > 0 && uploaded.length === 0) {
+    Alert.alert(
+      'Upload Failed',
+      'Could not upload images. Please check your connection and try again.',
+      [{ text: 'OK' }],
+    );
   }
 
   return {
@@ -142,11 +249,11 @@ export async function pickAndUploadListingImage(
 
 /**
  * Delete a listing image given its full URL (CDN or API-relative).
- * Extracts the R2 key from the URL and calls the delete API.
+ * Also deletes the corresponding thumb if it's a _full image.
  *
  * Usage:
  * ```ts
- * await deleteListingImageByUrl('https://cdn.alifh.ae/listings/VIN/photo.webp');
+ * await deleteListingImageByUrl('https://cdn.revvup.ae/listings/2026/02/xxx_full.jpg');
  * ```
  */
 export async function deleteListingImageByUrl(url: string): Promise<void> {
@@ -169,5 +276,15 @@ export async function deleteListingImageByUrl(url: string): Promise<void> {
     key = key.split('?')[0];
   }
 
-  await deleteListingImage(key);
+  // Delete both full and thumb versions
+  const deletePromises = [deleteListingImage(key)];
+  
+  // If this is a _full image, also delete the corresponding _thumb
+  if (key.includes('_full.')) {
+    const thumbKey = key.replace('_full.', '_thumb.');
+    deletePromises.push(deleteListingImage(thumbKey).catch(() => {})); // Ignore if thumb doesn't exist
+  }
+
+  await Promise.all(deletePromises);
 }
+
