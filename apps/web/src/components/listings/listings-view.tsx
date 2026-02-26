@@ -98,7 +98,10 @@ export function ListingsView({
           {/* Mobile Layout (no resizable) */}
           <div className="lg:hidden">
             {/* TOP: Sticky Search Header */}
-            <div className="sticky top-14 sm:top-16 z-30 bg-background pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6">
+            <div className={cn(
+              "sticky z-30 bg-background pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6",
+              embedded ? "top-0" : "top-14 sm:top-16"
+            )}>
               <ListingsHeader
                 params={params}
                 facets={facets}
@@ -150,7 +153,10 @@ export function ListingsView({
           <div className="hidden lg:flex gap-6">
             {/* LEFT: Sidebar - sticky */}
             {sidebarOpen && (
-              <div className="shrink-0 sticky top-16 self-start max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-hide">
+              <div className={cn(
+                "shrink-0 sticky self-start overflow-y-auto scrollbar-hide",
+                embedded ? "top-0 max-h-[calc(100vh-4rem)]" : "top-16 max-h-[calc(100vh-5rem)]"
+              )}>
                 <ListingsSidebar
                   params={params}
                   facets={facets}
@@ -168,7 +174,10 @@ export function ListingsView({
             {/* RIGHT: Search Header + Content */}
             <div className="flex-1 min-w-0">
               {/* TOP: Search Header - sticky below navbar */}
-              <div className="sticky top-14 sm:top-16 z-30 bg-background pb-2">
+              <div className={cn(
+                "sticky z-30 bg-background pb-2",
+                embedded ? "top-0" : "top-14 sm:top-16"
+              )}>
                 <ListingsHeader
                   params={params}
                   facets={facets}
