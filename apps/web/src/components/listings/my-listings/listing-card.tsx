@@ -357,19 +357,12 @@ export function ListingCard({
 
           {/* AI Moderation Reason for Pending Review */}
           {isInReview && (listing.aiModeration?.reasoning || (listing.aiModeration?.flags && listing.aiModeration.flags.length > 0)) && (
-            <div className="mt-1.5 sm:mt-2 px-2.5 py-2 sm:py-2.5 rounded-lg bg-blue-500/5 border border-blue-500/10 space-y-2">
-              {/* Reasoning */}
-              {listing.aiModeration?.reasoning && (
-                <div className="flex items-start gap-2">
-                  <span className="text-[10px] sm:text-[11px] text-blue-600">
-                    <span className="font-semibold">Review Reason:</span>{' '}
-                    <span className="text-blue-600/80">{listing.aiModeration.reasoning}</span>
-                  </span>
-                </div>
-              )}
-              {/* Flags */}
+            <div className="mt-1.5 sm:mt-2 pt-1.5 border-t border-border/20">
+              <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-relaxed">
+                {listing.aiModeration?.reasoning}
+              </p>
               {listing.aiModeration?.flags && listing.aiModeration.flags.length > 0 && (
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1 mt-1">
                   {listing.aiModeration.flags.map((flag, index) => {
                     const label = typeof flag === 'object' 
                       ? (flag.message || flag.code || '').replace(/_/g, ' ')
@@ -378,7 +371,7 @@ export function ListingCard({
                     return (
                       <span 
                         key={index}
-                        className="inline-block px-1.5 py-0.5 text-[9px] sm:text-[10px] font-medium bg-amber-500/10 text-amber-600 rounded"
+                        className="px-1.5 py-0.5 text-[9px] sm:text-[10px] bg-muted text-muted-foreground rounded"
                       >
                         {label}
                       </span>
@@ -386,9 +379,8 @@ export function ListingCard({
                   })}
                 </div>
               )}
-              {/* Info */}
-              <p className="text-[9px] sm:text-[10px] text-muted-foreground italic">
-                Note: This is an automated assessment. A human reviewer will make the final decision.
+              <p className="text-[9px] text-muted-foreground/60 mt-1 italic">
+                Automated review — a human will make the final decision
               </p>
             </div>
           )}

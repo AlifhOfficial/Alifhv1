@@ -11,12 +11,12 @@ import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { AlertCircle, Clock, Info, ShieldAlert } from 'lucide-react-native';
+import { Clock } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getThumbUrl } from '@/lib/config';
-import { Heading, Body, Data, Supporting } from '@/components/ui';
+import { Heading, Body, Supporting } from '@/components/ui';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -47,7 +47,7 @@ export function PendingReviewReasonSheet({
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => ['55%'], []);
+  const snapPoints = useMemo(() => ['42%'], []);
 
   useEffect(() => {
     if (visible) {
@@ -123,9 +123,9 @@ export function PendingReviewReasonSheet({
               <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.textMuted} />
             </View>
           )}
-          <Data size="small" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
+          <Body size="small" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
             {listingTitle}
-          </Data>
+          </Body>
         </View>
 
         <ScrollView 
@@ -133,98 +133,49 @@ export function PendingReviewReasonSheet({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: Spacing.lg }}
         >
-          {/* Info Banner */}
-          <View style={[styles.infoBanner, { backgroundColor: colors.warning + '15' }]}>
-            <Info size={16} color={colors.warning} style={{ marginTop: 2 }} />
-            <Body size="small" style={{ color: colors.text, marginLeft: Spacing.sm, flex: 1 }}>
-              Your listing requires manual review before it goes live. Our team will check it within 24 hours.
-            </Body>
-          </View>
-
-          {/* AI Disclaimer */}
-          {(hasReasoning || hasFlags) && (
-            <View style={[styles.disclaimer, { backgroundColor: colors.fill }]}>
-              <Supporting style={{ color: colors.textMuted, fontStyle: 'italic' }}>
-                Note: This assessment was generated automatically and may not be fully accurate. A human reviewer will make the final decision.
-              </Supporting>
-            </View>
-          )}
-
-          {/* AI Reasoning */}
-          {hasReasoning && (
+          {/* Main Content */}
+          {(hasReasoning || hasFlags) ? (
             <View style={[styles.section, { backgroundColor: colors.fill }]}>
-              <View style={styles.sectionHeader}>
-                <ShieldAlert size={16} color={colors.primary} />
-                <Data size="small" style={{ color: colors.textSecondary, marginLeft: Spacing.xs }}>
-                  Review Reason
-                </Data>
-              </View>
-              <Body size="small" style={{ color: colors.text, marginTop: Spacing.sm, lineHeight: 20 }}>
-                {aiModeration?.reasoning}
-              </Body>
+              {/* Reasoning */}
+              {hasReasoning && (
+                <Body size="small" style={{ color: colors.text, lineHeight: 20 }}>
+                  {aiModeration?.reasoning}
+                </Body>
+              )}
+              
+              {/* Flags */}
+              {hasFlags && (
+                <View style={[styles.flagsContainer, hasReasoning && { marginTop: Spacing.md }]}>
+                  {aiModeration?.flags?.map((flag, index) => {
+                    const label = formatFlagLabel(flag);
+                    if (!label) return null;
+                    return (
+                      <View
+                        key={index}
+                        style={[styles.flagBadge, { backgroundColor: colors.warning + '20' }]}
+                      >
+                        <Body size="small" style={{ color: colors.warning }}>
+                          {label}
+                        </Body>
+                      </View>
+                    );
+                  })}
+                </View>
+              )}
             </View>
-          )}
-
-          {/* Flags */}
-          {hasFlags && (
-            <View style={[styles.section, { backgroundColor: colors.fill }]}>
-              <View style={styles.sectionHeader}>
-                <AlertCircle size={16} color={colors.warning} />
-                <Data size="small" style={{ color: colors.textSecondary, marginLeft: Spacing.xs }}>
-                  Items Flagged
-                </Data>
-              </View>
-              <View style={styles.flagsContainer}>
-                {aiModeration?.flags?.map((flag, index) => {
-                  const label = formatFlagLabel(flag);
-                  if (!label) return null;
-                  return (
-                    <View
-                      key={index}
-                      style={[styles.flagBadge, { backgroundColor: colors.warning + '20' }]}
-                    >
-                      <Body size="small" style={{ color: colors.warning }}>
-                        {label}
-                      </Body>
-                    </View>
-                  );
-                })}
-              </View>
-            </View>
-          )}
-
-          {/* No Details Available */}
-          {!hasReasoning && !hasFlags && (
+          ) : (
             <View style={[styles.section, { backgroundColor: colors.fill }]}>
               <Body size="small" style={{ color: colors.textMuted, textAlign: 'center' }}>
-                No specific details available. Our team will review your listing shortly.
+                No specific details available.
               </Body>
             </View>
           )}
 
-          {/* What to Expect */}
-          <View style={styles.tipSection}>
-            <Data size="small" style={{ color: colors.textSecondary, marginBottom: Spacing.sm }}>
-              What happens next?
-            </Data>
-            <View style={styles.tipRow}>
-              <View style={[styles.tipDot, { backgroundColor: colors.success }]} />
-              <Supporting style={{ color: colors.textMuted, flex: 1 }}>
-                If approved, your listing goes live automatically
-              </Supporting>
-            </View>
-            <View style={styles.tipRow}>
-              <View style={[styles.tipDot, { backgroundColor: colors.warning }]} />
-              <Supporting style={{ color: colors.textMuted, flex: 1 }}>
-                If changes needed, we'll notify you with details
-              </Supporting>
-            </View>
-            <View style={styles.tipRow}>
-              <View style={[styles.tipDot, { backgroundColor: colors.primary }]} />
-              <Supporting style={{ color: colors.textMuted, flex: 1 }}>
-                You can edit and resubmit anytime
-              </Supporting>
-            </View>
+          {/* Footer Note */}
+          <View style={styles.footerNote}>
+            <Supporting style={{ color: colors.textMuted, textAlign: 'center', lineHeight: 18 }}>
+              Our team will review within 24 hours. This assessment is automated — your listing will be reviewed by a human.
+            </Supporting>
           </View>
         </ScrollView>
       </BottomSheetView>
@@ -299,49 +250,22 @@ const styles = StyleSheet.create({
   scrollContent: {
     flex: 1,
   },
-  infoBanner: {
-    flexDirection: 'row',
-    padding: Spacing.md,
-    borderRadius: Radius.md,
-    marginBottom: Spacing.md,
-  },
-  disclaimer: {
-    padding: Spacing.sm,
-    borderRadius: Radius.sm,
-    marginBottom: Spacing.md,
-  },
   section: {
     padding: Spacing.md,
     borderRadius: Radius.md,
     marginBottom: Spacing.md,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   flagsContainer: {
     flexDirection: 'column',
     gap: Spacing.xs,
-    marginTop: Spacing.sm,
   },
   flagBadge: {
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: Radius.md,
   },
-  tipSection: {
+  footerNote: {
+    paddingHorizontal: Spacing.sm,
     marginTop: Spacing.sm,
-  },
-  tipRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
-    marginBottom: Spacing.xs,
-  },
-  tipDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginTop: 6,
   },
 });
