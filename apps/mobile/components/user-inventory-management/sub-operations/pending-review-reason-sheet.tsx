@@ -141,6 +141,15 @@ export function PendingReviewReasonSheet({
             </Body>
           </View>
 
+          {/* AI Disclaimer */}
+          {(hasReasoning || hasFlags) && (
+            <View style={[styles.disclaimer, { backgroundColor: colors.fill }]}>
+              <Supporting style={{ color: colors.textMuted, fontStyle: 'italic' }}>
+                Note: This assessment was generated automatically and may not be fully accurate. A human reviewer will make the final decision.
+              </Supporting>
+            </View>
+          )}
+
           {/* AI Reasoning */}
           {hasReasoning && (
             <View style={[styles.section, { backgroundColor: colors.fill }]}>
@@ -294,6 +303,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: Spacing.md,
     borderRadius: Radius.md,
+    marginBottom: Spacing.md,
+  },
+  disclaimer: {
+    padding: Spacing.sm,
+    borderRadius: Radius.sm,
     marginBottom: Spacing.md,
   },
   section: {

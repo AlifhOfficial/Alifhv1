@@ -387,8 +387,8 @@ export function ListingCard({
                 </div>
               )}
               {/* Info */}
-              <p className="text-[9px] sm:text-[10px] text-muted-foreground">
-                Our team will review within 24 hours
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground italic">
+                Note: This is an automated assessment. A human reviewer will make the final decision.
               </p>
             </div>
           )}
