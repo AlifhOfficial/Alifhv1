@@ -38,7 +38,8 @@ export default function EditListingPage({ params }: PageProps) {
           return;
         }
         const data = await res.json();
-        setListing(data);
+        // API returns { listing, sellerData } - extract listing
+        setListing(data.listing || data);
       } catch (err) {
         setError('Failed to load listing');
       } finally {
