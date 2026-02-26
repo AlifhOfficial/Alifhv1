@@ -108,6 +108,7 @@ export interface SearchResultItem {
   model: string;
   year: number;
   trim: string | null;
+  condition: string | null;
   price: number;
   mileage: number;
   emirate: string;

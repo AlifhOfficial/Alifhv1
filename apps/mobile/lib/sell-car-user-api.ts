@@ -279,6 +279,8 @@ export interface UpdateListingResponse {
   moderationStatus: ModerationStatus;
   lifecycleStatus: LifecycleStatus;
   updatedAt: string;
+  /** AI moderation result (only when publishing a draft) */
+  moderation?: AIModerationResult | null;
 }
 
 export interface DeleteListingResponse {

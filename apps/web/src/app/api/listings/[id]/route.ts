@@ -338,8 +338,9 @@ export async function PUT(
     if (body.seatingCapacity !== undefined) updateData.seatingCapacity = body.seatingCapacity;
     if (body.exteriorColor !== undefined) updateData.exteriorColor = body.exteriorColor;
     if (body.interiorColor !== undefined) updateData.interiorColor = body.interiorColor;
-    if (body.mileage !== undefined) updateData.mileage = body.mileage;
-    if (body.condition === undefined && body.mileage !== undefined) {
+    if (body.mileage !== undefined) {
+      updateData.mileage = body.mileage;
+      // Always recalculate condition based on mileage
       updateData.condition = body.mileage < 5000 ? 'new' : 'used';
     }
     if (body.moderationStatus !== undefined) updateData.moderationStatus = body.moderationStatus;

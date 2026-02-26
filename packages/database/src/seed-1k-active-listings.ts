@@ -429,8 +429,8 @@ function generateActiveListing(
     model,
     year,
     trim,
-    condition: getRandomBoolean(0.1) ? 'new' as const : 'used' as const,
-    
+    condition: mileage < 5000 ? 'new' as const : 'used' as const,
+
     // Vehicle specs
     bodyType,
     fuelType,

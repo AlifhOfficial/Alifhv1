@@ -44,6 +44,7 @@ export interface CarCardData {
   model: string | null;
   year: number | null;
   trim: string | null;
+  condition: string | null;
   price: number | null;
   mileage: number | null;
   emirate: string | null;
@@ -77,6 +78,7 @@ function buildCardSelectFields(now: Date) {
     model: carListing.model,
     year: carListing.year,
     trim: carListing.trim,
+    condition: carListing.condition,
     price: carListing.price,
     mileage: carListing.mileage,
     emirate: carListing.emirate,

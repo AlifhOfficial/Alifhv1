@@ -243,9 +243,8 @@ export async function POST(req: NextRequest) {
       vinVisibility: body.vinVisibility || 'public', // Default to public for trust
       trim: body.trim || undefined,
       description: body.description || undefined,
-      condition:
-        body.condition ||
-        (typeof body.mileage === 'number' && body.mileage < 5000 ? 'new' : 'used'),
+      // Condition is always derived from mileage: < 5000 km = new, >= 5000 km = used
+      condition: typeof body.mileage === 'number' && body.mileage < 5000 ? 'new' : 'used',
       currency: body.currency || 'AED',
       isNegotiable: body.isNegotiable ?? false,
       

@@ -477,6 +477,7 @@ function generateListing(
     
     // Condition
     mileage,
+    condition: mileage < 5000 ? 'new' as const : 'used' as const,
     
     // Pricing
     price,
