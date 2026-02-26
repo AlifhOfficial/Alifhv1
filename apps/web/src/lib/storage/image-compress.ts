@@ -2,12 +2,12 @@
  * Client-Side Image Compression — Web
  *
  * Uses browser-image-compression for fast client-side compression.
- * Canvas-based, runs in main thread or web worker.
+ * Canvas-based, runs in web worker for non-blocking compression.
  *
- * Output Targets:
- * - Thumb: 480px max, ~20-25KB
- * - Full: 1400px max, ~45-55KB
- * - Avatar: 512px square, ~15-20KB
+ * Output Targets (matched with mobile):
+ * - Thumb: 480px max, 25KB max
+ * - Full: 1400px max, 80KB max (balanced quality)
+ * - Avatar: 512px square, 25KB max
  * - Showroom: Various sizes per asset type
  *
  * @module lib/storage/image-compress
@@ -31,7 +31,7 @@ export interface CompressionConfig {
   maxWidth: number;
   maxHeight: number;
   maxSizeKB: number;
-  quality?: number; // 0-1, only for JPEG/WebP
+  quality?: number; // 0-1, for JPEG quality hint
 }
 
 export interface CompressedImage {
@@ -48,36 +48,39 @@ export interface ListingImagePair {
 }
 
 // ============================================================================
-// Compression Configs — Tuned for size targets
+// Compression Configs — Matched with mobile, realistic targets
 // ============================================================================
 
-/** Listing thumbs: 480px, ~20-25KB */
+/** Listing thumbs: 480px, max 35KB - fast loading previews */
 const LISTING_THUMB_CONFIG: CompressionConfig = {
   maxWidth: 480,
   maxHeight: 480,
-  maxSizeKB: 25,
+  maxSizeKB: 35,
+  quality: 0.65,
 };
 
-/** Listing full: 1400px, ~45-55KB */
+/** Listing full: 1400px, max 150KB - good detail with reasonable size */
 const LISTING_FULL_CONFIG: CompressionConfig = {
   maxWidth: 1400,
   maxHeight: 1400,
-  maxSizeKB: 55,
+  maxSizeKB: 150,
+  quality: 0.7,
 };
 
-/** Avatar: 512px square, ~15-20KB */
+/** Avatar: 512px square, max 30KB */
 const AVATAR_CONFIG: CompressionConfig = {
   maxWidth: 512,
   maxHeight: 512,
-  maxSizeKB: 20,
+  maxSizeKB: 30,
+  quality: 0.7,
 };
 
 /** Showroom configs by asset type */
 const SHOWROOM_CONFIGS: Record<ShowroomAssetType, CompressionConfig> = {
-  'hero-image': { maxWidth: 1920, maxHeight: 1080, maxSizeKB: 150 },
-  'founder-image': { maxWidth: 800, maxHeight: 1000, maxSizeKB: 80 },
-  'gallery': { maxWidth: 1600, maxHeight: 1200, maxSizeKB: 100 },
-  'team-member': { maxWidth: 600, maxHeight: 600, maxSizeKB: 50 },
+  'hero-image': { maxWidth: 1920, maxHeight: 1080, maxSizeKB: 200, quality: 0.75 },
+  'founder-image': { maxWidth: 800, maxHeight: 1000, maxSizeKB: 100, quality: 0.75 },
+  'gallery': { maxWidth: 1600, maxHeight: 1200, maxSizeKB: 150, quality: 0.7 },
+  'team-member': { maxWidth: 600, maxHeight: 600, maxSizeKB: 60, quality: 0.7 },
 };
 
 // ============================================================================
@@ -86,6 +89,7 @@ const SHOWROOM_CONFIGS: Record<ShowroomAssetType, CompressionConfig> = {
 
 /**
  * Compress a single image using browser-image-compression.
+ * Iteratively compresses to hit maxSizeKB target.
  *
  * @param file - File object from input[type=file]
  * @param config - Compression settings
@@ -100,7 +104,7 @@ async function compressImage(
     maxWidthOrHeight: Math.max(config.maxWidth, config.maxHeight),
     useWebWorker: true,
     fileType: 'image/jpeg' as const, // JPEG for max compatibility
-    initialQuality: 0.8,
+    initialQuality: config.quality ?? 0.75,
     alwaysKeepResolution: false,
   };
 

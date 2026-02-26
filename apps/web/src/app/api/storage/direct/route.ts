@@ -41,10 +41,10 @@ type UploadType = 'listing' | 'avatar' | 'showroom';
 
 // Max sizes for pre-compressed images (generous to allow quality variance)
 const MAX_SIZES = {
-  listing_thumb: 50 * 1024,      // 50KB
-  listing_full: 100 * 1024,      // 100KB
-  avatar: 50 * 1024,             // 50KB
-  showroom: 200 * 1024,          // 200KB
+  listing_thumb: 100 * 1024,     // 100KB (allow some headroom)
+  listing_full: 250 * 1024,      // 250KB (allow some headroom)
+  avatar: 100 * 1024,            // 100KB
+  showroom: 300 * 1024,          // 300KB
 };
 
 // Allowed compressed image types

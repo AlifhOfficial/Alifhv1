@@ -1,19 +1,20 @@
 /**
  * Client-Side Image Compression — Mobile
  *
- * Native C++ compression using react-native-compressor for WhatsApp-like speed.
- * Handles HEIC natively (iOS), outputs optimized JPEG for max compatibility.
+ * Uses expo-image-manipulator for Expo Go compatibility.
+ * Implements ITERATIVE compression to hit target file sizes
+ * while maintaining maximum quality.
  *
  * Output Targets:
- * - Thumb: 480px max, ~20-25KB
- * - Full: 1400px max, ~45-55KB
- * - Avatar: 512px square, ~15-20KB
+ * - Thumb: 480px max, 25KB max
+ * - Full: 1400px max, 80KB max (balanced quality)
+ * - Avatar: 512px square, 25KB max
  * - Showroom: Various sizes per asset type
  *
  * @module lib/image-compress
  */
 
-import { Image } from 'react-native-compressor';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { Platform } from 'react-native';
 
 // ============================================================================
@@ -31,7 +32,9 @@ export type ShowroomAssetType =
 export interface CompressionConfig {
   maxWidth: number;
   maxHeight: number;
-  quality: number; // 0-1
+  maxSizeKB: number;    // Target max file size in KB
+  initialQuality: number; // Starting quality (0-1)
+  minQuality: number;     // Don't go below this quality
 }
 
 export interface CompressedImage {
@@ -48,36 +51,42 @@ export interface ListingImagePair {
 }
 
 // ============================================================================
-// Compression Configs — Tuned for size targets
+// Compression Configs — Realistic targets for quality/size balance
 // ============================================================================
 
-/** Listing thumbs: 480px, ~20-25KB */
+/** Listing thumbs: 480px, max 35KB - fast loading previews */
 const LISTING_THUMB_CONFIG: CompressionConfig = {
   maxWidth: 480,
   maxHeight: 480,
-  quality: 0.72,
+  maxSizeKB: 35,
+  initialQuality: 0.65,
+  minQuality: 0.35,
 };
 
-/** Listing full: 1400px, ~45-55KB */
+/** Listing full: 1400px, max 150KB - good detail with reasonable size */
 const LISTING_FULL_CONFIG: CompressionConfig = {
   maxWidth: 1400,
   maxHeight: 1400,
-  quality: 0.75,
+  maxSizeKB: 150,
+  initialQuality: 0.7,
+  minQuality: 0.45,
 };
 
-/** Avatar: 512px square, ~15-20KB */
+/** Avatar: 512px square, max 30KB */
 const AVATAR_CONFIG: CompressionConfig = {
   maxWidth: 512,
   maxHeight: 512,
-  quality: 0.80,
+  maxSizeKB: 30,
+  initialQuality: 0.7,
+  minQuality: 0.4,
 };
 
 /** Showroom configs by asset type */
 const SHOWROOM_CONFIGS: Record<ShowroomAssetType, CompressionConfig> = {
-  'hero-image': { maxWidth: 1920, maxHeight: 1080, quality: 0.80 },
-  'founder-image': { maxWidth: 800, maxHeight: 1000, quality: 0.82 },
-  'gallery': { maxWidth: 1600, maxHeight: 1200, quality: 0.78 },
-  'team-member': { maxWidth: 600, maxHeight: 600, quality: 0.80 },
+  'hero-image': { maxWidth: 1920, maxHeight: 1080, maxSizeKB: 200, initialQuality: 0.75, minQuality: 0.5 },
+  'founder-image': { maxWidth: 800, maxHeight: 1000, maxSizeKB: 100, initialQuality: 0.75, minQuality: 0.45 },
+  'gallery': { maxWidth: 1600, maxHeight: 1200, maxSizeKB: 150, initialQuality: 0.7, minQuality: 0.45 },
+  'team-member': { maxWidth: 600, maxHeight: 600, maxSizeKB: 60, initialQuality: 0.7, minQuality: 0.45 },
 };
 
 // ============================================================================
@@ -85,40 +94,126 @@ const SHOWROOM_CONFIGS: Record<ShowroomAssetType, CompressionConfig> = {
 // ============================================================================
 
 /**
- * Compress a single image using native C++ compression.
- * Handles HEIC automatically on iOS.
+ * Resize an image to fit within max dimensions while preserving aspect ratio.
+ * Returns the resized URI or original if already small enough.
+ */
+async function resizeImage(
+  uri: string,
+  maxWidth: number,
+  maxHeight: number,
+): Promise<{ uri: string; width: number; height: number }> {
+  // Get original dimensions
+  const original = await ImageManipulator.manipulateAsync(uri, []);
+  const { width: origW, height: origH } = original;
+  
+  // Skip if already within bounds
+  if (origW <= maxWidth && origH <= maxHeight) {
+    return { uri: original.uri, width: origW, height: origH };
+  }
+  
+  // Calculate target dimensions preserving aspect ratio
+  const aspectRatio = origW / origH;
+  let targetWidth: number;
+  let targetHeight: number;
+  
+  if (aspectRatio > maxWidth / maxHeight) {
+    // Constrain by width
+    targetWidth = maxWidth;
+    targetHeight = Math.round(maxWidth / aspectRatio);
+  } else {
+    // Constrain by height
+    targetHeight = maxHeight;
+    targetWidth = Math.round(maxHeight * aspectRatio);
+  }
+  
+  // Resize
+  const resized = await ImageManipulator.manipulateAsync(
+    uri,
+    [{ resize: { width: targetWidth } }],
+    { format: ImageManipulator.SaveFormat.JPEG }
+  );
+  
+  return { uri: resized.uri, width: resized.width, height: resized.height };
+}
+
+/**
+ * Compress an image ITERATIVELY to hit target file size.
+ * Starts at initial quality and reduces until target met.
+ * If still too large at minQuality, reduces dimensions too.
  *
  * @param uri - Local file URI (file:///...)
- * @param config - Compression settings
+ * @param config - Compression settings with size targets
  * @returns Compressed image with metadata
  */
 async function compressImage(
   uri: string,
   config: CompressionConfig,
 ): Promise<CompressedImage> {
-  const result = await Image.compress(uri, {
-    maxWidth: config.maxWidth,
-    maxHeight: config.maxHeight,
-    quality: config.quality,
-    input: 'uri',
-    output: 'jpg', // JPEG for max compatibility + smaller size than PNG
-    returnableOutputType: 'uri',
-  });
-
-  // Get file info for the compressed image
-  const response = await fetch(result);
-  const blob = await response.blob();
-
-  // Estimate dimensions (react-native-compressor maintains aspect ratio)
-  // For accurate dimensions, we'd need to decode, but this is good enough
-  const estimatedWidth = Math.min(config.maxWidth, config.maxWidth);
-  const estimatedHeight = Math.min(config.maxHeight, config.maxHeight);
-
+  // First resize to max dimensions (preserving aspect ratio)
+  const resized = await resizeImage(uri, config.maxWidth, config.maxHeight);
+  
+  const maxBytes = config.maxSizeKB * 1024;
+  let quality = config.initialQuality;
+  let currentUri = resized.uri;
+  let currentDims = { width: resized.width, height: resized.height };
+  let result: ImageManipulator.ImageResult;
+  let blob: Blob;
+  let attempts = 0;
+  const maxAttempts = 8;
+  
+  // Iteratively compress until we hit target size or min quality
+  while (attempts < maxAttempts) {
+    attempts++;
+    
+    result = await ImageManipulator.manipulateAsync(
+      currentUri,
+      [], // Already resized
+      {
+        compress: quality,
+        format: ImageManipulator.SaveFormat.JPEG,
+      }
+    );
+    
+    // Get file size
+    const response = await fetch(result.uri);
+    blob = await response.blob();
+    
+    // Check if within target
+    if (blob.size <= maxBytes) {
+      break;
+    }
+    
+    // If at min quality but still too large, reduce dimensions
+    if (quality <= config.minQuality && blob.size > maxBytes) {
+      const scale = 0.85; // Reduce by 15%
+      const newWidth = Math.round(currentDims.width * scale);
+      const newHeight = Math.round(currentDims.height * scale);
+      
+      // Don't go below reasonable minimum
+      if (newWidth < 200 || newHeight < 200) {
+        break; // Accept what we have
+      }
+      
+      const smaller = await ImageManipulator.manipulateAsync(
+        resized.uri,
+        [{ resize: { width: newWidth } }],
+        { format: ImageManipulator.SaveFormat.JPEG }
+      );
+      currentUri = smaller.uri;
+      currentDims = { width: smaller.width, height: smaller.height };
+      quality = config.initialQuality; // Reset quality for new dimensions
+      continue;
+    }
+    
+    // Reduce quality for next iteration (larger steps for faster convergence)
+    quality = Math.max(config.minQuality, quality - 0.08);
+  }
+  
   return {
-    uri: result,
-    width: estimatedWidth,
-    height: estimatedHeight,
-    size: blob.size,
+    uri: result!.uri,
+    width: result!.width,
+    height: result!.height,
+    size: blob!.size,
     mimeType: 'image/jpeg',
   };
 }
