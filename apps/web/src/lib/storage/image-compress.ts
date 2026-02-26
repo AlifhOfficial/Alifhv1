@@ -19,7 +19,9 @@ import imageCompression from 'browser-image-compression';
 // Types
 // ============================================================================
 
-export type ImageUploadType = 'listing' | 'avatar' | 'showroom';
+export type ImageUploadType = 'listing' | 'avatar' | 'showroom' | 'partner';
+
+export type PartnerImageType = 'logo' | 'hero';
 
 export type ShowroomAssetType =
   | 'hero-image'
@@ -51,28 +53,34 @@ export interface ListingImagePair {
 // Compression Configs — Matched with mobile, realistic targets
 // ============================================================================
 
-/** Listing thumbs: 480px, max 25KB - fast loading previews */
+/** Listing thumbs: 480px, max 50KB - good quality previews */
 const LISTING_THUMB_CONFIG: CompressionConfig = {
   maxWidth: 480,
   maxHeight: 480,
-  maxSizeKB: 25,
-  quality: 0.6,
+  maxSizeKB: 50,
+  quality: 0.8,
 };
 
-/** Listing full: 1400px, max 70KB - good detail with small size */
+/** Listing full: 1400px, max 100KB - high quality detail */
 const LISTING_FULL_CONFIG: CompressionConfig = {
   maxWidth: 1400,
   maxHeight: 1400,
-  maxSizeKB: 70,
-  quality: 0.6,
+  maxSizeKB: 100,
+  quality: 0.8,
 };
 
-/** Avatar: 512px square, max 30KB */
+/** Avatar: 512px square, max 40KB */
 const AVATAR_CONFIG: CompressionConfig = {
   maxWidth: 512,
   maxHeight: 512,
-  maxSizeKB: 30,
-  quality: 0.7,
+  maxSizeKB: 40,
+  quality: 0.8,
+};
+
+/** Partner image configs */
+const PARTNER_CONFIGS: Record<PartnerImageType, CompressionConfig> = {
+  'logo': { maxWidth: 512, maxHeight: 512, maxSizeKB: 40, quality: 0.75 },
+  'hero': { maxWidth: 1920, maxHeight: 600, maxSizeKB: 120, quality: 0.7 },
 };
 
 /** Showroom configs by asset type */
@@ -205,6 +213,28 @@ export async function compressListingImages(
  */
 export async function compressAvatar(file: File): Promise<CompressedImage> {
   return compressImage(file, AVATAR_CONFIG);
+}
+
+// ============================================================================
+// Public API — Partner Images
+// ============================================================================
+
+/**
+ * Compress a partner image (logo or hero banner).
+ *
+ * @param file - Original image File
+ * @param imageType - 'logo' or 'hero'
+ * @returns Compressed image
+ */
+export async function compressPartnerImage(
+  file: File,
+  imageType: PartnerImageType,
+): Promise<CompressedImage> {
+  const config = PARTNER_CONFIGS[imageType];
+  if (!config) {
+    throw new Error(`Unknown partner image type: ${imageType}`);
+  }
+  return compressImage(file, config);
 }
 
 // ============================================================================

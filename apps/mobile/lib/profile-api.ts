@@ -7,6 +7,8 @@
 
 import { getStoredSession } from './auth-api';
 import { API_BASE, AUTH_ENDPOINTS, PROFILE_ENDPOINTS } from './config';
+import { compressAvatar } from './image-compress';
+import { uploadAvatarDirect } from './sell-car-user-api';
 
 // ============================================================================
 // TYPES
@@ -368,7 +370,7 @@ export async function verifyPhoneOTP(
 }
 
 // ============================================================================
-// AVATAR UPLOAD (Presigned URL Pipeline)
+// AVATAR UPLOAD (Client-Side Compression + Direct R2)
 // ============================================================================
 
 export interface AvatarUploadResult {
@@ -378,8 +380,10 @@ export interface AvatarUploadResult {
 }
 
 /**
- * Upload avatar image using presigned URL pipeline
- * @param uri - Local file URI
+ * Upload avatar image using client-side compression + direct R2 upload.
+ * Much faster than server-side processing pipeline.
+ * 
+ * @param uri - Local file URI from image picker
  * @param previousKey - Optional key of previous avatar (unused, kept for backwards compat)
  */
 export async function uploadAvatar(
@@ -387,74 +391,20 @@ export async function uploadAvatar(
   previousKey?: string | null
 ): Promise<AvatarUploadResult> {
   try {
-    const session = await getStoredSession();
+    // Step 1: Compress client-side (512px, ~30KB)
+    const compressed = await compressAvatar(uri);
+    console.log('[Profile API] Avatar compressed:', compressed.size, 'bytes');
     
-    // Get file info from URI
-    const filename = uri.split('/').pop() || 'avatar.jpg';
-    const ext = filename.split('.').pop()?.toLowerCase() || '';
-    const mimeTypes: Record<string, string> = {
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'png': 'image/png',
-      'webp': 'image/webp',
-      'heic': 'image/heic',
-      'heif': 'image/heif',
-    };
-    const contentType = mimeTypes[ext] || 'image/jpeg';
+    // Step 2: Direct upload to R2 (no server processing)
+    const result = await uploadAvatarDirect(compressed.uri);
+    console.log('[Profile API] Avatar uploaded:', result.key);
     
-    // Step 1: Get presigned URL
-    const presignedRes = await fetch(`${API_BASE}/api/storage/presigned`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(session?.token ? { 'Authorization': `Bearer ${session.token}` } : {}),
-      },
-      body: JSON.stringify({ type: 'avatar', contentType }),
-    });
-    
-    if (!presignedRes.ok) {
-      const err = await presignedRes.json().catch(() => ({}));
-      return { success: false, error: err.error || 'Failed to get upload URL' };
-    }
-    
-    const { uploadUrl, rawKey } = await presignedRes.json();
-    
-    // Step 2: Upload directly to R2
-    const fileBlob = await fetch(uri).then(r => r.blob());
-    const uploadRes = await fetch(uploadUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': contentType },
-      body: fileBlob,
-    });
-    
-    if (!uploadRes.ok) {
-      return { success: false, error: 'Upload failed. Please try again.' };
-    }
-    
-    // Step 3: Process the uploaded image
-    const processRes = await fetch(`${API_BASE}/api/storage/process`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(session?.token ? { 'Authorization': `Bearer ${session.token}` } : {}),
-      },
-      body: JSON.stringify({ rawKey }),
-    });
-    
-    if (!processRes.ok) {
-      const err = await processRes.json().catch(() => ({}));
-      return { success: false, error: err.error || 'Processing failed' };
-    }
-    
-    const data = await processRes.json();
-    console.log('[Profile API] Avatar uploaded:', data.key);
-    
-    return { success: true, key: data.key };
-  } catch (error) {
+    return { success: true, key: result.key };
+  } catch (error: any) {
     console.error('[Profile API] Avatar upload error:', error);
     return {
       success: false,
-      error: 'Failed to upload photo. Please try again.',
+      error: error.message || 'Failed to upload photo. Please try again.',
     };
   }
 }

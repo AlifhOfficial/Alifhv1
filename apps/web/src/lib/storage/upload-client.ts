@@ -402,6 +402,49 @@ export async function uploadAvatarDirect(file: File | Blob): Promise<DirectSingl
 }
 
 /**
+ * Get presigned URL for direct partner image upload.
+ */
+async function getPartnerUploadUrl(
+  partnerId: string,
+  imageType: 'logo' | 'hero',
+): Promise<{ uploadUrl: string; key: string; url: string }> {
+  const res = await fetch('/api/storage/direct', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'partner', partnerId, imageType }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to get upload URL');
+  }
+
+  return res.json();
+}
+
+/**
+ * Direct upload a pre-compressed partner image.
+ * 
+ * @param file - Pre-compressed partner image (logo or hero)
+ * @param partnerId - Partner ID
+ * @param imageType - 'logo' or 'hero'
+ * @returns CDN URL
+ */
+export async function uploadPartnerImageDirect(
+  file: File | Blob,
+  partnerId: string,
+  imageType: 'logo' | 'hero',
+): Promise<DirectSingleUploadResult> {
+  const urls = await getPartnerUploadUrl(partnerId, imageType);
+  await uploadToPresigned(urls.uploadUrl, file);
+
+  return {
+    key: urls.key,
+    url: urls.url,
+  };
+}
+
+/**
  * Get presigned URL for direct showroom image upload.
  */
 async function getShowroomUploadUrl(
@@ -451,6 +494,7 @@ export async function uploadShowroomImageDirect(
 import { 
   compressListingImage, 
   compressAvatar as compressAvatarImage, 
+  compressPartnerImage,
   compressShowroomImage 
 } from './image-compress';
 
@@ -536,6 +580,26 @@ export async function compressAndUploadAvatar(
   onProgress?.(50);
   
   const result = await uploadAvatarDirect(compressed.file);
+  onProgress?.(100);
+  
+  return result;
+}
+
+/**
+ * Compress and upload a partner image (logo or hero).
+ */
+export async function compressAndUploadPartnerImage(
+  file: File,
+  partnerId: string,
+  imageType: 'logo' | 'hero',
+  onProgress?: (percent: number) => void,
+): Promise<DirectSingleUploadResult> {
+  onProgress?.(10);
+  
+  const compressed = await compressPartnerImage(file, imageType);
+  onProgress?.(50);
+  
+  const result = await uploadPartnerImageDirect(compressed.file, partnerId, imageType);
   onProgress?.(100);
   
   return result;

@@ -9,7 +9,7 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { usePartnerProfile } from '@/hooks/partner/car-dealer/use-partner-profile';
 import { usePartnerStats } from '@/hooks/partner/car-dealer/use-partner-stats';
-import { uploadPartnerImage } from '@/lib/storage';
+import { compressAndUploadPartnerImage } from '@/lib/storage';
 import { 
   ArrowLeft,
   Camera,
@@ -289,7 +289,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     setEditingField(null);
   };
 
-  // Image upload - uses presigned URL pipeline for fast uploads
+  // Image upload - client-side compression + direct R2 upload
   const uploadImage = async (
     e: React.ChangeEvent<HTMLInputElement>,
     field: 'logo' | 'heroImage'
@@ -298,13 +298,13 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     e.target.value = '';
     if (!file) return;
 
-    // Basic check - server does magic byte detection for full validation
+    // Basic check - compression handles more
     if (!file.type.startsWith('image/') && file.type !== '' && file.type !== 'application/octet-stream') {
       toast({ title: 'Only image files are allowed', variant: 'destructive' });
       return;
     }
-    if (file.size > 20 * 1024 * 1024) {
-      toast({ title: 'Max 20MB', variant: 'destructive' });
+    if (file.size > 30 * 1024 * 1024) {
+      toast({ title: 'Max 30MB', variant: 'destructive' });
       return;
     }
 
@@ -312,7 +312,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     setUploading(true);
     try {
       const imageType = field === 'heroImage' ? 'hero' : 'logo';
-      const result = await uploadPartnerImage(file, partnerId, imageType);
+      // Client-side compression + direct R2 upload (fast!)
+      const result = await compressAndUploadPartnerImage(file, partnerId, imageType);
       
       await updateProfile({ [field]: result.key });
       updateField({ [field]: result.key });

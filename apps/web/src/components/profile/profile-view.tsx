@@ -12,7 +12,7 @@ import { useUserProfile, type UserProfileUpdate } from '@/hooks/profile';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/providers/auth-provider';
 import { authClient } from '@/lib/auth/client';
-import { uploadAvatar as uploadAvatarImage } from '@/lib/storage';
+import { compressAndUploadAvatar } from '@/lib/storage';
 import { 
   Loader2, 
   Camera,
@@ -170,19 +170,20 @@ export function ProfileView() {
     e.target.value = '';
     if (!file) return;
 
-    // Basic check - server does magic byte detection for full validation
+    // Basic check - compression handles more
     if (!file.type.startsWith('image/') && file.type !== '' && file.type !== 'application/octet-stream') {
       toast({ title: 'Only image files are allowed', variant: 'destructive' });
       return;
     }
-    if (file.size > 15 * 1024 * 1024) {
-      toast({ title: 'Max 15MB', variant: 'destructive' });
+    if (file.size > 30 * 1024 * 1024) {
+      toast({ title: 'Max 30MB', variant: 'destructive' });
       return;
     }
 
     setAvatarUploading(true);
     try {
-      const result = await uploadAvatarImage(file);
+      // Client-side compression + direct R2 upload (fast!)
+      const result = await compressAndUploadAvatar(file);
       // updateProfile handles session refresh automatically via mutation onSuccess
       await updateProfile({ avatar: result.key });
       toast({ title: 'Photo updated' });

@@ -37,14 +37,16 @@ export const runtime = 'nodejs';
 // Configuration
 // ============================================================================
 
-type UploadType = 'listing' | 'avatar' | 'showroom';
+type UploadType = 'listing' | 'avatar' | 'showroom' | 'partner';
 
 // Max sizes for pre-compressed images (allow some headroom above targets)
 const MAX_SIZES = {
-  listing_thumb: 50 * 1024,      // 50KB (target 25KB)
-  listing_full: 100 * 1024,      // 100KB (target 70KB)
-  avatar: 50 * 1024,             // 50KB
+  listing_thumb: 80 * 1024,      // 80KB (target 50KB)
+  listing_full: 150 * 1024,      // 150KB (target 100KB)
+  avatar: 60 * 1024,             // 60KB (target 40KB)
   showroom: 250 * 1024,          // 250KB
+  partner_logo: 60 * 1024,       // 60KB (target 40KB)
+  partner_hero: 150 * 1024,      // 150KB (target 120KB)
 };
 
 // Allowed compressed image types
@@ -57,6 +59,9 @@ const CDN_CACHE = 'public, max-age=31536000, immutable';
 const SHOWROOM_ASSET_TYPES = [
   'hero-image', 'founder-image', 'gallery', 'team-member',
 ];
+
+// Partner image types
+const PARTNER_IMAGE_TYPES = ['logo', 'hero'];
 
 // ============================================================================
 // Key Generation — Final paths (no raw/ prefix, no processing needed)
@@ -90,6 +95,12 @@ function generateShowroomKey(partnerId: string, assetType: string): string {
   return `brands/${partnerId}/showroom/${datePath}/${assetType}-${ts}-${id}.jpg`;
 }
 
+function generatePartnerKey(partnerId: string, imageType: string): string {
+  const datePath = getDatePath();
+  const ts = Date.now();
+  return `brands/${partnerId}/${datePath}/${imageType}-${ts}.jpg`;
+}
+
 // ============================================================================
 // Main Handler
 // ============================================================================
@@ -102,12 +113,12 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { type, vin, partnerId, assetType } = body;
+    const { type, vin, partnerId, assetType, imageType } = body;
 
     // Validate upload type
-    if (!type || !['listing', 'avatar', 'showroom'].includes(type)) {
+    if (!type || !['listing', 'avatar', 'showroom', 'partner'].includes(type)) {
       return NextResponse.json(
-        { error: 'Invalid type. Use: listing, avatar, showroom' },
+        { error: 'Invalid type. Use: listing, avatar, showroom, partner' },
         { status: 400 }
       );
     }
@@ -185,6 +196,48 @@ export async function POST(req: NextRequest) {
         key,
         url: `${cdnUrl}/${key}`,
         maxSize: MAX_SIZES.avatar,
+        expiresIn: 600,
+      });
+    }
+
+    // ─── Partner: Single presigned URL (logo or hero) ──────────────────────
+
+    if (type === 'partner') {
+      if (!partnerId) {
+        return NextResponse.json({ error: 'partnerId required' }, { status: 400 });
+      }
+      if (!imageType || !PARTNER_IMAGE_TYPES.includes(imageType)) {
+        return NextResponse.json(
+          { error: `Invalid imageType. Use: ${PARTNER_IMAGE_TYPES.join(', ')}` },
+          { status: 400 }
+        );
+      }
+
+      // Check user has partner access
+      const membership = user.partnerMemberships?.find(m => m.partnerId === partnerId);
+      if (!membership || !['owner', 'admin'].includes(membership.staffRole)) {
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      }
+
+      const key = generatePartnerKey(partnerId, imageType);
+      const maxSize = imageType === 'logo' ? MAX_SIZES.partner_logo : MAX_SIZES.partner_hero;
+
+      const uploadUrl = await getSignedUrl(
+        client,
+        new PutObjectCommand({
+          Bucket: bucketName,
+          Key: key,
+          ContentType: 'image/jpeg',
+          CacheControl: CDN_CACHE,
+        }),
+        { expiresIn: 600 }
+      );
+
+      return NextResponse.json({
+        uploadUrl,
+        key,
+        url: `${cdnUrl}/${key}`,
+        maxSize,
         expiresIn: 600,
       });
     }
