@@ -91,9 +91,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
         
         {/* Unread Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center px-1.5 text-[11px] font-semibold text-white bg-rose-500 rounded-full">
-            {unreadCount > 99 ? '99+' : unreadCount}
-          </span>
+          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-rose-500 rounded-full" />
         )}
       </button>
 
@@ -114,9 +112,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
               Messages
             </h3>
             {unreadCount > 0 && (
-              <span className="text-sm font-medium text-rose-500">
-                {unreadCount} unread
-              </span>
+              <span className="w-2 h-2 bg-rose-500 rounded-full" />
             )}
           </div>
 
@@ -232,9 +228,7 @@ function ConversationGroup({ group, onSelectConversation }: ConversationGroupPro
               ({conversations.length})
             </span>
             {hasUnread && (
-              <span className="ml-auto flex-shrink-0 w-5 h-5 text-[11px] font-bold bg-rose-500 text-white rounded-full flex items-center justify-center">
-                {totalUnread > 9 ? '9+' : totalUnread}
-              </span>
+              <span className="ml-auto flex-shrink-0 w-2 h-2 bg-rose-500 rounded-full" />
             )}
           </div>
         </div>
@@ -335,9 +329,7 @@ function ConversationPreviewItem({ conversation, onClick, isGrouped = false }: C
               </span>
             )}
             {hasUnread && (
-              <span className="w-5 h-5 text-[11px] font-bold bg-rose-500 text-white rounded-full flex items-center justify-center">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
+              <span className="w-2 h-2 bg-rose-500 rounded-full" />
             )}
           </div>
         </div>
