@@ -88,14 +88,14 @@ const ACTION_ROWS: ActionRow[] = [
     label: 'Edit Listing',
     icon: Pencil,
     color: (c) => c.text,
-    visible: () => true,
+    visible: ({ lifecycleStatus }) => lifecycleStatus !== 'expired',
   },
   {
     key: 'view_stats',
     label: 'View Stats',
     icon: BarChart3,
     color: (c) => c.text,
-    visible: () => true,
+    visible: ({ lifecycleStatus }) => lifecycleStatus !== 'expired',
   },
   {
     key: 'mark_sold',

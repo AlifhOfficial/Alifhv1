@@ -12,6 +12,10 @@ import type { ListingFormData } from '@/components/listings/listing-form/types';
 
 interface NewListingViewProps {
   userId: string;
+  /** If editing a draft, pass the listing data */
+  initialData?: Partial<ListingFormData> & { id?: string };
+  /** Draft listing ID - if provided, updates existing draft instead of creating new */
+  draftId?: string;
 }
 
 // Pending review modal - shown when AI flags for manual review
@@ -124,7 +128,7 @@ function SuccessModal({ onClose, onViewListing }: { onClose: () => void; onViewL
   );
 }
 
-export function NewListingView({ userId }: NewListingViewProps) {
+export function NewListingView({ userId, initialData, draftId }: NewListingViewProps) {
   void userId;
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -148,8 +152,12 @@ export function NewListingView({ userId }: NewListingViewProps) {
         status: 'published',
       };
 
-      const response = await fetch('/api/listings', {
-        method: 'POST',
+      // If editing a draft, update it; otherwise create new
+      const url = draftId ? `/api/listings/${draftId}` : '/api/listings';
+      const method = draftId ? 'PATCH' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -164,7 +172,7 @@ export function NewListingView({ userId }: NewListingViewProps) {
       }
 
       const result = await response.json();
-      const listingId = result.data?.id;
+      const listingId = draftId || result.data?.id;
       const moderation = result.data?.moderation;
       
       setCreatedListingId(listingId);
@@ -215,8 +223,12 @@ export function NewListingView({ userId }: NewListingViewProps) {
         status: 'draft',
       };
 
-      const response = await fetch('/api/listings', {
-        method: 'POST',
+      // If editing a draft, update it; otherwise create new
+      const url = draftId ? `/api/listings/${draftId}` : '/api/listings';
+      const method = draftId ? 'PATCH' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -260,6 +272,7 @@ export function NewListingView({ userId }: NewListingViewProps) {
       <div>
         <ListingForm
           mode="create"
+          initialData={initialData}
           onSubmit={handleSubmit}
           onSaveDraft={handleSaveDraft}
           onCancel={handleCancel}

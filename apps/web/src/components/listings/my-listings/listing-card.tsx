@@ -244,10 +244,16 @@ export function ListingCard({
                   </DropdownMenuItem>
                 )}
                 {isExpiringSoon && (
-                  <DropdownMenuItem onClick={() => onExtend(listing.id, 7)} className="flex items-center gap-2 text-blue-600">
-                    <Clock className="w-4 h-4" />
-                    Extend 7 days
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem onClick={() => onExtend(listing.id, 7)} className="flex items-center gap-2 text-blue-600">
+                      <Clock className="w-4 h-4" />
+                      Extend 7 days
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onExtend(listing.id, 14)} className="flex items-center gap-2 text-blue-600">
+                      <Clock className="w-4 h-4" />
+                      Extend 14 days
+                    </DropdownMenuItem>
+                  </>
                 )}
                 {onToggleBlk && listing.lifecycleStatus === 'active' && (
                   listing.isBlkListing ? (
@@ -274,7 +280,7 @@ export function ListingCard({
                     </DropdownMenuItem>
                   </>
                 )}
-                {canDelete && (!isDeepInventory || isRejected || isSuspended) && (
+                {canDelete && (!isDeepInventory || isRejected || isSuspended || isExpired) && (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => onDelete(listing.id)} className="flex items-center gap-2 text-red-600 focus:text-red-600">

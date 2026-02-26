@@ -23,3 +23,4 @@ export { SecuritySection } from './SecuritySection';
 export { SupportSection } from './SupportSection';
 export { DangerZone } from './DangerZone';
 export { DeleteAccountSheet } from './DeleteAccountSheet';
+export { KycVerificationSheet } from './KycVerificationSheet';

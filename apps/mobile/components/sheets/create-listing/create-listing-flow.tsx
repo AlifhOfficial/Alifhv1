@@ -62,6 +62,8 @@ interface CreateListingFlowProps {
   initialData?: Partial<CreateListingData>;
   /** If provided, the flow will UPDATE instead of CREATE */
   listingId?: string;
+  /** If true, editing a published listing (lock VIN/make/model/year) */
+  isPublishedEdit?: boolean;
 }
 
 // ─── Step Content Map ────────────────────────────────────────────────────────
@@ -104,6 +106,7 @@ export function CreateListingFlow({
   onSuccess,
   initialData,
   listingId,
+  isPublishedEdit = false,
 }: CreateListingFlowProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
@@ -113,12 +116,25 @@ export function CreateListingFlow({
 
   const snapPoints = useMemo(() => ['65%', '93%'], []);
 
+  // For published edits, skip VIN step (can't change VIN/make/model/year)
+  // Start at 'mileage' step (index 5) which is after the locked fields
+  const initialStepIndex = isPublishedEdit ? 5 : 0;
+
   // ── State ──
   const [data, setData] = useState<CreateListingData>(() => ({
     ...EMPTY_DATA,
     ...initialData,
   }));
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [currentStepIndex, setCurrentStepIndex] = useState(initialStepIndex);
+
+  // Sync data when initialData changes and sheet opens
+  // This is critical for editing - initialData is set AFTER visible becomes true
+  useEffect(() => {
+    if (visible && initialData) {
+      setData({ ...EMPTY_DATA, ...initialData });
+      setCurrentStepIndex(isPublishedEdit ? 5 : 0);
+    }
+  }, [visible, initialData, isPublishedEdit]);
 
   const currentStep = SHEET_STEPS[currentStepIndex];
   const currentStepId = currentStep?.id;
@@ -139,12 +155,12 @@ export function CreateListingFlow({
       if (index === -1) {
         Keyboard.dismiss();
         // Reset state when closed
-        setCurrentStepIndex(0);
+        setCurrentStepIndex(isPublishedEdit ? 5 : 0);
         setData({ ...EMPTY_DATA, ...initialData });
         onClose();
       }
     },
-    [onClose, initialData]
+    [onClose, initialData, isPublishedEdit]
   );
 
   // ── Form updater ──
@@ -168,11 +184,12 @@ export function CreateListingFlow({
   }, [currentStepIndex, currentStepId, currentStep, data]);
 
   const goToPrevStep = useCallback(() => {
-    if (currentStepIndex > 0) {
+    // Don't go back past the initial step (important for published edits)
+    if (currentStepIndex > initialStepIndex) {
       setCurrentStepIndex((i) => i - 1);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-  }, [currentStepIndex]);
+  }, [currentStepIndex, initialStepIndex]);
 
   const skipStep = useCallback(() => {
     if (!currentStep?.required && currentStepIndex < SHEET_STEPS.length - 1) {
@@ -191,7 +208,8 @@ export function CreateListingFlow({
   // ── Close handler with confirmation ──
   const handleClose = useCallback(() => {
     Keyboard.dismiss();
-    if (currentStepIndex === 0) {
+    // If at initial step, just close
+    if (currentStepIndex === initialStepIndex) {
       bottomSheetRef.current?.dismiss();
       return;
     }
@@ -211,7 +229,7 @@ export function CreateListingFlow({
         },
       ]
     );
-  }, [currentStepIndex]);
+  }, [currentStepIndex, initialStepIndex]);
 
   // ── Success handler ──
   const handleSuccess = useCallback(
@@ -236,7 +254,7 @@ export function CreateListingFlow({
       if (!visible) return;
 
       const onBack = () => {
-        if (currentStepIndex > 0) {
+        if (currentStepIndex > initialStepIndex) {
           goToPrevStep();
           return true;
         }
@@ -246,7 +264,7 @@ export function CreateListingFlow({
 
       const sub = BackHandler.addEventListener('hardwareBackPress', onBack);
       return () => sub.remove();
-    }, [visible, currentStepIndex, goToPrevStep, handleClose])
+    }, [visible, currentStepIndex, initialStepIndex, goToPrevStep, handleClose])
   );
 
   const renderBackdrop = useCallback(
@@ -278,7 +296,7 @@ export function CreateListingFlow({
       ref={bottomSheetRef}
       snapPoints={snapPoints}
       enableDynamicSizing={false}
-      enablePanDownToClose={currentStepIndex === 0}
+      enablePanDownToClose={currentStepIndex === initialStepIndex}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
@@ -310,7 +328,7 @@ export function CreateListingFlow({
               >
                 <X size={Sizes.iconSm} color={colors.textSecondary} strokeWidth={2} />
               </HapticPressable>
-              {currentStepIndex > 0 && (
+              {currentStepIndex > initialStepIndex && (
                 <HapticPressable
                   onPress={goToPrevStep}
                   hitSlop={Spacing.md}

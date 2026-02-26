@@ -154,6 +154,7 @@ export function InventoryScreen() {
   const [showEditFlow, setShowEditFlow] = useState(false);
   const [editInitialData, setEditInitialData] = useState<Partial<CreateListingData> | undefined>(undefined);
   const [editingListingId, setEditingListingId] = useState<string | null>(null);
+  const [isPublishedEdit, setIsPublishedEdit] = useState(false);
 
   // Handler to open create flow (fresh, no initial data)
   const openCreateFlow = useCallback(() => {
@@ -236,6 +237,10 @@ export function InventoryScreen() {
         if (!selectedListing) break;
         try {
           const listing = await getListingForEdit(selectedListing.id);
+          // Check if this is a published listing (not draft)
+          // Drafts get full creation flow, published get limited edit
+          const isDraft = selectedListing.moderationStatus === 'draft';
+          
           // Map API data to CreateListingData format
           const initialData: Partial<CreateListingData> = {
             vin: listing.vin || '',
@@ -275,6 +280,7 @@ export function InventoryScreen() {
           };
           setEditInitialData(initialData);
           setEditingListingId(selectedListing.id);
+          setIsPublishedEdit(!isDraft); // true for published, false for drafts
           setShowEditFlow(true);
         } catch (err) {
           console.error('Failed to load listing for edit:', err);
@@ -655,15 +661,18 @@ export function InventoryScreen() {
           setShowEditFlow(false);
           setEditInitialData(undefined);
           setEditingListingId(null);
+          setIsPublishedEdit(false);
         }}
         onSuccess={() => {
           setShowEditFlow(false);
           setEditInitialData(undefined);
           setEditingListingId(null);
+          setIsPublishedEdit(false);
           fetchListings({ refresh: true });
         }}
         initialData={editInitialData}
         listingId={editingListingId ?? undefined}
+        isPublishedEdit={isPublishedEdit}
       />
 
       {/* ─────────────────────── Bottom Safe Area ────────────────────────── */}

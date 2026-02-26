@@ -28,6 +28,7 @@ import {
   SupportSection,
   DangerZone,
   DeleteAccountSheet,
+  KycVerificationSheet,
   type KYCStatus,
 } from '@/components/settings';
 
@@ -54,6 +55,7 @@ export default function SettingsScreen() {
     emailNotifications,
     passkeys,
     addingPasskey,
+    loadProfile,
     saveToggle,
     deleteAccount,
     handleAddPasskey,
@@ -71,6 +73,7 @@ export default function SettingsScreen() {
 
   // Local UI state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showKycSheet, setShowKycSheet] = useState(false);
 
   const handleDeleteAccount = useCallback(() => {
     deleteAccount(() => {
@@ -147,9 +150,18 @@ export default function SettingsScreen() {
         <IdentitySection
           status={kycStatus}
           colors={colors}
-          onAction={() => {
-            // TODO: Navigate to KYC flow
-            Alert.alert('Coming Soon', 'Identity verification will be available soon.');
+          onAction={() => setShowKycSheet(true)}
+        />
+
+        {/* KYC Verification Sheet */}
+        <KycVerificationSheet
+          visible={showKycSheet}
+          onClose={() => setShowKycSheet(false)}
+          onVerified={() => {
+            loadProfile();
+          }}
+          onStatusChange={() => {
+            loadProfile();
           }}
         />
 
