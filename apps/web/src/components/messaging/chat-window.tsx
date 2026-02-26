@@ -69,18 +69,9 @@ export function ChatWindow({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const lastMessageIdRef = useRef<string | null>(null);
-  const [showListingPreview, setShowListingPreview] = useState(true);
   const isNearBottomRef = useRef(true);
 
   // Messages are newest-first from API, flex-col-reverse displays them correctly
-  // No sort needed - newest at bottom naturally
-
-  // Hide listing preview once first message is sent
-  useEffect(() => {
-    if (messages.length > 0 && showListingPreview) {
-      setShowListingPreview(false);
-    }
-  }, [messages.length, showListingPreview]);
 
   // Track if user is near bottom (for auto-scroll on new messages)
   useEffect(() => {
@@ -309,7 +300,6 @@ export function ChatWindow({
                     seenAt={otherLastReadAt}
                     otherUserAvatar={otherParticipant?.avatarUrl ?? null}
                     otherUserName={otherParticipant?.name ?? null}
-                    listing={index === arr.length - 1 && listing ? listing : undefined}
                   />
                 </div>
               );
@@ -324,8 +314,6 @@ export function ChatWindow({
         disabled={isSending}
         initialText={!isLoading && messages.length === 0 ? defaultText : undefined}
         resetKey={conversationId}
-        listingPreview={!isLoading && messages.length === 0 && showListingPreview ? listing : undefined}
-        onDismissListing={() => setShowListingPreview(false)}
       />
     </div>
   );

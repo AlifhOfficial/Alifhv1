@@ -148,7 +148,9 @@ export default function SellerContactScreen() {
       return;
     }
 
-    const otherUserId = listing.sellerData.userId;
+    // For partner listings, userId is on the listing itself (assigned staff member)
+    // For user listings, it's available on both listing.listing.userId and sellerData.userId
+    const otherUserId = listing.listing.userId || listing.sellerData.userId;
     if (!otherUserId) {
       Alert.alert('Error', 'Unable to contact seller at this time.');
       return;

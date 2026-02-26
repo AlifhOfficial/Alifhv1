@@ -211,10 +211,6 @@ export function ChatWindow({
           prevMessage.isSystemMessage);
       const showSeen = item.id === lastReadMsgId;
 
-      // Show listing only on the first message
-      const showListing =
-        index === messages.length - 1 && conversation?.listing;
-
       // Check if we need to show a date separator (compare with NEXT message since list is inverted)
       const messageDate = new Date(item.createdAt);
       const nextMessage = messages[index + 1];
@@ -236,7 +232,6 @@ export function ChatWindow({
                 showSeen={showSeen}
                 otherUserAvatar={otherUserAvatar}
                 otherUserName={otherUserName}
-                listing={showListing && conversation?.listing ? conversation.listing : undefined}
               />
             </View>
             <View style={styles.timestampSide}>

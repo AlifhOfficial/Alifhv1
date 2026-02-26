@@ -276,6 +276,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xs,
     gap: Spacing['2xl'],
+    marginTop: Spacing.md,
   },
   scrollView: {
     flex: 1,

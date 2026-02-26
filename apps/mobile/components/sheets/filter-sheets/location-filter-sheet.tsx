@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
   },
   header: {
     flexShrink: 0,
@@ -272,6 +273,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xs,
     gap: Spacing['2xl'],
+    marginTop: Spacing.md,
   },
   listContainer: {
     gap: Spacing.xs,

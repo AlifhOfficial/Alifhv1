@@ -9,7 +9,7 @@ import { View, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
-import { Settings2, LayoutGrid, List } from 'lucide-react-native';
+import { LayoutGrid, List } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Layout, Radius, Sizes } from '@/constants/theme';
@@ -109,38 +109,30 @@ export function BrowseHeader({
         </View>
 
         {/* Filters pill */}
-        <View>
-          <View
-            style={[
-              styles.pill,
-              styles.glass,
-              {
-                borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBackground,
-              },
-            ]}
-          >
-            <HapticPressable onPress={handleSettingsPress} style={styles.pillInner}>
-              {({ pressed }) => (
-                <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                  <Settings2 size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
-                  <Data size="small">Filters</Data>
-                </View>
-              )}
-            </HapticPressable>
-          </View>
-          {settingsCount > 0 && (
-            <View
-              style={[
-                styles.settingsBadge,
-                { backgroundColor: colors.text, borderColor: colors.background },
-              ]}
-            >
-              <Label size="badge" uppercase={false} style={{ color: colors.background }}>
-                {settingsCount > 9 ? '9+' : settingsCount}
-              </Label>
-            </View>
-          )}
+        <View
+          style={[
+            styles.pill,
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBackground,
+            },
+          ]}
+        >
+          <HapticPressable onPress={handleSettingsPress} style={styles.pillInner}>
+            {({ pressed }) => (
+              <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
+                <Data size="small">Filters</Data>
+                {settingsCount > 0 && (
+                  <View style={[styles.badge, { backgroundColor: colors.text }]}>
+                    <Label size="badge" uppercase={false} style={{ color: colors.background }}>
+                      {settingsCount > 9 ? '9+' : settingsCount}
+                    </Label>
+                  </View>
+                )}
+              </View>
+            )}
+          </HapticPressable>
         </View>
 
         {/* Filter pills */}
@@ -238,18 +230,6 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  settingsBadge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    width: Spacing.lg,
-    height: Spacing.lg,
-    borderRadius: Spacing.lg / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    zIndex: 2,
   },
   pill: {
     height: Sizes.pillHeight,

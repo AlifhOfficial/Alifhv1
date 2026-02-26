@@ -342,6 +342,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xl,
+    paddingTop: Spacing.md,
   },
   header: {
     flexShrink: 0,
@@ -365,6 +366,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.xs,
     gap: Spacing['2xl'],
+    marginTop: Spacing.md,
   },
   searchContainer: {
     flexDirection: 'row',

@@ -6,9 +6,8 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback, KeyboardEvent, ChangeEvent } from 'react';
-import { Send, X } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { getThumbUrl } from '@/utils/storage';
 
 interface MessageInputProps {
   onSend: (text: string, mediaUrl?: string) => Promise<void>;
@@ -19,10 +18,6 @@ interface MessageInputProps {
   resetKey?: string;
   /** Compact mode for floating chat windows */
   compact?: boolean;
-  /** Listing preview to show above input (for first message) */
-  listingPreview?: { id: string; title: string; thumbnail: string | null };
-  /** Handler to dismiss the listing preview */
-  onDismissListing?: () => void;
 }
 
 export function MessageInput({
@@ -33,8 +28,6 @@ export function MessageInput({
   initialText,
   resetKey,
   compact = false,
-  listingPreview,
-  onDismissListing,
 }: MessageInputProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -194,39 +187,6 @@ export function MessageInput({
       'border-t border-border/40 bg-background',
       compact ? 'px-2.5 py-2' : 'px-3 sm:px-4 py-2.5 sm:py-3'
     )}>
-      {/* Listing Preview Card */}
-      {listingPreview && (
-        <div className="mb-2 relative">
-          <div className="rounded-lg overflow-hidden border border-border/30 bg-card shadow-sm">
-            <div className="flex gap-2 p-1.5 sm:p-2">
-              {listingPreview.thumbnail ? (
-                <img 
-                  src={getThumbUrl(listingPreview.thumbnail) || listingPreview.thumbnail} 
-                  alt={listingPreview.title} 
-                  className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-md flex-shrink-0" 
-                />
-              ) : (
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-muted/40 rounded-md flex-shrink-0" />
-              )}
-              <div className="flex-1 min-w-0 flex items-center">
-                <p className="text-[11px] sm:text-xs font-bold text-foreground line-clamp-2">
-                  {listingPreview.title}
-                </p>
-              </div>
-              {onDismissListing && (
-                <button
-                  onClick={onDismissListing}
-                  className="flex-shrink-0 p-0.5 sm:p-1 hover:bg-secondary/50 rounded-md transition-colors self-start"
-                  aria-label="Remove preview"
-                >
-                  <X className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-      
       <div className={cn(
         'flex items-center bg-sidebar border border-border/40 rounded-xl min-w-0 overflow-hidden w-full',
         compact ? 'p-1' : 'p-1 sm:p-1.5'

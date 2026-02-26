@@ -57,6 +57,7 @@ export interface SpecialNotes {
 
 export interface ListingDetailedData {
   id: string;
+  userId: string;
   vin: string | null;
   vinVisibility: 'public' | 'private';
   slug: string | null;
