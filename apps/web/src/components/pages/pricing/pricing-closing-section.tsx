@@ -13,7 +13,7 @@ import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 function FlowApplyButton() {
   const router = useRouter();
   const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
-    feature: "apply for Flow",
+    feature: "apply for the Founding Dealer Program",
     redirectTo: "/user-dashboard/requests",
   });
 
@@ -23,9 +23,9 @@ function FlowApplyButton() {
         onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
         className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
       >
-        Apply for Flow — AED 7K/mo
+        Apply for Flow
       </button>
-      <AuthRequiredModal open={showModal} onClose={closeModal} feature="apply for Flow" redirectTo="/user-dashboard/requests" />
+      <AuthRequiredModal open={showModal} onClose={closeModal} feature="apply for the Founding Dealer Program" redirectTo="/user-dashboard/requests" />
     </>
   );
 }
@@ -43,7 +43,7 @@ function BlackApplyButton() {
         onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
         className="w-full sm:w-auto h-11 px-8 bg-muted border border-border/40 text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
       >
-        Apply for Black — starts at AED 21K/mo
+        Apply for Black
       </button>
       <AuthRequiredModal open={showModal} onClose={closeModal} feature="apply for Black" redirectTo="/user-dashboard/requests" />
     </>

@@ -342,7 +342,7 @@ export default function PartnerBillingPage() {
                     <span className="font-semibold text-green-500 text-right">0 AED</span>
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm">
-                    <span className="text-muted-foreground">Free trial ends</span>
+                    <span className="text-muted-foreground">Founding access ends</span>
                     <span className="font-medium text-foreground text-right">{formatDate(subData.trialEnd)}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm">
@@ -353,7 +353,7 @@ export default function PartnerBillingPage() {
                   </div>
                   <div className="flex items-center gap-2 text-xs text-blue-500 pt-1">
                     <Clock className="w-3 h-3" />
-                    <span>{daysRemaining} days of free access remaining</span>
+                    <span>{daysRemaining} days remaining in founding period</span>
                   </div>
                 </div>
               )}

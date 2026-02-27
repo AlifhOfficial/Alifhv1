@@ -605,16 +605,16 @@ export const faqData: FAQCategory[] = [
       },
       {
         id: "pricing-trial",
-        question: "Is there a free trial?",
-        answer: "Yes. We offer a 30-day free trial for new partners. No credit card required. Full platform access, unlimited listings, and direct support from day one. If it works for you, great. If not, you walk away having lost nothing.",
-        keywords: ["trial", "free", "test", "demo", "30 days"],
+        question: "What is the Founding Dealer Program?",
+        answer: "Founding partners receive three months of full platform access with no credit card required. During this period, you test the platform with your inventory while we build traffic. Founding members secure a locked rate moving forward—your pricing is protected as we scale.",
+        keywords: ["founding", "program", "trial", "test", "access"],
         isPopular: true,
       },
       {
         id: "pricing-price-change",
-        question: "Will the price stay at AED 7,000?",
-        answer: "Flow is currently priced at AED 7,000 per showroom. As the platform evolves, pricing for new customers may change. Existing partners will always be notified in advance of any updates.",
-        keywords: ["price", "change", "increase", "7000", "stay"],
+        question: "Will pricing change?",
+        answer: "Founding partners secure their rate—it's locked moving forward. As the platform scales and demand increases, pricing for new partners may adjust. Early partners are protected.",
+        keywords: ["price", "change", "increase", "7000", "stay", "locked"],
       },
       {
         id: "pricing-payments",

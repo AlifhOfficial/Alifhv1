@@ -390,7 +390,7 @@ export function DealerPartnersView() {
               />
               <FAQItem 
                 question="Why should I trust you?"
-                answer="You shouldn't. Not yet. That's why we're offering a 30-day free trial. Don't trust our words — test the platform. Judge us on results. If we earn your trust, great. If not, you walk away having lost nothing."
+                answer="You shouldn't. Not yet. That's why we offer founding partners three months of full access — no credit card, no lock-ins. Don't trust our words — test the platform. Judge us on results. If we earn your trust, great. If not, you walk away having lost nothing."
               />
             </div>
           </section>
@@ -429,10 +429,10 @@ export function DealerPartnersView() {
             <div className="rounded-xl border border-primary/40 bg-sidebar p-8">
               <div className="text-center mb-6">
                 <p className="text-lg font-bold text-foreground mb-2">
-                  30-Day Free Trial
+                  Founding Dealer Program
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  No risk. No credit card. No hidden terms.
+                  Limited access. No credit card. No lock-ins.
                 </p>
               </div>
               
@@ -463,7 +463,7 @@ export function DealerPartnersView() {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-sm text-foreground">
                       <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
-                      Give us 30 days
+                      Three months to prove value
                     </div>
                     <div className="flex items-center gap-2 text-sm text-foreground">
                       <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
@@ -486,11 +486,11 @@ export function DealerPartnersView() {
                   href="/user-dashboard/requests"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-10 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
                 >
-                  Start 30-Day Free Trial
+                  Apply for Founding Program
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <p className="text-sm text-muted-foreground mt-4">
-                  No credit card required. List alongside any other platform.
+                  List alongside any other platform. Founding partners secure a locked rate.
                 </p>
               </div>
             </div>

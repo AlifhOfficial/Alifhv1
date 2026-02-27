@@ -11,10 +11,10 @@ import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import { MacOSWindow } from '@/components/ui/macos-window';
 
-function TrialButton() {
+function FoundingProgramButton() {
   const router = useRouter();
   const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
-    feature: "start your free trial",
+    feature: "apply for the Founding Dealer Program",
     redirectTo: "/user-dashboard/requests",
   });
 
@@ -32,12 +32,12 @@ function TrialButton() {
         onClick={handleClick}
         className="w-full sm:w-auto h-12 px-10 bg-primary text-primary-foreground text-base font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
       >
-        Start 30-Day Free Trial
+        Apply for Founding Program
       </button>
       <AuthRequiredModal
         open={showModal}
         onClose={closeModal}
-        feature="start your free trial"
+        feature="apply for the Founding Dealer Program"
         redirectTo="/user-dashboard/requests"
       />
     </>
@@ -55,9 +55,9 @@ export function PartnerClosingSection() {
             Ready?
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-            Start your free trial.
+            Join the Founding Program.
             <br />
-            <span className="text-muted-foreground">No credit card required.</span>
+            <span className="text-muted-foreground">Limited access. Locked rates.</span>
           </h2>
         </div>
 
@@ -68,7 +68,7 @@ export function PartnerClosingSection() {
 
         {/* CTA Button */}
         <div className="flex justify-center">
-          <TrialButton />
+          <FoundingProgramButton />
         </div>
 
       </div>

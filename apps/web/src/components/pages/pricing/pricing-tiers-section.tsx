@@ -10,10 +10,10 @@ import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 
-function FlowTrialButton() {
+function FlowApplyButton() {
   const router = useRouter();
   const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
-    feature: "start your free trial",
+    feature: "apply for the Founding Dealer Program",
     redirectTo: "/user-dashboard/requests",
   });
 
@@ -23,9 +23,9 @@ function FlowTrialButton() {
         onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
         className="w-full h-11 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
       >
-        Start 30-Day Free Trial
+        Apply for Founding Program
       </button>
-      <AuthRequiredModal open={showModal} onClose={closeModal} feature="start your free trial" redirectTo="/user-dashboard/requests" />
+      <AuthRequiredModal open={showModal} onClose={closeModal} feature="apply for the Founding Dealer Program" redirectTo="/user-dashboard/requests" />
     </>
   );
 }
@@ -66,7 +66,7 @@ export function PricingTiersSection() {
               Most dealers start here.
             </p>
 
-            <FlowTrialButton />
+            <FlowApplyButton />
           </div>
 
           {/* Black Card */}
@@ -99,7 +99,7 @@ export function PricingTiersSection() {
 
         {/* Note */}
         <p className="text-center text-sm text-muted-foreground mt-10 max-w-md mx-auto">
-          No credit card required. List alongside any other platform.
+          Three months full access. No credit card. Founding partners secure a locked rate.
         </p>
         
         {/* Link to Partner Page */}

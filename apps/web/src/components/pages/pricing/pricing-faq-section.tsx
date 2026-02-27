@@ -72,13 +72,13 @@ export function PricingFaqSection() {
     },
     {
       id: 'trial',
-      q: 'Is there a free trial?',
-      a: 'Yes. We offer a 30-day free trial for new partners. No credit card required. Full platform access, unlimited listings, and direct support from day one.',
+      q: 'What is the Founding Dealer Program?',
+      a: 'Founding partners receive three months of full platform access with no credit card required. During this period, you test the platform with your inventory while we build traffic. Founding members secure a locked rate moving forward—your pricing is protected as we scale.',
     },
     {
       id: 'price-change',
-      q: 'Will the price stay at AED 7,000?',
-      a: 'Flow is currently priced at AED 7,000 per showroom. As the platform evolves, pricing for new customers may change. Existing partners will always be notified in advance of any updates.',
+      q: 'Will pricing change?',
+      a: 'Founding partners secure their rate—it\'s locked moving forward. As the platform scales and demand increases, pricing for new partners may adjust. Early partners are protected.',
     },
     {
       id: 'payments',

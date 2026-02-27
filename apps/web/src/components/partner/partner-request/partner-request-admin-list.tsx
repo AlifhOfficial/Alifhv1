@@ -330,9 +330,9 @@ export function PartnerRequestAdminList() {
                     {approvingId === request.id && (
                       <div className="space-y-4 pt-6 border-t border-border/40">
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">Free Trial Period</label>
+                          <label className="text-sm font-medium text-foreground">Founding Access Period</label>
                           <p className="text-xs text-muted-foreground">
-                            Select how many months of free access to grant on Revvup Flow
+                            Select how many months of founding access to grant on Revvup Flow
                           </p>
                           <div className="flex flex-wrap gap-2 mt-3">
                             {[0, 1, 2, 3, 6, 12].map((months) => (

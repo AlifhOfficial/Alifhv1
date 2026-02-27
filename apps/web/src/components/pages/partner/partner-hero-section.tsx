@@ -13,10 +13,10 @@ import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 
-function TrialButton() {
+function FoundingProgramButton() {
   const router = useRouter();
   const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
-    feature: "start your free trial",
+    feature: "apply for the Founding Dealer Program",
     redirectTo: "/user-dashboard/requests",
   });
 
@@ -34,12 +34,12 @@ function TrialButton() {
         onClick={handleClick}
         className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
       >
-        Start 30-Day Free Trial
+        Apply for Founding Program
       </button>
       <AuthRequiredModal
         open={showModal}
         onClose={closeModal}
-        feature="start your free trial"
+        feature="apply for the Founding Dealer Program"
         redirectTo="/user-dashboard/requests"
       />
     </>
@@ -68,7 +68,7 @@ export function PartnerHeroSection() {
 
         {/* Main CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
-          <TrialButton />
+          <FoundingProgramButton />
           <Link
             href="/pricing"
             className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"

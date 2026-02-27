@@ -15,7 +15,7 @@ const dealerFaqItems = [...partnerFaqItems, ...pricingFaqItems];
 
 export const metadata: Metadata = {
   title: 'Car Dealer Partnership Program Dubai UAE — Zero Commission | Revvup',
-  description: 'Join the only car marketplace that works FOR you, not against you. Zero commission, flat subscription, unlimited listings. We don\'t sell cars — we help YOU sell more. 30-day free trial for dealers.',
+  description: 'Join the only car marketplace that works FOR you, not against you. Zero commission, flat subscription, unlimited listings. We don\'t sell cars — we help YOU sell more. Founding Dealer Program now open.',
   keywords: [
     // High-intent dealer search terms
     'car dealer platform dubai',
