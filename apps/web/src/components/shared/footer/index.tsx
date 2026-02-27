@@ -55,7 +55,7 @@ export function Footer() {
             {/* Brand */}
             <div className="flex-shrink-0">
               <Link href="/">
-                <Logo width={28} height={28} />
+                <Logo width={100} height={30} />
               </Link>
               <p className="text-sm text-muted-foreground/60 mt-3 max-w-[200px]">
                 More than a marketplace.<br />Join the Revolution.

@@ -16,13 +16,13 @@ interface LogoProps {
 
 export function Logo({ className, width = 100, height = 30, priority = false }: LogoProps) {
   return (
-    <span className={cn("inline-block relative", className)}>
+    <span className={cn("inline-block", className)}>
       <Image
         src="/assets/Revvup_logo_Black.svg"
         alt="Revvup"
         width={width}
         height={height}
-        className="h-full w-auto dark:hidden"
+        className="dark:hidden"
         priority={priority}
       />
       <Image
@@ -30,7 +30,7 @@ export function Logo({ className, width = 100, height = 30, priority = false }: 
         alt="Revvup"
         width={width}
         height={height}
-        className="h-full w-auto hidden dark:block"
+        className="hidden dark:block"
         priority={priority}
       />
     </span>
