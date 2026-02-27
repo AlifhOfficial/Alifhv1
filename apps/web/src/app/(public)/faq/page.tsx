@@ -43,17 +43,44 @@ export default function FAQPage() {
     : faqData;
 
   return (
-    <div className="bg-background pt-14 sm:pt-16 lg:h-[calc(100vh-3.5rem)] sm:lg:h-[calc(100vh-4rem)] lg:overflow-hidden">
-      <div className="max-w-6xl mx-auto h-full">
-        <div className="flex h-full">
+    <div className="bg-background pt-14 sm:pt-16 min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)]">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col lg:flex-row">
           
-          {/* Left Sidebar - Desktop (fixed height, no scroll) */}
-          <aside className="hidden lg:block w-64 shrink-0 h-full">
-            <div className="h-full overflow-y-auto pt-14 pb-10 px-6">
-              <div className="mb-10">
-                <div className="flex items-center gap-3 mb-2">
+          {/* Left Sidebar - Desktop */}
+          <aside className="hidden lg:block w-64 shrink-0 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:overflow-y-auto">
+            <div className="pt-8 pb-10 px-6">
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-4">
                   <LifeBuoy className="w-6 h-6 text-muted-foreground" />
                   <h1 className="text-xl font-bold tracking-tight text-foreground">Help Center</h1>
+                </div>
+                
+                {/* Search Bar - Desktop */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      if (e.target.value) setActiveCategory(null);
+                    }}
+                    className="w-full h-9 pl-9 pr-8 rounded-lg border border-sidebar-border bg-sidebar text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 transition-all"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setActiveCategory(null);
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted/40 transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5 text-muted-foreground" />
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -114,7 +141,7 @@ export default function FAQPage() {
           </aside>
 
           {/* Main Content */}
-          <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
+          <div className="flex-1 min-w-0">
             {/* Mobile Header */}
             <div className="lg:hidden px-4 sm:px-6 pt-8 pb-6">
               <div className="flex items-center gap-3 mb-4">
@@ -159,8 +186,8 @@ export default function FAQPage() {
               </div>
             </div>
 
-            {/* Search Bar */}
-            <div className="sticky top-0 z-10 bg-background px-4 sm:px-6 lg:px-8 py-4 lg:pt-14">
+            {/* Search Bar - Mobile Only */}
+            <div className="lg:hidden sticky top-14 sm:top-16 z-10 bg-background px-4 sm:px-6 py-4">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
                 <input
@@ -189,7 +216,7 @@ export default function FAQPage() {
             </div>
 
             {/* FAQ Content */}
-            <div className="px-4 sm:px-6 lg:px-8 py-8">
+            <div className="px-4 sm:px-6 lg:px-8 py-8 lg:pt-8">
               
               {/* Search Results */}
               {isSearching && (
