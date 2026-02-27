@@ -11,6 +11,7 @@ import { AUTH_CONFIG } from "@/lib/auth/config";
 import { 
   signInWithEmail, 
   signInWithGooglePopup,
+  signInWithApplePopup,
   signInWithPasskey,
   signUpWithEmail, 
   requestPasswordReset,
@@ -218,6 +219,55 @@ export class AuthFlowController {
   // Google sign-up = Google sign-in (auto-creates account)
   async handleGoogleSignUp() {
     return this.handleGoogleSignIn();
+  }
+
+  /**
+   * Apple Sign In - Opens in popup window for better UX
+   * User stays on current page, popup handles OAuth flow
+   */
+  async handleAppleSignIn() {
+    this.startFlow(async () => {
+      // Show loading state in current modal (don't switch to redirect modal)
+      this.actions.setLoading(true);
+      this.actions.setError(null);
+
+      // Open Apple OAuth in popup - this awaits until popup completes/closes
+      const result = await signInWithApplePopup();
+      if (!this.isFlowActive) return;
+
+      if (result.success) {
+        // Show success feedback briefly
+        this.actions.setSignInSuccess(true);
+        this.actions.setLoading(false);
+        this.actions.setCurrentModal("signin-feedback");
+
+        const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.SUCCESS_DISPLAY);
+        if (!stillActive) return;
+
+        this.callbacks.onSuccess?.(result.user);
+        this.handleCloseAll();
+      } else {
+        // User cancelled or error occurred
+        // If just cancelled, close modal silently
+        if (result.error === "Sign in window was closed" || result.error === "Sign in was cancelled") {
+          this.actions.setLoading(false);
+          // Keep current modal open, user can try again
+          return;
+        }
+        
+        const errorMessage = parseAuthError(result.error);
+        const errorInfo = getAuthErrorInfo(errorMessage);
+        
+        this.actions.setAuthErrorInfo(errorInfo);
+        this.actions.setLoading(false);
+        this.actions.setCurrentModal("auth-error");
+      }
+    });
+  }
+
+  // Apple sign-up = Apple sign-in (auto-creates account)
+  async handleAppleSignUp() {
+    return this.handleAppleSignIn();
   }
 
   // ============================================================================

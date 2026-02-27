@@ -400,12 +400,16 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       prompt: "select_account", // Always show account picker
     },
+    apple: {
+      clientId: process.env.APPLE_CLIENT_ID!, // Bundle ID: ae.revvup.mobile or Services ID for web
+      clientSecret: process.env.APPLE_CLIENT_SECRET!, // JWT generated from .p8 key
+    },
   },
 
   account: {
     accountLinking: {
       enabled: true,
-      trustedProviders: ["google"],
+      trustedProviders: ["google", "apple"],
     },
   },
 

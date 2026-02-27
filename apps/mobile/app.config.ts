@@ -86,6 +86,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
       'expo-audio',
       'expo-asset',
+      'expo-apple-authentication',
     ],
     experiments: {
       typedRoutes: true,

@@ -1043,3 +1043,115 @@ export async function signInWithGoogle(): Promise<AuthResult> {
     };
   }
 }
+
+// ============================================================================
+// APPLE SIGN IN (Native iOS)
+// ============================================================================
+
+/**
+ * Sign in with Apple using native iOS authentication
+ * Uses expo-apple-authentication for the native sign-in flow
+ */
+export async function signInWithApple(): Promise<AuthResult> {
+  try {
+    // Dynamic import to avoid issues on Android
+    const AppleAuthentication = await import('expo-apple-authentication');
+    const { Platform } = await import('react-native');
+    
+    // Apple Sign In is only available on iOS
+    if (Platform.OS !== 'ios') {
+      return { success: false, error: 'Apple Sign In is only available on iOS' };
+    }
+    
+    // Check if Apple Sign In is available on this device
+    const isAvailable = await AppleAuthentication.isAvailableAsync();
+    if (!isAvailable) {
+      return { success: false, error: 'Apple Sign In is not available on this device' };
+    }
+    
+    console.log('[Auth] Starting Apple Sign In');
+    
+    // Request sign in with Apple
+    const credential = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+    });
+    
+    console.log('[Auth] Apple credential received');
+    
+    // identityToken is the JWT we send to our backend
+    if (!credential.identityToken) {
+      return { success: false, error: 'No identity token received from Apple' };
+    }
+    
+    // Send the token to our backend for verification
+    const response = await fetch(`${API_BASE}${AUTH_ENDPOINTS.APPLE_SIGN_IN}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        identityToken: credential.identityToken,
+        authorizationCode: credential.authorizationCode,
+        // Apple only returns name/email on FIRST sign in - backend must store these
+        fullName: credential.fullName ? {
+          givenName: credential.fullName.givenName,
+          familyName: credential.fullName.familyName,
+        } : null,
+        email: credential.email, // May be null on subsequent logins
+        user: credential.user, // Apple user ID
+      }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      return { 
+        success: false, 
+        error: error.message || 'Apple sign in failed on server' 
+      };
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success || !data.token || !data.user) {
+      return { 
+        success: false, 
+        error: data.error || 'Invalid response from server' 
+      };
+    }
+    
+    // Build session and user objects
+    const user: AuthUser = {
+      id: data.user.id,
+      name: data.user.name || '',
+      email: data.user.email,
+      image: data.user.image || null,
+      emailVerified: true, // Apple emails are verified
+    };
+    
+    const session: AuthSession = {
+      token: data.token,
+      expiresAt: data.expiresAt,
+    };
+    
+    // Store the session
+    await storeSession(session, user);
+    
+    console.log('[Auth] Apple sign in successful');
+    return { success: true, user, session };
+  } catch (error: any) {
+    console.error('[Auth] Apple sign in error:', error);
+    
+    // Handle user cancellation
+    if (error.code === 'ERR_REQUEST_CANCELED' || error.code === 'ERR_CANCELED') {
+      return { success: false, error: 'Sign in was cancelled' };
+    }
+    
+    return {
+      success: false,
+      error: error?.message || 'Apple sign in failed. Please try again.',
+    };
+  }
+}

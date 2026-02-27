@@ -256,9 +256,22 @@ export function AuthFlow({
     setError(null);
     
     try {
-      // TODO: Implement Apple OAuth for mobile
-      // This requires expo-apple-authentication
-      setError('Apple sign in coming soon');
+      const result = await AuthAPI.signInWithApple();
+      
+      if (!result.success) {
+        setError(result.error || 'Apple sign in failed. Please try again.');
+        return;
+      }
+      
+      if (result.user) {
+        // Store user info for success screen
+        setUserId(result.user.id);
+        setUserName(result.user.name || '');
+        setEmail(result.user.email);
+        
+        // Navigate to success screen
+        setCurrentScreen('success');
+      }
     } catch (err: any) {
       setError(err?.message || 'Apple sign in failed. Please try again.');
     } finally {

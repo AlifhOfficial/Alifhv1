@@ -206,6 +206,7 @@ export const AUTH_ENDPOINTS = {
   GET_SESSION: '/api/auth/get-session',
   // Social auth
   GOOGLE_SIGN_IN: '/auth/google/mobile-start',
+  APPLE_SIGN_IN: '/api/auth/apple/native', // Native iOS Apple Sign In
   // Phone verification
   PHONE_SEND_OTP: '/api/auth/phone-number/send-otp',
   PHONE_VERIFY: '/api/auth/phone-number/verify',
