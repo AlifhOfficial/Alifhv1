@@ -24,8 +24,18 @@ export default function GoogleCallbackPage() {
         const url = new URL(window.location.href);
         const error = url.searchParams.get('error');
         const errorDescription = url.searchParams.get('error_description');
+        const retryCount = parseInt(url.searchParams.get('retry') || '0', 10);
         
         if (error) {
+          // For state_mismatch errors, auto-retry once by restarting the OAuth flow
+          // This handles stale state cookies from previous failed attempts
+          if (error === 'state_mismatch' && retryCount < 1) {
+            setMessage('Retrying sign in...');
+            // Redirect to start page with retry flag (passed through callback URL)
+            window.location.href = '/auth/google/start?retry=1';
+            return;
+          }
+          
           setStatus('error');
           
           // Provide user-friendly error messages
@@ -53,7 +63,7 @@ export default function GoogleCallbackPage() {
         }
 
         // Auth was successful - Better Auth already set the session cookie
-        // Just notify the parent window
+        // Notify the parent window
         setStatus('success');
         setMessage('Signed in successfully');
         

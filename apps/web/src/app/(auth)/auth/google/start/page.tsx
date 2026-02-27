@@ -4,27 +4,65 @@
  * This page initiates the Google OAuth flow in a popup.
  * It calls Better Auth's signIn.social which redirects to Google.
  * 
- * NOTE: Cookie clearing happens in auth-handlers.ts before popup opens.
- * Do NOT clear cookies here to avoid race conditions with state cookie.
+ * Supports retry parameter from callback page for auto-retry on state_mismatch errors.
  */
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 
-export default function GoogleStartPage() {
+/**
+ * Clear stale OAuth state cookies before starting a new flow.
+ * This prevents state_mismatch errors from previous incomplete attempts.
+ * Safe to call in popup context since we're about to set new cookies anyway.
+ */
+function clearStaleOAuthCookies() {
+  if (typeof document === 'undefined') return;
+  
+  const cookies = document.cookie.split(";");
+  for (const cookie of cookies) {
+    const [name] = cookie.split("=");
+    const trimmedName = name.trim();
+    
+    // Only clear OAuth-related state/PKCE cookies, NOT session cookies
+    if (
+      trimmedName.includes("state") ||
+      trimmedName.includes("pkce") ||
+      trimmedName.includes("code_verifier")
+    ) {
+      // Clear with various path combinations
+      const paths = ["/", "/api", "/api/auth", "/auth"];
+      for (const path of paths) {
+        document.cookie = `${trimmedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;
+      }
+    }
+  }
+}
+
+function GoogleStartContent() {
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const startAuth = async () => {
       try {
+        // Clear stale OAuth cookies from previous incomplete attempts
+        // This prevents state_mismatch errors
+        clearStaleOAuthCookies();
+        
+        // Check if this is a retry attempt (passed from callback on state_mismatch)
+        const retry = searchParams.get('retry');
+        const callbackURL = retry 
+          ? `/auth/google/callback?retry=${retry}`
+          : "/auth/google/callback";
+        
         // Initiate Google OAuth - this will redirect to Google
-        // Cookie clearing already happened in parent window before popup opened
         await authClient.signIn.social({
           provider: "google",
-          callbackURL: "/auth/google/callback",
+          callbackURL,
         });
       } catch (err) {
         setError("Failed to start Google sign in");
@@ -41,7 +79,7 @@ export default function GoogleStartPage() {
     };
 
     startAuth();
-  }, []);
+  }, [searchParams]);
 
   if (error) {
     return (
@@ -60,5 +98,20 @@ export default function GoogleStartPage() {
         <p className="text-sm text-muted-foreground">Connecting to Google...</p>
       </div>
     </div>
+  );
+}
+
+export default function GoogleStartPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="text-center space-y-3">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground mx-auto" />
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    }>
+      <GoogleStartContent />
+    </Suspense>
   );
 }
