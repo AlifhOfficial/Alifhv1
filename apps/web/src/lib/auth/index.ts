@@ -401,8 +401,27 @@ export const auth = betterAuth({
       prompt: "select_account", // Always show account picker
     },
     apple: {
-      clientId: process.env.APPLE_CLIENT_ID!, // Bundle ID: ae.revvup.mobile or Services ID for web
+      clientId: process.env.APPLE_CLIENT_ID!, // Services ID for web: ae.revvup.web.auth
       clientSecret: process.env.APPLE_CLIENT_SECRET!, // JWT generated from .p8 key
+      // Apple only sends name on FIRST sign-in, and may use private relay email
+      mapProfileToUser: (profile) => {
+        const email = profile.email || "";
+        const isPrivateEmail = email.includes("privaterelay.appleid.com");
+        
+        // Use Apple's provided name, or a friendly fallback
+        // Avoid ugly email prefix like "j2h59vxg55"
+        let name = profile.name;
+        if (!name || name.trim() === "") {
+          name = isPrivateEmail ? "Apple User" : email.split("@")[0] || "Apple User";
+        }
+        
+        return {
+          email,
+          name,
+          image: profile.picture || null,
+          emailVerified: true, // Apple emails are verified
+        };
+      },
     },
   },
 

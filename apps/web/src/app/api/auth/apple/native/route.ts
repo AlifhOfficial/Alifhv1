@@ -92,6 +92,12 @@ export async function POST(request: NextRequest) {
       displayName = parts.join(" ");
     }
     
+    // Better fallback name than ugly email prefix
+    // If it's a private relay email, don't use it as the name
+    const fallbackName = isPrivateEmail || email?.includes("privaterelay.appleid.com") 
+      ? "Apple User" 
+      : (email ? email.split("@")[0] : "Apple User");
+    
     if (!email) {
       return NextResponse.json(
         { success: false, error: "Email is required for sign in" },
@@ -165,7 +171,7 @@ export async function POST(request: NextRequest) {
           id: userId,
           email: email.toLowerCase(),
           emailVerified: true, // Apple emails are verified
-          name: displayName || email.split("@")[0],
+          name: displayName || fallbackName,
           image: null,
           role: "user",
           banned: false,
