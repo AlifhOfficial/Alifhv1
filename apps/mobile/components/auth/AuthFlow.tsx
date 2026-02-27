@@ -256,22 +256,8 @@ export function AuthFlow({
     setError(null);
     
     try {
-      const result = await AuthAPI.signInWithApple();
-      
-      if (!result.success) {
-        setError(result.error || 'Apple sign in failed. Please try again.');
-        return;
-      }
-      
-      if (result.user) {
-        // Store user info for success screen
-        setUserId(result.user.id);
-        setUserName(result.user.name || '');
-        setEmail(result.user.email);
-        
-        // Navigate to success screen
-        setCurrentScreen('success');
-      }
+      // Apple Sign In disabled for v1 - backend ready but requires dev build
+      setError('Apple sign in coming soon');
     } catch (err: any) {
       setError(err?.message || 'Apple sign in failed. Please try again.');
     } finally {
@@ -327,7 +313,6 @@ export function AuthFlow({
               onSignIn={handleSignIn}
               onForgotPassword={() => navigateTo('forgot-password')}
               onGoogleSignIn={handleGoogleAuth}
-              onAppleSignIn={handleAppleAuth}
               onSwitchToSignUp={() => navigateTo('signup')}
               isLoading={isLoading}
               error={error}

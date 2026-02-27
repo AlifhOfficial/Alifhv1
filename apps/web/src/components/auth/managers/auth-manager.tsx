@@ -53,7 +53,7 @@ export function AuthManager({
         onSwitchToMagicLink={() => actions.setCurrentModal("magic-link")}
         onSubmit={(email, password) => flowController.handleSignIn(email, password)}
         onGoogleSignIn={() => flowController.handleGoogleSignIn()}
-        onAppleSignIn={() => flowController.handleAppleSignIn()}
+        // onAppleSignIn disabled for v1
         onPasskeySuccess={() => flowController.handlePasskeySignIn()}
         isLoading={state.isLoading}
         error={state.error}
@@ -66,7 +66,7 @@ export function AuthManager({
         onSwitchToSignIn={() => actions.setCurrentModal("signin")}
         onSubmit={(name, email, password) => flowController.handleSignUp(name, email, password)}
         onGoogleSignUp={() => flowController.handleGoogleSignUp()}
-        onAppleSignUp={() => flowController.handleAppleSignUp()}
+        // onAppleSignUp disabled for v1
         isLoading={state.isLoading}
         error={state.error}
       />
