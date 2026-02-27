@@ -225,10 +225,10 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-background">
         <div className="flex items-center justify-between h-14 sm:h-16 max-w-[1600px] mx-auto px-4 sm:px-6">
             {/* Logo - suppressHydrationWarning prevents Safari hydration issues with theme-based visibility */}
-            <Link href="/" className="flex items-center z-50 mr-8" suppressHydrationWarning>
+            <Link href="/" className="flex items-center mr-8" suppressHydrationWarning>
               <Image
                 src="/assets/Revvup_logo_Black.svg"
                 alt="Revvup"
