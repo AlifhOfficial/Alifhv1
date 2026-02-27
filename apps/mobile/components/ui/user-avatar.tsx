@@ -3,11 +3,10 @@
  * 
  * Avatar resolution:
  * 1. User-set profile image (uploaded) - if exists, show it
- * 2. No profile image → show DiceBear robot OR initials (based on preference)
+ * 2. No profile image → show initials
  * 
  * NOTE: OAuth images (Google, etc.) are NOT used as fallback.
- * Once a user interacts with their avatar (upload/remove), only their
- * preference (robot or initials) is used as fallback.
+ * Boring avatars/DiceBear robots have been removed - initials only.
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -17,9 +16,6 @@ import { Colors, Sizes, Spacing, Typography } from '@/constants/theme';
 import { getPublicUrl } from '@/lib/config';
 import { Body } from './text';
 
-// DiceBear style - fun robot characters with transparent backgrounds
-const DICEBEAR_STYLE = 'bottts';
-
 interface UserAvatarProps {
   /** 
    * Avatar URL from profile
@@ -27,15 +23,14 @@ interface UserAvatarProps {
    */
   src?: string | null;
   
-  /** User's display name for initials/generated avatar seed */
+  /** User's display name for initials */
   name?: string | null;
   
   /** Avatar size */
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
   
   /**
-   * Fallback preference: true = DiceBear robot, false = initials
-   * Controlled by user in settings. Defaults to true (robot).
+   * @deprecated No longer used - always shows initials when no photo
    */
   useGeneratedAvatar?: boolean;
 }
@@ -60,12 +55,6 @@ const fontSizes = {
   xxl: Typography.displayLarge.fontSize,      // ~34
 };
 
-/** Generate DiceBear avatar URL */
-function getGeneratedAvatarUrl(seed: string, size: number): string {
-  const encodedSeed = encodeURIComponent(seed.trim() || 'user');
-  return `https://api.dicebear.com/9.x/${DICEBEAR_STYLE}/png?seed=${encodedSeed}&size=${size}&backgroundColor=transparent`;
-}
-
 /** Generate initials from a name */
 function getInitials(name?: string | null): string {
   if (!name) return 'U';
@@ -79,30 +68,25 @@ export function UserAvatar({
   src,
   name,
   size = 'md',
-  useGeneratedAvatar = true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  useGeneratedAvatar, // deprecated, ignored
 }: UserAvatarProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   
   const [imageError, setImageError] = useState(false);
-  const [generatedError, setGeneratedError] = useState(false);
 
-  // Reset error states when inputs change
+  // Reset error state when src changes
   useEffect(() => setImageError(false), [src]);
-  useEffect(() => setGeneratedError(false), [name, size]);
 
   const pixelSize = sizes[size];
   const fontSize = fontSizes[size];
-  const displayName = name || 'User';
-  const generatedAvatarUrl = getGeneratedAvatarUrl(displayName, pixelSize * 2);
 
   // Convert storage key to CDN URL if needed
   const resolvedSrc = src ? getPublicUrl(src) : null;
 
-  // Determine what to show: image → generated robot → initials
+  // Show image if available, otherwise show initials
   const showImage = resolvedSrc && !imageError;
-  const showGenerated = !showImage && useGeneratedAvatar && !generatedError;
-  const showInitials = !showImage && !showGenerated;
 
   // Match web styling: border-border bg-card for container
   // For initials fallback: bg-muted with text-foreground
@@ -110,15 +94,15 @@ export function UserAvatar({
     width: pixelSize,
     height: pixelSize,
     borderRadius: pixelSize / 2,
-    backgroundColor: showInitials 
-      ? colors.surfaceSecondary
-      : colors.surface,
+    backgroundColor: showImage 
+      ? colors.surface
+      : colors.surfaceSecondary,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden' as const,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
-  }), [pixelSize, showInitials, colors]);
+  }), [pixelSize, showImage, colors]);
 
   return (
     <View style={containerStyle}>
@@ -130,15 +114,7 @@ export function UserAvatar({
           resizeMode="cover"
         />
       )}
-      {showGenerated && (
-        <Image
-          source={{ uri: generatedAvatarUrl }}
-          style={styles.image}
-          onError={() => setGeneratedError(true)}
-          resizeMode="contain"
-        />
-      )}
-      {showInitials && (
+      {!showImage && (
         <Body style={[styles.initials, { fontSize }]}>
           {getInitials(name)}
         </Body>

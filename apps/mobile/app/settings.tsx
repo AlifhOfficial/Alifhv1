@@ -8,6 +8,7 @@ import {
   StyleSheet,
   View,
   Alert,
+  Linking,
 } from 'react-native';
 import { Body, Skeleton } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,7 +25,7 @@ import {
   PrivacySection,
   SellingSection,
   IdentitySection,
-  SecuritySection,
+  // SecuritySection, // TODO: Enable passkeys in v2
   SupportSection,
   DangerZone,
   DeleteAccountSheet,
@@ -87,11 +88,11 @@ export default function SettingsScreen() {
   }, [deleteAccount, signOut]);
 
   const handleHelpPress = useCallback(() => {
-    // TODO: Navigate to help
+    Linking.openURL('https://revvup.ae/faq');
   }, []);
 
   const handleFeedbackPress = useCallback(() => {
-    // TODO: Navigate to feedback
+    Linking.openURL('https://revvup.ae/contact');
   }, []);
 
   // Header height for content offset
@@ -129,13 +130,9 @@ export default function SettingsScreen() {
       {/* Privacy */}
       <PrivacySection
           showPhone={showPhone}
-          useGeneratedAvatar={useGeneratedAvatar}
           savingField={savingField}
           colors={colors}
           onToggleShowPhone={() => saveToggle('showPhone', showPhone)}
-          onToggleGeneratedAvatar={() =>
-            saveToggle('useGeneratedAvatar', useGeneratedAvatar)
-          }
         />
 
         {/* Selling */}
@@ -165,7 +162,7 @@ export default function SettingsScreen() {
           }}
         />
 
-        {/* Security */}
+        {/* Security - TODO: Enable passkeys in v2
         <SecuritySection
           passkeys={passkeys}
           addingPasskey={addingPasskey}
@@ -173,6 +170,7 @@ export default function SettingsScreen() {
           onAddPasskey={handleAddPasskey}
           onDeletePasskey={handleDeletePasskey}
         />
+        */}
 
         {/* Support */}
         <SupportSection

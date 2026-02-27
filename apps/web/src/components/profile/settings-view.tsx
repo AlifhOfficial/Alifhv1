@@ -246,23 +246,12 @@ export function SettingsView() {
             <SettingRow 
               title="Show Phone Number" 
               description="Display your phone on public profile"
+              isLast
             >
               <Toggle 
                 enabled={showPhone} 
                 onToggle={() => saveToggle('showPhone', showPhone)}
                 disabled={savingField === 'showPhone'}
-              />
-            </SettingRow>
-            
-            <SettingRow 
-              title="Generated Avatar" 
-              description="Use robot avatar when no photo is set"
-              isLast
-            >
-              <Toggle 
-                enabled={useGeneratedAvatar} 
-                onToggle={() => saveToggle('useGeneratedAvatar', useGeneratedAvatar)}
-                disabled={savingField === 'useGeneratedAvatar'}
               />
             </SettingRow>
           </div>

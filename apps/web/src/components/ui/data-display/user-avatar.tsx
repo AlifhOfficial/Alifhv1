@@ -5,11 +5,10 @@
  * 
  * Avatar resolution:
  * 1. User-set profile image (uploaded) - if exists, show it
- * 2. No profile image → show DiceBear robot OR initials (based on preference)
+ * 2. No profile image → show initials
  * 
  * NOTE: OAuth images (Google, etc.) are NOT used as fallback.
- * Once a user interacts with their avatar (upload/remove), only their
- * preference (robot or initials) is used as fallback.
+ * Boring avatars/DiceBear robots have been removed - initials only.
  * 
  * Usage:
  * @example
@@ -21,16 +20,12 @@
  * <UserAvatar 
  *   src={profile?.avatarUrl}
  *   name={displayName}
- *   useGeneratedAvatar={preferences?.useGeneratedAvatar ?? true}
  * />
  */
 
 import * as React from "react";
 import Image from "next/image";
 import { cn, getPublicUrl } from "@/utils";
-
-// DiceBear style - fun robot characters with transparent backgrounds
-const DICEBEAR_STYLE = "bottts";
 
 interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   /** 
@@ -45,7 +40,7 @@ interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
    */
   profileAvatar?: string | null;
   
-  /** User's display name for initials/generated avatar seed */
+  /** User's display name for initials */
   name?: string | null;
   
   /** Alt text for the image */
@@ -55,8 +50,7 @@ interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   
   /**
-   * Fallback preference: true = DiceBear robot, false = initials
-   * Controlled by user in settings. Defaults to true (robot).
+   * @deprecated No longer used - always shows initials when no photo
    */
   useGeneratedAvatar?: boolean;
   
@@ -71,12 +65,6 @@ const sizeClasses: Record<NonNullable<UserAvatarProps["size"]>, string> = {
   lg: "h-12 w-12 text-base",
   xl: "h-16 w-16 text-lg",
 };
-
-/** Generate DiceBear avatar URL */
-function getGeneratedAvatarUrl(seed: string, size: number): string {
-  const encodedSeed = encodeURIComponent(seed.trim() || "user");
-  return `https://api.dicebear.com/9.x/${DICEBEAR_STYLE}/svg?seed=${encodedSeed}&size=${size}&backgroundColor=transparent`;
-}
 
 /** Generate initials from a name */
 function getInitials(name?: string | null): string {
@@ -95,12 +83,12 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
     name,
     alt = "User avatar", 
     size = "md",
-    useGeneratedAvatar = true,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    useGeneratedAvatar, // deprecated, ignored
     updatedAt,
     ...props 
   }, ref) => {
     const [imageError, setImageError] = React.useState(false);
-    const [generatedError, setGeneratedError] = React.useState(false);
 
     // Resolve avatar URL: src or profileAvatar (no OAuth fallback) with cache busting
     const resolvedUrl = React.useMemo(() => {
@@ -110,25 +98,21 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
       return getPublicUrl(avatarSource, cacheBuster);
     }, [directSrc, profileAvatar, updatedAt]);
 
-    // Reset error states when inputs change
+    // Reset error state when src changes
     React.useEffect(() => setImageError(false), [resolvedUrl]);
-    React.useEffect(() => setGeneratedError(false), [name, size]);
 
     // Calculate sizes
     const pixelSize = size === "xs" ? 24 : size === "sm" ? 32 : size === "md" ? 40 : size === "lg" ? 48 : 64;
-    const displayName = name || "User";
-    const generatedAvatarUrl = getGeneratedAvatarUrl(displayName, pixelSize * 2);
 
-    // Determine what to show: image → generated robot → initials
+    // Show image if available, otherwise show initials
     const showImage = resolvedUrl && !imageError;
-    const showGenerated = !showImage && useGeneratedAvatar && !generatedError;
-    const showInitials = !showImage && !showGenerated;
 
     return (
       <div
         ref={ref}
         className={cn(
-          "relative inline-flex items-center justify-center overflow-hidden rounded-full border border-border bg-card font-medium text-foreground",
+          "relative inline-flex items-center justify-center overflow-hidden rounded-full border border-border font-medium text-foreground",
+          showImage ? "bg-card" : "bg-muted",
           sizeClasses[size],
           className
         )}
@@ -147,16 +131,7 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
             unoptimized={resolvedUrl.includes('r2.dev')}
           />
         )}
-        {showGenerated && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={generatedAvatarUrl}
-            alt={alt}
-            className="h-full w-full"
-            onError={() => setGeneratedError(true)}
-          />
-        )}
-        {showInitials && (
+        {!showImage && (
           <span className="select-none">{getInitials(name)}</span>
         )}
       </div>

@@ -474,7 +474,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
 
   const hasSelections = selectedMakes.length > 0 || selectedModels.length > 0 || selectedTrims.length > 0 || selectedTags.length > 0 || selectedExtras.length > 0 || selectedPartner !== null || selectedBodyTypes.length > 0 || selectedFuelTypes.length > 0 || selectedTransmission.length > 0 || selectedSpecs.length > 0 || selectedCondition !== null || selectedSellerType !== null;
   const canApply = !!(query.trim() || hasSelections);
-  const makes = facets?.make ?? [];
+  const makes = facets?.makes ?? [];
 
   // Build selection summary text
   const selectionSummary = useMemo(() => {
@@ -746,7 +746,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                 <View style={styles.chipGrid}>
                   {/* Selected makes first */}
                   {selectedMakes.map((makeValue) => {
-                    const makeData = makes.find((m) => m.value === makeValue);
+                    const makeData = makes.find((m: FacetBucket) => m.value === makeValue);
                     return renderChip(
                       makeData?.label ?? makeValue,
                       undefined,
@@ -757,11 +757,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                   })}
                   {/* Unselected makes */}
                   {makes
-                    .filter((m) => !selectedMakes.includes(m.value))
+                    .filter((m: FacetBucket) => !selectedMakes.includes(m.value))
                     .slice(0, MAX_VISIBLE_CHIPS - selectedMakes.length)
-                    .map((make) =>
+                    .map((make: FacetBucket) =>
                       renderChip(
-                        make.label,
+                        make.label ?? make.value,
                         make.count,
                         false,
                         () => toggleMake(make.value),
@@ -787,7 +787,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                   <View style={styles.chipGrid}>
                     {/* Selected models first */}
                     {selectedModels.map((modelValue) => {
-                      const modelData = modelFacets.find((m) => m.value === modelValue);
+                      const modelData = modelFacets.find((m: FacetBucket) => m.value === modelValue);
                       return renderChip(
                         modelData?.label ?? modelValue,
                         undefined,
@@ -798,11 +798,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                     })}
                     {/* Unselected models */}
                     {modelFacets
-                      .filter((m) => !selectedModels.includes(m.value))
+                      .filter((m: FacetBucket) => !selectedModels.includes(m.value))
                       .slice(0, MAX_VISIBLE_CHIPS - selectedModels.length)
-                      .map((model) =>
+                      .map((model: FacetBucket) =>
                         renderChip(
-                          model.label,
+                          model.label ?? model.value,
                           model.count,
                           false,
                           () => toggleModel(model.value),
@@ -829,7 +829,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                   <View style={styles.chipGrid}>
                     {/* Selected trims first */}
                     {selectedTrims.map((trimValue) => {
-                      const trimData = trimFacets.find((t) => t.value === trimValue);
+                      const trimData = trimFacets.find((t: FacetBucket) => t.value === trimValue);
                       return renderChip(
                         trimData?.label ?? trimValue,
                         undefined,
@@ -840,11 +840,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                     })}
                     {/* Unselected trims */}
                     {trimFacets
-                      .filter((t) => !selectedTrims.includes(t.value))
+                      .filter((t: FacetBucket) => !selectedTrims.includes(t.value))
                       .slice(0, MAX_VISIBLE_CHIPS - selectedTrims.length)
-                      .map((trim) =>
+                      .map((trim: FacetBucket) =>
                         renderChip(
-                          trim.label,
+                          trim.label ?? trim.value,
                           trim.count,
                           false,
                           () => toggleTrim(trim.value),

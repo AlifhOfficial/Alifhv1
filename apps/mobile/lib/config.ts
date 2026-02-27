@@ -214,6 +214,9 @@ export const AUTH_ENDPOINTS = {
   PASSKEY_VERIFY_REGISTRATION: '/api/auth/passkey/verify-registration',
   PASSKEY_DELETE: '/api/auth/passkey/delete-passkey',
   PASSKEY_LIST: '/api/auth/passkey/list-user-passkeys',
+  // Passkey authentication (sign in with Face ID/biometrics)
+  PASSKEY_AUTHENTICATE_OPTIONS: '/api/auth/passkey/generate-authenticate-options',
+  PASSKEY_VERIFY_AUTHENTICATION: '/api/auth/passkey/verify-authentication',
 } as const;
 
 // Profile endpoints

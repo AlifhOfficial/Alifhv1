@@ -648,6 +648,13 @@ export async function addPasskey(name: string): Promise<PasskeyResult> {
     }
 
     console.log('[Auth] Got registration options, starting native passkey creation...');
+    console.log('[Auth] Registration options:', JSON.stringify({
+      challenge: options.challenge?.substring(0, 20) + '...',
+      rp: options.rp,
+      user: { id: options.user?.id?.substring(0, 20) + '...', name: options.user?.name, displayName: options.user?.displayName },
+      pubKeyCredParams: options.pubKeyCredParams,
+      authenticatorSelection: options.authenticatorSelection,
+    }, null, 2));
 
     // Step 2: Create credential using native passkey API
     // The server returns SimpleWebAuthn-format options which are WebAuthn-compatible
@@ -768,6 +775,167 @@ export async function listPasskeys(): Promise<{ success: boolean; passkeys: Arra
       success: false,
       passkeys: [],
       error: 'Network error. Please check your connection.',
+    };
+  }
+}
+
+/**
+ * Sign in with Passkey (Face ID / Touch ID / Fingerprint)
+ * 
+ * Full WebAuthn authentication flow:
+ * 1. POST /passkey/generate-authenticate-options — get challenge from server
+ * 2. Native Passkey.get() — device biometric credential assertion
+ * 3. POST /passkey/verify-authentication — send assertion to server, get session
+ */
+export async function signInWithPasskey(): Promise<AuthResult> {
+  try {
+    // Check if passkeys are supported on this device
+    if (!NativePasskey.isSupported()) {
+      return {
+        success: false,
+        error: 'Passkeys are not supported on this device.',
+      };
+    }
+
+    // Step 1: Get authentication options from server
+    console.log('[Auth] Requesting passkey authentication options...');
+    const optionsResponse = await fetch(`${API_BASE}${AUTH_ENDPOINTS.PASSKEY_AUTHENTICATE_OPTIONS}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': API_BASE,
+      },
+      body: JSON.stringify({}),
+    });
+
+    const options = await safeParseJson(optionsResponse);
+
+    if (!optionsResponse.ok || !options) {
+      console.error('[Auth] Generate authenticate options failed:', options);
+      // Check if user has no passkeys registered
+      if (options?.code === 'USER_NOT_FOUND' || options?.message?.includes('no passkey')) {
+        return {
+          success: false,
+          error: 'No passkeys found. Please sign in with your email first and register a passkey.',
+        };
+      }
+      return {
+        success: false,
+        error: options?.message || options?.error || 'Failed to get authentication options',
+      };
+    }
+
+    console.log('[Auth] Got authentication options, starting native passkey assertion...');
+
+    // Step 2: Get credential using native passkey API
+    const assertionResult = await NativePasskey.get({
+      challenge: options.challenge,
+      rpId: options.rpId,
+      timeout: options.timeout,
+      allowCredentials: options.allowCredentials,
+      userVerification: options.userVerification || 'preferred',
+    });
+
+    console.log('[Auth] Native passkey assertion complete, verifying with server...');
+
+    // Step 3: Send assertion to server for verification
+    const verifyResponse = await fetch(`${API_BASE}${AUTH_ENDPOINTS.PASSKEY_VERIFY_AUTHENTICATION}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': API_BASE,
+      },
+      body: JSON.stringify({
+        response: assertionResult,
+      }),
+    });
+
+    // Extract session token from Set-Cookie header (Better Auth sets it there)
+    const setCookie = verifyResponse.headers.get('set-cookie') || '';
+    const sessionMatch = setCookie.match(/better-auth\.session_token=([^;]+)/);
+
+    const verifyData = await safeParseJson(verifyResponse);
+
+    if (!verifyResponse.ok) {
+      console.error('[Auth] Verify authentication failed:', verifyData);
+      return {
+        success: false,
+        error: verifyData?.message || verifyData?.error || 'Passkey verification failed',
+      };
+    }
+
+    console.log('[Auth] Passkey authentication successful!');
+
+    // Build session from response
+    // Better Auth passkey returns user and session data
+    const token = sessionMatch?.[1] || verifyData?.session?.token || verifyData?.token;
+    const user = verifyData?.user;
+    const sessionData = verifyData?.session;
+
+    if (!token || !user) {
+      // Try to get session via GET /api/auth/get-session if we have a token
+      if (token) {
+        const sessionResponse = await fetch(`${API_BASE}${AUTH_ENDPOINTS.GET_SESSION}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Origin': API_BASE,
+          },
+        });
+        const sessionResult = await safeParseJson(sessionResponse);
+        if (sessionResponse.ok && sessionResult?.user) {
+          const session: AuthSession = {
+            token,
+            expiresAt: sessionResult.session?.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          };
+          await storeSession(session, sessionResult.user);
+          return {
+            success: true,
+            user: sessionResult.user,
+            session,
+          };
+        }
+      }
+      return {
+        success: false,
+        error: 'Authentication succeeded but failed to get session data',
+      };
+    }
+
+    // Store session
+    const session: AuthSession = {
+      token,
+      expiresAt: sessionData?.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+    await storeSession(session, user);
+
+    return {
+      success: true,
+      user,
+      session,
+    };
+  } catch (error: any) {
+    console.error('[Auth] Sign in with passkey error:', error);
+
+    // Handle user cancellation gracefully
+    const msg = error?.message?.toLowerCase() || '';
+    if (msg.includes('cancel') || msg.includes('abort') || msg.includes('dismissed')) {
+      return {
+        success: false,
+        error: 'Passkey sign in was cancelled.',
+      };
+    }
+
+    // Handle no credentials available
+    if (msg.includes('no credentials') || msg.includes('not found')) {
+      return {
+        success: false,
+        error: 'No passkeys found for this account. Please sign in with email first.',
+      };
+    }
+
+    return {
+      success: false,
+      error: error?.message || 'Failed to sign in with passkey. Please try again.',
     };
   }
 }

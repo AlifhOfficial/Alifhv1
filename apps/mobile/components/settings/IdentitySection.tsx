@@ -6,9 +6,10 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { HapticPressable } from '@/components/ui';
+import { Ionicons } from '@expo/vector-icons';
 
-import { Body, ButtonText } from '@/components/ui';
-import { Sizes, Spacing, Radius } from '@/constants/theme';
+import { Body } from '@/components/ui';
+import { Sizes, Spacing } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
 
@@ -134,12 +135,9 @@ export function IdentitySection({
         {display.buttonText && (
           <HapticPressable
             onPress={onAction}
-            style={[
-              styles.actionButton,
-              { backgroundColor: colors.surfaceSecondary },
-            ]}
+            hitSlop={Spacing.md}
           >
-            <ButtonText size="medium">{display.buttonText}</ButtonText>
+            <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.textMuted} />
           </HapticPressable>
         )}
       </View>
@@ -162,10 +160,5 @@ const styles = StyleSheet.create({
   },
   description: {
     marginTop: Sizes.badgePaddingV,
-  },
-  actionButton: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.md,
   },
 });

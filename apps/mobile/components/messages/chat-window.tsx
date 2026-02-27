@@ -341,7 +341,6 @@ export function ChatWindow({
         lastSeenAt={lastSeenAt}
         listingTitle={listingTitle}
         isLoading={!conversation}
-        onBack={onBack}
       />
 
       {/* Messages List with horizontal swipe for timestamps */}
