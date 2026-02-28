@@ -6,15 +6,18 @@
  * @module queries/listings/car-listings/mutations/delete
  */
 
-import { eq, and, lte, isNull, isNotNull } from 'drizzle-orm';
+import { eq, and, lte, isNull, isNotNull, sql } from 'drizzle-orm';
 import { db } from '../../../../dbclient';
 import { carListing } from '../../../../schema/listing';
+import { partner } from '../../../../schema/partner';
 import { updateVinHistoryOnDelete } from './vin-history';
 
 /**
  * Soft delete a car listing (set lifecycleStatus to 'deleted')
  * Supports both direct ownership (userId) and partner ownership (partnerId)
  * Also updates VIN publication history for anti-abuse tracking.
+ * 
+ * Clears BLK status if the listing was BLK (since deleted listings are not active).
  */
 export async function deleteCarListing(
   listingId: string,
@@ -23,12 +26,13 @@ export async function deleteCarListing(
 ): Promise<boolean> {
   const now = new Date();
   
-  // First verify ownership and get VIN for history tracking
+  // First verify ownership and get VIN + BLK info for tracking
   const listing = await db
     .select({ 
       userId: carListing.userId, 
       partnerId: carListing.partnerId,
       vin: carListing.vin,
+      isBlkListing: carListing.isBlkListing,
     })
     .from(carListing)
     .where(eq(carListing.id, listingId))
@@ -41,10 +45,12 @@ export async function deleteCarListing(
   
   if (!isDirectOwner && !isPartnerOwner) return false;
   
+  // Clear BLK status when deleting (BLK only for active listings)
   const result = await db
     .update(carListing)
     .set({
       lifecycleStatus: 'deleted',
+      isBlkListing: false, // Clear BLK on delete
       deletedAt: now,
       updatedAt: now,
       lastEditedAt: now,
@@ -52,19 +58,32 @@ export async function deleteCarListing(
     .where(eq(carListing.id, listingId))
     .returning({ id: carListing.id });
 
-  if (result.length > 0 && listing[0].vin) {
+  if (result.length > 0) {
+    // Decrement partner's BLK count if this was a BLK listing
+    if (listing[0].isBlkListing && listing[0].partnerId) {
+      await db
+        .update(partner)
+        .set({
+          activeBlackListingsCount: sql`GREATEST(0, ${partner.activeBlackListingsCount} - 1)`,
+          updatedAt: now,
+        })
+        .where(eq(partner.id, listing[0].partnerId));
+      console.log(`[blk-cleanup] Cleared BLK on delete for listing ${listingId}, partner: ${listing[0].partnerId}`);
+    }
+
     // Update VIN history to mark this listing as deleted
-    // Non-blocking but logged - VIN history is important for anti-abuse
-    try {
-      await updateVinHistoryOnDelete({
-        vin: listing[0].vin,
-        userId: listing[0].userId!,
-        listingId,
-        deletedAt: now,
-      });
-    } catch (err) {
-      // Log error but don't fail the delete operation
-      console.error('[vin-history] Failed to update VIN history on delete:', err);
+    if (listing[0].vin) {
+      try {
+        await updateVinHistoryOnDelete({
+          vin: listing[0].vin,
+          userId: listing[0].userId!,
+          listingId,
+          deletedAt: now,
+        });
+      } catch (err) {
+        // Log error but don't fail the delete operation
+        console.error('[vin-history] Failed to update VIN history on delete:', err);
+      }
     }
   }
 

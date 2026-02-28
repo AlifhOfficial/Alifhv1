@@ -9,6 +9,7 @@
 import { eq, and, sql, inArray } from 'drizzle-orm';
 import { db } from '../../../../dbclient';
 import { carListing } from '../../../../schema/listing';
+import { partner } from '../../../../schema/partner';
 import { conversation, conversationParticipant } from '../../../../schema/messaging';
 import { 
   addDays, 
@@ -133,6 +134,7 @@ function hasMinorContentEdits(input: UpdateCarListingInput): boolean {
 
 /**
  * Apply lifecycle status updates to the update data
+ * Also clears BLK status when transitioning to non-active status
  */
 function applyLifecycleUpdates(
   updateData: Record<string, any>,
@@ -145,6 +147,12 @@ function applyLifecycleUpdates(
   if (lifecycleStatus === 'archived') updateData.archivedAt = now;
   if (lifecycleStatus === 'sold') updateData.soldAt = now;
   if (lifecycleStatus === 'deleted') updateData.deletedAt = now;
+  
+  // Clear BLK status when transitioning to non-active status
+  // BLK is only valid for active listings
+  if (lifecycleStatus !== 'active') {
+    updateData.isBlkListing = false;
+  }
 }
 
 /**
@@ -263,6 +271,9 @@ export async function updateCarListing(
       expiresAt: carListing.expiresAt,
       price: carListing.price,
       vin: carListing.vin,
+      // BLK tracking
+      isBlkListing: carListing.isBlkListing,
+      partnerId: carListing.partnerId,
       // QiScore fields for recomputation
       images: carListing.images,
       description: carListing.description,
@@ -359,6 +370,10 @@ export async function updateCarListing(
   const newPrice = input.price;
   const priceChanged = newPrice !== undefined && newPrice !== oldPrice;
 
+  // Check if BLK status is being cleared due to lifecycle change
+  const wasBlk = current.isBlkListing;
+  const blkBeingCleared = wasBlk && updateData.isBlkListing === false;
+
   const [result] = await Promise.all([
     db.update(carListing)
       .set(updateData)
@@ -373,6 +388,18 @@ export async function updateCarListing(
         })
       : Promise.resolve(),
   ]);
+
+  // Decrement partner BLK count if BLK status was cleared
+  if (result.length > 0 && blkBeingCleared && current.partnerId) {
+    await db
+      .update(partner)
+      .set({
+        activeBlackListingsCount: sql`GREATEST(0, ${partner.activeBlackListingsCount} - 1)`,
+        updatedAt: now,
+      })
+      .where(eq(partner.id, current.partnerId));
+    console.log(`[blk-cleanup] Cleared BLK on lifecycle change for listing ${listingId}, partner: ${current.partnerId}`);
+  }
 
   return result.length > 0;
 }
@@ -402,6 +429,9 @@ export async function updateCarListingByStaff(
       expiresAt: carListing.expiresAt,
       price: carListing.price,
       vin: carListing.vin,
+      // BLK tracking
+      isBlkListing: carListing.isBlkListing,
+      partnerId: carListing.partnerId,
       // QiScore fields for recomputation
       images: carListing.images,
       description: carListing.description,
@@ -508,6 +538,21 @@ export async function updateCarListingByStaff(
         })
       : Promise.resolve(),
   ]);
+
+  // Decrement partner BLK count if BLK status was cleared
+  const wasBlk = current.isBlkListing;
+  const blkBeingCleared = wasBlk && updateData.isBlkListing === false;
+  
+  if (result.length > 0 && blkBeingCleared && current.partnerId) {
+    await db
+      .update(partner)
+      .set({
+        activeBlackListingsCount: sql`GREATEST(0, ${partner.activeBlackListingsCount} - 1)`,
+        updatedAt: now,
+      })
+      .where(eq(partner.id, current.partnerId));
+    console.log(`[blk-cleanup] Cleared BLK on staff lifecycle change for listing ${listingId}, partner: ${current.partnerId}`);
+  }
 
   return result.length > 0;
 }

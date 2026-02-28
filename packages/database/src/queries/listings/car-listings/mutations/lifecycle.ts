@@ -9,7 +9,8 @@
 import { eq, and, isNotNull, lte, inArray, sql } from 'drizzle-orm';
 import { db } from '../../../../dbclient';
 import { carListing } from '../../../../schema/listing';
-import { addDays, EXTENSION_WINDOW_MS } from './helpers';
+import { partner } from '../../../../schema/partner';
+import { addDays, EXTENSION_WINDOW_MS, clearBlkStatusOnDeactivation } from './helpers';
 import { updateVinHistoryOnSold, updateVinHistoryOnExtend } from './vin-history';
 
 /**
@@ -174,6 +175,8 @@ export async function extendCarListingExpiry(input: {
  * Supports both direct ownership (userId) and partner ownership (partnerId)
  * If soldPrice is not provided, defaults to the listing's current price
  * Also updates VIN publication history for anti-abuse tracking.
+ * 
+ * Clears BLK status if the listing was BLK (since sold listings are not active).
  */
 export async function markCarListingSold(input: {
   listingId: string;
@@ -190,6 +193,7 @@ export async function markCarListingSold(input: {
       userId: carListing.userId,
       price: carListing.price,
       vin: carListing.vin,
+      isBlkListing: carListing.isBlkListing,
     })
     .from(carListing)
     .where(eq(carListing.id, input.listingId))
@@ -212,10 +216,12 @@ export async function markCarListingSold(input: {
   // Use provided soldPrice or default to listing price
   const finalSoldPrice = input.soldPrice ?? listing.price;
 
+  // Clear BLK status when marking as sold (BLK only for active listings)
   const updated = await db
     .update(carListing)
     .set({
       lifecycleStatus: 'sold',
+      isBlkListing: false, // Clear BLK on sold
       soldAt: now,
       soldPrice: finalSoldPrice,
       updatedAt: now,
@@ -225,6 +231,18 @@ export async function markCarListingSold(input: {
     .returning({ id: carListing.id });
 
   if (updated.length === 0) return { success: false, error: 'Failed to update listing' };
+
+  // Decrement partner's BLK count if this was a BLK listing
+  if (listing.isBlkListing && listing.partnerId) {
+    await db
+      .update(partner)
+      .set({
+        activeBlackListingsCount: sql`GREATEST(0, ${partner.activeBlackListingsCount} - 1)`,
+        updatedAt: now,
+      })
+      .where(eq(partner.id, listing.partnerId));
+    console.log(`[blk-cleanup] Cleared BLK on sold for listing ${input.listingId}, partner: ${listing.partnerId}`);
+  }
   
   // Update VIN history to mark as sold
   // This allows the VIN to be reposted by a NEW owner without abuse concern
@@ -252,19 +270,26 @@ export async function markCarListingSold(input: {
  * This is the production-ready alternative to opportunistic per-user expiry.
  * Ensures public browse and admin stats are always accurate.
  * 
+ * Also clears BLK status for any BLK listings being expired and decrements
+ * the partner's activeBlackListingsCount accordingly.
+ * 
  * @param batchSize - Max listings to expire in one call (default: 500)
  * @returns Number of listings marked as expired
  */
 export async function expireAllExpiredListings(batchSize = 500): Promise<{
   expiredCount: number;
+  blkCleared: number;
   hasMore: boolean;
 }> {
   const now = new Date();
   
-  // Find and update expired listings in a single atomic operation
-  // Uses batch size to prevent long-running queries in production
-  const expiredIds = await db
-    .select({ id: carListing.id })
+  // Find expired listings including BLK info
+  const expiredListings = await db
+    .select({ 
+      id: carListing.id,
+      isBlkListing: carListing.isBlkListing,
+      partnerId: carListing.partnerId,
+    })
     .from(carListing)
     .where(
       and(
@@ -276,26 +301,54 @@ export async function expireAllExpiredListings(batchSize = 500): Promise<{
     )
     .limit(batchSize + 1); // +1 to detect if there are more
 
-  if (expiredIds.length === 0) {
-    return { expiredCount: 0, hasMore: false };
+  if (expiredListings.length === 0) {
+    return { expiredCount: 0, blkCleared: 0, hasMore: false };
   }
 
-  const hasMore = expiredIds.length > batchSize;
-  const idsToExpire = expiredIds.slice(0, batchSize).map(r => r.id);
+  const hasMore = expiredListings.length > batchSize;
+  const listingsToExpire = expiredListings.slice(0, batchSize);
+  const idsToExpire = listingsToExpire.map(r => r.id);
 
+  // Update lifecycle status to expired and clear BLK flag in one query
   const updated = await db
     .update(carListing)
     .set({ 
-      lifecycleStatus: 'expired', 
+      lifecycleStatus: 'expired',
+      isBlkListing: false, // Always clear BLK on expiry
       updatedAt: now 
     })
     .where(inArray(carListing.id, idsToExpire))
     .returning({ id: carListing.id });
 
-  console.log(`[expiry-maintenance] Expired ${updated.length} listings`);
+  // Group BLK listings by partner and decrement counts
+  const blkByPartner = new Map<string, number>();
+  for (const listing of listingsToExpire) {
+    if (listing.isBlkListing && listing.partnerId) {
+      blkByPartner.set(
+        listing.partnerId, 
+        (blkByPartner.get(listing.partnerId) ?? 0) + 1
+      );
+    }
+  }
+
+  // Decrement activeBlackListingsCount for each affected partner
+  let totalBlkCleared = 0;
+  for (const [partnerId, count] of blkByPartner) {
+    await db
+      .update(partner)
+      .set({
+        activeBlackListingsCount: sql`GREATEST(0, ${partner.activeBlackListingsCount} - ${count})`,
+        updatedAt: now,
+      })
+      .where(eq(partner.id, partnerId));
+    totalBlkCleared += count;
+  }
+
+  console.log(`[expiry-maintenance] Expired ${updated.length} listings, cleared ${totalBlkCleared} BLK slots`);
 
   return { 
-    expiredCount: updated.length, 
+    expiredCount: updated.length,
+    blkCleared: totalBlkCleared,
     hasMore 
   };
 }

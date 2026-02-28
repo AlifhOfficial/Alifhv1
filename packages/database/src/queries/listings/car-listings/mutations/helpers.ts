@@ -160,3 +160,55 @@ export const QI_SCORE_KEYS = [
   'videoUrl',
   'vinVisibility',
 ] as const;
+
+/**
+ * Clear BLK status for listings that are leaving 'active' status.
+ * This ensures BLK count only applies to active listings.
+ * 
+ * Called when:
+ * - Listing expires (cron job)
+ * - Listing is marked as sold
+ * - Listing is archived
+ * - Listing is deleted
+ * 
+ * @param partnerId - Partner ID to decrement count for
+ * @param blkListingIds - IDs of BLK listings that are being deactivated
+ * @returns Number of listings cleared
+ */
+export async function clearBlkStatusOnDeactivation(
+  partnerId: string,
+  blkListingIds: string[]
+): Promise<number> {
+  if (blkListingIds.length === 0) return 0;
+  
+  // Import here to avoid circular dependencies
+  const { db } = await import('../../../../dbclient');
+  const { carListing } = await import('../../../../schema/listing');
+  const { partner } = await import('../../../../schema/partner');
+  const { eq, sql, inArray } = await import('drizzle-orm');
+  
+  // Clear BLK flag on the listings
+  const cleared = await db
+    .update(carListing)
+    .set({ 
+      isBlkListing: false,
+      updatedAt: new Date(),
+    })
+    .where(inArray(carListing.id, blkListingIds))
+    .returning({ id: carListing.id });
+  
+  // Decrement partner's activeBlackListingsCount (never go below 0)
+  if (cleared.length > 0) {
+    await db
+      .update(partner)
+      .set({
+        activeBlackListingsCount: sql`GREATEST(0, ${partner.activeBlackListingsCount} - ${cleared.length})`,
+        updatedAt: new Date(),
+      })
+      .where(eq(partner.id, partnerId));
+    
+    console.log(`[blk-cleanup] Cleared BLK status for ${cleared.length} listings, partner: ${partnerId}`);
+  }
+  
+  return cleared.length;
+}
