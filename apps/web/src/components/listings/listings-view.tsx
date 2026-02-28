@@ -10,7 +10,6 @@ import { ListingsHeader } from './listings-header';
 import { ListingsSidebar } from './listings-sidebar';
 import { ListingsContent } from './listings-content';
 import { ListingsPagination } from './listings-pagination';
-import { AmnaFloatingButton } from './amna-floating-button';
 import { useSearch } from '@/hooks/use-search';
 import { useUser } from '@/hooks/auth/use-auth';
 import { useFavoritesStatus } from '@/hooks/engagement';
@@ -30,6 +29,8 @@ interface ListingsViewProps {
   defaultModel?: string;
 }
 
+const VIEW_MODE_KEY = 'listings-view-mode';
+
 export function ListingsView({ 
   embedded = false, 
   defaultFiltersOpen = true,
@@ -37,9 +38,22 @@ export function ListingsView({
   defaultBrand,
   defaultModel,
 }: ListingsViewProps) {
-  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('list'); // Default to list
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(VIEW_MODE_KEY);
+      if (saved === 'grid' || saved === 'list' || saved === 'minimal') {
+        return saved;
+      }
+    }
+    return 'grid';
+  });
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(defaultFiltersOpen);
+
+  // Persist view mode to localStorage
+  useEffect(() => {
+    localStorage.setItem(VIEW_MODE_KEY, viewMode);
+  }, [viewMode]);
 
   const { isSignedIn } = useUser();
 
@@ -227,8 +241,6 @@ export function ListingsView({
           </div>
         </div>
       </div>
-      {/* Floating Amna AI Button */}
-      <AmnaFloatingButton />
     </TooltipProvider>
   );
 }
