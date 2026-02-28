@@ -24,6 +24,20 @@ import { useTheme } from '@/context/theme-context';
 import { Skeleton, Data } from '@/components/ui';
 import { DescriptionSheet, FeaturesSheet, SpecsSheet } from '@/components/sheets';
 import { ListingDetailedData, SellerData } from '@/lib/listing-api';
+import {
+  getEnumLabel,
+  VEHICLE_CONDITIONS,
+  BODY_TYPES,
+  TRANSMISSION_TYPES,
+  FUEL_TYPES,
+  EXTERIOR_COLORS,
+  INTERIOR_COLORS,
+  STEERING_SIDES,
+  DOORS_OPTIONS,
+  SEATING_OPTIONS,
+  POWER_RANGES,
+  ENGINE_SIZES,
+} from '@/lib/listing-constants';
 
 import {
   ImageGallery,
@@ -194,18 +208,18 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
         visible={specsSheetVisible}
         onClose={closeSpecsSheet}
         specs={[
-          { label: 'Condition', value: listing.condition },
-          { label: 'Body Type', value: listing.bodyType },
-          { label: 'Transmission', value: listing.transmission },
-          { label: 'Fuel Type', value: listing.fuelType },
-          { label: 'Engine', value: listing.engineSize },
+          { label: 'Condition', value: listing.condition ? getEnumLabel(VEHICLE_CONDITIONS, listing.condition) : null },
+          { label: 'Body Type', value: listing.bodyType ? getEnumLabel(BODY_TYPES, listing.bodyType) : null },
+          { label: 'Transmission', value: listing.transmission ? getEnumLabel(TRANSMISSION_TYPES, listing.transmission) : null },
+          { label: 'Fuel Type', value: listing.fuelType ? getEnumLabel(FUEL_TYPES, listing.fuelType) : null },
+          { label: 'Engine', value: listing.engineSize ? getEnumLabel(ENGINE_SIZES, listing.engineSize) : null },
           { label: 'Cylinders', value: listing.cylinders },
-          { label: 'Power', value: listing.powerRange },
-          { label: 'Exterior Color', value: listing.exteriorColor },
-          { label: 'Interior Color', value: listing.interiorColor },
-          { label: 'Doors', value: listing.doors },
-          { label: 'Seats', value: listing.seatingCapacity },
-          { label: 'Steering', value: listing.steeringSide },
+          { label: 'Power', value: listing.powerRange ? getEnumLabel(POWER_RANGES, listing.powerRange) : null },
+          { label: 'Exterior Color', value: listing.exteriorColor ? getEnumLabel(EXTERIOR_COLORS, listing.exteriorColor) : null },
+          { label: 'Interior Color', value: listing.interiorColor ? getEnumLabel(INTERIOR_COLORS, listing.interiorColor) : null },
+          { label: 'Doors', value: listing.doors ? getEnumLabel(DOORS_OPTIONS, listing.doors) : null },
+          { label: 'Seats', value: listing.seatingCapacity ? getEnumLabel(SEATING_OPTIONS, listing.seatingCapacity) : null },
+          { label: 'Steering', value: listing.steeringSide ? getEnumLabel(STEERING_SIDES, listing.steeringSide) : null },
         ].filter(s => s.value != null)}
       />
 

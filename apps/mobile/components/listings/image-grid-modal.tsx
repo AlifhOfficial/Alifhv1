@@ -261,12 +261,9 @@ export function ImageGridModal({
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.background, borderBottomColor: colors.glassBorder }]}>
-          <View>
-            <Heading size="medium">{title}</Heading>
-            <Supporting size="small" style={{ marginTop: Spacing.xs / 2 }}>
-              {totalImages} images
-            </Supporting>
-          </View>
+          <Supporting size="small">
+            {totalImages} photos
+          </Supporting>
           <HapticPressable
             onPress={onClose}
             style={[styles.closeButton, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}

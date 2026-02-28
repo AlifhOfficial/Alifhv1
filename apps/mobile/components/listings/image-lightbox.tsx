@@ -32,7 +32,6 @@ interface ImageLightboxProps {
   images: string[];
   currentIndex: number;
   isOpen: boolean;
-  title?: string;
   onClose: () => void;
   onIndexChange: (index: number) => void;
 }
@@ -41,7 +40,6 @@ export function ImageLightbox({
   images,
   currentIndex,
   isOpen,
-  title = 'Image',
   onClose,
   onIndexChange,
 }: ImageLightboxProps) {
