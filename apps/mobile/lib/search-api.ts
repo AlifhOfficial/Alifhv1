@@ -33,16 +33,21 @@ export interface FacetBucket {
 }
 
 export interface SearchFacets {
-  makes?: FacetBucket[];
-  bodyTypes?: FacetBucket[];
-  fuelTypes?: FacetBucket[];
-  transmissions?: FacetBucket[];
+  make?: FacetBucket[];
+  model?: FacetBucket[];
+  trim?: FacetBucket[];
+  bodyType?: FacetBucket[];
+  fuelType?: FacetBucket[];
+  transmission?: FacetBucket[];
   emirate?: FacetBucket[];
   specs?: FacetBucket[];
-  sellerTypes?: FacetBucket[];
-  conditions?: FacetBucket[];
-  yearRanges?: FacetBucket[];
-  priceRanges?: FacetBucket[];
+  sellerType?: FacetBucket[];
+  yearRange?: { min: number; max: number };
+  priceRange?: { min: number; max: number };
+  mileageRange?: { min: number; max: number };
+  engineSize?: FacetBucket[];
+  exteriorColor?: FacetBucket[];
+  interiorColor?: FacetBucket[];
 }
 
 interface DBSearchParams {

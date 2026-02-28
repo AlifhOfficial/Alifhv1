@@ -484,7 +484,7 @@ export function MoreFiltersSheet({
             BODY_TYPES,
             localFilters.bodyType,
             (value) => handleToggleArray('bodyType', value),
-            facets?.bodyTypes
+            facets?.bodyType
           ),
           localFilters.bodyType?.length ?? 0
         )}
@@ -497,7 +497,7 @@ export function MoreFiltersSheet({
             FUEL_TYPES,
             localFilters.fuelType,
             (value) => handleToggleArray('fuelType', value),
-            facets?.fuelTypes
+            facets?.fuelType
           ),
           localFilters.fuelType?.length ?? 0
         )}
@@ -510,7 +510,7 @@ export function MoreFiltersSheet({
             TRANSMISSION_TYPES,
             localFilters.transmission,
             (value) => handleToggleArray('transmission', value),
-            facets?.transmissions
+            facets?.transmission
           ),
           localFilters.transmission?.length ?? 0
         )}
@@ -561,7 +561,7 @@ export function MoreFiltersSheet({
           <View style={styles.chipsRow}>
             {SELLER_TYPE_OPTIONS.map(option => {
               const isSelected = localFilters.sellerType === option.value;
-              const facet = facets?.sellerTypes?.find((f: FacetBucket) => f.value === option.value);
+              const facet = facets?.sellerType?.find((f: FacetBucket) => f.value === option.value);
               const count = facet?.count ?? 0;
               return (
                 <HapticPressable

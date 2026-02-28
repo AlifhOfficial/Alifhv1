@@ -63,7 +63,7 @@ export function MakeFilterSheet({
       searchApi
         .getFacets(filterContext)
         .then((result) => {
-          setFacets(result?.makes ?? []);
+          setFacets(result?.make ?? []);
         })
         .catch(console.error)
         .finally(() => setIsLoadingFacets(false));

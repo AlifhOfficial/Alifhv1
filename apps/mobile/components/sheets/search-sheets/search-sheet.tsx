@@ -474,7 +474,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
 
   const hasSelections = selectedMakes.length > 0 || selectedModels.length > 0 || selectedTrims.length > 0 || selectedTags.length > 0 || selectedExtras.length > 0 || selectedPartner !== null || selectedBodyTypes.length > 0 || selectedFuelTypes.length > 0 || selectedTransmission.length > 0 || selectedSpecs.length > 0 || selectedCondition !== null || selectedSellerType !== null;
   const canApply = !!(query.trim() || hasSelections);
-  const makes = facets?.makes ?? [];
+  const makes = facets?.make ?? [];
 
   // Build selection summary text
   const selectionSummary = useMemo(() => {
