@@ -157,7 +157,7 @@ export function GreetingNote() {
         {content.top}
       </Supporting>
       <View style={styles.nameRow}>
-        <Display size="medium" style={{ color: colors.text }}>
+        <Display size="medium" style={{ color: colors.primary }}>
           {content.name}
         </Display>
         {content.bottom && (

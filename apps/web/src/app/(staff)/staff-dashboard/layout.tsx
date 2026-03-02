@@ -4,7 +4,7 @@ import { DashboardLayout, DashboardContent } from "@/components/shared/layout/da
 import { AppSidebar } from "@/components/shared/layout/app-sidebar";
 import { PageLoader } from "@/components/shared/page-loader";
 import { useAuth } from "@/providers/auth-provider";
-import { redirect } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 
 const navSections = [
   {
@@ -26,6 +26,7 @@ const navSections = [
 
 export default function StaffDashboardLayout({ children }: { children: React.ReactNode }) {
   const { session: user, isLoading } = useAuth();
+  const pathname = usePathname();
   
   if (isLoading) {
     return <PageLoader />;
@@ -46,10 +47,13 @@ export default function StaffDashboardLayout({ children }: { children: React.Rea
     companyName: staffMembership.partnerName,
   };
 
+  // Check if current page needs full height (no padding, full container)
+  const isFullHeightPage = pathname?.includes('/messaging');
+
   return (
     <DashboardLayout enableRightPanel>
       <AppSidebar user={user} sections={navSections} staffOverride={staffOverride} />
-      <DashboardContent>{children}</DashboardContent>
+      <DashboardContent fullHeight={isFullHeightPage}>{children}</DashboardContent>
     </DashboardLayout>
   );
 }

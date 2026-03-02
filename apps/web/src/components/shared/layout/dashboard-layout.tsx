@@ -134,9 +134,26 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
   };
 
   return (
-    <SidebarInset className="flex flex-col relative bg-background border-l border-border/50 overflow-hidden shadow-sm">
-      {/* Header with SidebarTrigger, ThemeToggle, and actions */}
-      <header className="flex h-14 shrink-0 items-center gap-2 bg-background/80 backdrop-blur-sm px-4 z-50 sticky top-0">
+    <SidebarInset className="flex flex-col relative overflow-hidden gap-3">
+      {/* Main content - full height for chat, scrollable with padding for others */}
+      {fullHeight ? (
+        <div className="flex-1 min-h-0 overflow-hidden overscroll-contain">
+          {children}
+        </div>
+      ) : noPadding ? (
+        <div className="flex-1 overflow-y-auto overscroll-contain rounded-xl border border-border bg-background shadow-sm">
+          {children}
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto overscroll-contain rounded-xl border border-border bg-background shadow-sm">
+          <div className="p-4">
+            {children}
+          </div>
+        </div>
+      )}
+
+      {/* Bottom Bar Panel - Rounded window like sidebar */}
+      <footer className="flex h-14 shrink-0 items-center gap-2 px-4 z-50 rounded-xl border border-border bg-background shadow-sm">
         <SidebarTrigger className="-ml-1" />
         <ThemeToggle />
         {header && (
@@ -162,24 +179,7 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
             Sign Out
           </Button>
         </div>
-      </header>
-      
-      {/* Main content - full height for chat, scrollable with padding for others */}
-      {fullHeight ? (
-        <div className="flex-1 min-h-0 overflow-hidden p-4">
-          {children}
-        </div>
-      ) : noPadding ? (
-        <div className="flex-1 overflow-y-auto">
-          {children}
-        </div>
-      ) : (
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-4">
-            {children}
-          </div>
-        </div>
-      )}
+      </footer>
     </SidebarInset>
   );
 }

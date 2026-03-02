@@ -165,7 +165,7 @@ export function FloatingChatWindow({
 
   return (
     <div
-      className="fixed z-40 transition-all duration-200 ease-out overflow-hidden"
+      className="fixed z-40 transition-all duration-200 ease-out overflow-hidden overscroll-contain"
       style={{ 
         right: rightOffset, 
         width: 320, 
@@ -175,7 +175,7 @@ export function FloatingChatWindow({
     >
       <div
         className={cn(
-          'flex flex-col h-full bg-background border border-border shadow-2xl overflow-hidden',
+          'flex flex-col h-full bg-background border border-border shadow-2xl overflow-hidden overscroll-contain',
           isMinimized ? 'rounded-2xl' : 'rounded-t-xl'
         )}
       >
@@ -277,7 +277,7 @@ export function FloatingChatWindow({
             <div
               ref={containerRef}
               onScroll={handleScroll}
-              className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-3 bg-background flex flex-col-reverse gap-1.5"
+              className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain p-3 bg-background flex flex-col-reverse gap-1.5"
             >
               {isFetchingMore && (
                 <div className="flex justify-center py-2">

@@ -193,7 +193,7 @@ function SidebarFooterContent({
           <div className="relative" data-footer-menu>
             <SidebarMenuButton 
               size="lg" 
-              className="cursor-pointer"
+              className="cursor-pointer hover:bg-sidebar-accent"
               tooltip={displayName}
               onClick={(e) => {
                 e.stopPropagation();
@@ -411,7 +411,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                             
                             return (
                               <SidebarMenuSubItem key={item.label}>
-                                <SidebarMenuSubButton asChild isActive={isActive} className="font-medium tracking-tight">
+                                <SidebarMenuSubButton asChild isActive={isActive} className={`font-medium tracking-tight ${isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'hover:bg-sidebar-accent/50'}`}>
                                   <Link href={item.href}>
                                     <span>{item.label}</span>
                                   </Link>
@@ -451,7 +451,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                           asChild 
                           isActive={isActive}
                           tooltip={item.label}
-                          className="font-semibold tracking-tight"
+                          className={`font-semibold tracking-tight ${isActive ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'hover:bg-sidebar-accent'}`}
                         >
                           <Link href={item.href}>
                             {Icon && <Icon className="size-4" />}

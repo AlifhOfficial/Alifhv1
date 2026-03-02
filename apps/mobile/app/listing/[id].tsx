@@ -94,16 +94,23 @@ export default function ListingDetailScreen() {
     if (!listing) return;
     try {
       const carTitle = `${listing.listing.year} ${listing.listing.make} ${listing.listing.model}`;
-      const shareUrl = `https://revvup.ae/listing/${listingId}`;
+      const shareUrl = `https://revvup.ae/listings/${listingId}`;
       if (Platform.OS === 'web') {
         if (navigator?.clipboard) {
           await navigator.clipboard.writeText(shareUrl);
         }
+      } else if (Platform.OS === 'ios') {
+        // iOS automatically appends URL to message, so don't include in message
+        await Share.share({
+          title: carTitle,
+          message: `Check out this ${carTitle} on Revvup!`,
+          url: shareUrl,
+        });
       } else {
+        // Android doesn't use url parameter, include in message
         await Share.share({
           title: carTitle,
           message: `Check out this ${carTitle} on Revvup!\n${shareUrl}`,
-          url: shareUrl,
         });
       }
     } catch (error) {

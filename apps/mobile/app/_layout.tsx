@@ -39,7 +39,7 @@ import { BootScreen } from '@/components/layout/boot-screen';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { AlertProvider } from '@/components/ui/themed-alert';
-import { GlobalTabBar } from '@/components/layout/global-tab-bar';
+import { TabBarRouter } from '@/components/layout/tab-bar-router';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { AuthFlow } from '@/components/auth';
 import { AuthSheet } from '@/components/sheets';
@@ -249,8 +249,8 @@ function RootLayoutNav() {
       {/* Global Safe Area Gradients - hidden when chrome is hidden */}
       {isTabBarVisible && <BottomSafeAreaGradient />}
       
-      {/* Global Tab Bar - always render, let component handle visibility */}
-      <GlobalTabBar />
+      {/* Tab Bar Router - routes to correct tab bar based on pathname */}
+      <TabBarRouter />
       
       {/* Auth Sheet - renders above tab bar */}
       <AuthSheetRenderer />

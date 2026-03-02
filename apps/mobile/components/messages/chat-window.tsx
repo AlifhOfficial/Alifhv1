@@ -225,18 +225,19 @@ export function ChatWindow({
   const renderMessage = useCallback(
     ({ item, index }: { item: Message; index: number }) => {
       const isOwn = item.senderId === userId;
-      const prevMessage = messages[index + 1];
+      // Check next message (newer, visually below in inverted list) to show avatar at bottom of group
+      const nextMessage = messages[index - 1];
       const showAvatar =
         !isOwn &&
-        (!prevMessage ||
-          prevMessage.senderId !== item.senderId ||
-          prevMessage.isSystemMessage);
+        (!nextMessage ||
+          nextMessage.senderId !== item.senderId ||
+          nextMessage.isSystemMessage);
       const showSeen = item.id === lastReadMsgId;
 
-      // Check if we need to show a date separator (compare with NEXT message since list is inverted)
+      // Check if we need to show a date separator (compare with older message above in inverted list)
       const messageDate = new Date(item.createdAt);
-      const nextMessage = messages[index + 1];
-      const showDateSeparator = !nextMessage || !isSameDay(messageDate, new Date(nextMessage.createdAt));
+      const prevMessage = messages[index + 1];
+      const showDateSeparator = !prevMessage || !isSameDay(messageDate, new Date(prevMessage.createdAt));
 
       // Determine if this bubble gets a timestamp
       const hasTextBubble = !!item.text && !item.isSystemMessage;

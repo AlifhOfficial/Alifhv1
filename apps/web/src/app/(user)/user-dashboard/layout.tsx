@@ -71,10 +71,13 @@ export default function UserDashboardLayout({ children }: UserDashboardLayoutPro
     return <PageLoader />;
   }
 
+  // Check if current page needs full height (no padding, full container)
+  const isFullHeightPage = pathname?.includes('/messaging');
+
   return (
     <DashboardLayout enableRightPanel>
       <AppSidebar user={user} sections={navSections} />
-      <DashboardContent>{children}</DashboardContent>
+      <DashboardContent fullHeight={isFullHeightPage}>{children}</DashboardContent>
     </DashboardLayout>
   );
 }

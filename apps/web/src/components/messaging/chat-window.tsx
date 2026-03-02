@@ -206,9 +206,9 @@ export function ChatWindow({
     : undefined;
 
   return (
-    <div className={cn('flex flex-col h-full w-full min-h-0 bg-background overflow-hidden', className)}>
+    <div className={cn('flex flex-col h-full w-full min-h-0 bg-background overflow-hidden overscroll-contain', className)}>
       {/* Header - fixed at top, never scrolls */}
-      <div className="flex-shrink-0 flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border/40 bg-background z-10">
+      <div className="flex-shrink-0 flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border/40 z-10">
         {onBack && (
           <button onClick={onBack} className="p-1.5 sm:p-2 hover:bg-sidebar rounded-lg transition-colors lg:hidden" aria-label="Back">
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
@@ -253,7 +253,7 @@ export function ChatWindow({
         )}
       </div>
 
-      <div ref={containerRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-3 sm:p-4 bg-background flex flex-col-reverse gap-1.5 sm:gap-2">
+      <div ref={containerRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain p-3 sm:p-4 flex flex-col-reverse gap-1.5 sm:gap-2">
         {isFetchingMore && (
           <div className="flex justify-center py-3 sm:py-4">
             <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-muted-foreground" />
@@ -265,7 +265,7 @@ export function ChatWindow({
             <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-muted-foreground" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="min-h-[250px] sm:min-h-[300px] flex items-center justify-center">
+          <div className="flex items-center justify-center flex-1">
             <div className="text-center space-y-2.5 sm:space-y-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-sidebar flex items-center justify-center">
                 <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground/40" />
@@ -286,12 +286,14 @@ export function ChatWindow({
 
             {messages.map((message, index, arr) => {
               const messageDate = new Date(message.createdAt);
-              // With flex-col-reverse, next in array is prev visually
+              // With flex-col-reverse, next in array is prev visually (older, above)
               const nextMessage = arr[index + 1];
               const nextDate = nextMessage ? new Date(nextMessage.createdAt) : null;
               const showDateSeparator = !nextDate || !isSameDay(nextDate, messageDate);
 
-              const showAvatar = !nextMessage || nextMessage.senderId !== message.senderId;
+              // Show avatar at bottom of consecutive group (check newer message below)
+              const prevMessage = arr[index - 1];
+              const showAvatar = !prevMessage || prevMessage.senderId !== message.senderId;
               const isOwn = message.senderId === userId;
               const isReadByOther = isOwn && otherLastReadAt ? messageDate <= otherLastReadAt : false;
               const showSeen = isOwn && message.id === lastReadMsgId;

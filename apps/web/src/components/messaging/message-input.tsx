@@ -186,67 +186,72 @@ export function MessageInput({
 
   return (
     <div className={cn(
-      'border-t border-border/40 bg-background',
+      'flex-shrink-0 bg-background',
       compact ? 'px-2.5 py-2' : 'px-3 sm:px-4 py-2.5 sm:py-3'
     )}>
       <div className={cn(
-        'flex items-center bg-sidebar border border-border/40 rounded-xl min-w-0 overflow-hidden w-full',
-        compact ? 'p-1' : 'p-1 sm:p-1.5'
+        'flex items-center gap-2',
+        compact ? 'gap-1.5' : 'gap-2'
       )}>
-        {/* Location Button */}
+        {/* Location Button - Circle */}
         {onRequestLocation && (
           <button
             type="button"
             onClick={onRequestLocation}
             disabled={disabled}
             className={cn(
-              'rounded-lg transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed',
-              compact ? 'p-1.5' : 'p-1.5 sm:p-2',
-              'text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50'
+              'flex-shrink-0 rounded-full border border-border bg-sidebar transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center',
+              compact ? 'w-8 h-8' : 'w-10 h-10 sm:w-11 sm:h-11',
+              'text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/50'
             )}
             aria-label="Share location"
             title="Share location"
           >
-            <MapPin className={compact ? 'w-4 h-4' : 'w-4 h-4 sm:w-[18px] sm:h-[18px]'} />
+            <MapPin className={compact ? 'w-4 h-4' : 'w-4 h-4 sm:w-5 sm:h-5'} />
           </button>
         )}
 
-        {/* Text Input */}
-        <textarea
-          ref={textareaRef}
-          value={text}
-          onChange={handleInput}
-          onKeyDown={handleKeyDown}
-          disabled={disabled}
-          placeholder={placeholder}
-          rows={1}
-          autoFocus
-          tabIndex={0}
-          className={cn(
-            'flex-1 bg-transparent text-foreground placeholder:text-muted-foreground/50 resize-none min-w-0 overflow-hidden focus:outline-none focus:ring-0 font-medium',
-            compact ? 'max-h-16 text-[13px] py-1 px-2' : 'max-h-20 sm:max-h-24 lg:max-h-32 text-[13px] sm:text-sm py-1 sm:py-1.5 lg:py-2 px-2 sm:px-2 lg:px-3'
-          )}
-          style={{
-            minHeight: '18px',
-            height: 'auto',
-          }}
-        />
+        {/* Text Input - Pill shaped */}
+        <div className={cn(
+          'flex-1 bg-sidebar border border-border rounded-full min-w-0 overflow-hidden flex items-center',
+          compact ? 'px-4 h-8' : 'px-4 sm:px-5 h-10 sm:h-11'
+        )}>
+          <textarea
+            ref={textareaRef}
+            value={text}
+            onChange={handleInput}
+            onKeyDown={handleKeyDown}
+            disabled={disabled}
+            placeholder={placeholder}
+            rows={1}
+            autoFocus
+            tabIndex={0}
+            className={cn(
+              'w-full bg-transparent text-foreground placeholder:text-muted-foreground/50 resize-none overflow-hidden focus:outline-none focus:ring-0 font-medium',
+              compact ? 'max-h-16 text-[13px]' : 'max-h-20 sm:max-h-24 lg:max-h-32 text-[13px] sm:text-sm'
+            )}
+            style={{
+              minHeight: '20px',
+              height: 'auto',
+            }}
+          />
+        </div>
 
-        {/* Send Button */}
+        {/* Send Button - Circle */}
         <button
           type="button"
           onClick={handleSend}
           disabled={!text.trim() || disabled}
           className={cn(
-            'rounded-lg transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed ml-1',
-            compact ? 'p-1.5' : 'p-1.5 sm:p-2',
+            'flex-shrink-0 rounded-full border transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center',
+            compact ? 'w-8 h-8' : 'w-10 h-10 sm:w-11 sm:h-11',
             text.trim() && !disabled
-              ? 'bg-blue-500 text-white hover:bg-blue-600'
-              : 'text-muted-foreground/50'
+              ? 'bg-primary border-primary text-primary-foreground hover:bg-primary/90'
+              : 'bg-sidebar border-border text-muted-foreground/50'
           )}
           aria-label="Send message"
         >
-          <Send className={compact ? 'w-4 h-4' : 'w-4 h-4 sm:w-[18px] sm:h-[18px]'} />
+          <Send className={compact ? 'w-4 h-4' : 'w-4 h-4 sm:w-5 sm:h-5'} />
         </button>
       </div>
 

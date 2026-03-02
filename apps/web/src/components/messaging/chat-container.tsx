@@ -65,36 +65,39 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
   };
 
   return (
-    <div className={cn('flex h-full min-h-0 flex-col overflow-hidden border-t border-border/50', className)}>
-      {/* Main */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* List - Full width on mobile when visible, fixed width on desktop */}
-        <div className={cn(
-          'flex-shrink-0 transition-all duration-200',
-          listOpen ? 'w-full lg:w-80 xl:w-96' : 'w-0 lg:w-0',
-          showMobile && 'hidden lg:block'
-        )}>
-          <ConversationList
-            inbox={inbox}
-            conversations={conversations}
-            isLoading={isLoading}
-            totalUnread={totalUnread}
-            activeConversationId={selectedId}
-            listOpen={listOpen}
-            onListToggle={setListOpen}
-            onSelectConversation={(id) => {
-              setLocalSelectedId(id);
-              setShowMobileOverride(true);
-              // Update URL for consistency (back button, refresh, sharing)
-              if (pathname) {
-                router.replace(`${pathname}?conversationId=${id}`, { scroll: false });
-              }
-            }}
-          />
-        </div>
+    <div className={cn('flex h-full min-h-0 gap-3 overflow-hidden overscroll-contain', className)}>
+      {/* List Panel - Rounded window like sidebar on desktop, full on mobile */}
+      <div className={cn(
+        'flex-shrink-0 min-h-0 transition-all duration-200 overflow-hidden',
+        'rounded-xl border border-border bg-background shadow-sm',
+        listOpen ? 'w-full lg:w-80 xl:w-96' : 'w-0 border-0',
+        showMobile && 'hidden lg:flex'
+      )}>
+        <ConversationList
+          inbox={inbox}
+          conversations={conversations}
+          isLoading={isLoading}
+          totalUnread={totalUnread}
+          activeConversationId={selectedId}
+          listOpen={listOpen}
+          onListToggle={setListOpen}
+          onSelectConversation={(id) => {
+            setLocalSelectedId(id);
+            setShowMobileOverride(true);
+            // Update URL for consistency (back button, refresh, sharing)
+            if (pathname) {
+              router.replace(`${pathname}?conversationId=${id}`, { scroll: false });
+            }
+          }}
+        />
+      </div>
 
-        {/* Chat - Full width on mobile, flex on desktop */}
-        <div className={cn('flex-1 min-w-0 hidden lg:flex relative', showMobile && 'flex')}>
+      {/* Chat Panel - Rounded window like sidebar on desktop, full on mobile */}
+      <div className={cn(
+        'flex-1 min-w-0 min-h-0 hidden lg:flex relative overflow-hidden',
+        'rounded-xl border border-border bg-background shadow-sm',
+        showMobile && 'flex'
+      )}>
           {/* Show list button when collapsed AND no chat selected */}
           {!listOpen && !selected && !selectedId && (
             <button
@@ -121,22 +124,26 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
             />
           ) : selectedId && isLoading ? (
             // Loading state when conversation ID is selected but not yet in list
-            <div className="min-h-[300px] sm:min-h-[400px] flex items-center justify-center h-full w-full bg-background">
+            <div className="flex items-center justify-center h-full w-full">
               <div className="text-center space-y-3 sm:space-y-4">
                 <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground animate-spin" />
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground/70">Loading conversation...</p>
               </div>
             </div>
           ) : (
-            <div className="min-h-[300px] sm:min-h-[400px] flex items-center justify-center h-full w-full bg-background">
+            <div className="flex flex-col items-center justify-center h-full w-full bg-sidebar/30">
               <div className="text-center space-y-3 sm:space-y-4">
-                <MessageCircle className="w-10 h-10 sm:w-12 sm:h-12 mx-auto text-muted-foreground/40 stroke-[1.5]" />
-                <p className="text-xs sm:text-sm font-medium text-muted-foreground/70">Select a conversation</p>
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-sidebar/80 flex items-center justify-center border border-border/30">
+                  <MessageCircle className="w-7 h-7 sm:w-9 sm:h-9 text-muted-foreground/50 stroke-[1.5]" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm sm:text-base font-semibold text-foreground/80">No conversation selected</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground/60">Choose a conversation from the list to start chatting</p>
+                </div>
               </div>
             </div>
           )}
         </div>
-      </div>
     </div>
   );
 }
@@ -144,7 +151,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
 export function ChatContainer(props: ChatContainerProps) {
   return (
     <Suspense fallback={
-      <div className={cn('flex h-full min-h-0 flex-col overflow-hidden items-center justify-center', props.className)}>
+      <div className={cn('flex h-full min-h-0 gap-3 overflow-hidden items-center justify-center rounded-xl border border-border bg-background shadow-sm', props.className)}>
         <MessageCircle className="w-12 h-12 mx-auto text-muted-foreground/40 stroke-[1.5] animate-pulse" />
       </div>
     }>

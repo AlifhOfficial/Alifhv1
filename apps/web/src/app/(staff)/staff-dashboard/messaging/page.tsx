@@ -15,7 +15,7 @@ export default function MessagingPage() {
   // Show loading state while session is being fetched
   if (isLoading) {
     return (
-      <div className="h-[calc(100dvh-3.5rem)] -m-4 flex items-center justify-center">
+      <div className="h-full flex items-center justify-center">
         <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-muted-foreground" />
       </div>
     );
@@ -24,14 +24,14 @@ export default function MessagingPage() {
   // Guard against missing session
   if (!session?.id) {
     return (
-      <div className="h-[calc(100dvh-3.5rem)] -m-4 flex items-center justify-center">
+      <div className="h-full flex items-center justify-center">
         <p className="text-xs sm:text-sm font-medium text-muted-foreground">Please sign in to view messages</p>
       </div>
     );
   }
 
   return (
-    <div className="h-[calc(100dvh-3.5rem)] -m-4 flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden">
       <ChatContainer userId={session.id} inbox="staff" className="flex-1 min-h-0" />
     </div>
   );

@@ -218,12 +218,12 @@ export function ConversationList({
 
   return (
     <div className={cn(
-      'flex flex-col h-full min-h-0 bg-background border-r border-border/50 transition-all duration-200',
+      'flex flex-col h-full w-full min-h-0 bg-background transition-all duration-200 overscroll-contain',
       !listOpen && 'w-0 overflow-hidden',
       className
     )}>
       {/* Header */}
-      <div className="p-3 sm:p-4 border-b border-border/40 bg-background flex-shrink-0">
+      <div className="p-3 sm:p-4 border-b border-border/40 flex-shrink-0">
         <div className="flex items-center justify-between mb-2.5 sm:mb-3">
           <h1 className="text-base sm:text-lg font-semibold text-foreground">Messages</h1>
           <div className="flex items-center gap-2 sm:gap-3">
@@ -264,7 +264,7 @@ export function ConversationList({
 
       {/* Conversations List - only show when expanded */}
       {listOpen && (
-        <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
         {isLoading ? (
           <div className="flex items-center justify-center h-24 sm:h-32">
             <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-muted-foreground/50" />

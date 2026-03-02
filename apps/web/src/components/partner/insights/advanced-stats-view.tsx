@@ -1019,11 +1019,6 @@ export function AdvancedStatsView() {
             <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Detailed performance metrics and insights</p>
           </div>
         </div>
-        
-        {/* Slowest Listing Alert */}
-        {sales.slowestActiveListing && sales.slowestActiveListing.daysSincePublished > 30 && (
-          <AlertBanner listing={sales.slowestActiveListing} />
-        )}
 
         {/* Key Stats with Charts - 12 Column Grid */}
         <div className="grid grid-cols-12 gap-4">

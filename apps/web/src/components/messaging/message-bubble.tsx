@@ -66,7 +66,7 @@ export function MessageBubble({
   return (
     <div
       className={cn(
-        'flex mb-1 sm:mb-1.5 group animate-in fade-in slide-in-from-bottom-2 duration-200',
+        'flex items-end mb-1 sm:mb-1.5 group animate-in fade-in slide-in-from-bottom-2 duration-200',
         compact ? 'gap-1.5' : 'gap-2 sm:gap-2.5',
         isOwn ? 'flex-row-reverse' : 'flex-row',
         isOptimistic && 'opacity-70'
@@ -93,14 +93,6 @@ export function MessageBubble({
         compact ? 'max-w-[85%]' : 'max-w-[85%] sm:max-w-[80%] md:max-w-[65%]',
         isOwn ? 'items-end' : 'items-start'
       )}>
-        {/* Sender Name (only for received messages with avatar) */}
-        {/* Use otherUserName (partner name when available) instead of individual sender name */}
-        {!isOwn && showAvatar && (
-          <small className="text-[10px] sm:text-xs text-muted-foreground/70 mb-0.5 sm:mb-1 px-1.5 sm:px-2 font-semibold">
-            {otherUserName ?? sender.name ?? 'User'}
-          </small>
-        )}
-
         {/* Listing Preview - rendered OUTSIDE the bubble */}
         {listing && (
           <div className="mb-1.5 sm:mb-2 max-w-[240px] sm:max-w-[280px] rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
