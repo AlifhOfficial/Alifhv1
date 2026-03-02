@@ -61,7 +61,7 @@ export function ThemeToggle() {
 
       {showMenu && (
         <div 
-          className="absolute left-0 top-full mt-2 w-32 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden"
+          className="absolute left-0 bottom-full mb-2 w-32 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-1.5 flex flex-col gap-0.5">
