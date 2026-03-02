@@ -4,8 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Platform, Alert } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { StyleSheet, View, Platform } from 'react-native';
+import { HapticPressable, useAlert } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
 import { Body, Supporting } from '@/components/ui';
@@ -52,6 +52,8 @@ interface TagsSectionProps {
 }
 
 export function TagsSection({ selectedTags, colors, onToggle }: TagsSectionProps) {
+  const { showAlert } = useAlert();
+
   const handleTagPress = (tag: string) => {
     if (Platform.OS === 'ios') {
       Haptics.selectionAsync();
@@ -65,7 +67,7 @@ export function TagsSection({ selectedTags, colors, onToggle }: TagsSectionProps
       if (Platform.OS === 'ios') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       }
-      Alert.alert('Limit Reached', `You can select up to ${MAX_TAGS} tags`);
+      showAlert('Limit Reached', `You can select up to ${MAX_TAGS} tags`);
     }
   };
 

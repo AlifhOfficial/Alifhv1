@@ -124,10 +124,10 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
               hitSlop={Spacing.md}
               style={[
                 styles.iconButton,
-                { backgroundColor: colors.fillSecondary }
+                { backgroundColor: colors.error }
               ]}
             >
-              <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
+              <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
             </HapticPressable>
           </View>
         </View>

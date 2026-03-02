@@ -10,7 +10,6 @@ import {
   View, 
   Pressable, 
   Platform, 
-  Alert, 
   ActionSheetIOS,
 } from 'react-native';
 import Animated, { 
@@ -28,7 +27,7 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Body } from '@/components/ui';
+import { Body, useAlert } from '@/components/ui';
 import { Spacing, Radius, Sizes } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
@@ -54,6 +53,7 @@ export function ProfileAvatar({
   onRemovePhoto,
 }: ProfileAvatarProps) {
   const scale = useSharedValue(1);
+  const { showAlert } = useAlert();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -71,7 +71,7 @@ export function ProfileAvatar({
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     
     if (status !== 'granted') {
-      Alert.alert(
+      showAlert(
         'Camera Access Required',
         'Please allow camera access in Settings to take photos.',
         [
@@ -98,7 +98,7 @@ export function ProfileAvatar({
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
     if (status !== 'granted') {
-      Alert.alert(
+      showAlert(
         'Photo Library Access Required',
         'Please allow photo library access in Settings to choose photos.',
         [
@@ -124,7 +124,7 @@ export function ProfileAvatar({
   const handleRemovePhoto = async () => {
     if (!imageUrl) return;
     
-    Alert.alert(
+    showAlert(
       'Remove Photo',
       'Are you sure you want to remove your profile photo?',
       [
@@ -178,7 +178,7 @@ export function ProfileAvatar({
       );
     } else {
       // Android fallback
-      Alert.alert('Change Photo', 'Choose an option', [
+      showAlert('Change Photo', 'Choose an option', [
         { text: 'Take Photo', onPress: pickFromCamera },
         { text: 'Choose from Library', onPress: pickFromLibrary },
         ...(imageUrl ? [{ 

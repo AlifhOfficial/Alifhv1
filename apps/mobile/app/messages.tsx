@@ -13,14 +13,10 @@ import {
   View,
   FlatList,
   RefreshControl,
-  Pressable,
-  Platform,
 } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MessageCircle, LogIn } from 'lucide-react-native';
-import * as Haptics from 'expo-haptics';
+import { MessageCircle } from 'lucide-react-native';
 
 import {
   MessagesHeader,
@@ -31,7 +27,7 @@ import { TopSafeAreaGradient } from '@/components/layout';
 import { Colors, Layout, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { Heading, Body, Data, ButtonText, Skeleton, SkeletonCircle } from '@/components/ui';
+import { Heading, Body, Data, Skeleton, SkeletonCircle, AuthRequiredEmptyState } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
 
 // ── List Item Type - Always grouped ─────────────────────────────
@@ -52,7 +48,7 @@ export default function MessagesScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { isAuthenticated, user, openAuthFlow } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   // Dynamic top padding based on safe area + header
   const contentTopPadding = insets.top + HEADER_HEIGHT + Spacing.md;
@@ -227,38 +223,10 @@ export default function MessagesScreen() {
     // Not authenticated
     if (!isAuthenticated) {
       return (
-        <View style={styles.emptyState}>
-          <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
-            <MessageCircle size={Sizes.avatarSm} color={colors.textTertiary} strokeWidth={1.5} />
-          </View>
-          <Heading size="medium">
-            Sign In to Message
-          </Heading>
-          <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
-            Connect with buyers and sellers on Revvup
-          </Body>
-          <HapticPressable
-            onPress={() => {
-              if (Platform.OS === 'ios') {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              }
-              openAuthFlow();
-            }}
-            style={({ pressed }) => [
-              styles.signInButton,
-              {
-                backgroundColor: colors.primary,
-                opacity: pressed ? 0.9 : 1,
-                transform: [{ scale: pressed ? 0.98 : 1 }],
-              },
-            ]}
-          >
-            <LogIn size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
-            <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
-              Sign In
-            </ButtonText>
-          </HapticPressable>
-        </View>
+        <AuthRequiredEmptyState
+          title="Sign in to message"
+          subtitle="Connect with buyers and sellers on Revvup"
+        />
       );
     }
 
@@ -387,15 +355,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,
-  },
-  signInButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    height: Sizes.avatarLg,
-    paddingHorizontal: Spacing['2xl'],
-    borderRadius: Radius.lg,
-    marginTop: Spacing.md,
   },
 });

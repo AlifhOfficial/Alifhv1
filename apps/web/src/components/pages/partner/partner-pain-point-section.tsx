@@ -93,7 +93,7 @@ export function PartnerPainPointSection() {
 
 function MarketplaceGameInfographic() {
   return (
-    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
+    <>
       {/* CSS Animations */}
       <style jsx>{`
         @keyframes cursor-move {
@@ -112,7 +112,7 @@ function MarketplaceGameInfographic() {
         }
       `}</style>
 
-<MacOSWindow url="car-marketplace.ae" contentClassName="flex flex-col md:flex-row aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1]">
+      <MacOSWindow url="car-marketplace.ae" contentClassName="flex flex-col md:flex-row aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1]">
           {/* Left - Others: Cluttered fees with stacked cars */}
           <div className="flex-1 p-6 pt-8 pb-8 sm:p-8 sm:pt-10 sm:pb-10 lg:p-14 lg:pt-16 lg:pb-16 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5">
             <span className="text-[10px] sm:text-xs font-medium text-white/30 mb-6 sm:mb-8">Others</span>
@@ -182,6 +182,6 @@ function MarketplaceGameInfographic() {
             <p className="text-[10px] sm:text-xs text-white/30 mt-8 sm:mt-10">Just list</p>
           </div>
       </MacOSWindow>
-    </div>
+    </>
   );
 }

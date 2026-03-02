@@ -10,6 +10,7 @@ import {
   StyleSheet,
   NativeSyntheticEvent,
   TextInputContentSizeChangeEventData,
+  Keyboard,
 } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
@@ -166,7 +167,10 @@ export function MessageInput({
         {onRequestLocation && (
           <HapticPressable
             haptic="light"
-            onPress={onRequestLocation}
+            onPress={() => {
+              Keyboard.dismiss();
+              onRequestLocation();
+            }}
             disabled={disabled}
             style={[
               styles.actionButton,

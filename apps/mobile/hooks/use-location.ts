@@ -6,7 +6,7 @@
 
 import { useState, useCallback } from 'react';
 import * as Location from 'expo-location';
-import { Alert, Linking, Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
 
 export interface LocationResult {
   latitude: number;
@@ -15,13 +15,24 @@ export interface LocationResult {
   placeName?: string;
 }
 
+type AlertButton = {
+  text: string;
+  onPress?: () => void;
+  style?: 'default' | 'cancel' | 'destructive';
+};
+
+interface UseLocationOptions {
+  showAlert?: (title: string, message?: string, buttons?: AlertButton[]) => void;
+}
+
 interface UseLocationReturn {
   isLoading: boolean;
   error: string | null;
   getCurrentLocation: () => Promise<LocationResult | null>;
 }
 
-export function useLocation(): UseLocationReturn {
+export function useLocation(options: UseLocationOptions = {}): UseLocationReturn {
+  const { showAlert } = options;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +47,7 @@ export function useLocation(): UseLocationReturn {
     
     if (status !== 'granted') {
       // Show alert with option to open settings
-      Alert.alert(
+      showAlert?.(
         'Location Permission Required',
         'Please enable location access in Settings to share your location.',
         [

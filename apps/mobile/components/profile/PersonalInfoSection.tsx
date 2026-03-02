@@ -4,8 +4,8 @@
  */
 
 import React from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { StyleSheet, View } from 'react-native';
+import { HapticPressable, useAlert } from '@/components/ui';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { ButtonText } from '@/components/ui';
@@ -46,9 +46,11 @@ export function PersonalInfoSection({
   onPhoneRemove,
   onPhoneVerified,
 }: PersonalInfoSectionProps) {
+  const { showAlert } = useAlert();
+
   const handleEmailPress = () => {
     if (profile.emailVerified) {
-      Alert.alert(
+      showAlert(
         'Cannot change verified email',
         'Please email support@revvup.ae to change your verified email address. This protects you from fraudulent activities.'
       );

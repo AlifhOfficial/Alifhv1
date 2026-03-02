@@ -17,8 +17,8 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { View, StyleSheet, ScrollView, Linking, Platform, Alert } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { View, StyleSheet, ScrollView, Linking, Platform } from 'react-native';
+import { HapticPressable, useAlert } from '@/components/ui';
 import { Image } from 'expo-image';
 import {
   BottomSheetModal,
@@ -88,6 +88,7 @@ export function BookingDetailsSheet({
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const { showAlert } = useAlert();
 
   const snapPoints = useMemo(() => ['85%'], []);
 
@@ -140,7 +141,7 @@ export function BookingDetailsSheet({
     const endDate = new Date(b.scheduledEndTime);
 
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-      Alert.alert('Unable to add to calendar', 'The booking date or time is invalid.');
+      showAlert('Unable to add to calendar', 'The booking date or time is invalid.');
       return;
     }
 
@@ -153,7 +154,7 @@ export function BookingDetailsSheet({
       try {
         const { status } = await ExpoCalendar.requestCalendarPermissionsAsync();
         if (status !== 'granted') {
-          Alert.alert('Permission required', 'Calendar access is needed to create the event.');
+          showAlert('Permission required', 'Calendar access is needed to create the event.');
           return;
         }
 
@@ -166,7 +167,7 @@ export function BookingDetailsSheet({
               calendars.find((c) => c.allowsModifications);
 
         if (!defaultCalendar) {
-          Alert.alert('No calendar found', 'Could not find a writable calendar on this device.');
+          showAlert('No calendar found', 'Could not find a writable calendar on this device.');
           return;
         }
 
@@ -179,13 +180,13 @@ export function BookingDetailsSheet({
           timeZone: 'Asia/Dubai',
         });
 
-        Alert.alert('Added!', 'The test drive has been added to your calendar.');
+        showAlert('Added!', 'The test drive has been added to your calendar.');
       } catch (err: any) {
-        Alert.alert('Error', err.message || 'Failed to add event to calendar.');
+        showAlert('Error', err.message || 'Failed to add event to calendar.');
       }
     };
 
-    Alert.alert('Add to Calendar', 'Choose your calendar app', [
+    showAlert('Add to Calendar', 'Choose your calendar app', [
       {
         text: 'Google Calendar',
         onPress: () => Linking.openURL(gcalUrl),
@@ -236,9 +237,9 @@ export function BookingDetailsSheet({
           <HapticPressable
             onPress={onClose}
             hitSlop={Layout.hitSlop}
-            style={[styles.closeButton, { backgroundColor: colors.fillSecondary }]}
+            style={[styles.closeButton, { backgroundColor: colors.error }]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
+            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
           </HapticPressable>
         </View>
 

@@ -8,7 +8,7 @@
  */
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, StyleSheet, Alert, BackHandler, Keyboard } from 'react-native';
+import { View, StyleSheet, BackHandler, Keyboard } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import {
   BottomSheetModal,
@@ -20,7 +20,7 @@ import { ChevronLeft, X } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, ButtonText } from '@/components/ui';
+import { Heading, Body, ButtonText, useAlert } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
 
 import {
@@ -113,6 +113,7 @@ export function CreateListingFlow({
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const { showAlert } = useAlert();
 
   const snapPoints = useMemo(() => ['65%', '93%'], []);
 
@@ -172,7 +173,7 @@ export function CreateListingFlow({
   const goToNextStep = useCallback(() => {
     const error = validateStep(currentStepId, data);
     if (error && currentStep?.required) {
-      Alert.alert('Required', error);
+      showAlert('Required', error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
@@ -214,7 +215,7 @@ export function CreateListingFlow({
       return;
     }
 
-    Alert.alert(
+    showAlert(
       'Exit Listing?',
       'Are you sure? You will lose all progress.',
       [
@@ -327,9 +328,9 @@ export function CreateListingFlow({
               <HapticPressable
                 onPress={handleClose}
                 hitSlop={Spacing.md}
-                style={[styles.circleButton, { backgroundColor: colors.fillSecondary }]}
+                style={[styles.circleButton, { backgroundColor: colors.error }]}
               >
-                <X size={Sizes.iconSm} color={colors.textSecondary} strokeWidth={2} />
+                <X size={Sizes.iconSm} color="#FFFFFF" strokeWidth={2} />
               </HapticPressable>
               {currentStepIndex > initialStepIndex && (
                 <HapticPressable

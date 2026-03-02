@@ -14,16 +14,12 @@ import { Colors, Sizes } from '@/constants/theme';
 
 export function ProfileMenu() {
   const { colorScheme } = useTheme();
-  const { isAuthenticated, user, openAuthFlow } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const router = useRouter();
   const colors = Colors[colorScheme];
 
   const handlePress = () => {
-    if (isAuthenticated) {
-      router.push('/profile');
-    } else {
-      openAuthFlow();
-    }
+    router.push('/profile');
   };
 
   // Show user avatar if authenticated
@@ -35,7 +31,7 @@ export function ProfileMenu() {
           styles.glass,
           {
             borderColor: colors.glassBorder,
-            backgroundColor: colors.glassBackground,
+            backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
           },
         ]}
       >
@@ -61,7 +57,7 @@ export function ProfileMenu() {
         styles.glass,
         { 
           borderColor: colors.glassBorder,
-          backgroundColor: colors.glassBackground,
+          backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
         }
       ]}
     >

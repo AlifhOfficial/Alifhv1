@@ -4,8 +4,8 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, Platform, Alert } from 'react-native';
-import { HapticPressable, Data } from '@/components/ui';
+import { StyleSheet, View, Platform } from 'react-native';
+import { HapticPressable, Data, useAlert } from '@/components/ui';
 import { useRouter } from 'expo-router';
 import { Settings2, User, LogOut } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -22,13 +22,14 @@ interface ProfileHeaderProps {
 export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
   const router = useRouter();
   const { signOut, isAuthenticated } = useAuth();
+  const { showAlert } = useAlert();
 
   const handleSignOut = () => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
-    Alert.alert(
+    showAlert(
       'Sign Out',
       'Are you sure you want to sign out?',
       [

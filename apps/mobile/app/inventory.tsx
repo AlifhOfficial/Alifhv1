@@ -3,17 +3,24 @@
  * Route: /inventory
  *
  * Renders the My Inventory view with listing management.
- * Requires authentication — triggers auth flow if not signed in.
+ * Requires authentication — shows auth empty state if not signed in.
  */
 
 import { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { useAuth } from '@/context/auth-context';
 import { useTabBar } from '@/context/tab-bar-context';
+import { useTheme } from '@/context/theme-context';
 import { InventoryScreen } from '@/components/user-inventory-management/inventory-screen';
+import { TopSafeAreaGradient } from '@/components/layout';
+import { AuthRequiredEmptyState } from '@/components/ui';
+import { Colors } from '@/constants/theme';
 
 export default function InventoryRoute() {
-  const { isAuthenticated, openAuthFlow } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { hideChrome, showChrome } = useTabBar();
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
 
   // Hide tab bar for immersive experience
   useEffect(() => {
@@ -23,12 +30,24 @@ export default function InventoryRoute() {
     };
   }, [hideChrome, showChrome]);
 
-  // Gate behind auth
-  useEffect(() => {
-    if (!isAuthenticated) {
-      openAuthFlow();
-    }
-  }, [isAuthenticated, openAuthFlow]);
+  // Show auth empty state when not authenticated
+  if (!isAuthenticated) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <TopSafeAreaGradient />
+        <AuthRequiredEmptyState
+          title="Sign in to view inventory"
+          subtitle="Manage your car listings on Revvup"
+        />
+      </View>
+    );
+  }
 
   return <InventoryScreen />;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

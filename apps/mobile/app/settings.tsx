@@ -7,10 +7,9 @@ import React, { useState, useCallback } from 'react';
 import {
   StyleSheet,
   View,
-  Alert,
   Linking,
 } from 'react-native';
-import { Body, Skeleton } from '@/components/ui';
+import { Body, Skeleton, AuthRequiredEmptyState, useAlert } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/components/layout';
 
@@ -42,6 +41,7 @@ export default function SettingsScreen() {
   const { colorScheme, setThemeMode } = useTheme();
   const { signOut, isAuthenticated, user } = useAuth();
   const insets = useSafeAreaInsets();
+  const { showAlert } = useAlert();
 
   // Settings data from hook
   const {
@@ -79,13 +79,13 @@ export default function SettingsScreen() {
   const handleDeleteAccount = useCallback(() => {
     deleteAccount(() => {
       setShowDeleteModal(false);
-      Alert.alert(
+      showAlert(
         'Account Deletion Requested',
         'Your account will be permanently deleted after 6 months.',
         [{ text: 'OK', onPress: () => signOut() }]
       );
     });
-  }, [deleteAccount, signOut]);
+  }, [deleteAccount, signOut, showAlert]);
 
   const handleHelpPress = useCallback(() => {
     Linking.openURL('https://revvup.ae/faq');
@@ -97,6 +97,20 @@ export default function SettingsScreen() {
 
   // Header height for content offset
   const headerHeight = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
+
+  // Unauthenticated - show auth required empty state
+  if (!isAuthenticated) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <TopSafeAreaGradient />
+        <SettingsHeader colors={colors} topInset={insets.top} />
+        <AuthRequiredEmptyState
+          title="Sign in to settings"
+          subtitle="Manage your account preferences on Revvup"
+        />
+      </View>
+    );
+  }
 
   // Loading state — skeleton
   if (isLoading) {

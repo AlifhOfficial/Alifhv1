@@ -3,17 +3,24 @@
  * Route: /bookings
  *
  * Renders the My Bookings view with booking management.
- * Requires authentication — triggers auth flow if not signed in.
+ * Requires authentication — shows auth empty state if not signed in.
  */
 
 import { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { useAuth } from '@/context/auth-context';
 import { useTabBar } from '@/context/tab-bar-context';
+import { useTheme } from '@/context/theme-context';
 import { BookingsScreen } from '@/components/bookings/bookings-screen';
+import { TopSafeAreaGradient } from '@/components/layout';
+import { AuthRequiredEmptyState } from '@/components/ui';
+import { Colors } from '@/constants/theme';
 
 export default function BookingsRoute() {
-  const { isAuthenticated, openAuthFlow } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { hideChrome, showChrome } = useTabBar();
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
 
   // Hide tab bar for immersive experience
   useEffect(() => {
@@ -23,12 +30,24 @@ export default function BookingsRoute() {
     };
   }, [hideChrome, showChrome]);
 
-  // Gate behind auth
-  useEffect(() => {
-    if (!isAuthenticated) {
-      openAuthFlow();
-    }
-  }, [isAuthenticated, openAuthFlow]);
+  // Show auth empty state when not authenticated
+  if (!isAuthenticated) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <TopSafeAreaGradient />
+        <AuthRequiredEmptyState
+          title="Sign in to view bookings"
+          subtitle="Manage your test drive appointments on Revvup"
+        />
+      </View>
+    );
+  }
 
   return <BookingsScreen />;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

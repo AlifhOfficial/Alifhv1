@@ -152,9 +152,9 @@ export function CancelBookingSheet({
             onPress={onClose}
             hitSlop={Layout.hitSlop}
             disabled={loading}
-            style={[styles.closeButton, { backgroundColor: colors.fillSecondary }]}
+            style={[styles.closeButton, { backgroundColor: colors.error }]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
+            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
           </HapticPressable>
         </View>
 

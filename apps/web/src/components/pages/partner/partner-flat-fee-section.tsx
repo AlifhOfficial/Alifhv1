@@ -114,7 +114,7 @@ function FeatureCard({ title, description }: FeatureCardProps) {
 
 function UnlimitedListingsInfographic() {
   return (
-    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
+    <>
       {/* Typing animation CSS */}
       <style>{`
         @keyframes typing {
@@ -137,7 +137,7 @@ function UnlimitedListingsInfographic() {
         }
       `}</style>
 
-<MacOSWindow url="revvup.ae/dashboard" contentClassName="flex flex-col md:flex-row aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1]">
+      <MacOSWindow url="revvup.ae/dashboard" contentClassName="flex flex-col md:flex-row aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1]">
           {/* Left - Your inventory with car cards */}
           <div className="flex-1 p-4 sm:p-8 lg:p-12 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5">
             <span className="text-[10px] sm:text-xs font-medium text-white/30 mb-4 sm:mb-6">Your inventory</span>
@@ -219,6 +219,6 @@ function UnlimitedListingsInfographic() {
             <p className="text-[10px] sm:text-xs text-white/30 mt-8 sm:mt-10">per month</p>
           </div>
       </MacOSWindow>
-    </div>
+    </>
   );
 }

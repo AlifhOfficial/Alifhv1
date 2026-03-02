@@ -13,13 +13,11 @@ import { useRouter } from 'expo-router';
 
 import { ProfileMenu } from './profile-menu';
 import { useTheme } from '@/context/theme-context';
-import { useAuth } from '@/context/auth-context';
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { Data } from '@/components/ui';
 
 export function HomeHeader() {
   const { colorScheme, toggleTheme } = useTheme();
-  const { isAuthenticated, openAuthFlow } = useAuth();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -42,20 +40,12 @@ export function HomeHeader() {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    if (!isAuthenticated) {
-      openAuthFlow();
-      return;
-    }
     router.push('/inventory');
   };
 
   const handleBookingsPress = () => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    if (!isAuthenticated) {
-      openAuthFlow();
-      return;
     }
     router.push('/bookings');
   };
@@ -78,7 +68,7 @@ export function HomeHeader() {
             styles.glass,
             { 
               borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
+              backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
             }
           ]}
         >
@@ -103,7 +93,7 @@ export function HomeHeader() {
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
+              backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
             },
           ]}
         >
@@ -128,7 +118,7 @@ export function HomeHeader() {
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
+              backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
             },
           ]}
         >
@@ -153,7 +143,7 @@ export function HomeHeader() {
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
+              backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
             },
           ]}
         >

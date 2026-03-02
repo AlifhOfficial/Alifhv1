@@ -124,10 +124,10 @@ export function MarkSoldSheet({
             disabled={loading}
             style={[
               styles.closeButton,
-              { backgroundColor: colors.fillSecondary },
+              { backgroundColor: colors.error },
             ]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.textSecondary} />
+            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
           </HapticPressable>
         </View>
 

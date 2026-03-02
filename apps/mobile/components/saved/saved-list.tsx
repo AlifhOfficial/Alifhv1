@@ -7,10 +7,10 @@ import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Heart, Zap } from 'lucide-react-native';
+import { Heart, Zap, ArrowRight } from 'lucide-react-native';
 
 import { Layout, Sizes, Spacing, Radius } from '@/constants/theme';
-import { Heading, Supporting } from '@/components/ui';
+import { Heading, Supporting, HapticPressable } from '@/components/ui';
 import { CarCardList } from '@/components/cards/car-card-list';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors, SavedTab } from './types';
@@ -32,37 +32,42 @@ interface SavedListProps {
 // ============================================================================
 
 function EmptyState({ 
-  colors, 
+  colors,
   isFavorites,
-  topPadding,
+  onBrowse,
 }: { 
-  colors: ThemeColors; 
+  colors: ThemeColors;
   isFavorites: boolean;
-  topPadding: number;
+  onBrowse: () => void;
 }) {
+  const IconComponent = isFavorites ? Heart : Zap;
+  const iconColor = isFavorites ? colors.favorite : colors.warning;
+  
   return (
-    <View style={[styles.emptyContainer, { paddingTop: topPadding }]}>
-      <Animated.View entering={FadeIn.duration(300)} style={styles.emptyContent}>
-        
-        {/* Icon */}
-        {isFavorites ? (
-          <Heart size={Sizes.avatarLg} color={colors.favorite} strokeWidth={1.5} />
-        ) : (
-          <Zap size={Sizes.avatarLg} color={colors.warning} strokeWidth={1.5} />
-        )}
-
-        {/* Title */}
-        <Heading size="large" style={styles.emptyTitle}>
+    <View style={styles.emptyContainer}>
+      <Animated.View 
+        entering={FadeIn.duration(300)} 
+        style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      >
+        <IconComponent size={Sizes.iconXl} color={iconColor} fill={iconColor} strokeWidth={1.5} />
+        <Heading size="small" style={styles.emptyTitle}>
           {isFavorites ? 'No favorites yet' : 'No superlikes yet'}
         </Heading>
-
-        {/* Subtitle */}
-        <Supporting size="small" style={styles.emptySubtitle}>
+        <Supporting size="small" tone="secondary" style={styles.emptySubtitle}>
           {isFavorites 
             ? 'Tap the heart on any listing to save it here'
             : 'Long press the heart to superlike a listing'}
         </Supporting>
-
+        <HapticPressable
+          haptic="medium"
+          onPress={onBrowse}
+          style={styles.ctaRow}
+        >
+          <Heading size="small" style={{ color: colors.text }}>Browse</Heading>
+          <View style={[styles.ctaBubble, { backgroundColor: colors.glassBackground, borderColor: colors.border }]}>
+            <ArrowRight size={Sizes.iconXs} color={colors.text} strokeWidth={2} />
+          </View>
+        </HapticPressable>
       </Animated.View>
     </View>
   );
@@ -86,10 +91,14 @@ export function SavedList({
     router.push(`/listing/${id}`);
   }, [router]);
 
+  const handleBrowse = useCallback(() => {
+    router.push('/browse');
+  }, [router]);
+
   // Empty state
   if (listings.length === 0) {
     const isFavorites = activeTab === 'favorites';
-    return <EmptyState colors={colors} isFavorites={isFavorites} topPadding={topPadding} />;
+    return <EmptyState colors={colors} isFavorites={isFavorites} onBrowse={handleBrowse} />;
   }
 
   return (
@@ -147,18 +156,39 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing['4xl'],
+    paddingHorizontal: Spacing['2xl'],
   },
-  emptyContent: {
+  emptyCard: {
     alignItems: 'center',
-    gap: Spacing.lg,
+    padding: Spacing.xl,
+    borderRadius: Radius['2xl'],
+    borderWidth: 1,
+    gap: Spacing.sm,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
   },
   emptyTitle: {
     textAlign: 'center',
-    marginTop: Spacing.sm,
   },
   emptySubtitle: {
     textAlign: 'center',
+  },
+  ctaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.sm,
+  },
+  ctaBubble: {
+    width: Sizes.bubbleXs,
+    height: Sizes.bubbleXs,
+    borderRadius: Radius.full,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   
   // List

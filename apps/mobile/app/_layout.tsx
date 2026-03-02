@@ -38,6 +38,7 @@ import { NetworkProvider } from '@/context/network-context';
 import { BootScreen } from '@/components/layout/boot-screen';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
+import { AlertProvider } from '@/components/ui/themed-alert';
 import { GlobalTabBar } from '@/components/layout/global-tab-bar';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { AuthFlow } from '@/components/auth';
@@ -301,26 +302,28 @@ export default function RootLayout() {
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
         <SafeAreaProvider>
           <ThemeProvider>
-            <KeyboardProvider>
-              <NetworkProvider>
-                <BottomSheetModalProvider>
-                  <TabBarProvider>
-                    <SearchProvider>
-                      <AuthProvider>
-                        <FavoritesProvider>
-                          <WebSocketWrapper>
-                            <NotificationWrapper>
-                              <RootLayoutNav />
-                              <OfflineBanner />
-                            </NotificationWrapper>
-                          </WebSocketWrapper>
-                        </FavoritesProvider>
-                      </AuthProvider>
-                    </SearchProvider>
-                  </TabBarProvider>
-                </BottomSheetModalProvider>
-              </NetworkProvider>
-            </KeyboardProvider>
+            <AlertProvider>
+              <KeyboardProvider>
+                <NetworkProvider>
+                  <BottomSheetModalProvider>
+                    <TabBarProvider>
+                      <SearchProvider>
+                        <AuthProvider>
+                          <FavoritesProvider>
+                            <WebSocketWrapper>
+                              <NotificationWrapper>
+                                <RootLayoutNav />
+                                <OfflineBanner />
+                              </NotificationWrapper>
+                            </WebSocketWrapper>
+                          </FavoritesProvider>
+                        </AuthProvider>
+                      </SearchProvider>
+                    </TabBarProvider>
+                  </BottomSheetModalProvider>
+                </NetworkProvider>
+              </KeyboardProvider>
+            </AlertProvider>
           </ThemeProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>

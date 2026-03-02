@@ -3,16 +3,16 @@
  * Native-feeling, modular profile screen connected to API
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import {
   StyleSheet,
   View,
 } from 'react-native';
-import { Body, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
+import { Body, Supporting, Skeleton, SkeletonCircle, AuthRequiredEmptyState, useAlert } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/components/layout';
 
-import { Layout, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Layout, Spacing, Radius, Sizes, Colors } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { TopSafeAreaGradient } from '@/components/layout';
 import {
@@ -35,16 +35,9 @@ import {
 
 export default function ProfileScreen() {
   const colors = useProfileColors();
-  const { user, isAuthenticated, showAuthSheet, refreshSession } = useAuth();
+  const { user, isAuthenticated, refreshSession } = useAuth();
   const insets = useSafeAreaInsets();
-
-  // Show auth sheet when not authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      const timer = setTimeout(() => showAuthSheet('profile'), 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, showAuthSheet]);
+  const { showAlert } = useAlert();
 
   // Profile data from API
   const {
@@ -67,7 +60,7 @@ export default function ProfileScreen() {
     removePhone,
     onPhoneVerified,
     error,
-  } = useProfile({ isAuthenticated, onAvatarChange: refreshSession });
+  } = useProfile({ isAuthenticated, onAvatarChange: refreshSession, showAlert });
 
   // Transform API stats to component format
   const stats: ProfileStats = {
@@ -124,12 +117,16 @@ export default function ProfileScreen() {
   // Header height for content offset
   const headerHeight = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
 
-  // Unauthenticated - show header only (sheet comes from context)
+  // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <TopSafeAreaGradient />
         <ProfileHeader colors={colors} topInset={insets.top} />
+        <AuthRequiredEmptyState
+          title="Sign in to view profile"
+          subtitle="Manage your account and listings on Revvup"
+        />
       </View>
     );
   }

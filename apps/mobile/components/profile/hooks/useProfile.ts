@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import {
   fetchProfile,
@@ -24,6 +24,8 @@ interface UseProfileOptions {
   isAuthenticated: boolean;
   /** Callback to refresh auth context session (syncs avatar across app) */
   onAvatarChange?: () => Promise<void>;
+  /** Themed alert function */
+  showAlert: (title: string, message?: string) => void;
 }
 
 interface UseProfileReturn {
@@ -57,7 +59,7 @@ interface UseProfileReturn {
   error: string | null;
 }
 
-export function useProfile({ isAuthenticated, onAvatarChange }: UseProfileOptions): UseProfileReturn {
+export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UseProfileOptions): UseProfileReturn {
   // Loading states
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -190,13 +192,13 @@ export function useProfile({ isAuthenticated, onAvatarChange }: UseProfileOption
           if (Platform.OS === 'ios') {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
           }
-          Alert.alert('Error', result.error || 'Failed to save. Please try again.');
+          showAlert('Error', result.error || 'Failed to save. Please try again.');
         }
       } catch {
         if (Platform.OS === 'ios') {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         }
-        Alert.alert('Error', 'Failed to save. Please try again.');
+        showAlert('Error', 'Failed to save. Please try again.');
       } finally {
         setIsSaving(false);
       }
@@ -236,7 +238,7 @@ export function useProfile({ isAuthenticated, onAvatarChange }: UseProfileOption
       } else {
         // Revert on error
         setForm((f: ProfileFormData) => ({ ...f, tags: form.tags }));
-        Alert.alert('Error', result.error || 'Failed to save tag.');
+        showAlert('Error', result.error || 'Failed to save tag.');
       }
     },
     [form]
@@ -268,16 +270,16 @@ export function useProfile({ isAuthenticated, onAvatarChange }: UseProfileOption
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           }
         } else {
-          Alert.alert('Error', 'Failed to update profile photo.');
+          showAlert('Error', 'Failed to update profile photo.');
         }
       } else {
-        Alert.alert('Error', result.error || 'Failed to upload photo.');
+        showAlert('Error', result.error || 'Failed to upload photo.');
         if (Platform.OS === 'ios') {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         }
       }
     } catch {
-      Alert.alert('Error', 'Failed to upload photo. Please try again.');
+      showAlert('Error', 'Failed to upload photo. Please try again.');
       if (Platform.OS === 'ios') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
@@ -305,10 +307,10 @@ export function useProfile({ isAuthenticated, onAvatarChange }: UseProfileOption
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
       } else {
-        Alert.alert('Error', result.error || 'Failed to remove photo.');
+        showAlert('Error', result.error || 'Failed to remove photo.');
       }
     } catch {
-      Alert.alert('Error', 'Failed to remove photo. Please try again.');
+      showAlert('Error', 'Failed to remove photo. Please try again.');
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -332,13 +334,13 @@ export function useProfile({ isAuthenticated, onAvatarChange }: UseProfileOption
         if (Platform.OS === 'ios') {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         }
-        Alert.alert('Error', result.error || 'Failed to remove phone number.');
+        showAlert('Error', result.error || 'Failed to remove phone number.');
       }
     } catch {
       if (Platform.OS === 'ios') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
-      Alert.alert('Error', 'Failed to remove phone number. Please try again.');
+      showAlert('Error', 'Failed to remove phone number. Please try again.');
     } finally {
       setIsSaving(false);
     }

@@ -10,9 +10,8 @@ import {
   TextInput,
   Pressable,
   Platform,
-  Alert,
 } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { HapticPressable, useAlert } from '@/components/ui';
 import { PulseLoader } from '@/components/ui';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
@@ -51,6 +50,7 @@ export function PhoneVerificationField({
   const [justVerified, setJustVerified] = useState(false);
   const inputRef = useRef<TextInput>(null);
   const otpInputRef = useRef<TextInput>(null);
+  const { showAlert } = useAlert();
 
   // Countdown timer
   useEffect(() => {
@@ -71,7 +71,7 @@ export function PhoneVerificationField({
 
   const handleEditPress = () => {
     if (isVerified || justVerified) {
-      Alert.alert(
+      showAlert(
         'Cannot change verified phone',
         'Please email support@revvup.ae to change your verified phone number. This protects you from fraudulent activities.'
       );
@@ -102,7 +102,7 @@ export function PhoneVerificationField({
   const handleSendOTP = async () => {
     const cleanPhone = phone.replace(/[^\d]/g, '');
     if (cleanPhone.length !== 9) {
-      Alert.alert('Invalid Phone', 'Please enter a valid 9-digit phone number');
+      showAlert('Invalid Phone', 'Please enter a valid 9-digit phone number');
       return;
     }
 
@@ -149,7 +149,7 @@ export function PhoneVerificationField({
       if (Platform.OS === 'ios') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      Alert.alert('Success', 'Your phone number has been verified!');
+      showAlert('Success', 'Your phone number has been verified!');
     } else {
       setError(result.error || 'Invalid code');
       setStep('otp');

@@ -10,9 +10,9 @@
  */
 
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode, useMemo, useRef } from 'react';
-import { Alert } from 'react-native';
 import { savedApi, FavoritesStatusData } from '@/lib/saved-api';
 import { useAuth } from '@/context/auth-context';
+import { useAlert } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -54,6 +54,7 @@ interface FavoritesProviderProps {
 
 export function FavoritesProvider({ children }: FavoritesProviderProps) {
   const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
+  const { showAlert } = useAlert();
   
   // State - using arrays for stable references
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
@@ -189,10 +190,9 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
       
       // Handle rate limit error gracefully
       if (err instanceof Error && err.message === 'RATE_LIMITED') {
-        Alert.alert(
+        showAlert(
           'Please slow down',
-          'You\'re saving too fast. Please wait a moment and try again.',
-          [{ text: 'OK' }]
+          'You\'re saving too fast. Please wait a moment and try again.'
         );
         return; // Don't rethrow for rate limit
       }
@@ -201,7 +201,7 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
     } finally {
       pendingFavoritesRef.current.delete(listingId);
     }
-  }, [isAuthenticated, favoriteIds]);
+  }, [isAuthenticated, favoriteIds, showAlert]);
 
   // Action: Toggle superlike with optimistic update
   const toggleSuperlike = useCallback(async (listingId: string) => {
@@ -265,20 +265,18 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
       
       // Handle quota exceeded gracefully
       if (err instanceof Error && err.message === 'QUOTA_EXCEEDED') {
-        Alert.alert(
+        showAlert(
           'Superlike limit reached',
-          'You\'ve used all your superlikes for this month. Upgrade to Premium for more!',
-          [{ text: 'OK' }]
+          'You\'ve used all your superlikes for this month. Upgrade to Premium for more!'
         );
         return; // Don't rethrow for quota exceeded
       }
       
       // Handle rate limit error gracefully
       if (err instanceof Error && err.message === 'RATE_LIMITED') {
-        Alert.alert(
+        showAlert(
           'Please slow down',
-          'You\'re acting too fast. Please wait a moment and try again.',
-          [{ text: 'OK' }]
+          'You\'re acting too fast. Please wait a moment and try again.'
         );
         return; // Don't rethrow for rate limit
       }
@@ -287,7 +285,7 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
     } finally {
       pendingSuperlikesRef.current.delete(listingId);
     }
-  }, [isAuthenticated, superlikeIds, quota, fetchStatus]);
+  }, [isAuthenticated, superlikeIds, quota, fetchStatus, showAlert]);
 
   // Memoize context value
   const value = useMemo<FavoritesContextType>(() => ({

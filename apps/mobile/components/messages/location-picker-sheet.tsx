@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
-import { HapticPressable, Body, Data, Heading } from '@/components/ui';
+import { HapticPressable, Body, Data, Heading, useAlert } from '@/components/ui';
 import { useLocation, type LocationResult } from '@/hooks/use-location';
 
 interface LocationPickerSheetProps {
@@ -41,7 +41,8 @@ export function LocationPickerSheet({
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const { isLoading, error, getCurrentLocation } = useLocation();
+  const { showAlert } = useAlert();
+  const { isLoading, error, getCurrentLocation } = useLocation({ showAlert });
   
   const [location, setLocation] = useState<LocationResult | null>(null);
   const [isSending, setIsSending] = useState(false);
@@ -135,9 +136,9 @@ export function LocationPickerSheet({
             haptic="light" 
             onPress={onClose} 
             disabled={isSending}
-            style={styles.closeButton}
+            style={[styles.closeButton, { backgroundColor: colors.error }]}
           >
-            <X size={Sizes.iconMd} color={colors.textMuted} />
+            <X size={Sizes.iconSm} color="#FFFFFF" strokeWidth={2} />
           </HapticPressable>
         </View>
 
@@ -267,7 +268,11 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   closeButton: {
-    padding: Spacing.xs,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   mapContainer: {
     height: 160,

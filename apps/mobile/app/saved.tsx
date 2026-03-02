@@ -3,16 +3,16 @@
  * Native-feeling, modular saved screen connected to API
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
   Text,
 } from 'react-native';
-import { Skeleton } from '@/components/ui';
+import { Skeleton, AuthRequiredEmptyState } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors, Typography, Layout, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Layout, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
@@ -29,20 +29,11 @@ import { useSaved } from '@/hooks/use-saved';
 export default function SavedScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const { isAuthenticated, showAuthSheet } = useAuth();
+  const { isAuthenticated } = useAuth();
   const insets = useSafeAreaInsets();
   
   // Account for absolute header: safe area + headerPadding + pill height + bottom padding
   const contentTopPadding = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
-
-  // Show auth sheet when not authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      // Small delay to ensure sheet modal is mounted
-      const timer = setTimeout(() => showAuthSheet('saved'), 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, showAuthSheet]);
 
   // Saved data from hook (pass isAuthenticated like profile does)
   const {
@@ -59,7 +50,7 @@ export default function SavedScreen() {
   // Get current listings based on active tab
   const currentListings = activeTab === 'favorites' ? favorites : superlikes;
 
-  // Unauthenticated - show header only (sheet comes from context)
+  // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -67,6 +58,10 @@ export default function SavedScreen() {
         <SavedHeader
           activeTab={activeTab}
           onTabChange={setActiveTab}
+        />
+        <AuthRequiredEmptyState
+          title="Sign in to save"
+          subtitle="Keep track of your favorite cars on Revvup"
         />
       </View>
     );
@@ -82,19 +77,8 @@ export default function SavedScreen() {
           onTabChange={setActiveTab}
         />
         <View style={[styles.skeletonContainer, { paddingTop: contentTopPadding }]}>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <View
-              key={i}
-              style={[styles.skeletonCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
-            >
-              <Skeleton width={120} height={100} borderRadius={8} />
-              <View style={styles.skeletonCardContent}>
-                <Skeleton width={140} height={14} />
-                <Skeleton width={100} height={12} />
-                <Skeleton width={80} height={16} />
-                <Skeleton width={110} height={12} />
-              </View>
-            </View>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} width="100%" height={100} borderRadius={12} />
           ))}
         </View>
       </View>
@@ -110,9 +94,9 @@ export default function SavedScreen() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
-        <View style={[styles.errorContainer, { paddingTop: contentTopPadding }]}>
-          <Text style={[styles.errorText, { color: colors.error }]}>
-            {error}
+        <View style={styles.emptyContainer}>
+          <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>
+            Something went wrong
           </Text>
           <Text
             style={[styles.retryText, { color: colors.primary }]}
@@ -158,31 +142,20 @@ const styles = StyleSheet.create({
   skeletonContainer: {
     flex: 1,
     paddingHorizontal: Spacing.lg,
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
-  skeletonCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-    padding: 12,
-    gap: 12,
-  },
-  skeletonCardContent: {
-    flex: 1,
-    gap: 6,
-  },
-  errorContainer: {
+  emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 40,
+    gap: Spacing.sm,
   },
-  errorText: {
-    fontSize: 16,
-    fontFamily: 'Inter_400Regular',
-    textAlign: 'center',
+  emptyTitle: {
+    fontSize: 15,
+    fontFamily: 'Inter_500Medium',
   },
-  retryText: {},
+  retryText: {
+    fontSize: 14,
+    fontFamily: 'Inter_500Medium',
+  },
 });

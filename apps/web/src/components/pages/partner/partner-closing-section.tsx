@@ -82,14 +82,12 @@ export function PartnerClosingSection() {
 
 function JoinRevvupInfographic() {
   return (
-    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
-      <MacOSWindow url="revvup.ae/partners" contentClassName="flex items-center justify-center min-h-[480px] sm:min-h-[560px] lg:min-h-[680px] p-6 sm:p-10 lg:p-16">
-          <div className="text-center">
-            <p className="text-5xl sm:text-7xl lg:text-9xl font-bold text-white tracking-tight">
-              Your Move.
-            </p>
-          </div>
-      </MacOSWindow>
-    </div>
+    <MacOSWindow url="revvup.ae/partners" contentClassName="flex items-center justify-center min-h-[480px] sm:min-h-[560px] lg:min-h-[680px] p-6 sm:p-10 lg:p-16">
+      <div className="text-center">
+        <p className="text-5xl sm:text-7xl lg:text-9xl font-bold text-white tracking-tight">
+          Your Move.
+        </p>
+      </div>
+    </MacOSWindow>
   );
 }
