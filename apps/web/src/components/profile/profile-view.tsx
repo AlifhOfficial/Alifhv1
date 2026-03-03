@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { KycVerificationModal } from '@/components/kyc';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/utils/cn';
 
 // ============================================================================
@@ -421,14 +422,35 @@ export function ProfileView() {
   const showResubmit = daysUntilExpiry !== null && daysUntilExpiry <= 60; // 2 months = ~60 days
   const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry <= 30 && daysUntilExpiry > 0;
 
-  // Loading state
+  // Loading state - Skeleton
   if (profileLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-2xl mx-auto px-6 py-16">
-          <div className="flex flex-col items-center justify-center py-24">
-            <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+      <div className="min-h-screen bg-background pb-16">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+          {/* Header: Avatar + Info */}
+          <div className="flex items-start gap-3 sm:gap-5">
+            <Skeleton className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shrink-0" />
+            <div className="flex-1 pt-1 sm:pt-2 space-y-2">
+              <Skeleton className="h-5 sm:h-6 w-40" />
+              <Skeleton className="h-3 sm:h-4 w-52" />
+              <Skeleton className="h-3 sm:h-4 w-28" />
+            </div>
           </div>
+
+          {/* Identity Card */}
+          <Skeleton className="h-[72px] w-full rounded-xl" />
+
+          {/* Stats Grid - 4 cols */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-px rounded-xl overflow-hidden">
+            <Skeleton className="h-[72px]" />
+            <Skeleton className="h-[72px]" />
+            <Skeleton className="h-[72px]" />
+            <Skeleton className="h-[72px]" />
+          </div>
+
+          {/* Section */}
+          <Skeleton className="h-28 w-full rounded-xl" />
+          <Skeleton className="h-40 w-full rounded-xl" />
         </div>
       </div>
     );

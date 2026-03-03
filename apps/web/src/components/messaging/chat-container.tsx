@@ -7,9 +7,10 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { MessageCircle, PanelLeft, Loader2 } from 'lucide-react';
+import { MessageCircle, PanelLeft } from 'lucide-react';
 import { ConversationList } from './conversation-list';
 import { ChatWindow } from './chat-window';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useConversations } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
 
@@ -124,10 +125,20 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
             />
           ) : selectedId && isLoading ? (
             // Loading state when conversation ID is selected but not yet in list
-            <div className="flex items-center justify-center h-full w-full">
-              <div className="text-center space-y-3 sm:space-y-4">
-                <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-muted-foreground animate-spin" />
-                <p className="text-xs sm:text-sm font-medium text-muted-foreground/70">Loading conversation...</p>
+            <div className="flex flex-col h-full w-full">
+              {/* Header skeleton */}
+              <div className="flex items-center gap-3 px-4 py-3 border-b border-border/40">
+                <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+                <div className="flex-1 space-y-1.5">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              </div>
+              {/* Messages skeleton */}
+              <div className="flex-1 p-4 flex flex-col-reverse gap-2 sm:gap-3">
+                <Skeleton className="h-9 w-36 rounded-2xl rounded-br-md self-end" />
+                <Skeleton className="h-12 w-44 rounded-2xl rounded-bl-md self-start" />
+                <Skeleton className="h-8 w-28 rounded-2xl rounded-br-md self-end" />
               </div>
             </div>
           ) : (

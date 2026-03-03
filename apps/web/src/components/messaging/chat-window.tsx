@@ -6,9 +6,10 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Loader2, ArrowLeft, MessageCircle, X } from 'lucide-react';
+import { ArrowLeft, MessageCircle, X } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
+import { Skeleton } from '@/components/ui/skeleton';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { LocationPickerDialog } from './location-picker-dialog';
@@ -255,14 +256,17 @@ export function ChatWindow({
 
       <div ref={containerRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain p-3 sm:p-4 flex flex-col-reverse gap-1.5 sm:gap-2">
         {isFetchingMore && (
-          <div className="flex justify-center py-3 sm:py-4">
-            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-muted-foreground" />
+          <div className="flex justify-center py-3">
+            <Skeleton className="h-6 w-6 rounded-full" />
           </div>
         )}
 
         {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-muted-foreground" />
+          <div className="flex flex-col gap-2 sm:gap-3 py-4">
+            <Skeleton className="h-9 w-36 rounded-2xl rounded-br-md self-end" />
+            <Skeleton className="h-12 w-44 rounded-2xl rounded-bl-md self-start" />
+            <Skeleton className="h-8 w-28 rounded-2xl rounded-br-md self-end" />
+            <Skeleton className="h-10 w-40 rounded-2xl rounded-bl-md self-start" />
           </div>
         ) : messages.length === 0 ? (
           <div className="flex items-center justify-center flex-1">

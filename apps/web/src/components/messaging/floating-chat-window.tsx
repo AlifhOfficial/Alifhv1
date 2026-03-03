@@ -7,9 +7,10 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, X, Minus, Maximize2 } from 'lucide-react';
+import { X, Minus, Maximize2 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
+import { Skeleton } from '@/components/ui/skeleton';
 import { MessageBubble } from '@/components/messaging/message-bubble';
 import { MessageInput } from '@/components/messaging/message-input';
 import { LocationPickerDialog } from '@/components/messaging/location-picker-dialog';
@@ -281,13 +282,15 @@ export function FloatingChatWindow({
             >
               {isFetchingMore && (
                 <div className="flex justify-center py-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  <Skeleton className="h-5 w-5 rounded-full" />
                 </div>
               )}
 
               {isLoading ? (
-                <div className="flex items-center justify-center h-full">
-                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                <div className="flex flex-col gap-2 py-2">
+                  <Skeleton className="h-7 w-28 rounded-xl rounded-br-sm self-end" />
+                  <Skeleton className="h-9 w-36 rounded-xl rounded-bl-sm self-start" />
+                  <Skeleton className="h-6 w-24 rounded-xl rounded-br-sm self-end" />
                 </div>
               ) : messages.length === 0 ? (
                 <div className="flex items-center justify-center h-full">

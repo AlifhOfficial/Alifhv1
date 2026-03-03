@@ -15,6 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Empty state config - context-aware messages for each status
 const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: string; message: string; subMessage: string }> = {
@@ -724,11 +725,19 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
         </div>
       )}
 
-      {/* Loading */}
+      {/* Loading Skeleton */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-16 sm:py-24">
-          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-          <p className="text-[11px] sm:text-xs text-muted-foreground mt-3 sm:mt-4">Loading...</p>
+        <div className="space-y-1">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex gap-4 p-4">
+              <Skeleton className="w-28 sm:w-36 md:w-44 aspect-[4/3] rounded-lg shrink-0" />
+              <div className="flex-1 min-w-0 space-y-2">
+                <Skeleton className="h-4 sm:h-5 w-3/4" />
+                <Skeleton className="h-3 w-1/3" />
+                <Skeleton className="h-5 w-16 rounded-full mt-auto" />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

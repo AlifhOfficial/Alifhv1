@@ -3,8 +3,8 @@
 import { useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { Loader2, RefreshCw, Heart } from 'lucide-react';
-import { CarListItem } from '@/components/inventory';
+import { RefreshCw, Heart } from 'lucide-react';
+import { CarCard } from '@/components/inventory';
 import { useFavoritesListings } from '@/hooks/engagement';
 
 export default function FavoritesPage() {
@@ -52,8 +52,10 @@ export default function FavoritesPage() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="flex items-center justify-center py-12 sm:py-20">
-          <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-muted-foreground" />
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          {[...Array(6)].map((_, i) => (
+            <CarCard.Skeleton key={i} />
+          ))}
         </div>
       )}
 
@@ -78,12 +80,12 @@ export default function FavoritesPage() {
               </div>
             </div>
           ) : (
-            <div className="space-y-2 sm:space-y-3">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {validFavoriteIds.map((listingId) => {
                 const listing = listingsById.get(listingId)!;
                 
                 return (
-                  <CarListItem
+                  <CarCard
                     key={listingId}
                     id={listing.id}
                     make={listing.make ?? ''}

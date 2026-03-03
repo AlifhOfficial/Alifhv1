@@ -7,6 +7,7 @@
 
 import { useState } from 'react';
 import { Calendar, Clock, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { UserBookingData } from './types';
 import { UserBookingCard } from './user-booking-card';
 
@@ -73,9 +74,21 @@ export function UserBookingList({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 sm:py-24">
-        <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-        <p className="text-[11px] sm:text-xs text-muted-foreground mt-3 sm:mt-4">Loading...</p>
+      <div className="space-y-1">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="flex gap-4 p-4">
+            <Skeleton className="w-28 sm:w-36 aspect-[4/3] rounded-lg shrink-0" />
+            <div className="flex-1 min-w-0 space-y-2">
+              <Skeleton className="h-4 sm:h-5 w-3/4" />
+              <Skeleton className="h-3 w-1/3" />
+              <div className="flex gap-3 mt-2">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-3 w-12" />
+              </div>
+              <Skeleton className="h-5 w-20 rounded-full mt-auto" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

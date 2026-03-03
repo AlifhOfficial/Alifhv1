@@ -14,7 +14,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, Loader2, MessageCircle, PanelLeft } from 'lucide-react';
+import { Search, MessageCircle, PanelLeft } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ConversationListItem } from './conversation-list-item';
 import { PartnerConversationGroup } from './partner-conversation-group';
 import { UserConversationGroup } from './user-conversation-group';
@@ -266,8 +267,16 @@ export function ConversationList({
       {listOpen && (
         <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
         {isLoading ? (
-          <div className="flex items-center justify-center h-24 sm:h-32">
-            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-muted-foreground/50" />
+          <div className="px-2 py-2 space-y-1">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-start gap-3 py-3 px-3">
+                <Skeleton className="w-11 h-11 rounded-full shrink-0" />
+                <div className="flex-1 min-w-0 space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-full" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : filteredConversations.length === 0 ? (
           <div className="flex items-center justify-center py-12 sm:py-16">
