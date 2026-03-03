@@ -141,19 +141,19 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
           {children}
         </div>
       ) : noPadding ? (
-        <div className="flex-1 overflow-y-auto overscroll-contain rounded-xl border border-border bg-background shadow-sm">
+        <div className="flex-1 overflow-y-auto overscroll-contain rounded-xl bg-background">
           {children}
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto overscroll-contain rounded-xl border border-border bg-background shadow-sm">
+        <div className="flex-1 overflow-y-auto overscroll-contain rounded-xl bg-background">
           <div className="p-5 sm:p-6">
             {children}
           </div>
         </div>
       )}
 
-      {/* Bottom Bar Panel - Rounded window like sidebar */}
-      <footer className="flex h-14 shrink-0 items-center gap-2 px-4 z-50 rounded-xl border border-border bg-background shadow-sm">
+      {/* Bottom Bar Panel */}
+      <footer className="flex h-14 shrink-0 items-center gap-2 px-4 z-50 rounded-xl bg-background border-t border-border">
         <SidebarTrigger className="-ml-1" />
         <ThemeToggle />
         {header && (

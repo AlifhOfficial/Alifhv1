@@ -88,21 +88,18 @@ export function UserAvatar({
   // Show image if available, otherwise show initials
   const showImage = resolvedSrc && !imageError;
 
-  // Match web styling: border-border bg-card for container
-  // For initials fallback: bg-muted with text-foreground
+  // Match web styling: bg-card with border-border/40, consistent with BrandAvatar
   const containerStyle = useMemo(() => ({
     width: pixelSize,
     height: pixelSize,
     borderRadius: pixelSize / 2,
-    backgroundColor: showImage 
-      ? colors.surface
-      : colors.surfaceSecondary,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.glassBorderOnDark,
     overflow: 'hidden' as const,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
-  }), [pixelSize, showImage, colors]);
+  }), [pixelSize, colors]);
 
   return (
     <View style={containerStyle}>
@@ -115,7 +112,7 @@ export function UserAvatar({
         />
       )}
       {!showImage && (
-        <Body style={[styles.initials, { fontSize }]}>
+        <Body style={[styles.initials, { fontSize, color: colors.textSecondary }]}>
           {getInitials(name)}
         </Body>
       )}
@@ -129,6 +126,6 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   initials: {
-    fontFamily: 'Inter_500Medium', // font-medium like web
+    fontFamily: 'Inter_700Bold', // font-bold to match BrandAvatar
   },
 });

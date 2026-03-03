@@ -223,7 +223,7 @@ export function ConversationList({
       className
     )}>
       {/* Header */}
-      <div className="p-3 sm:p-4 border-b border-border/40 flex-shrink-0">
+      <div className="p-3 sm:p-4 flex-shrink-0">
         <div className="flex items-center justify-between mb-2.5 sm:mb-3">
           <h1 className="text-base sm:text-lg font-semibold text-foreground">Messages</h1>
           <div className="flex items-center gap-2 sm:gap-3">
@@ -242,7 +242,7 @@ export function ConversationList({
               aria-hidden={!listOpen}
               tabIndex={listOpen ? 0 : -1}
             >
-              <PanelLeft className="h-4 w-4" />
+              <PanelLeft className="h-4 w-4" strokeWidth={1.5} />
             </button>
           </div>
         </div>
@@ -256,7 +256,7 @@ export function ConversationList({
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium border border-border/40 bg-sidebar text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-border rounded-lg transition-colors"
+              className="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium bg-muted/50 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:bg-muted rounded-lg transition-colors"
             />
           </div>
         )}

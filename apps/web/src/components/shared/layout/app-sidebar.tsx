@@ -63,7 +63,6 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
@@ -480,9 +479,6 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
         setShowSupportModal={setShowSupportModal}
         pathname={pathname}
       />
-
-      {/* Rail for collapse/expand on hover */}
-      <SidebarRail />
     </Sidebar>
 
     {/* Support Modal - Rendered outside sidebar to avoid z-index issues */}

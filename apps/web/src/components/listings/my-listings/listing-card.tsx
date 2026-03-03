@@ -18,10 +18,8 @@ import {
   Trash2, 
   CheckCircle2, 
   RotateCcw, 
-  Plus, 
   Clock, 
   ChevronDown,
-  BarChart3,
   Eye
 } from 'lucide-react';
 import { cn, getThumbUrl } from '@/utils';
@@ -99,10 +97,6 @@ export function ListingCard({
   const editHref = listingType === 'work'
     ? `/staff-dashboard/work-listings/${listing.id}/edit`
     : `/user-dashboard/listings/${listing.id}/edit`;
-  
-  const newListingUrl = listingType === 'work' 
-    ? '/staff-dashboard/work-listings/new' 
-    : '/user-dashboard/listings/new';
 
   const displayImage = getThumbUrl(listing.thumbnail) || listing.thumbnail || '/assets/cars/car1.avif';
 
@@ -113,14 +107,8 @@ export function ListingCard({
   const isExpiringSoon = listing.lifecycleStatus === 'active' && !!expiresAt && msRemaining !== null && msRemaining > 0 && msRemaining <= 2 * 24 * 60 * 60 * 1000;
 
   // Date formatting
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return '—';
-    const d = new Date(date);
-    return d.toLocaleDateString('en-AE', { day: 'numeric', month: 'short', year: 'numeric' });
-  };
-  
   const formatRelativeDate = (date: Date | string | null) => {
-    if (!date) return '—';
+    if (!date) return '';
     const d = new Date(date);
     const now = new Date();
     const diffMs = now.getTime() - d.getTime();
@@ -130,7 +118,7 @@ export function ListingCard({
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays}d ago`;
     if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
-    return formatDate(date);
+    return d.toLocaleDateString('en-AE', { day: 'numeric', month: 'short' });
   };
 
   // Status flags
@@ -163,69 +151,67 @@ export function ListingCard({
 
   // Status config
   const getStatus = () => {
-    if (isDeleted) return { label: 'Deleted', color: 'text-muted-foreground' };
-    if (isSold) return { label: 'Sold', color: 'text-emerald-600' };
-    if (isExpired) return { label: 'Expired', color: 'text-amber-600' };
-    if (isArchived && !isSuspended) return { label: 'Archived', color: 'text-muted-foreground' };
-    if (isSuspended) return { label: 'Suspended', color: 'text-red-600' };
-    if (isRejected) return { label: 'Rejected', color: 'text-red-600' };
-    if (listing.isPublic) return { label: 'Live', color: 'text-emerald-600' };
-    if (isInReview) return { label: 'In Review', color: 'text-blue-600' };
-    if (isDraft) return { label: 'Draft', color: 'text-amber-600' };
-    if (isApproved) return { label: 'Ready', color: 'text-emerald-600' };
-    return { label: 'Active', color: 'text-muted-foreground' };
+    if (isDeleted) return { label: 'Deleted', bg: 'bg-muted', text: 'text-muted-foreground' };
+    if (isSold) return { label: 'Sold', bg: 'bg-emerald-500/10', text: 'text-emerald-600' };
+    if (isExpired) return { label: 'Expired', bg: 'bg-amber-500/10', text: 'text-amber-600' };
+    if (isArchived && !isSuspended) return { label: 'Archived', bg: 'bg-muted', text: 'text-muted-foreground' };
+    if (isSuspended) return { label: 'Suspended', bg: 'bg-red-500/10', text: 'text-red-600' };
+    if (isRejected) return { label: 'Rejected', bg: 'bg-red-500/10', text: 'text-red-600' };
+    if (listing.isPublic) return { label: 'Live', bg: 'bg-emerald-500/10', text: 'text-emerald-600' };
+    if (isInReview) return { label: 'In Review', bg: 'bg-blue-500/10', text: 'text-blue-600' };
+    if (isDraft) return { label: 'Draft', bg: 'bg-amber-500/10', text: 'text-amber-600' };
+    if (isApproved) return { label: 'Ready', bg: 'bg-emerald-500/10', text: 'text-emerald-600' };
+    return { label: 'Active', bg: 'bg-muted', text: 'text-muted-foreground' };
   };
   const status = getStatus();
 
   return (
-    <div className="group relative rounded-lg sm:rounded-xl bg-card border border-border/40 overflow-hidden hover:border-border/60 transition-colors">
-      {/* Main Card Content */}
-      <div className="flex flex-col sm:flex-row">
+    <div className="group relative">
+      {/* Main Card */}
+      <div className="flex gap-4 p-4">
         {/* Image */}
-        <div className="p-2 sm:p-2.5 sm:w-44 md:w-52 lg:w-56 flex-shrink-0">
-          <Link 
-            href={`/listings/${listing.id}`} 
-            className="relative aspect-[16/9] sm:aspect-[4/3] w-full overflow-hidden rounded-md sm:rounded-lg block bg-muted/30"
-          >
-            <Image
-              src={displayImage}
-              alt={`${listing.year} ${listing.make} ${listing.model}`}
-              fill
-              className="object-cover"
-              sizes="(max-width: 640px) 100vw, (max-width: 768px) 176px, (max-width: 1024px) 208px, 224px"
-            />
-            
-            {listing.isBlkListing && (
-              <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black text-white">
-                <span className="text-[9px] font-bold tracking-widest">BLK</span>
-              </div>
-            )}
+        <Link 
+          href={`/listings/${listing.id}`} 
+          className="relative w-28 sm:w-36 md:w-44 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30"
+        >
+          <Image
+            src={displayImage}
+            alt={`${listing.year} ${listing.make} ${listing.model}`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 176px"
+          />
+          
+          {listing.isBlkListing && (
+            <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black text-white">
+              <span className="text-[9px] font-bold tracking-widest">BLK</span>
+            </div>
+          )}
 
-            {isExpiringSoon && daysRemaining !== null && (
-              <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-white">
-                <span className="text-[10px] font-bold">{daysRemaining}d left</span>
-              </div>
-            )}
-          </Link>
-        </div>
+          {isExpiringSoon && daysRemaining !== null && (
+            <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-white">
+              <span className="text-[10px] font-bold">{daysRemaining}d left</span>
+            </div>
+          )}
+        </Link>
 
         {/* Content */}
-        <div className="flex-1 px-2 pb-2 sm:p-3 sm:py-3 sm:pr-3 sm:pl-0.5 flex flex-col min-w-0">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-2 mb-1 sm:mb-1.5">
+        <div className="flex-1 min-w-0 flex flex-col">
+          {/* Top: Title + Menu */}
+          <div className="flex items-start justify-between gap-3">
             <Link href={`/listings/${listing.id}`} className="flex-1 min-w-0">
-              <h3 className="text-xs sm:text-sm font-semibold text-foreground line-clamp-1">
+              <h3 className="text-sm sm:text-base font-semibold text-foreground tracking-tight line-clamp-1">
                 {listing.year} {listing.make} {listing.model}
               </h3>
               {listing.trim && (
-                <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5 line-clamp-1">{listing.trim}</p>
+                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{listing.trim}</p>
               )}
             </Link>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="w-6 h-6 sm:w-7 sm:h-7 -mr-1 flex items-center justify-center rounded-md sm:rounded-lg text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/50 transition-colors">
-                  <MoreHorizontal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <button className="w-8 h-8 -mr-2 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+                  <MoreHorizontal className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44">
@@ -293,155 +279,102 @@ export function ListingCard({
             </DropdownMenu>
           </div>
 
-          {/* Price Row */}
-          <p className="text-sm sm:text-base font-bold text-primary tabular-nums mb-auto">
-            {listing.price.toLocaleString()} <span className="text-[10px] sm:text-xs font-semibold text-muted-foreground">AED</span>
+          {/* Price */}
+          <p className="text-base sm:text-lg font-bold text-foreground tabular-nums mt-2">
+            {listing.price.toLocaleString()} <span className="text-xs font-medium text-muted-foreground">AED</span>
           </p>
 
-          {/* Status + Stats Row */}
-          <div className="flex items-center justify-between gap-2 pt-1.5 sm:pt-2 mt-1.5 sm:mt-2 border-t border-border/30">
-            {/* Left: Status + Days Left + Hot */}
-            <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
-              <span className={cn("text-[10px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded", 
-                status.label === 'Live' ? 'bg-emerald-500/10 text-emerald-600' :
-                status.label === 'Sold' ? 'bg-emerald-500/10 text-emerald-600' :
-                status.label === 'Draft' ? 'bg-amber-500/10 text-amber-600' :
-                status.label === 'In Review' ? 'bg-blue-500/10 text-blue-600' :
-                status.label === 'Rejected' ? 'bg-red-500/10 text-red-600' :
-                status.label === 'Suspended' ? 'bg-red-500/10 text-red-600' :
-                status.label === 'Expired' ? 'bg-amber-500/10 text-amber-600' :
-                'bg-muted text-muted-foreground'
-              )}>
-                {status.label}
-              </span>
-              {listing.isPublic && daysRemaining !== null && daysRemaining > 0 && !isExpiringSoon && (
-                <span className="text-[10px] sm:text-[11px] text-muted-foreground/60 tabular-nums">
-                  {daysRemaining}d
-                </span>
-              )}
-              {hotScore >= 40 && (
-                <span className={cn("flex items-center gap-0.5 text-[10px] sm:text-[11px] font-semibold", hotLevel.color)}>
-                  <Flame className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                  {hotLevel.label}
-                </span>
-              )}
-            </div>
+          {/* Status + Stats */}
+          <div className="flex items-center gap-3 mt-auto pt-3">
+            <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", status.bg, status.text)}>
+              {status.label}
+            </span>
             
-            {/* Right: Stats */}
-            <div className="flex items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-[11px] text-muted-foreground/60 shrink-0">
-              <span className="flex items-center gap-0.5 sm:gap-1">
-                <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                <span className="font-semibold text-foreground/80 tabular-nums">{views}</span>
+            {hotScore >= 40 && (
+              <span className={cn("flex items-center gap-1 text-xs font-medium", hotLevel.color)}>
+                <Flame className="w-3.5 h-3.5" />
+                {hotLevel.label}
               </span>
-              <span className="flex items-center gap-0.5 sm:gap-1">
-                <Heart className="w-2.5 h-2.5 sm:w-3 sm:h-3" strokeWidth={1.5} />
-                <span className="font-semibold text-foreground/80 tabular-nums">{saves}</span>
+            )}
+
+            <div className="flex items-center gap-3 ml-auto text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Eye className="w-3.5 h-3.5" />
+                {views}
               </span>
-              {superlikes > 0 && (
-                <span className="flex items-center gap-0.5 sm:gap-1 text-amber-500">
-                  <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                  <span className="font-semibold tabular-nums">{superlikes}</span>
-                </span>
-              )}
+              <span className="flex items-center gap-1">
+                <Heart className="w-3.5 h-3.5" />
+                {saves}
+              </span>
             </div>
           </div>
 
-          {/* Rejection Reason */}
+          {/* Rejection/Suspension Reason */}
           {isRejected && listing.rejectionReason && (
-            <div className="mt-1.5 sm:mt-2 px-2 py-1 sm:py-1.5 rounded-md bg-red-500/5 border border-red-500/10">
-              <p className="text-[10px] sm:text-[11px] text-red-600 line-clamp-2">
-                <span className="font-semibold">Reason:</span> {listing.rejectionReason}
-              </p>
-            </div>
+            <p className="text-xs text-red-600 mt-3 line-clamp-2">
+              {listing.rejectionReason}
+            </p>
           )}
-
-          {/* AI Moderation Reason for Pending Review */}
-          {isInReview && (listing.aiModeration?.reasoning || (listing.aiModeration?.flags && listing.aiModeration.flags.length > 0)) && (
-            <div className="mt-1.5 sm:mt-2 pt-1.5 border-t border-border/20">
-              <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-relaxed">
-                {listing.aiModeration?.reasoning}
-              </p>
-              {listing.aiModeration?.flags && listing.aiModeration.flags.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {listing.aiModeration.flags.map((flag, index) => {
-                    const label = typeof flag === 'object' 
-                      ? (flag.message || flag.code || '').replace(/_/g, ' ')
-                      : typeof flag === 'string' ? flag.replace(/_/g, ' ') : '';
-                    if (!label) return null;
-                    return (
-                      <span 
-                        key={index}
-                        className="px-1.5 py-0.5 text-[9px] sm:text-[10px] bg-muted text-muted-foreground rounded"
-                      >
-                        {label}
-                      </span>
-                    );
-                  })}
-                </div>
-              )}
-              <p className="text-[9px] text-muted-foreground/60 mt-1 italic">
-                Automated review — a human will make the final decision
-              </p>
-            </div>
-          )}
-
-          {/* Suspension Reason */}
           {isSuspended && listing.suspensionReason && (
-            <div className="mt-1.5 sm:mt-2 px-2 py-1 sm:py-1.5 rounded-md bg-red-500/5 border border-red-500/10">
-              <p className="text-[10px] sm:text-[11px] text-red-600 line-clamp-2">
-                <span className="font-semibold">Reason:</span> {listing.suspensionReason}
-              </p>
-            </div>
+            <p className="text-xs text-red-600 mt-3 line-clamp-2">
+              {listing.suspensionReason}
+            </p>
           )}
         </div>
       </div>
 
-      {/* Insights Toggle Bar - Full Width */}
+      {/* Insights Toggle */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className={cn(
-          "w-full flex items-center justify-between px-2 sm:px-3 py-1.5 sm:py-2 border-t border-border/30 hover:bg-muted/30 transition-colors",
-          isExpanded && "bg-muted/20"
-        )}
+        className="w-full flex items-center justify-center gap-1.5 py-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
       >
-        <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground/60">
-          {isExpanded ? 'Hide insights' : 'View insights'}
-        </span>
-        <ChevronDown className={cn(
-          "w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground/40 transition-transform duration-200",
-          isExpanded && "rotate-180"
-        )} />
+        <span>{isExpanded ? 'Hide insights' : isInReview ? 'Review status' : 'View insights'}</span>
+        <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", isExpanded && "rotate-180")} />
       </button>
 
-      {/* Expanded Insights Panel - Full Width */}
+      {/* Expanded Insights */}
       {isExpanded && (
-        <div className="px-2 sm:px-3 pb-2 sm:pb-3 pt-2 bg-muted/10 animate-in slide-in-from-top-2 duration-200">
-          {/* Metrics Grid */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-2 sm:mb-3">
-            {/* Click Rate */}
-            <div>
-              <div className="flex items-center justify-between mb-1 sm:mb-1.5">
-                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground/60">Click Rate</span>
-                <span className="text-[11px] sm:text-xs font-bold tabular-nums text-foreground">{ctr}%</span>
+        <div className="px-5 pb-5 pt-2 space-y-5 animate-in slide-in-from-top-2 duration-200">
+          {/* AI Moderation for Review - shown first when in review */}
+          {isInReview && listing.aiModeration?.reasoning && (
+            <div className="p-4 rounded-lg bg-blue-500/5">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="w-4 h-4 text-blue-500" />
+                <span className="text-sm font-medium text-blue-600">Under Review</span>
               </div>
-              <div className="h-1 sm:h-1.5 bg-muted/50 rounded-full overflow-hidden">
+              <p className="text-sm text-foreground/80 leading-relaxed">
+                {listing.aiModeration.reasoning}
+              </p>
+              <p className="text-xs text-muted-foreground mt-3">
+                A human moderator will make the final decision
+              </p>
+            </div>
+          )}
+
+          {/* Metrics */}
+          <div className="grid grid-cols-2 gap-8">
+            <div>
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="text-xs text-muted-foreground">Click Rate</span>
+                <span className="text-sm font-semibold tabular-nums">{ctr}%</span>
+              </div>
+              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-primary rounded-full transition-all duration-500"
+                  className="h-full bg-primary rounded-full"
                   style={{ width: `${Math.min(parseFloat(ctr) * 10, 100)}%` }}
                 />
               </div>
             </div>
             
-            {/* Engagement */}
             <div>
-              <div className="flex items-center justify-between mb-1 sm:mb-1.5">
-                <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground/60">Engagement</span>
-                <span className={cn("text-[11px] sm:text-xs font-bold tabular-nums", hotLevel.color)}>{hotScore}/100</span>
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="text-xs text-muted-foreground">Engagement</span>
+                <span className={cn("text-sm font-semibold tabular-nums", hotLevel.color)}>{hotScore}</span>
               </div>
-              <div className="h-1 sm:h-1.5 bg-muted/50 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                 <div 
                   className={cn(
-                    "h-full rounded-full transition-all duration-500",
+                    "h-full rounded-full",
                     hotScore >= 70 ? "bg-orange-500" :
                     hotScore >= 40 ? "bg-amber-500" :
                     hotScore >= 20 ? "bg-emerald-500" :
@@ -453,52 +386,35 @@ export function ListingCard({
             </div>
           </div>
 
-          {/* Additional Stats Row */}
-          <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-1 xs:gap-0 pt-2 border-t border-border/30">
-            <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-[11px] text-muted-foreground/60">
-              <span className="flex items-center gap-1">
-                <BarChart3 className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                <span className="font-semibold text-foreground/80 tabular-nums">{impressions.toLocaleString()}</span>
-                <span>impr</span>
+          {/* Additional Info */}
+          <div className="flex items-center justify-between text-xs text-muted-foreground pt-2">
+            <span>{impressions.toLocaleString()} impressions</span>
+            {superlikes > 0 && (
+              <span className="flex items-center gap-1 text-amber-500">
+                <Zap className="w-3.5 h-3.5" />
+                {superlikes} superlikes
               </span>
-              {(listing.extensionCount ?? 0) > 0 && (
-                <span>
-                  Extended <span className="font-semibold text-foreground/80">{listing.extensionCount}×</span>
-                </span>
-              )}
-            </div>
-            <span className="text-[10px] sm:text-[11px] text-muted-foreground/50">
-              {formatRelativeDate(listing.publishedAt || listing.createdAt)}
-            </span>
+            )}
+            <span>{formatRelativeDate(listing.publishedAt || listing.createdAt)}</span>
           </div>
-
-          {/* Expiry Date */}
-          {expiresAt && (
-            <p className={cn(
-              "text-[10px] sm:text-[11px] mt-1.5 sm:mt-2",
-              isExpiringSoon ? "text-amber-600 font-medium" : "text-muted-foreground/50"
-            )}>
-              Expires {formatDate(expiresAt)}
-            </p>
-          )}
         </div>
       )}
 
-      {/* Delete Confirmation */}
+      {/* Delete Confirmation Overlay */}
       {deleteConfirm === listing.id && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-2xl rounded-lg sm:rounded-xl z-10">
-          <div className="text-center px-4 sm:px-6">
-            <p className="text-xs sm:text-sm font-semibold text-foreground mb-2 sm:mb-3">Delete this listing?</p>
-            <div className="flex items-center justify-center gap-2">
+        <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-xl z-10">
+          <div className="text-center px-6">
+            <p className="text-sm font-semibold mb-4">Delete this listing?</p>
+            <div className="flex items-center justify-center gap-3">
               <button 
                 onClick={onCancelDelete}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground rounded-md sm:rounded-lg hover:bg-muted/50 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={() => onDelete(listing.id)}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white bg-destructive hover:bg-destructive/90 rounded-md sm:rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-white bg-destructive hover:bg-destructive/90 rounded-lg transition-colors"
               >
                 Delete
               </button>
@@ -509,4 +425,3 @@ export function ListingCard({
     </div>
   );
 }
-

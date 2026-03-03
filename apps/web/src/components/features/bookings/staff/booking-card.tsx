@@ -100,46 +100,42 @@ export function BookingCard({
   const hasEnded = scheduledEnd <= now;
 
   return (
-    <div className="group relative rounded-xl bg-card border border-border/40 hover:border-border/60 transition-colors overflow-hidden">
-      {/* Main Card Content */}
-      <div className="flex flex-col sm:flex-row">
+    <div className="group relative">
+      {/* Main Card */}
+      <div className="flex gap-4 p-4">
         {/* Image */}
-        <div className="p-2.5 sm:w-36 flex-shrink-0">
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted/20">
-            {booking.listingThumbnail ? (
-              <img
-                src={getThumbUrl(booking.listingThumbnail) || booking.listingThumbnail}
-                alt={booking.listingTitle}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-muted/30">
-                <ImageIcon className="w-6 h-6 text-muted-foreground/30" />
-              </div>
-            )}
-          </div>
+        <div className="relative w-28 sm:w-36 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/20">
+          {booking.listingThumbnail ? (
+            <img
+              src={getThumbUrl(booking.listingThumbnail) || booking.listingThumbnail}
+              alt={booking.listingTitle}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-muted/30">
+              <ImageIcon className="w-6 h-6 text-muted-foreground/30" />
+            </div>
+          )}
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-3 sm:py-3 sm:pr-3 sm:pl-0.5 flex flex-col min-w-0">
+        <div className="flex-1 min-w-0 flex flex-col">
           {/* Header */}
-          <div className="flex items-start justify-between gap-2 mb-2">
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[15px] font-semibold text-foreground line-clamp-1">
+              <p className="text-sm sm:text-base font-semibold text-foreground tracking-tight line-clamp-1">
                 {booking.listingTitle}
               </p>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <User className="w-3.5 h-3.5 text-muted-foreground/50" />
-                <span className="text-sm text-muted-foreground/70">{booking.userName}</span>
+                <User className="w-3.5 h-3.5 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">{booking.userName}</span>
                 {booking.numberOfAttendees > 1 && (
-                  <span className="text-xs text-muted-foreground/50 ml-1">
-                    +{booking.numberOfAttendees - 1}
-                  </span>
+                  <span className="text-xs text-muted-foreground/60">+{booking.numberOfAttendees - 1}</span>
                 )}
               </div>
             </div>
             <span className={cn(
-              "text-[11px] font-semibold px-1.5 py-0.5 rounded flex-shrink-0",
+              "text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0",
               STATUS_CONFIG[booking.status]?.bg || 'bg-muted',
               STATUS_CONFIG[booking.status]?.text || 'text-muted-foreground'
             )}>
@@ -148,33 +144,33 @@ export function BookingCard({
           </div>
 
           {/* Date & Time */}
-          <div className="flex items-center gap-3 text-sm mb-auto">
-            <span className="flex items-center gap-1.5 text-muted-foreground/70">
+          <div className="flex items-center gap-3 text-xs mt-2">
+            <span className="flex items-center gap-1.5 text-muted-foreground">
               <Calendar className="w-3.5 h-3.5" />
-              <span className="font-medium text-foreground/80">{formatDate(booking.scheduledStartTime)}</span>
+              <span className="font-medium text-foreground">{formatDate(booking.scheduledStartTime)}</span>
             </span>
-            <span className="flex items-center gap-1.5 text-muted-foreground/70">
+            <span className="flex items-center gap-1.5 text-muted-foreground">
               <Clock className="w-3.5 h-3.5" />
-              <span className="font-medium text-foreground/80 tabular-nums">{formatTime(booking.scheduledStartTime)}</span>
+              <span className="font-medium text-foreground tabular-nums">{formatTime(booking.scheduledStartTime)}</span>
             </span>
           </div>
 
-          {/* Code Row */}
-          <div className="flex items-center justify-between pt-2">
+          {/* Code */}
+          <div className="mt-auto pt-3">
             {booking.confirmationToken && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   copyCode();
                 }}
-                className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground/60 hover:text-muted-foreground transition-colors group/code"
+                className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors"
                 title="Copy booking code"
               >
                 <span>#{booking.confirmationToken}</span>
                 {copied ? (
-                  <Check className="w-3 h-3 text-emerald-500" />
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
                 ) : (
-                  <Copy className="w-3 h-3 opacity-0 group-hover/code:opacity-100 transition-opacity" />
+                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 )}
               </button>
             )}
@@ -182,81 +178,69 @@ export function BookingCard({
         </div>
       </div>
 
-      {/* Details Toggle Bar */}
+      {/* Details Toggle */}
       <button
         onClick={onToggleExpand}
-        className={cn(
-          "w-full flex items-center justify-between px-3 py-2 border-t border-border/30 hover:bg-muted/30 transition-colors",
-          isExpanded && "bg-muted/20"
-        )}
+        className="w-full flex items-center justify-center gap-1.5 py-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
       >
-        <span className="text-[11px] font-semibold text-muted-foreground/70">
-          {isExpanded ? 'Hide' : 'Details'}
-        </span>
-        <ChevronDown className={cn(
-          "w-3.5 h-3.5 text-muted-foreground/50 transition-transform duration-200",
-          isExpanded && "rotate-180"
-        )} />
+        <span>{isExpanded ? 'Hide details' : 'View details'}</span>
+        <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", isExpanded && "rotate-180")} />
       </button>
 
-      {/* Expanded Details Panel */}
+      {/* Expanded Details */}
       {isExpanded && (
-        <div className="px-3 pb-3 pt-2 bg-muted/10 border-t border-border/20 animate-in slide-in-from-top-2 duration-200">
-          <div className="grid md:grid-cols-2 gap-4">
+        <div className="px-5 pb-5 pt-2 space-y-5 animate-in slide-in-from-top-2 duration-200">
+          <div className="grid md:grid-cols-2 gap-6">
             {/* Contact Info */}
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50">Contact</p>
-              <div className="space-y-1.5">
+            <div className="space-y-3">
+              <p className="text-xs font-medium text-muted-foreground">Contact</p>
+              <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <User className="w-3.5 h-3.5 text-muted-foreground/50" />
-                  <span className="text-sm font-medium text-foreground/80">{booking.userName}</span>
+                  <User className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">{booking.userName}</span>
                   {booking.numberOfAttendees > 1 && (
-                    <span className="text-xs text-muted-foreground/60">
-                      (+{booking.numberOfAttendees - 1} guests)
-                    </span>
+                    <span className="text-xs text-muted-foreground">(+{booking.numberOfAttendees - 1} guests)</span>
                   )}
                 </div>
                 <a 
                   href={`mailto:${booking.userEmail}`}
-                  className="flex items-center gap-2 text-xs text-foreground/80 hover:text-primary transition-colors"
+                  className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
                 >
-                  <Mail className="w-3.5 h-3.5 text-muted-foreground/50" />
+                  <Mail className="w-4 h-4 text-muted-foreground" />
                   {booking.userEmail}
                 </a>
                 <a 
                   href={`tel:${booking.userPhone}`}
-                  className="flex items-center gap-2 text-xs text-foreground/80 hover:text-primary transition-colors"
+                  className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
                 >
-                  <Phone className="w-3.5 h-3.5 text-muted-foreground/50" />
+                  <Phone className="w-4 h-4 text-muted-foreground" />
                   {booking.userPhone}
                 </a>
               </div>
             </div>
 
             {/* Booking Info */}
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50">Booking Info</p>
-              <div className="space-y-1.5">
+            <div className="space-y-3">
+              <p className="text-xs font-medium text-muted-foreground">Booking Info</p>
+              <div className="space-y-2">
                 <div>
-                  <p className="text-[10px] text-muted-foreground/60">Code</p>
+                  <p className="text-xs text-muted-foreground mb-0.5">Code</p>
                   <button
                     onClick={copyCode}
-                    className="flex items-center gap-1.5 text-xs font-mono font-semibold text-foreground/80 hover:text-primary transition-colors group/code2"
+                    className="flex items-center gap-1.5 text-sm font-mono font-medium text-foreground hover:text-primary transition-colors"
                   >
                     {booking.confirmationToken}
                     {copied ? (
-                      <Check className="w-3 h-3 text-emerald-500" />
+                      <Check className="w-3.5 h-3.5 text-emerald-500" />
                     ) : (
-                      <Copy className="w-3 h-3 opacity-50 group-hover/code2:opacity-100 transition-opacity" />
+                      <Copy className="w-3.5 h-3.5 opacity-50 hover:opacity-100 transition-opacity" />
                     )}
                   </button>
                 </div>
                 {booking.checkInTime && (
                   <div>
-                    <p className="text-[10px] text-muted-foreground/60">Checked In</p>
-                    <p className="text-xs font-medium text-foreground/80">
-                      {formatTime(booking.checkInTime)}
-                    </p>
+                    <p className="text-xs text-muted-foreground mb-0.5">Checked In</p>
+                    <p className="text-sm font-medium text-foreground">{formatTime(booking.checkInTime)}</p>
                   </div>
                 )}
               </div>
@@ -265,17 +249,17 @@ export function BookingCard({
 
           {/* Notes & Requests */}
           {(booking.notes || booking.specialRequests) && (
-            <div className="mt-3 pt-3 border-t border-border/20 space-y-2">
+            <div className="space-y-4">
               {booking.notes && (
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50 mb-1">Notes</p>
-                  <p className="text-xs text-foreground/80 leading-relaxed">{booking.notes}</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Notes</p>
+                  <p className="text-sm text-foreground leading-relaxed">{booking.notes}</p>
                 </div>
               )}
               {booking.specialRequests && (
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50 mb-1">Special Requests</p>
-                  <p className="text-xs text-foreground/80 leading-relaxed">{booking.specialRequests}</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Special Requests</p>
+                  <p className="text-sm text-foreground leading-relaxed">{booking.specialRequests}</p>
                 </div>
               )}
             </div>
@@ -283,28 +267,26 @@ export function BookingCard({
 
           {/* Cancellation Reason */}
           {booking.cancellationReason && (
-            <div className="mt-3 p-2.5 rounded-lg bg-destructive/5 border border-destructive/10">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-destructive/80 mb-1">Cancellation Reason</p>
-              <p className="text-xs text-foreground/80 capitalize">{booking.cancellationReason.replace(/_/g, ' ')}</p>
+            <div className="p-4 rounded-lg bg-destructive/5">
+              <p className="text-xs font-medium text-destructive mb-1">Cancellation Reason</p>
+              <p className="text-sm text-foreground capitalize">{booking.cancellationReason.replace(/_/g, ' ')}</p>
               {booking.cancellationNotes && (
-                <p className="text-[11px] text-muted-foreground/70 mt-1">{booking.cancellationNotes}</p>
+                <p className="text-xs text-muted-foreground mt-2">{booking.cancellationNotes}</p>
               )}
             </div>
           )}
 
           {/* Actions */}
           {(booking.status === 'pending' || booking.status === 'confirmed') && (
-            <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border/20">
+            <div className="flex flex-wrap gap-2 pt-2">
               {booking.status === 'pending' && (
                 <>
                   <button
                     onClick={() => onAction('confirm')}
                     disabled={isActionLoading}
-                    className="h-7 px-3 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-xs font-semibold transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                    className="h-9 px-4 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
                   >
-                    {isActionLoading ? (
-                      <div className="w-3 h-3 border border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
-                    ) : null}
+                    {isActionLoading && <div className="w-3.5 h-3.5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />}
                     Confirm
                   </button>
                   <button
@@ -315,7 +297,7 @@ export function BookingCard({
                       }
                     }}
                     disabled={isActionLoading}
-                    className="h-7 px-3 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-xs font-semibold transition-colors disabled:opacity-50"
+                    className="h-9 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-sm font-medium transition-colors disabled:opacity-50"
                   >
                     Reject
                   </button>
@@ -326,11 +308,9 @@ export function BookingCard({
                 <button
                   onClick={() => onAction('cancel')}
                   disabled={isActionLoading}
-                  className="h-7 px-3 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-xs font-semibold transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                  className="h-9 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
                 >
-                  {isActionLoading ? (
-                    <div className="w-3 h-3 border border-red-500/30 border-t-red-500 rounded-full animate-spin" />
-                  ) : null}
+                  {isActionLoading && <div className="w-3.5 h-3.5 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" />}
                   Cancel
                 </button>
               )}
@@ -340,20 +320,16 @@ export function BookingCard({
                   <button
                     onClick={() => onAction('complete')}
                     disabled={isActionLoading}
-                    className="h-7 px-3 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-xs font-semibold transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                    className="h-9 px-4 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
                   >
-                    {isActionLoading ? (
-                      <div className="w-3 h-3 border border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
-                    ) : null}
+                    {isActionLoading && <div className="w-3.5 h-3.5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />}
                     Complete
                   </button>
                   {hasEnded && (
                     <button
-                      onClick={() => onAction('no_show', { 
-                        reason: 'Customer did not show up' 
-                      })}
+                      onClick={() => onAction('no_show', { reason: 'Customer did not show up' })}
                       disabled={isActionLoading}
-                      className="h-7 px-3 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 text-xs font-semibold transition-colors disabled:opacity-50"
+                      className="h-9 px-4 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 text-sm font-medium transition-colors disabled:opacity-50"
                     >
                       No-show
                     </button>

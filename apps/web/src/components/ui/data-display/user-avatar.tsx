@@ -111,8 +111,7 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
       <div
         ref={ref}
         className={cn(
-          "relative inline-flex items-center justify-center overflow-hidden rounded-full border border-border font-medium text-foreground",
-          showImage ? "bg-card" : "bg-muted",
+          "relative inline-flex items-center justify-center overflow-hidden rounded-full bg-card border border-border/40 flex-shrink-0",
           sizeClasses[size],
           className
         )}
@@ -132,7 +131,7 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
           />
         )}
         {!showImage && (
-          <span className="select-none">{getInitials(name)}</span>
+          <span className="font-bold text-muted-foreground select-none">{getInitials(name)}</span>
         )}
       </div>
     );

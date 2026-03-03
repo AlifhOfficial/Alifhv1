@@ -585,40 +585,6 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
           </div>
         </div>
 
-        {/* Stats */}
-        {stats && (
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-10">
-            <div>
-              <span className="text-[10px] sm:text-xs text-muted-foreground">Active</span>
-              <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-blue-500">{stats.active}</p>
-            </div>
-            <div>
-              <span className="text-[10px] sm:text-xs text-muted-foreground">Public</span>
-              <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-green-500">{stats.public}</p>
-            </div>
-            <div>
-              <span className="text-[10px] sm:text-xs text-muted-foreground">Draft</span>
-              <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-yellow-500">{stats.draft}</p>
-            </div>
-            {stats.inReview > 0 && (
-              <div>
-                <span className="text-[10px] sm:text-xs text-muted-foreground">In Review</span>
-                <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-blue-500">{stats.inReview}</p>
-              </div>
-            )}
-            {stats.sold > 0 && (
-              <div>
-                <span className="text-[10px] sm:text-xs text-muted-foreground">Sold</span>
-                <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-purple-500\">{stats.sold}</p>
-              </div>
-            )}
-            <div>
-              <span className="text-[10px] sm:text-xs text-muted-foreground">Total</span>
-              <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1">{stats.all}</p>
-            </div>
-          </div>
-        )}
-
       {/* Toolbar */}
       <div className="flex flex-col gap-3 mb-6 sm:mb-8">
         {/* Row 1: Search + Sort + New */}
@@ -803,7 +769,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       {/* Listings */}
       {!isLoading && !error && listings.length > 0 && (
         <>
-          <div className="space-y-2 sm:space-y-1">
+          <div className="space-y-3 sm:space-y-4">
             {listings.map((listing) => (
               <ListingCard
                 key={listing.id}

@@ -95,14 +95,14 @@ export function PartnerConversationGroup({
             <div key={conversation.id} className="relative pl-6">
               {/* Smooth curved connector */}
               <svg 
-                className="absolute left-0 top-0 w-5 h-7 text-muted-foreground/60"
+                className="absolute left-0 top-0 w-5 h-7 text-muted-foreground/40"
                 viewBox="0 0 20 28"
                 fill="none"
               >
                 <path 
                   d="M2 0 L2 14 Q2 22 10 22 L20 22" 
                   stroke="currentColor" 
-                  strokeWidth="1.5" 
+                  strokeWidth="1" 
                   strokeLinecap="round"
                   fill="none"
                 />

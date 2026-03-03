@@ -8,7 +8,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { CheckCircle2, TrendingUp, ShieldCheck, Info } from 'lucide-react';
+import { CheckCircle2, Info } from 'lucide-react';
 import { cn } from '@/utils';
 import { Combobox } from '../combobox';
 import { VINInput } from '../vin-input';
@@ -126,15 +126,12 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
     <div className="space-y-8">
       {/* VIN Entry Section */}
       <section>
-        <div className="flex items-baseline justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground">
-            Vehicle Identification
-            <span className="text-red-500 ml-0.5">*</span>
-          </h3>
-          <span className="text-xs text-sidebar-foreground/70">Protects buyers & verifies specs</span>
-        </div>
+        <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground mb-3">
+          VIN
+          <span className="text-red-500 ml-0.5">*</span>
+        </h3>
         
-        <div className="rounded-xl bg-sidebar-accent/30 p-5 space-y-4">
+        <div className="rounded-xl bg-sidebar-accent/30 p-5 space-y-5">
           <VINInput
             value={data.vin || ''}
             onChange={(v) => {
@@ -148,13 +145,13 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
           {/* VIN Visibility Toggle */}
           <div className="flex items-center justify-between pt-3 border-t border-border/20">
             <div>
-              <p className="text-sm font-semibold text-sidebar-foreground">
-                Show VIN on listing
+              <p className="text-sm font-medium text-sidebar-foreground">
+                Public VIN
               </p>
-              <p className="text-xs text-sidebar-foreground/70 flex items-center gap-1">
+              <p className="text-xs text-sidebar-foreground/50">
                 {data.vinVisibility === 'public' 
-                  ? <><TrendingUp className="w-3 h-3" /> Includes 15% ranking boost</>
-                  : <><ShieldCheck className="w-3 h-3" /> VIN verified badge shown instead</>}
+                  ? '+15% ranking boost'
+                  : 'Verified badge only'}
               </p>
             </div>
             <button
@@ -176,9 +173,10 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
             </button>
           </div>
           
-          {/* Permanent Decision Notice */}
-          <p className="text-xs text-sidebar-foreground/50 mt-2 flex items-center gap-1">
-            <Info className="w-3 h-3" /> This setting is permanent for this listing.
+          {/* Info */}
+          <p className="text-xs text-sidebar-foreground/50 flex items-center gap-1.5">
+            <Info className="w-3 h-3 flex-shrink-0" />
+            Verifies specs & protects buyers. Visibility setting is permanent.
           </p>
         </div>
       </section>

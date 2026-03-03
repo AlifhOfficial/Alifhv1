@@ -69,8 +69,8 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
       {/* List Panel - Rounded window like sidebar on desktop, full on mobile */}
       <div className={cn(
         'flex-shrink-0 min-h-0 transition-all duration-200 overflow-hidden',
-        'rounded-xl border border-border bg-background shadow-sm',
-        listOpen ? 'w-full lg:w-80 xl:w-96' : 'w-0 border-0',
+        'rounded-xl bg-background',
+        listOpen ? 'w-full lg:w-80 xl:w-96' : 'w-0',
         showMobile && 'hidden lg:flex'
       )}>
         <ConversationList
@@ -105,7 +105,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
               className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 p-1.5 sm:p-2 text-muted-foreground hover:text-foreground transition-colors bg-background border border-border/50 rounded-lg shadow-sm"
               title="Show messages"
             >
-              <PanelLeft className="h-4 w-4" />
+              <PanelLeft className="h-4 w-4" strokeWidth={1.5} />
             </button>
           )}
           {selected ? (
