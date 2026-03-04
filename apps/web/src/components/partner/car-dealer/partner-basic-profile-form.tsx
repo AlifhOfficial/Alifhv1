@@ -317,7 +317,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       const result = await compressAndUploadPartnerImage(file, partnerId, imageType);
       
       await updateProfile({ [field]: result.key });
-      updateField({ [field]: result.key });
+      // Refetch to get updated URLs from server
+      await refetchFresh();
       toast({ title: `${field === 'logo' ? 'Logo' : 'Banner'} updated` });
     } catch (err: any) {
       toast({ title: err.message || 'Upload failed', variant: 'destructive' });
@@ -503,7 +504,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
               <button
                 onClick={async () => {
                   await updateProfile({ heroImage: null });
-                  updateField({ heroImage: null });
+                  await refetchFresh();
                 }}
                 className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-red-500/50 transition-colors"
               >
@@ -542,13 +543,13 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           />
           <label htmlFor="logo-upload" className="block cursor-pointer">
             <BrandAvatar 
-              logoUrl={profile?.logoUrl || form.logo} 
+              logoUrl={profile?.logoUrl || (form.logo ? getPublicUrl(form.logo) : null)} 
               brandName={profile.brandName} 
               size="xl"
               className={cn("w-20 h-20 sm:w-24 sm:h-24 border-4 border-background", logoUploading && "opacity-50")}
             />
             <div className={cn(
-              "absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl transition-opacity",
+              "absolute inset-0 flex items-center justify-center bg-black/40 rounded-full transition-opacity",
               logoUploading ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             )}>
               {logoUploading ? (
@@ -568,7 +569,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 setLogoUploading(true);
                 try {
                   await updateProfile({ logo: null });
-                  updateField({ logo: null });
+                  await refetchFresh();
                   toast({ title: 'Logo removed' });
                 } catch {
                   toast({ title: 'Failed to remove', variant: 'destructive' });
