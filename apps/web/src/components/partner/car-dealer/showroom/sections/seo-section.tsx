@@ -69,10 +69,12 @@ export function SeoSection({
               {form.seoImage ? (
                 <>
                   <Image
+                    key={form.seoImage}
                     src={getPublicUrl(form.seoImage) || form.seoImage}
                     alt="SEO preview"
                     fill
                     className="object-cover"
+                    unoptimized
                   />
                   <button
                     onClick={() => removeImage('seoImage')}

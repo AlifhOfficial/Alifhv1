@@ -47,10 +47,12 @@ export function ImageUpload({
       {imageUrl ? (
         <>
           <Image
+            key={imageUrl}
             src={imageUrl}
             alt={label}
             fill
             className="object-cover"
+            unoptimized
           />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
             <button

@@ -40,7 +40,14 @@ export function TeamMemberCard({ member, onUpdate, onRemove, onImageUpload, isUp
           />
           {member.image ? (
             <>
-              <Image src={getPublicUrl(member.image) || member.image} alt={member.name} fill className="object-cover" />
+              <Image 
+                key={member.image}
+                src={getPublicUrl(member.image) || member.image} 
+                alt={member.name} 
+                fill 
+                className="object-cover" 
+                unoptimized
+              />
               <label
                 htmlFor={`team-${member.id}-image`}
                 className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"

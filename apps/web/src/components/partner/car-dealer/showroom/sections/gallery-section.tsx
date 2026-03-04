@@ -73,8 +73,8 @@ export function GallerySection({
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {(form.showroomImages || []).map((img, idx) => (
-              <div key={idx} className="relative aspect-video rounded-lg overflow-hidden bg-muted/30 group">
-                <Image src={getPublicUrl(img) || img} alt={`Gallery ${idx + 1}`} fill className="object-cover" />
+              <div key={img} className="relative aspect-video rounded-lg overflow-hidden bg-muted/30 group">
+                <Image src={getPublicUrl(img) || img} alt={`Gallery ${idx + 1}`} fill className="object-cover" unoptimized />
                 <button
                   onClick={async () => {
                     const updated = (form.showroomImages || []).filter((_, i) => i !== idx);

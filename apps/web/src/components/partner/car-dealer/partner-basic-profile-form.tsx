@@ -488,6 +488,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         {form.heroImage ? (
           <>
             <img
+              key={profile?.heroImageUrl || form.heroImage}
               src={profile?.heroImageUrl || getPublicUrl(form.heroImage) || form.heroImage}
               alt="Banner"
               className="w-full h-full object-cover"
@@ -541,7 +542,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           />
           <label htmlFor="logo-upload" className="block cursor-pointer">
             <BrandAvatar 
-              logoUrl={profile.logoUrl || form.logo} 
+              logoUrl={profile?.logoUrl || form.logo} 
               brandName={profile.brandName} 
               size="xl"
               className={cn("w-20 h-20 sm:w-24 sm:h-24 border-4 border-background", logoUploading && "opacity-50")}

@@ -83,6 +83,7 @@ export function BrandAvatar({
     >
       {showImage ? (
         <Image
+          key={resolvedUrl}
           src={resolvedUrl}
           alt={brandName}
           fill
@@ -91,6 +92,7 @@ export function BrandAvatar({
           onError={() => setHasError(true)}
           referrerPolicy="no-referrer"
           priority={false}
+          unoptimized={resolvedUrl.includes('r2.dev')}
         />
       ) : (
         <span className="font-bold text-muted-foreground">
