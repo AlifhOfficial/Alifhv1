@@ -13,7 +13,6 @@
 'use client';
 
 import * as React from 'react';
-import Image from 'next/image';
 import { cn, getPublicUrl } from '@/utils';
 
 interface BrandAvatarProps {
@@ -59,10 +58,16 @@ export function BrandAvatar({
 }: BrandAvatarProps) {
   const [hasError, setHasError] = React.useState(false);
 
-  // Resolve storage key to public URL with cache busting
+  // If logoUrl is already a full URL (from API), use it directly
+  // Otherwise resolve storage key to public URL
   const resolvedUrl = React.useMemo(() => {
     if (!logoUrl) return null;
-    const cacheBuster = updatedAt ? new Date(updatedAt).getTime() : undefined;
+    // Already a full URL - use as-is (API already added cache buster)
+    if (logoUrl.startsWith('http://') || logoUrl.startsWith('https://')) {
+      return logoUrl;
+    }
+    // Storage key - convert to URL with cache buster
+    const cacheBuster = updatedAt ? new Date(updatedAt).getTime() : Date.now();
     return getPublicUrl(logoUrl, cacheBuster);
   }, [logoUrl, updatedAt]);
 
@@ -82,17 +87,13 @@ export function BrandAvatar({
       )}
     >
       {showImage ? (
-        <Image
+        <img
           key={resolvedUrl}
           src={resolvedUrl}
           alt={brandName}
-          fill
-          sizes="(max-width: 768px) 64px, 96px"
-          className="object-cover"
+          className="w-full h-full object-cover"
           onError={() => setHasError(true)}
           referrerPolicy="no-referrer"
-          priority={false}
-          unoptimized={resolvedUrl.includes('r2.dev')}
         />
       ) : (
         <span className="font-bold text-muted-foreground">

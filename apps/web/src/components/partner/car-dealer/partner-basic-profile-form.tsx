@@ -496,9 +496,20 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 {bannerUploading ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Camera className="w-4 h-4 text-white" />}
               </label>
               <button
-                onClick={async () => {
-                  await updateProfile({ heroImage: null });
-                  await refetchFresh();
+                type="button"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setBannerUploading(true);
+                  try {
+                    await updateProfile({ heroImage: null });
+                    await refetchFresh();
+                    toast({ title: 'Banner removed' });
+                  } catch {
+                    toast({ title: 'Failed to remove', variant: 'destructive' });
+                  } finally {
+                    setBannerUploading(false);
+                  }
                 }}
                 className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-red-500/50 transition-colors"
               >
