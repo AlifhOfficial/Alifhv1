@@ -147,16 +147,10 @@ export function usePartnerProfile(partnerId: string | null | undefined) {
   const queryClient = useQueryClient();
   const { refetch: refetchSession } = useAuth();
 
-  // staleTime: Infinity prevents auto-refetches (we trust setQueryData for mutations)
-  // Keep data cached to avoid refetches during re-renders
   const query = useQuery({
     queryKey: ['partner-profile', partnerId],
     queryFn: () => fetchPartnerProfile(partnerId!),
     enabled: !!partnerId,
-    staleTime: Infinity, // Never auto-refetch (mutations update via setQueryData)
-    refetchOnWindowFocus: false, // No auto refetch
-    refetchOnMount: false, // Don't refetch if we have data
-    refetchOnReconnect: false, // No auto refetch on reconnect
   });
 
   const mutation = useMutation({
