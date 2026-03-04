@@ -137,10 +137,18 @@ export async function GET(_req: NextRequest) {
       });
     }
 
-    // Map Stripe price to our plan
+    // Get plan from DATABASE tier (source of truth)
+    // The partner.tier is updated by the Stripe webhook when subscription changes
+    const plan = partnerData?.tier === 'black' ? PLANS.black : PLANS.flow;
+    
+    // Also get Stripe's price ID for verification logging
     const priceId = activeSubscription.items.data[0]?.price.id;
-    const isBlackPlan = priceId === process.env.STRIPE_PRICE_ALIFH_BLACK;
-    const plan = isBlackPlan ? PLANS.black : PLANS.flow;
+    const stripePlanIsBlack = priceId === process.env.STRIPE_PRICE_ALIFH_BLACK;
+    
+    // Log if there's a mismatch (indicates webhook may not have fired)
+    if ((partnerData?.tier === 'black') !== stripePlanIsBlack) {
+      console.warn(`[Subscription] Plan mismatch! DB tier=${partnerData?.tier}, Stripe priceId suggests=${stripePlanIsBlack ? 'black' : 'flow'}. Webhook may need to resync.`);
+    }
 
     // Get payment method info if available
     const paymentMethod = activeSubscription.default_payment_method as any;

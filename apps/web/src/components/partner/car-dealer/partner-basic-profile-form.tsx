@@ -469,8 +469,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         Dashboard
       </Link>
 
-      {/* Banner */}
-      <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border/40 h-24 sm:h-32 mb-6 group/banner">
+      {/* Banner - Completely separate section */}
+      <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border/40 h-32 sm:h-40 mb-4">
         <input
           type="file"
           accept="image/*"
@@ -483,23 +483,21 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         {profile?.heroImage ? (
           <>
             <img
-              key={profile.heroImageUrl || profile.heroImage}
               src={profile.heroImageUrl || getPublicUrl(profile.heroImage)}
               alt="Banner"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/banner:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            {/* Always visible controls */}
+            <div className="absolute top-2 right-2 flex gap-2">
               <label
                 htmlFor="banner-upload"
-                className="p-2 rounded-full bg-white/20 backdrop-blur-sm cursor-pointer hover:bg-white/30 transition-colors"
+                className="p-2 rounded-full bg-black/50 cursor-pointer hover:bg-black/70 transition-colors"
               >
                 {bannerUploading ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Camera className="w-4 h-4 text-white" />}
               </label>
               <button
                 type="button"
-                onClick={async (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
+                onClick={async () => {
                   setBannerUploading(true);
                   try {
                     await updateProfile({ heroImage: null });
@@ -511,7 +509,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                     setBannerUploading(false);
                   }
                 }}
-                className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-red-500/50 transition-colors"
+                disabled={bannerUploading}
+                className="p-2 rounded-full bg-red-500/80 hover:bg-red-600 transition-colors"
               >
                 <X className="w-4 h-4 text-white" />
               </button>
@@ -534,10 +533,10 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         )}
       </div>
 
-      {/* Profile Header */}
-      <div className="flex items-start gap-3 sm:gap-4 mb-6 sm:mb-8">
-        {/* Avatar */}
-        <div className="relative group/avatar -mt-10 sm:-mt-12 z-10 shrink-0">
+      {/* Profile Header - Avatar and info side by side, NO overlap with banner */}
+      <div className="flex items-center gap-4 mb-6 sm:mb-8">
+        {/* Avatar - Separate entity */}
+        <div className="relative shrink-0">
           <input 
             type="file" 
             accept="image/*" 
@@ -546,16 +545,16 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             onChange={(e) => uploadImage(e, 'logo')} 
             disabled={logoUploading}
           />
-          <label htmlFor="logo-upload" className="block cursor-pointer relative w-20 h-20 sm:w-24 sm:h-24">
+          <label htmlFor="logo-upload" className="block cursor-pointer relative w-16 h-16 sm:w-20 sm:h-20">
             <BrandAvatar 
               logoUrl={profile?.logoUrl} 
               brandName={profile.brandName} 
               size="xl"
-              className={cn("w-20 h-20 sm:w-24 sm:h-24 border-4 border-background", logoUploading && "opacity-50")}
+              className={cn("w-16 h-16 sm:w-20 sm:h-20 border-2 border-border", logoUploading && "opacity-50")}
             />
             <div className={cn(
               "absolute inset-0 flex items-center justify-center bg-black/40 rounded-full transition-opacity",
-              logoUploading ? "opacity-100" : "opacity-0 group-hover/avatar:opacity-100"
+              logoUploading ? "opacity-100" : "opacity-0 hover:opacity-100"
             )}>
               {logoUploading ? (
                 <Loader2 className="w-5 h-5 text-white animate-spin" />
@@ -568,9 +567,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           {profile?.logo && !logoUploading && (
             <button
               type="button"
-              onClick={async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+              onClick={async () => {
                 setLogoUploading(true);
                 try {
                   await updateProfile({ logo: null });
@@ -582,15 +579,15 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                   setLogoUploading(false);
                 }
               }}
-              className="absolute -top-1 -right-1 z-10 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity hover:bg-destructive/90"
+              className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:bg-destructive/90"
               title="Remove logo"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-3 h-3" />
             </button>
           )}
         </div>
 
-        <div className="flex-1 min-w-0 pt-1 sm:pt-2">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate">{profile.brandName}</h1>
             {profile.tier === 'black' ? (

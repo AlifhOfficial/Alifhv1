@@ -101,27 +101,37 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Get current partner tier from DB (standard = Flow, black = Black)
+    const currentTier = partnerData?.tier || 'standard';
+    const isUpgrade = currentTier !== 'black' && plan === 'black';
+    const isDowngrade = currentTier === 'black' && plan === 'flow';
+    const isSamePlan = (currentTier === 'black' && plan === 'black') || 
+                       (currentTier === 'standard' && plan === 'flow');
+    
     // Calculate remaining free trial days
-    // Use admin-set trialEndDate if available, otherwise fall back to config-based calculation
-    let trialEndDate: Date;
+    // IMPORTANT: Trial only applies if staying on same plan or adding payment method
+    // Upgrading to Black during trial requires PAYMENT - no free upgrade
+    let hasRemainingTrial = false;
+    let trialEndDate: Date | null = null;
     
     if (partnerData?.trialEndDate) {
-      // Admin set a specific trial end date during approval
       trialEndDate = new Date(partnerData.trialEndDate);
-    } else {
-      // Fallback: calculate from partner creation + plan freeMonths
-      const planConfig = PLANS[plan];
-      const partnerCreatedAt = partnerData?.createdAt || new Date();
-      trialEndDate = new Date(partnerCreatedAt);
-      trialEndDate.setMonth(trialEndDate.getMonth() + planConfig.freeMonths);
+      const now = new Date();
+      const isInTrial = now < trialEndDate;
+      
+      // Only honor trial if:
+      // 1. Currently in trial period AND
+      // 2. Staying on same plan (not upgrading to Black)
+      // Upgrading to Black = pay immediately, no trial benefit
+      if (isInTrial && isSamePlan) {
+        hasRemainingTrial = true;
+      } else if (isInTrial && isUpgrade) {
+        // User is upgrading during trial - they pay for Black immediately
+        // No trial period for upgrades
+        console.log(`[Checkout] Partner ${partnerMembership.partnerId} upgrading from ${currentTier} to ${plan} during trial - no trial benefit for upgrade`);
+        hasRemainingTrial = false;
+      }
     }
-    
-    const now = new Date();
-    const remainingTrialMs = trialEndDate.getTime() - now.getTime();
-    const remainingTrialDays = Math.max(0, Math.ceil(remainingTrialMs / (1000 * 60 * 60 * 24)));
-    
-    // Only apply trial if there are remaining days
-    const hasRemainingTrial = remainingTrialDays > 0;
 
     // Build URLs
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
@@ -152,7 +162,8 @@ export async function POST(req: NextRequest) {
           plan: plan,
         },
         // Honor remaining free trial - Stripe needs Unix timestamp
-        ...(hasRemainingTrial ? { trial_end: Math.floor(trialEndDate.getTime() / 1000) } : {}),
+        // Only applies when staying on same plan, NOT for upgrades
+        ...(hasRemainingTrial && trialEndDate ? { trial_end: Math.floor(trialEndDate.getTime() / 1000) } : {}),
       },
       // Allow promotion codes
       allow_promotion_codes: true,
