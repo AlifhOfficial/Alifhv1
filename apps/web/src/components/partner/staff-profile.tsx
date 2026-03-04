@@ -10,6 +10,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2, RefreshCw, User, Phone, Briefcase } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 
 interface StaffProfileData {
@@ -109,10 +110,40 @@ export function StaffProfile() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="flex flex-col items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-          <p className="text-xs text-muted-foreground mt-4">Loading...</p>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-16">
+        {/* Back */}
+        <Skeleton className="h-4 w-12 mb-6" />
+        
+        {/* Header */}
+        <header className="mb-8 sm:mb-16">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
+            <div>
+              <Skeleton className="h-7 w-40 mb-2" />
+              <Skeleton className="h-4 w-56" />
+            </div>
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-8 w-8 rounded-lg" />
+            </div>
+          </div>
+        </header>
+
+        {/* Role Badge Skeleton */}
+        <div className="mb-8">
+          <Skeleton className="h-6 w-16 rounded-full" />
+        </div>
+
+        {/* Form Fields Skeleton */}
+        <div className="space-y-8 max-w-md">
+          <div>
+            <Skeleton className="h-3 w-24 mb-2" />
+            <Skeleton className="h-10 w-full rounded-xl" />
+            <Skeleton className="h-3 w-48 mt-2" />
+          </div>
+          <div>
+            <Skeleton className="h-3 w-20 mb-2" />
+            <Skeleton className="h-10 w-full rounded-xl" />
+            <Skeleton className="h-3 w-40 mt-2" />
+          </div>
         </div>
       </div>
     );

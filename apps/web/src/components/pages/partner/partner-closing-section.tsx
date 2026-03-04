@@ -62,9 +62,7 @@ export function PartnerClosingSection() {
         </div>
 
         {/* Infographic */}
-        <div className="mb-12">
-          <JoinRevvupInfographic />
-        </div>
+        <JoinRevvupInfographic />
 
         {/* CTA Button */}
         <div className="flex justify-center">

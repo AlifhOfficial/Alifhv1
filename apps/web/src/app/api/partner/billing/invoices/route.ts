@@ -59,12 +59,17 @@ export async function GET(req: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
     const startingAfter = searchParams.get('starting_after') || undefined;
 
-    // Fetch invoices from Stripe
-    const invoices = await stripe.invoices.list({
-      customer: user.stripeCustomerId,
-      limit,
-      starting_after: startingAfter,
-    });
+    // Fetch invoices and upcoming invoice in parallel
+    const [invoices, upcomingResult] = await Promise.all([
+      stripe.invoices.list({
+        customer: user.stripeCustomerId,
+        limit,
+        starting_after: startingAfter,
+      }),
+      stripe.invoices.createPreview({
+        customer: user.stripeCustomerId,
+      }).catch(() => null), // May fail if no active subscription
+    ]);
 
     // Transform to clean response format
     const formattedInvoices = invoices.data.map((invoice) => ({
@@ -90,12 +95,10 @@ export async function GET(req: NextRequest) {
         : null,
     }));
 
-    // Get upcoming invoice if subscription exists
+    // Format upcoming invoice if available
     let upcomingInvoice = null;
-    try {
-      const upcoming = await stripe.invoices.createPreview({
-        customer: user.stripeCustomerId,
-      });
+    if (upcomingResult) {
+      const upcoming = upcomingResult;
       upcomingInvoice = {
         id: 'upcoming',
         number: null,
@@ -113,8 +116,6 @@ export async function GET(req: NextRequest) {
           ? new Date(upcoming.period_end * 1000).toISOString()
           : null,
       };
-    } catch {
-      // No upcoming invoice (no active subscription)
     }
 
     return NextResponse.json({

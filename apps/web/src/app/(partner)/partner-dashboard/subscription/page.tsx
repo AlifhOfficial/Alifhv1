@@ -17,7 +17,7 @@ import {
   ExternalLink, 
   Download, 
   Calendar,
-  CheckCircle,
+  CheckCircle2,
   Clock,
   AlertCircle,
   FileText,
@@ -27,6 +27,7 @@ import {
   ArrowDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -104,12 +105,12 @@ const formatDate = (dateString: string | null) => {
 // Status badge component
 const StatusBadge = ({ status }: { status: string }) => {
   const config: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
-    active: { bg: 'bg-green-500/10', text: 'text-green-500', icon: <CheckCircle className="w-3 h-3" /> },
-    trialing: { bg: 'bg-blue-500/10', text: 'text-blue-500', icon: <Sparkles className="w-3 h-3" /> },
+    active: { bg: 'bg-green-500/10', text: 'text-green-500', icon: <CheckCircle2 className="w-3 h-3" /> },
+    trialing: { bg: 'bg-blue-500/10', text: 'text-blue-500', icon: <Clock className="w-3 h-3" /> },
     past_due: { bg: 'bg-yellow-500/10', text: 'text-yellow-500', icon: <AlertCircle className="w-3 h-3" /> },
     canceled: { bg: 'bg-red-500/10', text: 'text-red-500', icon: <AlertCircle className="w-3 h-3" /> },
     inactive: { bg: 'bg-muted', text: 'text-muted-foreground', icon: <Clock className="w-3 h-3" /> },
-    paid: { bg: 'bg-green-500/10', text: 'text-green-500', icon: <CheckCircle className="w-3 h-3" /> },
+    paid: { bg: 'bg-green-500/10', text: 'text-green-500', icon: <CheckCircle2 className="w-3 h-3" /> },
     open: { bg: 'bg-yellow-500/10', text: 'text-yellow-500', icon: <Clock className="w-3 h-3" /> },
     upcoming: { bg: 'bg-blue-500/10', text: 'text-blue-500', icon: <Calendar className="w-3 h-3" /> },
   };
@@ -290,9 +291,52 @@ export default function PartnerBillingPage() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-          <p className="text-xs text-muted-foreground mt-4">Loading billing...</p>
+        <div className="space-y-6">
+          {/* Subscription Card Skeleton */}
+          <div className="rounded-xl border border-border/40 bg-sidebar p-6 space-y-4">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+              </div>
+              <Skeleton className="h-7 w-40" />
+            </div>
+            <div className="pt-2 space-y-3">
+              <div className="grid grid-cols-2 gap-4">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-28 ml-auto" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-24 ml-auto" />
+              </div>
+            </div>
+            <div className="pt-4 flex gap-3">
+              <Skeleton className="h-10 w-40 rounded-lg" />
+              <Skeleton className="h-10 w-36 rounded-lg" />
+            </div>
+          </div>
+          
+          {/* Invoice Table Skeleton */}
+          <div className="rounded-xl border border-border/40 overflow-hidden">
+            <div className="p-4 border-b border-border/30">
+              <Skeleton className="h-5 w-32" />
+            </div>
+            <div className="divide-y divide-border/30">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-center justify-between p-4">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-5 w-16 rounded-full" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
@@ -300,32 +344,22 @@ export default function PartnerBillingPage() {
       {!isLoading && subData && (
         <>
           {/* Subscription Status Card */}
-          <div className="rounded-xl border border-border/40 bg-sidebar p-6 space-y-6">
+          <div className="rounded-xl border border-border/40 bg-sidebar p-6 space-y-4">
             {/* Plan Header */}
-            <div className="flex items-center gap-4">
-              <div className={cn(
-                "w-12 h-12 rounded-xl flex items-center justify-center shrink-0",
-                subData.plan === 'black' ? 'bg-gradient-to-br from-zinc-900 to-zinc-700' : 'bg-gradient-to-br from-blue-600 to-blue-400'
-              )}>
-                {subData.plan === 'black' ? (
-                  <Crown className="w-6 h-6 text-white" />
-                ) : (
-                  <Sparkles className="w-6 h-6 text-white" />
-                )}
-              </div>
+            <div className="flex items-center justify-between">
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mb-1">
                   <h2 className="text-lg font-semibold text-foreground">{subData.planDisplayName}</h2>
                   <StatusBadge status={subData.status} />
                 </div>
-                <p className="text-2xl font-bold text-foreground mt-1">
+                <p className="text-2xl font-bold text-foreground">
                   {subData.priceAED.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">AED/month</span>
                 </p>
               </div>
             </div>
             
             {/* Billing Details */}
-            <div className="border-t border-border/30 pt-4">
+            <div className="pt-2">
               {/* Trial billing breakdown */}
               {subData.status === 'trialing' && daysRemaining !== null && (
                 <div className="space-y-3">
@@ -338,7 +372,7 @@ export default function PartnerBillingPage() {
                     </div>
                   )}
                   <div className="grid grid-cols-2 gap-4 text-sm">
-                    <span className="text-muted-foreground">Charged today</span>
+                    <span className="text-muted-foreground">Current charge</span>
                     <span className="font-semibold text-green-500 text-right">0 AED</span>
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm">
@@ -387,7 +421,7 @@ export default function PartnerBillingPage() {
               
               {/* Payment Method Display */}
               {subData.paymentMethod && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mt-4 pt-4 border-t border-border/30">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mt-3">
                   <CreditCard className="w-4 h-4" />
                   <span className="capitalize">{subData.paymentMethod.brand}</span>
                   <span>•••• {subData.paymentMethod.last4}</span>
@@ -399,7 +433,7 @@ export default function PartnerBillingPage() {
             </div>
             
             {/* Actions */}
-            <div className="border-t border-border/30 pt-4 flex flex-wrap gap-3">
+            <div className="pt-4 flex flex-wrap gap-3">
               {/* Subscribe/Add Payment buttons for trial/inactive users without payment */}
               {(subData.status === 'trialing' || subData.status === 'inactive') && !subData.paymentMethod && (
                 <>
@@ -452,7 +486,7 @@ export default function PartnerBillingPage() {
                 <button
                   onClick={handleOpenPortal}
                   disabled={portalLoading}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
                   {portalLoading ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />
@@ -556,7 +590,7 @@ export default function PartnerBillingPage() {
 
           {/* Invoices */}
           <div className="rounded-xl border border-border/40 bg-sidebar">
-            <div className="p-4 border-b border-border/40">
+            <div className="p-4">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-muted-foreground" />
                 <h3 className="text-sm font-medium text-foreground">Invoices</h3>
@@ -570,8 +604,8 @@ export default function PartnerBillingPage() {
               </div>
             ) : (
               <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
+                <TableHeader className="[&_tr]:border-0">
+                  <TableRow className="hover:bg-transparent border-0">
                     <TableHead className="text-xs">Invoice</TableHead>
                     <TableHead className="text-xs">Date</TableHead>
                     <TableHead className="text-xs">Amount</TableHead>
@@ -579,9 +613,9 @@ export default function PartnerBillingPage() {
                     <TableHead className="text-xs text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className="[&_tr]:border-0">
                   {invoices.map((invoice) => (
-                    <TableRow key={invoice.id}>
+                    <TableRow key={invoice.id} className="border-0">
                       <TableCell className="font-medium">
                         <div>
                           <p className="text-sm">{invoice.number || invoice.id.slice(0, 8)}</p>

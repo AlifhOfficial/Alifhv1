@@ -12,6 +12,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { cn } from '@/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { usePartnerShowroom, type ShowroomUpdateData, type PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import { useToast } from '@/hooks/use-toast';
 import { compressAndUploadShowroomImage, uploadShowroomVideo } from '@/lib/storage';
@@ -217,10 +218,29 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
   // Loading state
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto px-6 py-16">
-        <div className="flex flex-col items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+      <div className="max-w-4xl mx-auto px-6 py-16 space-y-8">
+        {/* Header Skeleton */}
+        <div>
+          <Skeleton className="h-7 w-48 mb-2" />
+          <Skeleton className="h-4 w-72" />
         </div>
+        
+        {/* Form Sections Skeleton */}
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="rounded-xl border border-border/40 p-6 space-y-4">
+            <Skeleton className="h-5 w-32 mb-4" />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Skeleton className="h-3 w-20 mb-2" />
+                <Skeleton className="h-10 w-full rounded-xl" />
+              </div>
+              <div>
+                <Skeleton className="h-3 w-24 mb-2" />
+                <Skeleton className="h-10 w-full rounded-xl" />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

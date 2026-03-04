@@ -27,9 +27,7 @@ export function PartnerPainPointSection() {
         </div>
 
         {/* Infographic */}
-        <div className="mb-12">
-          <MarketplaceGameInfographic />
-        </div>
+        <MarketplaceGameInfographic />
 
         {/* Description */}
         <p className="text-base text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mb-16">

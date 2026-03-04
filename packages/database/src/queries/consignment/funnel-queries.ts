@@ -12,6 +12,7 @@ import { eq, and, asc, desc, isNull, inArray, lte, gte, sql, or, ilike } from 'd
 import { db } from '../../dbclient';
 import { consignmentFunnel, type ConsignmentFunnelFilters } from '../../schema/consignment';
 import { carListing } from '../../schema/listing';
+import { user } from '../../schema/auth';
 import { userProfile } from '../../schema/profile';
 
 const FUNNEL_ID_PREFIX = 'funl_';
@@ -116,11 +117,10 @@ export async function getAllPartnerFunnels(
       isActive: consignmentFunnel.isActive,
       createdAt: consignmentFunnel.createdAt,
       updatedAt: consignmentFunnel.updatedAt,
-      staffFirstName: userProfile.firstName,
-      staffLastName: userProfile.lastName,
+      staffName: user.name,
     })
     .from(consignmentFunnel)
-    .leftJoin(userProfile, eq(consignmentFunnel.staffId, userProfile.userId))
+    .leftJoin(user, eq(consignmentFunnel.staffId, user.id))
     .where(and(...whereConditions))
     .orderBy(desc(consignmentFunnel.createdAt))
     .limit(limit)
@@ -137,9 +137,7 @@ export async function getAllPartnerFunnels(
     isActive: r.isActive,
     createdAt: r.createdAt,
     updatedAt: r.updatedAt,
-    staffName: r.staffFirstName && r.staffLastName 
-      ? `${r.staffFirstName} ${r.staffLastName}`
-      : r.staffFirstName || r.staffLastName || null,
+    staffName: r.staffName,
   }));
 }
 
@@ -170,21 +168,18 @@ export async function getPartnerFunnelStaff(partnerId: string): Promise<{ staffI
   const results = await db
     .select({
       staffId: consignmentFunnel.staffId,
-      staffFirstName: userProfile.firstName,
-      staffLastName: userProfile.lastName,
+      staffName: user.name,
       funnelCount: sql<number>`count(*)`,
     })
     .from(consignmentFunnel)
-    .leftJoin(userProfile, eq(consignmentFunnel.staffId, userProfile.userId))
+    .leftJoin(user, eq(consignmentFunnel.staffId, user.id))
     .where(eq(consignmentFunnel.partnerId, partnerId))
-    .groupBy(consignmentFunnel.staffId, userProfile.firstName, userProfile.lastName)
+    .groupBy(consignmentFunnel.staffId, user.name)
     .orderBy(sql`count(*) desc`);
   
   return results.map(r => ({
     staffId: r.staffId,
-    staffName: r.staffFirstName && r.staffLastName 
-      ? `${r.staffFirstName} ${r.staffLastName}`
-      : r.staffFirstName || r.staffLastName || 'Unknown',
+    staffName: r.staffName || 'Unknown',
     funnelCount: Number(r.funnelCount),
   }));
 }

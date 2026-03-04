@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { StaffDeleteModal } from './staff-delete-modal';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Select,
   SelectContent,
@@ -249,9 +250,38 @@ export function PartnerStaffManagement() {
   if (isLoading) {
     return (
       <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="flex flex-col items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-          <p className="text-xs text-muted-foreground mt-4">Loading...</p>
+        {/* Back */}
+        <Skeleton className="h-4 w-12 mb-6" />
+        
+        {/* Header */}
+        <header className="mb-16">
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <Skeleton className="h-7 w-48 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-8 w-8 rounded-lg" />
+              <Skeleton className="h-9 w-32 rounded-xl" />
+            </div>
+          </div>
+        </header>
+
+        {/* Staff List Skeletons */}
+        <div className="space-y-1">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4 p-4 -mx-4 rounded-xl">
+              <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+              <div className="flex-1 min-w-0">
+                <Skeleton className="h-4 w-32 mb-1.5" />
+                <Skeleton className="h-3 w-48" />
+              </div>
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-8 w-24 rounded-lg" />
+                <Skeleton className="h-4 w-14" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );

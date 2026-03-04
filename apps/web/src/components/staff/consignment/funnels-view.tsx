@@ -22,6 +22,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getThumbUrl } from '@/utils/storage';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -212,9 +213,36 @@ export function ConsignmentFunnelsView() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-16 sm:py-24">
-          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-          <p className="text-[11px] sm:text-xs text-muted-foreground mt-3 sm:mt-4">Loading...</p>
+        <div className="space-y-4">
+          {/* Stats Skeleton */}
+          <div className="flex flex-wrap items-center gap-6">
+            <div>
+              <Skeleton className="h-3 w-14 mb-1" />
+              <Skeleton className="h-6 w-8" />
+            </div>
+            <div>
+              <Skeleton className="h-3 w-16 mb-1" />
+              <Skeleton className="h-6 w-10" />
+            </div>
+          </div>
+          
+          {/* Funnel Cards Skeleton */}
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-border/40 p-4 sm:p-5">
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="flex-1">
+                  <Skeleton className="h-5 w-40 mb-2" />
+                  <Skeleton className="h-3 w-56" />
+                </div>
+                <Skeleton className="h-6 w-16 rounded-full" />
+              </div>
+              <div className="flex gap-1.5">
+                <Skeleton className="h-5 w-16 rounded-md" />
+                <Skeleton className="h-5 w-20 rounded-md" />
+                <Skeleton className="h-5 w-14 rounded-md" />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -311,26 +339,25 @@ interface MatchingListing {
 }
 
 function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRowProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false); // Start collapsed - lazy load
   const filterTags = getFilterTags(funnel.filters);
 
-  // Fetch preview listings (limit 4)
+  // Fetch preview listings only when expanded (lazy load)
   const { data: previewData, isLoading: previewLoading } = useQuery<{
     listings: MatchingListing[];
     total: number;
   }>({
     queryKey: ['funnel-preview', funnel.id],
     queryFn: async () => {
-      // Always use cache-busting param to bypass browser HTTP cache
-      const res = await fetch(`/api/partner/consignment/funnels/${funnel.id}/matches?limit=4&_t=${Date.now()}`, {
+      const res = await fetch(`/api/partner/consignment/funnels/${funnel.id}/matches?limit=4`, {
         cache: 'no-store',
       });
       if (!res.ok) throw new Error('Failed to fetch preview');
       return res.json();
     },
-    staleTime: 0, // Always refetch on invalidation
-    refetchOnMount: 'always',
-    gcTime: 0, // Don't cache stale data
+    enabled: isExpanded, // Only fetch when row is expanded
+    staleTime: 60000, // Cache for 1 minute
+    gcTime: 300000, // Keep in cache for 5 minutes
   });
 
   return (
@@ -413,9 +440,10 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
       {isExpanded && (
       <div className="p-3 sm:p-4">
         {previewLoading ? (
-          <div className="flex flex-col items-center justify-center py-6 sm:py-8 gap-2">
-            <div className="w-4 h-4 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-            <p className="text-[10px] sm:text-xs text-muted-foreground/50">Loading...</p>
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="aspect-[4/3] rounded-lg" />
+            ))}
           </div>
         ) : !previewData?.listings || previewData.listings.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-center">

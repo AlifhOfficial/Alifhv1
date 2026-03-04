@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { BrandAvatar } from './ui/brand-avatar';
 import { cn } from '@/utils/cn';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getPublicUrl } from '@/utils';
 import Link from 'next/link';
 
@@ -428,9 +429,24 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   // Loading
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto px-6 py-16">
-        <div className="flex flex-col items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+      <div className="max-w-2xl mx-auto px-6 py-16 space-y-8">
+        {/* Header Skeleton */}
+        <div>
+          <Skeleton className="h-7 w-40 mb-2" />
+          <Skeleton className="h-4 w-56" />
+        </div>
+        
+        {/* Profile Fields Skeleton */}
+        <div className="space-y-6">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex items-center justify-between py-4 border-b border-border/30">
+              <div>
+                <Skeleton className="h-3 w-24 mb-2" />
+                <Skeleton className="h-5 w-40" />
+              </div>
+              <Skeleton className="h-8 w-14 rounded-lg" />
+            </div>
+          ))}
         </div>
       </div>
     );

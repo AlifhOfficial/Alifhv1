@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Combobox } from '@/components/ui/forms/combobox';
+import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useDebouncedCallback } from 'use-debounce';
@@ -342,9 +343,27 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
 
       {/* Loading */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-16 sm:py-20">
-          <Loader2 className="w-5 h-5 animate-spin text-muted-foreground/40 mb-2" />
-          <p className="text-xs text-muted-foreground/60">Loading funnels...</p>
+        <div className="space-y-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-border/40 bg-card p-4 sm:p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Skeleton className="w-4 h-4 rounded" />
+                    <Skeleton className="h-5 w-48" />
+                  </div>
+                  <Skeleton className="h-3 w-64 mb-2 ml-7" />
+                  <Skeleton className="h-3 w-32 mb-3 ml-7" />
+                  <div className="flex gap-1.5 ml-7">
+                    <Skeleton className="h-5 w-16 rounded-md" />
+                    <Skeleton className="h-5 w-20 rounded-md" />
+                    <Skeleton className="h-5 w-14 rounded-md" />
+                  </div>
+                </div>
+                <Skeleton className="h-6 w-16 rounded-full" />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -522,7 +541,7 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
             )}
 
             <p className="text-[11px] sm:text-xs text-muted-foreground ml-5 sm:ml-7 mb-1.5 sm:mb-2">
-              {funnel.staffName || 'Unknown'} · {new Date(funnel.createdAt).toLocaleDateString()}
+              {funnel.staffName || 'Staff member'} · {new Date(funnel.createdAt).toLocaleDateString()}
             </p>
 
             {/* Filter Tags */}

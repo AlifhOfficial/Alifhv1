@@ -8,6 +8,7 @@
 import { redirect } from 'next/navigation';
 import { useAuth } from '@/providers/auth-provider';
 import { EditListingView } from '@/components/listings/edit-listing';
+import { Skeleton } from '@/components/ui/skeleton';
 import { use, useEffect, useState } from 'react';
 
 interface PageProps {
@@ -45,8 +46,40 @@ export default function StaffEditWorkListingPage({ params }: PageProps) {
 
   if (isLoading || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
+        {/* Header Skeleton */}
+        <div>
+          <Skeleton className="h-4 w-20 mb-4" />
+          <Skeleton className="h-8 w-64 mb-2" />
+          <Skeleton className="h-4 w-40" />
+        </div>
+        
+        {/* Image Upload Skeleton */}
+        <div className="grid grid-cols-4 gap-3">
+          <Skeleton className="aspect-video rounded-xl col-span-2 row-span-2" />
+          <Skeleton className="aspect-video rounded-xl" />
+          <Skeleton className="aspect-video rounded-xl" />
+          <Skeleton className="aspect-video rounded-xl" />
+          <Skeleton className="aspect-video rounded-xl" />
+        </div>
+        
+        {/* Form Fields Skeleton */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Skeleton className="h-3 w-16 mb-2" />
+              <Skeleton className="h-10 w-full rounded-xl" />
+            </div>
+            <div>
+              <Skeleton className="h-3 w-20 mb-2" />
+              <Skeleton className="h-10 w-full rounded-xl" />
+            </div>
+          </div>
+          <div>
+            <Skeleton className="h-3 w-24 mb-2" />
+            <Skeleton className="h-24 w-full rounded-xl" />
+          </div>
+        </div>
       </div>
     );
   }

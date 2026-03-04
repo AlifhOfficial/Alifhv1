@@ -9,6 +9,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Building2 } from 'lucide-react';
 import { SellerProfileCard } from '@/components/listings/listing-detail/seller-profile-card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/providers/auth-provider';
 import type { ExtendedUser } from '@/types/auth';
 import type { PartnerSellerData } from '@/hooks/listings/use-listing-detail';
@@ -81,8 +82,32 @@ export function StaffWorksFor() {
     return (
       <div className="min-h-full bg-background">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <div className="flex flex-col items-center justify-center py-24">
-            <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+          {/* Partner Card Skeleton */}
+          <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-6">
+            {/* Header */}
+            <div className="flex items-center gap-4">
+              <Skeleton className="w-16 h-16 rounded-xl" />
+              <div className="flex-1">
+                <Skeleton className="h-6 w-48 mb-2" />
+                <Skeleton className="h-4 w-32" />
+              </div>
+            </div>
+            
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="text-center p-3 rounded-xl bg-secondary/30">
+                  <Skeleton className="h-6 w-10 mx-auto mb-1" />
+                  <Skeleton className="h-3 w-16 mx-auto" />
+                </div>
+              ))}
+            </div>
+            
+            {/* Contact Info */}
+            <div className="space-y-3 pt-4 border-t border-border/30">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-4 w-56" />
+            </div>
           </div>
         </div>
       </div>

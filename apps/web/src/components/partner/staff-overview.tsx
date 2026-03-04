@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { Users, Clock, ArrowRight, RefreshCw, Mail, UserPlus } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 interface StaffStats {
@@ -125,9 +126,30 @@ export function StaffOverview() {
 
       {/* Loading */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-          <p className="text-xs text-muted-foreground mt-4">Loading...</p>
+        <div className="space-y-6">
+          {/* Stats Skeleton */}
+          <div className="flex items-center gap-10">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i}>
+                <Skeleton className="h-3 w-12 mb-2" />
+                <Skeleton className="h-7 w-8" />
+              </div>
+            ))}
+          </div>
+          
+          {/* Team List Skeleton */}
+          <div className="space-y-1">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 p-4 -mx-4 rounded-xl">
+                <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <Skeleton className="h-4 w-32 mb-1.5" />
+                  <Skeleton className="h-3 w-48" />
+                </div>
+                <Skeleton className="h-5 w-14 rounded-full" />
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

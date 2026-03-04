@@ -25,9 +25,7 @@ export function PartnerFlatFeeSection() {
         </div>
 
         {/* Infographic */}
-        <div className="mb-12">
-          <UnlimitedListingsInfographic />
-        </div>
+        <UnlimitedListingsInfographic />
 
         {/* Description */}
         <p className="text-base text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mb-16">

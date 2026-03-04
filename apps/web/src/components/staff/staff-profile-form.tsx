@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/hooks/profile';
 import { Loader2, CheckCircle2, Info } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface StaffProfile {
   id: string;
@@ -271,10 +272,33 @@ export function StaffProfileForm() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-2xl mx-auto px-6 py-16">
-          <div className="flex flex-col items-center justify-center py-24">
-            <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+      <div className="min-h-screen bg-background pb-16">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+          {/* Header Skeleton */}
+          <div>
+            <Skeleton className="h-6 w-32 mb-1" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+          
+          {/* Info Banner Skeleton */}
+          <Skeleton className="h-16 w-full rounded-xl" />
+          
+          {/* Profile Fields Skeleton */}
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="rounded-xl border border-border/40 p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="w-10 h-10 rounded-xl" />
+                    <div>
+                      <Skeleton className="h-4 w-28 mb-1" />
+                      <Skeleton className="h-3 w-40" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-8 w-14 rounded-lg" />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -7,18 +7,18 @@
 
 import Image from "next/image";
 import { Combobox } from "@/components/ui/forms/combobox";
-import { ShoppingCart, User, RefreshCw, Crown, Search, ChevronLeft, ChevronRight, X, Box } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ShoppingCart, RefreshCw, Crown, Search, ChevronLeft, ChevronRight, X, Box, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { cn } from "@/utils";
 import { getThumbUrl } from "@/utils/storage";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/forms/select';
 import { useDebouncedCallback } from 'use-debounce';
 
 // Status tab types - maps to lifecycleStatus API param
@@ -132,16 +132,8 @@ export function DealerInventory({
   const hasFetchedInitialRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   
-  // Reassign modal state
-  const [reassignModal, setReassignModal] = useState<{
-    open: boolean;
-    listingId: string | null;
-    listingTitle: string;
-    currentManagerId: string | null;
-  }>({ open: false, listingId: null, listingTitle: '', currentManagerId: null });
-  const [reassignTargetUserId, setReassignTargetUserId] = useState<string>('');
-  const [isReassigning, setIsReassigning] = useState(false);
-  const [reassignError, setReassignError] = useState<string | null>(null);
+  // Reassign state
+  const [reassigningListingId, setReassigningListingId] = useState<string | null>(null);
 
   // Check if user can reassign (owner or admin)
   const canReassign = userRole === 'owner' || userRole === 'admin';
@@ -187,7 +179,7 @@ export function DealerInventory({
             id: m.id,
             userId: m.userId,
             status: m.status,
-            displayName: m.displayName || m.userName || m.userEmail,
+            displayName: m.userName || m.userEmail,
             username: m.userEmail?.split('@')[0] || '',
             avatar: m.userAvatar,
           }));
@@ -304,18 +296,15 @@ export function DealerInventory({
   }, []);
 
   // Handle reassigning a listing to a different staff member
-  const handleReassign = async () => {
-    if (!reassignModal.listingId || !reassignTargetUserId) return;
-    
-    setIsReassigning(true);
-    setReassignError(null);
+  const handleReassign = async (listingId: string, newUserId: string) => {
+    setReassigningListingId(listingId);
     
     try {
-      const response = await fetch(`/api/listings/${reassignModal.listingId}/reassign`, {
+      const response = await fetch(`/api/listings/${listingId}/reassign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ newUserId: reassignTargetUserId }),
+        body: JSON.stringify({ newUserId }),
       });
       
       if (!response.ok) {
@@ -325,14 +314,10 @@ export function DealerInventory({
       
       // Refresh listings
       await fetchListings(true);
-      
-      // Close modal
-      setReassignModal({ open: false, listingId: null, listingTitle: '', currentManagerId: null });
-      setReassignTargetUserId('');
     } catch (err) {
-      setReassignError(err instanceof Error ? err.message : 'Failed to reassign listing');
+      console.error('Reassign failed:', err);
     } finally {
-      setIsReassigning(false);
+      setReassigningListingId(null);
     }
   };
 
@@ -453,40 +438,6 @@ export function DealerInventory({
         </div>
       </div>
 
-        {/* Stats */}
-        {stats && (
-          <div className="flex flex-wrap items-center gap-6 sm:gap-10">
-            <div>
-              <span className="text-xs text-muted-foreground">Active</span>
-              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.active}</p>
-            </div>
-            <div>
-              <span className="text-xs text-muted-foreground">Public</span>
-              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.public}</p>
-            </div>
-            <div>
-              <span className="text-xs text-muted-foreground">Draft</span>
-              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-yellow-500">{stats.draft}</p>
-            </div>
-            {stats.inReview > 0 && (
-              <div>
-                <span className="text-xs text-muted-foreground">In Review</span>
-                <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.inReview}</p>
-              </div>
-            )}
-            {stats.sold > 0 && (
-              <div>
-                <span className="text-xs text-muted-foreground">Sold</span>
-                <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-purple-500">{stats.sold}</p>
-              </div>
-            )}
-            <div>
-              <span className="text-xs text-muted-foreground">Total</span>
-              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1">{stats.all}</p>
-            </div>
-          </div>
-        )}
-
       {/* Toolbar */}
       <div className="flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-8">
         {/* Row 1: Search + Staff Filter */}
@@ -553,15 +504,6 @@ export function DealerInventory({
           })}
         </div>
         </div>
-
-        {hasActiveFilters && (
-          <button
-            onClick={clearFilters}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors self-end sm:self-auto"
-          >
-            Reset
-          </button>
-        )}
       </div>
 
       {/* Error */}
@@ -573,9 +515,30 @@ export function DealerInventory({
 
       {/* Loading */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
-          <p className="text-xs text-muted-foreground mt-4">Loading...</p>
+        <div className="space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="p-4 sm:p-5 rounded-xl">
+              <div className="flex items-start gap-4 sm:gap-5">
+                <Skeleton className="w-24 h-16 sm:w-32 sm:h-20 rounded-xl shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-3">
+                    <Skeleton className="h-5 w-2/3" />
+                    <Skeleton className="h-6 w-16 rounded-lg" />
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-3">
+                    <div className="space-y-1">
+                      <Skeleton className="h-2 w-8" />
+                      <Skeleton className="h-4 w-20" />
+                    </div>
+                    <div className="space-y-1">
+                      <Skeleton className="h-2 w-16" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -599,7 +562,7 @@ export function DealerInventory({
           </div>
 
           {/* List */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             {listings.map((listing) => {
               const statusBadge = getStatusBadge(listing);
               const teamMember = listing.postedByUserId ? teamMemberMap.get(listing.postedByUserId) : null;
@@ -608,82 +571,105 @@ export function DealerInventory({
                 <div
                   key={listing.id}
                   className={cn(
-                    "group flex items-center gap-3 sm:gap-4 p-3 rounded-xl hover:bg-secondary/40 transition-colors border border-transparent hover:border-border/40",
+                    "group p-4 sm:p-5 rounded-xl hover:bg-secondary/40 transition-colors border border-transparent hover:border-border/40",
                     listing.isBlkListing && "bg-zinc-500/5"
                   )}
                 >
-                  {/* Thumbnail */}
-                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-lg overflow-hidden bg-secondary flex-shrink-0 relative">
-                    {listing.thumbnail ? (
-                      <Image
-                        src={getThumbUrl(listing.thumbnail) || listing.thumbnail}
-                        alt=""
-                        fill
-                        className="object-cover"
-                        sizes="80px"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Box className="w-4 h-4 text-muted-foreground/30" />
-                      </div>
-                    )}
-                    {listing.isBlkListing && (
-                      <div className="absolute top-1 left-1 w-4 h-4 rounded bg-zinc-800 flex items-center justify-center">
-                        <Crown className="w-2.5 h-2.5 text-zinc-100" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <Link href={`/listings/${listing.id}`} className="hover:underline">
-                      <p className="text-sm font-semibold tracking-tight truncate">
-                        {listing.year} {listing.make} {listing.model}
-                        {listing.trim && ` ${listing.trim}`}
-                      </p>
-                    </Link>
-                    <div className="flex items-center gap-2 mt-1">
-                      <p className="text-xs text-muted-foreground">
-                        {listing.price.toLocaleString()} AED
-                      </p>
-                      {listing.postedByDisplayName && (
-                        <>
-                          <span className="text-xs text-muted-foreground/40">·</span>
-                          <p className={cn("text-xs text-muted-foreground/70", teamMember?.status === 'left' && 'opacity-50')}>
-                            {listing.postedByDisplayName}
-                          </p>
-                        </>
+                  <div className="flex items-start gap-4 sm:gap-5">
+                    {/* Thumbnail */}
+                    <div className="w-24 h-16 sm:w-32 sm:h-20 rounded-xl overflow-hidden bg-secondary flex-shrink-0 relative">
+                      {listing.thumbnail ? (
+                        <Image
+                          src={getThumbUrl(listing.thumbnail) || listing.thumbnail}
+                          alt=""
+                          fill
+                          className="object-cover"
+                          sizes="128px"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Box className="w-6 h-6 text-muted-foreground/30" />
+                        </div>
+                      )}
+                      {listing.isBlkListing && (
+                        <div className="absolute top-1.5 left-1.5 w-5 h-5 rounded bg-zinc-800 flex items-center justify-center">
+                          <Crown className="w-3 h-3 text-zinc-100" />
+                        </div>
                       )}
                     </div>
-                  </div>
 
-                  {/* Actions - Show on hover for desktop, always visible on mobile */}
-                  <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                    <Link href={`/listings/${listing.id}`}>
-                      <button className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs font-medium transition-colors">
-                        View
-                      </button>
-                    </Link>
-                    {canReassign && activeStaff.length > 0 && (
-                      <button
-                        onClick={() => setReassignModal({
-                          open: true,
-                          listingId: listing.id,
-                          listingTitle: `${listing.year} ${listing.make} ${listing.model}`,
-                          currentManagerId: listing.postedByUserId || null,
-                        })}
-                        className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs font-medium transition-colors"
-                      >
-                        Reassign
-                      </button>
-                    )}
-                  </div>
+                    {/* Main Info */}
+                    <div className="flex-1 min-w-0">
+                      {/* Title + Status Row */}
+                      <div className="flex items-start justify-between gap-3">
+                        <Link href={`/listings/${listing.id}`} className="hover:underline min-w-0">
+                          <p className="text-sm sm:text-base font-semibold tracking-tight truncate">
+                            {listing.year} {listing.make} {listing.model}
+                            {listing.trim && ` ${listing.trim}`}
+                          </p>
+                        </Link>
+                        <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap flex-shrink-0 ${statusBadge.bg} ${statusBadge.color}`}>
+                          {statusBadge.label}
+                        </span>
+                      </div>
 
-                  {/* Status */}
-                  <div className="flex-shrink-0">
-                    <span className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${statusBadge.bg} ${statusBadge.color}`}>
-                      {statusBadge.label}
-                    </span>
+                      {/* Details Grid */}
+                      <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2">
+                        {/* Price */}
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Price</p>
+                          <p className="text-sm font-medium text-foreground">{listing.price.toLocaleString()} AED</p>
+                        </div>
+
+                        {/* Assigned To */}
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Assigned To</p>
+                          <p className={cn("text-sm", (listing.staffMember?.displayName || listing.postedByDisplayName) ? 'text-foreground' : 'text-muted-foreground/60', teamMember?.status === 'left' && 'opacity-50')}>
+                            {listing.staffMember?.displayName || listing.postedByDisplayName || 'Unassigned'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Actions Row */}
+                      <div className="flex items-center gap-2 mt-3 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                        <Link href={`/listings/${listing.id}`}>
+                          <button className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs font-medium transition-colors">
+                            View
+                          </button>
+                        </Link>
+                        {canReassign && activeStaff.length > 0 && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button 
+                                disabled={reassigningListingId === listing.id}
+                                className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs font-medium transition-colors flex items-center gap-1 disabled:opacity-50"
+                              >
+                                {reassigningListingId === listing.id ? 'Reassigning...' : 'Reassign'}
+                                <ChevronDown className="w-3 h-3" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-48">
+                              {activeStaff.filter(staff => staff.userId !== listing.postedByUserId).length > 0 ? (
+                                activeStaff
+                                  .filter(staff => staff.userId !== listing.postedByUserId)
+                                  .map(staff => (
+                                    <DropdownMenuItem 
+                                      key={staff.userId} 
+                                      onClick={() => handleReassign(listing.id, staff.userId)}
+                                    >
+                                      {staff.displayName}
+                                    </DropdownMenuItem>
+                                  ))
+                              ) : (
+                                <DropdownMenuItem disabled className="text-muted-foreground">
+                                  No other staff available
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               );
@@ -761,77 +747,6 @@ export function DealerInventory({
           >
             Clear filters
           </button>
-        </div>
-      )}
-
-      {/* Reassign Modal */}
-      {reassignModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="fixed inset-0 bg-background/40 backdrop-blur-2xl" onClick={() => {
-            setReassignModal({ open: false, listingId: null, listingTitle: '', currentManagerId: null });
-            setReassignTargetUserId('');
-            setReassignError(null);
-          }} />
-          
-          <div className="relative z-50 bg-background border border-border rounded-xl p-5 sm:p-6 max-w-md w-full mx-4 space-y-4 sm:space-y-6">
-            <div>
-              <h3 className="text-base sm:text-lg font-medium tracking-tight">Reassign Listing</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                Reassign <span className="font-medium text-foreground">{reassignModal.listingTitle}</span>
-              </p>
-            </div>
-            
-            {/* Staff Selection */}
-            <div className="space-y-2 sm:space-y-3">
-              <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                <User className="w-3.5 h-3.5" />
-                Select Staff Member
-              </label>
-              <Select value={reassignTargetUserId} onValueChange={(v) => setReassignTargetUserId(v)}>
-                <SelectTrigger className="h-9 sm:h-10 rounded-lg sm:rounded-xl bg-secondary/50 border-0">
-                  <SelectValue placeholder="Select staff member..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {activeStaff
-                    .filter(staff => staff.userId !== reassignModal.currentManagerId)
-                    .map(staff => (
-                      <SelectItem key={staff.userId} value={staff.userId}>
-                        {staff.displayName}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Error */}
-            {reassignError && (
-              <div className="p-3 rounded-xl bg-red-500/10">
-                <p className="text-sm text-red-600">{reassignError}</p>
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-2">
-              <button
-                onClick={() => {
-                  setReassignModal({ open: false, listingId: null, listingTitle: '', currentManagerId: null });
-                  setReassignTargetUserId('');
-                  setReassignError(null);
-                }}
-                disabled={isReassigning}
-                className="px-4 py-2 rounded-lg sm:rounded-full text-sm hover:bg-secondary/50 transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleReassign}
-                disabled={!reassignTargetUserId || isReassigning}
-                className="px-4 py-2 rounded-lg sm:rounded-full bg-foreground text-background text-sm font-medium transition-colors hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isReassigning ? 'Reassigning...' : 'Reassign'}
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>
