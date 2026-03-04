@@ -16,6 +16,28 @@ import { eq, and, desc, sql, inArray } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
 // ============================================================================
+// Slug Generation Helper
+// ============================================================================
+
+/**
+ * Generate a URL-friendly slug from company name
+ * Includes short ID suffix to ensure uniqueness
+ */
+function generatePartnerSlug(companyName: string, partnerId: string): string {
+  const baseSlug = companyName
+    .toLowerCase()
+    .replace(/\s+/g, '-')       // spaces to hyphens
+    .replace(/&/g, 'and')       // & to and
+    .replace(/[^a-z0-9-]/g, '') // remove special chars
+    .replace(/-+/g, '-')        // multiple hyphens to single
+    .replace(/^-|-$/g, '');     // trim hyphens
+  
+  // Append short ID to ensure uniqueness
+  const shortId = partnerId.slice(-6);
+  return `${baseSlug}-${shortId}`;
+}
+
+// ============================================================================
 // Types
 // ============================================================================
 
@@ -238,11 +260,15 @@ export async function createPartnerFromRequest(
     trialEndDate.setMonth(trialEndDate.getMonth() + trialMonths);
   }
 
+  // Generate unique slug for the partner
+  const slug = generatePartnerSlug(requestData.companyNameLegal, partnerId);
+
   // Create partner record (auto-verified on approval)
   const newPartnerResult = await db
     .insert(partner)
     .values({
       id: partnerId,
+      slug: slug, // SEO-friendly URL slug
       companyNameLegal: requestData.companyNameLegal,
       brandName: requestData.companyNameLegal, // Use company name as brand name
       tradeLicense: requestData.tradeLicense,
