@@ -307,12 +307,12 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     setUploading(true);
     try {
       const imageType = field === 'heroImage' ? 'hero' : 'logo';
-      // Client-side compression + direct R2 upload (fast!)
+      // Client-side compression + direct R2 upload
       const result = await compressAndUploadPartnerImage(file, partnerId, imageType);
       
+      // Mutation returns updated profile with fresh logoUrl/heroImageUrl
+      // No need to refetch - mutation onSuccess already updates cache
       await updateProfile({ [field]: result.key });
-      // Refetch to get updated URLs from server
-      await refetchFresh();
       toast({ title: `${field === 'logo' ? 'Logo' : 'Banner'} updated` });
     } catch (err: any) {
       toast({ title: err.message || 'Upload failed', variant: 'destructive' });
@@ -501,7 +501,6 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                   setBannerUploading(true);
                   try {
                     await updateProfile({ heroImage: null });
-                    await refetchFresh();
                     toast({ title: 'Banner removed' });
                   } catch {
                     toast({ title: 'Failed to remove', variant: 'destructive' });
@@ -571,7 +570,6 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 setLogoUploading(true);
                 try {
                   await updateProfile({ logo: null });
-                  await refetchFresh();
                   toast({ title: 'Logo removed' });
                 } catch {
                   toast({ title: 'Failed to remove', variant: 'destructive' });
