@@ -169,15 +169,13 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     emirate: '',
     lat: null as number | null,
     lng: null as number | null,
-    logo: null as string | null,
-    heroImage: null as string | null,
     specialties: [] as string[],
     experienceYears: null as number | null,
     foundedYear: null as number | null,
     googleReviewUrl: '',
   });
 
-  // Initialize form from profile
+  // Initialize form from profile (text fields only - images use profile directly)
   useEffect(() => {
     if (profile) {
       setForm({
@@ -188,8 +186,6 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         emirate: profile.emirate ?? '',
         lat: profile.locationLat ?? null,
         lng: profile.locationLng ?? null,
-        logo: profile.logo,
-        heroImage: profile.heroImage,
         specialties: profile.specialties ?? [],
         experienceYears: profile.experienceYears,
         foundedYear: profile.foundedYear,
@@ -279,8 +275,6 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         emirate: profile.emirate ?? '',
         lat: profile.locationLat ?? null,
         lng: profile.locationLng ?? null,
-        logo: profile.logo,
-        heroImage: profile.heroImage,
         specialties: profile.specialties ?? [],
         experienceYears: profile.experienceYears,
         foundedYear: profile.foundedYear,
@@ -486,11 +480,11 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           disabled={bannerUploading}
         />
         
-        {form.heroImage ? (
+        {profile?.heroImage ? (
           <>
             <img
-              key={profile?.heroImageUrl || form.heroImage}
-              src={profile?.heroImageUrl || getPublicUrl(form.heroImage) || form.heroImage}
+              key={profile.heroImageUrl || profile.heroImage}
+              src={profile.heroImageUrl || getPublicUrl(profile.heroImage)}
               alt="Banner"
               className="w-full h-full object-cover"
             />
@@ -543,7 +537,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           />
           <label htmlFor="logo-upload" className="block cursor-pointer">
             <BrandAvatar 
-              logoUrl={profile?.logoUrl || (form.logo ? getPublicUrl(form.logo) : null)} 
+              logoUrl={profile?.logoUrl} 
               brandName={profile.brandName} 
               size="xl"
               className={cn("w-20 h-20 sm:w-24 sm:h-24 border-4 border-background", logoUploading && "opacity-50")}
@@ -560,7 +554,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             </div>
           </label>
           {/* Remove logo button */}
-          {form.logo && !logoUploading && (
+          {profile?.logo && !logoUploading && (
             <button
               type="button"
               onClick={async (e) => {
