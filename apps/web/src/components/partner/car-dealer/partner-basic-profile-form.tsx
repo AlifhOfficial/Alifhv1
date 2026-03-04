@@ -470,7 +470,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       </Link>
 
       {/* Banner */}
-      <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border/40 h-24 sm:h-32 mb-6 group">
+      <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border/40 h-24 sm:h-32 mb-6 group/banner">
         <input
           type="file"
           accept="image/*"
@@ -488,7 +488,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
               alt="Banner"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/banner:opacity-100 transition-opacity flex items-center justify-center gap-2">
               <label
                 htmlFor="banner-upload"
                 className="p-2 rounded-full bg-white/20 backdrop-blur-sm cursor-pointer hover:bg-white/30 transition-colors"
@@ -526,7 +526,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       {/* Profile Header */}
       <div className="flex items-start gap-3 sm:gap-4 mb-6 sm:mb-8">
         {/* Avatar */}
-        <div className="relative group -mt-10 sm:-mt-12 z-10 shrink-0">
+        <div className="relative group/avatar -mt-10 sm:-mt-12 z-10 shrink-0">
           <input 
             type="file" 
             accept="image/*" 
@@ -535,7 +535,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             onChange={(e) => uploadImage(e, 'logo')} 
             disabled={logoUploading}
           />
-          <label htmlFor="logo-upload" className="block cursor-pointer">
+          <label htmlFor="logo-upload" className="block cursor-pointer relative w-20 h-20 sm:w-24 sm:h-24">
             <BrandAvatar 
               logoUrl={profile?.logoUrl} 
               brandName={profile.brandName} 
@@ -544,7 +544,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             />
             <div className={cn(
               "absolute inset-0 flex items-center justify-center bg-black/40 rounded-full transition-opacity",
-              logoUploading ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              logoUploading ? "opacity-100" : "opacity-0 group-hover/avatar:opacity-100"
             )}>
               {logoUploading ? (
                 <Loader2 className="w-5 h-5 text-white animate-spin" />
@@ -571,7 +571,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                   setLogoUploading(false);
                 }
               }}
-              className="absolute -top-1 -right-1 z-10 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/90"
+              className="absolute -top-1 -right-1 z-10 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity hover:bg-destructive/90"
               title="Remove logo"
             >
               <X className="w-3.5 h-3.5" />
