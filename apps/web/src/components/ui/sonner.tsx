@@ -9,7 +9,7 @@ type ToasterProps = React.ComponentProps<typeof Sonner>;
  * Custom Sonner Toaster - Revvup Design System
  * 
  * Pre-configured toast notification container with:
- * - Theme-aware styling (light/dark mode support)
+ * - Theme-aware styling (light/dark/charcoal mode support)
  * - Close button on all toasts
  * - Proper positioning and spacing
  * - Consistent typography with design system
@@ -18,9 +18,13 @@ type ToasterProps = React.ComponentProps<typeof Sonner>;
 function Toaster({ ...props }: ToasterProps) {
   const { theme = 'system' } = useTheme();
 
+  // Map charcoal to dark for Sonner (it only accepts light/dark/system)
+  // Our Tailwind config treats charcoal as a dark variant so styles apply correctly
+  const sonnerTheme = theme === 'charcoal' ? 'dark' : theme;
+
   return (
     <Sonner
-      theme={theme as ToasterProps['theme']}
+      theme={sonnerTheme as ToasterProps['theme']}
       position="bottom-right"
       offset={16}
       gap={12}
