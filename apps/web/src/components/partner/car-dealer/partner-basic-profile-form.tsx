@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import { BrandAvatar } from './ui/brand-avatar';
 import { cn } from '@/utils/cn';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getPublicUrl } from '@/utils';
 import Link from 'next/link';
 
@@ -169,13 +168,15 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     emirate: '',
     lat: null as number | null,
     lng: null as number | null,
+    logo: null as string | null,
+    heroImage: null as string | null,
     specialties: [] as string[],
     experienceYears: null as number | null,
     foundedYear: null as number | null,
     googleReviewUrl: '',
   });
 
-  // Initialize form from profile (text fields only - images use profile directly)
+  // Initialize form from profile
   useEffect(() => {
     if (profile) {
       setForm({
@@ -186,6 +187,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         emirate: profile.emirate ?? '',
         lat: profile.locationLat ?? null,
         lng: profile.locationLng ?? null,
+        logo: profile.logo,
+        heroImage: profile.heroImage,
         specialties: profile.specialties ?? [],
         experienceYears: profile.experienceYears,
         foundedYear: profile.foundedYear,
@@ -275,6 +278,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         emirate: profile.emirate ?? '',
         lat: profile.locationLat ?? null,
         lng: profile.locationLng ?? null,
+        logo: profile.logo,
+        heroImage: profile.heroImage,
         specialties: profile.specialties ?? [],
         experienceYears: profile.experienceYears,
         foundedYear: profile.foundedYear,
@@ -307,12 +312,11 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     setUploading(true);
     try {
       const imageType = field === 'heroImage' ? 'hero' : 'logo';
-      // Client-side compression + direct R2 upload
+      // Client-side compression + direct R2 upload (fast!)
       const result = await compressAndUploadPartnerImage(file, partnerId, imageType);
       
-      // Mutation returns updated profile with fresh logoUrl/heroImageUrl
-      // No need to refetch - mutation onSuccess already updates cache
       await updateProfile({ [field]: result.key });
+      updateField({ [field]: result.key });
       toast({ title: `${field === 'logo' ? 'Logo' : 'Banner'} updated` });
     } catch (err: any) {
       toast({ title: err.message || 'Upload failed', variant: 'destructive' });
@@ -424,24 +428,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   // Loading
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto px-6 py-16 space-y-8">
-        {/* Header Skeleton */}
-        <div>
-          <Skeleton className="h-7 w-40 mb-2" />
-          <Skeleton className="h-4 w-56" />
-        </div>
-        
-        {/* Profile Fields Skeleton */}
-        <div className="space-y-6">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="flex items-center justify-between py-4 border-b border-border/30">
-              <div>
-                <Skeleton className="h-3 w-24 mb-2" />
-                <Skeleton className="h-5 w-40" />
-              </div>
-              <Skeleton className="h-8 w-14 rounded-lg" />
-            </div>
-          ))}
+      <div className="max-w-2xl mx-auto px-6 py-16">
+        <div className="flex flex-col items-center justify-center py-24">
+          <div className="w-5 h-5 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -469,8 +458,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         Dashboard
       </Link>
 
-      {/* Banner - Completely separate section */}
-      <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border/40 h-32 sm:h-40 mb-4">
+      {/* Banner */}
+      <div className="relative rounded-xl overflow-hidden bg-muted/30 border border-border/40 h-24 sm:h-32 mb-6 group">
         <input
           type="file"
           accept="image/*"
@@ -480,36 +469,26 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           disabled={bannerUploading}
         />
         
-        {profile?.heroImage ? (
+        {form.heroImage ? (
           <>
             <img
-              src={profile.heroImageUrl || getPublicUrl(profile.heroImage)}
+              src={profile?.heroImageUrl || getPublicUrl(form.heroImage) || form.heroImage}
               alt="Banner"
               className="w-full h-full object-cover"
             />
-            {/* Always visible controls */}
-            <div className="absolute top-2 right-2 flex gap-2">
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
               <label
                 htmlFor="banner-upload"
-                className="p-2 rounded-full bg-black/50 cursor-pointer hover:bg-black/70 transition-colors"
+                className="p-2 rounded-full bg-white/20 backdrop-blur-sm cursor-pointer hover:bg-white/30 transition-colors"
               >
                 {bannerUploading ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Camera className="w-4 h-4 text-white" />}
               </label>
               <button
-                type="button"
                 onClick={async () => {
-                  setBannerUploading(true);
-                  try {
-                    await updateProfile({ heroImage: null });
-                    toast({ title: 'Banner removed' });
-                  } catch {
-                    toast({ title: 'Failed to remove', variant: 'destructive' });
-                  } finally {
-                    setBannerUploading(false);
-                  }
+                  await updateProfile({ heroImage: null });
+                  updateField({ heroImage: null });
                 }}
-                disabled={bannerUploading}
-                className="p-2 rounded-full bg-red-500/80 hover:bg-red-600 transition-colors"
+                className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-red-500/50 transition-colors"
               >
                 <X className="w-4 h-4 text-white" />
               </button>
@@ -532,10 +511,10 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         )}
       </div>
 
-      {/* Profile Header - Avatar and info side by side, NO overlap with banner */}
-      <div className="flex items-center gap-4 mb-6 sm:mb-8">
-        {/* Avatar - Separate entity */}
-        <div className="relative shrink-0">
+      {/* Profile Header */}
+      <div className="flex items-start gap-3 sm:gap-4 mb-6 sm:mb-8">
+        {/* Avatar */}
+        <div className="relative group -mt-10 sm:-mt-12 z-10 shrink-0">
           <input 
             type="file" 
             accept="image/*" 
@@ -544,16 +523,16 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             onChange={(e) => uploadImage(e, 'logo')} 
             disabled={logoUploading}
           />
-          <label htmlFor="logo-upload" className="block cursor-pointer relative w-16 h-16 sm:w-20 sm:h-20">
+          <label htmlFor="logo-upload" className="block cursor-pointer">
             <BrandAvatar 
-              logoUrl={profile?.logoUrl} 
+              logoUrl={profile.logoUrl || form.logo} 
               brandName={profile.brandName} 
               size="xl"
-              className={cn("w-16 h-16 sm:w-20 sm:h-20 border-2 border-border", logoUploading && "opacity-50")}
+              className={cn("w-20 h-20 sm:w-24 sm:h-24 border-4 border-background", logoUploading && "opacity-50")}
             />
             <div className={cn(
-              "absolute inset-0 flex items-center justify-center bg-black/40 rounded-full transition-opacity",
-              logoUploading ? "opacity-100" : "opacity-0 hover:opacity-100"
+              "absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl transition-opacity",
+              logoUploading ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             )}>
               {logoUploading ? (
                 <Loader2 className="w-5 h-5 text-white animate-spin" />
@@ -563,13 +542,16 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             </div>
           </label>
           {/* Remove logo button */}
-          {profile?.logo && !logoUploading && (
+          {form.logo && !logoUploading && (
             <button
               type="button"
-              onClick={async () => {
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 setLogoUploading(true);
                 try {
                   await updateProfile({ logo: null });
+                  updateField({ logo: null });
                   toast({ title: 'Logo removed' });
                 } catch {
                   toast({ title: 'Failed to remove', variant: 'destructive' });
@@ -577,15 +559,15 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                   setLogoUploading(false);
                 }
               }}
-              className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:bg-destructive/90"
+              className="absolute -top-1 -right-1 z-10 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/90"
               title="Remove logo"
             >
-              <X className="w-3 h-3" />
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
 
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 pt-1 sm:pt-2">
           <div className="flex items-center gap-2">
             <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate">{profile.brandName}</h1>
             {profile.tier === 'black' ? (

@@ -234,10 +234,8 @@ export async function getStaffEffectivePhone(
     return { phone: null, displayName: null };
   }
 
-  // Priority: work phone (if not using personal) → personal phone
-  const effectivePhone = result.usePersonalPhone 
-    ? result.personalPhone 
-    : (result.workPhone ?? result.personalPhone);
+  // Priority: work phone → personal phone (company phone handled by caller)
+  const effectivePhone = result.workPhone ?? result.personalPhone ?? null;
 
   // Display name with fallback to user name
   const effectiveDisplayName = result.displayName ?? result.userName;

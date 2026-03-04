@@ -32,8 +32,10 @@ import { z } from 'zod';
 import { getDealerBaseProfile, updateDealerBaseProfile } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
-
+// Force dynamic - disable ALL Vercel caching
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 
 /**
@@ -167,6 +169,9 @@ export async function PATCH(
     }
 
     const updatedProfile = await updateDealerBaseProfile(partnerId, validationResult.data);
+
+    console.log('[PATCH dealer-profile] input:', validationResult.data);
+    console.log('[PATCH dealer-profile] DB result:', { logo: updatedProfile?.logo, heroImage: updatedProfile?.heroImage });
 
     if (!updatedProfile) {
       return NextResponse.json(

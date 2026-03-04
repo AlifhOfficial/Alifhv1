@@ -116,7 +116,11 @@ async function updatePartnerProfileAPI(partnerId: string, updates: PartnerProfil
   const res = await fetch(`/api/partners/${partnerId}/dealer-profile`, {
     method: 'PATCH',
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    cache: 'no-store', // Never cache PATCH
+    headers: { 
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
+    },
     body: JSON.stringify(updates),
   });
 
@@ -125,7 +129,14 @@ async function updatePartnerProfileAPI(partnerId: string, updates: PartnerProfil
     throw new Error(data.error || 'Failed to update partner profile');
   }
 
-  return res.json();
+  const result = await res.json();
+  console.log('[updatePartnerProfileAPI] Response:', { 
+    logo: result.logo, 
+    heroImage: result.heroImage,
+    logoUrl: result.logoUrl,
+    heroImageUrl: result.heroImageUrl 
+  });
+  return result;
 }
 
 // ============================================================================
@@ -151,6 +162,12 @@ export function usePartnerProfile(partnerId: string | null | undefined) {
   const mutation = useMutation({
     mutationFn: (updates: PartnerProfileUpdate) => updatePartnerProfileAPI(partnerId!, updates),
     onSuccess: (updatedProfile, variables) => {
+      console.log('[mutation onSuccess] Setting cache with:', {
+        logo: updatedProfile.logo,
+        heroImage: updatedProfile.heroImage,
+        logoUrl: updatedProfile.logoUrl,
+        heroImageUrl: updatedProfile.heroImageUrl,
+      });
       // Update local cache directly - no refetch needed
       queryClient.setQueryData(['partner-profile', partnerId], updatedProfile);
       
