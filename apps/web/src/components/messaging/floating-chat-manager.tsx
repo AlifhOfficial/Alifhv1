@@ -6,11 +6,20 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { FloatingChatWindow } from './floating-chat-window';
 import type { Conversation } from '@/hooks/messaging';
 
 // Maximum number of floating chat windows visible at once
 const MAX_VISIBLE_CHATS = 3;
+
+// Routes where floating chat should NOT appear (dashboards have their own chat views)
+const BLOCKED_ROUTE_PREFIXES = [
+  '/admin',
+  '/staff-dashboard',
+  '/partner-dashboard',
+  '/user-dashboard',
+];
 
 interface ChatWindowState {
   conversation: Conversation;
@@ -65,6 +74,10 @@ interface FloatingChatProviderProps {
 
 export function FloatingChatProvider({ children, userId }: FloatingChatProviderProps) {
   const [openChats, setOpenChats] = useState<ChatWindowState[]>([]);
+  const pathname = usePathname();
+  
+  // Check if current route is blocked (dashboards have their own chat views)
+  const isBlockedRoute = BLOCKED_ROUTE_PREFIXES.some((prefix) => pathname?.startsWith(prefix));
 
   const openChat = useCallback((conversation: Conversation) => {
     setOpenChats((prev) => {
@@ -131,8 +144,8 @@ export function FloatingChatProvider({ children, userId }: FloatingChatProviderP
     <FloatingChatContext.Provider value={value}>
       {children}
       
-      {/* Render floating chat windows */}
-      {userId && openChats.map((chatState, index) => (
+      {/* Render floating chat windows (hidden on dashboard routes) */}
+      {userId && !isBlockedRoute && openChats.map((chatState, index) => (
         <FloatingChatWindow
           key={chatState.conversation.id}
           conversation={chatState.conversation}
