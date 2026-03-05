@@ -28,7 +28,7 @@ export function PartnerFlatFeeSection() {
         <UnlimitedListingsInfographic />
 
         {/* Description */}
-        <p className="text-base text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mb-16">
+        <p className="text-base text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mt-12 mb-16">
           Your margins are yours. We succeed when you succeed—not by skimming off your sales.
         </p>
 

@@ -38,6 +38,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       backgroundColor: '#000000',
       bundleIdentifier: 'ae.revvup.mobile',
       associatedDomains,
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
     },
     android: {
       userInterfaceStyle: 'automatic',

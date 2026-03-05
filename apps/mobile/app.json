@@ -14,8 +14,12 @@
       "backgroundColor": "#000000",
       "bundleIdentifier": "ae.revvup.mobile",
       "associatedDomains": [
+        "webcredentials:revvup.ae",
         "webcredentials:revvup.ae"
-      ]
+      ],
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "userInterfaceStyle": "automatic",

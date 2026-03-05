@@ -65,7 +65,7 @@ export function PartnerClosingSection() {
         <JoinRevvupInfographic />
 
         {/* CTA Button */}
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-12">
           <FoundingProgramButton />
         </div>
 

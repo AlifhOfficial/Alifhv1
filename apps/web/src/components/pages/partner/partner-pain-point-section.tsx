@@ -30,7 +30,7 @@ export function PartnerPainPointSection() {
         <MarketplaceGameInfographic />
 
         {/* Description */}
-        <p className="text-base text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mb-16">
+        <p className="text-base text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mt-12 mb-16">
           You shouldn't have to pay the platform that competes against you. They sell cars. Then charge you to be seen. That's not partnership.
         </p>
 
