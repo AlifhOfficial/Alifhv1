@@ -191,7 +191,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                 type="number"
                 inputMode="numeric"
                 value={data.mileage ?? ''}
-                onChange={(e) => updateField('mileage', parseInt(e.target.value || '0', 10) || 0)}
+                onChange={(e) => updateField('mileage', e.target.value ? parseInt(e.target.value, 10) : undefined)}
                 placeholder="45,000"
                 min={0}
                 className={cn(

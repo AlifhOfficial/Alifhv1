@@ -116,7 +116,7 @@ export function FilterSidebar({
         <RangeFilter
           minValue={params.yearMin}
           maxValue={params.yearMax}
-          rangeMin={facets?.yearRange.min ?? 2000}
+          rangeMin={facets?.yearRange.min ?? 1900}
           rangeMax={facets?.yearRange.max ?? new Date().getFullYear() + 1}
           onChange={(yearMin, yearMax) => onFilterChange({ yearMin, yearMax })}
           formatLabel={(val) => String(val)}

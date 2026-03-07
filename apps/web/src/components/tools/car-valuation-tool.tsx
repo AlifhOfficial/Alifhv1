@@ -14,8 +14,9 @@ import {
   EXTERIOR_COLORS,
 } from '@alifh/database/listing-constants'
 
-// Generate year options (2000-2026)
-const years = Array.from({ length: 27 }, (_, i) => 2026 - i)
+// Generate year options (1900-current+1) - supports vintage cars
+const currentYear = new Date().getFullYear()
+const years = Array.from({ length: currentYear - 1900 + 2 }, (_, i) => currentYear + 1 - i)
 
 // ============================================================================
 // Shared Components

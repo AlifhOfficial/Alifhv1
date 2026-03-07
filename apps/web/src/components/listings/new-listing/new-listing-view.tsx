@@ -71,7 +71,7 @@ function PendingReviewModal({ onClose }: { onClose: () => void }) {
 }
 
 // Success modal - shown when AI approves listing immediately
-function SuccessModal({ onClose, onViewListing }: { onClose: () => void; onViewListing: () => void }) {
+function SuccessModal({ onClose }: { onClose: () => void }) {
   return (
     <div 
       className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-4"
@@ -109,18 +109,12 @@ function SuccessModal({ onClose, onViewListing }: { onClose: () => void; onViewL
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border/40 p-3 sm:p-4 flex gap-2">
+        <div className="border-t border-border/40 p-3 sm:p-4">
           <button
             onClick={onClose}
-            className="flex-1 h-9 sm:h-10 rounded-lg sm:rounded-xl border border-border text-foreground text-xs sm:text-sm font-medium hover:bg-muted/30 transition-colors"
+            className="w-full h-9 sm:h-10 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-colors"
           >
-            My Listings
-          </button>
-          <button
-            onClick={onViewListing}
-            className="flex-1 h-9 sm:h-10 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-colors"
-          >
-            View Listing
+            Go to My Listings
           </button>
         </div>
       </div>
@@ -134,7 +128,6 @@ export function NewListingView({ userId, initialData, draftId }: NewListingViewP
   const [error, setError] = useState<string | null>(null);
   const [showPendingModal, setShowPendingModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [createdListingId, setCreatedListingId] = useState<string | null>(null);
 
   const handleSubmit = async (data: ListingFormData) => {
     try {
@@ -172,10 +165,7 @@ export function NewListingView({ userId, initialData, draftId }: NewListingViewP
       }
 
       const result = await response.json();
-      const listingId = draftId || result.data?.id;
       const moderation = result.data?.moderation;
-      
-      setCreatedListingId(listingId);
       
       // Check AI moderation result
       if (moderation?.approved) {
@@ -199,13 +189,6 @@ export function NewListingView({ userId, initialData, draftId }: NewListingViewP
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
     router.push('/user-dashboard/listings/my-listings');
-  };
-
-  const handleViewListing = () => {
-    setShowSuccessModal(false);
-    if (createdListingId) {
-      router.push(`/listing/${createdListingId}`);
-    }
   };
 
   const handleSaveDraft = async (data: Partial<ListingFormData>) => {
@@ -257,7 +240,7 @@ export function NewListingView({ userId, initialData, draftId }: NewListingViewP
       {showPendingModal && <PendingReviewModal onClose={handlePendingModalClose} />}
       
       {/* Success Modal - shown when AI approves listing immediately */}
-      {showSuccessModal && <SuccessModal onClose={handleSuccessModalClose} onViewListing={handleViewListing} />}
+      {showSuccessModal && <SuccessModal onClose={handleSuccessModalClose} />}
 
       {/* Error Message */}
       {error && (

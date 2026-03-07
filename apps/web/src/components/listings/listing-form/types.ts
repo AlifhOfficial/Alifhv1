@@ -78,9 +78,36 @@ export const FORM_STEPS: FormStepConfig[] = [
 
 export const vinStepSchema = z.object({
   vin: z.string()
-    .length(17, 'VIN must be exactly 17 characters')
-    .regex(VIN_PATTERN, 'Invalid VIN (cannot contain I, O, or Q)')
-    .transform(v => v.toUpperCase()),
+    .transform(v => v.toUpperCase())
+    .superRefine((v, ctx) => {
+      if (v.length < 17) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Please enter full 17-character VIN',
+        });
+        return;
+      }
+      if (v.length > 17) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'VIN cannot be more than 17 characters',
+        });
+        return;
+      }
+      if (/[IOQ]/i.test(v)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'VIN cannot contain letters I, O, or Q',
+        });
+        return;
+      }
+      if (!/^[A-HJ-NPR-Z0-9]{17}$/i.test(v)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'VIN can only contain letters A-H, J-N, P-R, S-Z and numbers 0-9',
+        });
+      }
+    }),
   vinVisibility: z.enum(VIN_VISIBILITY_OPTIONS as unknown as [string, ...string[]]).default('public'),
   make: z.string().min(1, 'Make is required'),
   model: z.string()
@@ -88,7 +115,7 @@ export const vinStepSchema = z.object({
     .refine(v => v.trim().length > 0, 'Model is required'),
   year: z.number()
     .int()
-    .min(1990, 'Year must be 1990 or later')
+    .min(1900, 'Year must be 1900 or later')
     .max(currentYear + 1, `Year cannot exceed ${currentYear + 1}`),
   trim: z.string().optional().nullable(),
   condition: z.enum(['new', 'used']).default('used'),

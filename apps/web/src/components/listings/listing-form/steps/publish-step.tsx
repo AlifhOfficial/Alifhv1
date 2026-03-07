@@ -190,7 +190,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                 type="number"
                 inputMode="numeric"
                 value={data.price ?? ''}
-                onChange={(e) => updateField('price', parseInt(e.target.value || '0', 10) || 0)}
+                onChange={(e) => updateField('price', e.target.value ? parseInt(e.target.value, 10) : undefined)}
                 placeholder="85,000"
                 min={0}
                 className={cn(

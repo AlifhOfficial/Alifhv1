@@ -160,8 +160,10 @@ const VIN_PATTERN = /^[A-HJ-NPR-Z0-9]{17}$/;
 
 export function validateVin(vin: string): string | null {
   if (!vin) return 'VIN is required';
-  if (vin.length !== 17) return 'VIN must be exactly 17 characters';
-  if (!VIN_PATTERN.test(vin)) return 'Invalid VIN (cannot contain I, O, or Q)';
+  if (vin.length < 17) return 'Please enter full 17-character VIN';
+  if (vin.length > 17) return 'VIN cannot be more than 17 characters';
+  if (/[IOQ]/i.test(vin)) return 'VIN cannot contain letters I, O, or Q';
+  if (!VIN_PATTERN.test(vin)) return 'VIN can only contain letters A-H, J-N, P-R, S-Z and numbers 0-9';
   return null;
 }
 
@@ -177,7 +179,7 @@ export function validateStep(stepId: SheetStepId, data: CreateListingData): stri
     case 'year':
       if (!data.year) return 'Select a year';
       const y = parseInt(data.year, 10);
-      if (isNaN(y) || y < 1970 || y > new Date().getFullYear() + 1) {
+      if (isNaN(y) || y < 1900 || y > new Date().getFullYear() + 1) {
         return 'Invalid year';
       }
       return null;

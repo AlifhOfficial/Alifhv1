@@ -558,7 +558,7 @@ async function getRangeFacets(
 
   return {
     yearRange: { 
-      min: result?.minYear || 2000, 
+      min: result?.minYear || 1900, 
       max: result?.maxYear || new Date().getFullYear() + 1 
     },
     priceRange: { 

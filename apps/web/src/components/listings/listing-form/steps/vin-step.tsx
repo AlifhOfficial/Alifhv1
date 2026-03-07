@@ -140,6 +140,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
             }}
             onDecode={handleVINDecode}
             excludeListingId={excludeListingId}
+            error={errors.vin}
           />
           
           {/* VIN Visibility Toggle */}

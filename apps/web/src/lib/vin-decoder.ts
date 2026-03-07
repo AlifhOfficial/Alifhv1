@@ -227,7 +227,7 @@ export async function decodeVIN(vin: string): Promise<VINDecodeResult> {
   const cleanVIN = vin.trim().toUpperCase();
   
   if (cleanVIN.length !== 17) {
-    return { success: false, error: 'VIN must be exactly 17 characters' };
+    return { success: false, error: 'Please enter full 17-character VIN' };
   }
   
   // VIN cannot contain I, O, or Q

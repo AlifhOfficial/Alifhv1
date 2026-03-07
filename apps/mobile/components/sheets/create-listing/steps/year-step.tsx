@@ -25,7 +25,7 @@ import type { StepContentProps } from '../create-listing-flow';
 function generateYears(): string[] {
   const maxYear = new Date().getFullYear() + 1;
   const years: string[] = [];
-  for (let y = maxYear; y >= 1970; y--) {
+  for (let y = maxYear; y >= 1900; y--) {
     years.push(String(y));
   }
   return years;

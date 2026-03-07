@@ -55,10 +55,25 @@ export async function GET(request: NextRequest) {
     
     // Validate VIN format
     if (!isValidVINFormat(formattedVIN)) {
+      const vinLength = formattedVIN.length;
+      let errorMessage = 'Invalid VIN format';
+      let details = '';
+      
+      if (vinLength < 17) {
+        errorMessage = 'VIN is incomplete';
+        details = 'Please enter full 17-character VIN';
+      } else if (vinLength > 17) {
+        details = 'VIN cannot be more than 17 characters';
+      } else if (/[IOQ]/i.test(formattedVIN)) {
+        details = 'VIN cannot contain letters I, O, or Q';
+      } else {
+        details = 'VIN can only contain letters A-H, J-N, P-R, S-Z and numbers 0-9';
+      }
+      
       return NextResponse.json(
         { 
-          error: 'Invalid VIN format',
-          details: 'VIN must be exactly 17 characters and cannot contain I, O, or Q'
+          error: errorMessage,
+          details
         },
         { status: 400 }
       );

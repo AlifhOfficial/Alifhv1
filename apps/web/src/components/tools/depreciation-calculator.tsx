@@ -258,7 +258,7 @@ export function DepreciationCalculator() {
             value={formData.yearBought}
             onChange={(e) => setFormData({ ...formData, yearBought: e.target.value })}
           >
-            {Array.from({ length: 15 }, (_, i) => currentYear - i).map((year) => (
+            {Array.from({ length: currentYear - 1900 + 1 }, (_, i) => currentYear - i).map((year) => (
               <option key={year} value={year}>{year}</option>
             ))}
           </select>

@@ -20,9 +20,10 @@ import { calculateFuelCost, calculateTripCost, formatAED } from './calculations'
 import { getInstantSuggestions } from './suggestions'
 
 // ============================================================================
-// Generate years
+// Generate years (1900-current+1) - supports vintage cars
 // ============================================================================
-const years = Array.from({ length: 20 }, (_, i) => 2026 - i)
+const currentYearFuel = new Date().getFullYear()
+const years = Array.from({ length: currentYearFuel - 1900 + 2 }, (_, i) => currentYearFuel + 1 - i)
 
 // ============================================================================
 // SHARED UI COMPONENTS (matching car-valuation-tool)

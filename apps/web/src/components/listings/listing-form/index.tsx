@@ -231,12 +231,18 @@ export function ListingForm({
           <PublishStep data={formData} updateField={updateField} errors={errors} />
         )}
         
-        {/* Error Summary */}
-        {Object.keys(errors).length > 0 && (
+        {/* Error Summary - exclude errors already shown inline in current step */}
+        {Object.keys(errors).filter(key => {
+          // VIN error is shown inline in VINInput on vin step
+          if (currentStep === 'vin' && key === 'vin') return false;
+          return true;
+        }).length > 0 && (
           <div className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-xl border border-red-500/30 bg-red-500/5">
             <p className="text-[11px] sm:text-xs font-bold text-red-500 mb-1.5 sm:mb-2">Please fix:</p>
             <ul className="space-y-1">
-              {Object.entries(errors).map(([field, error]) => (
+              {Object.entries(errors)
+                .filter(([field]) => !(currentStep === 'vin' && field === 'vin'))
+                .map(([field, error]) => (
                 <li key={field} className="text-[11px] sm:text-xs text-red-500/90 flex items-center gap-1.5 sm:gap-2">
                   <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-red-500 shrink-0" />
                   {error}
