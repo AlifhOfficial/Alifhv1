@@ -19,11 +19,14 @@ export async function sendStaffInvite(input: {
   title?: string;
   department?: string;
 }) {
+  // Normalize email to lowercase for case-insensitive matching
+  const normalizedEmail = input.email.toLowerCase().trim();
+
   // Check if user exists with this email
   const [existingUser] = await db
     .select()
     .from(user)
-    .where(eq(user.email, input.email))
+    .where(sql`lower(${user.email}) = ${normalizedEmail}`)
     .limit(1);
 
   if (!existingUser) {

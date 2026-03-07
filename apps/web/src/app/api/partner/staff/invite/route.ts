@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
     const invite = await sendStaffInvite({
       partnerId,
-      email: validated.email,
+      email: validated.email.toLowerCase().trim(),
       role: dbRole as 'owner' | 'admin' | 'sales' | 'viewer',
       title: validated.title,
       department: validated.department,
