@@ -15,6 +15,7 @@ const SORT_LABELS: Record<SearchSortOption, string> = {
   price_low: 'Price: Low to High',
   price_high: 'Price: High to Low',
   mileage_low: 'Lowest Mileage',
+  mileage_high: 'Highest Mileage',
   year_new: 'Year: Newest',
   year_old: 'Year: Oldest',
 };

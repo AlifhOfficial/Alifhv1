@@ -156,6 +156,7 @@ export const SORT_OPTIONS = [
   { value: 'year_new', label: 'Year: Newest' },
   { value: 'year_old', label: 'Year: Oldest' },
   { value: 'mileage_low', label: 'Mileage: Low to High' },
+  { value: 'mileage_high', label: 'Mileage: High to Low' },
 ] as const;
 
 export type SortOption = (typeof SORT_OPTIONS)[number]['value'];

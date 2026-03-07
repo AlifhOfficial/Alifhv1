@@ -82,7 +82,7 @@ export interface ParsedSearchIntent {
   isNegotiable?: boolean;
   
   // Sorting preference
-  sortBy?: 'newest' | 'cheapest' | 'price_low' | 'price_high' | 'mileage_low' | 'year_new' | 'popular';
+  sortBy?: 'newest' | 'cheapest' | 'price_low' | 'price_high' | 'mileage_low' | 'mileage_high' | 'year_new' | 'popular';
   
   // Fallback: if the query has something the LLM can't map to structured filters,
   // pass it as a text search for our existing keyword matching
@@ -346,8 +346,8 @@ LOCATION:
 - emirate: string[] — EXACT values: ${emirates}
 
 SORTING:
-- sortBy: "newest" | "price_low" | "price_high" | "mileage_low" | "year_new" | "popular"
-  (User says "cheapest" → price_low, "newest" → newest, "most popular" → popular, "lowest mileage" → mileage_low)
+- sortBy: "newest" | "price_low" | "price_high" | "mileage_low" | "mileage_high" | "year_new" | "popular"
+  (User says "cheapest" → price_low, "newest" → newest, "most popular" → popular, "lowest mileage" → mileage_low, "highest mileage" → mileage_high)
 
 METADATA FIELDS (always include these):
 - confidence: number (0-1) — How well you understood the intent. 1.0 = crystal clear, 0.5 = partial, 0.1 = guessing

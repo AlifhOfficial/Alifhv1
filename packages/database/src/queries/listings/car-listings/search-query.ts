@@ -466,6 +466,8 @@ function buildOrderBy(params: SearchParams): SQL[] {
       return [desc(carListing.price), desc(carListing.createdAt)];
     case 'mileage_low':
       return [asc(carListing.mileage), desc(carListing.createdAt)];
+    case 'mileage_high':
+      return [desc(carListing.mileage), desc(carListing.createdAt)];
     case 'year_new':
       return [desc(carListing.year), desc(carListing.createdAt)];
     case 'year_old':

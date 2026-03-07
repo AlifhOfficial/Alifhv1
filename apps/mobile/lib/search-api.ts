@@ -23,6 +23,7 @@ export type SearchSortOption =
   | 'price_low'
   | 'price_high'
   | 'mileage_low'
+  | 'mileage_high'
   | 'year_new'
   | 'year_old';
 
@@ -92,6 +93,7 @@ export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
   { value: 'price_low', label: 'Price: Low to High' },
   { value: 'price_high', label: 'Price: High to Low' },
   { value: 'mileage_low', label: 'Lowest Mileage' },
+  { value: 'mileage_high', label: 'Highest Mileage' },
   { value: 'year_new', label: 'Year: Newest' },
   { value: 'year_old', label: 'Year: Oldest' },
 ];

@@ -115,6 +115,7 @@ export type SearchSortOption =
   | 'price_low'      // price asc
   | 'price_high'     // price desc
   | 'mileage_low'    // mileage asc
+  | 'mileage_high'   // mileage desc
   | 'year_new'       // year desc
   | 'year_old'       // year asc
   | 'popular';       // viewCount + favouriteCount
@@ -126,6 +127,7 @@ export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
   { value: 'price_low', label: 'Price: Low to High' },
   { value: 'price_high', label: 'Price: High to Low' },
   { value: 'mileage_low', label: 'Lowest Mileage' },
+  { value: 'mileage_high', label: 'Highest Mileage' },
   { value: 'year_new', label: 'Newest Year' },
   { value: 'year_old', label: 'Oldest Year' },
   { value: 'popular', label: 'Most Popular' },
