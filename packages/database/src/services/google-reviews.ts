@@ -105,47 +105,70 @@ export async function extractPlaceId(url: string): Promise<string | null> {
   if (dataMatch) {
     // Extract business name from URL
     const nameMatch = url.match(/\/place\/([^/@]+)/);
-    // Extract coordinates from the URL
+    // Extract coordinates from the URL - try both @lat,lng and more specific patterns
     const coordMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
     
-    if (nameMatch && coordMatch) {
+    if (nameMatch) {
       const name = decodeURIComponent(nameMatch[1].replace(/\+/g, ' '));
-      const lat = coordMatch[1];
-      const lng = coordMatch[2];
+      const lat = coordMatch?.[1];
+      const lng = coordMatch?.[2];
       
       const apiKey = process.env.GOOGLE_PLACES_API_KEY;
       if (!apiKey) {
-        console.error('[GoogleReviews] GOOGLE_PLACES_API_KEY not set');
-        return null;
+        console.error('[GoogleReviews] GOOGLE_PLACES_API_KEY not set - cannot convert hex place_id');
+        throw new Error('Google Places API key not configured');
       }
       
       try {
-        // Use Text Search with location bias to find the exact place
-        const searchUrl = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
-        searchUrl.searchParams.set('query', name);
-        searchUrl.searchParams.set('location', `${lat},${lng}`);
-        searchUrl.searchParams.set('radius', '50'); // Small radius to ensure we get the right place
-        searchUrl.searchParams.set('key', apiKey);
+        // Use Find Place API for more reliable results
+        const findPlaceUrl = new URL('https://maps.googleapis.com/maps/api/place/findplacefromtext/json');
+        findPlaceUrl.searchParams.set('input', name);
+        findPlaceUrl.searchParams.set('inputtype', 'textquery');
+        findPlaceUrl.searchParams.set('fields', 'place_id,name');
+        if (lat && lng) {
+          findPlaceUrl.searchParams.set('locationbias', `point:${lat},${lng}`);
+        }
+        findPlaceUrl.searchParams.set('key', apiKey);
         
-        const response = await fetch(searchUrl.toString());
+        const response = await fetch(findPlaceUrl.toString());
         const data = await response.json();
         
-        if (data.status === 'OK' && data.results?.[0]?.place_id) {
-          return data.results[0].place_id;
-        } else {
-          console.error('[GoogleReviews] Text Search failed:', data.status);
+        if (data.status === 'OK' && data.candidates?.[0]?.place_id) {
+          console.log('[GoogleReviews] Found place_id via Find Place:', data.candidates[0].place_id);
+          return data.candidates[0].place_id;
         }
+        
+        // Fallback to Text Search with larger radius
+        const searchUrl = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
+        searchUrl.searchParams.set('query', name);
+        if (lat && lng) {
+          searchUrl.searchParams.set('location', `${lat},${lng}`);
+          searchUrl.searchParams.set('radius', '5000'); // 5km radius for better matching
+        }
+        searchUrl.searchParams.set('key', apiKey);
+        
+        const searchResponse = await fetch(searchUrl.toString());
+        const searchData = await searchResponse.json();
+        
+        if (searchData.status === 'OK' && searchData.results?.[0]?.place_id) {
+          console.log('[GoogleReviews] Found place_id via Text Search:', searchData.results[0].place_id);
+          return searchData.results[0].place_id;
+        }
+        
+        console.error('[GoogleReviews] Text Search failed:', searchData.status, searchData.error_message);
+        throw new Error(`Could not find business "${name}" in Google Places`);
       } catch (error) {
         console.error('[GoogleReviews] Failed to convert hex to place_id:', error);
+        throw error;
       }
     }
     
-    console.warn('[GoogleReviews] Found hex-encoded place_id, but could not convert to ChIJ format');
-    return null;
+    console.warn('[GoogleReviews] Found hex-encoded place_id, but no business name in URL');
+    throw new Error('Could not extract business name from URL');
   }
   
   console.warn('[GoogleReviews] Could not extract place_id from URL:', url);
-  return null;
+  throw new Error('Invalid Google Maps URL format - could not extract place ID');
 }
 
 // ============================================================================
@@ -232,7 +255,12 @@ export async function syncPartnerReviews(partnerId: string): Promise<SyncResult>
     
     // Always extract place_id fresh from URL to ensure we have the correct one
     // This handles cases where URL was changed but old place_id is still stored
-    const placeId = await extractPlaceId(partnerData.googleReviewUrl);
+    let placeId: string | null;
+    try {
+      placeId = await extractPlaceId(partnerData.googleReviewUrl);
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Could not extract place_id from URL' };
+    }
     
     if (!placeId) {
       return { success: false, error: 'Could not extract place_id from URL' };

@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   Camera,
   CheckCircle2,
+  Clock,
   Loader2,
   MapPin,
   RefreshCw,
@@ -165,6 +166,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const isGeocodingRef = React.useRef(false);
   const [customSpecialty, setCustomSpecialty] = useState('');
+  const [syncingReviews, setSyncingReviews] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     brandName: '',
@@ -425,8 +428,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
 
   // Sync reviews manually
   const syncReviews = async () => {
-    if (!form.googleReviewUrl?.trim()) return;
-    toast({ title: 'Syncing reviews...' });
+    if (!form.googleReviewUrl?.trim() || syncingReviews) return;
+    setSyncingReviews(true);
+    setSyncError(null);
     try {
       const res = await fetch('/api/partner/google-reviews/sync', {
         method: 'POST',
@@ -434,11 +438,19 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         body: JSON.stringify({ partnerId }),
         credentials: 'include',
       });
-      if (!res.ok) throw new Error('Sync failed');
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Sync failed');
+      }
       toast({ title: 'Reviews synced', description: `${data.rating?.toFixed(1)} ⭐ (${data.reviewCount} reviews)` });
-    } catch {
-      toast({ title: 'Sync failed', variant: 'destructive' });
+      // Refetch profile to update the last synced time
+      await refetchFresh();
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Sync failed';
+      setSyncError(errorMsg);
+      toast({ title: 'Sync failed', description: errorMsg, variant: 'destructive' });
+    } finally {
+      setSyncingReviews(false);
     }
   };
 
@@ -756,8 +768,16 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[15px] font-bold tracking-tight text-foreground">Google Reviews</h3>
           {form.googleReviewUrl?.trim() && (
-            <button onClick={syncReviews} className="text-xs text-blue-500 hover:text-blue-600 font-semibold">
-              Sync
+            <button 
+              onClick={syncReviews} 
+              disabled={syncingReviews}
+              className="text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50 flex items-center gap-1"
+            >
+              {syncingReviews ? (
+                <><Loader2 className="w-3 h-3 animate-spin" /> Syncing...</>
+              ) : (
+                'Sync'
+              )}
             </button>
           )}
         </div>
@@ -767,27 +787,56 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             {...getEditableFieldProps('googleReviewUrl')}
             label="Google Maps URL" 
             value={form.googleReviewUrl} 
-            placeholder="https://maps.google.com/?cid=..."
+            placeholder="https://maps.app.goo.gl/... or https://maps.google.com/..."
             type="url"
           />
           
-          {profile.googleRating && (
+          {/* Sync Error */}
+          {syncError && (
+            <div className="mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+              <p className="text-xs text-red-500 font-medium">{syncError}</p>
+            </div>
+          )}
+          
+          {/* Rating and Status */}
+          {form.googleReviewUrl?.trim() && (
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 pt-4 mt-2 border-t border-border/20">
-              <div>
-                <p className="text-lg font-semibold flex items-center gap-1.5">
-                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                  {profile.googleRating.toFixed(1)}
-                </p>
-                <p className="text-xs text-muted-foreground/70">{profile.googleReviewCount ?? 0} reviews</p>
-              </div>
-              {profile.googleReviewsSyncedAt && (
+              {profile.googleRating ? (
                 <div>
-                  <p className="text-sm font-semibold">
-                    {new Date(profile.googleReviewsSyncedAt).toLocaleDateString()}
+                  <p className="text-lg font-semibold flex items-center gap-1.5">
+                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                    {profile.googleRating.toFixed(1)}
                   </p>
-                  <p className="text-xs text-muted-foreground/70">Last synced</p>
+                  <p className="text-xs text-muted-foreground/70">{profile.googleReviewCount ?? 0} reviews</p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground/70">No rating yet</p>
+                  <p className="text-xs text-muted-foreground/50">Tap Sync to fetch reviews</p>
                 </div>
               )}
+              <div>
+                {profile.googleReviewsSyncedAt ? (
+                  <>
+                    <p className="text-sm font-semibold flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground/70" />
+                      {new Date(profile.googleReviewsSyncedAt).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric', 
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                    <p className="text-xs text-muted-foreground/70">Last synced</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-medium text-muted-foreground/50">Never synced</p>
+                    <p className="text-xs text-muted-foreground/50">Add URL and sync</p>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </div>
