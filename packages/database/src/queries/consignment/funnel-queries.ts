@@ -334,6 +334,9 @@ export async function getFunnelMatchingListings(
   if (filters.makes?.length) {
     filterConditions.push(inArray(carListing.make, filters.makes));
   }
+  if (filters.models?.length) {
+    filterConditions.push(inArray(carListing.model, filters.models));
+  }
   if (filters.bodyTypes?.length) {
     // Cast to enum type - values are validated at input
     filterConditions.push(inArray(carListing.bodyType, filters.bodyTypes as typeof carListing.bodyType.enumValues));

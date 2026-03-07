@@ -72,7 +72,7 @@ export async function sendStaffInvite(input: {
     
     // If active with another company
     if (existingMembership.status === 'active') {
-      throw new Error(`This user already works for "${existingMembership.partnerName}". Staff can only work for one company.`);
+      throw new Error('This user is already employed at another company. Staff can only work for one company at a time.');
     }
     
     // If they left another company, they can be invited to yours - delete the old record

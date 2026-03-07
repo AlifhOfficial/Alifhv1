@@ -36,6 +36,7 @@ interface ConsignmentFunnel {
   description: string | null;
   filters: {
     makes?: string[];
+    models?: string[];
     bodyTypes?: string[];
     fuelTypes?: string[];
     minYear?: number;
@@ -147,8 +148,6 @@ export function ConsignmentFunnelsView() {
     );
   }
 
-  const totalMatches = data?.funnels?.reduce((sum, f) => sum + f.matchCount, 0) || 0;
-
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
@@ -204,10 +203,6 @@ export function ConsignmentFunnelsView() {
             <span className="text-[10px] sm:text-xs text-muted-foreground">Funnels</span>
             <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-blue-500">{data.funnels.length}</p>
           </div>
-          <div>
-            <span className="text-[10px] sm:text-xs text-muted-foreground">Matches</span>
-            <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-green-500">{totalMatches}</p>
-          </div>
         </div>
       )}
 
@@ -220,26 +215,32 @@ export function ConsignmentFunnelsView() {
               <Skeleton className="h-3 w-14 mb-1" />
               <Skeleton className="h-6 w-8" />
             </div>
-            <div>
-              <Skeleton className="h-3 w-16 mb-1" />
-              <Skeleton className="h-6 w-10" />
-            </div>
           </div>
           
           {/* Funnel Cards Skeleton */}
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-border/40 p-4 sm:p-5">
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <div className="flex-1">
-                  <Skeleton className="h-5 w-40 mb-2" />
-                  <Skeleton className="h-3 w-56" />
+            <div key={i} className="rounded-lg sm:rounded-xl border border-border/40 p-3 sm:p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  {/* Chevron + Title */}
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1">
+                    <Skeleton className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded flex-shrink-0" />
+                    <Skeleton className="h-4 sm:h-5 w-32 sm:w-40" />
+                  </div>
+                  {/* Description */}
+                  <Skeleton className="h-3 w-48 sm:w-56 mb-2 ml-5 sm:ml-7" />
+                  {/* Filter Tags */}
+                  <div className="flex gap-1 sm:gap-1.5 ml-5 sm:ml-7">
+                    <Skeleton className="h-5 w-14 sm:w-16 rounded-md" />
+                    <Skeleton className="h-5 w-16 sm:w-20 rounded-md" />
+                    <Skeleton className="h-5 w-12 sm:w-14 rounded-md" />
+                  </div>
                 </div>
-                <Skeleton className="h-6 w-16 rounded-full" />
-              </div>
-              <div className="flex gap-1.5">
-                <Skeleton className="h-5 w-16 rounded-md" />
-                <Skeleton className="h-5 w-20 rounded-md" />
-                <Skeleton className="h-5 w-14 rounded-md" />
+                {/* Active Badge + Menu */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Skeleton className="h-5 sm:h-6 w-14 sm:w-16 rounded-full" />
+                  <Skeleton className="h-6 w-6 rounded" />
+                </div>
               </div>
             </div>
           ))}
@@ -377,7 +378,6 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
                 !isExpanded && "-rotate-90"
               )} />
               <h3 className="text-sm sm:text-base font-semibold tracking-tight truncate">{funnel.name}</h3>
-              <span className="text-xs sm:text-sm font-semibold text-blue-500">{funnel.matchCount}</span>
             </div>
             
             {funnel.description && (
@@ -440,9 +440,17 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
       {isExpanded && (
       <div className="p-3 sm:p-4">
         {previewLoading ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-[4/3] rounded-lg" />
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:overflow-visible scrollbar-hide">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex-shrink-0 w-[140px] sm:w-auto">
+                <div className="rounded-lg border border-border/40 bg-card overflow-hidden">
+                  <Skeleton className="aspect-[4/3]" />
+                  <div className="p-2 sm:p-2.5">
+                    <Skeleton className="h-3 sm:h-4 w-24 sm:w-32 mb-1.5" />
+                    <Skeleton className="h-3 sm:h-4 w-16 sm:w-20" />
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         ) : !previewData?.listings || previewData.listings.length === 0 ? (
@@ -498,7 +506,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
                 onClick={onViewAll}
                 className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-primary hover:bg-primary/5 rounded-lg transition-colors"
               >
-                View All {previewData.total > 4 ? `${previewData.total} ` : ''}→
+                View All →
               </button>
             </div>
           </>
@@ -519,6 +527,11 @@ function getFilterTags(filters: ConsignmentFunnel['filters']): string[] {
   if (filters.makes?.length) {
     tags.push(...filters.makes.slice(0, 2));
     if (filters.makes.length > 2) tags.push(`+${filters.makes.length - 2} makes`);
+  }
+
+  if (filters.models?.length) {
+    tags.push(...filters.models.slice(0, 2));
+    if (filters.models.length > 2) tags.push(`+${filters.models.length - 2} models`);
   }
 
   if (filters.bodyTypes?.length) {

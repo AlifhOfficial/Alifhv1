@@ -9,7 +9,6 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { 
-  Loader2,
   RefreshCw,
   ChevronDown,
   ChevronLeft,
@@ -26,6 +25,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useDebouncedCallback } from 'use-debounce';
 import { getThumbUrl } from '@/utils/storage';
+import { FunnelMatchesView } from '@/components/staff/consignment/funnel-matches-view';
 
 // ============================================================================
 // Constants
@@ -109,6 +109,7 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedFunnels, setExpandedFunnels] = useState<Set<string>>(new Set());
+  const [viewingFunnel, setViewingFunnel] = useState<ConsignmentFunnel | null>(null);
   const hasFetchedInitialRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -244,6 +245,16 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
     });
   };
 
+  // If viewing all matches for a specific funnel
+  if (viewingFunnel) {
+    return (
+      <FunnelMatchesView 
+        funnel={viewingFunnel} 
+        onBack={() => setViewingFunnel(null)} 
+      />
+    );
+  }
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
@@ -345,22 +356,27 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
       {isLoading && (
         <div className="space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-border/40 bg-card p-4 sm:p-5">
-              <div className="flex items-start justify-between gap-4">
+            <div key={i} className="rounded-xl border border-border/40 bg-card p-3 sm:p-4 md:p-5">
+              <div className="flex items-start justify-between gap-2 sm:gap-4">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Skeleton className="w-4 h-4 rounded" />
-                    <Skeleton className="h-5 w-48" />
+                  {/* Chevron + Title */}
+                  <div className="flex items-center gap-2 sm:gap-3 mb-1">
+                    <Skeleton className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded flex-shrink-0" />
+                    <Skeleton className="h-4 sm:h-5 w-32 sm:w-48" />
                   </div>
-                  <Skeleton className="h-3 w-64 mb-2 ml-7" />
-                  <Skeleton className="h-3 w-32 mb-3 ml-7" />
-                  <div className="flex gap-1.5 ml-7">
-                    <Skeleton className="h-5 w-16 rounded-md" />
-                    <Skeleton className="h-5 w-20 rounded-md" />
-                    <Skeleton className="h-5 w-14 rounded-md" />
+                  {/* Description */}
+                  <Skeleton className="h-3 sm:h-4 w-56 sm:w-64 mb-1.5 sm:mb-2 ml-5 sm:ml-7" />
+                  {/* Staff + Date */}
+                  <Skeleton className="h-3 w-28 sm:w-36 mb-1.5 sm:mb-2 ml-5 sm:ml-7" />
+                  {/* Filter Tags */}
+                  <div className="flex gap-1 sm:gap-1.5 ml-5 sm:ml-7">
+                    <Skeleton className="h-5 w-14 sm:w-16 rounded-md" />
+                    <Skeleton className="h-5 w-16 sm:w-20 rounded-md" />
+                    <Skeleton className="h-5 w-12 sm:w-14 rounded-md" />
                   </div>
                 </div>
-                <Skeleton className="h-6 w-16 rounded-full" />
+                {/* Active Badge */}
+                <Skeleton className="h-5 sm:h-6 w-14 sm:w-16 rounded-full flex-shrink-0" />
               </div>
             </div>
           ))}
@@ -394,6 +410,7 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
                 funnel={funnel}
                 isExpanded={expandedFunnels.has(funnel.id)}
                 onToggle={() => toggleFunnel(funnel.id)}
+                onViewAll={() => setViewingFunnel(funnel)}
               />
             ))}
           </div>
@@ -487,9 +504,10 @@ interface FunnelRowProps {
   funnel: ConsignmentFunnel;
   isExpanded: boolean;
   onToggle: () => void;
+  onViewAll: () => void;
 }
 
-function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
+function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) {
   const filterTags = getFilterTags(funnel.filters);
   
   // Preview state
@@ -583,9 +601,18 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
 
           {/* Preview Loading */}
           {previewLoading && (
-            <div className="flex items-center justify-center py-8 gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground/40" />
-              <p className="text-xs text-muted-foreground/50">Loading matches...</p>
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:overflow-visible scrollbar-hide">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex-shrink-0 w-[160px] sm:w-auto">
+                  <div className="rounded-lg border border-border/40 bg-card overflow-hidden">
+                    <Skeleton className="aspect-[4/3]" />
+                    <div className="p-2">
+                      <Skeleton className="h-3 sm:h-4 w-20 sm:w-28 mb-1.5" />
+                      <Skeleton className="h-3 sm:h-4 w-16 sm:w-20" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
@@ -601,8 +628,9 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
 
           {/* Preview Grid */}
           {!previewLoading && previewData.length > 0 && (
+            <>
             <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:overflow-visible scrollbar-hide">
-              {previewData.map((listing) => (
+              {previewData.slice(0, 4).map((listing) => (
                 <Link
                   key={listing.id}
                   href={`/listings/${listing.id}`}
@@ -639,6 +667,18 @@ function FunnelRow({ funnel, isExpanded, onToggle }: FunnelRowProps) {
                 </Link>
               ))}
             </div>
+
+            {/* View All Button */}
+            <div className="mt-3 sm:mt-4 flex justify-end">
+              <button
+                type="button"
+                onClick={onViewAll}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-primary hover:bg-primary/5 rounded-lg transition-colors"
+              >
+                View All →
+              </button>
+            </div>
+            </>
           )}
         </div>
       )}

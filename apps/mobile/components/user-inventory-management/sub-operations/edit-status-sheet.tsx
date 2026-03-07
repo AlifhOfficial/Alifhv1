@@ -90,7 +90,12 @@ const ACTION_ROWS: ActionRow[] = [
     label: 'Edit Listing',
     icon: Pencil,
     color: (c) => c.text,
-    visible: ({ lifecycleStatus }) => lifecycleStatus !== 'expired',
+    // Can't edit sold, expired, deleted, or rejected listings
+    visible: ({ lifecycleStatus, moderationStatus }) =>
+      lifecycleStatus !== 'expired' &&
+      lifecycleStatus !== 'sold' &&
+      lifecycleStatus !== 'deleted' &&
+      moderationStatus !== 'rejected',
   },
   {
     key: 'view_stats',

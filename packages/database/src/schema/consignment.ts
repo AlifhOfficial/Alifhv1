@@ -20,6 +20,7 @@ import { partner } from './partner';
 export type ConsignmentFunnelFilters = {
   // Vehicle basics
   makes?: string[];           // ["Mercedes-Benz", "BMW", "Porsche"]
+  models?: string[];          // ["C-Class", "3 Series", "911"]
   bodyTypes?: string[];       // ["sedan", "suv", "coupe"]
   fuelTypes?: string[];       // ["petrol", "electric", "hybrid"]
   

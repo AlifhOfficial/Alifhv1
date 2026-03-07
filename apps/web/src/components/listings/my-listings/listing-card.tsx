@@ -138,10 +138,12 @@ export function ListingCard({
   const isExpired = listing.lifecycleStatus === 'expired';
   const isArchived = listing.lifecycleStatus === 'archived';
 
-  // Permissions
-  // Rejected listings can only be deleted - no archive, edit, or other actions
+  // Permissions - simplified logic
+  // Active/Archived: full options
+  // Sold/Expired/Suspended/Rejected: delete only
+  // Deleted: no options (hide menu)
   const canArchiveToggle = (listing.lifecycleStatus === 'active' || listing.lifecycleStatus === 'archived') && !isSuspended && !isRejected;
-  const canDelete = listing.lifecycleStatus !== 'deleted';
+  const canDelete = !isDeleted; // Can delete anything except already deleted
   const isDeepInventory = isDeleted || isSold || isExpired || isSuspended;
   const canEdit = !isSuspended && !isDeepInventory && !isRejected;
   const canMarkSold = listing.isPublic && listing.lifecycleStatus === 'active' && !isRejected;
@@ -214,6 +216,8 @@ export function ListingCard({
               )}
             </Link>
 
+            {/* Hide menu for deleted listings - no actions available */}
+            {!isDeleted && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="w-8 h-8 -mr-2 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
@@ -272,9 +276,9 @@ export function ListingCard({
                     </DropdownMenuItem>
                   </>
                 )}
-                {canDelete && (!isDeepInventory || isRejected || isSuspended || isExpired) && (
+                {canDelete && (
                   <>
-                    <DropdownMenuSeparator />
+                    {(canEdit || canMarkSold || canArchiveToggle) && <DropdownMenuSeparator />}
                     <DropdownMenuItem onClick={() => onDelete(listing.id)} className="flex items-center gap-2 text-red-600 focus:text-red-600">
                       <Trash2 className="w-4 h-4" />
                       Delete
@@ -283,6 +287,7 @@ export function ListingCard({
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+            )}
           </div>
 
           {/* Price */}

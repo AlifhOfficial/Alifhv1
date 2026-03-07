@@ -31,10 +31,12 @@ import {
   FUEL_TYPES,
   SPECS_TYPES,
   UAE_EMIRATES,
+  getModelsForMake,
 } from '@/components/listings/listing-form/constants';
 
 interface FunnelFilters {
   makes?: string[];
+  models?: string[];
   bodyTypes?: string[];
   fuelTypes?: string[];
   minYear?: number;
@@ -253,6 +255,22 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
             onChange={(value) => toggleArrayFilter('makes', value)}
             searchPlaceholder="Search makes..."
           />
+
+          {/* Models - Searchable (depends on selected makes) */}
+          {filters.makes && filters.makes.length > 0 && (
+            <SearchableFilterGroup
+              title="Models"
+              options={filters.makes.flatMap(make => 
+                getModelsForMake(make).map(model => ({ 
+                  value: model, 
+                  label: filters.makes!.length > 1 ? `${make} ${model}` : model 
+                }))
+              )}
+              selected={filters.models || []}
+              onChange={(value) => toggleArrayFilter('models', value)}
+              searchPlaceholder="Search models..."
+            />
+          )}
 
           {/* Body Types - Searchable */}
           <SearchableFilterGroup

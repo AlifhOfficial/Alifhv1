@@ -12,8 +12,10 @@ import {
   removeStaffMember,
   db,
   partnerStaff,
+  carListing,
   eq,
   and,
+  sql,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
@@ -142,6 +144,27 @@ export async function POST(req: NextRequest) {
             );
           }
         }
+
+        // Cannot promote to owner if staff has active listings assigned
+        if (validated.role === 'owner' && staffMember?.role !== 'owner' && staffMember?.userId) {
+          const [activeListings] = await db
+            .select({ count: sql<number>`count(*)` })
+            .from(carListing)
+            .where(
+              and(
+                eq(carListing.userId, staffMember.userId),
+                eq(carListing.partnerId, partnerId),
+                eq(carListing.lifecycleStatus, 'active')
+              )
+            );
+          if (activeListings && activeListings.count > 0) {
+            return NextResponse.json(
+              { error: `Cannot promote to owner. This staff member has ${activeListings.count} active listing${activeListings.count > 1 ? 's' : ''} assigned. Reassign them first.` },
+              { status: 400 }
+            );
+          }
+        }
+
         result = await updateStaffMember({
           staffId: validated.staffId,
           partnerId,

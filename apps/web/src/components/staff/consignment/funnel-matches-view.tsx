@@ -9,7 +9,6 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowLeft,
-  Loader2,
   ChevronLeft,
   ChevronRight,
   ImageIcon,
@@ -96,17 +95,13 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-border/40 overflow-hidden">
-              <Skeleton className="h-40 w-full" />
-              <div className="p-4 space-y-2">
-                <Skeleton className="h-5 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <div className="flex gap-2 pt-2">
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-4 w-20" />
-                </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className="rounded-lg border border-sidebar-border bg-sidebar overflow-hidden">
+              <Skeleton className="aspect-[4/3]" />
+              <div className="p-2.5">
+                <Skeleton className="h-4 w-28 sm:w-32 mb-1.5" />
+                <Skeleton className="h-4 w-20 sm:w-24" />
               </div>
             </div>
           ))}

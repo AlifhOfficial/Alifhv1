@@ -423,7 +423,7 @@ export function DealerInventory({
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
               <Crown className="w-3 h-3" />
               <span className="text-xs font-medium">
-                {blackQuota.activeBlackListingsCount}/{blackQuota.blackListingQuota} BLK
+                {blackQuota.blackListingQuota - blackQuota.activeBlackListingsCount} of {blackQuota.blackListingQuota} BLK
               </span>
             </div>
           )}
@@ -637,7 +637,7 @@ export function DealerInventory({
                             View
                           </button>
                         </Link>
-                        {canReassign && activeStaff.length > 0 && (
+                        {canReassign && activeStaff.length > 0 && listing.lifecycleStatus === 'active' && (
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <button 
