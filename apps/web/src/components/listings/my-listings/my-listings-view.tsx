@@ -195,7 +195,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       case 'rejected':
         return { moderationStatus: 'rejected' };
       case 'archived':
-        return { lifecycleStatus: 'archived' };
+        return { status: 'archived' };
       case 'sold':
         return { lifecycleStatus: 'sold' };
       case 'expired':

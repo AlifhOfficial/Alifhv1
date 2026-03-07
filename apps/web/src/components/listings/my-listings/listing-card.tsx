@@ -162,9 +162,9 @@ export function ListingCard({
     if (isDeleted) return { label: 'Deleted', bg: 'bg-muted', text: 'text-muted-foreground' };
     if (isSold) return { label: 'Sold', bg: 'bg-emerald-500/10', text: 'text-emerald-600' };
     if (isExpired) return { label: 'Expired', bg: 'bg-amber-500/10', text: 'text-amber-600' };
-    if (isArchived && !isSuspended) return { label: 'Archived', bg: 'bg-muted', text: 'text-muted-foreground' };
     if (isSuspended) return { label: 'Suspended', bg: 'bg-red-500/10', text: 'text-red-600' };
     if (isRejected) return { label: 'Rejected', bg: 'bg-red-500/10', text: 'text-red-600' };
+    if (isArchived) return { label: 'Archived', bg: 'bg-muted', text: 'text-muted-foreground' };
     if (listing.isPublic) return { label: 'Live', bg: 'bg-emerald-500/10', text: 'text-emerald-600' };
     if (isInReview) return { label: 'In Review', bg: 'bg-blue-500/10', text: 'text-blue-600' };
     if (isDraft) return { label: 'Draft', bg: 'bg-amber-500/10', text: 'text-amber-600' };

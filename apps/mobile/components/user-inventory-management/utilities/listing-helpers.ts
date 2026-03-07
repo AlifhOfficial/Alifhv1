@@ -17,7 +17,11 @@ export function formatListingStatus(
   moderation: ModerationStatus,
   lifecycle: LifecycleStatus,
 ): string {
-  // Terminal lifecycle states take priority
+  // Rejected takes priority — rejected listings have lifecycleStatus 'archived'
+  // but should always display as "Rejected"
+  if (moderation === 'rejected') return 'Rejected';
+
+  // Terminal lifecycle states
   switch (lifecycle) {
     case 'sold':    return 'Sold';
     case 'expired': return 'Expired';
@@ -31,7 +35,6 @@ export function formatListingStatus(
     case 'submitted':      return 'In Review';
     case 'pending_review':  return 'In Review';
     case 'approved':       return 'Active';
-    case 'rejected':       return 'Rejected';
     default:               return 'Unknown';
   }
 }
@@ -52,6 +55,10 @@ export function getStatusColor(
     textSecondary: string;
   },
 ): string {
+  // Rejected takes priority — rejected listings have lifecycleStatus 'archived'
+  // but should always show error color
+  if (moderation === 'rejected') return colors.error;
+
   // Terminal lifecycle states
   switch (lifecycle) {
     case 'sold':     return colors.success;
@@ -66,7 +73,6 @@ export function getStatusColor(
     case 'submitted':      return colors.warning;
     case 'pending_review': return colors.warning;
     case 'approved':       return colors.success;
-    case 'rejected':       return colors.error;
     default:               return colors.textMuted;
   }
 }
