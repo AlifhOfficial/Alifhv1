@@ -17,6 +17,7 @@ import { useMessages, useSendMessage, useSendLocationMessage, useMarkAsRead } fr
 import { cn } from '@/utils/cn';
 import { format, formatDistanceToNow, isSameDay } from 'date-fns';
 import type { LocationResult } from '@/hooks/use-location';
+import Link from 'next/link';
 
 interface ChatWindowProps {
   conversationId: string;
@@ -203,7 +204,7 @@ export function ChatWindow({
   };
 
   const defaultText = inbox === 'personal' && listing && messages.length === 0
-    ? `Hi, is this still available?`
+    ? `Hi ${displayName}, is the ${listing.title} still available?`
     : undefined;
 
   return (
@@ -224,9 +225,26 @@ export function ChatWindow({
           )}
         </div>
 
-        <div className="flex-1 min-w-0">
-          <h3 className="text-sm sm:text-[15px] font-bold tracking-tight truncate text-foreground">{displayName}</h3>
-          <div className="flex items-center gap-1.5 mt-0.5">
+        <div className="flex-1 min-w-0 space-y-0.5">
+          {partner ? (
+            <Link
+              href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.name)}&sort=relevance`}
+              className="text-sm sm:text-[15px] font-bold tracking-tight truncate text-foreground hover:text-primary hover:underline transition-colors block leading-snug"
+            >
+              {displayName}
+            </Link>
+          ) : (
+            <h3 className="text-sm sm:text-[15px] font-bold tracking-tight truncate text-foreground leading-snug">{displayName}</h3>
+          )}
+          {listing && (
+            <Link
+              href={`/listings/${listing.id}`}
+              className="text-xs font-medium text-muted-foreground/70 truncate hover:text-primary hover:underline transition-colors block leading-snug"
+            >
+              {listing.title}
+            </Link>
+          )}
+          <div className="flex items-center gap-1.5">
             {isOtherOnline && (
               <div className="flex items-center gap-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500" />

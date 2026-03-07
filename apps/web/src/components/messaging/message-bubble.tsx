@@ -12,6 +12,7 @@ import { formatDistanceToNow } from 'date-fns';
 import type { Message } from '@/hooks/messaging';
 import { X } from 'lucide-react';
 import { LocationBubble } from './location-bubble';
+import Link from 'next/link';
 
 interface MessageBubbleProps {
   message: Message;
@@ -93,9 +94,12 @@ export function MessageBubble({
         compact ? 'max-w-[85%]' : 'max-w-[85%] sm:max-w-[80%] md:max-w-[65%]',
         isOwn ? 'items-end' : 'items-start'
       )}>
-        {/* Listing Preview - rendered OUTSIDE the bubble */}
+        {/* Listing Preview - rendered OUTSIDE the bubble, clickable to listing */}
         {listing && (
-          <div className="mb-1.5 sm:mb-2 max-w-[240px] sm:max-w-[280px] rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm">
+          <Link
+            href={`/listings/${listing.id}`}
+            className="mb-1.5 sm:mb-2 max-w-[240px] sm:max-w-[280px] rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm block hover:border-primary/50 hover:shadow-md transition-all"
+          >
             {listing.thumbnail ? (
               <img 
                 src={getThumbUrl(listing.thumbnail) || listing.thumbnail} 
@@ -110,7 +114,7 @@ export function MessageBubble({
                 {listing.title}
               </p>
             </div>
-          </div>
+          </Link>
         )}
 
         {/* Message Bubble with Hover Timestamp */}

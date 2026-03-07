@@ -11,6 +11,7 @@ import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { ConversationListItem } from './conversation-list-item';
 import { cn } from '@/utils/cn';
 import type { Conversation } from '@/hooks/messaging';
+import Link from 'next/link';
 
 // Derived type from Conversation
 type ConversationPartner = NonNullable<Conversation['partner']>;
@@ -64,9 +65,13 @@ export function PartnerConversationGroup({
         {/* Partner Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-foreground truncate">
+            <Link
+              href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.name)}&sort=relevance`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-sm font-bold text-foreground truncate hover:text-primary hover:underline transition-colors"
+            >
               {partner.name}
-            </h3>
+            </Link>
             {conversations.length > 1 && (
               <span className="text-xs font-medium text-muted-foreground/50">
                 {conversations.length}

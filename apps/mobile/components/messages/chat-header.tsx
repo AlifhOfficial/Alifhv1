@@ -6,9 +6,11 @@
 
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Skeleton } from '@/components/ui';
+import { Skeleton, HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { useTheme } from '@/context/theme-context';
+import { useSearch } from '@/context/search-context';
 import { Colors, Spacing, Sizes, Layout, Radius } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Data } from '@/components/ui';
@@ -21,6 +23,9 @@ interface ChatHeaderProps {
   isTyping?: boolean;
   lastSeenAt?: Date | string | null;
   listingTitle?: string;
+  listingId?: string | null;
+  partnerId?: string | null;
+  partnerName?: string | null;
   isLoading?: boolean;
 }
 
@@ -31,11 +36,16 @@ export function ChatHeader({
   isTyping = false,
   lastSeenAt,
   listingTitle,
+  listingId,
+  partnerId,
+  partnerName,
   isLoading = false,
 }: ChatHeaderProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { applySearch, clearSearch, clearFilterParams } = useSearch();
 
   // Format activity timestamp
   const getActivityText = () => {
@@ -92,24 +102,50 @@ export function ChatHeader({
           )}
         </View>
 
-        {/* Name Pill */}
-        <View
-          style={[
-            styles.pillButton,
-            styles.glass,
-            {
-              borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
-              minWidth: isLoading ? Spacing['5xl'] * 2 : undefined,
-            },
-          ]}
-        >
-          {isLoading ? (
-            <Skeleton width={Spacing['4xl'] * 2} height={Sizes.iconSm} borderRadius={Radius.sm} />
-          ) : (
-            <Data size="small">{name}</Data>
-          )}
-        </View>
+        {/* Name Pill - tappable to partner search if dealer */}
+        {partnerId && partnerName ? (
+          <HapticPressable
+            onPress={() => {
+              clearSearch();
+              clearFilterParams();
+              applySearch({ partnerId, partnerName });
+              router.push('/browse' as any);
+            }}
+            style={[
+              styles.pillButton,
+              styles.glass,
+              {
+                borderColor: colors.glassBorder,
+                backgroundColor: colors.glassBackground,
+                minWidth: isLoading ? Spacing['5xl'] * 2 : undefined,
+              },
+            ]}
+          >
+            {isLoading ? (
+              <Skeleton width={Spacing['4xl'] * 2} height={Sizes.iconSm} borderRadius={Radius.sm} />
+            ) : (
+              <Data size="small">{name}</Data>
+            )}
+          </HapticPressable>
+        ) : (
+          <View
+            style={[
+              styles.pillButton,
+              styles.glass,
+              {
+                borderColor: colors.glassBorder,
+                backgroundColor: colors.glassBackground,
+                minWidth: isLoading ? Spacing['5xl'] * 2 : undefined,
+              },
+            ]}
+          >
+            {isLoading ? (
+              <Skeleton width={Spacing['4xl'] * 2} height={Sizes.iconSm} borderRadius={Radius.sm} />
+            ) : (
+              <Data size="small">{name}</Data>
+            )}
+          </View>
+        )}
 
         {/* Activity Pill - Moon icon + timestamp */}
         <View
@@ -139,9 +175,15 @@ export function ChatHeader({
           )}
         </View>
 
-        {/* Listing Title Pill */}
+        {/* Listing Title Pill - tappable to listing */}
         {listingTitle && (
-          <View
+          <HapticPressable
+            onPress={() => {
+              if (listingId) {
+                router.push({ pathname: '/listing/[id]', params: { id: listingId } } as any);
+              }
+            }}
+            disabled={!listingId}
             style={[
               styles.pillButton,
               styles.glass,
@@ -154,7 +196,7 @@ export function ChatHeader({
             <Data size="small" style={{ color: colors.textSecondary }}>
               Re: {listingTitle}
             </Data>
-          </View>
+          </HapticPressable>
         )}
       </ScrollView>
     </View>

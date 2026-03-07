@@ -11,6 +11,7 @@ import { cn } from '@/utils/cn';
 import { formatDistanceToNow } from 'date-fns';
 import type { Conversation } from '@/hooks/messaging';
 import { Pin } from 'lucide-react';
+import Link from 'next/link';
 
 interface ConversationListItemProps {
   conversation: Conversation;
@@ -116,9 +117,13 @@ export function ConversationListItem({
 
           {/* Listing Context (only for non-nested items) */}
           {showListingContext && (
-            <p className="text-xs font-medium text-muted-foreground/50 mb-0.5 truncate">
+            <Link
+              href={`/listings/${listing.id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-xs font-medium text-muted-foreground/50 mb-0.5 truncate block hover:text-primary hover:underline transition-colors"
+            >
               Re: {listing.title}
-            </p>
+            </Link>
           )}
 
           <div className="flex items-center justify-between overflow-hidden gap-2">

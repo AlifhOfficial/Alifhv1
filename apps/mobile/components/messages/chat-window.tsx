@@ -341,6 +341,9 @@ export function ChatWindow({
         isTyping={isOtherTyping}
         lastSeenAt={lastSeenAt}
         listingTitle={listingTitle}
+        listingId={conversation?.listing?.id ?? conversation?.listingId ?? null}
+        partnerId={conversation?.partner?.id ?? conversation?.partnerId ?? null}
+        partnerName={conversation?.partner?.name ?? null}
         isLoading={!conversation}
       />
 
@@ -420,6 +423,11 @@ export function ChatWindow({
         onRequestLocation={handleOpenLocationSheet}
         disabled={false}
         resetKey={conversationId}
+        initialText={
+          !isLoading && messages.length === 0 && conversation?.listing
+            ? `Hi ${displayName}, is the ${listingTitle || 'listing'} still available?`
+            : undefined
+        }
       />
 
       {/* Location Picker Sheet */}

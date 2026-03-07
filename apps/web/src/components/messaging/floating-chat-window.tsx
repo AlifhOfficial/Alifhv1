@@ -18,6 +18,7 @@ import { useMessages, useSendMessage, useSendLocationMessage, useMarkAsRead, typ
 import { cn } from '@/utils/cn';
 import { format, isSameDay } from 'date-fns';
 import type { LocationResult } from '@/hooks/use-location';
+import Link from 'next/link';
 
 // Simple time ago formatter (1m, 5m, 1h, 12h, 1d, etc)
 function formatTimeAgo(date: Date | string | null): string | null {
@@ -214,7 +215,7 @@ export function FloatingChatWindow({
             className="flex-1 min-w-0 text-left hover:opacity-80 transition-opacity"
           >
             <div className="flex items-center gap-2">
-              <h4 className="text-sm font-bold tracking-tight truncate text-sidebar-foreground">
+              <h4 className="text-sm font-bold tracking-tight truncate text-sidebar-foreground leading-snug">
                 {displayName}
               </h4>
               {/* Activity indicator */}
@@ -232,9 +233,13 @@ export function FloatingChatWindow({
               )}
             </div>
             {!isMinimized && listing && (
-              <p className="text-xs font-medium text-muted-foreground/70 truncate mt-0.5">
+              <Link
+                href={`/listings/${listing.id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="text-xs font-medium text-muted-foreground/70 truncate mt-1 block hover:text-primary hover:underline transition-colors leading-snug"
+              >
                 {listing.title}
-              </p>
+              </Link>
             )}
           </button>
 

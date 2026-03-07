@@ -5,7 +5,8 @@
  */
 
 import React from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { getThumbUrl } from '@/lib/config';
@@ -35,6 +36,7 @@ export function MessageBubble({
 }: MessageBubbleProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const router = useRouter();
 
   const { sender, text, mediaUrl, mediaType, mediaMetadata, isEdited, isSystemMessage } = message;
 
@@ -88,9 +90,10 @@ export function MessageBubble({
       <View
         style={[styles.content, isOwn ? styles.contentOwn : styles.contentOther]}
       >
-        {/* Listing Preview (if any) */}
+        {/* Listing Preview (if any) - tappable to listing */}
         {listing && (
-          <View
+          <Pressable
+            onPress={() => router.push({ pathname: '/listing/[id]', params: { id: listing.id } } as any)}
             style={[
               styles.listingPreview,
               { borderColor: colors.border, backgroundColor: colors.surface },
@@ -112,7 +115,7 @@ export function MessageBubble({
                 {listing.title}
               </Data>
             </View>
-          </View>
+          </Pressable>
         )}
 
         {/* Message Bubble */}
