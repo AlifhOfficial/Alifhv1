@@ -161,6 +161,7 @@ export function ProfileView() {
       // updateProfile's onSuccess handles cache update and session refresh
       await updateProfile(payload);
       setEditingField(null);
+      toast({ title: 'Saved' });
     } catch {
       toast({ title: 'Failed to save', variant: 'destructive' });
     } finally {

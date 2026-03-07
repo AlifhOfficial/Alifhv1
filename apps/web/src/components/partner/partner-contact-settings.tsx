@@ -102,9 +102,6 @@ export function PartnerContactSettings() {
       if (!res.ok) throw new Error('Failed to update profile');
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['partner-profile'] });
-    },
   });
 
   // Save single field
@@ -382,7 +379,7 @@ export function PartnerContactSettings() {
             {/* Admin Phone with verification */}
             <div className="py-2 sm:py-3">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <p className="text-xs font-medium text-muted-foreground/70">Admin Phone (requires verification)</p>
+                <p className="text-xs font-medium text-muted-foreground/70">Admin Phone</p>
                 {(profile?.adminPhoneVerified || phoneJustVerified) ? (
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
                 ) : form.adminPhone && phoneVerifyStep === 'idle' && editingField !== 'adminPhone' ? (

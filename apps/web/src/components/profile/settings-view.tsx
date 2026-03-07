@@ -182,6 +182,7 @@ export function SettingsView() {
       };
       
       await updateProfile(payload);
+      toast({ title: 'Updated' });
     } catch {
       toast({ title: 'Failed to update', variant: 'destructive' });
     } finally {

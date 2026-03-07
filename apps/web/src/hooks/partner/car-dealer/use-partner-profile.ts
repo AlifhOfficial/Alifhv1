@@ -156,12 +156,6 @@ export function usePartnerProfile(partnerId: string | null | undefined) {
   const mutation = useMutation({
     mutationFn: (updates: PartnerProfileUpdate) => updatePartnerProfileAPI(partnerId!, updates),
     onSuccess: (updatedProfile, variables) => {
-      console.log('[mutation onSuccess] Setting cache with:', {
-        logo: updatedProfile.logo,
-        heroImage: updatedProfile.heroImage,
-        logoUrl: updatedProfile.logoUrl,
-        heroImageUrl: updatedProfile.heroImageUrl,
-      });
       // Update local cache directly - no refetch needed
       queryClient.setQueryData(['partner-profile', partnerId], updatedProfile);
       

@@ -29,6 +29,8 @@ import { toast } from 'sonner';
  * toast.success('Done');
  * ```
  */
+const SYNC_NOTE = 'Changes may take 5–10 min to appear everywhere.';
+
 export function useToast() {
   return {
     toast: ({
@@ -43,14 +45,18 @@ export function useToast() {
       action?: any;
     }) => {
       const message = description || title || 'Notification';
+      // For non-error toasts, append sync note if no description provided
+      const desc = variant === 'destructive'
+        ? description
+        : description || SYNC_NOTE;
       
       switch (variant) {
         case 'destructive':
-          return toast.error(title || 'Error', { description });
+          return toast.error(title || 'Error', { description: desc });
         case 'success':
-          return toast.success(title || 'Success', { description });
+          return toast.success(title || 'Success', { description: desc });
         default:
-          return toast(title || message, { description });
+          return toast(title || message, { description: desc });
       }
     },
     dismiss: (toastId?: string) => toast.dismiss(toastId),

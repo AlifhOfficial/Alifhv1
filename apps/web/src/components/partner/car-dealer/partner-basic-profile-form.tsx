@@ -107,11 +107,17 @@ const EditableField = React.memo(function EditableField({
               ) : (
                 <input
                   autoFocus
-                  type={type}
+                  type={type === 'number' ? 'text' : type}
+                  inputMode={type === 'number' ? 'numeric' : undefined}
+                  pattern={type === 'number' ? '[0-9]*' : undefined}
                   value={String(value || '')}
                   onChange={(e) => {
-                    const val = type === 'number' ? (parseInt(e.target.value) || null) : e.target.value;
-                    onChange(val);
+                    if (type === 'number') {
+                      const digits = e.target.value.replace(/\D/g, '');
+                      onChange(digits ? parseInt(digits) : null);
+                    } else {
+                      onChange(e.target.value);
+                    }
                   }}
                   placeholder={placeholder}
                   className="w-full h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
@@ -266,6 +272,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
 
       await updateProfile(payload);
       setEditingField(null);
+      toast({ title: 'Saved' });
       
       // Sync Google reviews if URL changed
       if (field === 'googleReviewUrl' && form.googleReviewUrl?.trim() && 
@@ -281,7 +288,6 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           if (syncRes.ok) {
             const data = await syncRes.json();
             toast({ title: 'Reviews synced', description: `${data.rating?.toFixed(1)} ⭐` });
-            await refetchFresh();
           }
         } catch {}
       }
@@ -431,7 +437,6 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
       if (!res.ok) throw new Error('Sync failed');
       const data = await res.json();
       toast({ title: 'Reviews synced', description: `${data.rating?.toFixed(1)} ⭐ (${data.reviewCount} reviews)` });
-      await refetchFresh();
     } catch {
       toast({ title: 'Sync failed', variant: 'destructive' });
     }
