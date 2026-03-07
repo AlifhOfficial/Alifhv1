@@ -344,10 +344,10 @@ type ResultStatus = 'approved' | 'rejected' | 'pending' | 'duplicate';
 
 function createResultHtml(status: ResultStatus, sessionId: string, reason?: string) {
   const config = {
-    approved: { icon: '✓', title: 'Verified!', message: 'Closing...', bgClass: 'success' },
-    rejected: { icon: '✕', title: 'Verification Failed', message: reason || 'Please try again with a valid ID', bgClass: 'failed' },
-    pending: { icon: '⏳', title: 'Processing...', message: 'Please wait', bgClass: 'pending' },
-    duplicate: { icon: '⚠️', title: 'Document Already Used', message: 'This ID is registered to another account', bgClass: 'failed' },
+    approved: { icon: '✓', title: 'Verified!', message: 'Your identity has been verified', bgClass: 'success', btnClass: 'btn-success' },
+    rejected: { icon: '✕', title: 'Verification Failed', message: reason || 'Please try again with a valid ID', bgClass: 'failed', btnClass: 'btn-failed' },
+    pending: { icon: '⏳', title: 'Under Review', message: 'We\'ll notify you when complete', bgClass: 'pending', btnClass: 'btn-pending' },
+    duplicate: { icon: '⚠️', title: 'Document Already Used', message: 'This ID is registered to another account', bgClass: 'failed', btnClass: 'btn-failed' },
   }[status];
 
   const postMessageStatus = status === 'duplicate' ? 'duplicate' : status;
@@ -377,22 +377,36 @@ function createResultHtml(status: ResultStatus, sessionId: string, reason?: stri
       min-height: 100vh;
       background: #fafafa;
     }
-    .container { text-align: center; padding: 40px; }
+    .container { text-align: center; padding: 40px; max-width: 320px; }
     .icon {
-      width: 80px;
-      height: 80px;
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 20px;
-      font-size: 40px;
+      margin: 0 auto 16px;
+      font-size: 36px;
     }
     .success { background: #dcfce7; }
     .failed { background: #fee2e2; }
     .pending { background: #fef3c7; }
-    h1 { font-size: 24px; font-weight: 600; margin-bottom: 8px; color: #111; }
-    p { color: #666; font-size: 14px; }
+    h1 { font-size: 20px; font-weight: 600; margin-bottom: 6px; color: #111; }
+    p { color: #666; font-size: 14px; line-height: 1.4; margin-bottom: 24px; }
+    .btn {
+      display: inline-block;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn-success { background: #22c55e; color: white; }
+    .btn-failed { background: #ef4444; color: white; }
+    .btn-pending { background: #f59e0b; color: white; }
   </style>
 </head>
 <body>
@@ -400,15 +414,27 @@ function createResultHtml(status: ResultStatus, sessionId: string, reason?: stri
     <div class="icon ${config.bgClass}">${config.icon}</div>
     <h1>${config.title}</h1>
     <p>${config.message}</p>
+    <button class="btn ${config.btnClass}" onclick="closeModal()">Close</button>
   </div>
   <script>
-    if (window.parent !== window) {
-      window.parent.postMessage({
-        type: 'kyc-complete',
-        status: '${postMessageStatus}',
-        sessionId: '${sessionId}'${errorPayload}
-      }, '*');
+    // Notify parent modal of result
+    function notifyParent() {
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          type: 'kyc-complete',
+          status: '${postMessageStatus}',
+          sessionId: '${sessionId}'${errorPayload}
+        }, '*');
+      }
     }
+    
+    // Close button handler - notify parent again to ensure modal closes
+    function closeModal() {
+      notifyParent();
+    }
+    
+    // Auto-notify on load
+    notifyParent();
   </script>
 </body>
 </html>`;

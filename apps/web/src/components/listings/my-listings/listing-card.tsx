@@ -31,6 +31,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 // ============================================================================
 // Types & Helpers
@@ -306,6 +312,12 @@ export function ListingCard({
                 <Heart className="w-3.5 h-3.5" />
                 {saves}
               </span>
+              {superlikes > 0 && (
+                <span className="flex items-center gap-1 text-amber-500">
+                  <Zap className="w-3.5 h-3.5" />
+                  {superlikes}
+                </span>
+              )}
             </div>
           </div>
 
@@ -352,49 +364,61 @@ export function ListingCard({
           )}
 
           {/* Metrics */}
-          <div className="grid grid-cols-2 gap-8">
-            <div>
-              <div className="flex items-baseline justify-between mb-2">
-                <span className="text-xs text-muted-foreground">Click Rate</span>
-                <span className="text-sm font-semibold tabular-nums">{ctr}%</span>
+          <TooltipProvider delayDuration={200}>
+            <div className="grid grid-cols-2 gap-8">
+              <div>
+                <div className="flex items-baseline justify-between mb-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="text-xs text-muted-foreground cursor-help border-b border-dotted border-muted-foreground/50">Click Rate</span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[200px]">
+                      <p className="text-xs">Percentage of people who viewed your listing after seeing it in search results</p>
+                      <p className="text-xs text-muted-foreground mt-1">Views ÷ Impressions × 100</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <span className="text-sm font-semibold tabular-nums">{ctr}%</span>
+                </div>
+                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary rounded-full"
+                    style={{ width: `${Math.min(parseFloat(ctr) * 5, 100)}%` }}
+                  />
+                </div>
               </div>
-              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-primary rounded-full"
-                  style={{ width: `${Math.min(parseFloat(ctr) * 10, 100)}%` }}
-                />
+              
+              <div>
+                <div className="flex items-baseline justify-between mb-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="text-xs text-muted-foreground cursor-help border-b border-dotted border-muted-foreground/50">Engagement</span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[220px]">
+                      <p className="text-xs">Score based on how users interact with your listing</p>
+                      <p className="text-xs text-muted-foreground mt-1">Combines click rate, saves, superlikes, and view volume (0-100)</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <span className={cn("text-sm font-semibold tabular-nums", hotLevel.color)}>{hotScore}</span>
+                </div>
+                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className={cn(
+                      "h-full rounded-full",
+                      hotScore >= 70 ? "bg-orange-500" :
+                      hotScore >= 40 ? "bg-amber-500" :
+                      hotScore >= 20 ? "bg-emerald-500" :
+                      "bg-muted-foreground/30"
+                    )}
+                    style={{ width: `${hotScore}%` }}
+                  />
+                </div>
               </div>
             </div>
-            
-            <div>
-              <div className="flex items-baseline justify-between mb-2">
-                <span className="text-xs text-muted-foreground">Engagement</span>
-                <span className={cn("text-sm font-semibold tabular-nums", hotLevel.color)}>{hotScore}</span>
-              </div>
-              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                <div 
-                  className={cn(
-                    "h-full rounded-full",
-                    hotScore >= 70 ? "bg-orange-500" :
-                    hotScore >= 40 ? "bg-amber-500" :
-                    hotScore >= 20 ? "bg-emerald-500" :
-                    "bg-muted-foreground/30"
-                  )}
-                  style={{ width: `${hotScore}%` }}
-                />
-              </div>
-            </div>
-          </div>
+          </TooltipProvider>
 
           {/* Additional Info */}
           <div className="flex items-center justify-between text-xs text-muted-foreground pt-2">
             <span>{impressions.toLocaleString()} impressions</span>
-            {superlikes > 0 && (
-              <span className="flex items-center gap-1 text-amber-500">
-                <Zap className="w-3.5 h-3.5" />
-                {superlikes} superlikes
-              </span>
-            )}
             <span>{formatRelativeDate(listing.publishedAt || listing.createdAt)}</span>
           </div>
         </div>
