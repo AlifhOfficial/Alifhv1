@@ -103,6 +103,8 @@ export interface ListingDetailedData {
   partnerBrandName: string | null;
   partnerVerified: boolean;
   isBlkListing: boolean;
+  // Visibility
+  isPublic: boolean;
   // Timestamps
   createdAt: string;
   updatedAt?: string;
@@ -172,6 +174,8 @@ export interface UserSellerProfile {
 export interface ListingDetailed {
   listing: ListingDetailedData;
   sellerData: SellerData;
+  /** True if admin is viewing a non-public listing (mobile users won't see this, but kept for type safety) */
+  isAdminPreview?: boolean;
 }
 
 // ============================================================================
@@ -276,9 +280,35 @@ export async function getListingBasic(id: string): Promise<ListingDetailedData> 
   return data;
 }
 
+// Session-level dedup for views (prevents re-tracking on re-renders/remounts)
+const sessionTrackedViews = new Set<string>();
+
+/**
+ * Track a listing view (fire-and-forget)
+ * Calls: POST /api/listings/[id]/view
+ */
+export async function trackView(listingId: string): Promise<void> {
+  // Skip if already tracked this session
+  if (sessionTrackedViews.has(listingId)) {
+    return;
+  }
+
+  // Mark as tracked immediately
+  sessionTrackedViews.add(listingId);
+
+  // Fire-and-forget - don't await, don't handle errors
+  fetch(`${API_BASE}/api/listings/${listingId}/view`, {
+    method: 'POST',
+    credentials: 'include',
+  }).catch(() => {
+    // Silent fail - view tracking is non-critical
+  });
+}
+
 export const listingApi = {
   getDetailed: getListingDetailed,
   getBasic: getListingBasic,
+  trackView,
 };
 
 export default listingApi;

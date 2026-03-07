@@ -53,11 +53,12 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   const { listing, sellerData, isAdminPreview, isLoading, error } = useListingDetail(listingId);
   
   // Track view when listing loads successfully (fire-and-forget)
+  // Only track for live/public listings - not admin previews
   useEffect(() => {
-    if (listing?.id && listing.isPublic) {
+    if (listing?.id && listing.isPublic && !isAdminPreview) {
       trackView(listing.id);
     }
-  }, [listing?.id, listing?.isPublic, trackView]);
+  }, [listing?.id, listing?.isPublic, isAdminPreview, trackView]);
 
   // Error or not found state (only show after loading completes)
   if (!isLoading && (error || !listing)) {

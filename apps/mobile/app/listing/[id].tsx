@@ -26,6 +26,7 @@ import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import { FloatingListingActions } from '@/components/listings';
 import { listingApi, ListingDetailed } from '@/lib/listing-api';
+import { useRef } from 'react';
 
 export default function ListingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -40,6 +41,7 @@ export default function ListingDetailScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showTopGradient, setShowTopGradient] = useState(false);
+  const viewTrackedRef = useRef(false);
 
   // Handle scroll to show/hide top gradient
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -85,6 +87,17 @@ export default function ListingDetailScreen() {
   useEffect(() => {
     fetchListing();
   }, [fetchListing]);
+
+  // Track view when listing loads successfully (fire-and-forget)
+  // Only track for live/public listings - not admin previews
+  useEffect(() => {
+    const isPublic = listing?.listing?.isPublic ?? false;
+    const isAdminPreview = listing?.isAdminPreview ?? false;
+    if (listing?.listing?.id && isPublic && !isAdminPreview && !viewTrackedRef.current) {
+      viewTrackedRef.current = true;
+      listingApi.trackView(listing.listing.id);
+    }
+  }, [listing?.listing?.id, listing?.listing?.isPublic, listing?.isAdminPreview]);
 
   const handleRefresh = useCallback(() => {
     fetchListing(true);
