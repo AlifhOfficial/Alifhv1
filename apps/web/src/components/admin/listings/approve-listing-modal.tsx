@@ -43,7 +43,7 @@ export function ApproveListingModal({ open, listing, onClose, onSuccess }: Appro
       });
 
       if (!response.ok) {
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
         throw new Error(data.error || 'Failed to approve listing');
       }
 

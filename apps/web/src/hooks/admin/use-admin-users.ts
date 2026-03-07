@@ -212,7 +212,7 @@ async function fetchAdminUsers(options: ListUsersOptions = {}): Promise<{
   const response = await fetch(`/api/admin/users?${params.toString()}`);
   
   if (!response.ok) {
-    const error = await response.json();
+    const error = await response.json().catch(() => ({}));
     throw new Error(error.error || 'Failed to fetch users');
   }
   
@@ -244,7 +244,7 @@ async function searchAdminUsers(options: SearchUsersOptions): Promise<{
   }
   
   if (!response.ok) {
-    const error = await response.json();
+    const error = await response.json().catch(() => ({}));
     throw new Error(error.error || 'Failed to search users');
   }
   
@@ -280,7 +280,7 @@ async function fetchAdminPartners(options: ListPartnersOptions = {}): Promise<{
   const response = await fetch(`/api/admin/partners?${params.toString()}`);
   
   if (!response.ok) {
-    const error = await response.json();
+    const error = await response.json().catch(() => ({}));
     throw new Error(error.error || 'Failed to fetch partners');
   }
   
@@ -295,7 +295,7 @@ async function fetchAdminStats(): Promise<AdminStats> {
   const response = await fetch('/api/admin/stats');
   
   if (!response.ok) {
-    const error = await response.json();
+    const error = await response.json().catch(() => ({}));
     throw new Error(error.error || 'Failed to fetch statistics');
   }
   

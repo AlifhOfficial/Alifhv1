@@ -49,7 +49,7 @@ export function RejectListingModal({ open, listing, onClose, onSuccess }: Reject
       });
 
       if (!response.ok) {
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
         throw new Error(data.error || 'Failed to reject listing');
       }
 

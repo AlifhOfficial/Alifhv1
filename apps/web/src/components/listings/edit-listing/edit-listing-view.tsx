@@ -105,7 +105,7 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || 'Failed to update listing');
       }
 

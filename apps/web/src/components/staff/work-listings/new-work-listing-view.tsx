@@ -47,7 +47,7 @@ export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProp
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         const errorMessage = errorData.details?.message || errorData.error || 'Failed to create listing';
         console.error('API Error Details:', errorData);
         throw new Error(errorMessage);
@@ -94,7 +94,7 @@ export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProp
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || 'Failed to save draft');
       }
 
