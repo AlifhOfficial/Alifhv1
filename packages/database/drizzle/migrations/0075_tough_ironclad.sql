@@ -1,0 +1,1 @@
+ALTER TABLE "user_profile" ALTER COLUMN "consignment_mode" SET DEFAULT true;

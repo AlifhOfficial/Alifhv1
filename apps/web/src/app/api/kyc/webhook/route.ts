@@ -440,6 +440,11 @@ function createResultHtml(status: ResultStatus, sessionId: string, reason?: stri
 </html>`;
 
   return new NextResponse(html, {
-    headers: { 'Content-Type': 'text/html' },
+    headers: {
+      'Content-Type': 'text/html',
+      // Allow this response to be framed by Didit verification and our own modal iframe
+      'X-Frame-Options': 'ALLOWALL',
+      'Content-Security-Policy': "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; frame-ancestors *;",
+    },
   });
 }

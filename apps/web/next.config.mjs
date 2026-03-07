@@ -22,14 +22,19 @@ const nextConfig = {
   // Content Security Policy and PWA Service Worker headers
   async headers() {
     return [
-      // KYC webhook callback - Allow framing by Didit iframe
+      // KYC webhook callback - Allow framing for Didit verification iframe
       // Returns minimal HTML with "Done" UI and postMessage - NOT the full site
+      // IMPORTANT: This must come AFTER the global /:path* rule so it overrides X-Frame-Options: DENY
       {
         source: '/api/kyc/webhook',
         headers: [
           {
             key: 'X-Frame-Options',
             value: 'ALLOWALL',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; frame-ancestors *;",
           },
         ],
       },

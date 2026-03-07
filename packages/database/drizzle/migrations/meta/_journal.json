@@ -519,6 +519,20 @@
       "when": 1772140283980,
       "tag": "0073_curved_tyger_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1741478400000,
+      "tag": "0074_fix_consignment_mode_default",
+      "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
+      "when": 1772921445869,
+      "tag": "0075_tough_ironclad",
+      "breakpoints": true
     }
   ]
 }
