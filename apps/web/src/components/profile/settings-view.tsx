@@ -120,6 +120,12 @@ export function SettingsView() {
       });
       
       if (error) {
+        // Handle user cancellation gracefully
+        const errorMsg = error.message?.toLowerCase() || '';
+        if (errorMsg.includes('timed out') || errorMsg.includes('not allowed') || errorMsg.includes('cancelled') || errorMsg.includes('canceled') || errorMsg.includes('abort')) {
+          // User cancelled - no toast needed
+          return;
+        }
         toast({ title: 'Failed to add passkey', description: error.message, variant: 'destructive' });
         return;
       }
@@ -127,6 +133,12 @@ export function SettingsView() {
       toast({ title: 'Passkey added!', description: 'You can now sign in with this device' });
       await refresh(); // Refresh to get updated passkeys
     } catch (err: any) {
+      // Handle user cancellation gracefully
+      const errorMsg = err.message?.toLowerCase() || '';
+      if (errorMsg.includes('timed out') || errorMsg.includes('not allowed') || errorMsg.includes('cancelled') || errorMsg.includes('canceled') || errorMsg.includes('abort')) {
+        // User cancelled - no toast needed
+        return;
+      }
       toast({ title: 'Failed to add passkey', description: err.message || 'Unknown error', variant: 'destructive' });
     } finally {
       setAddingPasskey(false);
@@ -144,8 +156,9 @@ export function SettingsView() {
       }
       
       toast({ title: 'Passkey removed' });
-      // Optimistically update local state
+      // Optimistically update local state and refresh from server
       setPasskeys(prev => prev.filter(p => p.id !== id));
+      await refresh();
     } catch (err) {
       toast({ title: 'Failed to delete passkey', variant: 'destructive' });
     } finally {
@@ -345,7 +358,7 @@ export function SettingsView() {
               <div>
                 <p className="text-sm font-medium text-foreground">Delete Account</p>
                 <p className="text-xs text-muted-foreground/70 mt-0.5">
-                  Permanently delete after 6 months
+                  Request permanent account deletion
                 </p>
               </div>
               <button
@@ -366,7 +379,7 @@ export function SettingsView() {
           <div className="bg-background border border-border/40 rounded-xl p-6 max-w-sm w-full shadow-xl">
             <h2 className="text-lg font-semibold tracking-tight mb-2">Delete Account?</h2>
             <p className="text-sm text-muted-foreground mb-4">
-              This action cannot be undone. Your account will be permanently deleted after 6 months.
+              Your account will be deactivated immediately and permanently deleted after 6 months. We retain your data during this period to comply with UAE regulations and resolve any potential disputes. This action cannot be undone.
             </p>
             
             <div className="space-y-3">

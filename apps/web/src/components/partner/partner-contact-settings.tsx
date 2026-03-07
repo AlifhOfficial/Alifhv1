@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { authClient } from '@/lib/auth/client';
@@ -66,6 +66,19 @@ export function PartnerContactSettings() {
       });
     }
   }, [profile]);
+
+  // Reset form when editing field changes (cancel unsaved edits when clicking away)
+  const prevEditingField = useRef<EditingField>(null);
+  useEffect(() => {
+    if (prevEditingField.current !== null && prevEditingField.current !== editingField && profile) {
+      setForm({
+        adminName: profile.adminName || '',
+        adminPhone: profile.adminPhone?.replace(/^\+971/, '') || '',
+        tollNumber: profile.tollNumber?.replace(/^800/, '') || '',
+      });
+    }
+    prevEditingField.current = editingField;
+  }, [editingField, profile]);
 
   // OTP countdown timer
   useEffect(() => {
@@ -214,8 +227,15 @@ export function PartnerContactSettings() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast({ title: 'Invalid code', description: data.error || 'Verification failed', variant: 'destructive' });
-        setPhoneVerifyStep('otp');
+        const errorMsg = (data.error || '').toLowerCase();
+        if (errorMsg.includes('expired') || errorMsg.includes('not found')) {
+          toast({ title: 'Code expired', description: 'Please request a new code', variant: 'destructive' });
+          setPhoneVerifyStep('idle');
+          setOtp('');
+        } else {
+          toast({ title: 'Invalid code', description: data.error || 'Verification failed', variant: 'destructive' });
+          setPhoneVerifyStep('otp');
+        }
         return;
       }
 

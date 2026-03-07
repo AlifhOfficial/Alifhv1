@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useUserProfile } from '@/hooks/profile';
@@ -68,6 +68,20 @@ export function StaffProfileForm() {
       });
     }
   }, [profile]);
+
+  // Reset form when editing field changes (cancel unsaved edits when clicking away)
+  const prevEditingField = useRef<EditingField>(null);
+  useEffect(() => {
+    if (prevEditingField.current !== null && prevEditingField.current !== editingField && profile) {
+      const forcePersonal = !profile.workPhoneVerified;
+      setForm({
+        displayName: profile.displayName || '',
+        workPhone: profile.workPhone?.replace(/^\+971/, '') || '',
+        usePersonalPhone: forcePersonal ? true : (profile.usePersonalPhone ?? true),
+      });
+    }
+    prevEditingField.current = editingField;
+  }, [editingField, profile]);
 
   // OTP countdown timer
   useEffect(() => {

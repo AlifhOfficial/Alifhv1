@@ -105,6 +105,24 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
     }
   }, [profile]);
 
+  // Reset form when editing field changes (cancel unsaved edits when switching fields)
+  const prevEditingField = useRef<EditingField>(null);
+  useEffect(() => {
+    if (prevEditingField.current !== null && prevEditingField.current !== editingField && profile) {
+      const cleanPhone = profile.phone?.replace(/^\+971/, '') ?? '';
+      const formData: ProfileFormData = {
+        firstName: profile.firstName || '',
+        lastName: profile.lastName || '',
+        phone: cleanPhone,
+        bio: profile.description || '',
+        tags: profile.tags || [],
+      };
+      setForm(formData);
+      originalFormRef.current = formData;
+    }
+    prevEditingField.current = editingField;
+  }, [editingField, profile]);
+
   // Fetch profile data
   const loadProfile = useCallback(async () => {
     if (!isAuthenticated) {

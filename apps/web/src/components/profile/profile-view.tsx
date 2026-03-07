@@ -100,6 +100,23 @@ export function ProfileView() {
     }
   }, [profile]);
 
+  // Reset form when editing field changes (cancel unsaved edits when clicking away)
+  const prevEditingField = React.useRef<EditingField>(null);
+  useEffect(() => {
+    // When switching from editing one field to another (or to null), reset unsaved changes
+    if (prevEditingField.current !== null && prevEditingField.current !== editingField && profile) {
+      setForm(f => ({
+        ...f,
+        firstName: profile.firstName ?? '',
+        lastName: profile.lastName ?? '',
+        phone: profile.phone?.replace(/^\+971/, '') ?? '',
+        bio: profile.description ?? '',
+        // Don't reset tags - they auto-save
+      }));
+    }
+    prevEditingField.current = editingField;
+  }, [editingField, profile]);
+
   // OTP countdown timer
   useEffect(() => {
     if (otpCountdown > 0) {
@@ -300,7 +317,15 @@ export function ProfileView() {
       });
 
       if (error) {
-        toast({ title: 'Invalid code', description: error.message, variant: 'destructive' });
+        // Show appropriate error based on the actual error message
+        const errorMsg = error.message?.toLowerCase() || '';
+        if (errorMsg.includes('already') || errorMsg.includes('linked') || errorMsg.includes('exists')) {
+          toast({ title: 'Phone already registered', description: 'This number is linked to another account', variant: 'destructive' });
+        } else if (errorMsg.includes('expired')) {
+          toast({ title: 'Code expired', description: 'Please request a new code', variant: 'destructive' });
+        } else {
+          toast({ title: 'Invalid code', description: error.message, variant: 'destructive' });
+        }
         setPhoneVerifyStep('otp');
         return;
       }
@@ -347,13 +372,13 @@ export function ProfileView() {
       <div 
         className={cn(
           "py-3 border-b border-border/20 last:border-0",
-          !disabled && field !== null && "cursor-pointer hover:bg-muted/30 -mx-5 px-5 transition-colors",
+          !disabled && field !== null && !isEditing && "cursor-pointer hover:bg-muted/30 -mx-5 px-5 transition-colors",
           disabled && onDisabledClick && "cursor-pointer -mx-5 px-5"
         )}
         onClick={() => {
           if (disabled && onDisabledClick) {
             onDisabledClick();
-          } else if (!disabled && field !== null) {
+          } else if (!disabled && field !== null && !isEditing) {
             setEditingField(field);
           }
         }}
@@ -831,10 +856,10 @@ export function ProfileView() {
                     autoFocus
                     value={form.bio}
                     onChange={(e) => {
-                      const value = e.target.value.slice(0, 2000).toLowerCase();
+                      const value = e.target.value.slice(0, 2000);
                       updateField({ bio: value });
                     }}
-                    placeholder="tell others about yourself..."
+                    placeholder="Tell others about yourself..."
                     rows={4}
                     maxLength={2000}
                     className="w-full p-4 bg-muted/20 rounded-xl border border-border/40 focus:ring-1 focus:ring-primary/30 outline-none resize-none placeholder:text-muted-foreground/50 text-foreground font-medium"
@@ -864,7 +889,7 @@ export function ProfileView() {
               ) : (
                 <>
                   <p className="text-sm font-medium text-foreground whitespace-pre-wrap">
-                    {form.bio || <span className="text-muted-foreground/50">tap to add bio</span>}
+                    {form.bio || <span className="text-muted-foreground/50">Tap to add bio</span>}
                   </p>
                   {form.bio && (
                     <p className="text-xs text-muted-foreground/70 mt-2">{form.bio.length}/2000 characters</p>

@@ -81,7 +81,7 @@ export default function SettingsScreen() {
       setShowDeleteModal(false);
       showAlert(
         'Account Deletion Requested',
-        'Your account will be permanently deleted after 6 months.',
+        'Your account has been deactivated and will be permanently deleted after 6 months. We retain your data during this period to comply with UAE regulations.',
         [{ text: 'OK', onPress: () => signOut() }]
       );
     });

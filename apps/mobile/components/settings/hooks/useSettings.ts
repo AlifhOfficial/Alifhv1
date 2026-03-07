@@ -139,7 +139,13 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
         // Refresh profile to get updated passkeys list
         await loadProfile();
       } else {
-        Alert.alert('Error', result.error || 'Failed to add passkey');
+        // Handle user cancellation gracefully - don't show alert
+        const errorMsg = result.error?.toLowerCase() || '';
+        if (errorMsg.includes('cancel') || errorMsg.includes('abort') || errorMsg.includes('dismiss')) {
+          // User cancelled - no alert needed
+        } else {
+          Alert.alert('Error', result.error || 'Failed to add passkey');
+        }
       }
     } catch {
       Alert.alert('Error', 'Failed to add passkey. Please try again.');
@@ -157,8 +163,9 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
         if (Platform.OS === 'ios') {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
-        // Optimistically remove from local state
+        // Update local state and refresh from server
         setPasskeys((prev) => prev.filter((pk) => pk.id !== id));
+        await loadProfile();
       } else {
         Alert.alert('Error', result.error || 'Failed to delete passkey');
       }
@@ -167,7 +174,7 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
     } finally {
       setDeletingPasskeyId(null);
     }
-  }, []);
+  }, [loadProfile]);
 
   return {
     // State

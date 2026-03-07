@@ -121,8 +121,7 @@ export function DeleteAccountSheet({
 
         {/* Description */}
         <Body size="medium" tone="secondary" style={styles.description}>
-          This action cannot be undone. Your account will be permanently deleted
-          after 6 months.
+          Your account will be deactivated immediately and permanently deleted after 6 months. We retain your data during this period to comply with UAE regulations and resolve any potential disputes. This action cannot be undone.
         </Body>
 
         {/* Input */}

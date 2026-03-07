@@ -197,6 +197,29 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     }
   }, [profile]);
 
+  // Reset form when editing field changes (cancel unsaved edits when clicking away)
+  const prevEditingField = React.useRef<EditingField>(null);
+  React.useEffect(() => {
+    if (prevEditingField.current !== null && prevEditingField.current !== editingField && profile) {
+      setForm({
+        brandName: profile.brandName ?? '',
+        website: profile.website ?? '',
+        description: profile.description ?? '',
+        city: profile.city ?? '',
+        emirate: profile.emirate ?? '',
+        lat: profile.locationLat ?? null,
+        lng: profile.locationLng ?? null,
+        logo: profile.logo,
+        heroImage: profile.heroImage,
+        specialties: profile.specialties ?? [],
+        experienceYears: profile.experienceYears,
+        foundedYear: profile.foundedYear,
+        googleReviewUrl: profile.googleReviewUrl ?? '',
+      });
+    }
+    prevEditingField.current = editingField;
+  }, [editingField, profile]);
+
   const updateField = (updates: Partial<typeof form>) => {
     setForm(f => ({ ...f, ...updates }));
   };

@@ -61,8 +61,8 @@ export function BioSection({
   };
 
   const handleChange = (text: string) => {
-    // Keep lowercase and limit length
-    onChange(text.slice(0, MAX_BIO_LENGTH).toLowerCase());
+    // Limit length only - allow any case
+    onChange(text.slice(0, MAX_BIO_LENGTH));
   };
 
   const charCountColor =

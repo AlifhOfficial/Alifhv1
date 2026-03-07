@@ -80,7 +80,7 @@ export const userProfile = pgTable('user_profile', {
     distanceUnit: 'km',
   }).notNull(),
   
-  consignmentMode: boolean('consignment_mode').default(false).notNull(),
+  consignmentMode: boolean('consignment_mode').default(true).notNull(),
   
   status: text('status').default('active').notNull(),
   

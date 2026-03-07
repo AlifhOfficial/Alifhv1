@@ -64,18 +64,10 @@ function mapKeysToImages(keys: string[]): ListingImage[] {
     .map((key, order) => ({ key, order }));
 }
 
-// Remove emojis and normalize text (prevent shouting, preserve line breaks)
+// Remove emojis from text
 function normalizeText(text: string): string {
-  // Remove emojis
-  const noEmoji = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, '');
-  
-  // Convert to lowercase first, then capitalize first letter of each sentence/paragraph
-  const lower = noEmoji.toLowerCase();
-  
-  // Capitalize first letter of text, after sentence endings, and after newlines
-  return lower.replace(/(^|[.!?]\s*|\n\s*)([a-z])/gm, (_, prefix, letter) => {
-    return prefix + letter.toUpperCase();
-  });
+  // Remove emojis only - preserve user's capitalization
+  return text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}]/gu, '');
 }
 
 // ============================================================================

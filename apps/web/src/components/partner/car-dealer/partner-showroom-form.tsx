@@ -71,6 +71,15 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
     }
   }, [showroom]);
 
+  // Reset form when editing field changes (cancel unsaved edits when clicking away)
+  const prevEditingField = React.useRef<EditingField>(null);
+  React.useEffect(() => {
+    if (prevEditingField.current !== null && prevEditingField.current !== editingField && showroom) {
+      setForm(showroom);
+    }
+    prevEditingField.current = editingField;
+  }, [editingField, showroom]);
+
   const updateField = useCallback(<K extends keyof PartnerShowroom>(field: K, value: PartnerShowroom[K]) => {
     setForm(f => ({ ...f, [field]: value }));
   }, []);
