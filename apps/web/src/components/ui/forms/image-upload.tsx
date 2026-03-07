@@ -1,6 +1,6 @@
 /**
  * Image Upload Component - Revvup Design System
- * Multi-image upload with preview and drag-and-drop
+ * Multi-image upload with preview and drag-and-drop reordering
  * 
  * Uses client-side compression + direct R2 upload for WhatsApp-like speed:
  * 1. Compress images client-side (parallel)
@@ -13,10 +13,105 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Upload, X, Loader2, GripVertical } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { getPublicUrl } from '@/utils/storage';
 import { compressAndUploadListingImages } from '@/lib/storage';
-import { Button } from './button';
+
+// ============================================================================
+// Sortable Image Item
+// ============================================================================
+
+interface SortableImageProps {
+  id: string;
+  url: string;
+  index: number;
+  onRemove: () => void;
+}
+
+function SortableImage({ id, url, index, onRemove }: SortableImageProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : undefined,
+    opacity: isDragging ? 0.8 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`relative group aspect-square rounded-xl overflow-hidden bg-muted/50 ${
+        isDragging ? 'ring-2 ring-primary shadow-lg' : ''
+      }`}
+    >
+      <img
+        src={getPublicUrl(url) || url}
+        alt={`Upload ${index + 1}`}
+        className="w-full h-full object-cover pointer-events-none"
+      />
+      
+      {/* Drag handle - top left (always visible on mobile, hover on desktop) */}
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        className="absolute top-2 left-2 p-1.5 bg-black/60 text-white rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-black/80 cursor-grab active:cursor-grabbing touch-none"
+      >
+        <GripVertical className="w-4 h-4" />
+      </button>
+      
+      {/* Delete button - top right (always visible on mobile, hover on desktop) */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove();
+        }}
+        className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-black/80"
+      >
+        <X className="w-4 h-4" />
+      </button>
+      
+      {/* Thumbnail badge */}
+      {index === 0 && (
+        <div className="absolute bottom-2 left-2 px-2.5 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-lg">
+          Thumbnail
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
+// Main Component
+// ============================================================================
 
 interface ImageUploadProps {
   value?: string[];
@@ -179,13 +274,33 @@ export function ImageUpload({
     }
   };
 
-  // Move image to first position (set as thumbnail)
-  const setAsThumbnail = (index: number) => {
-    if (index === 0) return; // Already thumbnail
-    const newImages = [...value];
-    const [movedImage] = newImages.splice(index, 1);
-    newImages.unshift(movedImage);
-    onChange(newImages);
+  // DnD sensors for pointer, touch and keyboard
+  // TouchSensor needs delay to not conflict with scroll on mobile
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement before drag starts (desktop)
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200, // Hold 200ms before drag starts on touch
+        tolerance: 5, // Allow 5px movement during delay
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Handle drag end - reorder images
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = value.indexOf(active.id as string);
+      const newIndex = value.indexOf(over.id as string);
+      onChange(arrayMove(value, oldIndex, newIndex));
+    }
   };
 
   const handleClick = () => {
@@ -201,43 +316,27 @@ export function ImageUpload({
         </div>
       )}
 
-      {/* Image Grid */}
+      {/* Image Grid - Sortable */}
       {value.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {value.map((url, index) => (
-            <div key={index} className="relative group aspect-square rounded-xl overflow-hidden bg-muted/50">
-              <img 
-                src={getPublicUrl(url) || url} 
-                alt={`Upload ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-              {/* Delete button - top right */}
-              <button
-                type="button"
-                onClick={() => removeImage(index)}
-                className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              {/* Set as thumbnail button - bottom left (only show if not already thumbnail) */}
-              {index !== 0 && (
-                <button
-                  type="button"
-                  onClick={() => setAsThumbnail(index)}
-                  className="absolute bottom-2 left-2 px-2.5 py-1.5 bg-black/60 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
-                >
-                  Mark thumbnail
-                </button>
-              )}
-              {/* Thumbnail badge */}
-              {index === 0 && (
-                <div className="absolute bottom-2 left-2 px-2.5 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-lg">
-                  Thumbnail
-                </div>
-              )}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={value} strategy={rectSortingStrategy}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {value.map((url, index) => (
+                <SortableImage
+                  key={url}
+                  id={url}
+                  url={url}
+                  index={index}
+                  onRemove={() => removeImage(index)}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
       )}
 
       {/* Upload Area */}

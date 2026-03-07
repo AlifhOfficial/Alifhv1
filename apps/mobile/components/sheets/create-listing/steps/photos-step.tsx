@@ -2,15 +2,19 @@
  * PhotosStepContent — Upload listing images
  *
  * Content-only component for the unified flow.
- * Tap star to set thumbnail. Simple grid layout.
+ * Drag to reorder. First image is thumbnail.
  *
  * @module components/sheets/create-listing/steps/photos-step
  */
 
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator, Dimensions, Alert } from 'react-native';
+import DraggableFlatList, { 
+  ScaleDecorator, 
+  RenderItemParams 
+} from 'react-native-draggable-flatlist';
 import * as Haptics from 'expo-haptics';
-import { X, ImagePlus, Star } from 'lucide-react-native';
+import { X, ImagePlus, GripVertical } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -109,24 +113,58 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
     [data.images, onUpdate]
   );
 
-  const handleSetThumbnail = useCallback(
-    (url: string) => {
-      const currentIndex = data.images.indexOf(url);
-      if (currentIndex === 0) return; // Already thumbnail
-      
-      // Move to front
-      const newImages = [url, ...data.images.filter((u) => u !== url)];
-      onUpdate({ images: newImages });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  // Handle drag end - reorder images
+  const handleDragEnd = useCallback(
+    ({ data: newData }: { data: string[] }) => {
+      onUpdate({ images: newData });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     },
-    [data.images, onUpdate]
+    [onUpdate]
   );
 
-  // Build rows of 3
-  const rows: string[][] = [];
-  for (let i = 0; i < data.images.length; i += GRID_COLUMNS) {
-    rows.push(data.images.slice(i, i + GRID_COLUMNS));
-  }
+  // Render individual image item
+  const renderItem = useCallback(
+    ({ item: url, drag, isActive, getIndex }: RenderItemParams<string>) => {
+      const imageIndex = getIndex() ?? 0;
+      const isThumbnail = imageIndex === 0;
+      
+      return (
+        <ScaleDecorator>
+          <View style={[styles.imageCard, isActive && styles.imageCardActive]}>
+            <Image source={{ uri: toAbsoluteUrl(url) }} style={styles.image} />
+            
+            {/* Thumbnail badge */}
+            {isThumbnail && (
+              <View style={[styles.thumbnailBadge, { backgroundColor: colors.primary }]}>
+                <Body size="small" style={{ color: colors.primaryForeground, fontSize: 8, fontWeight: '600' }}>
+                  COVER
+                </Body>
+              </View>
+            )}
+
+            {/* Drag handle */}
+            <HapticPressable
+              onLongPress={drag}
+              delayLongPress={100}
+              disabled={isActive}
+              style={[styles.dragHandle, { backgroundColor: colors.text + '80' }]}
+            >
+              <GripVertical size={12} color={colors.background} />
+            </HapticPressable>
+
+            {/* Delete button */}
+            <HapticPressable
+              onPress={() => handleDeleteImage(url)}
+              style={[styles.deleteBtn, { backgroundColor: colors.text + 'CC' }]}
+            >
+              <X size={12} color={colors.background} strokeWidth={2.5} />
+            </HapticPressable>
+          </View>
+        </ScaleDecorator>
+      );
+    },
+    [colors, handleDeleteImage]
+  );
 
   return (
     <StepContainer>
@@ -165,48 +203,20 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
         </Supporting>
       )}
 
-      {/* Image Grid */}
-      {rows.length > 0 && (
+      {/* Image Grid - Draggable */}
+      {data.images.length > 0 && (
         <View style={styles.gridWrapper}>
-          {rows.map((row, rowIndex) => (
-            <View key={rowIndex} style={styles.row}>
-              {row.map((url, colIndex) => {
-                const imageIndex = rowIndex * GRID_COLUMNS + colIndex;
-                const isThumbnail = imageIndex === 0;
-
-                return (
-                  <View key={url} style={styles.imageCard}>
-                    <Image source={{ uri: toAbsoluteUrl(url) }} style={styles.image} />
-
-                    {/* Thumbnail badge / button */}
-                    <HapticPressable
-                      onPress={() => handleSetThumbnail(url)}
-                      style={[
-                        styles.starBtn,
-                        { backgroundColor: isThumbnail ? colors.primary : colors.text + '80' },
-                      ]}
-                    >
-                      <Star
-                        size={10}
-                        color={isThumbnail ? colors.primaryForeground : colors.background}
-                        fill={isThumbnail ? colors.primaryForeground : 'transparent'}
-                      />
-                    </HapticPressable>
-
-                    {/* Delete button */}
-                    <HapticPressable
-                      onPress={() => handleDeleteImage(url)}
-                      style={[styles.deleteBtn, { backgroundColor: colors.text + 'CC' }]}
-                    >
-                      <X size={12} color={colors.background} strokeWidth={2.5} />
-                    </HapticPressable>
-                  </View>
-                );
-              })}
-            </View>
-          ))}
+          <DraggableFlatList
+            data={data.images}
+            keyExtractor={(item) => item}
+            renderItem={renderItem}
+            onDragEnd={handleDragEnd}
+            numColumns={GRID_COLUMNS}
+            columnWrapperStyle={styles.row}
+            scrollEnabled={false}
+          />
           <Supporting size="small" tone="muted" style={{ marginTop: Spacing.sm }}>
-            Tap star to set thumbnail
+            Hold and drag to reorder
           </Supporting>
         </View>
       )}
@@ -239,7 +249,6 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs,
   },
   row: {
-    flexDirection: 'row',
     gap: IMAGE_GAP,
     marginBottom: IMAGE_GAP,
   },
@@ -249,17 +258,29 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     overflow: 'hidden',
   },
+  imageCardActive: {
+    opacity: 0.9,
+    transform: [{ scale: 1.05 }],
+  },
   image: {
     width: '100%',
     height: '100%',
   },
-  starBtn: {
+  thumbnailBadge: {
     position: 'absolute',
     top: Spacing.xs,
     left: Spacing.xs,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  dragHandle: {
+    position: 'absolute',
+    bottom: Spacing.xs,
+    left: Spacing.xs,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
