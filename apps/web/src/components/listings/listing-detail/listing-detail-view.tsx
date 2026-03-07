@@ -50,7 +50,7 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   useFavoritesStatus({ enabled: isAuthenticated });
   
   // Fetch listing data via hook
-  const { listing, sellerData, isLoading, error } = useListingDetail(listingId);
+  const { listing, sellerData, isAdminPreview, isLoading, error } = useListingDetail(listingId);
   
   // Track view when listing loads successfully (fire-and-forget)
   useEffect(() => {
@@ -83,11 +83,11 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   }
 
   // Access control for non-public listings (only check after loading)
-  if (!isLoading && listing && !listing.isPublic) {
-    const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  // If isAdminPreview is true, admin already validated server-side
+  if (!isLoading && listing && !listing.isPublic && !isAdminPreview) {
     const isOwner = user?.id === listing.userId;
 
-    if (!isAdmin && !isOwner) {
+    if (!isOwner) {
       return (
         <div className="min-h-screen bg-background">
           <main className="pt-20">
@@ -204,6 +204,28 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
       
       <main className="pt-20">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
+          {/* Admin Preview Banner */}
+          {isAdminPreview && listing && (
+            <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-amber-700 dark:text-amber-400">Admin Preview</p>
+                  <p className="text-sm text-amber-600 dark:text-amber-400/80 mt-0.5">
+                    This listing is <strong>{listing.moderationStatus}</strong> ({listing.lifecycleStatus}).
+                    It is not visible to the public.
+                  </p>
+                </div>
+                <Link
+                  href="/admin-dashboard/listings"
+                  className="text-sm font-medium text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap"
+                >
+                  ← Back to Moderation
+                </Link>
+              </div>
+            </div>
+          )}
+          
           {/* Breadcrumb */}
           {isLoading ? (
             <div className="flex items-center gap-2 py-4 mb-4 sm:mb-6">

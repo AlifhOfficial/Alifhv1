@@ -3,11 +3,12 @@
  * GET /api/listings/[id]/detailed
  * 
  * Purpose: Fetch comprehensive listing data with seller profile for detailed view pages
- * Authentication: None required (public endpoint)
+ * Authentication: None required (public endpoint), but admin can view unpublished listings
  * 
  * Features:
  * - Full specifications, features, and pricing insights
  * - Seller profile data (partner OR user) - NO stats (loaded separately via /api/sellers/stats)
+ * - Admin preview: Admins can view non-public listings for moderation
  * 
  * Performance:
  * - Stats are fetched separately via /api/sellers/stats to avoid blocking
@@ -19,6 +20,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { applyCdnHeaders } from '@/lib/cdn-cache';
+import { getSessionUser } from '@/lib/auth/session-context';
 import { 
   getListingDetailed, 
   getDealerBaseProfile, 
@@ -102,7 +104,14 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
         { status: 404 }
       );
     }
-    if (!listing.isPublic) {
+    
+    // Check if user is admin for preview access to non-public listings
+    const user = await getSessionUser();
+    const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+    const isAdminPreview = !listing.isPublic && isAdmin;
+    
+    // Non-public listings: only allow admin preview
+    if (!listing.isPublic && !isAdmin) {
       return NextResponse.json(
         { error: 'Listing not found' },
         { status: 404 }
@@ -112,10 +121,10 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     const sellerData = await fetchSellerData(listing);
 
     // Filter sensitive data based on visibility settings
-    // VIN: Only expose if vinVisibility is 'public'
+    // VIN: Only expose if vinVisibility is 'public' (or admin preview)
     const filteredListing = {
       ...listing,
-      vin: listing.vinVisibility === 'public' ? listing.vin : null,
+      vin: (listing.vinVisibility === 'public' || isAdminPreview) ? listing.vin : null,
     };
 
     // User profile phone: Only expose if seller opted to show phone
@@ -130,12 +139,20 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     }
 
     // Build response with filtered listing + seller data
-    const responseData = { listing: filteredListing, sellerData };
+    const responseData = { 
+      listing: filteredListing, 
+      sellerData,
+      // Flag for UI to show admin preview banner
+      isAdminPreview,
+    };
 
     logTiming('total');
 
     const response = NextResponse.json(responseData);
-    applyCdnHeaders(response, 'listing');
+    // Don't cache admin previews
+    if (!isAdminPreview) {
+      applyCdnHeaders(response, 'listing');
+    }
     return response;
   } catch (error) {
     console.error('[API] Error fetching detailed listing:', error);

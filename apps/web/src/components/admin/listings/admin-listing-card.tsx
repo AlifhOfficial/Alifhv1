@@ -59,13 +59,13 @@ interface AdminListingCardProps {
 }
 
 export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDelete }: AdminListingCardProps) {
-  const formatPrice = (cents: number) => {
+  const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-AE', {
       style: 'currency',
       currency: 'AED',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(cents / 100);
+    }).format(price);
   };
 
   const formatDate = (dateString: string) => {

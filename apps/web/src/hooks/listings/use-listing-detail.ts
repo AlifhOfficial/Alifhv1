@@ -110,6 +110,8 @@ export type SellerData = PartnerSellerData | UserSellerData;
 export interface ListingDetailResponse {
   listing: CarDetailedData;
   sellerData: SellerData;
+  /** True if admin is viewing a non-public listing for moderation */
+  isAdminPreview?: boolean;
 }
 
 // ============================================================================
@@ -158,6 +160,7 @@ export function useListingDetail(
   return {
     listing: query.data?.listing ?? null,
     sellerData: query.data?.sellerData ?? null,
+    isAdminPreview: query.data?.isAdminPreview ?? false,
     isLoading: query.isLoading,
     isPending: query.isPending,
     error: query.error,
