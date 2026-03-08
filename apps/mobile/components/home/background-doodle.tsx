@@ -2,6 +2,7 @@
  * Background Doodle Component
  * 
  * Single flowing gradient glow using brand blue
+ * Designed to be subtle and elegant, adding depth without overpowering content
  */
 
 import React from 'react';
