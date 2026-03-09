@@ -20,7 +20,6 @@ type BookingSort = 'newest' | 'oldest';
 import type { UserBookingData } from './types';
 import { USER_BOOKING_STATUS_LABELS } from './types';
 import { UserBookingList } from './user-booking-list';
-import { FeedbackModal } from './feedback-modal';
 import { CancelBookingModal } from './cancel-booking-modal';
 
 export function UserBookingsView() {
@@ -33,12 +32,8 @@ export function UserBookingsView() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sort, setSort] = useState<BookingSort>('newest');
   const [currentPage, setCurrentPage] = useState(1);
-  const [feedbackModal, setFeedbackModal] = useState<{ bookingId: string; isOpen: boolean } | null>(null);
-  const [feedbackRating, setFeedbackRating] = useState(0);
-  const [feedbackComment, setFeedbackComment] = useState('');
-  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
   const [cancelModal, setCancelModal] = useState<{ bookingId: string; isOpen: boolean } | null>(null);
-  const [cancelReason, setCancelReason] = useState<string>('changed_mind');
+  const [cancelReason, setCancelReason] = useState<string>('');
   const [cancelNotes, setCancelNotes] = useState('');
   const [isCancelling, setIsCancelling] = useState(false);
   
@@ -142,53 +137,13 @@ export function UserBookingsView() {
     }
   }
 
-  async function handleSubmitFeedback() {
-    if (!feedbackModal) return;
-
-    setIsSubmittingFeedback(true);
-    setError(null);
-
-    try {
-      const res = await fetch(`/api/bookings/${feedbackModal.bookingId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          action: 'feedback',
-          rating: feedbackRating,
-          comment: feedbackComment || null,
-        }),
-      });
-
-      const result = await res.json();
-
-      if (!res.ok) {
-        throw new Error(result.error || 'Failed to submit feedback');
-      }
-
-      setFeedbackModal(null);
-      setFeedbackRating(0);
-      setFeedbackComment('');
-      fetchBookings();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit feedback');
-    } finally {
-      setIsSubmittingFeedback(false);
-    }
-  }
-
-  function handleCloseFeedback() {
-    setFeedbackModal(null);
-    setFeedbackRating(0);
-    setFeedbackComment('');
-  }
-
   async function handleSubmitCancel() {
     if (!cancelModal) return;
     setIsCancelling(true);
     try {
       await handleCancel(cancelModal.bookingId, cancelReason, cancelNotes);
       setCancelModal(null);
-      setCancelReason('changed_mind');
+      setCancelReason('');
       setCancelNotes('');
       if (selectedStatus !== 'cancelled') {
         setSelectedStatus('cancelled');
@@ -200,7 +155,7 @@ export function UserBookingsView() {
 
   function handleCloseCancel() {
     setCancelModal(null);
-    setCancelReason('changed_mind');
+    setCancelReason('');
     setCancelNotes('');
   }
 
@@ -309,7 +264,6 @@ export function UserBookingsView() {
         selectedStatus={selectedStatus}
         searchQuery={debouncedSearch}
         onCancel={(bookingId) => setCancelModal({ bookingId, isOpen: true })}
-        onOpenFeedback={(bookingId) => setFeedbackModal({ bookingId, isOpen: true })}
       />
 
       {/* Pagination */}
@@ -343,17 +297,6 @@ export function UserBookingsView() {
       })()}
 
       {/* Modals */}
-      <FeedbackModal
-        isOpen={feedbackModal?.isOpen ?? false}
-        rating={feedbackRating}
-        comment={feedbackComment}
-        isSubmitting={isSubmittingFeedback}
-        onRatingChange={setFeedbackRating}
-        onCommentChange={setFeedbackComment}
-        onSubmit={handleSubmitFeedback}
-        onClose={handleCloseFeedback}
-      />
-
       <CancelBookingModal
         isOpen={cancelModal?.isOpen ?? false}
         reason={cancelReason}

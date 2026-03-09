@@ -86,9 +86,9 @@ export function BookingCard({
 
   const formatTime = (isoString: string) => {
     return new Date(isoString).toLocaleTimeString('en-AE', {
-      hour: '2-digit',
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: false,
+      hour12: true,
       timeZone: BOOKING_TIME_ZONE,
     });
   };
@@ -276,6 +276,14 @@ export function BookingCard({
             </div>
           )}
 
+          {/* Rejection Reason */}
+          {booking.rejectionReason && (
+            <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
+              <p className="text-xs font-medium text-red-500 mb-1">Rejection Reason</p>
+              <p className="text-sm text-foreground">{booking.rejectionReason}</p>
+            </div>
+          )}
+
           {/* Actions */}
           {(booking.status === 'pending' || booking.status === 'confirmed') && (
             <div className="flex flex-wrap gap-2 pt-2">
@@ -290,12 +298,7 @@ export function BookingCard({
                     Confirm
                   </button>
                   <button
-                    onClick={() => {
-                      const reason = prompt('Enter rejection reason:');
-                      if (reason) {
-                        onAction('reject', { reason });
-                      }
-                    }}
+                    onClick={() => onAction('reject')}
                     disabled={isActionLoading}
                     className="h-9 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-sm font-medium transition-colors disabled:opacity-50"
                   >
@@ -327,7 +330,7 @@ export function BookingCard({
                   </button>
                   {hasEnded && (
                     <button
-                      onClick={() => onAction('no_show', { reason: 'Customer did not show up' })}
+                      onClick={() => onAction('noShow', { noShowReason: 'Customer did not show up' })}
                       disabled={isActionLoading}
                       className="h-9 px-4 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 text-sm font-medium transition-colors disabled:opacity-50"
                     >

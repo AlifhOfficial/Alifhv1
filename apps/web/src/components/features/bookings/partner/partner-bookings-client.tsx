@@ -8,11 +8,13 @@
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { Combobox } from "@/components/ui/forms/combobox";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X } from "lucide-react";
+import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X, Phone, Mail, User, Clock, Users, Hash, MessageSquare, FileText, XCircle, ChevronDown, ImageIcon, Copy, Check, DollarSign } from "lucide-react";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { cn } from "@/utils";
 import { getThumbUrl } from "@/utils/storage";
+
+const BOOKING_TIME_ZONE = 'Asia/Dubai';
 
 interface PartnerBookingsClientProps {
   partnerId: string;
@@ -23,31 +25,48 @@ interface PartnerBookingsClientProps {
 interface BookingData {
   id: string;
   status: string;
+  source?: string;
   scheduledDate: string;
   scheduledStartTime: Date;
+  scheduledEndTime?: Date;
   userName: string;
   userEmail: string;
+  userPhone?: string | null;
   listingTitle: string;
   listingThumbnail: string | null;
-  listingMake: string;
-  listingModel: string;
-  listingYear: number;
+  listingMake?: string;
+  listingModel?: string;
+  listingYear?: number;
+  listingPrice?: number;
   listingId?: string;
   staffUserId?: string | null;
   staffName?: string | null;
   staffAvatar?: string | null;
+  confirmationToken?: string;
+  numberOfAttendees?: number;
+  notes?: string | null;
+  specialRequests?: string | null;
+  partnerNotes?: string | null;
+  confirmedAt?: string | null;
+  confirmedBy?: string | null;
+  cancelledAt?: string | null;
+  cancelledBy?: string | null;
   createdAt: Date;
+  cancellationReason?: string | null;
+  cancellationNotes?: string | null;
+  rejectionReason?: string | null;
 }
 
 interface BookingStats {
-  totalBookings: number;
-  pendingBookings: number;
-  confirmedBookings: number;
-  completedBookings: number;
-  cancelledBookings: number;
-  noShowBookings: number;
-  todayBookings: number;
-  upcomingBookings: number;
+  // API field names
+  total: number;
+  pending: number;
+  confirmed: number;
+  completed: number;
+  cancelled: number;
+  noShow: number;
+  todayCount: number;
+  upcomingCount: number;
 }
 
 interface StaffBookingStats {
@@ -67,12 +86,12 @@ interface TeamMember {
   avatar: string | null;
 }
 
-type StatusFilter = 'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no_show';
+type StatusFilter = 'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'rejected' | 'no_show';
 
 // Normalize status values from API to our filter keys
 const normalizeStatus = (status: string): StatusFilter => {
   const normalized = status.toLowerCase().replace(/[-\s]/g, '_');
-  if (['pending', 'confirmed', 'completed', 'cancelled', 'no_show'].includes(normalized)) {
+  if (['pending', 'confirmed', 'completed', 'cancelled', 'rejected', 'no_show'].includes(normalized)) {
     return normalized as StatusFilter;
   }
   return 'pending'; // fallback
@@ -84,6 +103,7 @@ const STATUS_CONFIG: Record<StatusFilter, { label: string; color: string; bg: st
   confirmed: { label: 'Confirmed', color: 'text-green-600', bg: 'bg-green-500/10' },
   completed: { label: 'Completed', color: 'text-blue-600', bg: 'bg-blue-500/10' },
   cancelled: { label: 'Cancelled', color: 'text-red-600', bg: 'bg-red-500/10' },
+  rejected: { label: 'Rejected', color: 'text-red-600', bg: 'bg-red-500/10' },
   no_show: { label: 'No Show', color: 'text-red-600', bg: 'bg-red-500/10' },
 };
 
@@ -112,6 +132,8 @@ export function PartnerBookingsClient({
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expandedBooking, setExpandedBooking] = useState<string | null>(null);
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
   
   // Refs
   const hasFetchedTeamRef = useRef(false);
@@ -299,12 +321,12 @@ export function PartnerBookingsClient({
       };
     }
     return {
-      all: stats.totalBookings,
-      pending: stats.pendingBookings,
-      confirmed: stats.confirmedBookings,
-      completed: stats.completedBookings,
-      cancelled: stats.cancelledBookings,
-      no_show: stats.noShowBookings,
+      all: stats.total,
+      pending: stats.pending,
+      confirmed: stats.confirmed,
+      completed: stats.completed,
+      cancelled: stats.cancelled,
+      no_show: stats.noShow,
     };
   }, [stats]);
 
@@ -339,16 +361,31 @@ export function PartnerBookingsClient({
     tomorrow.setDate(tomorrow.getDate() + 1);
     
     if (d.toDateString() === today.toDateString()) {
-      return { label: 'Today', time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isToday: true };
+      return { label: 'Today', isToday: true, isTomorrow: false };
     }
     if (d.toDateString() === tomorrow.toDateString()) {
-      return { label: 'Tomorrow', time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isToday: false };
+      return { label: 'Tomorrow', isToday: false, isTomorrow: true };
     }
     return { 
-      label: d.toLocaleDateString([], { month: 'short', day: 'numeric' }), 
-      time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isToday: false 
+      label: d.toLocaleDateString('en-AE', { weekday: 'short', month: 'short', day: 'numeric', timeZone: BOOKING_TIME_ZONE }), 
+      isToday: false,
+      isTomorrow: false,
     };
+  };
+
+  const formatTime = (isoString: string | Date) => {
+    return new Date(isoString).toLocaleTimeString('en-AE', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: BOOKING_TIME_ZONE,
+    });
+  };
+
+  const copyToken = async (token: string) => {
+    await navigator.clipboard.writeText(token);
+    setCopiedToken(token);
+    setTimeout(() => setCopiedToken(null), 2000);
   };
 
   return (
@@ -455,31 +492,32 @@ export function PartnerBookingsClient({
       {isLoading && (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="p-4 sm:p-5 rounded-xl">
-              <div className="flex items-start gap-4 sm:gap-5">
-                <Skeleton className="w-24 h-16 sm:w-32 sm:h-20 rounded-xl shrink-0" />
-                <div className="flex-1 min-w-0">
+            <div key={i} className="p-4">
+              <div className="flex gap-4">
+                {/* Image skeleton */}
+                <Skeleton className="w-28 sm:w-36 aspect-[4/3] rounded-lg flex-shrink-0" />
+                
+                {/* Content skeleton */}
+                <div className="flex-1 min-w-0 flex flex-col">
+                  {/* Header */}
                   <div className="flex items-start justify-between gap-3">
-                    <Skeleton className="h-5 w-2/3" />
-                    <Skeleton className="h-6 w-20 rounded-lg" />
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-5 w-40" />
+                      <Skeleton className="h-3.5 w-24" />
+                    </div>
+                    <Skeleton className="h-5 w-16 rounded-full" />
                   </div>
-                  <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-3">
-                    <div className="space-y-1">
-                      <Skeleton className="h-2 w-12" />
-                      <Skeleton className="h-4 w-24" />
-                    </div>
-                    <div className="space-y-1">
-                      <Skeleton className="h-2 w-16" />
-                      <Skeleton className="h-4 w-28" />
-                    </div>
-                    <div className="space-y-1">
-                      <Skeleton className="h-2 w-14" />
-                      <Skeleton className="h-4 w-20" />
-                    </div>
-                    <div className="space-y-1">
-                      <Skeleton className="h-2 w-10" />
-                      <Skeleton className="h-4 w-32" />
-                    </div>
+                  
+                  {/* Date/Time row */}
+                  <div className="flex items-center gap-3 mt-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                  
+                  {/* Code + Staff row */}
+                  <div className="mt-auto pt-3 flex items-center justify-between">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-8 w-24 rounded-lg" />
                   </div>
                 </div>
               </div>
@@ -503,84 +541,262 @@ export function PartnerBookingsClient({
           </div>
 
           {/* List */}
-          <div className="space-y-3">
+          <div className="space-y-1">
             {bookings.map((booking) => {
               const normalizedStatus = normalizeStatus(booking.status);
-              const statusLabel = STATUS_CONFIG[normalizedStatus]?.label || booking.status;
+              const statusConfig = STATUS_CONFIG[normalizedStatus];
               const teamMember = booking.staffUserId ? teamMemberMap.get(booking.staffUserId) : null;
               const dateInfo = formatBookingDate(booking.scheduledStartTime);
+              const isExpanded = expandedBooking === booking.id;
+              const isCancelledOrRejected = normalizedStatus === 'cancelled' || normalizedStatus === 'rejected';
               
               return (
                 <div
                   key={booking.id}
-                  className="group p-4 sm:p-5 rounded-xl hover:bg-secondary/40 transition-colors border border-transparent hover:border-border/40"
+                  className="group relative"
                 >
-                  <div className="flex items-start gap-4 sm:gap-5">
+                  {/* Main Card - Overview */}
+                  <div className="flex gap-4 p-4">
                     {/* Image */}
-                    <div className="w-24 h-16 sm:w-32 sm:h-20 rounded-xl overflow-hidden bg-secondary flex-shrink-0">
+                    <div className="relative w-28 sm:w-36 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/20">
                       {booking.listingThumbnail ? (
                         <img
                           src={getThumbUrl(booking.listingThumbnail) || booking.listingThumbnail}
-                          alt=""
+                          alt={booking.listingTitle}
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Box className="w-6 h-6 text-muted-foreground/30" />
+                        <div className="w-full h-full flex items-center justify-center bg-muted/30">
+                          <ImageIcon className="w-6 h-6 text-muted-foreground/30" />
                         </div>
                       )}
                     </div>
 
-                    {/* Main Info */}
-                    <div className="flex-1 min-w-0">
-                      {/* Car + Status Row */}
+                    {/* Content */}
+                    <div className="flex-1 min-w-0 flex flex-col">
+                      {/* Header */}
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-sm sm:text-base font-semibold tracking-tight truncate">
-                            {booking.listingYear} {booking.listingMake} {booking.listingModel}
+                          <p className="text-sm sm:text-base font-semibold text-foreground tracking-tight line-clamp-1">
+                            {booking.listingTitle || `${booking.listingYear || ''} ${booking.listingMake || ''} ${booking.listingModel || ''}`.trim() || 'Vehicle'}
                           </p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <User className="w-3.5 h-3.5 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">{booking.userName}</span>
+                            {booking.numberOfAttendees && booking.numberOfAttendees > 1 && (
+                              <span className="text-xs text-muted-foreground/60">+{booking.numberOfAttendees - 1}</span>
+                            )}
+                          </div>
                         </div>
-                        <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap flex-shrink-0 ${STATUS_CONFIG[normalizedStatus]?.bg || 'bg-secondary/50'} ${STATUS_CONFIG[normalizedStatus]?.color || 'text-muted-foreground'}`}>
-                          {statusLabel}
+                        <span className={cn(
+                          "text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0",
+                          statusConfig?.bg || 'bg-muted',
+                          statusConfig?.color || 'text-muted-foreground'
+                        )}>
+                          {statusConfig?.label || booking.status}
                         </span>
                       </div>
 
-                      {/* Details Grid */}
-                      <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2">
-                        {/* Customer */}
-                        <div>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Customer</p>
-                          <p className="text-sm text-foreground truncate">{booking.userName}</p>
-                        </div>
-
-                        {/* Appointment */}
-                        <div>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Appointment</p>
-                          <p className="text-sm text-foreground flex items-center gap-1.5">
-                            <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                            <span className={dateInfo.isToday ? 'text-yellow-600 font-medium' : ''}>
-                              {dateInfo.label}
+                      {/* Date & Time */}
+                      <div className="flex items-center gap-3 text-xs mt-2">
+                        <span className="flex items-center gap-1.5 text-muted-foreground">
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span className={cn(
+                            "font-medium",
+                            dateInfo.isToday ? "text-yellow-600" : "text-foreground"
+                          )}>
+                            {dateInfo.label}
+                          </span>
+                        </span>
+                        <span className="flex items-center gap-1.5 text-muted-foreground">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span className="font-medium text-foreground tabular-nums">
+                            {formatTime(booking.scheduledStartTime)}
+                          </span>
+                        </span>
+                        {booking.listingPrice && (
+                          <span className="hidden sm:flex items-center gap-1.5 text-muted-foreground">
+                            <DollarSign className="w-3.5 h-3.5" />
+                            <span className="font-medium text-foreground tabular-nums">
+                              {booking.listingPrice.toLocaleString()}
                             </span>
-                            <span className="text-muted-foreground">{dateInfo.time}</span>
-                          </p>
-                        </div>
+                          </span>
+                        )}
+                      </div>
 
-                        {/* Assigned Staff */}
-                        <div>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Assigned To</p>
-                          <p className={cn("text-sm", booking.staffName ? 'text-foreground' : 'text-muted-foreground/60', teamMember?.status === 'left' && 'opacity-50')}>
-                            {booking.staffName || 'Unassigned'}
-                          </p>
-                        </div>
-
-                        {/* Contact */}
-                        <div>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Contact</p>
-                          <p className="text-sm text-muted-foreground truncate">{booking.userEmail}</p>
-                        </div>
+                      {/* Code + Staff (compact) */}
+                      <div className="mt-auto pt-3 flex items-center justify-between gap-2">
+                        {booking.confirmationToken && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToken(booking.confirmationToken!);
+                            }}
+                            className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors"
+                            title="Copy booking code"
+                          >
+                            <span>#{booking.confirmationToken}</span>
+                            {copiedToken === booking.confirmationToken ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-500" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            )}
+                          </button>
+                        )}
+                        {booking.staffName && (
+                          <span className={cn(
+                            "text-xs text-muted-foreground truncate",
+                            teamMember?.status === 'left' && "opacity-50"
+                          )}>
+                            {booking.staffName}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
+
+                  {/* Details Toggle */}
+                  <button
+                    onClick={() => setExpandedBooking(isExpanded ? null : booking.id)}
+                    className="w-full flex items-center justify-center gap-1.5 py-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors border-t border-border/20"
+                  >
+                    <span>{isExpanded ? 'Hide details' : 'View details'}</span>
+                    <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", isExpanded && "rotate-180")} />
+                  </button>
+
+                  {/* Expanded Details */}
+                  {isExpanded && (
+                    <div className="px-5 pb-5 pt-2 space-y-5 animate-in slide-in-from-top-2 duration-200 border-t border-border/20 bg-muted/10">
+                      <div className="grid md:grid-cols-2 gap-6">
+                        {/* Contact Info */}
+                        <div className="space-y-3">
+                          <p className="text-xs font-medium text-muted-foreground">Contact</p>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <User className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-sm font-medium text-foreground">{booking.userName}</span>
+                              {booking.numberOfAttendees && booking.numberOfAttendees > 1 && (
+                                <span className="text-xs text-muted-foreground">(+{booking.numberOfAttendees - 1} guests)</span>
+                              )}
+                            </div>
+                            <a 
+                              href={`mailto:${booking.userEmail}`}
+                              className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
+                            >
+                              <Mail className="w-4 h-4 text-muted-foreground" />
+                              {booking.userEmail}
+                            </a>
+                            {booking.userPhone && (
+                              <a 
+                                href={`tel:${booking.userPhone}`}
+                                className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
+                              >
+                                <Phone className="w-4 h-4 text-muted-foreground" />
+                                {booking.userPhone}
+                              </a>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Booking Info */}
+                        <div className="space-y-3">
+                          <p className="text-xs font-medium text-muted-foreground">Booking Info</p>
+                          <div className="space-y-2">
+                            <div>
+                              <p className="text-xs text-muted-foreground mb-0.5">Date & Time</p>
+                              <p className="text-sm font-medium text-foreground">
+                                {dateInfo.label}, {formatTime(booking.scheduledStartTime)}
+                                {booking.scheduledEndTime && ` – ${formatTime(booking.scheduledEndTime)}`}
+                              </p>
+                            </div>
+                            {booking.confirmationToken && (
+                              <div>
+                                <p className="text-xs text-muted-foreground mb-0.5">Confirmation Code</p>
+                                <button
+                                  onClick={() => copyToken(booking.confirmationToken!)}
+                                  className="flex items-center gap-1.5 text-sm font-mono font-medium text-foreground hover:text-primary transition-colors"
+                                >
+                                  {booking.confirmationToken}
+                                  {copiedToken === booking.confirmationToken ? (
+                                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                                  ) : (
+                                    <Copy className="w-3.5 h-3.5 opacity-50 hover:opacity-100 transition-opacity" />
+                                  )}
+                                </button>
+                              </div>
+                            )}
+                            {booking.listingPrice && (
+                              <div>
+                                <p className="text-xs text-muted-foreground mb-0.5">Vehicle Price</p>
+                                <p className="text-sm font-medium text-foreground">AED {booking.listingPrice.toLocaleString()}</p>
+                              </div>
+                            )}
+                            <div>
+                              <p className="text-xs text-muted-foreground mb-0.5">Assigned Staff</p>
+                              <p className={cn(
+                                "text-sm font-medium",
+                                booking.staffName ? "text-foreground" : "text-muted-foreground/60"
+                              )}>
+                                {booking.staffName || 'Unassigned'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Notes & Requests */}
+                      {(booking.notes || booking.specialRequests) && (
+                        <div className="space-y-4">
+                          {booking.notes && (
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground mb-1">Customer Notes</p>
+                              <p className="text-sm text-foreground leading-relaxed">{booking.notes}</p>
+                            </div>
+                          )}
+                          {booking.specialRequests && (
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground mb-1">Special Requests</p>
+                              <p className="text-sm text-foreground leading-relaxed">{booking.specialRequests}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Cancellation Reason */}
+                      {booking.cancellationReason && (
+                        <div className="p-4 rounded-lg bg-destructive/5">
+                          <p className="text-xs font-medium text-destructive mb-1">
+                            Cancelled by {booking.cancelledBy || 'unknown'}
+                          </p>
+                          <p className="text-sm text-foreground capitalize">{booking.cancellationReason.replace(/_/g, ' ')}</p>
+                          {booking.cancellationNotes && (
+                            <p className="text-xs text-muted-foreground mt-2">{booking.cancellationNotes}</p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Rejection Reason */}
+                      {booking.rejectionReason && (
+                        <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
+                          <p className="text-xs font-medium text-red-500 mb-1">Rejection Reason</p>
+                          <p className="text-sm text-foreground">{booking.rejectionReason}</p>
+                        </div>
+                      )}
+
+                      {/* Metadata Footer */}
+                      <div className="pt-3 border-t border-border/30 flex items-center justify-between text-[10px] text-muted-foreground/60">
+                        <span>
+                          Booked {new Date(booking.createdAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {booking.source && ` via ${booking.source}`}
+                        </span>
+                        {booking.confirmedAt && (
+                          <span className="text-green-600/80">
+                            Confirmed {new Date(booking.confirmedAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}

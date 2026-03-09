@@ -547,6 +547,13 @@
       "when": 1773018891134,
       "tag": "0077_sparkling_romulus",
       "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1773071341627,
+      "tag": "0078_skinny_the_order",
+      "breakpoints": true
     }
   ]
 }

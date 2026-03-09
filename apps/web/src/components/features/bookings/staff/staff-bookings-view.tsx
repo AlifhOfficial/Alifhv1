@@ -12,6 +12,7 @@ import type { BookingData, BookingStats, AvailabilityRule, BookingSettings } fro
 import { BookingList } from './booking-list';
 import { AvailabilitySettings } from './availability-settings';
 import { StaffCancelModal } from './staff-cancel-modal';
+import { StaffRejectModal } from './staff-reject-modal';
 import {
   Popover,
   PopoverContent,
@@ -26,8 +27,18 @@ import {
 } from '@/components/ui/forms/select';
 
 type TabType = 'bookings' | 'settings';
-type VerifyAction = 'check_in' | 'confirm' | 'complete' | 'no_show';
+type QuickAction = 'confirm' | 'reject' | 'complete' | 'noShow' | 'cancel';
 type BookingSort = 'newest' | 'oldest';
+
+// Quick lookup booking info
+interface LookedUpBooking {
+  id: string;
+  status: string;
+  userName: string;
+  listingTitle: string;
+  scheduledStartTime: string;
+  confirmationToken: string;
+}
 
 // Status tabs configuration
 const STATUS_TABS = [
@@ -73,14 +84,20 @@ export function StaffBookingsView() {
   
   // Cancel modal state
   const [cancelModal, setCancelModal] = useState<{ bookingId: string; isOpen: boolean } | null>(null);
-  const [cancelReason, setCancelReason] = useState<string>('customer_request');
+  const [cancelReason, setCancelReason] = useState<string>('');
   const [cancelNotes, setCancelNotes] = useState('');
   const [isCancelling, setIsCancelling] = useState(false);
   
-  // Verify by code state (inline)
+  // Reject modal state
+  const [rejectModal, setRejectModal] = useState<{ bookingId: string; isOpen: boolean } | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [isRejecting, setIsRejecting] = useState(false);
+  
+  // Quick action state (lookup-first flow)
   const [verifyCode, setVerifyCode] = useState('');
-  const [verifyAction, setVerifyAction] = useState<VerifyAction>('check_in');
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [lookedUpBooking, setLookedUpBooking] = useState<LookedUpBooking | null>(null);
+  const [isLookingUp, setIsLookingUp] = useState(false);
+  const [isApplyingAction, setIsApplyingAction] = useState(false);
   const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
   const [quickCheckOpen, setQuickCheckOpen] = useState(false);
   
@@ -126,7 +143,7 @@ export function StaffBookingsView() {
         params.set('q', debouncedSearch.trim());
       }
 
-      const res = await fetch(`/api/bookings?staffView=true&${params.toString()}`, {
+      const res = await fetch(`/api/bookings?staffView=true&myListings=true&${params.toString()}`, {
         signal: abortControllerRef.current.signal,
       });
       const data = await res.json();
@@ -181,52 +198,110 @@ export function StaffBookingsView() {
     }
   }, [activeTab, fetchAvailability]);
 
-  // Inline verify by code handler
-  async function handleVerifyByCode() {
+  // Lookup booking by code
+  async function handleLookupByCode() {
     const token = verifyCode.trim().toUpperCase();
     if (!token) return;
 
-    setIsVerifying(true);
+    setIsLookingUp(true);
+    setVerifyMessage(null);
+    setError(null);
+    setLookedUpBooking(null);
+
+    try {
+      const res = await fetch(`/api/bookings?confirmationToken=${token}&staffView=true&myListings=true`);
+      const data = await res.json();
+      if (!res.ok || !data.bookings?.length) {
+        throw new Error('Booking not found');
+      }
+      const booking = data.bookings[0];
+      setLookedUpBooking({
+        id: booking.id,
+        status: booking.status,
+        userName: booking.userName,
+        listingTitle: booking.listingTitle,
+        scheduledStartTime: booking.scheduledStartTime,
+        confirmationToken: booking.confirmationToken,
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Lookup failed');
+    } finally {
+      setIsLookingUp(false);
+    }
+  }
+
+  // Apply quick action to looked-up booking
+  async function handleApplyQuickAction(action: QuickAction) {
+    if (!lookedUpBooking) return;
+
+    // For cancel/reject, use modals instead
+    if (action === 'cancel') {
+      setCancelModal({ bookingId: lookedUpBooking.id, isOpen: true });
+      setQuickCheckOpen(false);
+      resetQuickAction();
+      return;
+    }
+    if (action === 'reject') {
+      setRejectModal({ bookingId: lookedUpBooking.id, isOpen: true });
+      setQuickCheckOpen(false);
+      resetQuickAction();
+      return;
+    }
+
+    setIsApplyingAction(true);
     setVerifyMessage(null);
     setError(null);
 
     try {
-      // First look up the booking by token
-      const lookupRes = await fetch(`/api/bookings?confirmationToken=${token}&staffView=true`);
-      const lookupData = await lookupRes.json();
-      if (!lookupRes.ok || !lookupData.bookings?.length) {
-        throw new Error('Booking not found');
-      }
-      const bookingId = lookupData.bookings[0].id;
-      
-      // Then perform the action
-      const res = await fetch(`/api/bookings/${bookingId}`, {
+      const res = await fetch(`/api/bookings/${lookedUpBooking.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: verifyAction }),
+        body: JSON.stringify({ action }),
       });
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        throw new Error(data.error || 'Verification failed');
+        throw new Error(data.error || 'Action failed');
       }
 
-      const messages: Record<VerifyAction, string> = {
-        check_in: 'Checked in',
-        confirm: 'Confirmed',
-        complete: 'Completed',
-        no_show: 'No-show recorded',
+      const messages: Record<string, string> = {
+        confirm: 'Booking confirmed',
+        complete: 'Marked as completed',
+        noShow: 'Marked as no-show',
       };
-      setVerifyMessage(messages[verifyAction]);
-      setVerifyCode('');
+      setVerifyMessage(messages[action] || 'Done');
+      resetQuickAction();
       fetchBookings();
       
-      // Clear message after 3s
       setTimeout(() => setVerifyMessage(null), 3000);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Verification failed');
+      setError(e instanceof Error ? e.message : 'Action failed');
     } finally {
-      setIsVerifying(false);
+      setIsApplyingAction(false);
+    }
+  }
+
+  function resetQuickAction() {
+    setVerifyCode('');
+    setLookedUpBooking(null);
+  }
+
+  // Get valid actions based on booking status
+  function getValidActions(status: string): { action: QuickAction; label: string; color: string }[] {
+    switch (status) {
+      case 'pending':
+        return [
+          { action: 'confirm', label: 'Confirm', color: 'bg-emerald-500 hover:bg-emerald-600 text-white' },
+          { action: 'reject', label: 'Reject', color: 'bg-red-500/10 hover:bg-red-500/20 text-red-600' },
+        ];
+      case 'confirmed':
+        return [
+          { action: 'complete', label: 'Complete', color: 'bg-blue-500 hover:bg-blue-600 text-white' },
+          { action: 'noShow', label: 'No-show', color: 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600' },
+          { action: 'cancel', label: 'Cancel', color: 'bg-red-500/10 hover:bg-red-500/20 text-red-600' },
+        ];
+      default:
+        return [];
     }
   }
 
@@ -350,6 +425,12 @@ export function StaffBookingsView() {
       return;
     }
     
+    // If action is reject, open the reject modal instead
+    if (action === 'reject') {
+      setRejectModal({ bookingId, isOpen: true });
+      return;
+    }
+    
     setError(null);
     try {
       const res = await fetch(`/api/bookings/${bookingId}`, {
@@ -392,7 +473,7 @@ export function StaffBookingsView() {
       }
 
       setCancelModal(null);
-      setCancelReason('customer_request');
+      setCancelReason('');
       setCancelNotes('');
       fetchBookings();
     } catch (err) {
@@ -404,8 +485,43 @@ export function StaffBookingsView() {
 
   function handleCloseCancel() {
     setCancelModal(null);
-    setCancelReason('customer_request');
+    setCancelReason('');
     setCancelNotes('');
+  }
+
+  async function handleSubmitReject() {
+    if (!rejectModal) return;
+    setIsRejecting(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/bookings/${rejectModal.bookingId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'reject', 
+          reason: rejectReason,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.error || 'Failed to reject booking');
+      }
+
+      setRejectModal(null);
+      setRejectReason('');
+      fetchBookings();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to reject booking');
+    } finally {
+      setIsRejecting(false);
+    }
+  }
+
+  function handleCloseReject() {
+    setRejectModal(null);
+    setRejectReason('');
   }
 
   return (
@@ -491,81 +607,116 @@ export function StaffBookingsView() {
                   </SelectContent>
                 </Select>
 
-                {/* Quick Check-in Dropdown */}
-                <Popover open={quickCheckOpen} onOpenChange={setQuickCheckOpen}>
+                {/* Quick Action Dropdown */}
+                <Popover open={quickCheckOpen} onOpenChange={(open) => {
+                  setQuickCheckOpen(open);
+                  if (!open) resetQuickAction();
+                }}>
                   <PopoverTrigger asChild>
                     <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 transition-colors flex-shrink-0">
                       <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      <span className="hidden sm:inline">Check-in</span>
+                      <span className="hidden sm:inline">Quick Action</span>
                       <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </button>
                   </PopoverTrigger>
-                <PopoverContent align="end" className="w-[280px] p-0" sideOffset={8}>
+                <PopoverContent align="end" className="w-[300px] p-0" sideOffset={8}>
                   <div className="p-3 border-b border-border/40">
-                    <p className="text-sm font-semibold text-foreground">Quick Check-in</p>
-                    <p className="text-xs text-muted-foreground/70 mt-0.5">Enter code to update status</p>
+                    <p className="text-sm font-semibold text-foreground">Quick Action</p>
+                    <p className="text-xs text-muted-foreground/70 mt-0.5">Enter booking code to update status</p>
                   </div>
                   
                   <div className="p-3 space-y-3">
                     {/* Code Input */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-muted-foreground/70">Booking Code</label>
-                      <input
-                        value={verifyCode}
-                        onChange={(e) => setVerifyCode(e.target.value.toUpperCase())}
-                        placeholder="e.g. W5ZC2CD6"
-                        className="w-full h-10 px-3 bg-muted/30 border border-border/40 rounded-lg focus:ring-1 focus:ring-primary/30 focus:border-primary/40 outline-none transition-all text-sm font-mono placeholder:text-muted-foreground/50"
-                        onKeyDown={(e) => e.key === 'Enter' && handleVerifyByCode()}
-                        autoFocus
-                      />
-                    </div>
-                    
-                    {/* Action Buttons */}
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-muted-foreground/70">Action</label>
-                      <div className="grid grid-cols-2 gap-1.5">
-                        {[
-                          { value: 'check_in', label: 'Check-in' },
-                          { value: 'confirm', label: 'Confirm' },
-                          { value: 'complete', label: 'Complete' },
-                          { value: 'no_show', label: 'No-show' },
-                        ].map((action) => (
+                    {!lookedUpBooking && (
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-muted-foreground/70">Booking Code</label>
+                        <div className="flex gap-2">
+                          <input
+                            value={verifyCode}
+                            onChange={(e) => setVerifyCode(e.target.value.toUpperCase())}
+                            placeholder="e.g. W5ZC2CD6"
+                            className="flex-1 h-10 px-3 bg-muted/30 border border-border/40 rounded-lg focus:ring-1 focus:ring-primary/30 focus:border-primary/40 outline-none transition-all text-sm font-mono placeholder:text-muted-foreground/50"
+                            onKeyDown={(e) => e.key === 'Enter' && handleLookupByCode()}
+                            autoFocus
+                          />
                           <button
-                            key={action.value}
-                            onClick={() => setVerifyAction(action.value as VerifyAction)}
-                            className={`h-8 px-2.5 rounded-lg text-xs font-semibold transition-colors ${
-                              verifyAction === action.value
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted/50 border border-border/40 text-foreground hover:bg-muted'
-                            }`}
+                            onClick={handleLookupByCode}
+                            disabled={isLookingUp || !verifyCode.trim()}
+                            className="h-10 px-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50"
                           >
-                            {action.label}
+                            {isLookingUp ? '...' : 'Lookup'}
                           </button>
-                        ))}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  
-                  {/* Footer */}
-                  <div className="p-3 border-t border-border/40 bg-muted/20">
-                    <button
-                      onClick={() => {
-                        handleVerifyByCode();
-                        if (verifyCode.trim()) setQuickCheckOpen(false);
-                      }}
-                      disabled={isVerifying || !verifyCode.trim()}
-                      className="w-full h-10 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors disabled:opacity-50"
-                    >
-                      {isVerifying ? 'Processing...' : 'Apply Action'}
-                    </button>
+                    )}
                     
-                    {verifyMessage && (
-                      <div className="flex items-center justify-center gap-1.5 text-xs text-emerald-500 font-medium mt-2">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        {verifyMessage}
+                    {/* Booking Info (after lookup) */}
+                    {lookedUpBooking && (
+                      <div className="space-y-3">
+                        {/* Booking summary */}
+                        <div className="p-3 rounded-lg bg-muted/30 border border-border/40 space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-sm font-medium text-foreground line-clamp-1">{lookedUpBooking.listingTitle}</p>
+                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
+                              lookedUpBooking.status === 'pending' ? 'bg-yellow-500/10 text-yellow-600' :
+                              lookedUpBooking.status === 'confirmed' ? 'bg-green-500/10 text-green-600' :
+                              lookedUpBooking.status === 'completed' ? 'bg-blue-500/10 text-blue-600' :
+                              'bg-muted text-muted-foreground'
+                            }`}>
+                              {lookedUpBooking.status.toUpperCase()}
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{lookedUpBooking.userName}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(lookedUpBooking.scheduledStartTime).toLocaleDateString('en-AE', {
+                              weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+                              timeZone: 'Asia/Dubai'
+                            })}
+                          </p>
+                          <p className="text-[10px] font-mono text-muted-foreground/60">{lookedUpBooking.confirmationToken}</p>
+                        </div>
+                        
+                        {/* Valid actions */}
+                        {getValidActions(lookedUpBooking.status).length > 0 ? (
+                          <div className="space-y-1.5">
+                            <label className="text-xs font-semibold text-muted-foreground/70">Actions</label>
+                            <div className="flex flex-wrap gap-1.5">
+                              {getValidActions(lookedUpBooking.status).map((actionItem) => (
+                                <button
+                                  key={actionItem.action}
+                                  onClick={() => handleApplyQuickAction(actionItem.action)}
+                                  disabled={isApplyingAction}
+                                  className={`h-8 px-3 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 ${actionItem.color}`}
+                                >
+                                  {actionItem.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground text-center py-2">No actions available for this status</p>
+                        )}
+                        
+                        {/* Reset button */}
+                        <button
+                          onClick={resetQuickAction}
+                          className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          ← Look up another booking
+                        </button>
                       </div>
                     )}
                   </div>
+                  
+                  {/* Success message */}
+                  {verifyMessage && (
+                    <div className="p-3 border-t border-border/40 bg-emerald-500/5">
+                      <div className="flex items-center justify-center gap-1.5 text-xs text-emerald-500 font-medium">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        {verifyMessage}
+                      </div>
+                    </div>
+                  )}
                 </PopoverContent>
               </Popover>
             </div>
@@ -698,6 +849,16 @@ export function StaffBookingsView() {
           onNotesChange={setCancelNotes}
           onSubmit={handleSubmitCancel}
           onClose={handleCloseCancel}
+        />
+
+        {/* Reject Modal */}
+        <StaffRejectModal
+          isOpen={rejectModal?.isOpen ?? false}
+          reason={rejectReason}
+          isSubmitting={isRejecting}
+          onReasonChange={setRejectReason}
+          onSubmit={handleSubmitReject}
+          onClose={handleCloseReject}
         />
     </div>
   );

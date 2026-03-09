@@ -9,7 +9,6 @@ import {
   Calendar, 
   Clock, 
   ChevronDown,
-  Star,
   ImageIcon,
   Users,
   MapPin
@@ -26,7 +25,6 @@ interface UserBookingCardProps {
   isActionLoading: boolean;
   onToggleExpand: () => void;
   onCancel: () => void;
-  onLeaveFeedback: () => void;
 }
 
 // Status colors with background for badge style
@@ -53,7 +51,6 @@ export function UserBookingCard({
   isActionLoading,
   onToggleExpand,
   onCancel,
-  onLeaveFeedback,
 }: UserBookingCardProps) {
   const formatDate = (isoString: string) => {
     const d = new Date(isoString);
@@ -68,9 +65,9 @@ export function UserBookingCard({
 
   const formatTime = (isoString: string) => {
     return new Date(isoString).toLocaleTimeString('en-AE', {
-      hour: '2-digit',
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: false,
+      hour12: true,
     });
   };
 
@@ -221,37 +218,11 @@ export function UserBookingCard({
             </div>
           )}
 
-          {/* Feedback Section */}
-          {booking.status === 'completed' && (
-            <div>
-              {booking.feedbackRating ? (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <Star
-                        key={star}
-                        className={cn(
-                          "w-4 h-4",
-                          star <= booking.feedbackRating!
-                            ? "fill-amber-400 text-amber-400"
-                            : "text-muted-foreground/20"
-                        )}
-                      />
-                    ))}
-                    <span className="text-xs text-muted-foreground ml-2">Your rating</span>
-                  </div>
-                  {booking.feedbackComment && (
-                    <p className="text-sm text-muted-foreground">{booking.feedbackComment}</p>
-                  )}
-                </div>
-              ) : (
-                <button
-                  onClick={onLeaveFeedback}
-                  className="h-9 px-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors"
-                >
-                  Leave Feedback
-                </button>
-              )}
+          {/* Rejection Reason */}
+          {booking.rejectionReason && (
+            <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
+              <p className="text-xs font-medium text-red-500 mb-1">Rejection Reason</p>
+              <p className="text-sm text-foreground">{booking.rejectionReason}</p>
             </div>
           )}
 

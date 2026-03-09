@@ -23,8 +23,8 @@ export interface UserBookingData {
   cancellationReason: string | null;
   cancellationNotes: string | null;
   confirmationToken: string | null;
-  feedbackRating: number | null;
-  feedbackComment: string | null;
+  rejectedAt: string | null;
+  rejectionReason: string | null;
   // Reschedule tracking
   rescheduleCount: number;
   lastRescheduledAt: string | null;

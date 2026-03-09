@@ -54,9 +54,10 @@ export async function GET(req: NextRequest) {
       return cachedJson({ error: 'This listing does not support bookings' }, { status: 400 });
     }
 
-    // Get partner config
+    // Get partner config (use staff-level settings if listing has assigned staff)
     const config = await managePartnerSettings({
       partnerId: listing.partnerId,
+      staffUserId: listing.userId,
       action: 'get',
     });
 
@@ -77,13 +78,14 @@ export async function GET(req: NextRequest) {
     if (availability.length === 0) {
       await managePartnerSettings({
         partnerId: listing.partnerId,
+        staffUserId: listing.userId,
         action: 'initDefaults',
       });
     }
 
     if (mode === 'dates') {
-      // Return available dates for the next 30 days
-      const dates = await getAvailableDates(listing.partnerId);
+      // Return available dates for the next 30 days (pass staffUserId for staff-specific settings)
+      const dates = await getAvailableDates(listing.partnerId, 30, listing.userId);
       
       return cachedJson({
         available: true,
@@ -108,9 +110,10 @@ export async function GET(req: NextRequest) {
     }
 
     // Get slots for specific date
+    // Pass staffUserId to check availability per staff member (not partner-wide)
     const date = dateStr ? new Date(dateStr) : new Date();
     date.setUTCHours(0, 0, 0, 0);
-    const slots = await getAvailableSlots(listing.partnerId, date);
+    const slots = await getAvailableSlots(listing.partnerId, date, listing.userId);
     const now = new Date();
 
     const filtered = slots.filter((s) => {

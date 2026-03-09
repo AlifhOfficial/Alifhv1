@@ -57,7 +57,6 @@ interface UserBookingListProps {
   selectedStatus: string;
   searchQuery?: string;
   onCancel: (bookingId: string) => void;
-  onOpenFeedback: (bookingId: string) => void;
 }
 
 export function UserBookingList({ 
@@ -66,7 +65,6 @@ export function UserBookingList({
   selectedStatus,
   searchQuery = '',
   onCancel,
-  onOpenFeedback,
 }: UserBookingListProps) {
   const [expandedBooking, setExpandedBooking] = useState<string | null>(null);
 
@@ -130,7 +128,6 @@ export function UserBookingList({
             expandedBooking === booking.id ? null : booking.id
           )}
           onCancel={() => onCancel(booking.id)}
-          onLeaveFeedback={() => onOpenFeedback(booking.id)}
         />
       ))}
       </div>

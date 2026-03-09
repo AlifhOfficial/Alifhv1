@@ -7,6 +7,7 @@
 
 import { Loader2, Calendar } from 'lucide-react';
 import { cn } from '@/utils';
+import { Skeleton } from "@/components/ui/skeleton";
 import type { AvailabilityRule, BookingSettings } from './types';
 import { DAY_NAMES } from './types';
 import {
@@ -121,8 +122,55 @@ export function AvailabilitySettings({
 }: AvailabilitySettingsProps) {
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="w-5 h-5 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+      <div className="space-y-4 sm:space-y-6 mt-3 sm:mt-4">
+        {/* Booking Preferences skeleton */}
+        <section>
+          <Skeleton className="h-5 w-40 mb-2 sm:mb-3" />
+          <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4 space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-3 w-44" />
+                </div>
+                <Skeleton className="h-6 w-11 rounded-full" />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Slot Settings skeleton */}
+        <section>
+          <Skeleton className="h-5 w-28 mb-2 sm:mb-3" />
+          <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4 space-y-4">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-40" />
+                </div>
+                <Skeleton className="h-9 w-28 rounded-md" />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Weekly Schedule skeleton */}
+        <section>
+          <Skeleton className="h-5 w-32 mb-2 sm:mb-3" />
+          <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4 space-y-3">
+            {[...Array(7)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between py-2">
+                <Skeleton className="h-4 w-20" />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-20 rounded-md" />
+                  <Skeleton className="h-4 w-4" />
+                  <Skeleton className="h-8 w-20 rounded-md" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     );
   }
@@ -152,6 +200,8 @@ export function AvailabilitySettings({
   const bookingEnabled = settings?.bookingEnabled ?? true;
   const autoConfirm = settings?.autoConfirm ?? false;
   const allowSameDay = settings?.allowSameDay ?? true;
+  const defaultSlotDuration = settings?.defaultSlotDuration ?? 45;
+  const bufferBetweenBookings = settings?.bufferBetweenBookings ?? 15;
 
   return (
     <div className="space-y-4 sm:space-y-6 mt-3 sm:mt-4">
@@ -195,6 +245,60 @@ export function AvailabilitySettings({
               onToggle={() => onUpdateSettings({ allowSameDay: !allowSameDay })}
               disabled={savingSettings}
             />
+          </SettingRow>
+        </div>
+      </section>
+
+      {/* Slot Settings */}
+      <section>
+        <h3 className="text-sm sm:text-[15px] font-semibold text-foreground mb-2 sm:mb-3">Slot Settings</h3>
+        
+        <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4">
+          <SettingRow 
+            title="Slot Duration" 
+            description="Length of each booking time slot"
+          >
+            <Select 
+              value={String(defaultSlotDuration)} 
+              onValueChange={(v) => onUpdateSettings({ defaultSlotDuration: parseInt(v) })}
+              disabled={savingSettings}
+            >
+              <SelectTrigger className="w-24 sm:w-28 h-8 sm:h-9 text-xs sm:text-sm bg-muted/30 border-border/40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="15">15 mins</SelectItem>
+                <SelectItem value="30">30 mins</SelectItem>
+                <SelectItem value="45">45 mins</SelectItem>
+                <SelectItem value="60">1 hour</SelectItem>
+                <SelectItem value="90">1.5 hours</SelectItem>
+                <SelectItem value="120">2 hours</SelectItem>
+              </SelectContent>
+            </Select>
+          </SettingRow>
+
+          <SettingRow 
+            title="Buffer Time" 
+            description="Gap between consecutive bookings"
+            isLast
+          >
+            <Select 
+              value={String(bufferBetweenBookings)} 
+              onValueChange={(v) => onUpdateSettings({ bufferBetweenBookings: parseInt(v) })}
+              disabled={savingSettings}
+            >
+              <SelectTrigger className="w-24 sm:w-28 h-8 sm:h-9 text-xs sm:text-sm bg-muted/30 border-border/40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">No buffer</SelectItem>
+                <SelectItem value="5">5 mins</SelectItem>
+                <SelectItem value="10">10 mins</SelectItem>
+                <SelectItem value="15">15 mins</SelectItem>
+                <SelectItem value="30">30 mins</SelectItem>
+                <SelectItem value="60">1 hour</SelectItem>
+              </SelectContent>
+            </Select>
           </SettingRow>
         </div>
       </section>

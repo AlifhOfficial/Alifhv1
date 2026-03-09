@@ -1,5 +1,5 @@
 /**
- * Staff Cancel Booking Modal
+ * Staff Reject Booking Modal
  * 
  * Clean, minimal design matching our modal patterns
  */
@@ -8,30 +8,26 @@
 
 import { createPortal } from 'react-dom';
 import { useEffect, useState } from 'react';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { Loader2, XCircle } from 'lucide-react';
 import { cn } from '@/utils';
 
-interface StaffCancelModalProps {
+interface StaffRejectModalProps {
   isOpen: boolean;
   reason: string;
-  notes: string;
   isSubmitting: boolean;
   onReasonChange: (reason: string) => void;
-  onNotesChange: (notes: string) => void;
   onSubmit: () => void;
   onClose: () => void;
 }
 
-export function StaffCancelModal({
+export function StaffRejectModal({
   isOpen,
   reason,
-  notes,
   isSubmitting,
   onReasonChange,
-  onNotesChange,
   onSubmit,
   onClose,
-}: StaffCancelModalProps) {
+}: StaffRejectModalProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -70,40 +66,25 @@ export function StaffCancelModal({
         {/* Content - Centered Layout */}
         <div className="p-6 text-center">
           {/* Icon Circle */}
-          <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
-            <AlertTriangle className="w-5 h-5 text-destructive" />
+          <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+            <XCircle className="w-5 h-5 text-red-500" />
           </div>
           
-          <h2 className="text-lg font-semibold text-foreground mb-1.5">Cancel Booking</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-1.5">Reject Booking</h2>
           <p className="text-sm text-muted-foreground/70 mb-5">
             Enter a reason. The customer will be notified.
           </p>
 
           {/* Reason Text Field */}
-          <div className="space-y-1.5 mb-3 text-left">
-            <label className="text-xs font-semibold text-muted-foreground/70">
-              Reason <span className="font-medium text-muted-foreground/50">(optional)</span>
-            </label>
-            <input
-              type="text"
-              value={reason}
-              onChange={(e) => onReasonChange(e.target.value)}
-              placeholder="Enter reason..."
-              disabled={isSubmitting}
-              className="w-full h-10 px-3 bg-muted/30 border border-border/40 rounded-lg text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
-            />
-          </div>
-
-          {/* Notes Textarea */}
           <div className="space-y-1.5 mb-5 text-left">
             <label className="text-xs font-semibold text-muted-foreground/70">
-              Notes <span className="font-medium text-muted-foreground/50">(optional)</span>
+              Reason <span className="text-red-500">*</span>
             </label>
             <textarea
-              value={notes}
-              onChange={(e) => onNotesChange(e.target.value)}
-              placeholder="Additional details..."
-              rows={2}
+              value={reason}
+              onChange={(e) => onReasonChange(e.target.value)}
+              placeholder="e.g. Vehicle is not available, Schedule conflict..."
+              rows={3}
               disabled={isSubmitting}
               className="w-full px-3 py-2.5 bg-muted/30 border border-border/40 rounded-lg text-sm resize-none placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
             />
@@ -113,16 +94,16 @@ export function StaffCancelModal({
           <div className="space-y-2">
             <button
               onClick={onSubmit}
-              disabled={isSubmitting}
-              className="w-full h-11 bg-destructive text-destructive-foreground rounded-lg text-sm font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
+              disabled={isSubmitting || !reason.trim()}
+              className="w-full h-11 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Cancelling...
+                  Rejecting...
                 </>
               ) : (
-                'Cancel Booking'
+                'Reject Booking'
               )}
             </button>
             <button

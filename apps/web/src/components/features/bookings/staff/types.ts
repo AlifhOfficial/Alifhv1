@@ -26,6 +26,8 @@ export interface BookingData {
   cancelledAt: string | null;
   cancellationReason: string | null;
   cancellationNotes?: string | null;
+  rejectedAt: string | null;
+  rejectionReason: string | null;
 }
 
 export interface BookingStats {
@@ -60,6 +62,10 @@ export interface BookingSettings {
   minLeadTimeHours: number;
   maxAdvanceBookingDays: number;
   allowSameDay: boolean;
+  
+  // Slot configuration
+  defaultSlotDuration: number; // Minutes (15, 30, 45, 60, 90, 120)
+  bufferBetweenBookings: number; // Minutes between bookings
 }
 
 export const STATUS_COLORS: Record<string, string> = {

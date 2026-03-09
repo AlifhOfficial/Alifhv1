@@ -52,6 +52,9 @@ export const partnerAvailability = pgTable('partner_availability', {
   id: text('id').primaryKey(),
   partnerId: text('partner_id').notNull().references(() => partner.id, { onDelete: 'cascade' }),
   
+  // Staff-specific availability (null = partner-level default that applies to all staff without specific settings)
+  staffUserId: text('staff_user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
   // Day-specific availability
   dayOfWeek: integer('day_of_week').notNull(), // 0 = Sunday, 1 = Monday, ... 6 = Saturday
   startTime: text('start_time').notNull(), // "09:00"
@@ -73,10 +76,11 @@ export const partnerAvailability = pgTable('partner_availability', {
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
 }, (table) => [
   index('partner_availability_partnerId_idx').on(table.partnerId),
+  index('partner_availability_staffUserId_idx').on(table.staffUserId),
   index('partner_availability_dayOfWeek_idx').on(table.dayOfWeek),
   index('partner_availability_isActive_idx').on(table.isActive),
-  // Ensure one rule per partner per day
-  unique('partner_availability_partnerId_dayOfWeek_unique').on(table.partnerId, table.dayOfWeek),
+  // Ensure one rule per partner per staff per day (staffUserId null = partner default)
+  unique('partner_availability_partnerId_staffUserId_dayOfWeek_unique').on(table.partnerId, table.staffUserId, table.dayOfWeek),
 ]);
 
 /**
@@ -311,7 +315,10 @@ export const booking = pgTable('booking', {
  */
 export const partnerBookingSettings = pgTable('partner_booking_settings', {
   id: text('id').primaryKey(),
-  partnerId: text('partner_id').notNull().references(() => partner.id, { onDelete: 'cascade' }).unique(),
+  partnerId: text('partner_id').notNull().references(() => partner.id, { onDelete: 'cascade' }),
+  
+  // Staff-specific settings (null = partner-level default that applies to all staff without specific settings)
+  staffUserId: text('staff_user_id').references(() => user.id, { onDelete: 'cascade' }),
   
   // Booking Enabled
   bookingEnabled: boolean('booking_enabled').default(true).notNull(),
@@ -355,5 +362,8 @@ export const partnerBookingSettings = pgTable('partner_booking_settings', {
   updatedAt: timestamp('updated_at').defaultNow().$onUpdate(() => new Date()).notNull(),
 }, (table) => [
   index('partner_booking_settings_partnerId_idx').on(table.partnerId),
+  index('partner_booking_settings_staffUserId_idx').on(table.staffUserId),
   index('partner_booking_settings_bookingEnabled_idx').on(table.bookingEnabled),
+  // Ensure one settings row per partner per staff (staffUserId null = partner default)
+  unique('partner_booking_settings_partnerId_staffUserId_unique').on(table.partnerId, table.staffUserId),
 ]);

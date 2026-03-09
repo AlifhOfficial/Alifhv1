@@ -7,4 +7,5 @@ export { BookingCard } from './booking-card';
 export { BookingList } from './booking-list';
 export { AvailabilitySettings } from './availability-settings';
 export { StaffCancelModal } from './staff-cancel-modal';
+export { StaffRejectModal } from './staff-reject-modal';
 export * from './types';

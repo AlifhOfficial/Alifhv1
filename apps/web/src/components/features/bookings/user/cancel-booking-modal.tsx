@@ -90,7 +90,7 @@ export function CancelBookingModal({
                 type="text"
                 value={reason}
                 onChange={(e) => onReasonChange(e.target.value)}
-                placeholder="Changed mind"
+                placeholder="Enter reason..."
                 disabled={isSubmitting}
                 className="w-full h-10 px-3 bg-muted/30 border border-border/40 rounded-lg text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
               />
