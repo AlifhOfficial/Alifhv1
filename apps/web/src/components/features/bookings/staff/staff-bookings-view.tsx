@@ -619,7 +619,12 @@ export function StaffBookingsView() {
                       <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </button>
                   </PopoverTrigger>
-                <PopoverContent align="end" className="w-[300px] p-0" sideOffset={8}>
+                <PopoverContent 
+                  align="end" 
+                  className="w-[calc(100vw-2rem)] sm:w-[320px] max-w-[320px] p-0" 
+                  sideOffset={8}
+                  collisionPadding={16}
+                >
                   <div className="p-3 border-b border-border/40">
                     <p className="text-sm font-semibold text-foreground">Quick Action</p>
                     <p className="text-xs text-muted-foreground/70 mt-0.5">Enter booking code to update status</p>
@@ -635,16 +640,16 @@ export function StaffBookingsView() {
                             value={verifyCode}
                             onChange={(e) => setVerifyCode(e.target.value.toUpperCase())}
                             placeholder="e.g. W5ZC2CD6"
-                            className="flex-1 h-10 px-3 bg-muted/30 border border-border/40 rounded-lg focus:ring-1 focus:ring-primary/30 focus:border-primary/40 outline-none transition-all text-sm font-mono placeholder:text-muted-foreground/50"
+                            className="flex-1 min-w-0 h-10 px-3 bg-muted/30 border border-border/40 rounded-lg focus:ring-1 focus:ring-primary/30 focus:border-primary/40 outline-none transition-all text-sm font-mono placeholder:text-muted-foreground/50"
                             onKeyDown={(e) => e.key === 'Enter' && handleLookupByCode()}
                             autoFocus
                           />
                           <button
                             onClick={handleLookupByCode}
                             disabled={isLookingUp || !verifyCode.trim()}
-                            className="h-10 px-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50"
+                            className="h-10 px-3 sm:px-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50 flex-shrink-0"
                           >
-                            {isLookingUp ? '...' : 'Lookup'}
+                            {isLookingUp ? '...' : 'Go'}
                           </button>
                         </div>
                       </div>
@@ -656,8 +661,8 @@ export function StaffBookingsView() {
                         {/* Booking summary */}
                         <div className="p-3 rounded-lg bg-muted/30 border border-border/40 space-y-2">
                           <div className="flex items-start justify-between gap-2">
-                            <p className="text-sm font-medium text-foreground line-clamp-1">{lookedUpBooking.listingTitle}</p>
-                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
+                            <p className="text-sm font-medium text-foreground line-clamp-1 min-w-0">{lookedUpBooking.listingTitle}</p>
+                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap ${
                               lookedUpBooking.status === 'pending' ? 'bg-yellow-500/10 text-yellow-600' :
                               lookedUpBooking.status === 'confirmed' ? 'bg-green-500/10 text-green-600' :
                               lookedUpBooking.status === 'completed' ? 'bg-blue-500/10 text-blue-600' :
@@ -666,7 +671,7 @@ export function StaffBookingsView() {
                               {lookedUpBooking.status.toUpperCase()}
                             </span>
                           </div>
-                          <p className="text-xs text-muted-foreground">{lookedUpBooking.userName}</p>
+                          <p className="text-xs text-muted-foreground truncate">{lookedUpBooking.userName}</p>
                           <p className="text-xs text-muted-foreground">
                             {new Date(lookedUpBooking.scheduledStartTime).toLocaleDateString('en-AE', {
                               weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',

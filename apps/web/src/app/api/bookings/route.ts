@@ -48,6 +48,7 @@ export async function GET(req: NextRequest) {
     
     // Build params from query string
     const id = searchParams.get('id') || undefined;
+    const confirmationToken = searchParams.get('confirmationToken') || undefined;
     const statusParam = searchParams.get('status');
     const status = statusParam ? statusParam.split(',') as BookingStatus[] : undefined;
     const q = searchParams.get('q') || undefined;
@@ -70,6 +71,7 @@ export async function GET(req: NextRequest) {
       staffUserId: staffView && searchParams.get('myListings') === 'true' ? user.id : undefined,
       
       id,
+      confirmationToken,
       status,
       q,
       sort,

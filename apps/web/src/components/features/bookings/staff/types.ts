@@ -60,8 +60,7 @@ export interface BookingSettings {
   
   // Lead time
   minLeadTimeHours: number;
-  maxAdvanceBookingDays: number;
-  allowSameDay: boolean;
+  maxLeadTimeDays: number;
   
   // Slot configuration
   defaultSlotDuration: number; // Minutes (15, 30, 45, 60, 90, 120)

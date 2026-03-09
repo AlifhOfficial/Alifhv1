@@ -127,7 +127,7 @@ export function AvailabilitySettings({
         <section>
           <Skeleton className="h-5 w-40 mb-2 sm:mb-3" />
           <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4 space-y-4">
-            {[...Array(3)].map((_, i) => (
+            {[...Array(2)].map((_, i) => (
               <div key={i} className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Skeleton className="h-4 w-28" />
@@ -199,7 +199,6 @@ export function AvailabilitySettings({
 
   const bookingEnabled = settings?.bookingEnabled ?? true;
   const autoConfirm = settings?.autoConfirm ?? false;
-  const allowSameDay = settings?.allowSameDay ?? true;
   const defaultSlotDuration = settings?.defaultSlotDuration ?? 45;
   const bufferBetweenBookings = settings?.bufferBetweenBookings ?? 15;
 
@@ -227,22 +226,11 @@ export function AvailabilitySettings({
           <SettingRow 
             title="Auto-Confirm" 
             description="Automatically confirm new bookings"
+            isLast
           >
             <Toggle 
               enabled={autoConfirm} 
               onToggle={() => onUpdateSettings({ autoConfirm: !autoConfirm })}
-              disabled={savingSettings}
-            />
-          </SettingRow>
-          
-          <SettingRow 
-            title="Same-Day Bookings" 
-            description="Allow bookings for today"
-            isLast
-          >
-            <Toggle 
-              enabled={allowSameDay} 
-              onToggle={() => onUpdateSettings({ allowSameDay: !allowSameDay })}
               disabled={savingSettings}
             />
           </SettingRow>
@@ -321,7 +309,7 @@ export function AvailabilitySettings({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0">No minimum</SelectItem>
+                <SelectItem value="0">None</SelectItem>
                 <SelectItem value="1">1 hour</SelectItem>
                 <SelectItem value="2">2 hours</SelectItem>
                 <SelectItem value="4">4 hours</SelectItem>
@@ -336,8 +324,8 @@ export function AvailabilitySettings({
             isLast
           >
             <Select 
-              value={String(settings?.maxAdvanceBookingDays ?? 30)} 
-              onValueChange={(v) => onUpdateSettings({ maxAdvanceBookingDays: parseInt(v) })}
+              value={String(settings?.maxLeadTimeDays ?? 30)} 
+              onValueChange={(v) => onUpdateSettings({ maxLeadTimeDays: parseInt(v) })}
               disabled={savingSettings}
             >
               <SelectTrigger className="w-24 sm:w-28 h-8 sm:h-9 text-xs sm:text-sm bg-muted/30 border-border/40">

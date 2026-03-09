@@ -14,7 +14,7 @@ export const runtime = 'nodejs';
 
 /**
  * GET /api/bookings/settings
- * Get partner's availability rules and booking settings
+ * Get staff's availability rules and booking settings
  */
 export async function GET(req: NextRequest) {
   try {
@@ -29,8 +29,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'No partner access' }, { status: 403 });
     }
 
+    // Get staff-specific settings for the current user
     const result = await managePartnerSettings({
       partnerId: membership.partnerId,
+      staffUserId: user.id,
       action: 'get',
     });
 
@@ -79,8 +81,10 @@ export async function POST(req: NextRequest) {
 
     const mappedAction = actionMap[action] || action;
 
+    // Pass staffUserId so each staff member has their own settings
     const result = await managePartnerSettings({
       partnerId: membership.partnerId,
+      staffUserId: user.id,
       action: mappedAction as any,
       ...data,
     });
