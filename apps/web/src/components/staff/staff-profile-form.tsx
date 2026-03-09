@@ -286,34 +286,32 @@ export function StaffProfileForm() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background pb-16">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
-          {/* Header Skeleton */}
-          <div>
-            <Skeleton className="h-6 w-32 mb-1" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-          
-          {/* Info Banner Skeleton */}
-          <Skeleton className="h-16 w-full rounded-xl" />
-          
-          {/* Profile Fields Skeleton */}
-          <div className="space-y-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="rounded-xl border border-border/40 p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Skeleton className="w-10 h-10 rounded-xl" />
-                    <div>
-                      <Skeleton className="h-4 w-28 mb-1" />
-                      <Skeleton className="h-3 w-40" />
-                    </div>
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+        {/* Header Skeleton */}
+        <div>
+          <Skeleton className="h-6 w-32 mb-1" />
+          <Skeleton className="h-4 w-48" />
+        </div>
+        
+        {/* Info Banner Skeleton */}
+        <Skeleton className="h-16 w-full rounded-xl" />
+        
+        {/* Profile Fields Skeleton */}
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-border/40 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="w-10 h-10 rounded-xl" />
+                  <div>
+                    <Skeleton className="h-4 w-28 mb-1" />
+                    <Skeleton className="h-3 w-40" />
                   </div>
-                  <Skeleton className="h-8 w-14 rounded-lg" />
                 </div>
+                <Skeleton className="h-8 w-14 rounded-lg" />
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -321,9 +319,9 @@ export function StaffProfileForm() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-2xl mx-auto px-6 py-16">
-          <p className="text-center text-muted-foreground">Unable to load profile</p>
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <p className="text-sm text-muted-foreground">Unable to load profile</p>
         </div>
       </div>
     );
@@ -333,251 +331,249 @@ export function StaffProfileForm() {
   const isPersonalPhoneVerified = userProfile?.phoneNumberVerified ?? false;
 
   return (
-    <div className="min-h-screen bg-background pb-16">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
 
-        {/* Header */}
-        <div>
-          <h1 className="text-lg sm:text-xl font-semibold tracking-tight">Work Profile</h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            {profile.partner.brandName}
+      {/* Header */}
+      <div>
+        <h1 className="text-lg sm:text-xl font-semibold tracking-tight">Work Profile</h1>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+          {profile.partner.brandName}
+        </p>
+      </div>
+
+      {/* Info Banner */}
+      <div className="rounded-xl border border-border/40 bg-blue-500/5 p-3 sm:p-4">
+        <div className="flex gap-3">
+          <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-muted-foreground">
+            Your work profile keeps your personal info private. Clients see your display name and work phone instead.
           </p>
         </div>
+      </div>
 
-        {/* Info Banner */}
-        <div className="rounded-xl border border-border/40 bg-blue-500/5 p-3 sm:p-4">
-          <div className="flex gap-3">
-            <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-muted-foreground">
-              Your work profile keeps your personal info private. Clients see your display name and work phone instead.
-            </p>
+      {/* Display Name */}
+      <section>
+        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Display Name</h3>
+        
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
+          <div 
+            className={cn(
+              "py-2 sm:py-3",
+              editingField !== 'displayName' && "cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 transition-colors rounded"
+            )}
+            onClick={() => editingField !== 'displayName' && setEditingField('displayName')}
+          >
+            <p className="text-xs font-medium text-muted-foreground/70 mb-1">Name shown to clients</p>
+            {editingField === 'displayName' ? (
+              <div className="space-y-2">
+                <input
+                  autoFocus
+                  type="text"
+                  value={form.displayName}
+                  onChange={(e) => updateField({ displayName: e.target.value })}
+                  placeholder="e.g. Ahmed, Alex, Sarah"
+                  className="w-full h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') saveField('displayName');
+                    if (e.key === 'Escape') cancelEdit();
+                  }}
+                />
+                <div className="flex items-center justify-end gap-2 sm:gap-3">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
+                    className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); saveField('displayName'); }}
+                    disabled={saving}
+                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                  >
+                    {saving ? '...' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm font-medium text-foreground">
+                {form.displayName || <span className="text-muted-foreground/50">Tap to add</span>}
+              </p>
+            )}
           </div>
         </div>
+      </section>
 
-        {/* Display Name */}
-        <section>
-          <h3 className="text-sm sm:text-[15px] font-bold tracking-tight text-foreground mb-2 sm:mb-3">Display Name</h3>
+      {/* Work Phone */}
+      <section>
+        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Work Phone</h3>
+        
+        <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5 space-y-3 sm:space-y-4">
           
-          <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
-            <div 
-              className={cn(
-                "py-2 sm:py-3",
-                editingField !== 'displayName' && "cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 transition-colors rounded"
-              )}
-              onClick={() => editingField !== 'displayName' && setEditingField('displayName')}
-            >
-              <p className="text-xs font-medium text-muted-foreground/70 mb-1">Name shown to clients</p>
-              {editingField === 'displayName' ? (
-                <div className="space-y-2">
+          {/* Use personal phone toggle */}
+          {personalPhone && (() => {
+            const isWorkVerified = profile?.workPhoneVerified || phoneJustVerified;
+            const canToggle = isWorkVerified;
+            
+            return (
+              <div 
+                className={cn(
+                  "flex items-center justify-between py-2 sm:py-3 -mx-4 sm:-mx-5 px-4 sm:px-5 transition-colors rounded",
+                  canToggle ? "cursor-pointer hover:bg-muted/30" : "cursor-not-allowed opacity-60"
+                )}
+                onClick={toggleUsePersonalPhone}
+              >
+                <div>
+                  <p className="text-sm font-medium text-foreground">Use my personal phone</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    +971 {personalPhone} {isPersonalPhoneVerified && '(verified)'}
+                  </p>
+                  {!canToggle && (
+                    <p className="text-xs text-muted-foreground/60 mt-1">
+                      Verify a work phone to toggle
+                    </p>
+                  )}
+                </div>
+                <div className={cn(
+                  "w-10 h-6 rounded-full transition-colors relative",
+                  form.usePersonalPhone ? "bg-green-500" : "bg-muted"
+                )}>
+                  <div className={cn(
+                    "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
+                    form.usePersonalPhone ? "translate-x-5" : "translate-x-1"
+                  )} />
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Divider */}
+          {personalPhone && (
+            <div className="border-t border-border/20" />
+          )}
+
+          {/* Work phone input - always show so they can add/verify a work phone */}
+          <div className="py-2 sm:py-3">
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs font-medium text-muted-foreground/70">
+                {form.usePersonalPhone ? 'Or add a separate work number' : 'Separate work number'}
+              </p>
+              {(profile?.workPhoneVerified || phoneJustVerified) ? (
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+              ) : form.workPhone && phoneVerifyStep === 'idle' ? (
+                <button
+                  onClick={sendPhoneOTP}
+                  className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                >
+                  Verify
+                </button>
+              ) : null}
+            </div>
+
+            {phoneVerifyStep === 'otp' ? (
+              // OTP input step
+              <div className="space-y-3">
+                <p className="text-xs text-muted-foreground">
+                  Enter the 6-digit code sent to +971{form.workPhone}
+                </p>
+                <div className="flex items-center gap-2">
                   <input
                     autoFocus
                     type="text"
-                    value={form.displayName}
-                    onChange={(e) => updateField({ displayName: e.target.value })}
-                    placeholder="e.g. Ahmed, Alex, Sarah"
-                    className="w-full h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') saveField('displayName');
-                      if (e.key === 'Escape') cancelEdit();
-                    }}
+                    inputMode="numeric"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/[^\d]/g, '').slice(0, 6))}
+                    placeholder="000000"
+                    className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-center text-lg font-mono tracking-widest focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                    maxLength={6}
                   />
-                  <div className="flex items-center justify-end gap-2 sm:gap-3">
+                </div>
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={otpCountdown > 0 ? undefined : sendPhoneOTP}
+                    disabled={otpCountdown > 0}
+                    className="text-xs text-muted-foreground hover:text-foreground disabled:cursor-not-allowed"
+                  >
+                    {otpCountdown > 0 ? `Resend in ${otpCountdown}s` : 'Resend code'}
+                  </button>
+                  <div className="flex items-center gap-2">
                     <button
-                      onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
+                      onClick={verifyPhoneOTP}
+                      disabled={otp.length !== 6}
+                      className="text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+                    >
+                      Verify
+                    </button>
+                    <button
+                      onClick={cancelPhoneVerify}
                       className="text-xs text-muted-foreground hover:text-foreground font-semibold"
                     >
                       Cancel
                     </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); saveField('displayName'); }}
-                      disabled={saving}
-                      className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-                    >
-                      {saving ? '...' : 'Save'}
-                    </button>
                   </div>
                 </div>
-              ) : (
-                <p className="text-sm font-medium text-foreground">
-                  {form.displayName || <span className="text-muted-foreground/50">Tap to add</span>}
-                </p>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* Work Phone */}
-        <section>
-          <h3 className="text-sm sm:text-[15px] font-bold tracking-tight text-foreground mb-2 sm:mb-3">Work Phone</h3>
-          
-          <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5 space-y-3 sm:space-y-4">
-            
-            {/* Use personal phone toggle */}
-            {personalPhone && (() => {
-              const isWorkVerified = profile?.workPhoneVerified || phoneJustVerified;
-              const canToggle = isWorkVerified;
-              
-              return (
-                <div 
-                  className={cn(
-                    "flex items-center justify-between py-2 sm:py-3 -mx-4 sm:-mx-5 px-4 sm:px-5 transition-colors rounded",
-                    canToggle ? "cursor-pointer hover:bg-muted/30" : "cursor-not-allowed opacity-60"
-                  )}
-                  onClick={toggleUsePersonalPhone}
-                >
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Use my personal phone</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      +971 {personalPhone} {isPersonalPhoneVerified && '(verified)'}
-                    </p>
-                    {!canToggle && (
-                      <p className="text-xs text-muted-foreground/60 mt-1">
-                        Verify a work phone to toggle
-                      </p>
-                    )}
-                  </div>
-                  <div className={cn(
-                    "w-10 h-6 rounded-full transition-colors relative",
-                    form.usePersonalPhone ? "bg-green-500" : "bg-muted"
-                  )}>
-                    <div className={cn(
-                      "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
-                      form.usePersonalPhone ? "translate-x-5" : "translate-x-1"
-                    )} />
-                  </div>
+              </div>
+            ) : phoneVerifyStep === 'verifying' ? (
+              // Loading state
+              <div className="flex items-center gap-2 h-10">
+                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Sending...</span>
+              </div>
+            ) : editingField === 'workPhone' ? (
+              // Edit phone number
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-muted-foreground shrink-0">+971</span>
+                  <input
+                    autoFocus
+                    type="tel"
+                    inputMode="numeric"
+                    value={form.workPhone}
+                    onChange={(e) => updateField({ workPhone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
+                    placeholder="50 000 0000"
+                    className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                    maxLength={9}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') saveField('workPhone');
+                      if (e.key === 'Escape') cancelEdit();
+                    }}
+                  />
                 </div>
-              );
-            })()}
-
-            {/* Divider */}
-            {personalPhone && (
-              <div className="border-t border-border/20" />
-            )}
-
-            {/* Work phone input - always show so they can add/verify a work phone */}
-            <div className="py-2 sm:py-3">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-xs font-medium text-muted-foreground/70">
-                  {form.usePersonalPhone ? 'Or add a separate work number' : 'Separate work number'}
-                </p>
-                {(profile?.workPhoneVerified || phoneJustVerified) ? (
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                ) : form.workPhone && phoneVerifyStep === 'idle' ? (
+                <div className="flex items-center justify-end gap-2 sm:gap-3">
                   <button
-                    onClick={sendPhoneOTP}
+                    onClick={cancelEdit}
+                    className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => saveField('workPhone')}
+                    disabled={saving}
                     className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
                   >
-                    Verify
-                    </button>
-                  ) : null}
+                    {saving ? '...' : 'Save'}
+                  </button>
                 </div>
-                
-                {phoneVerifyStep === 'otp' ? (
-                  // OTP input step
-                  <div className="space-y-3">
-                    <p className="text-xs text-muted-foreground">
-                      Enter the 6-digit code sent to +971{form.workPhone}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <input
-                        autoFocus
-                        type="text"
-                        inputMode="numeric"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value.replace(/[^\d]/g, '').slice(0, 6))}
-                        placeholder="000000"
-                        className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-center text-lg font-mono tracking-widest focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                        maxLength={6}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={otpCountdown > 0 ? undefined : sendPhoneOTP}
-                        disabled={otpCountdown > 0}
-                        className="text-xs text-muted-foreground hover:text-foreground disabled:cursor-not-allowed"
-                      >
-                        {otpCountdown > 0 ? `Resend in ${otpCountdown}s` : 'Resend code'}
-                      </button>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={verifyPhoneOTP}
-                          disabled={otp.length !== 6}
-                          className="text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
-                        >
-                          Verify
-                        </button>
-                        <button
-                          onClick={cancelPhoneVerify}
-                          className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : phoneVerifyStep === 'verifying' ? (
-                  // Loading state
-                  <div className="flex items-center gap-2 h-10">
-                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Sending...</span>
-                  </div>
-                ) : editingField === 'workPhone' ? (
-                  // Edit phone number
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-muted-foreground shrink-0">+971</span>
-                      <input
-                        autoFocus
-                        type="tel"
-                        inputMode="numeric"
-                        value={form.workPhone}
-                        onChange={(e) => updateField({ workPhone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
-                        placeholder="50 000 0000"
-                        className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
-                        maxLength={9}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') saveField('workPhone');
-                          if (e.key === 'Escape') cancelEdit();
-                        }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-end gap-2 sm:gap-3">
-                      <button
-                        onClick={cancelEdit}
-                        className="text-xs text-muted-foreground hover:text-foreground font-semibold"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => saveField('workPhone')}
-                        disabled={saving}
-                        className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
-                      >
-                        {saving ? '...' : 'Save'}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  // Display phone number
-                  <div 
-                    className="cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 py-1 transition-colors rounded"
-                    onClick={() => setEditingField('workPhone')}
-                  >
-                    <p className="text-sm font-medium text-foreground">
-                      {form.workPhone ? `+971 ${form.workPhone}` : <span className="text-muted-foreground/50">Tap to add</span>}
-                    </p>
-                  </div>
-                )}
               </div>
-
-            {/* Note about phone usage */}
-            <p className="text-xs text-muted-foreground border-t border-border/20 pt-3">
-              Clients will call or WhatsApp this number for inquiries
-            </p>
+            ) : (
+              // Display phone number
+              <div 
+                className="cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 py-1 transition-colors rounded"
+                onClick={() => setEditingField('workPhone')}
+              >
+                <p className="text-sm font-medium text-foreground">
+                  {form.workPhone ? `+971 ${form.workPhone}` : <span className="text-muted-foreground/50">Tap to add</span>}
+                </p>
+              </div>
+            )}
           </div>
-        </section>
 
-      </div>
+          {/* Note about phone usage */}
+          <p className="text-xs text-muted-foreground border-t border-border/20 pt-3">
+            Clients will call or WhatsApp this number for inquiries
+          </p>
+        </div>
+      </section>
+
     </div>
   );
 }
