@@ -53,8 +53,7 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
   const { data: listings = [], isLoading: isLoadingListings } = useQuery({
     queryKey: ['navbar-favorites-listings'],
     queryFn: () => fetchNavbarListings(favoriteIds),
-    staleTime: Infinity,
-    gcTime: Infinity,
+
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     // Only fetch when dropdown is open and we have favorites

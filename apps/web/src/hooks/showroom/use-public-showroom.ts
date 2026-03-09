@@ -79,8 +79,6 @@ export function usePublicShowroom(
       return response.json();
     },
     enabled: enabled && !!partnerId && partnerId.length >= 3,
-    staleTime: 5 * 60 * 1000, // 5 minutes - API has longer cache
-    gcTime: 30 * 60 * 1000, // 30 minutes
     retry: 1,
   });
   

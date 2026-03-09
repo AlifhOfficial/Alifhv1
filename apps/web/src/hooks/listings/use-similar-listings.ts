@@ -85,9 +85,6 @@ export function useSimilarListings(
     queryKey: ['listing', 'similar', listingId],
     queryFn: () => fetchSimilarListings(listingId!),
     enabled: !!listingId && enabled,
-    // Cache for 5 minutes on client (matches server cache)
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
     // Don't retry - if it fails, just don't show the section
     retry: false,
     // Return empty array on error (graceful degradation)

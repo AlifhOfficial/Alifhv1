@@ -56,7 +56,7 @@ export function BlackDirectoryView() {
   const { data, isLoading, error } = useQuery({
     queryKey: queryKeys.showroom.list(1, 50),
     queryFn: () => fetchShowrooms(1, 50),
-    staleTime: 1000 * 60 * 5, // 5 min
+
   });
 
   // Filter showrooms by search query (dealer name)

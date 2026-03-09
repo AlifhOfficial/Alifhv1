@@ -212,8 +212,6 @@ export function useMyListings(options: UseMyListingsOptions = {}) {
         limit,
         offset,
       }),
-    staleTime: 0, // Always fetch fresh - server handles caching
-    gcTime: 0, // No client-side caching
     enabled,
     refetchOnWindowFocus: true,
   });

@@ -190,11 +190,6 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       <View style={[styles.visibilitySection, { backgroundColor: colors.fillSecondary }]}>
         <View style={styles.visibilityContent}>
           <Label size="small">Show VIN publicly</Label>
-          <Supporting size="small" tone="muted" style={data.vinVisibility === 'private' ? { color: colors.warning } : undefined}>
-            {data.vinVisibility === 'public'
-              ? '+15% ranking boost'
-              : "You'll lose 15% ranking boost"}
-          </Supporting>
         </View>
         <Switch
           value={data.vinVisibility === 'public'}

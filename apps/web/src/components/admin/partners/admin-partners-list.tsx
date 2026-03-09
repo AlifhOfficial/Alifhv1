@@ -176,6 +176,7 @@ export function AdminPartnersList() {
 
       {selectedPartnerId && (
         <AdminPartnerDetailModal
+          key={selectedPartnerId}
           partnerId={selectedPartnerId}
           onClose={() => setSelectedPartnerId(null)}
         />

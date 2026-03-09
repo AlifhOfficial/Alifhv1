@@ -119,9 +119,7 @@ export function ConsignmentFunnelsView() {
       if (!res.ok) throw new Error('Failed to fetch funnels');
       return res.json();
     },
-    staleTime: 0, // Always refetch on invalidation
     refetchOnMount: 'always', // Always refetch when component mounts
-    gcTime: 0, // Don't keep stale data in cache
   });
 
   const deleteMutation = useMutation({
@@ -357,8 +355,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
       return res.json();
     },
     enabled: isExpanded, // Only fetch when row is expanded
-    staleTime: 60000, // Cache for 1 minute
-    gcTime: 300000, // Keep in cache for 5 minutes
+
   });
 
   return (

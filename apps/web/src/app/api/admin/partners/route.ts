@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
 
     // Parse query params
     const { searchParams } = new URL(req.url);
+    const partnerId = searchParams.get('partnerId'); // Single partner fetch
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
     const status = searchParams.get('status') as 'pending' | 'active' | 'suspended' | 'cancelled' | undefined;
@@ -52,6 +53,7 @@ export async function GET(req: NextRequest) {
 
     // Fetch partners
     const partners = await getAdminAllPartners({
+      partnerId: partnerId || undefined,
       limit,
       offset,
       status,

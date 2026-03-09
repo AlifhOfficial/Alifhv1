@@ -149,11 +149,6 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               <p className="text-sm font-medium text-sidebar-foreground">
                 Public VIN
               </p>
-              <p className="text-xs text-sidebar-foreground/50">
-                {data.vinVisibility === 'public' 
-                  ? '+15% ranking boost'
-                  : 'Verified badge only'}
-              </p>
             </div>
             <button
               type="button"

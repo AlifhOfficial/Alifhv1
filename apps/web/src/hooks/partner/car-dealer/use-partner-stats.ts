@@ -52,7 +52,6 @@ export function usePartnerStats(partnerId: string | null | undefined) {
     queryKey: ['partner-stats', partnerId],
     queryFn: () => fetchPartnerStats(partnerId!),
     enabled: !!partnerId,
-    staleTime: 5 * 60 * 1000, // 5 min - stats don't change often
     refetchOnWindowFocus: false, // Don't refetch on focus - expensive
     refetchOnMount: false, // Don't refetch if we have data
   });

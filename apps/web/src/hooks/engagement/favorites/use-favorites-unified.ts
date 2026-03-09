@@ -109,10 +109,6 @@ export function useFavoritesStatus(options?: { enabled?: boolean }) {
   return useQuery<FavoritesStatusData>({
     queryKey: ['favorites-status'],
     queryFn: fetchFavoritesStatus,
-    // User-owned data: safe to cache indefinitely since we control all mutations
-    // Data only changes via toggleFavorite/toggleSuperlike which invalidate both
-    // server cache (invalidateFavoritesCache) and client cache (invalidateQueries)
-    staleTime: Infinity,
     refetchOnWindowFocus: false,
     enabled: options?.enabled ?? true,
   });
@@ -328,8 +324,6 @@ export function useFavoritesListings() {
   const listingsQuery = useQuery({
     queryKey: ['favorites-listings'],
     queryFn: () => fetchListingCards(favoriteIds),
-    staleTime: Infinity,
-    gcTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     enabled: favoriteIds.length > 0,
@@ -354,8 +348,6 @@ export function useSuperlikesListings() {
   const listingsQuery = useQuery({
     queryKey: ['superlikes-listings'],
     queryFn: () => fetchListingCards(superlikeIds),
-    staleTime: Infinity,
-    gcTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     enabled: superlikeIds.length > 0,

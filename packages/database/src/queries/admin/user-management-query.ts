@@ -7,7 +7,7 @@
  * @module queries/admin/user-management-query
  */
 
-import { eq, and, like, desc, asc, sql, inArray } from 'drizzle-orm';
+import { eq, and, like, desc, asc, sql, inArray, SQL } from 'drizzle-orm';
 import { db } from '../../dbclient';
 import { user } from '../../schema/auth';
 import { userProfile, kycRecord } from '../../schema/profile';
@@ -469,6 +469,7 @@ export const getAdminUserByPhone = async (phone: string): Promise<AdminUserData 
  * Get all partners with complete information
  */
 export const getAdminAllPartners = async (options?: {
+  partnerId?: string;
   limit?: number;
   offset?: number;
   status?: 'pending' | 'active' | 'suspended' | 'cancelled';
@@ -476,6 +477,7 @@ export const getAdminAllPartners = async (options?: {
   sortOrder?: 'asc' | 'desc';
 }): Promise<AdminPartnerData[]> => {
   const {
+    partnerId,
     limit = 50,
     offset = 0,
     status,
@@ -483,8 +485,15 @@ export const getAdminAllPartners = async (options?: {
     sortOrder = 'desc',
   } = options || {};
 
-  // Build where clause
-  const whereClause = status ? eq(partner.status, status) : undefined;
+  // Build where clause - partnerId takes precedence
+  const conditions: SQL[] = [];
+  if (partnerId) {
+    conditions.push(eq(partner.id, partnerId));
+  }
+  if (status) {
+    conditions.push(eq(partner.status, status));
+  }
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
   // Get sort column with fallback
   const sortColumn = {

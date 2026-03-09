@@ -60,8 +60,6 @@ export function useSellerStats(
     queryKey: ['seller-stats', type, id],
     queryFn: () => fetchSellerStats(type!, id!),
     enabled: !!type && !!id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   return {

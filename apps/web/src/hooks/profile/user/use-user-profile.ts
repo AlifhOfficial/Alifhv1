@@ -122,14 +122,9 @@ export function useUserProfile() {
   const queryClient = useQueryClient();
   const { refetch: refetchSession, isAuthenticated } = useAuth();
 
-  // No client-side caching - server cache is source of truth
-  // staleTime: Infinity prevents auto-refetches (we trust setQueryData for mutations)
-  // gcTime: 0 means fresh fetch from server on each page visit
   const query = useQuery<UserProfileResponse | null>({
     queryKey: ['user-profile'],
     queryFn: fetchUserProfile,
-    staleTime: Infinity, // Never auto-refetch (mutations update via setQueryData)
-    gcTime: 0, // No caching when unmounted - fresh from server each time
     refetchOnWindowFocus: false, // No auto refetch
     refetchOnMount: true, // Fetch on mount if no data
     refetchOnReconnect: false, // No auto refetch on reconnect

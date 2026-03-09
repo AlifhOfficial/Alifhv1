@@ -11,7 +11,7 @@ interface AdminPartnerDetailModalProps {
 }
 
 export function AdminPartnerDetailModal({ partnerId, onClose }: AdminPartnerDetailModalProps) {
-  const { data: partner, isLoading } = useQuery({
+  const { data: partner, isPending } = useQuery({
     queryKey: ['admin', 'partner', partnerId],
     queryFn: async () => {
       const res = await fetch(`/api/admin/partners?partnerId=${partnerId}`);
@@ -20,6 +20,8 @@ export function AdminPartnerDetailModal({ partnerId, onClose }: AdminPartnerDeta
       return data.data[0]; // API returns array
     },
   });
+
+  const isLoading = isPending;
 
   return (
     <div className="fixed inset-0 bg-background/40 backdrop-blur-2xl flex items-center justify-center z-50 p-4">

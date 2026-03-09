@@ -152,8 +152,6 @@ export function useListingDetail(
     queryKey: ['listing', 'detail', id],
     queryFn: () => fetchListingDetail(id!),
     enabled: !!id && enabled,
-    staleTime: 0, // Always fetch fresh - caching is server-side only
-    gcTime: 0, // No client-side caching
     retry: 1,
   });
 

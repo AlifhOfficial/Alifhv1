@@ -146,8 +146,6 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   } = useQuery({
     queryKey,
     queryFn: () => fetchSearch(params),
-    staleTime: 60 * 1000, // Consider data fresh for 1 minute
-    gcTime: 5 * 60 * 1000, // Keep data in cache for 5 minutes (for back navigation)
     refetchOnWindowFocus: false,
     refetchOnMount: false, // Don't refetch on mount if we have cached data
     placeholderData: (previousData) => previousData, // Keep previous data visible while fetching
@@ -324,7 +322,6 @@ export function useQuickSearch(
   context?: { make?: string; model?: string }
 ): QuickSearchResult {
   // Fetch popular makes when no query (dropdown open with empty input)
-  // Uses long staleTime since popular makes don't change often
   const { data: popularData, isLoading: popularLoading } = useQuery({
     queryKey: ['listings', 'suggest', 'popular'],
     queryFn: async () => {
@@ -333,8 +330,6 @@ export function useQuickSearch(
       return response.json();
     },
     enabled: enabled && query.length < 2, // Only fetch when showing defaults
-    staleTime: 5 * 60 * 1000, // 5 minutes - popular makes rarely change
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
 
   // Fetch search suggestions when user types 2+ chars
@@ -358,8 +353,6 @@ export function useQuickSearch(
       return response.json();
     },
     enabled: enabled && shouldFetchSearch,
-    staleTime: 0, // Always fetch fresh - server handles caching
-    gcTime: 0, // No client-side caching
   });
 
   // Return search suggestions when typing, popular makes otherwise

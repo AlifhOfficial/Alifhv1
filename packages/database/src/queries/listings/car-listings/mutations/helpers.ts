@@ -141,9 +141,9 @@ export function computeQiScore(input: QiScoreInput): number {
   // Trust: 0-10 points
   const trust = input.partnerVerified ? 10 : 0;
   
-  // VIN Transparency: 0-10 points (~15% boost for public VIN)
+  // VIN Transparency: 0-5 points for public VIN
   // This encourages sellers to show their VIN for buyer trust
-  const vinTransparency = input.vinVisibility === 'public' ? 10 : 0;
+  const vinTransparency = input.vinVisibility === 'public' ? 5 : 0;
   
   return Math.round((photoScore + descScore + completeness + trust + vinTransparency) * 100) / 100;
 }

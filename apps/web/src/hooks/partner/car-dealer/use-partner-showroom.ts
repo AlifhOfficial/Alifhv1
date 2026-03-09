@@ -224,7 +224,6 @@ export function usePartnerShowroom(partnerId: string | null | undefined) {
     queryKey: ['partner-showroom', partnerId],
     queryFn: () => fetchShowroom(partnerId!),
     enabled: !!partnerId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   const updateMutation = useMutation({
