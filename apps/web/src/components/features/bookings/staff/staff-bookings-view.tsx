@@ -107,7 +107,7 @@ export function StaffBookingsView() {
     try {
       // Build query params for server-side filtering
       const params = new URLSearchParams();
-      params.set('stats', 'true');
+      params.set('includeStats', 'true');
       params.set('limit', String(ITEMS_PER_PAGE));
       params.set('offset', String((currentPage - 1) * ITEMS_PER_PAGE));
       params.set('sort', sort);
@@ -126,7 +126,7 @@ export function StaffBookingsView() {
         params.set('q', debouncedSearch.trim());
       }
 
-      const res = await fetch(`/api/bookings/manage?${params.toString()}`, {
+      const res = await fetch(`/api/bookings?staffView=true&${params.toString()}`, {
         signal: abortControllerRef.current.signal,
       });
       const data = await res.json();
@@ -151,7 +151,7 @@ export function StaffBookingsView() {
     setAvailabilityLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/bookings/availability');
+      const res = await fetch('/api/bookings/settings');
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to load availability');
       
@@ -191,10 +191,19 @@ export function StaffBookingsView() {
     setError(null);
 
     try {
-      const res = await fetch('/api/bookings/manage/verify', {
-        method: 'POST',
+      // First look up the booking by token
+      const lookupRes = await fetch(`/api/bookings?confirmationToken=${token}&staffView=true`);
+      const lookupData = await lookupRes.json();
+      if (!lookupRes.ok || !lookupData.bookings?.length) {
+        throw new Error('Booking not found');
+      }
+      const bookingId = lookupData.bookings[0].id;
+      
+      // Then perform the action
+      const res = await fetch(`/api/bookings/${bookingId}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ confirmationToken: token, action: verifyAction }),
+        body: JSON.stringify({ action: verifyAction }),
       });
       const data = await res.json().catch(() => ({}));
 
@@ -225,7 +234,7 @@ export function StaffBookingsView() {
     setAvailabilityLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/bookings/availability', {
+      const res = await fetch('/api/bookings/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'initialize' }),
@@ -260,7 +269,7 @@ export function StaffBookingsView() {
     setError(null);
     
     try {
-      const res = await fetch('/api/bookings/availability', {
+      const res = await fetch('/api/bookings/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -309,7 +318,7 @@ export function StaffBookingsView() {
     setError(null);
     
     try {
-      const res = await fetch('/api/bookings/availability', {
+      const res = await fetch('/api/bookings/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -343,7 +352,7 @@ export function StaffBookingsView() {
     
     setError(null);
     try {
-      const res = await fetch(`/api/bookings/manage/${bookingId}`, {
+      const res = await fetch(`/api/bookings/${bookingId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, ...data }),
@@ -366,7 +375,7 @@ export function StaffBookingsView() {
     setIsCancelling(true);
     setError(null);
     try {
-      const res = await fetch(`/api/bookings/manage/${cancelModal.bookingId}`, {
+      const res = await fetch(`/api/bookings/${cancelModal.bookingId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

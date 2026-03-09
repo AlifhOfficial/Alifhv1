@@ -228,6 +228,7 @@ export const booking = pgTable('booking', {
   // Status & time-based queries
   index('booking_status_idx').on(table.status),
   index('booking_scheduledStartTime_idx').on(table.scheduledStartTime),
+  index('booking_scheduledDate_idx').on(table.scheduledDate),
   index('booking_partnerId_scheduledStartTime_idx').on(table.partnerId, table.scheduledStartTime),
   index('booking_userId_scheduledStartTime_idx').on(table.userId, table.scheduledStartTime),
   index('booking_status_scheduledStartTime_idx').on(table.status, table.scheduledStartTime),
@@ -235,10 +236,20 @@ export const booking = pgTable('booking', {
   // Partner dashboard queries
   index('booking_partnerId_status_idx').on(table.partnerId, table.status),
   index('booking_partnerId_scheduledDate_idx').on(table.partnerId, table.scheduledDate),
+  index('booking_partnerId_scheduledDate_status_idx').on(table.partnerId, table.scheduledDate, table.status),
   
   // User history
   index('booking_userId_status_idx').on(table.userId, table.status),
   index('booking_userId_createdAt_idx').on(table.userId, table.createdAt),
+  
+  // Duplicate booking prevention (userId + listingId + status)
+  index('booking_userId_listingId_status_idx').on(table.userId, table.listingId, table.status),
+  
+  // Overlapping time check (userId + status + scheduledStartTime + scheduledEndTime)
+  index('booking_userId_status_startEnd_idx').on(table.userId, table.status, table.scheduledStartTime, table.scheduledEndTime),
+  
+  // Cancellation abuse check (userId + cancelledBy + cancelledAt)
+  index('booking_userId_cancelledBy_cancelledAt_idx').on(table.userId, table.cancelledBy, table.cancelledAt),
   
   // Verification
   index('booking_confirmationToken_idx').on(table.confirmationToken),

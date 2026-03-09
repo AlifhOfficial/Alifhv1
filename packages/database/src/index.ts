@@ -55,10 +55,8 @@ export * from './queries/partner/showroom';
 export * from './queries/user-stats';
 export * from './queries/user-dashboard';
 
-// Explicit booking query exports (required for proper bundling)
-export * from './queries/booking/availability-queries';
-export * from './queries/booking/booking-queries';
-export * from './queries/booking/booking-mutations';
+// Booking system (simplified 3-function architecture)
+export * from './queries/booking';
 
 // Explicit listings query exports (required for proper bundling)
 export * from './queries/listings/car-listings/car-listing-context-query';

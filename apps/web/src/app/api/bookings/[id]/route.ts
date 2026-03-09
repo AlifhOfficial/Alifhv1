@@ -1,20 +1,14 @@
 /**
- * API: Booking Operations
+ * API: Single Booking Operations
  * GET /api/bookings/[id] - Get booking details
- * PATCH /api/bookings/[id] - Update booking (cancel, reschedule)
+ * PATCH /api/bookings/[id] - Update booking (cancel, reschedule, feedback)
  * 
- * Authentication: Required (user must own the booking)
+ * Note: This is a convenience route. All operations can also be done via POST /api/bookings
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import {
-  getBookingById,
-  cancelBooking,
-  rescheduleBooking,
-  submitBookingFeedback,
-} from '@alifh/database';
-
+import { getBookings, manageBooking, type CancellationReason } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
@@ -33,26 +27,30 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-
     const { id } = await params;
-    const booking = await getBookingById(id);
+    const result = await getBookings({
+      id,
+      includePartnerSettings: true,
+    });
 
-    if (!booking) {
+    if (result.bookings.length === 0) {
       return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }
 
-    // Only allow user to view their own booking
-    if (booking.userId !== user.id) {
+    const booking = result.bookings[0];
+
+    // Authorization: user can view own booking, staff can view partner's bookings
+    const isOwner = booking.userId === user.id;
+    const isStaff = user.partnerMemberships?.some(m => m.partnerId === booking.partnerId);
+
+    if (!isOwner && !isStaff) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     return NextResponse.json(booking);
   } catch (error) {
     console.error('Error fetching booking:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch booking' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch booking' }, { status: 500 });
   }
 }
 
@@ -67,85 +65,82 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-
     const { id } = await params;
     const body = await req.json();
     const { action, ...data } = body;
 
-    // Get booking to verify ownership
-    const booking = await getBookingById(id);
-    if (!booking) {
+    if (!action) {
+      return NextResponse.json({ error: 'action is required' }, { status: 400 });
+    }
+
+    // Verify booking exists and user has access
+    const result = await getBookings({ id });
+    if (result.bookings.length === 0) {
       return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }
 
-    if (booking.userId !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const booking = result.bookings[0];
+    const isOwner = booking.userId === user.id;
+    const membership = user.partnerMemberships?.find(m => m.partnerId === booking.partnerId);
+    const isStaff = !!membership;
+
+    // User-only actions (cannot be done by staff on behalf of user)
+    const userOnlyActions = ['reschedule', 'feedback'];
+    // Staff-only actions
+    const staffOnlyActions = ['confirm', 'reject', 'complete', 'checkIn', 'noShow'];
+    // Shared actions (both user and staff can do)
+    const sharedActions = ['cancel'];
+
+    // User-only actions require ownership
+    if (userOnlyActions.includes(action) && !isOwner) {
+      return NextResponse.json({ error: 'You can only modify your own bookings' }, { status: 403 });
     }
 
-    switch (action) {
-      case 'cancel': {
-        const { reason, notes } = data;
-
-        const result = await cancelBooking(id, 'user', user.id, reason || 'other', notes);
-        if (!result.success) {
-          return NextResponse.json({ error: result.error }, { status: 400 });
-        }
-
-        return NextResponse.json({ success: true, message: 'Booking cancelled' });
-      }
-
-      case 'reschedule': {
-        const { newDate, newStartTime, newEndTime } = data;
-        if (!newDate || !newStartTime || !newEndTime) {
-          return NextResponse.json(
-            { error: 'New date and time are required for rescheduling' },
-            { status: 400 }
-          );
-        }
-
-        const result = await rescheduleBooking(
-          id,
-          user.id,
-          new Date(newDate),
-          new Date(newStartTime),
-          new Date(newEndTime)
-        );
-
-        if (!result.success) {
-          return NextResponse.json({ error: result.error }, { status: 400 });
-        }
-
-        return NextResponse.json({ success: true, message: 'Booking rescheduled' });
-      }
-
-      case 'feedback': {
-        const { feedback } = data;
-        if (!feedback || !feedback.overallRating) {
-          return NextResponse.json(
-            { error: 'Feedback with overall rating is required' },
-            { status: 400 }
-          );
-        }
-
-        const result = await submitBookingFeedback(id, user.id, feedback);
-        if (!result.success) {
-          return NextResponse.json({ error: result.error }, { status: 400 });
-        }
-
-        return NextResponse.json({ success: true, message: 'Feedback submitted' });
-      }
-
-      default:
-        return NextResponse.json(
-          { error: 'Invalid action. Supported: cancel, reschedule, feedback' },
-          { status: 400 }
-        );
+    // Staff-only actions require staff membership
+    if (staffOnlyActions.includes(action) && !isStaff) {
+      return NextResponse.json({ error: 'Staff access required' }, { status: 403 });
     }
+
+    // Shared actions require either ownership OR staff access
+    if (sharedActions.includes(action) && !isOwner && !isStaff) {
+      return NextResponse.json({ error: 'You can only modify your own bookings' }, { status: 403 });
+    }
+
+    // Determine actor type for the mutation
+    const isStaffAction = staffOnlyActions.includes(action) || (sharedActions.includes(action) && isStaff && !isOwner);
+
+    const mutationResult = await manageBooking({
+      action,
+      actorId: user.id,
+      actorType: isStaffAction ? 'staff' : 'user',
+      bookingId: id,
+      
+      // Cancel/reject
+      reason: data.reason,
+      cancellationReason: data.cancellationReason as CancellationReason,
+      
+      // Reschedule
+      newDate: data.newDate ? new Date(data.newDate) : undefined,
+      newStartTime: data.newStartTime ? new Date(data.newStartTime) : undefined,
+      newEndTime: data.newEndTime ? new Date(data.newEndTime) : undefined,
+      
+      // Staff operations
+      partnerNotes: data.partnerNotes,
+      checkInTime: data.checkInTime ? new Date(data.checkInTime) : undefined,
+      checkOutTime: data.checkOutTime ? new Date(data.checkOutTime) : undefined,
+      noShowReason: data.noShowReason,
+      
+      // Feedback
+      feedback: data.feedback,
+    });
+
+    if (!mutationResult.success) {
+      return NextResponse.json({ error: mutationResult.error }, { status: 400 });
+    }
+
+    return NextResponse.json(mutationResult);
   } catch (error) {
     console.error('Error updating booking:', error);
-    return NextResponse.json(
-      { error: 'Failed to update booking' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to update booking' }, { status: 500 });
   }
 }

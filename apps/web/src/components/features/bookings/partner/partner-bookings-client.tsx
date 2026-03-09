@@ -181,7 +181,7 @@ export function PartnerBookingsClient({
 
       const params = new URLSearchParams({
         partnerId,
-        includeStats: '1',
+        includeStats: 'true',
         limit: String(ITEMS_PER_PAGE),
         offset: String((currentPage - 1) * ITEMS_PER_PAGE),
       });
@@ -197,7 +197,7 @@ export function PartnerBookingsClient({
         params.set('q', debouncedSearch.trim());
       }
 
-      const response = await fetch(`/api/bookings/partner-bookings?${params}`, {
+      const response = await fetch(`/api/bookings?staffView=true&${params}`, {
         credentials: 'include',
         cache: 'no-store',
         signal: abortControllerRef.current.signal,
@@ -209,7 +209,7 @@ export function PartnerBookingsClient({
       }
 
       const data = await response.json();
-      setBookings(data.data || []);
+      setBookings(data.bookings || []);
       setTotalBookings(data.total || 0);
       if (data.stats) {
         setStats(data.stats);

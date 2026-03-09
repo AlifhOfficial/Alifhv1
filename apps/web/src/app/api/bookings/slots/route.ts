@@ -10,12 +10,9 @@ import { applyCdnHeaders } from '@/lib/cdn-cache';
 import {
   getAvailableSlots,
   getAvailableDates,
-  getPartnerBookingSettings,
-  getPartnerAvailability,
   getListingBookingContext,
-  initializeDefaultAvailability,
+  managePartnerSettings,
 } from '@alifh/database';
-
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -37,7 +34,6 @@ function cachedJson(data: unknown, init?: { status?: number }) {
  */
 export async function GET(req: NextRequest) {
   try {
-
     const { searchParams } = new URL(req.url);
     const listingId = searchParams.get('listingId');
     const dateStr = searchParams.get('date');
@@ -58,8 +54,16 @@ export async function GET(req: NextRequest) {
       return cachedJson({ error: 'This listing does not support bookings' }, { status: 400 });
     }
 
+    // Get partner config
+    const config = await managePartnerSettings({
+      partnerId: listing.partnerId,
+      action: 'get',
+    });
+
+    const settings = config.settings;
+    const availability = config.availability || [];
+
     // Check if partner accepts bookings
-    const settings = await getPartnerBookingSettings(listing.partnerId);
     if (settings && !settings.bookingEnabled) {
       return cachedJson({
         available: false,
@@ -69,10 +73,12 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Auto-initialize default availability if partner has none set up
-    const existingAvailability = await getPartnerAvailability(listing.partnerId);
-    if (existingAvailability.length === 0) {
-      await initializeDefaultAvailability(listing.partnerId);
+    // Auto-initialize default availability if partner has none
+    if (availability.length === 0) {
+      await managePartnerSettings({
+        partnerId: listing.partnerId,
+        action: 'initDefaults',
+      });
     }
 
     if (mode === 'dates') {
@@ -104,7 +110,7 @@ export async function GET(req: NextRequest) {
     // Get slots for specific date
     const date = dateStr ? new Date(dateStr) : new Date();
     date.setUTCHours(0, 0, 0, 0);
-    const slots = await getAvailableSlots(listing.partnerId, date, listingId);
+    const slots = await getAvailableSlots(listing.partnerId, date);
     const now = new Date();
 
     const filtered = slots.filter((s) => {
