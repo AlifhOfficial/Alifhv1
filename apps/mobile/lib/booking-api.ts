@@ -375,7 +375,7 @@ export async function cancelBooking(
     },
     body: JSON.stringify({
       action: 'cancel',
-      reason: params.reason,
+      cancellationReason: params.reason || 'other',
       notes: params.notes,
     }),
   });

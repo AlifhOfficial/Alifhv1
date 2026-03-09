@@ -461,8 +461,9 @@ export function StaffBookingsView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           action: 'cancel', 
-          reason: cancelReason,
-          notes: cancelNotes || undefined 
+          // Combine reason and notes into full text
+          notes: [cancelReason, cancelNotes].filter(Boolean).join(': ') || undefined,
+          cancellationReason: 'other' // Staff cancellations default to 'other'
         }),
       });
 

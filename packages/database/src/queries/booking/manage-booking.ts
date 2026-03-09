@@ -213,6 +213,7 @@ async function createBooking(
   }
 
   const partnerId = listing.partnerId;
+  const staffUserId = listing.userId; // Staff member managing this listing
 
   // Get user info
   const userData = await db
@@ -265,24 +266,40 @@ async function createBooking(
     return { success: false, error: 'You have another booking at this time' };
   }
 
-  // Create slot
+  // Create slot - calculate duration from actual booking times
   const slotId = createId();
+  const durationMinutes = Math.round((scheduledEndTime.getTime() - scheduledStartTime.getTime()) / (60 * 1000));
   await db.insert(bookingSlot).values({
     id: slotId,
     partnerId,
     listingId,
     startTime: scheduledStartTime,
     endTime: scheduledEndTime,
-    duration: CONFIG.DEFAULT_SLOT_DURATION,
+    duration: durationMinutes,
     status: 'booked',
     maxBookings: 1,
     currentBookings: 1,
   });
 
-  // Get partner settings for auto-confirm
-  const settings = await db.query.partnerBookingSettings.findFirst({
-    where: eq(partnerBookingSettings.partnerId, partnerId),
-  });
+  // Get partner/staff settings for auto-confirm
+  // Prefer staff-specific settings, fall back to partner defaults
+  let settings = staffUserId
+    ? await db.query.partnerBookingSettings.findFirst({
+        where: and(
+          eq(partnerBookingSettings.partnerId, partnerId),
+          eq(partnerBookingSettings.staffUserId, staffUserId)
+        ),
+      })
+    : null;
+  
+  if (!settings) {
+    settings = await db.query.partnerBookingSettings.findFirst({
+      where: and(
+        eq(partnerBookingSettings.partnerId, partnerId),
+        isNull(partnerBookingSettings.staffUserId)
+      ),
+    });
+  }
 
   const autoConfirm = settings?.autoConfirm ?? false;
   const confirmationToken = generateToken();
@@ -352,9 +369,31 @@ async function cancelBooking(
 
   // Check cancellation policy for users
   if (actorType === 'user') {
-    const settings = await db.query.partnerBookingSettings.findFirst({
-      where: eq(partnerBookingSettings.partnerId, existing.partnerId),
+    // Get staff-specific settings (listing owner's settings)
+    const bookingListing = await db.query.carListing.findFirst({
+      where: eq(carListing.id, existing.listingId),
+      columns: { userId: true },
     });
+    const staffUserId = bookingListing?.userId;
+
+    // Prefer staff-specific settings, fallback to partner defaults
+    let settings = staffUserId
+      ? await db.query.partnerBookingSettings.findFirst({
+          where: and(
+            eq(partnerBookingSettings.partnerId, existing.partnerId),
+            eq(partnerBookingSettings.staffUserId, staffUserId)
+          ),
+        })
+      : null;
+
+    if (!settings) {
+      settings = await db.query.partnerBookingSettings.findFirst({
+        where: and(
+          eq(partnerBookingSettings.partnerId, existing.partnerId),
+          isNull(partnerBookingSettings.staffUserId)
+        ),
+      });
+    }
 
     if (settings && !settings.allowUserCancellation) {
       return { success: false, error: 'This dealer does not allow user cancellations' };
@@ -419,10 +458,31 @@ async function rescheduleBooking(
     return { success: false, error: `Cannot reschedule booking in status: ${existing.status}` };
   }
 
-  // Check reschedule limit
-  const settings = await db.query.partnerBookingSettings.findFirst({
-    where: eq(partnerBookingSettings.partnerId, existing.partnerId),
+  // Check reschedule limit - get staff-specific settings
+  const bookingListing = await db.query.carListing.findFirst({
+    where: eq(carListing.id, existing.listingId),
+    columns: { userId: true },
   });
+  const staffUserId = bookingListing?.userId;
+
+  // Prefer staff-specific settings, fallback to partner defaults
+  let settings = staffUserId
+    ? await db.query.partnerBookingSettings.findFirst({
+        where: and(
+          eq(partnerBookingSettings.partnerId, existing.partnerId),
+          eq(partnerBookingSettings.staffUserId, staffUserId)
+        ),
+      })
+    : null;
+
+  if (!settings) {
+    settings = await db.query.partnerBookingSettings.findFirst({
+      where: and(
+        eq(partnerBookingSettings.partnerId, existing.partnerId),
+        isNull(partnerBookingSettings.staffUserId)
+      ),
+    });
+  }
 
   if (settings && !settings.allowReschedule) {
     return { success: false, error: 'This dealer does not allow rescheduling' };
@@ -440,15 +500,16 @@ async function rescheduleBooking(
     return { success: false, error: `Reschedule deadline passed (${deadlineHours} hours before appointment)` };
   }
 
-  // Create new slot
+  // Create new slot - calculate duration from actual times
   const newSlotId = createId();
+  const rescheduleDuration = Math.round((newEndTime.getTime() - newStartTime.getTime()) / (60 * 1000));
   await db.insert(bookingSlot).values({
     id: newSlotId,
     partnerId: existing.partnerId,
     listingId: existing.listingId,
     startTime: newStartTime,
     endTime: newEndTime,
-    duration: CONFIG.DEFAULT_SLOT_DURATION,
+    duration: rescheduleDuration,
     status: 'booked',
     maxBookings: 1,
     currentBookings: 1,

@@ -122,7 +122,12 @@ export function UserBookingsView() {
       const res = await fetch(`/api/bookings/${bookingId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'cancel', reason, notes: notes || undefined }),
+        // Combine reason and notes; send cancellationReason for enum
+        body: JSON.stringify({ 
+          action: 'cancel', 
+          notes: [reason, notes].filter(Boolean).join(': ') || undefined,
+          cancellationReason: 'other'
+        }),
       });
 
       const result = await res.json();

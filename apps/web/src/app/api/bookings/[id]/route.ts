@@ -115,9 +115,9 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       actorType: isStaffAction ? 'staff' : 'user',
       bookingId: id,
       
-      // Cancel/reject
-      reason: data.reason,
-      cancellationReason: data.cancellationReason as CancellationReason,
+      // Cancel/reject - notes is the free text, reason can be either
+      reason: data.notes || data.reason,
+      cancellationReason: (data.cancellationReason || 'other') as CancellationReason,
       
       // Reschedule
       newDate: data.newDate ? new Date(data.newDate) : undefined,
