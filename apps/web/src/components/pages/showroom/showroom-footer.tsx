@@ -90,7 +90,7 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
                   <div className="flex flex-col gap-3">
                     {showroom.instagramHandle && (
                       <a
-                        href={`https://instagram.com/${showroom.instagramHandle.replace('@', '')}`}
+                        href={showroom.instagramHandle}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
@@ -123,7 +123,7 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
                     )}
                     {showroom.tiktokHandle && (
                       <a
-                        href={`https://tiktok.com/@${showroom.tiktokHandle.replace('@', '')}`}
+                        href={showroom.tiktokHandle}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
