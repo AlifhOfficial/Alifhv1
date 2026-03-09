@@ -152,7 +152,6 @@ export const footerSections: FooterSection[] = [
     title: "Browse",
     links: [
       { label: "Cars", href: "/listings" },
-      { label: "Dealers", href: "/showcase" },
       { label: "Sell", href: "/user-dashboard/listings/new" },
       { label: "Black", href: "/black" },
       { label: "Tools", href: "/tools" },
@@ -179,7 +178,6 @@ export const footerSections: FooterSection[] = [
     links: [
       { label: "Terms", href: "/terms-of-service" },
       { label: "Privacy", href: "/privacy-policy" },
-      { label: "Refunds", href: "/refund-policy" },
     ],
   },
 ];
@@ -188,6 +186,7 @@ export const footerBottomLinks = [
   { label: "Dealer Agreement", href: "/dealer-agreement" },
   { label: "Acceptable Use", href: "/acceptable-use-policy" },
   { label: "IP Policy", href: "/intellectual-property" },
+  { label: "Refunds", href: "/refund-policy" },
   { label: "Disclaimer", href: "/disclaimer" },
 ];
 

@@ -174,10 +174,10 @@ function MarketplaceGameInfographic() {
               >
                 0
               </div>
-              <span className="text-sm sm:text-base text-primary/80 font-medium mt-2">fees</span>
+              <span className="text-sm sm:text-base text-primary/80 font-medium mt-2">paid visibility</span>
             </div>
             
-            <p className="text-[10px] sm:text-xs text-white/30 mt-8 sm:mt-10">Just list</p>
+            <p className="text-[10px] sm:text-xs text-white/30 mt-8 sm:mt-10">Quality ranks higher</p>
           </div>
       </MacOSWindow>
     </>

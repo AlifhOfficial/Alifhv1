@@ -61,16 +61,16 @@ export const faqData: FAQCategory[] = [
       // VIN & Transparency
       {
         id: "users-vin-required",
-        question: "Why does Revvup include VIN on every listing?",
-        answer: "Every Revvup listing includes the VIN (Vehicle Identification Number) to ensure transparency and help prevent fraud. This allows buyers to verify the car's history, specifications, and authenticity before contacting the seller.",
-        keywords: ["vin", "vehicle identification", "required", "why"],
+        question: "Why does Revvup collect VIN when listing?",
+        answer: "We collect VIN to prevent abuse—spam posts, fraudulent listings, and bad actors. It's a verification step that keeps the marketplace clean. Whether to display your VIN publicly is your choice.",
+        keywords: ["vin", "vehicle identification", "required", "why", "collect"],
         isPopular: true,
       },
       {
         id: "users-vin-visible",
         question: "Is my car's VIN visible to buyers on Revvup?",
-        answer: "Yes, VINs are visible to all users on Revvup. This transparency allows buyers to run independent history checks and verify vehicle details before reaching out, building trust and reducing time-wasters.",
-        keywords: ["vin", "public", "visible", "show"],
+        answer: "That's up to you. We collect VIN during listing to prevent abuse, but you choose whether to show it publicly or keep it private.",
+        keywords: ["vin", "public", "visible", "show", "display", "hide"],
       },
       // Test Drives & Booking
       {
@@ -122,14 +122,14 @@ export const faqData: FAQCategory[] = [
       {
         id: "users-best-place-sell-car",
         question: "What is the best place to sell a car in Dubai?",
-        answer: "The best place depends on your priorities. If you want free listing with no fees, transparent VIN verification, and quality-based rankings instead of pay-to-win, Revvup is built for that. No boost fees, no commissions, no hidden charges—just list and sell.",
+        answer: "The best place depends on your priorities. If you want free listing with no fees, clean interface, and quality-based rankings instead of pay-to-win, Revvup is built for that. No boost fees, no commissions, no hidden charges—just list and sell.",
         keywords: ["best place", "sell car", "dubai", "where", "site"],
         isPopular: true,
       },
       {
         id: "users-free-car-listing-dubai",
         question: "Where can I list my car for free in Dubai?",
-        answer: "On Revvup, private car listings are 100% free—forever. No listing fees, no boost fees, no commission on sale. Upload up to 20 photos, include your VIN for buyer trust, and reach serious buyers without paying anything.",
+        answer: "On Revvup, private car listings are 100% free—forever. No listing fees, no boost fees, no commission on sale. Upload up to 20 photos and reach serious buyers without paying anything.",
         keywords: ["free", "list car", "dubai", "where", "no fee"],
         isPopular: true,
       },
@@ -148,7 +148,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "users-free-alternative",
         question: "Is there a free alternative to paid car listing sites?",
-        answer: "Yes. Revvup is free for private sellers with no listing fees, no boost fees, and no commission. Unlike traditional classifieds, rankings are based on listing quality—not how much you pay. VIN on every listing adds buyer trust.",
+        answer: "Yes. Revvup is free for private sellers with no listing fees, no boost fees, and no commission. Unlike traditional classifieds, rankings are based on listing quality—not how much you pay.",
         keywords: ["dubizzle", "alternative", "free", "compare"],
         isPopular: true,
       },
@@ -173,31 +173,31 @@ export const faqData: FAQCategory[] = [
       {
         id: "users-best-car-website-dubai",
         question: "What is the best car website in Dubai for 2026?",
-        answer: "Revvup stands out for transparency: VIN on every listing, no paid boosts, no ads cluttering the experience. Free for private sellers, subscription-based for dealers. If you value fair rankings and honest transactions, it's built for that.",
+        answer: "Revvup stands out for transparency: no paid boosts, no ads cluttering the experience, quality-based rankings. Free for private sellers, subscription-based for dealers. If you value fair rankings and honest transactions, it's built for that.",
         keywords: ["best", "car website", "dubai", "2026", "top"],
       },
       {
         id: "users-sell-car-quickly-dubai",
         question: "How can I sell my car quickly in Dubai?",
-        answer: "List on Revvup with high-quality photos (use all 20 slots), write a detailed description, price competitively, and respond quickly to inquiries. Quality listings rank higher organically. Include your VIN to build instant buyer trust.",
+        answer: "List on Revvup with high-quality photos (use all 20 slots), write a detailed description, price competitively, and respond quickly to inquiries. Quality listings rank higher organically—no need to pay for visibility.",
         keywords: ["sell quickly", "fast", "tips", "how to", "dubai"],
       },
       {
         id: "users-verified-car-marketplace",
         question: "Is there a verified car marketplace in Dubai?",
-        answer: "Revvup requires VIN on every listing, allowing buyers to independently verify history and specs. This transparency layer helps prevent fraud and builds trust between buyers and sellers. Every listing—private or dealer—includes VIN.",
-        keywords: ["verified", "vin", "authentic", "trusted", "legit"],
+        answer: "Revvup verifies listings through VIN collection to prevent abuse and keep quality high. Seller ratings, response times, and reviews add additional trust layers. It's a cleaner marketplace by design.",
+        keywords: ["verified", "authentic", "trusted", "legit", "quality"],
       },
       {
         id: "users-sell-luxury-car-dubai",
         question: "What's the best way to sell a luxury car in Dubai?",
-        answer: "For high-value cars, presentation matters. Revvup's clean, ad-free interface showcases your car professionally. Upload 20 high-quality photos, include VIN for authenticity, and let the car speak for itself—no competing ads or clutter.",
+        answer: "For high-value cars, presentation matters. Revvup's clean, ad-free interface showcases your car professionally. Upload 20 high-quality photos, provide detailed specs, and let the car speak for itself—no competing ads or clutter.",
         keywords: ["luxury", "premium", "high value", "supercar", "best way"],
       },
       {
         id: "users-compare-car-platforms",
         question: "How do I compare car selling platforms in Dubai?",
-        answer: "Check for: listing fees (Revvup: free), boost fees (Revvup: none exist), commission (Revvup: 0%), VIN transparency (Revvup: required), and ranking fairness (Revvup: quality-based only). These factors determine your cost and visibility.",
+        answer: "Check for: listing fees (Revvup: free), boost fees (Revvup: none exist), commission (Revvup: 0%), and ranking fairness (Revvup: quality-based only). These factors determine your cost and visibility.",
         keywords: ["compare", "platforms", "which", "best", "features"],
       },
     ],
@@ -301,7 +301,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "partners-profile",
         question: "What does my Revvup partner profile show to buyers?",
-        answer: "Your partner profile displays: your showroom name and logo, current inventory, total cars sold, average response time, Google Rating (if synced), location with map, operating hours, and contact information.",
+        answer: "Your partner profile displays: your showroom name and logo, current inventory, total cars sold, average response time, Google Rating (if synced), location with map, and contact information.",
         keywords: ["profile", "brand", "page", "show", "display", "google"],
       },
       {
@@ -313,7 +313,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "partners-non-uae-specs",
         question: "Can I list imported or non-GCC spec cars on Revvup?",
-        answer: "Yes, you can list imported and non-GCC spec vehicles on Revvup. All specs are welcome—American, European, Japanese, or GCC. Just ensure the car is physically in the UAE and the VIN is accurate for buyer transparency.",
+        answer: "Yes, you can list imported and non-GCC spec vehicles on Revvup. All specs are welcome—American, European, Japanese, or GCC. Just ensure the car is physically in the UAE.",
         keywords: ["import", "non-gcc", "american spec", "european", "japanese", "specs"],
       },
       {
@@ -346,7 +346,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "partners-leads-quality",
         question: "What kind of leads do dealers get on Revvup?",
-        answer: "Revvup delivers high-intent buyer leads. Every inquiry comes through a specific car listing, so you know exactly what the buyer wants. VIN transparency means buyers are serious—they've already checked the car's history. No tire-kickers, no spam inquiries from bots.",
+        answer: "Revvup delivers high-intent buyer leads. Every inquiry comes through a specific car listing, so you know exactly what the buyer wants. No tire-kickers, no spam inquiries from bots—just serious buyers ready to talk.",
         keywords: ["leads", "quality", "buyers", "inquiries", "genuine"],
       },
       {
@@ -382,7 +382,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "partners-showroom-page",
         question: "Do dealers get a branded showroom page on Revvup?",
-        answer: "Yes. Every partner gets a dedicated showroom page with your logo, location, operating hours, full inventory, and Google Rating (if synced). Black tier partners receive custom branding and enhanced showroom presentation.",
+        answer: "Yes. Every partner gets a dedicated showroom page with your logo, location, full inventory, and Google Rating (if synced). Black tier partners receive custom branding and enhanced showroom presentation.",
         keywords: ["showroom page", "branded", "profile", "dealer page", "storefront"],
       },
       {
@@ -395,13 +395,13 @@ export const faqData: FAQCategory[] = [
       {
         id: "partners-luxury-cars",
         question: "Is Revvup good for luxury and premium car dealers?",
-        answer: "Yes. Revvup's clean, ad-free interface is designed for premium presentation. Black tier offers elevated showroom branding and premium listing formats. VIN transparency builds trust for high-value transactions. Many luxury dealers choose Revvup for the professional presentation.",
+        answer: "Yes. Revvup's clean, ad-free interface is designed for premium presentation. Black tier offers elevated showroom branding and premium listing formats. Many luxury dealers choose Revvup for the professional, clutter-free experience.",
         keywords: ["luxury", "premium", "high-end", "supercar", "exotic"],
       },
       {
         id: "partners-used-cars",
         question: "Is Revvup suitable for used car dealers?",
-        answer: "Absolutely. Revvup is built for used car dealers of all sizes. Unlimited listings mean your full inventory is online. VIN transparency helps buyers trust pre-owned vehicles. Quality-based ranking rewards dealers who present cars well and respond quickly.",
+        answer: "Absolutely. Revvup is built for used car dealers of all sizes. Unlimited listings mean your full inventory is online. Quality-based ranking rewards dealers who present cars well and respond quickly.",
         keywords: ["used cars", "pre-owned", "second hand", "certified"],
       },
       {
@@ -459,7 +459,7 @@ export const faqData: FAQCategory[] = [
       {
         id: "general-different",
         question: "How is Revvup different from other car platforms?",
-        answer: "Revvup was built to change how cars are bought and sold in the UAE. We believe in transparency—VIN on every listing. We believe in fairness—no paid boosts, no pay-to-win. We believe in clarity—clean design, no clutter, no ads. Most platforms optimize for their revenue. We optimize for trust. That's the difference.",
+        answer: "Revvup was built to change how cars are bought and sold in the UAE. We believe in fairness—no paid boosts, no pay-to-win. We believe in clarity—clean design, no clutter, no ads. Most platforms optimize for their revenue. We optimize for trust. That's the difference.",
         keywords: ["different", "compare", "vs", "dubizzle", "carswitch", "cars24", "yallamotor"],
         isPopular: true,
       },
@@ -478,21 +478,21 @@ export const faqData: FAQCategory[] = [
       },
       {
         id: "general-vin-why",
-        question: "Why does Revvup require VIN on every listing?",
-        answer: "Transparency. VIN lets buyers independently verify a car's history, specs, and authenticity before reaching out. It reduces fraud, saves time, and builds trust. Every listing—individual or dealer—includes VIN.",
-        keywords: ["vin", "why", "required", "transparency"],
+        question: "Why does Revvup collect VIN when listing?",
+        answer: "To prevent abuse—spam, fraud, and bad actors. VIN collection is a verification step that keeps the marketplace clean. Whether to display your VIN publicly is your choice.",
+        keywords: ["vin", "why", "required", "collect"],
       },
       // Trust & Safety
       {
         id: "general-prevent-scams",
         question: "How does Revvup prevent car scams?",
-        answer: "VIN on every listing for verification, seller ratings and response time tracking, and review systems. These don't eliminate bad actors entirely, but they make it much harder to hide and much easier for buyers to make informed decisions.",
+        answer: "VIN collection during listing prevents abuse, seller ratings and response time tracking enable informed decisions, and review systems help identify bad actors. These don't eliminate fraud entirely, but they make it much harder to hide.",
         keywords: ["scam", "fraud", "safe", "trust", "verify"],
       },
       {
         id: "general-verified",
         question: "Are car listings on Revvup verified?",
-        answer: "Every listing includes VIN, which allows buyers to independently verify history and specs. Additional seller verification features are in development. For now, VIN transparency is the primary trust layer.",
+        answer: "We collect VIN during listing to prevent abuse and verify authenticity. Seller ratings, response times, and reviews add additional trust layers. More verification features are in development.",
         keywords: ["verified", "verification", "real", "legit"],
       },
       // Business Model
@@ -606,14 +606,14 @@ export const faqData: FAQCategory[] = [
       {
         id: "pricing-trial",
         question: "What is the Founding Dealer Program?",
-        answer: "Founding partners receive three months of full platform access with no credit card required. During this period, you test the platform with your inventory while we build traffic. Founding members secure a locked rate moving forward—your pricing is protected as we scale.",
+        answer: "A limited launch program for early partners. You get three months of full platform access with no credit card required, a direct line to our team, and the ability to shape the platform as we build it.",
         keywords: ["founding", "program", "trial", "test", "access"],
         isPopular: true,
       },
       {
         id: "pricing-price-change",
         question: "Will pricing change?",
-        answer: "Founding partners secure their rate—it's locked moving forward. As the platform scales and demand increases, pricing for new partners may adjust. Early partners are protected.",
+        answer: "Pricing is subject to change as the platform scales—based on market conditions, demand, and operational efficiency. We offer a limited number of rate-lock spots for founding members who commit early. Not all founding members are guaranteed a locked rate—only the first to commit.",
         keywords: ["price", "change", "increase", "7000", "stay", "locked"],
       },
       {

@@ -6,7 +6,7 @@
 'use client';
 
 import Link from 'next/link';
-import { CircleDollarSign, FileKey, CalendarCheck, Layout, CheckCircle2 } from 'lucide-react';
+import { CircleDollarSign, Ban, CalendarCheck, Layout, CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
 import { getStaticUrl } from '@/utils';
 
@@ -56,9 +56,9 @@ export function DifferentiatorsSection() {
           />
 
           <FeatureCard 
-            icon={FileKey}
-            title="VIN required"
-            description="Every listing shows the VIN. Check the history yourself."
+            icon={Ban}
+            title="No duplicates"
+            description="One car, one listing. No spam or re-posts cluttering results."
           />
 
           <FeatureCard 

@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       listing.mileage ? `${listing.mileage.toLocaleString()} km.` : null,
       listing.transmission ? `${listing.transmission} transmission.` : null,
       listing.fuelType ? `${listing.fuelType} engine.` : null,
-      'Book test drive online. VIN shown. Revvup UAE.',
+      'Book test drive online. Revvup UAE.',,
     ].filter(Boolean).join(' ');
 
     // Get primary image for OG

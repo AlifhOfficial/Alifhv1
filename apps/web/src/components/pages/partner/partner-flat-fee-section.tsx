@@ -61,7 +61,7 @@ export function PartnerFlatFeeSection() {
         <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 lg:gap-16 pt-12 border-t border-border/40 max-w-5xl mx-auto">
           <div className="text-center space-y-1">
             <div className="text-2xl font-bold tracking-tight text-primary">AED 0</div>
-            <p className="text-sm text-muted-foreground">Per listing</p>
+            <p className="text-sm text-muted-foreground">Paid visibility</p>
           </div>
           <div className="w-px h-8 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">

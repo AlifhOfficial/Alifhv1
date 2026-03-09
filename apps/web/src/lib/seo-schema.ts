@@ -180,7 +180,7 @@ export function generateOrganizationSchema() {
     name: 'Revvup',
     url: 'https://revvup.ae',
     logo: 'https://revvup.ae/icons/icon-512x512.png',
-    description: 'UAE\'s transparent car marketplace. Buy and sell cars with VIN verification. Free for private sellers. No commission.',
+    description: 'UAE\'s transparent car marketplace. Buy and sell cars with no fees for private sellers. No commission.',
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'AE',

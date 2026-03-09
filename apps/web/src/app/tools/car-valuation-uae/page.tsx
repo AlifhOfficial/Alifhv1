@@ -36,7 +36,7 @@ const faqs = [
   },
   {
     question: 'How does Revvup ensure accurate valuations?',
-    answer: 'We analyze real listings from the UAE market and require VIN verification on all cars listed on our platform, ensuring you get valuations based on verified, transparent data.',
+    answer: 'We analyze real listings from the UAE market and use comprehensive data from active listings, ensuring you get valuations based on current market conditions.',
   },
 ]
 

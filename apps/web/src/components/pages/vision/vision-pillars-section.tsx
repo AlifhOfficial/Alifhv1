@@ -80,7 +80,7 @@ export function VisionPillarsSection() {
 
           {/* Description */}
           <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
-            In automotive, trust can be strengthened. Visible VINs. Clear pricing. Verified sellers. 
+            In automotive, trust can be strengthened. Clear pricing. Verified sellers. No duplicates.
             One transparent transaction at a time.
           </p>
 
@@ -88,8 +88,8 @@ export function VisionPillarsSection() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
             <FeatureCard 
               icon={Shield}
-              title="VIN on every listing"
-              description="Full vehicle history. Complete transparency."
+              title="No duplicates"
+              description="One car, one listing. Clean results."
             />
             <FeatureCard 
               icon={CheckCircle2}

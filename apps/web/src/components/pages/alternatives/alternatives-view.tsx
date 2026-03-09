@@ -116,8 +116,8 @@ export function AlternativesView() {
                 <div className="flex gap-3 pt-3 border-t border-border/20">
                   <span className="flex-shrink-0 text-sm font-semibold text-primary">03</span>
                   <div>
-                    <p className="text-sm font-semibold text-foreground mb-1">VIN numbers visible</p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">Every listing should show the VIN so buyers can check the car's history before wasting time.</p>
+                    <p className="text-sm font-semibold text-foreground mb-1">No duplicate listings</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">One car, one listing. No spam or re-posts cluttering results.</p>
                   </div>
                 </div>
                 
@@ -176,9 +176,9 @@ export function AlternativesView() {
                 revvup="Quality wins (photos, details, transparency)"
               />
               <ComparisonItem 
-                title="VIN Number"
-                typical="Often hidden or optional"
-                revvup="Required and visible on every listing"
+                title="Duplicates"
+                typical="Same car reposted multiple times"
+                revvup="One car, one listing"
               />
               <ComparisonItem 
                 title="Banner Ads"
@@ -216,7 +216,7 @@ export function AlternativesView() {
                 <span className="font-semibold text-foreground">You reach real buyers.</span> No sponsored ads means your listing doesn't get buried. Quality matters more than payment.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                <span className="font-semibold text-foreground">Buyers trust VIN verification.</span> When buyers see the VIN upfront, they know you're transparent. That builds trust and speeds up sales.
+                <span className="font-semibold text-foreground">No duplicates.</span> One car, one listing. No spam or re-posts cluttering results. Buyers see real inventory.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 <span className="font-semibold text-foreground">Less time wasted.</span> Online test drive booking means fewer calls. Auto-expiry means no outdated listings. Faster experience for everyone.
@@ -247,8 +247,8 @@ export function AlternativesView() {
                 answer="We have dealer plans with unlimited listings for a flat monthly fee. No commission. No pay-per-listing. Check our dealer partner page."
               />
               <FAQGuideItem 
-                question="Do I need VIN verification documents?"
-                answer="Just the VIN number itself. We don't ask for documents. Buyers can check the VIN themselves using online services."
+                question="Do I need to provide my VIN?"
+                answer="Yes, we collect VIN to prevent abuse and keep the marketplace clean. Whether to display it publicly is your choice."
               />
             </div>
           </section>
@@ -273,7 +273,7 @@ export function AlternativesView() {
                 </div>
                 <div className="flex gap-3 pt-2 border-t border-border/20">
                   <span className="flex-shrink-0 text-sm font-semibold text-primary">03</span>
-                  <p className="text-sm text-muted-foreground leading-relaxed pt-0.5">Post your listing with photos and your car's VIN</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed pt-0.5">Post your listing with photos and details</p>
                 </div>
                 <div className="flex gap-3 pt-2 border-t border-border/20">
                   <span className="flex-shrink-0 text-sm font-semibold text-primary">04</span>

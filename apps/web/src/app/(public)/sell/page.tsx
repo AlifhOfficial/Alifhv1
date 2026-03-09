@@ -103,8 +103,8 @@ export default function SellPage() {
             />
             <FeatureCard 
               icon={Shield}
-              title="VIN verified"
-              description="Builds trust with serious buyers."
+              title="No duplicates"
+              description="One car, one listing. Clean results."
             />
             <FeatureCard 
               icon={Zap}

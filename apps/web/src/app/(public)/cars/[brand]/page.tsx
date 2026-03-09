@@ -22,7 +22,7 @@ type BlackListing = 'black';
 const BLACK_META = {
   name: 'Black Listings',
   displayName: 'Black Verified Cars',
-  description: 'Browse Black verified cars in UAE. Quality-first listings with complete transparency. Every detail verified, every VIN shown. Connect with trusted sellers offering excellence.',
+  description: 'Browse Black verified cars in UAE. Quality-first listings with complete transparency. Connect with trusted sellers offering excellence.',
   slug: 'black-listings',
 };
 
@@ -31,25 +31,25 @@ const SPECS_META: Record<SpecType, { name: string; displayName: string; descript
   gcc: {
     name: 'GCC Specs',
     displayName: 'GCC Specs',
-    description: 'Browse GCC specs cars for sale in UAE. Full warranty coverage, easy registration, and regional specifications. VIN verified listings from dealers and private sellers.',
+    description: 'Browse GCC specs cars for sale in UAE. Full warranty coverage, easy registration, and regional specifications. Quality listings from dealers and private sellers.',
     slug: 'gcc-specs',
   },
   american: {
     name: 'American Specs',
     displayName: 'American Specs',
-    description: 'Find American specs cars in UAE. Import vehicles with US specifications. Browse verified listings with VIN numbers. Connect with trusted sellers.',
+    description: 'Find American specs cars in UAE. Import vehicles with US specifications. Browse quality listings. Connect with trusted sellers.',
     slug: 'american-specs',
   },
   european: {
     name: 'European Specs',
     displayName: 'European Specs',
-    description: 'European specs cars for sale in UAE. Browse import vehicles with EU specifications. VIN verified listings from dealers and private sellers.',
+    description: 'European specs cars for sale in UAE. Browse import vehicles with EU specifications. Quality listings from dealers and private sellers.',
     slug: 'european-specs',
   },
   japanese: {
     name: 'Japanese Specs',
     displayName: 'Japanese Specs',
-    description: 'Japanese specs cars for sale in UAE. Import vehicles with JDM specifications. Browse verified listings with full VIN transparency.',
+    description: 'Japanese specs cars for sale in UAE. Import vehicles with JDM specifications. Browse quality listings with full transparency.',
     slug: 'japanese-specs',
   },
 };
@@ -59,58 +59,58 @@ const EMIRATE_META: Record<Emirates, { name: string; displayName: string; descri
   dubai: {
     name: 'Dubai',
     displayName: 'Dubai',
-    description: 'Find used cars for sale in Dubai with VIN verification. Browse new and second-hand cars from private sellers and dealers. Free listings, no commission.',
+    description: 'Find used cars for sale in Dubai. Browse new and second-hand cars from private sellers and dealers. Free listings, no commission.',
   },
   abu_dhabi: {
     name: 'Abu Dhabi',
     displayName: 'Abu Dhabi',
-    description: 'Browse used cars for sale in Abu Dhabi. VIN shown on every listing. Connect with private sellers and dealers. Book test drives online.',
+    description: 'Browse used cars for sale in Abu Dhabi. Connect with private sellers and dealers. Book test drives online.',
   },
   sharjah: {
     name: 'Sharjah',
     displayName: 'Sharjah',
-    description: 'Used cars for sale in Sharjah with verified VIN numbers. Browse second-hand cars from trusted sellers. No hidden fees.',
+    description: 'Used cars for sale in Sharjah. Browse second-hand cars from trusted sellers. No hidden fees.',
   },
   ajman: {
     name: 'Ajman',
     displayName: 'Ajman',
-    description: 'Find and buy used cars in Ajman. All listings show VIN. Free for private sellers. Book test drives instantly.',
+    description: 'Find and buy used cars in Ajman. Free for private sellers. Book test drives instantly.',
   },
   ras_al_khaimah: {
     name: 'Ras Al Khaimah',
     displayName: 'Ras Al Khaimah',
-    description: 'Used cars for sale in Ras Al Khaimah. VIN verified listings. Connect with sellers directly. Zero commission marketplace.',
+    description: 'Used cars for sale in Ras Al Khaimah. Quality listings. Connect with sellers directly. Zero commission marketplace.',
   },
   fujairah: {
     name: 'Fujairah',
     displayName: 'Fujairah',
-    description: 'Browse used cars in Fujairah with full VIN transparency. Buy from private sellers and dealers. Free test drive booking.',
+    description: 'Browse used cars in Fujairah. Buy from private sellers and dealers. Free test drive booking.',
   },
   umm_al_quwain: {
     name: 'Umm Al Quwain',
     displayName: 'Umm Al Quwain',
-    description: 'Find used cars for sale in Umm Al Quwain. All listings verified with VIN. No paid boosts or hidden fees.',
+    description: 'Find used cars for sale in Umm Al Quwain. No paid boosts or hidden fees.',
   },
 };
 
 // Brand descriptions
 const BRAND_DESCRIPTIONS: Partial<Record<CarMake, string>> = {
-  'Toyota': 'Browse used Toyota cars for sale in UAE. Find Land Cruiser, Camry, Corolla, Hilux and more. VIN verified listings from dealers and private sellers.',
-  'Nissan': 'Used Nissan cars for sale in Dubai and UAE. Patrol, X-Trail, Altima, Maxima. All listings show VIN. Book test drives online.',
-  'Lexus': 'Luxury Lexus cars for sale in UAE. LX, RX, ES, GX models. VIN shown on every listing. Connect with verified sellers.',
-  'Mercedes-Benz': 'Mercedes-Benz cars for sale in UAE. S-Class, E-Class, GLE, G-Class. Premium listings with VIN verification.',
-  'BMW': 'Used BMW cars in UAE. 3-Series, 5-Series, X5, X6, M models. VIN verified. Zero commission marketplace.',
-  'Audi': 'Audi cars for sale in Dubai. Q7, Q5, A6, A4, RS models. All listings verified with VIN.',
-  'Land Rover': 'Land Rover and Range Rover for sale in UAE. Defender, Sport, Evoque. VIN shown on every listing.',
+  'Toyota': 'Browse used Toyota cars for sale in UAE. Find Land Cruiser, Camry, Corolla, Hilux and more. Quality listings from dealers and private sellers.',
+  'Nissan': 'Used Nissan cars for sale in Dubai and UAE. Patrol, X-Trail, Altima, Maxima. Book test drives online.',
+  'Lexus': 'Luxury Lexus cars for sale in UAE. LX, RX, ES, GX models. Connect with verified sellers.',
+  'Mercedes-Benz': 'Mercedes-Benz cars for sale in UAE. S-Class, E-Class, GLE, G-Class. Premium listings.',
+  'BMW': 'Used BMW cars in UAE. 3-Series, 5-Series, X5, X6, M models. Zero commission marketplace.',
+  'Audi': 'Audi cars for sale in Dubai. Q7, Q5, A6, A4, RS models. Quality verified listings.',
+  'Land Rover': 'Land Rover and Range Rover for sale in UAE. Defender, Sport, Evoque. Quality listings.',
   'Porsche': 'Porsche cars for sale in Dubai. 911, Cayenne, Macan, Taycan. Verified sellers only.',
-  'Ford': 'Ford cars and trucks in UAE. F-150, Mustang, Explorer, Ranger. VIN required on all listings.',
+  'Ford': 'Ford cars and trucks in UAE. F-150, Mustang, Explorer, Ranger. Quality listings.',
   'Chevrolet': 'Chevrolet vehicles for sale in UAE. Tahoe, Silverado, Corvette. Connect with sellers directly.',
-  'GMC': 'GMC trucks and SUVs in UAE. Sierra, Yukon, Denali. No commission. VIN shown.',
+  'GMC': 'GMC trucks and SUVs in UAE. Sierra, Yukon, Denali. No commission.',
   'Jeep': 'Jeep vehicles for sale in Dubai. Wrangler, Grand Cherokee, Gladiator. Free test drive booking.',
-  'Honda': 'Used Honda cars in UAE. Accord, Civic, CR-V, HR-V. VIN verified listings.',
-  'Hyundai': 'Hyundai cars for sale in Dubai. Tucson, Santa Fe, Elantra, Creta. All VINs shown.',
+  'Honda': 'Used Honda cars in UAE. Accord, Civic, CR-V, HR-V. Quality listings.',
+  'Hyundai': 'Hyundai cars for sale in Dubai. Tucson, Santa Fe, Elantra, Creta. Quality listings.',
   'Kia': 'Kia vehicles in UAE. Sportage, Sorento, Telluride, Carnival. No listing fees.',
-  'Mazda': 'Mazda cars for sale in UAE. CX-5, CX-9, Mazda3, Mazda6. VIN required.',
+  'Mazda': 'Mazda cars for sale in UAE. CX-5, CX-9, Mazda3, Mazda6. Quality listings.',
   'Mitsubishi': 'Mitsubishi cars in Dubai. Pajero, Outlander, Montero, Eclipse Cross.',
   'Dodge': 'Dodge muscle cars and trucks. Challenger, Charger, Durango, Ram.',
   'Genesis': 'Genesis luxury cars in UAE. G80, G90, GV70, GV80. Premium marketplace.',
@@ -205,7 +205,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (specType) {
     const spec = SPECS_META[specType];
     return {
-      title: `${spec.displayName} Cars for Sale in UAE | VIN Verified | Revvup`,
+      title: `${spec.displayName} Cars for Sale in UAE | Quality Listings | Revvup`,
       description: spec.description,
       keywords: `${spec.name.toLowerCase()} cars uae, ${spec.name.toLowerCase()} dubai, ${spec.slug} cars for sale, buy ${spec.slug} uae, ${spec.name.toLowerCase()} vehicles dubai, regional specs cars uae`,
       openGraph: {
@@ -225,7 +225,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (location) {
     const emirate = EMIRATE_META[location];
     return {
-      title: `Used Cars for Sale in ${emirate.displayName} | VIN Shown | Revvup`,
+      title: `Used Cars for Sale in ${emirate.displayName} | No Ads | Revvup`,
       description: emirate.description,
       keywords: `used cars ${emirate.name.toLowerCase()}, cars for sale ${emirate.name.toLowerCase()}, buy car ${emirate.name.toLowerCase()}, second hand cars ${emirate.name.toLowerCase()}, ${emirate.name.toLowerCase()} used cars, sell car ${emirate.name.toLowerCase()}`,
       openGraph: {
@@ -247,7 +247,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const description = BRAND_DESCRIPTIONS[brand] || 
-    `Used ${brand} cars for sale in UAE. Browse verified listings with VIN shown. Connect with dealers and private sellers. Book test drives online.`;
+    `Used ${brand} cars for sale in UAE. Browse quality listings. Connect with dealers and private sellers. Book test drives online.`;
 
   return {
     title: `${brand} Cars for Sale in UAE | Used & New | Revvup`,

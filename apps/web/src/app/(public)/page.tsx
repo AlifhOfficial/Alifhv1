@@ -17,11 +17,11 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Buy and Sell Cars in Dubai | Free Forever | Revvup',
-  description: 'Buy and sell new and used cars in Dubai. Free for private sellers. No fees, no ads, no paid boosts. VIN verified cars. Book test drives online. A better alternative car marketplace.',
-  keywords: 'sell my car dubai, sell car uae, used cars for sale dubai, buy used car dubai, second hand cars dubai, free car listing uae, list car free dubai, car marketplace dubai, cars for sale uae, buying used car dubai, dubai used cars, VIN check uae, best place to sell car dubai, dubizzle alternative, dubicars alternative, yallmotors alternative, cars24 alternative, shoofi alternative, ayeshi alternative, car marketplace uae, automotive classifieds dubai',
+  description: 'Buy and sell new and used cars in Dubai. Free for private sellers. No fees, no ads, no paid boosts. Book test drives online. A better alternative car marketplace.',
+  keywords: 'sell my car dubai, sell car uae, used cars for sale dubai, buy used car dubai, second hand cars dubai, free car listing uae, list car free dubai, car marketplace dubai, cars for sale uae, buying used car dubai, dubai used cars, best place to sell car dubai, dubizzle alternative, dubicars alternative, yallmotors alternative, cars24 alternative, shoofi alternative, ayeshi alternative, car marketplace uae, automotive classifieds dubai',
   openGraph: {
     title: 'Buy and Sell Cars in Dubai | Free Forever | Revvup',
-    description: 'Buy and sell new and used cars in Dubai. Free for private sellers. No fees, no ads. VIN verified. Book test drives online.',
+    description: 'Buy and sell new and used cars in Dubai. Free for private sellers. No fees, no ads. Book test drives online.',
     type: 'website',
     url: 'https://revvup.ae',
   },

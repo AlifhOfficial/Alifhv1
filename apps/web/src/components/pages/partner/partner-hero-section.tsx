@@ -109,7 +109,7 @@ export function PartnerHeroSection() {
 
         {/* Description */}
         <p className="text-center text-sm text-muted-foreground max-w-md mx-auto mt-8">
-          No credit card required. List alongside any other platform.
+          No credit card to get started. List alongside any other platform.
         </p>
 
       </div>

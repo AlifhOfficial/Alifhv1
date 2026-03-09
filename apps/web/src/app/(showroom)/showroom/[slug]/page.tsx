@@ -115,7 +115,7 @@ export async function generateMetadata({ params }: ShowroomPageProps): Promise<M
   
   const description = showroom.seoDescription || 
     showroom.brandPhilosophy || 
-    `Explore ${brandName}'s premium car showroom in UAE. Browse verified inventory, read reviews, and connect with trusted dealers. VIN verified listings.`;
+    `Explore ${brandName}'s premium car showroom in UAE. Browse verified inventory, read reviews, and connect with trusted dealers.`;
   
   const image = showroom.seoImageUrl || showroom.heroImageUrl;
   const location = showroom.partner?.emirate || 'UAE';

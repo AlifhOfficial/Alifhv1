@@ -73,12 +73,12 @@ export function PricingFaqSection() {
     {
       id: 'trial',
       q: 'What is the Founding Dealer Program?',
-      a: 'Founding partners receive three months of full platform access with no credit card required. During this period, you test the platform with your inventory while we build traffic. Founding members secure a locked rate moving forward—your pricing is protected as we scale.',
+      a: 'A limited launch program for early partners. You get three months of full platform access with no credit card required, a direct line to our team, and the ability to shape the platform as we build it.',
     },
     {
       id: 'price-change',
       q: 'Will pricing change?',
-      a: 'Founding partners secure their rate—it\'s locked moving forward. As the platform scales and demand increases, pricing for new partners may adjust. Early partners are protected.',
+      a: 'Pricing is subject to change as the platform scales — based on market conditions, demand, and operational efficiency. However, we offer a limited number of rate-lock spots for founding members who commit early. Not all founding members are guaranteed a locked rate — only the first to commit.',
     },
     {
       id: 'payments',

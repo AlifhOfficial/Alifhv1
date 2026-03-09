@@ -57,7 +57,7 @@ export function PartnerClosingSection() {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             Join the Founding Program.
             <br />
-            <span className="text-muted-foreground">Limited access. Locked rates.</span>
+            <span className="text-muted-foreground">Limited spots. Shape the platform.</span>
           </h2>
         </div>
 

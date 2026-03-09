@@ -80,8 +80,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     : `${brandName} Cars for Sale in ${location} | Verified Dealer | Revvup`;
 
   const description = isBlackTier
-    ? `Browse quality-verified cars from ${brandName} in ${location}. Black tier verified dealer. VIN shown on every listing. Book test drives online.`
-    : `Browse used cars for sale from ${brandName} in ${location}. Verified dealer listings with VIN numbers. Connect directly with the dealership.`;
+    ? `Browse quality-verified cars from ${brandName} in ${location}. Black tier verified dealer. Book test drives online.`
+    : `Browse used cars for sale from ${brandName} in ${location}. Verified dealer listings. Connect directly with the dealership.`;
 
   const keywords = isBlackTier
     ? `${brandName.toLowerCase()} cars ${location.toLowerCase()}, ${brandName.toLowerCase()} uae, black verified dealer, quality cars ${brandName.toLowerCase()}, ${brandName.toLowerCase()} showroom ${location.toLowerCase()}`

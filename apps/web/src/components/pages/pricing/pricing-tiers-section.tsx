@@ -46,6 +46,11 @@ export function PricingTiersSection() {
     <section id="tiers" className="pt-12 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1600px] mx-auto">
 
+        {/* Founding Program Note */}
+        <p className="text-center text-sm text-muted-foreground mb-8 max-w-md mx-auto">
+          <span className="font-medium text-foreground">Founding Dealer Program</span> — Limited spots. Three months full access. Direct line to our team.
+        </p>
+
         {/* Two Cards */}
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           
@@ -98,9 +103,14 @@ export function PricingTiersSection() {
         </div>
 
         {/* Note */}
-        <p className="text-center text-sm text-muted-foreground mt-10 max-w-md mx-auto">
-          Three months full access. No credit card. Founding partners secure a locked rate.
-        </p>
+        <div className="text-center mt-10 max-w-lg mx-auto space-y-2">
+          <p className="text-sm text-foreground font-medium">
+            No credit card to get started. Full access from day one.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Pricing may change as we scale. Limited rate-lock spots available for early commitments.
+          </p>
+        </div>
         
         {/* Link to Partner Page */}
         <div className="text-center mt-6">

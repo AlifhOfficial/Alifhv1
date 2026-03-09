@@ -148,30 +148,40 @@ export function DealerPartnersView() {
             <h2 className="text-[15px] font-bold tracking-tight text-foreground mb-3">
               02.5 The Pricing
             </h2>
-            <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
-              <p className="text-sm text-foreground leading-relaxed">
-                Two plans. Same platform. Same features. Same rankings. No pay-to-rank.
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Built to reduce your cost structure over time, not increase it.
-              </p>
+            <div className="rounded-xl border border-border/40 bg-sidebar p-6 space-y-6">
               
-              <div className="grid sm:grid-cols-2 gap-4 pt-2">
-                <div className="p-4 rounded-lg bg-background/50 border border-border/20">
-                  <p className="text-xs uppercase tracking-widest text-primary/70 mb-2">Flow</p>
-                  <p className="text-xl font-bold text-foreground">AED 7,000<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
-                  <p className="text-sm text-muted-foreground mt-1">Unlimited listings, full analytics, all tools</p>
-                  <p className="text-xs text-primary mt-2">Most dealers start here.</p>
+              {/* Header with Founder Badge */}
+              <div className="text-center pb-4 border-b border-border/20">
+                <p className="text-sm text-foreground leading-relaxed">
+                  Two plans. Same platform. Same features. Same rankings. No pay-to-rank.
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Pricing may adjust as we scale. Limited rate-lock spots for early commitments.
+                </p>
+              </div>
+              
+              {/* Pricing Cards */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="p-5 rounded-lg bg-background/50 border border-primary/30">
+                  <p className="text-xs uppercase tracking-widest text-primary mb-3">Flow</p>
+                  <p className="text-2xl font-bold text-foreground mb-1">
+                    AED 7,000<span className="text-sm font-normal text-muted-foreground">/mo</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">Unlimited listings, full analytics, all tools</p>
+                  <p className="text-xs text-primary font-medium">→ Most dealers start here</p>
                 </div>
-                <div className="p-4 rounded-lg bg-background/50 border border-border/20">
-                  <p className="text-xs uppercase tracking-widest text-foreground/70 mb-2">Black</p>
-                  <p className="text-xl font-bold text-foreground">AED 21,000<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
-                  <p className="text-sm text-muted-foreground mt-1">Everything in Flow + custom branding</p>
-                  <p className="text-xs text-muted-foreground mt-2">For established showrooms.</p>
+                <div className="p-5 rounded-lg bg-background/50 border border-border/20">
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Black</p>
+                  <p className="text-2xl font-bold text-foreground mb-1">
+                    AED 21,000<span className="text-sm font-normal text-muted-foreground">/mo</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">Everything in Flow + custom branding</p>
+                  <p className="text-xs text-muted-foreground font-medium">→ For established showrooms</p>
                 </div>
               </div>
               
-              <div className="flex items-center justify-between pt-3 border-t border-border/20">
+              {/* Footer */}
+              <div className="flex items-center justify-between pt-4 border-t border-border/20">
                 <p className="text-sm text-muted-foreground">Per showroom. Zero commission. Forever.</p>
                 <Link
                   href="/pricing"
@@ -218,7 +228,7 @@ export function DealerPartnersView() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">Founding member rates</span> — locked in forever</p>
+                  <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">Rate-lock opportunity</span> — limited spots for early commitments</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
@@ -339,7 +349,7 @@ export function DealerPartnersView() {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                  <p className="text-sm text-foreground">VIN verification on every listing</p>
+                  <p className="text-sm text-foreground">No duplicate listings cluttering results</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
@@ -374,7 +384,7 @@ export function DealerPartnersView() {
             <div className="space-y-3">
               <FAQItem 
                 question="But you don't have enough buyers yet"
-                answer="You're right. We're in the adoption phase. That's exactly why you get founding member rates and better visibility now. The dealers who waited for other platforms to be 'big enough' paid full price. Plus, keep your current listings — just add us as a second channel. Test it risk-free."
+                answer="You're right. We're in the adoption phase. That's exactly why you get better visibility now. The dealers who waited for other platforms to be 'big enough' paid full price. Plus, keep your current listings — just add us as a second channel. Test it risk-free."
               />
               <FAQItem 
                 question="I'm locked into a contract with another platform"
@@ -454,7 +464,7 @@ export function DealerPartnersView() {
                     </div>
                     <div className="flex items-center gap-2 text-sm text-foreground">
                       <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-                      Founding member rate lock
+                      Rate-lock eligibility
                     </div>
                   </div>
                 </div>
@@ -490,7 +500,7 @@ export function DealerPartnersView() {
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <p className="text-sm text-muted-foreground mt-4">
-                  List alongside any other platform. Founding partners secure a locked rate.
+                  List alongside any other platform. Limited rate-lock spots available.
                 </p>
               </div>
             </div>

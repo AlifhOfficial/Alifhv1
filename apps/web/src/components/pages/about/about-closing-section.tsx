@@ -39,7 +39,7 @@ export function AboutClosingSection() {
             Browse Cars
           </Link>
           <Link
-            href="/partners"
+            href="/user-dashboard/requests"
             className="w-full sm:w-auto h-12 px-10 border border-border/40 bg-sidebar text-foreground text-base font-semibold rounded-lg hover:bg-sidebar/80 transition-colors flex items-center justify-center"
           >
             Partner With Us

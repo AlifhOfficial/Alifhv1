@@ -13,7 +13,7 @@ const COMPARISON_DATA = [
   { label: 'Listing cost', others: 'AED 500–1,000+', alifh: 'Free' },
   { label: 'Get seen', others: 'Pay to rank higher', alifh: 'Quality ranks higher' },
   { label: 'Ads', others: 'Everywhere', alifh: 'None' },
-  { label: 'Car history', others: 'VIN hidden', alifh: 'VIN shown' },
+  { label: 'Duplicates', others: 'Same car reposted', alifh: 'One listing per car' },
   { label: 'Test drives', others: 'Phone calls', alifh: 'Book online' },
   { label: 'Old listings', others: 'Stay forever', alifh: 'Auto-removed' },
 ];

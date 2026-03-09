@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const title = `${brand} ${model} for Sale in UAE | Used & New | Revvup`;
-  const description = `Find used ${brand} ${model} for sale in Dubai and UAE. VIN verified listings. Connect with private sellers and dealers. Book test drives online. Zero commission.`;
+  const description = `Find used ${brand} ${model} for sale in Dubai and UAE. Quality listings. Connect with private sellers and dealers. Book test drives online. Zero commission.`;
 
   return {
     title,

@@ -96,8 +96,8 @@ export function HeroSection() {
           </div>
           <div className="w-px h-10 bg-border/30" />
           <div className="text-center">
-            <div className="text-2xl font-semibold tracking-tight text-primary mb-1">VIN</div>
-            <div className="text-sm text-muted-foreground">Required on every car</div>
+            <div className="text-2xl font-semibold tracking-tight text-primary mb-1">1:1</div>
+            <div className="text-sm text-muted-foreground">One car, one listing</div>
           </div>
           <div className="w-px h-10 bg-border/30" />
           <div className="text-center">

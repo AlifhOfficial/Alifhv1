@@ -27,7 +27,7 @@ const alternativesFaqItems = [
 
 export const metadata: Metadata = {
   title: 'Best Free Car Marketplace in Dubai UAE — Complete Guide 2026 | Revvup',
-  description: 'Complete guide to selling and buying cars in Dubai without fees. Learn why thousands switched to free car listings, no paid boosts, VIN verification, and honest rankings. Compare all features and make the right choice for your car sale.',
+  description: 'Complete guide to selling and buying cars in Dubai without fees. Learn why thousands switched to free car listings, no paid boosts, and honest rankings. Compare all features and make the right choice for your car sale.',
   keywords: [
     // Competitor alternatives
     'dubizzle alternative',
@@ -59,7 +59,6 @@ export const metadata: Metadata = {
     'car listing guide dubai',
     'sell car without fees uae',
     'no boost fees car marketplace',
-    'vin verified cars dubai',
     'transparent car marketplace uae',
     // Location specific
     'sell car abu dhabi free',
@@ -68,7 +67,7 @@ export const metadata: Metadata = {
   ].join(', '),
   openGraph: {
     title: 'Best Free Car Marketplace in Dubai UAE — Complete Guide 2026',
-    description: 'Complete guide to selling cars in Dubai without fees. Free forever. No listing fees. No paid boosts. VIN verified cars.',
+    description: 'Complete guide to selling cars in Dubai without fees. Free forever. No listing fees. No paid boosts.',
     type: 'article',
     url: 'https://revvup.ae/alternatives',
   },

@@ -9,14 +9,13 @@ import { faqData } from '@/data/faq-data';
 
 export const metadata: Metadata = {
   title: 'FAQ | Revvup - Help Center',
-  description: 'Find answers to frequently asked questions about Revvup. Learn about free car listings, partner pricing, VIN verification, test drive booking, and more.',
+  description: 'Find answers to frequently asked questions about Revvup. Learn about free car listings, partner pricing, test drive booking, and more.',
   keywords: [
     'Revvup FAQ',
     'car marketplace help',
     'free car listing UAE',
     'sell car Dubai',
     'car dealer platform',
-    'VIN verification',
     'test drive booking',
   ],
   alternates: {
