@@ -6,7 +6,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ArrowRight, Car, ChevronUp } from 'lucide-react';
+import { ArrowRight, ChevronUp } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ListingsHeader } from '@/components/listings/listings-header';
@@ -322,7 +322,7 @@ function InventoryCarousel({
               key={i} 
               className="flex-shrink-0 w-[300px] sm:w-[340px] rounded-xl bg-sidebar border border-border/40 overflow-hidden" 
             >
-              <div className="aspect-[4/3] bg-muted/30 animate-pulse" />
+              <div className="aspect-[16/9] bg-muted/30 animate-pulse" />
               <div className="p-4 space-y-2">
                 <div className="h-4 w-3/4 bg-muted/30 rounded animate-pulse" />
                 <div className="h-3 w-1/2 bg-muted/30 rounded animate-pulse" />
@@ -337,16 +337,9 @@ function InventoryCarousel({
   if (error || listings.length === 0) {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className={cn(
-          'flex flex-col items-center justify-center py-16',
-          'border border-dashed border-border/40 rounded-xl',
-          'bg-sidebar'
-        )}>
-          <Car className="w-10 h-10 text-muted-foreground/30 mb-3" />
-          <p className="text-sm text-muted-foreground">
-            {error ? 'Unable to load inventory' : 'No vehicles currently available'}
-          </p>
-        </div>
+        <p className="text-sm text-muted-foreground">
+          {error ? 'Unable to load inventory' : 'No vehicles currently available'}
+        </p>
       </div>
     );
   }
@@ -416,7 +409,7 @@ function ShowroomCarCard({ listing, priority = false, index, theme }: ShowroomCa
       className="flex-shrink-0 w-[300px] sm:w-[340px] rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group overflow-hidden"
     >
       {/* Image Container */}
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[16/9] overflow-hidden">
         <Image
           src={displayImage}
           alt={`${listing.year} ${listing.make} ${listing.model}`}
@@ -465,7 +458,7 @@ function ShowroomInventorySkeleton() {
         <div className="flex gap-4 overflow-hidden">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="flex-shrink-0 w-[300px] sm:w-[340px] rounded-xl bg-sidebar border border-border/40 overflow-hidden">
-              <Skeleton className="aspect-[4/3]" />
+              <Skeleton className="aspect-[16/9]" />
               <div className="p-4 space-y-2">
                 <Skeleton className="h-4 w-3/4" />
                 <Skeleton className="h-3 w-1/2" />

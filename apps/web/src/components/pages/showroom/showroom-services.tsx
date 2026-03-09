@@ -9,6 +9,13 @@ import Image from 'next/image';
 
 import { getPublicUrl } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -70,51 +77,89 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
           >
             {/* VIP Card - Priority Position */}
             {vipPerks && vipPerks.length > 0 && (
-              <div 
-                className="flex-shrink-0 w-[280px] sm:w-[320px] min-h-[200px] p-6 rounded-xl bg-blue-600 text-white border border-blue-700/40 hover:border-blue-400/50 transition-all duration-300 flex flex-col"
-              >
-                {/* VIP Label */}
-                <span className="text-xl font-semibold text-white/30 mb-3">
-                  VIP
-                </span>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button 
+                    className="flex-shrink-0 w-[280px] sm:w-[320px] h-[200px] p-6 rounded-xl bg-blue-600 text-white border border-blue-700/40 hover:border-blue-400/50 transition-all duration-300 flex flex-col text-left cursor-pointer"
+                  >
+                    {/* VIP Label */}
+                    <span className="text-xl font-semibold text-white mb-3">
+                      VIP
+                    </span>
 
-                {/* Perks List */}
-                <div className="flex-1 space-y-2">
-                  {vipPerks.slice(0, 4).map((perk, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-white/40 flex-shrink-0" />
-                      <span className="text-sm text-white/80">{perk}</span>
+                    {/* Perks List */}
+                    <div className="flex-1 space-y-2 overflow-hidden">
+                      {vipPerks.slice(0, 4).map((perk, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-white/40 flex-shrink-0" />
+                          <span className="text-sm text-white/80 truncate">{perk}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                  {vipPerks.length > 4 && (
-                    <span className="text-xs text-white/50">+{vipPerks.length - 4} more</span>
-                  )}
-                </div>
-              </div>
+                    
+                    {vipPerks.length > 4 && (
+                      <span className="text-xs text-white/60 mt-2">
+                        +{vipPerks.length - 4} more perks
+                      </span>
+                    )}
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <span className="text-blue-600">VIP</span> Perks
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+                    {vipPerks.map((perk, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0" />
+                        <span className="text-sm text-foreground">{perk}</span>
+                      </div>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
             )}
 
             {services.map((service, index) => (
-              <div 
-                key={service.id} 
-                className="flex-shrink-0 w-[280px] sm:w-[320px] min-h-[200px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col"
-              >
-                {/* Number */}
-                <span className="text-xl font-semibold text-muted-foreground/30 mb-3">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
+              <Dialog key={service.id}>
+                <DialogTrigger asChild>
+                  <button 
+                    className="flex-shrink-0 w-[280px] sm:w-[320px] h-[200px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col text-left cursor-pointer"
+                  >
+                    {/* Number */}
+                    <span className="text-xl font-semibold text-muted-foreground/30 mb-3">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
 
-                {/* Content */}
-                <div className="flex-1">
-                  <h3 className="text-base font-semibold text-foreground leading-snug mb-2">
-                    {service.title}
-                  </h3>
+                    {/* Content */}
+                    <div className="flex-1 overflow-hidden">
+                      <h3 className="text-base font-semibold text-foreground leading-snug mb-2">
+                        {service.title}
+                      </h3>
+                      {service.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-3">
+                          {service.description}
+                        </p>
+                      )}
+                    </div>
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-3">
+                      <span className="text-muted-foreground/30">{String(index + 1).padStart(2, '0')}</span>
+                      {service.title}
+                    </DialogTitle>
+                  </DialogHeader>
                   {service.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-3">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       {service.description}
                     </p>
                   )}
-                </div>
-              </div>
+                </DialogContent>
+              </Dialog>
             ))}
           </div>
         </div>

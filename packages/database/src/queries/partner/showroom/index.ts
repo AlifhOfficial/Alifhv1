@@ -13,6 +13,7 @@ export {
   getShowroomBySlug,
   getPublishedShowroomBySlug,
   getPublishedShowroomByPartnerId,
+  getShowroomPreviewByPartnerId,
   hasPublishedShowroom,
   createShowroom,
   updateShowroom,

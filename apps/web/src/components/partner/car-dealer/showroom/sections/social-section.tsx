@@ -7,7 +7,6 @@
 
 import React from 'react';
 import { Globe } from 'lucide-react';
-import { cn } from '@/utils';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import { EditableField } from '../components';
 
@@ -21,13 +20,11 @@ interface SocialSectionProps {
     onSave: () => void;
     onCancel: () => void;
   };
-  updateShowroom: (data: Partial<PartnerShowroom>) => Promise<void>;
 }
 
 export function SocialSection({
   form,
   getEditableFieldProps,
-  updateShowroom,
 }: SocialSectionProps) {
   return (
     <div className="space-y-6">
@@ -39,38 +36,12 @@ export function SocialSection({
             {...getEditableFieldProps('instagramHandle')}
             label="Instagram"
             value={form.instagramHandle || null}
-            placeholder="@yourbrand"
+            placeholder="https://instagram.com/yourbrand"
+            type="url"
           />
-          
-          {/* Instagram Feed Toggle */}
-          {form.instagramHandle && (
-            <div className="py-3 border-b border-border/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-muted-foreground/70">Show Instagram Feed</p>
-                  <p className="text-xs text-muted-foreground/50 mt-0.5">Display latest posts on showroom</p>
-                </div>
-                <button
-                  onClick={() => updateShowroom({ instagramFeedEnabled: !form.instagramFeedEnabled })}
-                  className={cn(
-                    "relative w-11 h-6 rounded-full transition-colors",
-                    form.instagramFeedEnabled ? 'bg-primary' : 'bg-muted'
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform",
-                      form.instagramFeedEnabled && 'translate-x-5'
-                    )}
-                  />
-                </button>
-              </div>
-            </div>
-          )}
-          
           <EditableField
             {...getEditableFieldProps('youtubeChannelUrl')}
-            label="YouTube Channel"
+            label="YouTube"
             value={form.youtubeChannelUrl || null}
             placeholder="https://youtube.com/@channel"
             type="url"
@@ -79,13 +50,14 @@ export function SocialSection({
             {...getEditableFieldProps('tiktokHandle')}
             label="TikTok"
             value={form.tiktokHandle || null}
-            placeholder="@yourbrand"
+            placeholder="https://tiktok.com/@yourbrand"
+            type="url"
           />
           <EditableField
             {...getEditableFieldProps('linkedinUrl')}
             label="LinkedIn"
             value={form.linkedinUrl || null}
-            placeholder="https://linkedin.com/company/..."
+            placeholder="https://linkedin.com/company/yourbrand"
             type="url"
           />
         </div>

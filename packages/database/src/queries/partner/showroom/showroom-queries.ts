@@ -453,6 +453,71 @@ export async function getPublishedShowroomByPartnerId(partnerId: string): Promis
 }
 
 /**
+ * Get showroom preview by partner ID (for owner preview before publishing)
+ * Returns showroom in public format but works for unpublished showrooms
+ * Used by authenticated owners to preview their showroom
+ * 
+ * @param partnerId - The partner's ID
+ * @returns Public showroom data with partner info or null
+ */
+export async function getShowroomPreviewByPartnerId(partnerId: string): Promise<PartnerShowroomPublic | null> {
+  // Single optimized query with partner join - NO isPublished check
+  const result = await db
+    .select({
+      showroom: partnerShowroom,
+      partnerId: partner.id,
+      partnerBrandName: partner.brandName,
+      partnerLogo: partner.logo,
+      partnerHeroImage: partner.heroImage,
+      partnerIsVerified: partner.isVerified,
+      partnerTier: partner.tier,
+      partnerGoogleRating: partner.googleRating,
+      partnerGoogleReviewCount: partner.googleReviewCount,
+      partnerCity: partner.city,
+      partnerEmirate: partner.emirate,
+      partnerPhone: partner.phone,
+      partnerWebsite: partner.website,
+      partnerLocationLat: partner.locationLat,
+      partnerLocationLng: partner.locationLng,
+      partnerAdminName: partner.adminName,
+      partnerAdminPhone: partner.adminPhone,
+      partnerTollNumber: partner.tollNumber,
+    })
+    .from(partnerShowroom)
+    .innerJoin(partner, eq(partnerShowroom.partnerId, partner.id))
+    .where(and(
+      eq(partnerShowroom.partnerId, partnerId),
+      eq(partner.tier, 'black'),
+    ))
+    .limit(1);
+  
+  if (!result.length) return null;
+  
+  const row = result[0];
+  const showroom = mapToShowroomPublic(row.showroom, {
+    id: row.partnerId,
+    brandName: row.partnerBrandName,
+    logo: row.partnerLogo,
+    heroImage: row.partnerHeroImage,
+    isVerified: row.partnerIsVerified,
+    tier: row.partnerTier,
+    googleRating: row.partnerGoogleRating,
+    googleReviewCount: row.partnerGoogleReviewCount || 0,
+    city: row.partnerCity,
+    emirate: row.partnerEmirate,
+    phone: row.partnerPhone,
+    website: row.partnerWebsite,
+    locationLat: row.partnerLocationLat,
+    locationLng: row.partnerLocationLng,
+    adminName: row.partnerAdminName,
+    adminPhone: row.partnerAdminPhone,
+    tollNumber: row.partnerTollNumber,
+  });
+  
+  return showroom;
+}
+
+/**
  * Get list of published showrooms (for directory page)
  * Paginated with basic partner info
  * 

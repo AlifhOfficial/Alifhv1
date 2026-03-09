@@ -9,6 +9,13 @@ import Image from 'next/image';
 
 import { getPublicUrl } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -68,43 +75,77 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {members.map((member) => (
-              <div 
-                key={member.id} 
-                className="flex-shrink-0 w-[260px] sm:w-[280px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group"
-              >
-                {/* Avatar */}
-                <div className="relative w-14 h-14 rounded-full overflow-hidden bg-muted mb-4 ring-2 ring-border/40 group-hover:ring-primary/30 transition-colors">
-                  {member.image ? (
-                    <Image
-                      src={getPublicUrl(member.image) || member.image}
-                      alt={member.name}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-lg font-semibold text-muted-foreground">
-                        {member.name.charAt(0)}
-                      </span>
+              <Dialog key={member.id}>
+                <DialogTrigger asChild>
+                  <button 
+                    className="flex-shrink-0 w-[260px] sm:w-[280px] h-[200px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group text-left cursor-pointer"
+                  >
+                    {/* Avatar */}
+                    <div className="relative w-14 h-14 rounded-full overflow-hidden bg-muted mb-4 ring-2 ring-border/40 group-hover:ring-primary/30 transition-colors">
+                      {member.image ? (
+                        <Image
+                          src={getPublicUrl(member.image) || member.image}
+                          alt={member.name}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-lg font-semibold text-muted-foreground">
+                            {member.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
 
-                {/* Content */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground">
-                    {member.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    {member.role}
-                  </p>
+                    {/* Content */}
+                    <div className="overflow-hidden">
+                      <h3 className="text-base font-semibold text-foreground">
+                        {member.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        {member.role}
+                      </p>
+                      {member.bio && (
+                        <p className="text-sm text-muted-foreground/70 mt-2 line-clamp-2">
+                          {member.bio}
+                        </p>
+                      )}
+                    </div>
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <div className="flex items-center gap-4">
+                      <div className="relative w-16 h-16 rounded-full overflow-hidden bg-muted ring-2 ring-border/40 flex-shrink-0">
+                        {member.image ? (
+                          <Image
+                            src={getPublicUrl(member.image) || member.image}
+                            alt={member.name}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-xl font-semibold text-muted-foreground">
+                              {member.name.charAt(0)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <DialogTitle>{member.name}</DialogTitle>
+                        <p className="text-sm text-muted-foreground mt-0.5">{member.role}</p>
+                      </div>
+                    </div>
+                  </DialogHeader>
                   {member.bio && (
-                    <p className="text-sm text-muted-foreground/70 mt-2 line-clamp-3">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       {member.bio}
                     </p>
                   )}
-                </div>
-              </div>
+                </DialogContent>
+              </Dialog>
             ))}
           </div>
         </div>

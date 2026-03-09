@@ -19,8 +19,8 @@ import { compressAndUploadShowroomImage, uploadShowroomVideo } from '@/lib/stora
 import {
   ArrowLeft,
   Loader2,
-  Eye,
-  EyeOff,
+  Globe,
+  Archive,
   ExternalLink,
 } from 'lucide-react';
 
@@ -322,6 +322,15 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
           </div>
           
           <div className="flex items-center gap-2">
+            {/* Preview Button - always visible */}
+            <Link
+              href="/partner-dashboard/showroom/preview"
+              target="_blank"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors"
+            >
+              Preview
+            </Link>
+            
             {showroom.isPublished ? (
               <>
                 <Link
@@ -330,14 +339,14 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
                   className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  View
+                  View Live
                 </Link>
                 <button
                   onClick={handleUnpublish}
                   disabled={isPublishing}
                   className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors disabled:opacity-50"
                 >
-                  {isPublishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <EyeOff className="w-4 h-4" />}
+                  {isPublishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Archive className="w-4 h-4" />}
                   Unpublish
                 </button>
               </>
@@ -347,7 +356,7 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
                 disabled={isPublishing}
                 className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
               >
-                {isPublishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
+                {isPublishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Globe className="w-4 h-4" />}
                 Publish
               </button>
             )}
