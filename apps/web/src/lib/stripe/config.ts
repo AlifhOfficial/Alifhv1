@@ -151,12 +151,15 @@ export function getStripePlans() {
 /**
  * Create a Stripe customer for a verified user
  * Called after email verification (not on signup to prevent orphaned customers)
+ * 
+ * @param user - User info
+ * @param businessName - Optional company legal name for B2B invoicing (used on invoices)
  */
 export async function createStripeCustomerForUser(user: {
   id: string;
   email: string;
   name?: string | null;
-}): Promise<string | null> {
+}, businessName?: string): Promise<string | null> {
   if (!isStripeConfigured()) {
     console.log('[Stripe] Not configured, skipping customer creation');
     return null;
@@ -177,11 +180,13 @@ export async function createStripeCustomerForUser(user: {
     }
 
     // Create new customer
+    // Use businessName for B2B invoicing (company legal name), fallback to user name
     const customer = await stripe.customers.create({
       email: user.email,
-      name: user.name || undefined,
+      name: businessName || user.name || undefined,
       metadata: {
         userId: user.id,
+        ...(businessName ? { businessName } : {}),
       },
     });
 

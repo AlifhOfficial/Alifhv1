@@ -51,33 +51,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get user's Stripe customer ID (create if needed)
-    let user = await getUserById(sessionUser.id);
-    let stripeCustomerId = user?.stripeCustomerId;
-    
-    // Auto-create Stripe customer if doesn't exist
-    if (!stripeCustomerId) {
-      stripeCustomerId = await createStripeCustomerForUser({
-        id: sessionUser.id,
-        email: sessionUser.email,
-        name: sessionUser.name || undefined,
-      });
-      
-      if (stripeCustomerId) {
-        await updateUserStripeCustomerId(sessionUser.id, stripeCustomerId);
-      } else {
-        return NextResponse.json(
-          { error: 'Failed to create billing account. Please contact support.' },
-          { status: 500 }
-        );
-      }
-    }
-
-    // Get partner data for metadata and trial calculation
+    // Get partner data for metadata, trial calculation, and billing name
     const [partnerData] = await db
       .select({
         id: partnerTable.id,
         brandName: partnerTable.brandName,
+        companyNameLegal: partnerTable.companyNameLegal,
         createdAt: partnerTable.createdAt,
         tier: partnerTable.tier,
         trialEndDate: partnerTable.trialEndDate,
@@ -87,7 +66,50 @@ export async function POST(req: NextRequest) {
       .where(eq(partnerTable.id, partnerMembership.partnerId))
       .limit(1);
 
+    // Get user's Stripe customer ID (create if needed)
+    let user = await getUserById(sessionUser.id);
+    let stripeCustomerId = user?.stripeCustomerId;
+    
     const stripe = getStripeClient();
+    
+    // Get company legal name for B2B invoicing (appears on invoices)
+    const billingName = partnerData?.companyNameLegal || partnerData?.brandName || sessionUser.name;
+    
+    if (!stripeCustomerId) {
+      // Create new Stripe customer with company legal name
+      stripeCustomerId = await createStripeCustomerForUser(
+        {
+          id: sessionUser.id,
+          email: sessionUser.email,
+          name: sessionUser.name || undefined,
+        },
+        billingName // Bill to company legal name, not personal name
+      );
+      
+      if (stripeCustomerId) {
+        await updateUserStripeCustomerId(sessionUser.id, stripeCustomerId);
+      } else {
+        return NextResponse.json(
+          { error: 'Failed to create billing account. Please contact support.' },
+          { status: 500 }
+        );
+      }
+    } else if (billingName) {
+      // Customer exists but may have been created during registration with user's personal name
+      // Update to company legal name for proper B2B invoicing
+      try {
+        await stripe.customers.update(stripeCustomerId, {
+          name: billingName,
+          metadata: {
+            partnerId: partnerMembership.partnerId,
+            companyNameLegal: partnerData?.companyNameLegal || '',
+          },
+        });
+      } catch (e) {
+        console.error('[Checkout] Failed to update Stripe customer name:', e);
+        // Continue anyway - not critical
+      }
+    }
 
     // Get price ID from env
     const priceId = plan === 'black' 

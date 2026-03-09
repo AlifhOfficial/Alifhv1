@@ -11,10 +11,11 @@ The billing system is designed to be **simple and Stripe-centric**. Stripe is th
 | Field | Type | Description |
 |-------|------|-------------|
 | `tier` | `'flow' \| 'black'` | Current subscription plan |
-| `stripeCustomerId` | `string` | Stripe customer (bills to `companyNameLegal`) |
+| `stripeCustomerId` | `string` | Stripe customer ID (linked to user who registered) |
 | `billingActive` | `boolean` | Is billing current? Controls staff access |
 | `trialEndDate` | `timestamp` | Admin-set trial expiry date |
 | `trialMonths` | `integer` | Number of trial months (for display) |
+| `companyNameLegal` | `string` | Legal company name (used on invoices) |
 
 ### Plans
 
@@ -22,6 +23,64 @@ The billing system is designed to be **simple and Stripe-centric**. Stripe is th
 |------|-------|----------------|-------------|
 | **Flow** | 7,000 AED/month | 1 | 5 |
 | **Black** | 21,000 AED/month | 5 | Unlimited |
+
+---
+
+## Stripe Customer Lifecycle
+
+### 1. User Registration (Before Partner)
+
+```
+User signs up with email
+            ↓
+Stripe customer created:
+├── Name: User's personal name
+├── Email: User's email
+└── Metadata: { userId }
+            ↓
+stripeCustomerId saved to user table
+```
+
+At this point, the user is just a regular user - not a partner yet.
+
+### 2. Partner Application & Approval
+
+```
+User applies to become partner
+├── Enters companyNameLegal
+├── Enters brandName
+└── Other business details
+            ↓
+Admin reviews & approves
+            ↓
+Partner created:
+├── tier = 'flow'
+├── billingActive = true (during trial)
+├── trialEndDate = now + X months
+└── companyNameLegal = "ABC Trading LLC"
+```
+
+### 3. First Subscription Checkout (Name Update)
+
+```
+Partner owner clicks "Subscribe"
+            ↓
+Before creating checkout:
+├── Stripe customer name UPDATED to companyNameLegal
+└── Metadata updated with partnerId
+            ↓
+Stripe Checkout opens
+├── Customer shows: "ABC Trading LLC"
+├── Plan: Flow or Black
+└── Billing address collected
+            ↓
+Invoices will now show:
+├── Bill To: ABC Trading LLC
+├── Email: owner@example.com
+└── Address: (collected in checkout)
+```
+
+**This is the key moment** - the Stripe customer (originally created with personal name) gets updated to the company's legal name when they subscribe.
 
 ---
 
@@ -52,13 +111,18 @@ Partner created:
 ### 3. Adding Payment Method
 
 ```
-Partner clicks "Add Payment Method"
+Partner clicks "Subscribe to Flow" or "Subscribe to Black"
+            ↓
+API: /api/partner/billing/checkout
+├── Fetches partner.companyNameLegal
+├── Updates Stripe customer name to companyNameLegal
+└── Creates checkout session
             ↓
 Redirects to Stripe Checkout
-├── Customer: partner.stripeCustomerId
-├── Name: partner.companyNameLegal
+├── Customer: partner owner's stripeCustomerId
+├── Name: partner.companyNameLegal (ABC Trading LLC)
 ├── Plan: flow or black
-└── Trial end: honors remaining trial
+└── Trial end: honors remaining trial if same plan
             ↓
 User enters card → Subscription created
             ↓
@@ -71,7 +135,8 @@ Updates partner:
 
 ### 4. Subscription Active
 
-- Monthly billing to company name
+- Monthly billing to **company legal name**
+- Invoices show: "Bill To: ABC Trading LLC"
 - Invoices available in Stripe Portal
 - Full platform access
 
@@ -135,7 +200,7 @@ if (pathname.startsWith("/partner-dashboard")) {
 | Route | Method | Purpose |
 |-------|--------|---------|
 | `/api/partner/billing/subscription` | GET | Get current plan status (auto-heals `billingActive`) |
-| `/api/partner/billing/checkout` | POST | Create Stripe checkout session |
+| `/api/partner/billing/checkout` | POST | Create Stripe checkout session (updates customer name) |
 | `/api/partner/billing/portal` | POST | Open Stripe billing portal |
 | `/api/partner/billing/invoices` | GET | List invoices from Stripe |
 | `/api/webhook/stripe` | POST | Handle Stripe webhook events |
@@ -185,8 +250,9 @@ This ensures data consistency even if:
    - Reduces sync complexity
 
 2. **Bill to Company, Not User**
-   - `stripeCustomerId` on `partner` table (not `user`)
-   - Customer name = `companyNameLegal`
+   - Stripe customer created during user registration (with personal name)
+   - Customer name **updated to `companyNameLegal`** when partner subscribes
+   - Invoices show company name, not personal name
 
 3. **Admin-Controlled Trials**
    - No automatic trial periods
@@ -204,13 +270,32 @@ This ensures data consistency even if:
 
 ---
 
+## Invoice Details
+
+When a partner subscribes, their Stripe invoices will show:
+
+```
+INVOICE
+
+Bill To:
+  ABC Trading LLC          ← companyNameLegal
+  owner@example.com        ← user email
+  [Billing address]        ← collected during checkout
+
+Plan: Revvup Flow
+Amount: AED 7,000.00
+```
+
+---
+
 ## Files Changed (Billing Simplification)
 
 | File | Change |
 |------|--------|
 | `packages/database/src/schema/partner.ts` | Added `stripeCustomerId`, `billingActive`; simplified `tier` enum |
 | `packages/database/src/schema/subscription.ts` | **Deleted** (Stripe is source of truth) |
-| `apps/web/src/lib/stripe/config.ts` | Removed `freeMonths` (admin-controlled) |
+| `apps/web/src/lib/stripe/config.ts` | Added `businessName` param to `createStripeCustomerForUser` |
+| `apps/web/src/app/api/partner/billing/checkout/route.ts` | Updates Stripe customer name to `companyNameLegal` before checkout |
 | `apps/web/src/app/api/webhook/stripe/route.ts` | Added staff disabling, `billingActive` updates |
 | `apps/web/src/proxy.ts` | Added billing check for staff-dashboard |
 | `apps/web/src/lib/auth/routing.ts` | Added `hasActiveBillingAsStaff()` helper |
