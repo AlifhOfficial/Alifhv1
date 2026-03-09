@@ -147,10 +147,9 @@ const ShowroomUpdateSchema = z.object({
   appointmentCtaText: z.string().max(50).optional(),
   
   // Social
-  instagramHandle: z.string().max(30).nullable().optional(),
-  instagramFeedEnabled: z.boolean().optional(),
+  instagramHandle: z.string().url().nullable().optional(),
   youtubeChannelUrl: z.string().url().nullable().optional(),
-  tiktokHandle: z.string().max(30).nullable().optional(),
+  tiktokHandle: z.string().url().nullable().optional(),
   linkedinUrl: z.string().url().nullable().optional(),
   pressFeatures: z.array(PressFeatureSchema).max(10).optional(),
   

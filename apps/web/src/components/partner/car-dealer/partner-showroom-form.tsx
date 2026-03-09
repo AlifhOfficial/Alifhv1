@@ -95,7 +95,7 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
     }
     
     // For URL fields, ensure they have https:// prefix if they have a value
-    const urlFields: (keyof ShowroomUpdateData)[] = ['youtubeChannelUrl', 'linkedinUrl', 'heroCtaLink', 'heroCtaSecondaryLink', 'showroomMapEmbedUrl'];
+    const urlFields: (keyof ShowroomUpdateData)[] = ['instagramHandle', 'youtubeChannelUrl', 'tiktokHandle', 'linkedinUrl', 'heroCtaLink', 'heroCtaSecondaryLink', 'showroomMapEmbedUrl'];
     if (urlFields.includes(field) && value && typeof value === 'string') {
       // Add https:// if missing protocol
       if (!value.startsWith('http://') && !value.startsWith('https://')) {
