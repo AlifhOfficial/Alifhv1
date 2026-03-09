@@ -481,7 +481,7 @@ function formatListingTitle(
 }
 
 /**
- * Check if a user can book (simple restriction check)
+ * Check if a user can book (no limits - always allowed)
  */
 export async function checkBookingRestrictions(userId: string): Promise<{
   canBook: boolean;
@@ -489,53 +489,6 @@ export async function checkBookingRestrictions(userId: string): Promise<{
   activeCount: number;
   cancellationCount: number;
 }> {
-  const MAX_ACTIVE = 3;
-  const MAX_CANCELLATIONS_PER_MONTH = 2;
-  
-  const now = new Date();
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-  // Count active bookings
-  const [activeResult] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(booking)
-    .where(and(
-      eq(booking.userId, userId),
-      inArray(booking.status, ACTIVE_STATUSES)
-    ));
-  
-  const activeCount = activeResult?.count ?? 0;
-
-  // Count recent cancellations by user
-  const [cancelResult] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(booking)
-    .where(and(
-      eq(booking.userId, userId),
-      eq(booking.status, 'cancelled'),
-      eq(booking.cancelledBy, 'user'),
-      gte(booking.cancelledAt, thirtyDaysAgo)
-    ));
-  
-  const cancellationCount = cancelResult?.count ?? 0;
-
-  if (activeCount >= MAX_ACTIVE) {
-    return {
-      canBook: false,
-      reason: `You have ${activeCount} active bookings. Maximum ${MAX_ACTIVE} allowed.`,
-      activeCount,
-      cancellationCount,
-    };
-  }
-
-  if (cancellationCount >= MAX_CANCELLATIONS_PER_MONTH) {
-    return {
-      canBook: false,
-      reason: `You have cancelled ${cancellationCount} bookings this month. Please wait before booking again.`,
-      activeCount,
-      cancellationCount,
-    };
-  }
-
-  return { canBook: true, activeCount, cancellationCount };
+  // No limits - always allow booking
+  return { canBook: true, activeCount: 0, cancellationCount: 0 };
 }

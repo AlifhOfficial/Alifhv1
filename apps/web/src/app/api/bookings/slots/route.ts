@@ -64,22 +64,34 @@ export async function GET(req: NextRequest) {
     const settings = config.settings;
     const availability = config.availability || [];
 
-    // Check if partner accepts bookings
-    if (settings && !settings.bookingEnabled) {
+    // Check if staff/partner has set up booking settings
+    // If no settings exist for this staff, they're not accepting bookings
+    if (!settings) {
       return cachedJson({
         available: false,
-        reason: 'This dealer is not accepting bookings at this time',
+        reason: 'This seller is not accepting bookings at this time',
         dates: [],
         slots: [],
       });
     }
 
-    // Auto-initialize default availability if partner has none
+    // Check if partner accepts bookings
+    if (!settings.bookingEnabled) {
+      return cachedJson({
+        available: false,
+        reason: 'This seller is not accepting bookings at this time',
+        dates: [],
+        slots: [],
+      });
+    }
+
+    // Check if staff has set up availability
     if (availability.length === 0) {
-      await managePartnerSettings({
-        partnerId: listing.partnerId,
-        staffUserId: listing.userId,
-        action: 'initDefaults',
+      return cachedJson({
+        available: false,
+        reason: 'This seller has not set up their availability yet',
+        dates: [],
+        slots: [],
       });
     }
 
@@ -91,7 +103,7 @@ export async function GET(req: NextRequest) {
         available: true,
         partnerId: listing.partnerId,
         dates,
-        settings: settings ? {
+        settings: {
           minLeadTimeHours: settings.minLeadTimeHours,
           maxLeadTimeDays: settings.maxLeadTimeDays,
           defaultSlotDuration: settings.defaultSlotDuration,
@@ -105,7 +117,7 @@ export async function GET(req: NextRequest) {
           allowReschedule: settings.allowReschedule,
           maxRescheduleCount: settings.maxRescheduleCount,
           rescheduleDeadlineHours: settings.rescheduleDeadlineHours,
-        } : null,
+        },
       });
     }
 

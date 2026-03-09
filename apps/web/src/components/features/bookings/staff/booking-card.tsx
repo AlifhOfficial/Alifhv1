@@ -266,13 +266,12 @@ export function BookingCard({
           )}
 
           {/* Cancellation Reason */}
-          {booking.cancellationReason && (
+          {(booking.cancellationReason || booking.cancellationNotes) && (
             <div className="p-4 rounded-lg bg-destructive/5">
               <p className="text-xs font-medium text-destructive mb-1">Cancellation Reason</p>
-              <p className="text-sm text-foreground capitalize">{booking.cancellationReason.replace(/_/g, ' ')}</p>
-              {booking.cancellationNotes && (
-                <p className="text-xs text-muted-foreground mt-2">{booking.cancellationNotes}</p>
-              )}
+              <p className="text-sm text-foreground">
+                {booking.cancellationNotes || booking.cancellationReason?.replace(/_/g, ' ')}
+              </p>
             </div>
           )}
 

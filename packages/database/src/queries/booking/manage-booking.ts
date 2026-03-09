@@ -21,7 +21,7 @@ import {
 import { carListing } from '../../schema/listing';
 import { user } from '../../schema/auth';
 import { userProfile } from '../../schema/profile';
-import { checkBookingRestrictions, ACTIVE_STATUSES, type BookingStatus } from './get-bookings';
+import { ACTIVE_STATUSES, type BookingStatus } from './get-bookings';
 import { getAvailableSlots, getListingBookingContext } from './manage-partner-settings';
 
 // ============================================================================
@@ -194,12 +194,6 @@ async function createBooking(
     return { success: false, error: 'Missing required fields: listingId, scheduledDate, scheduledStartTime, scheduledEndTime' };
   }
 
-  // Check user restrictions
-  const restrictions = await checkBookingRestrictions(userId);
-  if (!restrictions.canBook) {
-    return { success: false, error: restrictions.reason };
-  }
-
   // Get listing and partner
   const listing = await getListingBookingContext(listingId);
   if (!listing) {
@@ -281,9 +275,8 @@ async function createBooking(
     currentBookings: 1,
   });
 
-  // Get partner/staff settings for auto-confirm
-  // Prefer staff-specific settings, fall back to partner defaults
-  let settings = staffUserId
+  // Get staff settings for auto-confirm - no fallback
+  const settings = staffUserId
     ? await db.query.partnerBookingSettings.findFirst({
         where: and(
           eq(partnerBookingSettings.partnerId, partnerId),
@@ -291,15 +284,6 @@ async function createBooking(
         ),
       })
     : null;
-  
-  if (!settings) {
-    settings = await db.query.partnerBookingSettings.findFirst({
-      where: and(
-        eq(partnerBookingSettings.partnerId, partnerId),
-        isNull(partnerBookingSettings.staffUserId)
-      ),
-    });
-  }
 
   const autoConfirm = settings?.autoConfirm ?? false;
   const confirmationToken = generateToken();
@@ -376,8 +360,8 @@ async function cancelBooking(
     });
     const staffUserId = bookingListing?.userId;
 
-    // Prefer staff-specific settings, fallback to partner defaults
-    let settings = staffUserId
+    // Get staff-specific settings only - no fallback
+    const settings = staffUserId
       ? await db.query.partnerBookingSettings.findFirst({
           where: and(
             eq(partnerBookingSettings.partnerId, existing.partnerId),
@@ -385,15 +369,6 @@ async function cancelBooking(
           ),
         })
       : null;
-
-    if (!settings) {
-      settings = await db.query.partnerBookingSettings.findFirst({
-        where: and(
-          eq(partnerBookingSettings.partnerId, existing.partnerId),
-          isNull(partnerBookingSettings.staffUserId)
-        ),
-      });
-    }
 
     if (settings && !settings.allowUserCancellation) {
       return { success: false, error: 'This dealer does not allow user cancellations' };
@@ -458,15 +433,15 @@ async function rescheduleBooking(
     return { success: false, error: `Cannot reschedule booking in status: ${existing.status}` };
   }
 
-  // Check reschedule limit - get staff-specific settings
+  // Check reschedule limit - get staff-specific settings only
   const bookingListing = await db.query.carListing.findFirst({
     where: eq(carListing.id, existing.listingId),
     columns: { userId: true },
   });
   const staffUserId = bookingListing?.userId;
 
-  // Prefer staff-specific settings, fallback to partner defaults
-  let settings = staffUserId
+  // Get staff-specific settings only - no fallback
+  const settings = staffUserId
     ? await db.query.partnerBookingSettings.findFirst({
         where: and(
           eq(partnerBookingSettings.partnerId, existing.partnerId),
@@ -474,15 +449,6 @@ async function rescheduleBooking(
         ),
       })
     : null;
-
-  if (!settings) {
-    settings = await db.query.partnerBookingSettings.findFirst({
-      where: and(
-        eq(partnerBookingSettings.partnerId, existing.partnerId),
-        isNull(partnerBookingSettings.staffUserId)
-      ),
-    });
-  }
 
   if (settings && !settings.allowReschedule) {
     return { success: false, error: 'This dealer does not allow rescheduling' };

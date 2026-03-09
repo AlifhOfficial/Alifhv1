@@ -174,66 +174,33 @@ export async function managePartnerSettings(
 
 /**
  * Get all partner configuration (availability + settings)
- * If staffUserId is provided, returns staff-specific settings, otherwise partner defaults
+ * Returns staff-specific settings only - no fallback to partner defaults
  */
 async function getPartnerConfig(partnerId: string, staffUserId: string | null): Promise<ManagePartnerSettingsResult> {
   
-  // Get availability rules - staff-specific if staffUserId is provided
-  // Staff-specific rules take precedence, but we also return partner defaults
-  const availabilityWhere = staffUserId
-    ? and(
-        eq(partnerAvailability.partnerId, partnerId),
-        or(
-          eq(partnerAvailability.staffUserId, staffUserId),
-          isNull(partnerAvailability.staffUserId)
-        )
-      )
-    : and(
-        eq(partnerAvailability.partnerId, partnerId),
-        isNull(partnerAvailability.staffUserId)
-      );
+  // Only get staff-specific rules - no fallback
+  if (!staffUserId) {
+    return { success: true, availability: [], settings: null };
+  }
 
-  // Get settings - staff-specific if staffUserId is provided
-  const settingsWhere = staffUserId
-    ? and(
-        eq(partnerBookingSettings.partnerId, partnerId),
-        or(
-          eq(partnerBookingSettings.staffUserId, staffUserId),
-          isNull(partnerBookingSettings.staffUserId)
-        )
-      )
-    : and(
-        eq(partnerBookingSettings.partnerId, partnerId),
-        isNull(partnerBookingSettings.staffUserId)
-      );
-
-  const [availabilityRows, settingsRows] = await Promise.all([
+  const [availabilityRows, settingsRow] = await Promise.all([
     db.query.partnerAvailability.findMany({
-      where: availabilityWhere,
+      where: and(
+        eq(partnerAvailability.partnerId, partnerId),
+        eq(partnerAvailability.staffUserId, staffUserId)
+      ),
       orderBy: partnerAvailability.dayOfWeek,
     }),
-    db.query.partnerBookingSettings.findMany({
-      where: settingsWhere,
+    db.query.partnerBookingSettings.findFirst({
+      where: and(
+        eq(partnerBookingSettings.partnerId, partnerId),
+        eq(partnerBookingSettings.staffUserId, staffUserId)
+      ),
     }),
   ]);
 
-  // For availability: prefer staff-specific rules per day, fall back to partner defaults
-  const availabilityByDay = new Map<number, AvailabilityRule>();
-  for (const row of availabilityRows) {
-    const rule = mapAvailabilityRule(row);
-    const existing = availabilityByDay.get(rule.dayOfWeek);
-    // Staff-specific rules (has staffUserId) take precedence
-    if (!existing || (rule.staffUserId && !existing.staffUserId)) {
-      availabilityByDay.set(rule.dayOfWeek, rule);
-    }
-  }
-  const availability = Array.from(availabilityByDay.values()).sort((a, b) => a.dayOfWeek - b.dayOfWeek);
-
-  // For settings: prefer staff-specific, fall back to partner default
-  let settings: PartnerSettings | null = null;
-  const staffSettings = settingsRows.find(s => s.staffUserId === staffUserId);
-  const partnerSettings = settingsRows.find(s => s.staffUserId === null);
-  settings = staffSettings ? mapSettings(staffSettings) : (partnerSettings ? mapSettings(partnerSettings) : null);
+  const availability = availabilityRows.map(mapAvailabilityRule);
+  const settings = settingsRow ? mapSettings(settingsRow) : null;
 
   return { success: true, availability, settings };
 }
@@ -548,36 +515,21 @@ export async function getAvailableSlots(
   date: Date,
   staffUserId?: string | null
 ): Promise<TimeSlot[]> {
+  // Staff must have their own settings - no fallback
+  if (!staffUserId) return [];
+
   const dayOfWeek = date.getUTCDay();
   const dateStr = date.toISOString().split('T')[0];
 
-  // Get availability rule for this day
-  // First try staff-specific rule, then fall back to partner default
-  let rule: typeof partnerAvailability.$inferSelect | undefined;
-  
-  if (staffUserId) {
-    // Try to find staff-specific rule first
-    rule = await db.query.partnerAvailability.findFirst({
-      where: and(
-        eq(partnerAvailability.partnerId, partnerId),
-        eq(partnerAvailability.staffUserId, staffUserId),
-        eq(partnerAvailability.dayOfWeek, dayOfWeek),
-        eq(partnerAvailability.isActive, true)
-      ),
-    });
-  }
-  
-  // Fall back to partner default if no staff-specific rule found
-  if (!rule) {
-    rule = await db.query.partnerAvailability.findFirst({
-      where: and(
-        eq(partnerAvailability.partnerId, partnerId),
-        isNull(partnerAvailability.staffUserId),
-        eq(partnerAvailability.dayOfWeek, dayOfWeek),
-        eq(partnerAvailability.isActive, true)
-      ),
-    });
-  }
+  // Get staff-specific availability rule only - no fallback
+  const rule = await db.query.partnerAvailability.findFirst({
+    where: and(
+      eq(partnerAvailability.partnerId, partnerId),
+      eq(partnerAvailability.staffUserId, staffUserId),
+      eq(partnerAvailability.dayOfWeek, dayOfWeek),
+      eq(partnerAvailability.isActive, true)
+    ),
+  });
 
   if (!rule) return [];
 
@@ -628,6 +580,26 @@ export async function getAvailableSlots(
     });
   }
 
+  // Get staff's slot duration setting from their settings
+  let slotDuration = rule.slotDuration;
+  let bufferTime = rule.bufferTime || 0;
+  
+  // Get staff-specific settings only - no fallback
+  const staffSettings = await db.query.partnerBookingSettings.findFirst({
+    where: and(
+      eq(partnerBookingSettings.partnerId, partnerId),
+      eq(partnerBookingSettings.staffUserId, staffUserId)
+    ),
+    columns: { defaultSlotDuration: true, bufferBetweenBookings: true },
+  });
+  
+  if (staffSettings?.defaultSlotDuration) {
+    slotDuration = staffSettings.defaultSlotDuration;
+  }
+  if (staffSettings?.bufferBetweenBookings !== undefined && staffSettings?.bufferBetweenBookings !== null) {
+    bufferTime = staffSettings.bufferBetweenBookings;
+  }
+
   // Generate slots
   const slots: TimeSlot[] = [];
   const [startHour, startMin] = rule.startTime.split(':').map(Number);
@@ -644,7 +616,7 @@ export async function getAvailableSlots(
   let slotIndex = 0;
 
   while (slotStart < endDate) {
-    const slotEnd = new Date(slotStart.getTime() + rule.slotDuration * 60 * 1000);
+    const slotEnd = new Date(slotStart.getTime() + slotDuration * 60 * 1000);
     
     if (slotEnd > endDate) break;
 
@@ -666,13 +638,13 @@ export async function getAvailableSlots(
       id: `${dateStr}-${slotIndex}`,
       startTime: new Date(slotStart),
       endTime: new Date(slotEnd),
-      duration: rule.slotDuration,
+      duration: slotDuration,
       status,
       isAvailable: status === 'available',
     });
 
     // Move to next slot (duration + buffer)
-    slotStart = new Date(slotEnd.getTime() + (rule.bufferTime || 0) * 60 * 1000);
+    slotStart = new Date(slotEnd.getTime() + bufferTime * 60 * 1000);
     slotIndex++;
   }
 
@@ -681,67 +653,46 @@ export async function getAvailableSlots(
 
 /**
  * Get available dates for the next N days
- * Uses staff-specific settings if staffUserId is provided, otherwise partner defaults
+ * Uses staff-specific settings only - no fallback
  */
 export async function getAvailableDates(
   partnerId: string,
   days: number = 30,
   staffUserId?: string | null
 ): Promise<AvailableDate[]> {
+  // Staff must have their own settings - no fallback
+  if (!staffUserId) return [];
   
-  // Get settings for lead time - prefer staff-specific, fall back to partner default
-  let settings: typeof partnerBookingSettings.$inferSelect | undefined;
-  
-  if (staffUserId) {
-    settings = await db.query.partnerBookingSettings.findFirst({
-      where: and(
-        eq(partnerBookingSettings.partnerId, partnerId),
-        eq(partnerBookingSettings.staffUserId, staffUserId)
-      ),
-    });
-  }
-  
-  if (!settings) {
-    settings = await db.query.partnerBookingSettings.findFirst({
-      where: and(
-        eq(partnerBookingSettings.partnerId, partnerId),
-        isNull(partnerBookingSettings.staffUserId)
-      ),
-    });
-  }
-
-  const minLeadHours = settings?.minLeadTimeHours ?? DEFAULTS.MIN_LEAD_HOURS;
-  const maxLeadDays = settings?.maxLeadTimeDays ?? DEFAULTS.MAX_LEAD_DAYS;
-  const effectiveDays = Math.min(days, maxLeadDays);
-
-  // Get all availability rules - prefer staff-specific, fall back to partner defaults
-  const rulesWhere = staffUserId
-    ? and(
-        eq(partnerAvailability.partnerId, partnerId),
-        or(
-          eq(partnerAvailability.staffUserId, staffUserId),
-          isNull(partnerAvailability.staffUserId)
-        ),
-        eq(partnerAvailability.isActive, true)
-      )
-    : and(
-        eq(partnerAvailability.partnerId, partnerId),
-        isNull(partnerAvailability.staffUserId),
-        eq(partnerAvailability.isActive, true)
-      );
-
-  const rules = await db.query.partnerAvailability.findMany({
-    where: rulesWhere,
+  // Get staff-specific settings only
+  const settings = await db.query.partnerBookingSettings.findFirst({
+    where: and(
+      eq(partnerBookingSettings.partnerId, partnerId),
+      eq(partnerBookingSettings.staffUserId, staffUserId)
+    ),
   });
 
-  // Priority: staff-specific rules > partner defaults (per day)
+  // No settings = not accepting bookings
+  if (!settings) return [];
+
+  const minLeadHours = settings.minLeadTimeHours ?? DEFAULTS.MIN_LEAD_HOURS;
+  const maxLeadDays = settings.maxLeadTimeDays ?? DEFAULTS.MAX_LEAD_DAYS;
+  const effectiveDays = Math.min(days, maxLeadDays);
+
+  // Get staff-specific availability rules only
+  const rules = await db.query.partnerAvailability.findMany({
+    where: and(
+      eq(partnerAvailability.partnerId, partnerId),
+      eq(partnerAvailability.staffUserId, staffUserId),
+      eq(partnerAvailability.isActive, true)
+    ),
+  });
+
+  // No availability rules = not accepting bookings
+  if (rules.length === 0) return [];
+
   const rulesByDay = new Map<number, typeof partnerAvailability.$inferSelect>();
   for (const rule of rules) {
-    const existing = rulesByDay.get(rule.dayOfWeek);
-    // Staff-specific rules (has staffUserId) take precedence
-    if (!existing || (rule.staffUserId && !existing.staffUserId)) {
-      rulesByDay.set(rule.dayOfWeek, rule);
-    }
+    rulesByDay.set(rule.dayOfWeek, rule);
   }
   
   const dates: AvailableDate[] = [];

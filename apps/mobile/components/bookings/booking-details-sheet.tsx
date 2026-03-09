@@ -509,16 +509,10 @@ export function BookingDetailsSheet({
                 Cancelled
               </Label>
             </View>
-            {booking.cancellationReason && (
+            {(booking.cancellationNotes || booking.cancellationReason) && (
               <View style={styles.instructionRow}>
                 <Supporting size="small" tone="secondary" style={{ fontWeight: '600' }}>Reason</Supporting>
-                <Body size="small">{booking.cancellationReason.replace(/_/g, ' ')}</Body>
-              </View>
-            )}
-            {booking.cancellationNotes && (
-              <View style={styles.instructionRow}>
-                <Supporting size="small" tone="secondary" style={{ fontWeight: '600' }}>Notes</Supporting>
-                <Body size="small">{booking.cancellationNotes}</Body>
+                <Body size="small">{booking.cancellationNotes || booking.cancellationReason?.replace(/_/g, ' ')}</Body>
               </View>
             )}
             {booking.cancelledAt && (
