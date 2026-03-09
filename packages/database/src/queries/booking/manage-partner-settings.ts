@@ -43,6 +43,7 @@ export interface ManagePartnerSettingsParams {
   bookingEnabled?: boolean;
   autoConfirm?: boolean;
   confirmationTimeoutMinutes?: number;
+  allowSameDayBooking?: boolean;
   minLeadTimeHours?: number;
   maxLeadTimeDays?: number;
   allowUserCancellation?: boolean;
@@ -84,6 +85,7 @@ export interface PartnerSettings {
   bookingEnabled: boolean;
   autoConfirm: boolean;
   confirmationTimeoutMinutes: number | null;
+  allowSameDayBooking: boolean;
   minLeadTimeHours: number;
   maxLeadTimeDays: number;
   allowUserCancellation: boolean;
@@ -374,7 +376,7 @@ async function updateSettings(
   const settingsData: Record<string, unknown> = {};
   const settingsFields = [
     'bookingEnabled', 'autoConfirm', 'confirmationTimeoutMinutes',
-    'minLeadTimeHours', 'maxLeadTimeDays',
+    'allowSameDayBooking', 'minLeadTimeHours', 'maxLeadTimeDays',
     'allowUserCancellation', 'cancellationDeadlineHours',
     'allowReschedule', 'maxRescheduleCount', 'rescheduleDeadlineHours',
     'sendReminders', 'reminderTimes', 'smsReminders', 'emailReminders',
@@ -456,6 +458,7 @@ function mapSettings(row: any): PartnerSettings {
     bookingEnabled: row.bookingEnabled,
     autoConfirm: row.autoConfirm,
     confirmationTimeoutMinutes: row.confirmationTimeoutMinutes,
+    allowSameDayBooking: row.allowSameDayBooking ?? true,
     minLeadTimeHours: row.minLeadTimeHours,
     maxLeadTimeDays: row.maxLeadTimeDays,
     allowUserCancellation: row.allowUserCancellation,
@@ -590,8 +593,15 @@ export async function getAvailableSlots(
       eq(partnerBookingSettings.partnerId, partnerId),
       eq(partnerBookingSettings.staffUserId, staffUserId)
     ),
-    columns: { defaultSlotDuration: true, bufferBetweenBookings: true },
+    columns: { defaultSlotDuration: true, bufferBetweenBookings: true, allowSameDayBooking: true },
   });
+
+  // Check if same-day booking is blocked
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+  if (dateStr === todayStr && staffSettings?.allowSameDayBooking === false) {
+    return [];
+  }
   
   if (staffSettings?.defaultSlotDuration) {
     slotDuration = staffSettings.defaultSlotDuration;
@@ -611,7 +621,6 @@ export async function getAvailableSlots(
   const startDate = new Date(partnerDayStart + (startHour * 60 + startMin) * 60 * 1000);
   const endDate = new Date(partnerDayStart + (endHour * 60 + endMin) * 60 * 1000);
 
-  const now = new Date();
   let slotStart = new Date(startDate);
   let slotIndex = 0;
 
@@ -676,6 +685,7 @@ export async function getAvailableDates(
 
   const minLeadHours = settings.minLeadTimeHours ?? DEFAULTS.MIN_LEAD_HOURS;
   const maxLeadDays = settings.maxLeadTimeDays ?? DEFAULTS.MAX_LEAD_DAYS;
+  const allowSameDay = settings.allowSameDayBooking ?? true;
   const effectiveDays = Math.min(days, maxLeadDays);
 
   // Get staff-specific availability rules only
@@ -710,6 +720,16 @@ export async function getAvailableDates(
     const rule = rulesByDay.get(dayOfWeek);
 
     let hasSlots = false;
+
+    // Skip today if same-day booking is disabled
+    if (i === 0 && !allowSameDay) {
+      dates.push({
+        date: dateStr,
+        dayOfWeek,
+        hasSlots: false,
+      });
+      continue;
+    }
 
     if (rule && rule.isActive) {
       const excludeDates = (rule.excludeDates as string[]) || [];

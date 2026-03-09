@@ -55,6 +55,7 @@ export function UserBookingsView() {
     { key: 'confirmed', label: 'Confirmed' },
     { key: 'completed', label: 'Completed' },
     { key: 'cancelled', label: 'Cancelled' },
+    { key: 'rejected', label: 'Rejected' },
     { key: 'no_show', label: 'No Show' },
   ];
 

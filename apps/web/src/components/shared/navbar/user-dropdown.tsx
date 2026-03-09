@@ -1,14 +1,18 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
 import { 
   User,
-  LogOut
+  LogOut,
+  ChevronDown
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { UserRole } from "@/types/auth";
 import { getUserPortalAccess } from "@/lib/auth/routing";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
+import type { NavItem } from "@/lib/navigation";
 
 interface UserData {
   id: string;
@@ -39,6 +43,10 @@ interface ProfileMenuProps {
   onSignUp: () => void;
   onSignOut: () => void;
   onProfile?: () => void;
+  // Mobile navigation props
+  navItems?: NavItem[];
+  pathname?: string | null;
+  onNavigate?: () => void;
 }
 
 interface DashboardItem {
@@ -54,9 +62,21 @@ export function ProfileMenu({
   onSignUp,
   onSignOut,
   onProfile,
+  navItems,
+  pathname,
+  onNavigate,
 }: ProfileMenuProps) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  const toggleExpanded = (label: string) => {
+    setExpandedItems(prev => 
+      prev.includes(label) 
+        ? prev.filter(item => item !== label)
+        : [...prev, label]
+    );
+  };
 
   // Prevent hydration mismatch by only rendering user-specific content after mount
   useEffect(() => {
@@ -143,10 +163,79 @@ export function ProfileMenu({
 
         {showMenu && (
           <div 
-            className="absolute right-0 top-full mt-2 w-52 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden"
+            className="absolute right-0 top-full mt-2 w-52 lg:w-52 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
             data-menu-container
           >
+            {/* Mobile Navigation - Only visible on mobile */}
+            {navItems && navItems.length > 0 && (
+              <div className="lg:hidden py-1.5 border-b border-sidebar-border">
+                {navItems.map((item) => (
+                  <div key={item.label}>
+                    {item.submenu && !item.hideSubmenu ? (
+                      <>
+                        <button
+                          onClick={() => toggleExpanded(item.label)}
+                          className={`w-full flex items-center justify-between px-3 py-2 text-[15px] font-semibold tracking-tight transition-colors ${
+                            pathname === item.href
+                              ? "text-sidebar-foreground bg-sidebar-accent"
+                              : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                          }`}
+                        >
+                          {item.label}
+                          <ChevronDown 
+                            className={`w-4 h-4 text-sidebar-foreground/50 transition-transform duration-200 ${
+                              expandedItems.includes(item.label) ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+                        
+                        {expandedItems.includes(item.label) && (
+                          <div className="py-1 pl-4 space-y-0.5 bg-sidebar-accent/30">
+                            {item.submenu.map((section) => (
+                              <div key={section.title} className="py-1">
+                                <div className="px-3 py-1 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                                  {section.title}
+                                </div>
+                                {section.items.map((subItem) => (
+                                  <Link
+                                    key={subItem.href}
+                                    href={subItem.href}
+                                    onClick={() => {
+                                      onNavigate?.();
+                                      onToggleMenu();
+                                    }}
+                                    className="block px-3 py-1.5 text-[14px] font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                                  >
+                                    {subItem.label}
+                                  </Link>
+                                ))}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        onClick={() => {
+                          onNavigate?.();
+                          onToggleMenu();
+                        }}
+                        className={`block px-3 py-2 text-[15px] font-semibold tracking-tight transition-colors ${
+                          pathname === item.href
+                            ? "text-sidebar-foreground bg-sidebar-accent"
+                            : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Menu Items */}
             <div className="py-1.5">
               {/* Dashboards Section */}
@@ -240,10 +329,79 @@ export function ProfileMenu({
 
       {showMenu && (
         <div 
-          className="absolute right-0 top-full mt-2 w-44 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50"
+          className="absolute right-0 top-full mt-2 w-52 lg:w-44 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 max-h-[80vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
           data-menu-container
         >
+          {/* Mobile Navigation - Only visible on mobile */}
+          {navItems && navItems.length > 0 && (
+            <div className="lg:hidden py-1.5 border-b border-sidebar-border">
+              {navItems.map((item) => (
+                <div key={item.label}>
+                  {item.submenu && !item.hideSubmenu ? (
+                    <>
+                      <button
+                        onClick={() => toggleExpanded(item.label)}
+                        className={`w-full flex items-center justify-between px-3 py-2 text-[15px] font-semibold tracking-tight transition-colors ${
+                          pathname === item.href
+                            ? "text-sidebar-foreground bg-sidebar-accent"
+                            : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                        }`}
+                      >
+                        {item.label}
+                        <ChevronDown 
+                          className={`w-4 h-4 text-sidebar-foreground/50 transition-transform duration-200 ${
+                            expandedItems.includes(item.label) ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+                      
+                      {expandedItems.includes(item.label) && (
+                        <div className="py-1 pl-4 space-y-0.5 bg-sidebar-accent/30">
+                          {item.submenu.map((section) => (
+                            <div key={section.title} className="py-1">
+                              <div className="px-3 py-1 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                                {section.title}
+                              </div>
+                              {section.items.map((subItem) => (
+                                <Link
+                                  key={subItem.href}
+                                  href={subItem.href}
+                                  onClick={() => {
+                                    onNavigate?.();
+                                    onToggleMenu();
+                                  }}
+                                  className="block px-3 py-1.5 text-[14px] font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                                >
+                                  {subItem.label}
+                                </Link>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      onClick={() => {
+                        onNavigate?.();
+                        onToggleMenu();
+                      }}
+                      className={`block px-3 py-2 text-[15px] font-semibold tracking-tight transition-colors ${
+                        pathname === item.href
+                          ? "text-sidebar-foreground bg-sidebar-accent"
+                          : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="py-1.5">
             <button
               onClick={onSignIn}

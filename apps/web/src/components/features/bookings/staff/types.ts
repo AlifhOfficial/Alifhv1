@@ -31,14 +31,15 @@ export interface BookingData {
 }
 
 export interface BookingStats {
-  totalBookings: number;
-  pendingBookings: number;
-  confirmedBookings: number;
-  completedBookings: number;
-  cancelledBookings: number;
-  noShowBookings: number;
-  todayBookings: number;
-  upcomingBookings: number;
+  total: number;
+  pending: number;
+  confirmed: number;
+  completed: number;
+  cancelled: number;
+  rejected: number;
+  noShow: number;
+  todayCount: number;
+  upcomingCount: number;
 }
 
 export interface AvailabilityRule {
@@ -59,6 +60,7 @@ export interface BookingSettings {
   autoConfirm: boolean;
   
   // Lead time
+  allowSameDayBooking: boolean;
   minLeadTimeHours: number;
   maxLeadTimeDays: number;
   

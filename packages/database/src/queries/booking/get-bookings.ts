@@ -146,6 +146,7 @@ export interface BookingStats {
   confirmed: number;
   completed: number;
   cancelled: number;
+  rejected: number;
   noShow: number;
   todayCount: number;
   upcomingCount: number;
@@ -443,6 +444,7 @@ export async function getBookings(params: GetBookingsParams): Promise<GetBooking
         confirmed: sql<number>`count(*) filter (where ${booking.status} = 'confirmed')::int`,
         completed: sql<number>`count(*) filter (where ${booking.status} = 'completed')::int`,
         cancelled: sql<number>`count(*) filter (where ${booking.status} = 'cancelled')::int`,
+        rejected: sql<number>`count(*) filter (where ${booking.status} = 'rejected')::int`,
         noShow: sql<number>`count(*) filter (where ${booking.status} = 'no_show')::int`,
         todayCount: sql<number>`count(*) filter (where ${booking.scheduledDate} >= ${todayStart} and ${booking.scheduledDate} <= ${todayEnd})::int`,
         upcomingCount: sql<number>`count(*) filter (where ${booking.scheduledStartTime} >= ${now} and ${booking.status} in ('pending', 'confirmed'))::int`,
@@ -456,6 +458,7 @@ export async function getBookings(params: GetBookingsParams): Promise<GetBooking
       confirmed: statsResult?.confirmed ?? 0,
       completed: statsResult?.completed ?? 0,
       cancelled: statsResult?.cancelled ?? 0,
+      rejected: statsResult?.rejected ?? 0,
       noShow: statsResult?.noShow ?? 0,
       todayCount: statsResult?.todayCount ?? 0,
       upcomingCount: statsResult?.upcomingCount ?? 0,

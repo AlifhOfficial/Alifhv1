@@ -297,6 +297,17 @@ export function AvailabilitySettings({
         
         <div className="rounded-xl border border-border/40 bg-card p-3 sm:p-4">
           <SettingRow 
+            title="Same Day Booking" 
+            description="Allow customers to book for today"
+          >
+            <Toggle 
+              enabled={settings?.allowSameDayBooking ?? true} 
+              onToggle={() => onUpdateSettings({ allowSameDayBooking: !(settings?.allowSameDayBooking ?? true) })}
+              disabled={savingSettings}
+            />
+          </SettingRow>
+
+          <SettingRow 
             title="Minimum Lead Time" 
             description="How far in advance customers must book"
           >

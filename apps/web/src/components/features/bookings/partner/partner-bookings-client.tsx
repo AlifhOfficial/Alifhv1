@@ -64,6 +64,7 @@ interface BookingStats {
   confirmed: number;
   completed: number;
   cancelled: number;
+  rejected: number;
   noShow: number;
   todayCount: number;
   upcomingCount: number;
@@ -317,6 +318,7 @@ export function PartnerBookingsClient({
         confirmed: 0,
         completed: 0,
         cancelled: 0,
+        rejected: 0,
         no_show: 0,
       };
     }
@@ -326,6 +328,7 @@ export function PartnerBookingsClient({
       confirmed: stats.confirmed,
       completed: stats.completed,
       cancelled: stats.cancelled,
+      rejected: stats.rejected,
       no_show: stats.noShow,
     };
   }, [stats]);
@@ -450,7 +453,7 @@ export function PartnerBookingsClient({
         {/* Row 2: Status Pills - Horizontal scroll on mobile */}
         <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
-          {(['all', 'pending', 'confirmed', 'completed', 'cancelled'] as StatusFilter[]).map((status) => {
+          {(['all', 'pending', 'confirmed', 'completed', 'cancelled', 'rejected', 'no_show'] as StatusFilter[]).map((status) => {
             const config = STATUS_CONFIG[status];
             const isActive = statusFilter === status;
             const count = statusCounts[status];

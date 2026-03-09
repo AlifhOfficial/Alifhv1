@@ -47,6 +47,7 @@ const STATUS_TABS = [
   { key: 'confirmed', label: 'Confirmed', color: 'green' },
   { key: 'completed', label: 'Completed', color: 'blue' },
   { key: 'cancelled', label: 'Cancelled', color: 'red' },
+  { key: 'rejected', label: 'Rejected', color: 'red' },
   { key: 'no_show', label: 'No Show', color: 'gray' },
 ];
 
@@ -733,12 +734,13 @@ export function StaffBookingsView() {
                   {STATUS_TABS.map((tab) => {
                     // Use stats for counts (server-side accurate)
                     const count = stats ? (
-                      tab.key === 'all' ? stats.totalBookings
-                      : tab.key === 'pending' ? stats.pendingBookings
-                      : tab.key === 'confirmed' ? stats.confirmedBookings
-                      : tab.key === 'completed' ? stats.completedBookings
-                      : tab.key === 'cancelled' ? stats.cancelledBookings
-                      : tab.key === 'no_show' ? stats.noShowBookings
+                      tab.key === 'all' ? stats.total
+                      : tab.key === 'pending' ? stats.pending
+                      : tab.key === 'confirmed' ? stats.confirmed
+                      : tab.key === 'completed' ? stats.completed
+                      : tab.key === 'cancelled' ? stats.cancelled
+                      : tab.key === 'rejected' ? stats.rejected
+                      : tab.key === 'no_show' ? stats.noShow
                       : 0
                     ) : 0;
                     const isActive = selectedStatus === tab.key;

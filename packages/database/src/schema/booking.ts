@@ -328,6 +328,7 @@ export const partnerBookingSettings = pgTable('partner_booking_settings', {
   confirmationTimeoutMinutes: integer('confirmation_timeout_minutes').default(60), // Auto-reject after X mins
   
   // Lead Time
+  allowSameDayBooking: boolean('allow_same_day_booking').default(true).notNull(), // Allow bookings for today
   minLeadTimeHours: integer('min_lead_time_hours').default(2).notNull(), // Minimum hours in advance
   maxLeadTimeDays: integer('max_lead_time_days').default(30).notNull(), // Maximum days in advance
   

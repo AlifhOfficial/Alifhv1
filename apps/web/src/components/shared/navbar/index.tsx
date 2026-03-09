@@ -16,11 +16,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Moon, Menu, X } from "lucide-react";
+import { Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navItems, type NavItem } from "@/lib/navigation";
 import { MegaDropdown } from "./mega-dropdown";
-import { MobileMenu } from "./mobile-menu";
 import { ProfileMenu } from "./user-dropdown";
 import { NavbarMessaging } from "./navbar-messaging";
 import { NavbarFavorites } from "./navbar-favorites";
@@ -35,7 +34,6 @@ export function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [_isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [currentAuthModal, setCurrentAuthModal] = useState<AuthModalType>(null);
@@ -89,7 +87,6 @@ export function Navbar() {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setShowMobileMenu(false);
         setActiveDropdown(null);
         setShowProfileMenu(false);
         setShowThemeMenu(false);
@@ -99,23 +96,6 @@ export function Navbar() {
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
-  // Prevent body scroll when mobile menu is open - Safari-safe approach
-  useEffect(() => {
-    if (showMobileMenu) {
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflow = '';
-        window.scrollTo(0, scrollY);
-      };
-    }
-  }, [showMobileMenu]);
 
   // Auth handlers
   const onSignOut = useCallback(async () => {
@@ -347,16 +327,10 @@ export function Navbar() {
                   setShowProfileMenu(false);
                   router.push("/profile");
                 }}
+                navItems={navItems}
+                pathname={pathname}
+                onNavigate={() => setShowProfileMenu(false)}
               />
-
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="lg:hidden p-2.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/20 active:scale-95"
-                aria-label="Menu"
-              >
-                {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
             </div>
           </div>
       </nav>
@@ -369,32 +343,6 @@ export function Navbar() {
         onMouseEnter={cancelDropdownClose}
         onMouseLeave={handleDropdownClose}
       />
-
-      {/* Mobile Menu */}
-      {showMobileMenu && (
-        <MobileMenu
-            navItems={navItems}
-            pathname={pathname}
-            onNavigate={() => setShowMobileMenu(false)}
-            onSignIn={() => {
-              setShowMobileMenu(false);
-              setCurrentAuthModal("signin");
-            }}
-            onSignUp={() => {
-              setShowMobileMenu(false);
-              setCurrentAuthModal("signup");
-            }}
-            user={user}
-            onProfile={() => {
-              setShowMobileMenu(false);
-              router.push("/profile");
-            }}
-            onSignOut={() => {
-              setShowMobileMenu(false);
-              onSignOut();
-            }}
-          />
-      )}
 
       {/* Auth Modals */}
       <AuthManager
