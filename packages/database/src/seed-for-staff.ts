@@ -618,8 +618,6 @@ async function seedForStaff() {
         verifiedAt: new Date(),
         badges: ['verified_dealer', 'black_member', 'premium_partner'],
         tags: ['luxury', 'premium', 'trusted'],
-        subscriptionTier: 'black',
-        subscriptionExpiresAt: new Date('2027-12-31'),
         activeListingsCount: 0,
         totalInventoryValue: 0,
         avgListingPrice: 0,

@@ -27,6 +27,9 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
     partner?.emirate
   ].filter(Boolean);
   const fullAddress = addressParts.join(', ');
+  
+  // Contact priority: tollNumber > adminPhone > registered phone
+  const displayPhone = partner?.tollNumber || partner?.adminPhone || partner?.phone;
 
   const mapUrl = partner?.locationLat && partner?.locationLng 
     ? `https://www.google.com/maps/search/?api=1&query=${partner.locationLat},${partner.locationLng}`
@@ -91,9 +94,9 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
             )}
             
             {/* Phone Card */}
-            {partner?.phone && (
+            {displayPhone && (
               <a 
-                href={`tel:${partner.phone}`}
+                href={`tel:${displayPhone}`}
                 className="group p-4 sm:p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-colors flex items-start gap-3 sm:gap-4 flex-1"
               >
                 <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
@@ -104,7 +107,7 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
                     Phone
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    {partner.phone}
+                    {displayPhone}
                   </p>
                   <p className="text-sm text-muted-foreground/70 mt-2 group-hover:text-primary transition-colors">
                     Call Now →

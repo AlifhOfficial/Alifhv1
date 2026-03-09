@@ -129,8 +129,6 @@ export interface PartnerProfileComprehensive {
   businessHours: BusinessHours;
   
   // === Subscription (read-only for partner) ===
-  subscriptionTier: string | null;
-  subscriptionExpiresAt: Date | null;
   paymentTerms: string | null;
   
   // === Notifications ===
@@ -290,8 +288,6 @@ export async function getPartnerProfileComprehensive(
       businessHours: partner.businessHours,
       
       // Subscription
-      subscriptionTier: partner.subscriptionTier,
-      subscriptionExpiresAt: partner.subscriptionExpiresAt,
       paymentTerms: partner.paymentTerms,
       
       // Notifications

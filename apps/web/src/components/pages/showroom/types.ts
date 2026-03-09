@@ -99,6 +99,10 @@ export interface PartnerData {
   website: string | null;
   locationLat: number | null;
   locationLng: number | null;
+  // Contact settings (for showroom display)
+  adminName: string | null;
+  adminPhone: string | null;
+  tollNumber: string | null;
 }
 
 // ============================================================================

@@ -57,7 +57,7 @@ const CDN_CACHE = 'public, max-age=31536000, immutable';
 
 // Showroom asset types
 const SHOWROOM_ASSET_TYPES = [
-  'hero-image', 'founder-image', 'gallery', 'team-member',
+  'hero-image', 'founder-image', 'gallery', 'team-member', 'seo-image',
 ];
 
 // Partner image types

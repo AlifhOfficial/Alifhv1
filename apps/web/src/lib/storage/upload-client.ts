@@ -440,7 +440,7 @@ export async function compressAndUploadPartnerImage(
 export async function compressAndUploadShowroomImage(
   file: File,
   partnerId: string,
-  assetType: 'hero-image' | 'founder-image' | 'gallery' | 'team-member',
+  assetType: 'hero-image' | 'founder-image' | 'gallery' | 'team-member' | 'seo-image',
   onProgress?: (percent: number) => void,
 ): Promise<DirectSingleUploadResult> {
   onProgress?.(10);

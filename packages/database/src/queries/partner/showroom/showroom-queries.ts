@@ -158,6 +158,10 @@ export interface PartnerShowroomPublic {
     website: string | null;
     locationLat: number | null;
     locationLng: number | null;
+    // Contact settings (for showroom display)
+    adminName: string | null;
+    adminPhone: string | null;
+    tollNumber: string | null;
   };
   
   // All showroom content fields (same as full, minus internal)
@@ -342,6 +346,9 @@ export async function getPublishedShowroomBySlug(slug: string): Promise<PartnerS
       partnerWebsite: partner.website,
       partnerLocationLat: partner.locationLat,
       partnerLocationLng: partner.locationLng,
+      partnerAdminName: partner.adminName,
+      partnerAdminPhone: partner.adminPhone,
+      partnerTollNumber: partner.tollNumber,
     })
     .from(partnerShowroom)
     .innerJoin(partner, eq(partnerShowroom.partnerId, partner.id))
@@ -371,6 +378,9 @@ export async function getPublishedShowroomBySlug(slug: string): Promise<PartnerS
     website: row.partnerWebsite,
     locationLat: row.partnerLocationLat,
     locationLng: row.partnerLocationLng,
+    adminName: row.partnerAdminName,
+    adminPhone: row.partnerAdminPhone,
+    tollNumber: row.partnerTollNumber,
   });
   
   return showroom;
@@ -402,6 +412,9 @@ export async function getPublishedShowroomByPartnerId(partnerId: string): Promis
       partnerWebsite: partner.website,
       partnerLocationLat: partner.locationLat,
       partnerLocationLng: partner.locationLng,
+      partnerAdminName: partner.adminName,
+      partnerAdminPhone: partner.adminPhone,
+      partnerTollNumber: partner.tollNumber,
     })
     .from(partnerShowroom)
     .innerJoin(partner, eq(partnerShowroom.partnerId, partner.id))
@@ -431,6 +444,9 @@ export async function getPublishedShowroomByPartnerId(partnerId: string): Promis
     website: row.partnerWebsite,
     locationLat: row.partnerLocationLat,
     locationLng: row.partnerLocationLng,
+    adminName: row.partnerAdminName,
+    adminPhone: row.partnerAdminPhone,
+    tollNumber: row.partnerTollNumber,
   });
   
   return showroom;
@@ -469,6 +485,9 @@ export async function getPublishedShowrooms(
         partnerWebsite: partner.website,
         partnerLocationLat: partner.locationLat,
         partnerLocationLng: partner.locationLng,
+        partnerAdminName: partner.adminName,
+        partnerAdminPhone: partner.adminPhone,
+        partnerTollNumber: partner.tollNumber,
       })
       .from(partnerShowroom)
       .innerJoin(partner, eq(partnerShowroom.partnerId, partner.id))
@@ -508,6 +527,9 @@ export async function getPublishedShowrooms(
       website: row.partnerWebsite,
       locationLat: row.partnerLocationLat,
       locationLng: row.partnerLocationLng,
+      adminName: row.partnerAdminName,
+      adminPhone: row.partnerAdminPhone,
+      tollNumber: row.partnerTollNumber,
     })),
     total: countResult[0]?.count || 0,
   };

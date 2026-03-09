@@ -63,8 +63,16 @@ export function SeoSection({
           
           {/* SEO Image / Open Graph */}
           <div className="pt-2">
-            <p className="text-sm font-semibold text-muted-foreground/70 mb-2">Social Share Image</p>
-            <p className="text-xs text-muted-foreground/50 mb-3">Shown when sharing on social media (1200x630 recommended)</p>
+            <p className="text-sm font-semibold text-muted-foreground/70 mb-2">Social Share Image (OG Image)</p>
+            <div className="text-xs text-muted-foreground/60 mb-3 space-y-1">
+              <p>This image appears when your showroom link is shared on:</p>
+              <ul className="list-disc list-inside pl-1 space-y-0.5">
+                <li>WhatsApp, iMessage, Telegram</li>
+                <li>Facebook, LinkedIn, Twitter/X</li>
+                <li>Google search results (rich snippets)</li>
+              </ul>
+              <p className="mt-1.5 text-muted-foreground/50">Best size: 1200×630px (landscape). Use your logo on a branded background.</p>
+            </div>
             <div className="relative aspect-[1200/630] max-w-[300px] rounded-lg overflow-hidden bg-muted/30 border border-border/40 group">
               {form.seoImage ? (
                 <>

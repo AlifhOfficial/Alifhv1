@@ -68,6 +68,31 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
             className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 sm:px-6 lg:px-8"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
+            {/* VIP Card - Priority Position */}
+            {vipPerks && vipPerks.length > 0 && (
+              <div 
+                className="flex-shrink-0 w-[280px] sm:w-[320px] min-h-[200px] p-6 rounded-xl bg-blue-600 text-white border border-blue-700/40 hover:border-blue-400/50 transition-all duration-300 flex flex-col"
+              >
+                {/* VIP Label */}
+                <span className="text-xl font-semibold text-white/30 mb-3">
+                  VIP
+                </span>
+
+                {/* Perks List */}
+                <div className="flex-1 space-y-2">
+                  {vipPerks.slice(0, 4).map((perk, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-white/40 flex-shrink-0" />
+                      <span className="text-sm text-white/80">{perk}</span>
+                    </div>
+                  ))}
+                  {vipPerks.length > 4 && (
+                    <span className="text-xs text-white/50">+{vipPerks.length - 4} more</span>
+                  )}
+                </div>
+              </div>
+            )}
+
             {services.map((service, index) => (
               <div 
                 key={service.id} 
@@ -91,31 +116,6 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
                 </div>
               </div>
             ))}
-
-            {/* VIP Card - in the same carousel */}
-            {vipPerks && vipPerks.length > 0 && (
-              <div 
-                className="flex-shrink-0 w-[280px] sm:w-[320px] min-h-[200px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col"
-              >
-                {/* VIP Label */}
-                <span className="text-xl font-semibold text-muted-foreground/30 mb-3">
-                  VIP
-                </span>
-
-                {/* Perks List */}
-                <div className="flex-1 space-y-2">
-                  {vipPerks.slice(0, 4).map((perk, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 flex-shrink-0" />
-                      <span className="text-sm text-muted-foreground">{perk}</span>
-                    </div>
-                  ))}
-                  {vipPerks.length > 4 && (
-                    <span className="text-xs text-muted-foreground/60">+{vipPerks.length - 4} more</span>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

@@ -27,7 +27,8 @@ export type ShowroomAssetType =
   | 'hero-image'
   | 'founder-image'
   | 'gallery'
-  | 'team-member';
+  | 'team-member'
+  | 'seo-image';
 
 export interface CompressionConfig {
   maxWidth: number;
@@ -89,6 +90,7 @@ const SHOWROOM_CONFIGS: Record<ShowroomAssetType, CompressionConfig> = {
   'founder-image': { maxWidth: 800, maxHeight: 1000, maxSizeKB: 120, quality: 0.8 },
   'gallery': { maxWidth: 1600, maxHeight: 1200, maxSizeKB: 180, quality: 0.8 },
   'team-member': { maxWidth: 600, maxHeight: 600, maxSizeKB: 80, quality: 0.8 },
+  'seo-image': { maxWidth: 1200, maxHeight: 630, maxSizeKB: 150, quality: 0.85 }, // OG image 1200x630
 };
 
 // ============================================================================

@@ -1,6 +1,7 @@
 /**
  * Gallery Section Component
  * Showroom gallery, virtual tour, and ambient style
+ * Supports drag-and-drop reordering using @dnd-kit
  */
 
 'use client';
@@ -9,9 +10,105 @@ import React from 'react';
 import Image from 'next/image';
 import { getPublicUrl } from '@/utils';
 import { compressAndUploadShowroomImage } from '@/lib/storage';
-import { Plus, X, Loader2 } from 'lucide-react';
+import { Plus, X, Loader2, GripVertical } from 'lucide-react';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import { EditableField, VideoUpload, VideoEmbedPreview } from '../components';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+// ============================================================================
+// Sortable Gallery Image Component
+// ============================================================================
+
+interface SortableGalleryImageProps {
+  id: string;
+  url: string;
+  index: number;
+  onRemove: () => void;
+}
+
+function SortableGalleryImage({ id, url, index, onRemove }: SortableGalleryImageProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : undefined,
+    opacity: isDragging ? 0.8 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`relative aspect-video rounded-lg overflow-hidden bg-muted/30 group ${
+        isDragging ? 'ring-2 ring-primary shadow-lg' : ''
+      }`}
+    >
+      <Image 
+        src={getPublicUrl(url) || url} 
+        alt={`Gallery ${index + 1}`} 
+        fill 
+        className="object-cover pointer-events-none" 
+        unoptimized 
+      />
+      
+      {/* Drag handle - top left */}
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        className="absolute top-2 left-2 p-1.5 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing touch-none"
+      >
+        <GripVertical className="w-3 h-3 text-white" />
+      </button>
+      
+      {/* Delete button - top right */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove();
+        }}
+        className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <X className="w-3 h-3 text-white" />
+      </button>
+      
+      {/* Position badge */}
+      <div className="absolute bottom-2 left-2 px-1.5 py-0.5 bg-black/50 text-white text-xs font-medium rounded">
+        {index + 1}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Gallery Section Props
+// ============================================================================
 
 interface GallerySectionProps {
   form: Partial<PartnerShowroom>;
@@ -53,6 +150,41 @@ export function GallerySection({
   removeVideo,
   toast,
 }: GallerySectionProps) {
+  // DnD sensors for pointer, touch and keyboard
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement before drag starts (desktop)
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200, // Hold 200ms before drag starts on touch
+        tolerance: 5, // Allow 5px movement during delay
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Handle drag end - reorder images and persist
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const images = form.showroomImages || [];
+      const oldIndex = images.indexOf(active.id as string);
+      const newIndex = images.indexOf(over.id as string);
+      const reordered = arrayMove(images, oldIndex, newIndex);
+      
+      // Update form immediately for responsive UI
+      setForm((prev) => ({ ...prev, showroomImages: reordered }));
+      
+      // Persist the new order
+      await updateShowroom({ showroomImages: reordered });
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Gallery Grid */}
@@ -67,40 +199,45 @@ export function GallerySection({
           <p className="text-xs text-muted-foreground leading-relaxed">
             <span className="font-medium text-foreground/80">First 6 images</span> — Showcase your showroom, facilities, team, and brand infrastructure.{' '}
             <span className="font-medium text-foreground/80">Remaining images</span> — Used as ambient visuals across your profile sections for brand presence.
+            <span className="block mt-1 text-muted-foreground/70">Drag images to reorder.</span>
           </p>
         </div>
         
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {(form.showroomImages || []).map((img, idx) => (
-              <div key={img} className="relative aspect-video rounded-lg overflow-hidden bg-muted/30 group">
-                <Image src={getPublicUrl(img) || img} alt={`Gallery ${idx + 1}`} fill className="object-cover" unoptimized />
-                <button
-                  onClick={async () => {
-                    const updated = (form.showroomImages || []).filter((_, i) => i !== idx);
-                    await updateShowroom({ showroomImages: updated });
-                  }}
-                  className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <X className="w-3 h-3 text-white" />
-                </button>
-              </div>
-            ))}
-            {(form.showroomImages?.length || 0) < 12 && (
-              <label className="aspect-video rounded-lg border-2 border-dashed border-border/40 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/40 transition-colors">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={async (e) => {
-                    const files = Array.from(e.target.files || []);
-                    e.target.value = '';
-                    if (!files.length) return;
-                    
-                    // Limit to remaining slots
-                    const remaining = 12 - (form.showroomImages?.length || 0);
-                    const toUpload = files.slice(0, remaining);
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext items={form.showroomImages || []} strategy={rectSortingStrategy}>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {(form.showroomImages || []).map((img, idx) => (
+                  <SortableGalleryImage
+                    key={img}
+                    id={img}
+                    url={img}
+                    index={idx}
+                    onRemove={async () => {
+                      const updated = (form.showroomImages || []).filter((_, i) => i !== idx);
+                      await updateShowroom({ showroomImages: updated });
+                    }}
+                  />
+                ))}
+                {(form.showroomImages?.length || 0) < 12 && (
+                  <label className="aspect-video rounded-lg border-2 border-dashed border-border/40 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/40 transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files || []);
+                        e.target.value = '';
+                        if (!files.length) return;
+                        
+                        // Limit to remaining slots
+                        const remaining = 12 - (form.showroomImages?.length || 0);
+                        const toUpload = files.slice(0, remaining);
                     
                     if (files.length > remaining) {
                       toast({ title: `Only uploading ${remaining} images (max 12)`, variant: 'default' });
@@ -151,7 +288,9 @@ export function GallerySection({
                 )}
               </label>
             )}
-          </div>
+              </div>
+            </SortableContext>
+          </DndContext>
         </div>
       </section>
 

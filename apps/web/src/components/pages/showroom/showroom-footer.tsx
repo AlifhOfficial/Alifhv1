@@ -25,6 +25,10 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
     partner?.emirate
   ].filter(Boolean);
   const fullAddress = addressParts.join(', ');
+  
+  // Contact priority: tollNumber > adminPhone > registered phone
+  const displayPhone = partner?.tollNumber || partner?.adminPhone || partner?.phone;
+  const contactName = partner?.adminName;
 
   return (
     <footer className="border-t border-border/40">
@@ -64,10 +68,10 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
               <div className="space-y-4">
                 <p className="text-sm font-semibold text-foreground">Contact</p>
                 <div className="flex flex-col gap-3">
-                  {partner?.phone && (
-                    <a href={`tel:${partner.phone}`} className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                  {displayPhone && (
+                    <a href={`tel:${displayPhone}`} className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
                       <Phone className="w-3.5 h-3.5" />
-                      {partner.phone}
+                      {displayPhone}
                     </a>
                   )}
                   {fullAddress && (

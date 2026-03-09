@@ -62,7 +62,7 @@ export default async function AccessDeniedPage({
             Back to Home
           </Link>
           <Link
-            href="/support"
+            href="/contact"
             className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
           >
             Contact Support

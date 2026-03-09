@@ -86,14 +86,31 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
 
   // Save single field
   const saveField = async (field: keyof ShowroomUpdateData) => {
-    if (!form[field] && form[field] !== false && form[field] !== 0) return;
+    // Get the current value - convert empty strings to null for nullable fields
+    let value = form[field];
+    
+    // For nullable string fields, convert empty string to null
+    if (value === '') {
+      value = null as any;
+    }
+    
+    // For URL fields, ensure they have https:// prefix if they have a value
+    const urlFields: (keyof ShowroomUpdateData)[] = ['youtubeChannelUrl', 'linkedinUrl', 'heroCtaLink', 'heroCtaSecondaryLink', 'showroomMapEmbedUrl'];
+    if (urlFields.includes(field) && value && typeof value === 'string') {
+      // Add https:// if missing protocol
+      if (!value.startsWith('http://') && !value.startsWith('https://')) {
+        value = `https://${value}` as any;
+      }
+    }
     
     try {
-      await updateShowroom({ [field]: form[field] });
+      await updateShowroom({ [field]: value });
       setEditingField(null);
       toast({ title: 'Saved' });
-    } catch (err) {
-      toast({ title: 'Failed to save', variant: 'destructive' });
+    } catch (err: any) {
+      // Show specific error message if available
+      const message = err?.message || 'Failed to save';
+      toast({ title: message, variant: 'destructive' });
     }
   };
 
@@ -105,7 +122,7 @@ export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
   };
 
   // Upload image via client-side compression + direct CDN upload
-  const uploadImage = async (file: File, type: 'hero-image' | 'founder-image' | 'gallery' | 'team-member', field: keyof PartnerShowroom) => {
+  const uploadImage = async (file: File, type: 'hero-image' | 'founder-image' | 'gallery' | 'team-member' | 'seo-image', field: keyof PartnerShowroom) => {
     // Basic check - allow common image types
     const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
     if (!validTypes.includes(file.type) && !file.type.startsWith('image/')) {
