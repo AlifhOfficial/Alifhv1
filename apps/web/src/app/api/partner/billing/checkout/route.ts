@@ -101,12 +101,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get current partner tier from DB (standard = Flow, black = Black)
-    const currentTier = partnerData?.tier || 'standard';
+    // Get current partner tier from DB (flow or black)
+    const currentTier = partnerData?.tier || 'flow';
     const isUpgrade = currentTier !== 'black' && plan === 'black';
     const isDowngrade = currentTier === 'black' && plan === 'flow';
     const isSamePlan = (currentTier === 'black' && plan === 'black') || 
-                       (currentTier === 'standard' && plan === 'flow');
+                       (currentTier === 'flow' && plan === 'flow');
     
     // Calculate remaining free trial days
     // IMPORTANT: Trial only applies if staying on same plan or adding payment method

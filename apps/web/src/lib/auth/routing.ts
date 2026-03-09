@@ -42,6 +42,30 @@ export function isDealerStaff(user: ExtendedUser): boolean {
 }
 
 /**
+ * Checks if user's staff membership has active billing
+ * Used to gate staff dashboard access when partner billing is inactive
+ * @param user - Extended user with partner memberships
+ * @returns True if user has at least one staff membership with active billing
+ */
+export function hasActiveBillingAsStaff(user: ExtendedUser): boolean {
+  return user.partnerMemberships?.some((membership) => 
+    membership.staffRole !== 'owner' && membership.billingActive === true
+  ) === true;
+}
+
+/**
+ * Checks if user's owner membership has active billing
+ * Used to gate partner dashboard access when billing is inactive
+ * @param user - Extended user with partner memberships
+ * @returns True if user has at least one owner membership with active billing
+ */
+export function hasActiveBillingAsOwner(user: ExtendedUser): boolean {
+  return user.partnerMemberships?.some((membership) => 
+    membership.staffRole === 'owner' && membership.billingActive === true
+  ) === true;
+}
+
+/**
  * Computes all portal access flags for a user
  * Used by middleware and navigation to show/hide portal links
  * 

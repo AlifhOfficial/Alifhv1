@@ -1,64 +1,75 @@
 import Link from "next/link";
-import { ShieldX, Home, LayoutDashboard } from "lucide-react";
-import { cn } from "@/utils/cn";
+
+const REASON_MESSAGES: Record<string, { badge: string; title: string; subtitle: string }> = {
+  'billing-inactive': {
+    badge: 'Billing',
+    title: 'Subscription required.',
+    subtitle: 'Your dealership\'s subscription is inactive.',
+  },
+  'not-dealer-owner': {
+    badge: 'Access',
+    title: 'Owner access required.',
+    subtitle: 'This area is restricted to partner owners.',
+  },
+  'not-dealer-staff': {
+    badge: 'Access',
+    title: 'Staff access required.',
+    subtitle: 'This area is restricted to partner staff.',
+  },
+  'insufficient-permissions': {
+    badge: 'Access',
+    title: 'Permission denied.',
+    subtitle: 'You don\'t have the required permissions.',
+  },
+  default: {
+    badge: 'Access',
+    title: 'Not authorized.',
+    subtitle: 'You don\'t have permission to view this page.',
+  },
+};
 
 export default async function AccessDeniedPage({
   searchParams,
 }: {
-  searchParams: Promise<{ required?: string; current?: string }>;
+  searchParams: Promise<{ required?: string; current?: string; reason?: string }>;
 }) {
   const params = await searchParams;
-  const currentRole = params.current || "user";
+  const reason = params.reason || "default";
+  const message = REASON_MESSAGES[reason] || REASON_MESSAGES.default;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="max-w-sm w-full text-center space-y-6">
-        {/* Icon */}
-        <div className="flex justify-center">
-          <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
-            <ShieldX className="h-6 w-6 text-destructive" />
-          </div>
-        </div>
-
-        {/* Message */}
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-foreground tracking-tight">
-            Access denied
+    <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center">
+      <div className="max-w-[1600px] mx-auto w-full">
+        
+        {/* Header */}
+        <div className="text-center mb-12 space-y-4">
+          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            {message.badge}
+          </span>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            {message.title}
+            <br />
+            <span className="text-muted-foreground">{message.subtitle}</span>
           </h1>
-          <p className="text-sm text-muted-foreground">
-            You don't have permission to access this page.
-          </p>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col gap-2 pt-2">
-          <Link
-            href={`/${currentRole}-dashboard`}
-            className={cn(
-              "h-10 inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-colors",
-              "bg-primary text-primary-foreground hover:bg-primary/90"
-            )}
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            Go to dashboard
-          </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/"
-            className={cn(
-              "h-10 inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-colors",
-              "bg-muted/30 text-foreground hover:bg-muted/50"
-            )}
+            className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
           >
-            <Home className="h-4 w-4" />
-            Go home
+            Back to Home
+          </Link>
+          <Link
+            href="/support"
+            className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+          >
+            Contact Support
           </Link>
         </div>
 
-        {/* Help text */}
-        <p className="text-xs text-muted-foreground">
-          Think this is a mistake? Contact support.
-        </p>
       </div>
-    </div>
+    </section>
   );
 }

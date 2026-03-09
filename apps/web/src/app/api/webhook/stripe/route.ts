@@ -8,14 +8,15 @@
  * Events handled:
  * - checkout.session.completed: Update tier when checkout completes
  * - customer.subscription.updated: Update tier when subscription changes
- * - customer.subscription.deleted: Reset tier to standard when subscription ends
+ * - customer.subscription.deleted: Reset tier to flow when subscription ends
+ * - invoice.payment_failed: Disable staff accounts (keep partner dashboard open for owner)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { getStripeClient, isStripeConfigured, PLANS } from '@/lib/stripe/config';
-import { db, partner as partnerTable, eq } from '@alifh/database';
+import { db, partner as partnerTable, partnerStaff as partnerStaffTable, eq, and, ne } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
@@ -26,40 +27,114 @@ export const dynamic = 'force-dynamic';
  * Update partner tier based on subscription plan
  */
 async function updatePartnerTier(partnerId: string, planName: string, subscriptionStatus: string) {
-  // Determine tier from plan name
-  const newTier = planName === 'black' ? 'black' : 'standard';
+  // Determine tier from plan name (flow or black)
+  const newTier = planName === 'black' ? 'black' : 'flow';
   
   // Also update blackListingQuota based on tier
   const blackListingQuota = newTier === 'black' ? 5 : 1;
   
-  console.log(`[Stripe Webhook] Updating partner ${partnerId}: tier=${newTier}, status=${subscriptionStatus}`);
+  // Set billingActive based on subscription status
+  const billingActive = ['active', 'trialing'].includes(subscriptionStatus);
+  
+  console.log(`[Stripe Webhook] Updating partner ${partnerId}: tier=${newTier}, status=${subscriptionStatus}, billingActive=${billingActive}`);
   
   await db
     .update(partnerTable)
     .set({
       tier: newTier,
-      subscriptionTier: planName,
       blackListingQuota: blackListingQuota,
+      billingActive: billingActive,
       updatedAt: new Date(),
     })
     .where(eq(partnerTable.id, partnerId));
+  
+  // Re-enable staff accounts if subscription is active
+  if (billingActive) {
+    await enablePartnerStaff(partnerId);
+  }
 }
 
 /**
  * Reset partner tier when subscription is cancelled/deleted
  */
 async function resetPartnerTier(partnerId: string) {
-  console.log(`[Stripe Webhook] Resetting partner ${partnerId} to standard tier (subscription cancelled)`);
+  console.log(`[Stripe Webhook] Resetting partner ${partnerId} to flow tier, billingActive=false (subscription cancelled)`);
   
   await db
     .update(partnerTable)
     .set({
-      tier: 'standard',
-      subscriptionTier: 'basic',
+      tier: 'flow',
       blackListingQuota: 1,
+      billingActive: false,
       updatedAt: new Date(),
     })
     .where(eq(partnerTable.id, partnerId));
+  
+  // Disable staff accounts when subscription ends
+  await disablePartnerStaff(partnerId);
+}
+
+/**
+ * Disable all non-owner staff accounts for a partner
+ * Owner keeps access to partner dashboard for billing management
+ * Also sets billingActive to false on the partner
+ */
+async function disablePartnerStaff(partnerId: string) {
+  console.log(`[Stripe Webhook] Disabling staff for partner ${partnerId} and setting billingActive=false`);
+  
+  // Set partner billingActive to false
+  await db
+    .update(partnerTable)
+    .set({
+      billingActive: false,
+      updatedAt: new Date(),
+    })
+    .where(eq(partnerTable.id, partnerId));
+  
+  // Suspend non-owner staff accounts
+  await db
+    .update(partnerStaffTable)
+    .set({
+      status: 'suspended',
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(partnerStaffTable.partnerId, partnerId),
+        eq(partnerStaffTable.isOwner, false) // Keep owner active
+      )
+    );
+}
+
+/**
+ * Re-enable staff accounts when subscription becomes active
+ * Also sets billingActive to true on the partner
+ */
+async function enablePartnerStaff(partnerId: string) {
+  console.log(`[Stripe Webhook] Re-enabling staff for partner ${partnerId} and setting billingActive=true`);
+  
+  // Set partner billingActive to true
+  await db
+    .update(partnerTable)
+    .set({
+      billingActive: true,
+      updatedAt: new Date(),
+    })
+    .where(eq(partnerTable.id, partnerId));
+  
+  // Only re-enable suspended staff (not 'left' or 'invited')
+  await db
+    .update(partnerStaffTable)
+    .set({
+      status: 'active',
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(partnerStaffTable.partnerId, partnerId),
+        eq(partnerStaffTable.status, 'suspended')
+      )
+    );
 }
 
 /**
@@ -184,7 +259,26 @@ export async function POST(req: NextRequest) {
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice;
         console.log(`[Stripe Webhook] Invoice payment failed: ${invoice.id}`);
-        // Could add notification logic here
+        
+        // Get subscription to find partnerId (subscription field may be string or object)
+        const subscriptionId = typeof (invoice as any).subscription === 'string' 
+          ? (invoice as any).subscription 
+          : (invoice as any).subscription?.id;
+          
+        if (subscriptionId) {
+          try {
+            const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+            const partnerId = getPartnerIdFromMetadata(subscription.metadata);
+            
+            if (partnerId) {
+              // Disable staff accounts (owner keeps access for billing management)
+              await disablePartnerStaff(partnerId);
+              console.log(`[Stripe Webhook] Staff disabled for partner ${partnerId} due to payment failure`);
+            }
+          } catch (err) {
+            console.error('[Stripe Webhook] Failed to process payment failure:', err);
+          }
+        }
         break;
       }
 

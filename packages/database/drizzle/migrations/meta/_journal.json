@@ -540,6 +540,13 @@
       "when": 1773016321625,
       "tag": "0076_productive_boom_boom",
       "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "7",
+      "when": 1773018891134,
+      "tag": "0077_sparkling_romulus",
+      "breakpoints": true
     }
   ]
 }

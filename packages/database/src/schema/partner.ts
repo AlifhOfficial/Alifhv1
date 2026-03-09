@@ -13,7 +13,7 @@ import {
 import { user } from './auth';
 
 export const partnerStatusEnum = pgEnum('partner_status', ['pending', 'active', 'suspended', 'cancelled']);
-export const partnerTierEnum = pgEnum('partner_tier', ['standard', 'gold', 'platinum', 'black']);
+export const partnerTierEnum = pgEnum('partner_tier', ['flow', 'black']);
 export const partnerTypeEnum = pgEnum('partner_type', ['car_dealer', 'showroom']);
 export const companySizeEnum = pgEnum('company_size', ['small', 'medium', 'large', 'enterprise']);
 export const partnerRequestStatusEnum = pgEnum('partner_request_status', ['pending', 'approved', 'rejected']);
@@ -30,8 +30,11 @@ export const partner = pgTable('partner', {
   tradeLicenseExpiry: timestamp('trade_license_expiry').notNull(),
   tradeLicenseDocumentUrl: text('trade_license_document_url'),
   status: partnerStatusEnum('status').default('pending').notNull(),
-  tier: partnerTierEnum('tier').default('standard').notNull(),
+  tier: partnerTierEnum('tier').default('flow').notNull(),
   partnerType: partnerTypeEnum('partner_type').notNull(),
+  
+  // Stripe billing (billed to companyNameLegal)
+  stripeCustomerId: text('stripe_customer_id'),
   email: text('email').notNull().unique(),
   phone: text('phone').notNull(),
   
@@ -104,11 +107,15 @@ export const partner = pgTable('partner', {
     saturday: { open: '09:00', close: '18:00' },
     sunday: { open: '09:00', close: '18:00' },
   }),
-  subscriptionTier: text('subscription_tier').default('basic'),
-  subscriptionExpiresAt: timestamp('subscription_expires_at'),
   // Trial Management - Set by admin when approving partner request
   trialEndDate: timestamp('trial_end_date'), // Exact trial end date set during approval
   trialMonths: integer('trial_months'), // Number of months granted (for display)
+  
+  // Billing access gate - controls staff dashboard access
+  // true = in trial OR active subscription
+  // false = trial expired with no subscription OR subscription cancelled
+  billingActive: boolean('billing_active').default(true).notNull(),
+  
   paymentTerms: text('payment_terms').default('net30'),
   notificationPreferences: jsonb('notification_preferences').$type<{
     emailNewLead: boolean;
@@ -175,6 +182,7 @@ export const partner = pgTable('partner', {
   index('partner_approvedBy_idx').on(table.approvedBy),
   index('partner_accountManagerId_idx').on(table.accountManagerId),
   index('partner_verifiedBy_idx').on(table.verifiedBy),
+  index('partner_stripeCustomerId_idx').on(table.stripeCustomerId),
 ]);
 
 export const partnerStaff = pgTable('partner_staff', {

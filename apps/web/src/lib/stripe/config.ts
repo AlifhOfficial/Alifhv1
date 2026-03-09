@@ -57,7 +57,6 @@ export interface PlanConfig {
   displayName: string;
   priceAED: number;
   description: string;
-  freeMonths: number;
   features: string[];
   limits: {
     listings: number; // -1 = unlimited
@@ -74,7 +73,6 @@ export const PLANS: Record<PlanName, PlanConfig> = {
     displayName: 'Revvup Flow',
     priceAED: 7000,
     description: 'Essential tools for car dealerships',
-    freeMonths: 3, // 21k credits / 7k = 3 months
     features: [
       'Up to 50 active listings',
       '1 Black listing slot',
@@ -95,7 +93,6 @@ export const PLANS: Record<PlanName, PlanConfig> = {
     displayName: 'Revvup Black',
     priceAED: 21000,
     description: 'Premium features for high-volume dealers',
-    freeMonths: 0, // Black has no default trial - requires payment immediately
     features: [
       'Unlimited listings',
       '5 Black listing slots',
@@ -129,21 +126,19 @@ export function getPlansArray(): PlanConfig[] {
 // Better Auth Stripe Plugin Config
 // ============================================================================
 
-/** Stripe plans for Better Auth plugin */
+/** Stripe plans for Better Auth plugin (trial is admin-controlled, not automatic) */
 export function getStripePlans() {
   return [
     {
       name: PLANS.flow.name,
       priceId: process.env.STRIPE_PRICE_ALIFH_FLOW!,
       priceAED: PLANS.flow.priceAED,
-      freeTrial: { days: PLANS.flow.freeMonths * 30 },
       limits: PLANS.flow.limits,
     },
     {
       name: PLANS.black.name,
       priceId: process.env.STRIPE_PRICE_ALIFH_BLACK!,
       priceAED: PLANS.black.priceAED,
-      freeTrial: { days: PLANS.black.freeMonths * 30 },
       limits: PLANS.black.limits,
     },
   ];

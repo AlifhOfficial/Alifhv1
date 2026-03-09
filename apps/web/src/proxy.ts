@@ -5,6 +5,7 @@ import {
   getUserPortalAccess,
   isDealerOwner,
   isDealerStaff,
+  hasActiveBillingAsStaff,
 } from "@/lib/auth/routing";
 import type { ExtendedUser } from "@/types/auth";
 import { getCachedSession, setCachedSession } from "@/lib/redis";
@@ -284,6 +285,7 @@ export async function proxy(request: NextRequest) {
       }
 
       // Partner dashboard - ONLY dealer owners (users with staffRole === 'owner')
+      // Note: Owners can access even when billing is inactive - they need to fix billing!
       if (pathname.startsWith("/partner-dashboard")) {
         if (!isDealerOwner(user)) {
           return NextResponse.redirect(
@@ -297,6 +299,12 @@ export async function proxy(request: NextRequest) {
         if (!isDealerStaff(user)) {
           return NextResponse.redirect(
             new URL("/access-denied?reason=not-dealer-staff", request.url)
+          );
+        }
+        // Check if billing is active for the partner - block staff access until billing resolved
+        if (!hasActiveBillingAsStaff(user)) {
+          return NextResponse.redirect(
+            new URL("/access-denied?reason=billing-inactive", request.url)
           );
         }
       }

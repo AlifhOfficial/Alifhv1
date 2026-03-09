@@ -50,23 +50,34 @@ export async function GET(_req: NextRequest) {
           createdAt: partnerTable.createdAt,
           trialEndDate: partnerTable.trialEndDate,
           trialMonths: partnerTable.trialMonths,
+          billingActive: partnerTable.billingActive,
         })
         .from(partnerTable)
         .where(eq(partnerTable.id, partnerMembership.partnerId))
         .limit(1);
 
-      // Use admin-set trial end date if available, otherwise calculate from config
+      // Trial is admin-set via trialEndDate - no automatic trial
       const plan = partnerData?.tier === 'black' ? PLANS.black : PLANS.flow;
-      let freeTrialEndDate: Date;
+      
+      // Check if in admin-set trial period
+      let isInTrial = false;
+      let trialEndDate: string | null = null;
       
       if (partnerData?.trialEndDate) {
-        freeTrialEndDate = new Date(partnerData.trialEndDate);
-      } else {
-        freeTrialEndDate = new Date(partnerData?.createdAt || new Date());
-        freeTrialEndDate.setMonth(freeTrialEndDate.getMonth() + plan.freeMonths);
+        const trialEnd = new Date(partnerData.trialEndDate);
+        isInTrial = new Date() < trialEnd;
+        trialEndDate = trialEnd.toISOString();
       }
       
-      const isInTrial = new Date() < freeTrialEndDate;
+      // Auto-heal: sync billingActive if mismatched
+      const shouldBeActive = isInTrial;
+      if (partnerData?.billingActive !== shouldBeActive) {
+        console.log(`[Subscription] Auto-heal: partner ${partnerMembership.partnerId} billingActive ${partnerData?.billingActive} → ${shouldBeActive} (no Stripe customer)`);
+        await db
+          .update(partnerTable)
+          .set({ billingActive: shouldBeActive, updatedAt: new Date() })
+          .where(eq(partnerTable.id, partnerMembership.partnerId));
+      }
 
       return NextResponse.json({
         success: true,
@@ -75,7 +86,7 @@ export async function GET(_req: NextRequest) {
           plan: plan.name,
           planDisplayName: plan.displayName,
           priceAED: plan.priceAED,
-          trialEnd: freeTrialEndDate.toISOString(),
+          trialEnd: trialEndDate,
           trialMonths: partnerData?.trialMonths || null,
           subscription: null,
           hasStripeCustomer: false,
@@ -92,6 +103,7 @@ export async function GET(_req: NextRequest) {
         createdAt: partnerTable.createdAt,
         trialEndDate: partnerTable.trialEndDate,
         trialMonths: partnerTable.trialMonths,
+        billingActive: partnerTable.billingActive,
       })
       .from(partnerTable)
       .where(eq(partnerTable.id, partnerMembership.partnerId))
@@ -108,19 +120,28 @@ export async function GET(_req: NextRequest) {
     const activeSubscription = subscriptions.data[0];
 
     if (!activeSubscription) {
-      // No subscription - check if still in free trial period
+      // No subscription - check if still in admin-set trial period
       const plan = partnerData?.tier === 'black' ? PLANS.black : PLANS.flow;
       
-      // Use admin-set trial end date if available
-      let freeTrialEndDate: Date;
+      // Check if in admin-set trial period
+      let isInTrial = false;
+      let trialEndDateStr: string | null = null;
+      
       if (partnerData?.trialEndDate) {
-        freeTrialEndDate = new Date(partnerData.trialEndDate);
-      } else {
-        freeTrialEndDate = new Date(partnerData?.createdAt || new Date());
-        freeTrialEndDate.setMonth(freeTrialEndDate.getMonth() + plan.freeMonths);
+        const trialEnd = new Date(partnerData.trialEndDate);
+        isInTrial = new Date() < trialEnd;
+        trialEndDateStr = trialEnd.toISOString();
       }
       
-      const isInTrial = new Date() < freeTrialEndDate;
+      // Auto-heal: sync billingActive if mismatched
+      const shouldBeActive = isInTrial;
+      if (partnerData?.billingActive !== shouldBeActive) {
+        console.log(`[Subscription] Auto-heal: partner ${partnerMembership.partnerId} billingActive ${partnerData?.billingActive} → ${shouldBeActive}`);
+        await db
+          .update(partnerTable)
+          .set({ billingActive: shouldBeActive, updatedAt: new Date() })
+          .where(eq(partnerTable.id, partnerMembership.partnerId));
+      }
 
       return NextResponse.json({
         success: true,
@@ -129,7 +150,7 @@ export async function GET(_req: NextRequest) {
           plan: plan.name,
           planDisplayName: plan.displayName,
           priceAED: plan.priceAED,
-          trialEnd: freeTrialEndDate.toISOString(),
+          trialEnd: trialEndDateStr,
           trialMonths: partnerData?.trialMonths || null,
           subscription: null,
           hasStripeCustomer: true,
@@ -148,6 +169,16 @@ export async function GET(_req: NextRequest) {
     // Log if there's a mismatch (indicates webhook may not have fired)
     if ((partnerData?.tier === 'black') !== stripePlanIsBlack) {
       console.warn(`[Subscription] Plan mismatch! DB tier=${partnerData?.tier}, Stripe priceId suggests=${stripePlanIsBlack ? 'black' : 'flow'}. Webhook may need to resync.`);
+    }
+    
+    // Auto-heal: sync billingActive based on Stripe subscription status
+    const shouldBeActive = ['active', 'trialing'].includes(activeSubscription.status);
+    if (partnerData?.billingActive !== shouldBeActive) {
+      console.log(`[Subscription] Auto-heal: partner ${partnerMembership.partnerId} billingActive ${partnerData?.billingActive} → ${shouldBeActive} (subscription.status=${activeSubscription.status})`);
+      await db
+        .update(partnerTable)
+        .set({ billingActive: shouldBeActive, updatedAt: new Date() })
+        .where(eq(partnerTable.id, partnerMembership.partnerId));
     }
 
     // Get payment method info if available

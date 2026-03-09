@@ -277,7 +277,7 @@ export async function createPartnerFromRequest(
       vatNumber: requestData.vatNumber,
       partnerType: requestData.partnerType,
       status: 'active',
-      tier: 'standard', // All partners start on Flow (standard tier)
+      tier: 'flow', // All partners start on Flow tier
       email: requestData.userEmail || requestData.email,
       phone: requestData.userPhone || '+971000000000', // Default phone
       showroomCount: 1,

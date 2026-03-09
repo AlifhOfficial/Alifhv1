@@ -37,7 +37,6 @@ export interface AuthUser {
     partnerName: string;
     partnerLogo?: string | null;
     partnerTier?: string | null;
-    subscriptionTier?: string | null;
     staffRole: string;
   }>;
 }

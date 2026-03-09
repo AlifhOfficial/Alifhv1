@@ -21,10 +21,6 @@ import {
   Clock,
   AlertCircle,
   FileText,
-  Sparkles,
-  Crown,
-  ArrowUp,
-  ArrowDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -175,7 +171,7 @@ export default function PartnerBillingPage() {
     },
     onSuccess: (data) => {
       if (data.data?.url) {
-        window.open(data.data.url, '_blank');
+        window.location.href = data.data.url;
       }
     },
   });
@@ -434,136 +430,50 @@ export default function PartnerBillingPage() {
             
             {/* Actions */}
             <div className="pt-4 flex flex-wrap gap-3">
-              {/* Subscribe/Add Payment buttons for trial/inactive users without payment */}
-              {(subData.status === 'trialing' || subData.status === 'inactive') && !subData.paymentMethod && (
-                <>
-                  {subData.plan === 'black' ? (
-                    <button
-                      onClick={() => handleCheckout('black')}
-                      disabled={checkoutPlan !== null}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-zinc-900 to-zinc-700 text-white text-sm font-medium hover:from-zinc-800 hover:to-zinc-600 transition-all disabled:opacity-50"
-                    >
-                      {checkoutPlan === 'black' ? (
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <CreditCard className="w-4 h-4" />
-                      )}
-                      Add Payment Method
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => handleCheckout('flow')}
-                        disabled={checkoutPlan !== null}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
-                      >
-                        {checkoutPlan === 'flow' ? (
-                          <RefreshCw className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <CreditCard className="w-4 h-4" />
-                        )}
-                        Add Payment Method
-                      </button>
-                      <button
-                        onClick={() => handleCheckout('black')}
-                        disabled={checkoutPlan !== null}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-background text-foreground text-sm font-medium hover:bg-secondary/50 transition-colors disabled:opacity-50"
-                      >
-                        {checkoutPlan === 'black' ? (
-                          <RefreshCw className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Crown className="w-4 h-4" />
-                        )}
-                        Upgrade to Black
-                      </button>
-                    </>
-                  )}
-                </>
-              )}
-
-              {/* Manage Subscription button - show for anyone with payment method or active subscription */}
-              {(subData.paymentMethod || subData.status === 'active') && subData.hasStripeCustomer && (
-                <button
-                  onClick={handleOpenPortal}
-                  disabled={portalLoading}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
-                >
-                  {portalLoading ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <ExternalLink className="w-4 h-4" />
-                  )}
-                  Manage Subscription
-                </button>
-              )}
-
-              {/* Upgrade button for Flow users (active or trialing with payment) */}
-              {(subData.status === 'active' || (subData.status === 'trialing' && subData.paymentMethod)) && subData.plan === 'flow' && (
-                <button
-                  onClick={() => handleCheckout('black')}
-                  disabled={checkoutPlan !== null}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-zinc-900 to-zinc-700 text-white text-sm font-medium hover:from-zinc-800 hover:to-zinc-600 transition-all disabled:opacity-50"
-                >
-                  {checkoutPlan === 'black' ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <ArrowUp className="w-4 h-4" />
-                  )}
-                  Upgrade to Black
-                </button>
-              )}
-
-              {/* Downgrade button for active Black users only (not during trial) */}
-              {subData.status === 'active' && subData.plan === 'black' && (
-                <button
-                  onClick={() => handleCheckout('flow')}
-                  disabled={checkoutPlan !== null}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-background text-foreground text-sm font-medium hover:bg-secondary/50 transition-colors disabled:opacity-50"
-                >
-                  {checkoutPlan === 'flow' ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <ArrowDown className="w-4 h-4" />
-                  )}
-                  Downgrade to Flow
-                </button>
-              )}
-
-              {/* Resubscribe buttons for cancelled/inactive users with payment method */}
-              {(subData.status === 'canceled' || subData.status === 'inactive') && subData.hasStripeCustomer && (
+              {/* No active subscription - show both plan options */}
+              {(subData.status === 'inactive' || subData.status === 'canceled') && (
                 <>
                   <button
                     onClick={() => handleCheckout('flow')}
                     disabled={checkoutPlan !== null}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
                   >
                     {checkoutPlan === 'flow' ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
                     ) : (
-                      <Sparkles className="w-4 h-4" />
+                      <CreditCard className="w-4 h-4" />
                     )}
                     Subscribe to Flow
                   </button>
                   <button
                     onClick={() => handleCheckout('black')}
                     disabled={checkoutPlan !== null}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-zinc-900 to-zinc-700 text-white text-sm font-medium hover:from-zinc-800 hover:to-zinc-600 transition-all disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-800 transition-colors disabled:opacity-50"
                   >
                     {checkoutPlan === 'black' ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
                     ) : (
-                      <Crown className="w-4 h-4" />
+                      <CreditCard className="w-4 h-4" />
                     )}
                     Subscribe to Black
                   </button>
                 </>
               )}
-              
-              {/* Help text for what Manage does */}
-              {(subData.paymentMethod || subData.status === 'active') && subData.hasStripeCustomer && (
-                <p className="w-full text-xs text-muted-foreground">
-                  Update payment method, cancel subscription, or download invoices
-                </p>
+
+              {/* Active or trialing subscription - can manage billing */}
+              {(subData.status === 'active' || subData.status === 'trialing') && subData.hasStripeCustomer && (
+                <button
+                  onClick={handleOpenPortal}
+                  disabled={portalLoading}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                >
+                  {portalLoading ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <ExternalLink className="w-4 h-4" />
+                  )}
+                  Manage Billing
+                </button>
               )}
             </div>
           </div>

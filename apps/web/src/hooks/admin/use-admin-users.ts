@@ -105,7 +105,7 @@ export interface AdminPartnerData {
   email: string;
   phone: string;
   status: 'pending' | 'active' | 'suspended' | 'cancelled';
-  tier: 'standard' | 'gold' | 'platinum' | 'black';
+  tier: 'flow' | 'black';
   partnerType: string;
   isVerified: boolean;
   verifiedAt: Date | string | null;

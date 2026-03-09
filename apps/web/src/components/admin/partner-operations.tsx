@@ -158,8 +158,8 @@ export function AdminPartnerOperations({
         {/* Update Tier */}
         <button
           onClick={() => {
-            const tier = prompt('Enter tier (standard/gold/platinum/black):') as any;
-            if (tier && ['standard', 'gold', 'platinum', 'black'].includes(tier)) {
+            const tier = prompt('Enter tier (flow/black):') as any;
+            if (tier && ['flow', 'black'].includes(tier)) {
               performOperation('updateTier', { partnerId: partner.id, tier });
             }
           }}

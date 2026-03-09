@@ -61,7 +61,7 @@ const cancelPartnerSchema = z.object({
 const updateTierSchema = z.object({
   operation: z.literal('updateTier'),
   partnerId: z.string(),
-  tier: z.enum(['standard', 'gold', 'platinum', 'black']),
+  tier: z.enum(['flow', 'black']),
 });
 
 const verifyPartnerSchema = z.object({

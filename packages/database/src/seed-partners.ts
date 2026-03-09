@@ -21,7 +21,7 @@ const partnersData = [
     vatNumber: 'VAT100123456789',
     partnerType: 'car_dealer' as const,
     status: 'active' as const,
-    tier: 'platinum' as const,
+    tier: 'black' as const,
     email: 'info@luxurymotorsdubai.ae',
     phone: '+971-4-123-4567',
     website: 'https://luxurymotorsdubai.ae',
@@ -67,8 +67,7 @@ const partnersData = [
       saturday: { open: '10:00', close: '22:00' },
       sunday: { open: '10:00', close: '22:00' },
     },
-    subscriptionTier: 'platinum',
-    subscriptionExpiresAt: new Date('2025-12-31'),
+    },
   },
   {
     companyNameLegal: 'Premium Auto Trading LLC',
@@ -79,7 +78,7 @@ const partnersData = [
     vatNumber: 'VAT100234567890',
     partnerType: 'car_dealer' as const,
     status: 'active' as const,
-    tier: 'gold' as const,
+    tier: 'flow' as const,
     email: 'info@premiumautotrading.ae',
     phone: '+971-4-987-6543',
     website: 'https://premiumautotrading.ae',
@@ -125,9 +124,6 @@ const partnersData = [
       saturday: { open: '10:00', close: '20:00' },
       sunday: { open: '10:00', close: '20:00' },
     },
-
-    subscriptionTier: 'gold',
-    subscriptionExpiresAt: new Date('2025-06-30'),
   },
   {
     companyNameLegal: 'Elite Motors Abu Dhabi LLC',
@@ -138,7 +134,7 @@ const partnersData = [
     vatNumber: 'VAT100345678901',
     partnerType: 'car_dealer' as const,
     status: 'active' as const,
-    tier: 'gold' as const,
+    tier: 'flow' as const,
     email: 'contact@elitemotorsad.ae',
     phone: '+971-2-555-7890',
     website: 'https://elitemotorsad.ae',
@@ -184,8 +180,6 @@ const partnersData = [
       saturday: { open: '10:00', close: '18:00' },
       sunday: { open: '10:00', close: '18:00' },
     },
-    subscriptionTier: 'gold',
-    subscriptionExpiresAt: new Date('2025-09-30'),
   },
   {
     companyNameLegal: 'Royal Auto Gallery LLC',
@@ -242,9 +236,6 @@ const partnersData = [
       saturday: { open: '10:00', close: '23:00' },
       sunday: { open: '10:00', close: '23:00' },
     },
-
-    subscriptionTier: 'black',
-    subscriptionExpiresAt: new Date('2026-12-31'),
   },
   {
     companyNameLegal: 'AutoHub Sharjah Trading LLC',
@@ -255,7 +246,7 @@ const partnersData = [
     vatNumber: 'VAT100567890123',
     partnerType: 'car_dealer' as const,
     status: 'active' as const,
-    tier: 'standard' as const,
+    tier: 'flow' as const,
     email: 'sales@autohubsharjah.ae',
     phone: '+971-6-555-1234',
     website: 'https://autohubsharjah.ae',
@@ -301,9 +292,6 @@ const partnersData = [
       saturday: { open: '09:00', close: '17:00' },
       sunday: { open: '09:00', close: '17:00' },
     },
-
-    subscriptionTier: 'standard',
-    subscriptionExpiresAt: new Date('2025-08-31'),
   },
 ];
 
@@ -423,9 +411,7 @@ async function seedPartners() {
     console.log('\n📊 Summary:\n');
     console.log(`   Partners: ${createdPartners.length}`);
     console.log(`   • Black tier: ${createdPartners.filter(p => p.tier === 'black').length}`);
-    console.log(`   • Platinum tier: ${createdPartners.filter(p => p.tier === 'platinum').length}`);
-    console.log(`   • Gold tier: ${createdPartners.filter(p => p.tier === 'gold').length}`);
-    console.log(`   • Standard tier: ${createdPartners.filter(p => p.tier === 'standard').length}`);
+    console.log(`   • Flow tier: ${createdPartners.filter(p => p.tier === 'flow').length}`);
     console.log(`\n   Staff members: ${staffCount}`);
     console.log('\n' + '='.repeat(60) + '\n');
 

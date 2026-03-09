@@ -20,6 +20,7 @@ export interface PartnerMembership {
   partnerName: string;
   partnerLogo: string | null;
   partnerTier: string;
+  billingActive: boolean;
   staffRole: StaffRole;
   permissions: {
     manageListings: boolean;

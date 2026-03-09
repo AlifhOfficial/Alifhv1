@@ -75,11 +75,11 @@ export async function cancelPartner(partnerId: string) {
  * Update partner tier
  * Also updates blackListingQuota based on tier:
  * - Black tier: 5 black listing slots
- * - Other tiers: 1 black listing slot
+ * - Flow tier: 1 black listing slot
  */
 export async function updatePartnerTier(input: {
   partnerId: string;
-  tier: 'standard' | 'gold' | 'platinum' | 'black';
+  tier: 'flow' | 'black';
 }) {
   // Set black listing quota based on tier
   const blackListingQuota = input.tier === 'black' ? 5 : 1;

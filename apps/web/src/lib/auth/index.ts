@@ -56,12 +56,10 @@ export const auth = betterAuth({
       session: schema.session,
       verification: schema.verification,
       passkey: schema.passkey,
-      subscription: schema.subscription,
       userRelations: schema.userRelations,
       accountRelations: schema.accountRelations,
       sessionRelations: schema.sessionRelations,
       passkeyRelations: schema.passkeyRelations,
-      subscriptionRelations: schema.subscriptionRelations,
     }
   }),
 
@@ -208,14 +206,14 @@ export const auth = betterAuth({
         partner_status: string | null;
         tier: string | null;
         logo: string | null;
-        subscription_tier: string | null;
+        billing_active: boolean | null;
       }>(sql`
         SELECT 
           u.role, u.banned,
           p.avatar, p.first_name, p.last_name, p.preferences, p.updated_at,
           ps.id as staff_id, ps.role as staff_role,
           pt.id as partner_id, pt.brand_name, pt.status as partner_status, 
-          pt.tier, pt.logo, pt.subscription_tier
+          pt.tier, pt.logo, pt.billing_active
         FROM "user" u
         LEFT JOIN user_profile p ON p.user_id = u.id
         LEFT JOIN partner_staff ps ON ps.user_id = u.id AND ps.status = 'active'
@@ -252,7 +250,7 @@ export const auth = betterAuth({
             status: row.partner_status!,
             tier: row.tier,
             logo: row.logo,
-            subscriptionTier: row.subscription_tier,
+            billingActive: row.billing_active ?? true,
           },
         }));
 
@@ -265,7 +263,7 @@ export const auth = betterAuth({
         partnerName: m.partner.brandName,
         partnerLogo: m.partner.logo,
         partnerTier: m.partner.tier,
-        subscriptionTier: m.partner.subscriptionTier,
+        billingActive: m.partner.billingActive,
         staffRole: m.role,
       }));
 
@@ -358,11 +356,10 @@ export const auth = betterAuth({
         onSubscriptionComplete: async ({ subscription, plan }) => {
           // Update partner tier based on subscription plan
           const partnerId = subscription.referenceId;
-          const newTier = plan.name === 'black' ? 'black' : 'standard';
+          const newTier = plan.name === 'black' ? 'black' : 'flow';
           
           await db.update(schema.partner)
             .set({ 
-              subscriptionTier: plan.name,
               tier: newTier as any,
               updatedAt: new Date(),
             })
@@ -376,13 +373,12 @@ export const auth = betterAuth({
           // TODO: Invalidate Upstash Redis session cache for partner staff
         },
         onSubscriptionCancel: async ({ subscription }) => {
-          // Downgrade partner to basic tier on cancellation
+          // Downgrade partner to flow tier on cancellation
           const partnerId = subscription.referenceId;
           
           await db.update(schema.partner)
             .set({ 
-              subscriptionTier: 'basic',
-              tier: 'standard',
+              tier: 'flow',
               updatedAt: new Date(),
             })
             .where(eq(schema.partner.id, partnerId));
@@ -572,7 +568,7 @@ export type Session = typeof auth.$Infer.Session & {
       partnerName: string;
       partnerLogo: string | null;
       partnerTier: string | null;
-      subscriptionTier: string | null;
+      billingActive: boolean;
       staffRole: string;
     }>;
   };
@@ -587,7 +583,7 @@ export type AuthUser = typeof auth.$Infer.Session.user & {
     partnerName: string;
     partnerLogo: string | null;
     partnerTier: string | null;
-    subscriptionTier: string | null;
+    billingActive: boolean;
     staffRole: string;
   }>;
 };
