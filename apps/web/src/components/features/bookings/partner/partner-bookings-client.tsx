@@ -8,7 +8,8 @@
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { Combobox } from "@/components/ui/forms/combobox";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X, Phone, Mail, User, Clock, Users, Hash, MessageSquare, FileText, XCircle, ChevronDown, ImageIcon, Copy, Check, DollarSign } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X, Phone, Mail, User, Clock, Users, Hash, MessageSquare, FileText, XCircle, ChevronDown, ImageIcon, Copy, Check } from "lucide-react";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { cn } from "@/utils";
@@ -309,29 +310,25 @@ export function PartnerBookingsClient({
   // Pagination is now server-side - calculate total pages from server total
   const totalPages = Math.ceil(totalBookings / ITEMS_PER_PAGE);
 
-  // Status counts from server stats
-  const statusCounts = useMemo(() => {
-    if (!stats) {
-      return {
-        all: 0,
-        pending: 0,
-        confirmed: 0,
-        completed: 0,
-        cancelled: 0,
-        rejected: 0,
-        no_show: 0,
-      };
-    }
-    return {
-      all: stats.total,
-      pending: stats.pending,
-      confirmed: stats.confirmed,
-      completed: stats.completed,
-      cancelled: stats.cancelled,
-      rejected: stats.rejected,
-      no_show: stats.noShow,
-    };
-  }, [stats]);
+  // Main tabs always shown in tab bar
+  const mainStatusTabs = useMemo(() => [
+    { key: 'all' as const, label: 'All', count: stats?.total ?? 0 },
+    { key: 'pending' as const, label: 'Pending', count: stats?.pending ?? 0 },
+    { key: 'confirmed' as const, label: 'Confirmed', count: stats?.confirmed ?? 0 },
+    { key: 'completed' as const, label: 'Completed', count: stats?.completed ?? 0 },
+  ], [stats]);
+
+  // Secondary statuses in dropdown (less frequently accessed)
+  const allSecondaryTabs = useMemo(() => [
+    { key: 'cancelled' as const, label: 'Cancelled', count: stats?.cancelled ?? 0 },
+    { key: 'rejected' as const, label: 'Rejected', count: stats?.rejected ?? 0 },
+    { key: 'no_show' as const, label: 'No Show', count: stats?.noShow ?? 0 },
+  ], [stats]);
+  const secondaryStatusTabs = useMemo(() => allSecondaryTabs.filter(tab => tab.count > 0), [allSecondaryTabs]);
+
+  // Check if current selection is a secondary status
+  const isSecondaryStatusSelected = secondaryStatusTabs.some(tab => tab.key === statusFilter);
+  const selectedSecondaryTab = secondaryStatusTabs.find(tab => tab.key === statusFilter);
 
   // Staff options for combobox
   const staffOptions = useMemo(() => {
@@ -339,7 +336,7 @@ export function PartnerBookingsClient({
     allStaffForDisplay.forEach(staff => {
       options.push({
         value: staff.staffUserId,
-        label: `${staff.staffName} (${staff.bookingCount})`,
+        label: staff.staffName,
       });
     });
     return options;
@@ -453,27 +450,64 @@ export function PartnerBookingsClient({
         {/* Row 2: Status Pills - Horizontal scroll on mobile */}
         <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
-          {(['all', 'pending', 'confirmed', 'completed', 'cancelled', 'rejected', 'no_show'] as StatusFilter[]).map((status) => {
-            const config = STATUS_CONFIG[status];
-            const isActive = statusFilter === status;
-            const count = statusCounts[status];
+          {mainStatusTabs.map((tab) => {
+            const isActive = statusFilter === tab.key;
             return (
               <button
-                key={status}
-                onClick={() => handleStatusFilterChange(status)}
+                key={tab.key}
+                onClick={() => handleStatusFilterChange(tab.key)}
                 className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all whitespace-nowrap ${
                   isActive
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {config.label}
-                {status !== 'all' && count > 0 && (
-                  <span className="ml-1 sm:ml-1.5 text-muted-foreground">{count}</span>
+                {tab.label}
+                {tab.key !== 'all' && tab.count > 0 && (
+                  <span className="ml-1 sm:ml-1.5 text-muted-foreground">{tab.count}</span>
                 )}
               </button>
             );
           })}
+          
+          {/* More dropdown for secondary statuses */}
+          {secondaryStatusTabs.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all flex items-center gap-1 whitespace-nowrap ${
+                    isSecondaryStatusSelected
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {isSecondaryStatusSelected && selectedSecondaryTab ? (
+                    <>
+                      {selectedSecondaryTab.label}
+                      <span className="text-muted-foreground">{selectedSecondaryTab.count}</span>
+                    </>
+                  ) : (
+                    <>More</>
+                  )}
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[140px]">
+                {secondaryStatusTabs.map((tab) => (
+                  <DropdownMenuItem
+                    key={tab.key}
+                    onClick={() => handleStatusFilterChange(tab.key)}
+                    className={`text-xs cursor-pointer ${
+                      statusFilter === tab.key ? 'bg-secondary' : ''
+                    }`}
+                  >
+                    <span className="flex-1">{tab.label}</span>
+                    <span className="text-muted-foreground ml-2">{tab.count}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
         </div>
       </div>
@@ -619,7 +653,7 @@ export function PartnerBookingsClient({
                         </span>
                         {booking.listingPrice && (
                           <span className="hidden sm:flex items-center gap-1.5 text-muted-foreground">
-                            <DollarSign className="w-3.5 h-3.5" />
+                            <span className="text-xs">AED</span>
                             <span className="font-medium text-foreground tabular-nums">
                               {booking.listingPrice.toLocaleString()}
                             </span>

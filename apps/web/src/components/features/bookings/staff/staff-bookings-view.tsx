@@ -25,6 +25,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/forms/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 type TabType = 'bookings' | 'settings';
 type QuickAction = 'confirm' | 'reject' | 'complete' | 'noShow' | 'cancel';
@@ -40,12 +46,16 @@ interface LookedUpBooking {
   confirmationToken: string;
 }
 
-// Status tabs configuration
-const STATUS_TABS = [
+// Main status tabs (always visible)
+const MAIN_STATUS_TABS = [
   { key: 'all', label: 'All', color: 'purple' },
   { key: 'pending', label: 'Pending', color: 'yellow' },
   { key: 'confirmed', label: 'Confirmed', color: 'green' },
   { key: 'completed', label: 'Completed', color: 'blue' },
+];
+
+// Secondary status tabs (in More dropdown)
+const SECONDARY_STATUS_TABS = [
   { key: 'cancelled', label: 'Cancelled', color: 'red' },
   { key: 'rejected', label: 'Rejected', color: 'red' },
   { key: 'no_show', label: 'No Show', color: 'gray' },
@@ -731,16 +741,13 @@ export function StaffBookingsView() {
               {/* Row 2: Status Pills - Horizontal scroll */}
               <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
                 <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
-                  {STATUS_TABS.map((tab) => {
+                  {MAIN_STATUS_TABS.map((tab) => {
                     // Use stats for counts (server-side accurate)
                     const count = stats ? (
                       tab.key === 'all' ? stats.total
                       : tab.key === 'pending' ? stats.pending
                       : tab.key === 'confirmed' ? stats.confirmed
                       : tab.key === 'completed' ? stats.completed
-                      : tab.key === 'cancelled' ? stats.cancelled
-                      : tab.key === 'rejected' ? stats.rejected
-                      : tab.key === 'no_show' ? stats.noShow
                       : 0
                     ) : 0;
                     const isActive = selectedStatus === tab.key;
@@ -759,12 +766,71 @@ export function StaffBookingsView() {
                         }`}
                       >
                         {tab.label}
-                        {count > 0 && (
+                        {tab.key !== 'all' && count > 0 && (
                           <span className="ml-1 sm:ml-1.5 text-muted-foreground">{count}</span>
                         )}
                       </button>
                     );
                   })}
+                  
+                  {/* More dropdown for secondary statuses */}
+                  {(() => {
+                    const secondaryWithCounts = SECONDARY_STATUS_TABS.map(tab => ({
+                      ...tab,
+                      count: stats ? (
+                        tab.key === 'cancelled' ? stats.cancelled
+                        : tab.key === 'rejected' ? stats.rejected
+                        : tab.key === 'no_show' ? stats.noShow
+                        : 0
+                      ) : 0
+                    })).filter(tab => tab.count > 0);
+                    
+                    if (secondaryWithCounts.length === 0) return null;
+                    
+                    const isSecondarySelected = SECONDARY_STATUS_TABS.some(tab => tab.key === selectedStatus);
+                    const selectedSecondaryTab = secondaryWithCounts.find(tab => tab.key === selectedStatus);
+                    
+                    return (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all flex items-center gap-1 whitespace-nowrap ${
+                              isSecondarySelected
+                                ? 'bg-background text-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                          >
+                            {isSecondarySelected && selectedSecondaryTab ? (
+                              <>
+                                {selectedSecondaryTab.label}
+                                <span className="text-muted-foreground">{selectedSecondaryTab.count}</span>
+                              </>
+                            ) : (
+                              <>More</>
+                            )}
+                            <ChevronDown className="w-3 h-3" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="min-w-[140px]">
+                          {secondaryWithCounts.map((tab) => (
+                            <DropdownMenuItem
+                              key={tab.key}
+                              onClick={() => {
+                                setSelectedStatus(tab.key);
+                                setCurrentPage(1);
+                              }}
+                              className={`text-xs cursor-pointer ${
+                                selectedStatus === tab.key ? 'bg-secondary' : ''
+                              }`}
+                            >
+                              <span className="flex-1">{tab.label}</span>
+                              <span className="text-muted-foreground ml-2">{tab.count}</span>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    );
+                  })()}
                 </div>
               </div>
             </div>

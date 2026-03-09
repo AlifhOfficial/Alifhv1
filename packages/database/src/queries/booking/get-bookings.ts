@@ -434,23 +434,43 @@ export async function getBookings(params: GetBookingsParams): Promise<GetBooking
     const countConditions: SQL[] = [];
     if (statsPartnerId) countConditions.push(eq(booking.partnerId, statsPartnerId));
     if (statsUserId) countConditions.push(eq(booking.userId, statsUserId));
+    // Note: staffUserId filter requires join with carListing, handled below
     
     const baseWhere = countConditions.length > 0 ? and(...countConditions) : undefined;
 
-    const [statsResult] = await db
-      .select({
-        total: sql<number>`count(*)::int`,
-        pending: sql<number>`count(*) filter (where ${booking.status} = 'pending')::int`,
-        confirmed: sql<number>`count(*) filter (where ${booking.status} = 'confirmed')::int`,
-        completed: sql<number>`count(*) filter (where ${booking.status} = 'completed')::int`,
-        cancelled: sql<number>`count(*) filter (where ${booking.status} = 'cancelled')::int`,
-        rejected: sql<number>`count(*) filter (where ${booking.status} = 'rejected')::int`,
-        noShow: sql<number>`count(*) filter (where ${booking.status} = 'no_show')::int`,
-        todayCount: sql<number>`count(*) filter (where ${booking.scheduledDate} >= ${todayStart} and ${booking.scheduledDate} <= ${todayEnd})::int`,
-        upcomingCount: sql<number>`count(*) filter (where ${booking.scheduledStartTime} >= ${now} and ${booking.status} in ('pending', 'confirmed'))::int`,
-      })
-      .from(booking)
-      .where(baseWhere);
+    // Build stats query - join with carListing if we need to filter by staff
+    const statsQuery = statsStaffUserId
+      ? db
+          .select({
+            total: sql<number>`count(*)::int`,
+            pending: sql<number>`count(*) filter (where ${booking.status} = 'pending')::int`,
+            confirmed: sql<number>`count(*) filter (where ${booking.status} = 'confirmed')::int`,
+            completed: sql<number>`count(*) filter (where ${booking.status} = 'completed')::int`,
+            cancelled: sql<number>`count(*) filter (where ${booking.status} = 'cancelled')::int`,
+            rejected: sql<number>`count(*) filter (where ${booking.status} = 'rejected')::int`,
+            noShow: sql<number>`count(*) filter (where ${booking.status} = 'no_show')::int`,
+            todayCount: sql<number>`count(*) filter (where ${booking.scheduledDate} >= ${todayStart} and ${booking.scheduledDate} <= ${todayEnd})::int`,
+            upcomingCount: sql<number>`count(*) filter (where ${booking.scheduledStartTime} >= ${now} and ${booking.status} in ('pending', 'confirmed'))::int`,
+          })
+          .from(booking)
+          .innerJoin(carListing, eq(booking.listingId, carListing.id))
+          .where(baseWhere ? and(baseWhere, eq(carListing.userId, statsStaffUserId)) : eq(carListing.userId, statsStaffUserId))
+      : db
+          .select({
+            total: sql<number>`count(*)::int`,
+            pending: sql<number>`count(*) filter (where ${booking.status} = 'pending')::int`,
+            confirmed: sql<number>`count(*) filter (where ${booking.status} = 'confirmed')::int`,
+            completed: sql<number>`count(*) filter (where ${booking.status} = 'completed')::int`,
+            cancelled: sql<number>`count(*) filter (where ${booking.status} = 'cancelled')::int`,
+            rejected: sql<number>`count(*) filter (where ${booking.status} = 'rejected')::int`,
+            noShow: sql<number>`count(*) filter (where ${booking.status} = 'no_show')::int`,
+            todayCount: sql<number>`count(*) filter (where ${booking.scheduledDate} >= ${todayStart} and ${booking.scheduledDate} <= ${todayEnd})::int`,
+            upcomingCount: sql<number>`count(*) filter (where ${booking.scheduledStartTime} >= ${now} and ${booking.status} in ('pending', 'confirmed'))::int`,
+          })
+          .from(booking)
+          .where(baseWhere);
+
+    const [statsResult] = await statsQuery;
 
     stats = {
       total: statsResult?.total ?? 0,

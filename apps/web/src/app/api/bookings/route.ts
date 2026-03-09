@@ -63,12 +63,18 @@ export async function GET(req: NextRequest) {
     const membership = user.partnerMemberships?.[0];
     const partnerId = searchParams.get('partnerId') || membership?.partnerId;
     const staffView = searchParams.get('staffView') === 'true' && membership;
+    
+    // Staff user ID filter - either myListings (current user) or explicit staffUserId param
+    const staffUserIdParam = searchParams.get('staffUserId');
+    const staffUserId = staffView 
+      ? (searchParams.get('myListings') === 'true' ? user.id : staffUserIdParam || undefined)
+      : undefined;
 
     const result = await getBookings({
       // User's own bookings OR partner bookings if staff
       userId: staffView ? undefined : user.id,
       partnerId: staffView ? partnerId : undefined,
-      staffUserId: staffView && searchParams.get('myListings') === 'true' ? user.id : undefined,
+      staffUserId,
       
       id,
       confirmationToken,

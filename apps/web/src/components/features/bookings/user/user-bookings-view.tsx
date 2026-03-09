@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { RefreshCw, Calendar, Search, X } from 'lucide-react';
+import { RefreshCw, Calendar, Search, X, ChevronDown } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -15,6 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/forms/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 type BookingSort = 'newest' | 'oldest';
 import type { UserBookingData } from './types';
@@ -48,16 +54,23 @@ export function UserBookingsView() {
     setCurrentPage(1);
   }, 400);
 
-  // Status tabs configuration
-  const statusTabs = [
+  // Main status tabs (always visible)
+  const mainStatusTabs = [
     { key: 'all', label: 'All' },
     { key: 'pending', label: 'Pending' },
     { key: 'confirmed', label: 'Confirmed' },
     { key: 'completed', label: 'Completed' },
+  ];
+
+  // Secondary status tabs (in More dropdown)
+  const secondaryStatusTabs = [
     { key: 'cancelled', label: 'Cancelled' },
     { key: 'rejected', label: 'Rejected' },
     { key: 'no_show', label: 'No Show' },
   ];
+  
+  const isSecondaryStatusSelected = secondaryStatusTabs.some(tab => tab.key === selectedStatus);
+  const selectedSecondaryTab = secondaryStatusTabs.find(tab => tab.key === selectedStatus);
 
   const fetchBookings = useCallback(async () => {
     // Cancel any in-flight request to prevent race conditions
@@ -232,7 +245,7 @@ export function UserBookingsView() {
         {/* Status Pills - Horizontal scroll on mobile */}
         <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-hide">
           <div className="flex items-center gap-1 bg-secondary/30 p-1 rounded-xl w-fit">
-            {statusTabs.map((tab) => {
+            {mainStatusTabs.map((tab) => {
               const isActive = selectedStatus === tab.key;
               
               return (
@@ -252,6 +265,42 @@ export function UserBookingsView() {
                 </button>
               );
             })}
+            
+            {/* More dropdown for secondary statuses */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs transition-all flex items-center gap-1 whitespace-nowrap ${
+                    isSecondaryStatusSelected
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {isSecondaryStatusSelected && selectedSecondaryTab ? (
+                    selectedSecondaryTab.label
+                  ) : (
+                    'More'
+                  )}
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[140px]">
+                {secondaryStatusTabs.map((tab) => (
+                  <DropdownMenuItem
+                    key={tab.key}
+                    onClick={() => {
+                      setSelectedStatus(tab.key);
+                      setCurrentPage(1);
+                    }}
+                    className={`text-xs cursor-pointer ${
+                      selectedStatus === tab.key ? 'bg-secondary' : ''
+                    }`}
+                  >
+                    {tab.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
