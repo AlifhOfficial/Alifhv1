@@ -1,10 +1,11 @@
 "use client";
 
+import { Suspense } from "react";
 import { DashboardLayout, DashboardContent } from "@/components/shared/layout/dashboard-layout";
 import { AppSidebar } from "@/components/shared/layout/app-sidebar";
 import { PageLoader } from "@/components/shared/page-loader";
 import { useAuth } from "@/providers/auth-provider";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 const navSections = [
@@ -41,9 +42,18 @@ interface UserDashboardLayoutProps {
 }
 
 export default function UserDashboardLayout({ children }: UserDashboardLayoutProps) {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <UserDashboardLayoutInner>{children}</UserDashboardLayoutInner>
+    </Suspense>
+  );
+}
+
+function UserDashboardLayoutInner({ children }: UserDashboardLayoutProps) {
   const { session: user, isLoading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   
   // Check if user is banned - must be before any conditional returns
   const isBanned = user ? (user as any).isBanned === true : false;
@@ -73,11 +83,13 @@ export default function UserDashboardLayout({ children }: UserDashboardLayoutPro
 
   // Check if current page needs full height (no padding, full container)
   const isFullHeightPage = pathname?.includes('/messaging');
+  // Only hide footer on mobile when a conversation is actually open
+  const hasConversationOpen = isFullHeightPage && !!searchParams?.get('conversationId');
 
   return (
     <DashboardLayout enableRightPanel>
       <AppSidebar user={user} sections={navSections} />
-      <DashboardContent fullHeight={isFullHeightPage}>{children}</DashboardContent>
+      <DashboardContent fullHeight={isFullHeightPage} hideFooterOnMobile={hasConversationOpen}>{children}</DashboardContent>
     </DashboardLayout>
   );
 }

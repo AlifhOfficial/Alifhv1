@@ -6,7 +6,6 @@
 'use client';
 
 import Image from 'next/image';
-import { getStaticUrl } from '@/utils';
 
 export function AboutTeamSection() {
   return (
@@ -28,7 +27,7 @@ export function AboutTeamSection() {
         {/* Image */}
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
-            src={getStaticUrl("/Abstract/pic2.png")}
+            src="/Abstract/pic2.png"
             alt="The Revvup Team"
             fill
             className="object-cover"

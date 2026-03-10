@@ -6,7 +6,6 @@
 'use client';
 
 import { CheckCircle2 } from 'lucide-react';
-import { getStaticUrl } from '@/utils';
 
 export function PartnerPhilosophySection() {
   return (
@@ -74,13 +73,13 @@ function PhilosophyInfographic() {
           <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">
             <div className="relative w-32 sm:w-40 lg:w-48">
               <div className="absolute top-0 left-0 w-20 sm:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-40 -rotate-6 shadow-lg">
-                <img src={getStaticUrl("/Marketing/m5.jpeg")} alt="" className="w-full h-full object-cover grayscale" />
+                <img src="/Marketing/m5.jpeg" alt="" className="w-full h-full object-cover grayscale" />
               </div>
               <div className="absolute top-2 left-4 w-20 sm:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-50 rotate-3 shadow-lg">
-                <img src={getStaticUrl("/Marketing/m6.jpeg")} alt="" className="w-full h-full object-cover grayscale" />
+                <img src="/Marketing/m6.jpeg" alt="" className="w-full h-full object-cover grayscale" />
               </div>
               <div className="absolute top-4 left-8 w-20 sm:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-60 -rotate-2 shadow-lg">
-                <img src={getStaticUrl("/Marketing/m7.jpeg")} alt="" className="w-full h-full object-cover grayscale" />
+                <img src="/Marketing/m7.jpeg" alt="" className="w-full h-full object-cover grayscale" />
               </div>
             </div>
           </div>

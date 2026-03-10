@@ -7,7 +7,6 @@
 
 import Image from 'next/image';
 import { Ban, Eye, Users, Shield } from 'lucide-react';
-import { getStaticUrl } from '@/utils';
 
 export function AboutStorySection() {
   return (
@@ -29,7 +28,7 @@ export function AboutStorySection() {
         {/* Image */}
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
-            src={getStaticUrl("/Abstract/pic3.png")}
+            src="/Abstract/pic3.png"
             alt="Why Revvup exists"
             fill
             className="object-cover"

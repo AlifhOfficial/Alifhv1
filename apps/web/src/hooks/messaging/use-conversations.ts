@@ -265,8 +265,8 @@ export function useCreateConversation() {
   const mutation = useMutation({ 
     mutationFn: createConversationAPI,
     onSuccess: () => {
-      // Invalidate conversations list to include newly created conversation
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      // Force refetch conversations list to include newly created conversation
+      queryClient.refetchQueries({ queryKey: ['conversations'] });
     },
   });
 

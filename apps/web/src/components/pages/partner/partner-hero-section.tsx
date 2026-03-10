@@ -8,7 +8,6 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { getStaticUrl } from '@/utils';
 import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
@@ -80,7 +79,7 @@ export function PartnerHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full overflow-hidden rounded-lg mb-8">
           <Image
-            src={getStaticUrl("/Abstract/homescreen.png")}
+            src="/Abstract/homescreen.png"
             alt="Revvup - For Dealers"
             width={1600}
             height={900}

@@ -6,7 +6,6 @@
 'use client';
 
 import { Clock, PenLine, Zap, Timer } from 'lucide-react';
-import { getStaticUrl } from '@/utils';
 
 export function FeaturesSection() {
   return (
@@ -103,7 +102,7 @@ function BuiltInDubaiInfographic() {
           
           <div className="flex-1 flex items-center justify-center">
             <img 
-              src={getStaticUrl("/Marketing/buyerview2.png")} 
+              src="/Marketing/buyerview2.png" 
               alt="Revvup dashboard" 
               className="w-full h-auto object-contain rounded-lg"
             />

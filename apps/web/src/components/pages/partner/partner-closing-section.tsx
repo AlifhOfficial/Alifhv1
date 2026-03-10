@@ -80,9 +80,9 @@ export function PartnerClosingSection() {
 
 function JoinRevvupInfographic() {
   return (
-    <MacOSWindow url="revvup.ae/partners" contentClassName="flex items-center justify-center min-h-[480px] sm:min-h-[560px] lg:min-h-[680px] p-6 sm:p-10 lg:p-16">
+    <MacOSWindow url="revvup.ae/partners" contentClassName="flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[560px] xl:min-h-[680px] p-4 sm:p-8 lg:p-16">
       <div className="text-center">
-        <p className="text-5xl sm:text-7xl lg:text-9xl font-bold text-white tracking-tight">
+        <p className="text-3xl sm:text-5xl lg:text-7xl xl:text-9xl font-bold text-white tracking-tight">
           Your Move.
         </p>
       </div>

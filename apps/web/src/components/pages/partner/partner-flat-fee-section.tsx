@@ -7,7 +7,6 @@
 
 import { CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
-import { getStaticUrl } from '@/utils';
 
 export function PartnerFlatFeeSection() {
   return (
@@ -135,86 +134,86 @@ function UnlimitedListingsInfographic() {
         }
       `}</style>
 
-      <MacOSWindow url="revvup.ae/dashboard" contentClassName="flex flex-col md:flex-row aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1]">
+      <MacOSWindow url="revvup.ae/dashboard" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]">
           {/* Left - Your inventory with car cards */}
-          <div className="flex-1 p-4 sm:p-8 lg:p-12 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5">
-            <span className="text-[10px] sm:text-xs font-medium text-white/30 mb-4 sm:mb-6">Your inventory</span>
+          <div className="flex-1 p-3 sm:p-6 lg:p-12 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5">
+            <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-white/30 mb-3 sm:mb-4 lg:mb-6">Your inventory</span>
             
-            <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-6 w-full max-w-3xl">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-3 lg:gap-6 w-full max-w-3xl">
               {/* Card 1 */}
-              <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
+              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
                 <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                  <img src={getStaticUrl("/Marketing/m14.jpeg")} alt="" className="w-full h-full object-cover" />
+                  <img src="/Marketing/m14.jpeg" alt="" className="w-full h-full object-cover" />
                 </div>
-                <div className="flex items-center justify-between gap-1 sm:gap-2 p-1.5 sm:p-3">
+                <div className="flex items-center justify-between gap-0.5 sm:gap-1 lg:gap-2 p-1 sm:p-2 lg:p-3">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[8px] sm:text-xs lg:text-sm font-semibold truncate text-white">Landcruiser</p>
+                    <p className="text-[7px] sm:text-[9px] lg:text-xs xl:text-sm font-semibold truncate text-white">Landcruiser</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
-                      <p className="text-[6px] sm:text-[10px] lg:text-xs text-white/50 truncate">IS Motors</p>
-                      <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0 text-blue-500" />
+                      <p className="text-[5px] sm:text-[7px] lg:text-[10px] xl:text-xs text-white/50 truncate">IS Motors</p>
+                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-blue-500" />
                     </div>
                   </div>
-                  <img src={getStaticUrl("/Marketing/avatarmock.png")} alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
+                  <img src="/Marketing/avatarmock.png" alt="" className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
                 </div>
               </div>
               
               {/* Card 2 */}
-              <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
+              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
                 <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                  <img src={getStaticUrl("/Marketing/m15.jpeg")} alt="" className="w-full h-full object-cover" />
+                  <img src="/Marketing/m15.jpeg" alt="" className="w-full h-full object-cover" />
                 </div>
-                <div className="flex items-center justify-between gap-1 sm:gap-2 p-1.5 sm:p-3">
+                <div className="flex items-center justify-between gap-0.5 sm:gap-1 lg:gap-2 p-1 sm:p-2 lg:p-3">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[8px] sm:text-xs lg:text-sm font-semibold truncate text-white">Lexus</p>
+                    <p className="text-[7px] sm:text-[9px] lg:text-xs xl:text-sm font-semibold truncate text-white">Lexus</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
-                      <p className="text-[6px] sm:text-[10px] lg:text-xs text-white/50 truncate">IS Motors</p>
-                      <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0 text-blue-500" />
+                      <p className="text-[5px] sm:text-[7px] lg:text-[10px] xl:text-xs text-white/50 truncate">IS Motors</p>
+                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-blue-500" />
                     </div>
                   </div>
-                  <img src={getStaticUrl("/Marketing/avatarmock.png")} alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
+                  <img src="/Marketing/avatarmock.png" alt="" className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
                 </div>
               </div>
               
               {/* Card 3 */}
-              <div className="flex flex-col overflow-hidden rounded-lg sm:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
+              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
                 <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                  <img src={getStaticUrl("/Marketing/m17.jpeg")} alt="" className="w-full h-full object-cover" />
+                  <img src="/Marketing/m17.jpeg" alt="" className="w-full h-full object-cover" />
                 </div>
-                <div className="flex items-center justify-between gap-1 sm:gap-2 p-1.5 sm:p-3">
+                <div className="flex items-center justify-between gap-0.5 sm:gap-1 lg:gap-2 p-1 sm:p-2 lg:p-3">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[8px] sm:text-xs lg:text-sm font-semibold truncate text-white">McLaren</p>
+                    <p className="text-[7px] sm:text-[9px] lg:text-xs xl:text-sm font-semibold truncate text-white">McLaren</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
-                      <p className="text-[6px] sm:text-[10px] lg:text-xs text-white/50 truncate">IS Motors</p>
-                      <CheckCircle2 className="w-2 h-2 sm:w-3 sm:h-3 flex-shrink-0 text-blue-500" />
+                      <p className="text-[5px] sm:text-[7px] lg:text-[10px] xl:text-xs text-white/50 truncate">IS Motors</p>
+                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-blue-500" />
                     </div>
                   </div>
-                  <img src={getStaticUrl("/Marketing/avatarmock.png")} alt="" className="w-4 h-4 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
+                  <img src="/Marketing/avatarmock.png" alt="" className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
                 </div>
               </div>
             </div>
             
             {/* Typing animated text below cards */}
-            <p className="typing-text mt-4 sm:mt-8 text-xs sm:text-base lg:text-lg text-primary font-medium">
+            <p className="typing-text mt-3 sm:mt-6 lg:mt-8 text-[10px] sm:text-sm lg:text-base xl:text-lg text-primary font-medium">
               + ∞ more listings included
             </p>
           </div>
           
           {/* Right - One subscription */}
-          <div className="w-full md:w-[280px] lg:w-[360px] p-8 sm:p-12 lg:p-16 flex flex-col items-center justify-center">
-            <span className="text-[10px] sm:text-xs font-medium text-primary mb-8 sm:mb-10">Your cost</span>
+          <div className="w-full md:w-[200px] lg:w-[280px] xl:w-[360px] p-6 sm:p-10 lg:p-16 flex flex-col items-center justify-center min-h-[160px] sm:min-h-0">
+            <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-primary mb-4 sm:mb-6 lg:mb-10">Your cost</span>
             
             <div className="flex flex-col items-center">
               {/* Giant one */}
               <div 
-                className="text-7xl sm:text-8xl lg:text-9xl font-bold text-primary leading-none"
+                className="text-5xl sm:text-6xl lg:text-8xl xl:text-9xl font-bold text-primary leading-none"
                 style={{ animation: 'glow-one 3s ease-in-out infinite' }}
               >
                 1
               </div>
-              <span className="text-sm sm:text-base text-primary/80 font-medium mt-2">subscription</span>
+              <span className="text-xs sm:text-sm lg:text-base text-primary/80 font-medium mt-1 sm:mt-2">subscription</span>
             </div>
             
-            <p className="text-[10px] sm:text-xs text-white/30 mt-8 sm:mt-10">per month</p>
+            <p className="text-[8px] sm:text-[9px] lg:text-[10px] xl:text-xs text-white/30 mt-4 sm:mt-6 lg:mt-10">per month</p>
           </div>
       </MacOSWindow>
     </>

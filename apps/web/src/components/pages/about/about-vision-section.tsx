@@ -7,7 +7,6 @@
 
 import Image from 'next/image';
 import { Car, CreditCard, Wrench, BookOpen, Calendar, Tag } from 'lucide-react';
-import { getStaticUrl } from '@/utils';
 
 export function AboutVisionSection() {
   return (
@@ -29,7 +28,7 @@ export function AboutVisionSection() {
         {/* Image */}
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
-            src={getStaticUrl("/Abstract/pic4.png")}
+            src="/Abstract/pic4.png"
             alt="Revvup Vision"
             fill
             className="object-cover"

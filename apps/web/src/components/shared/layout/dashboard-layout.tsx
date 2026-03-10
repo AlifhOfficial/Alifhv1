@@ -125,9 +125,10 @@ interface DashboardContentProps {
   header?: ReactNode;
   fullHeight?: boolean;
   noPadding?: boolean;
+  hideFooterOnMobile?: boolean;
 }
 
-export function DashboardContent({ children, header, fullHeight = false, noPadding = false }: DashboardContentProps) {
+export function DashboardContent({ children, header, fullHeight = false, noPadding = false, hideFooterOnMobile = false }: DashboardContentProps) {
   const { resolvedTheme } = useTheme();
   const onSignOut = async () => {
     await handleSignOut();
@@ -153,7 +154,7 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
       )}
 
       {/* Bottom Bar Panel */}
-      <footer className="flex h-14 shrink-0 items-center gap-2 px-4 z-50 rounded-xl bg-background border-t border-border">
+      <footer className={`${hideFooterOnMobile ? 'hidden lg:flex' : 'flex'} h-14 shrink-0 items-center gap-2 px-4 z-50 rounded-xl bg-background border-t border-border`}>
         <SidebarTrigger className="-ml-1" />
         <ThemeToggle />
         {header && (
@@ -164,7 +165,7 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
         )}
         
         {/* Right side actions */}
-        <div className="ml-auto hidden md:flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-1">
           <Button variant="ghost" asChild className="h-8 px-3 text-[15px] font-semibold tracking-tight">
             <Link href="/">
               Home

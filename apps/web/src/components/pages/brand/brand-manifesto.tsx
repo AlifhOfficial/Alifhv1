@@ -83,9 +83,9 @@ function LogoShowcaseInfographic({ logoSrc }: { logoSrc: string }) {
         }
       `}</style>
 
-      <MacOSWindow url="revvup.ae/brand" contentClassName="flex items-center justify-center min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] p-6 sm:p-10 lg:p-16">
+      <MacOSWindow url="revvup.ae/brand" contentClassName="flex items-center justify-center min-h-[280px] sm:min-h-[400px] lg:min-h-[500px] xl:min-h-[600px] p-4 sm:p-8 lg:p-16">
           <div 
-            className="relative w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80"
+            className="relative w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 xl:w-80 xl:h-80"
             style={{ animation: 'logo-pulse 4s ease-in-out infinite' }}
           >
             <Image
@@ -159,8 +159,8 @@ function ManifestoInfographic() {
         }
       `}</style>
 
-      <MacOSWindow showUrlBar={false} contentClassName="flex items-center justify-center min-h-[400px] sm:min-h-[500px] p-8 sm:p-12 lg:p-20">
-          <div className="grid sm:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-4xl">
+      <MacOSWindow showUrlBar={false} contentClassName="flex items-center justify-center min-h-[280px] sm:min-h-[400px] lg:min-h-[500px] p-4 sm:p-8 lg:p-20">
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-12 max-w-4xl w-full px-2 sm:px-0">
             {[
               { label: "Transparency", delay: "1" },
               { label: "Quality", delay: "2" },
@@ -169,11 +169,11 @@ function ManifestoInfographic() {
             ].map((value) => (
               <div 
                 key={value.label}
-                className="flex items-center gap-4"
+                className="flex items-center gap-2 sm:gap-3 lg:gap-4"
                 style={{ animation: `fade-value-${value.delay} 6s ease-out infinite` }}
               >
-                <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-primary flex-shrink-0" />
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight">
+                <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-primary flex-shrink-0" />
+                <span className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tight">
                   {value.label}
                 </span>
               </div>
@@ -224,8 +224,8 @@ function LogoVariantsInfographic() {
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
       <MacOSWindow showUrlBar={false} contentClassName="flex flex-col md:flex-row">
           {/* Light variant */}
-          <div className="w-full md:w-1/2 bg-white flex flex-col items-center justify-center p-12 sm:p-16 lg:p-20 min-h-[300px] sm:min-h-[400px]">
-            <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48">
+          <div className="w-full md:w-1/2 bg-white flex flex-col items-center justify-center p-8 sm:p-12 lg:p-20 min-h-[220px] sm:min-h-[300px] lg:min-h-[400px]">
+            <div className="relative w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 xl:w-48 xl:h-48">
               <Image
                 src="/assets/Revvup_logo_Black.svg"
                 alt="Revvup Logo Dark"
@@ -233,12 +233,12 @@ function LogoVariantsInfographic() {
                 className="object-contain"
               />
             </div>
-            <span className="text-xs sm:text-sm text-black/40 font-medium mt-6">Light backgrounds</span>
+            <span className="text-[10px] sm:text-xs lg:text-sm text-black/40 font-medium mt-4 sm:mt-6">Light backgrounds</span>
           </div>
 
           {/* Dark variant */}
-          <div className="w-full md:w-1/2 bg-black flex flex-col items-center justify-center p-12 sm:p-16 lg:p-20 min-h-[300px] sm:min-h-[400px] border-t md:border-t-0 md:border-l border-white/10">
-            <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48">
+          <div className="w-full md:w-1/2 bg-black flex flex-col items-center justify-center p-8 sm:p-12 lg:p-20 min-h-[220px] sm:min-h-[300px] lg:min-h-[400px] border-t md:border-t-0 md:border-l border-white/10">
+            <div className="relative w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 xl:w-48 xl:h-48">
               <Image
                 src="/assets/Revvup_logo_White.svg"
                 alt="Revvup Logo Light"
@@ -246,7 +246,7 @@ function LogoVariantsInfographic() {
                 className="object-contain"
               />
             </div>
-            <span className="text-xs sm:text-sm text-white/40 font-medium mt-6">Dark backgrounds</span>
+            <span className="text-[10px] sm:text-xs lg:text-sm text-white/40 font-medium mt-4 sm:mt-6">Dark backgrounds</span>
           </div>
       </MacOSWindow>
     </div>
@@ -293,21 +293,21 @@ function ColorInfographic() {
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
       <MacOSWindow showUrlBar={false} contentClassName="flex flex-col sm:flex-row">
           {/* Primary Blue */}
-          <div className="flex-1 bg-[#0066FF] flex flex-col items-center justify-center p-8 sm:p-12 lg:p-16 min-h-[200px] sm:min-h-[300px]">
-            <span className="text-3xl sm:text-5xl lg:text-7xl font-bold text-white tracking-tight">Blue</span>
-            <span className="text-xs sm:text-sm text-white/60 font-medium mt-3">#0066FF</span>
+          <div className="flex-1 bg-[#0066FF] flex flex-col items-center justify-center p-6 sm:p-10 lg:p-16 min-h-[150px] sm:min-h-[220px] lg:min-h-[300px]">
+            <span className="text-2xl sm:text-4xl lg:text-5xl xl:text-7xl font-bold text-white tracking-tight">Blue</span>
+            <span className="text-[9px] sm:text-xs lg:text-sm text-white/60 font-medium mt-2 sm:mt-3">#0066FF</span>
           </div>
 
           {/* White */}
-          <div className="flex-1 bg-white flex flex-col items-center justify-center p-8 sm:p-12 lg:p-16 min-h-[200px] sm:min-h-[300px] border-t sm:border-t-0 sm:border-l border-black/10">
-            <span className="text-3xl sm:text-5xl lg:text-7xl font-bold text-black tracking-tight">White</span>
-            <span className="text-xs sm:text-sm text-black/40 font-medium mt-3">#FFFFFF</span>
+          <div className="flex-1 bg-white flex flex-col items-center justify-center p-6 sm:p-10 lg:p-16 min-h-[150px] sm:min-h-[220px] lg:min-h-[300px] border-t sm:border-t-0 sm:border-l border-black/10">
+            <span className="text-2xl sm:text-4xl lg:text-5xl xl:text-7xl font-bold text-black tracking-tight">White</span>
+            <span className="text-[9px] sm:text-xs lg:text-sm text-black/40 font-medium mt-2 sm:mt-3">#FFFFFF</span>
           </div>
 
           {/* Black */}
-          <div className="flex-1 bg-black flex flex-col items-center justify-center p-8 sm:p-12 lg:p-16 min-h-[200px] sm:min-h-[300px] border-t sm:border-t-0 sm:border-l border-white/10">
-            <span className="text-3xl sm:text-5xl lg:text-7xl font-bold text-white tracking-tight">Black</span>
-            <span className="text-xs sm:text-sm text-white/40 font-medium mt-3">#000000</span>
+          <div className="flex-1 bg-black flex flex-col items-center justify-center p-6 sm:p-10 lg:p-16 min-h-[150px] sm:min-h-[220px] lg:min-h-[300px] border-t sm:border-t-0 sm:border-l border-white/10">
+            <span className="text-2xl sm:text-4xl lg:text-5xl xl:text-7xl font-bold text-white tracking-tight">Black</span>
+            <span className="text-[9px] sm:text-xs lg:text-sm text-white/40 font-medium mt-2 sm:mt-3">#000000</span>
           </div>
       </MacOSWindow>
     </div>

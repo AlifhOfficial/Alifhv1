@@ -6,7 +6,6 @@
 'use client';
 
 import Image from 'next/image';
-import { getStaticUrl } from '@/utils';
 
 export function BadgesHeroSection() {
   return (
@@ -28,7 +27,7 @@ export function BadgesHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1] overflow-hidden rounded-lg">
           <Image
-            src={getStaticUrl("/Abstract/signin.png")}
+            src="/Abstract/signin.png"
             alt="Revvup Badges"
             fill
             priority

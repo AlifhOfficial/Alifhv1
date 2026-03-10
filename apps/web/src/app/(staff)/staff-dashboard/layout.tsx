@@ -1,10 +1,11 @@
 'use client';
 
+import { Suspense } from "react";
 import { DashboardLayout, DashboardContent } from "@/components/shared/layout/dashboard-layout";
 import { AppSidebar } from "@/components/shared/layout/app-sidebar";
 import { PageLoader } from "@/components/shared/page-loader";
 import { useAuth } from "@/providers/auth-provider";
-import { redirect, usePathname } from "next/navigation";
+import { redirect, usePathname, useSearchParams } from "next/navigation";
 
 const navSections = [
   {
@@ -25,8 +26,17 @@ const navSections = [
 ];
 
 export default function StaffDashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <StaffDashboardLayoutInner>{children}</StaffDashboardLayoutInner>
+    </Suspense>
+  );
+}
+
+function StaffDashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const { session: user, isLoading } = useAuth();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   
   if (isLoading) {
     return <PageLoader />;
@@ -49,11 +59,13 @@ export default function StaffDashboardLayout({ children }: { children: React.Rea
 
   // Check if current page needs full height (no padding, full container)
   const isFullHeightPage = pathname?.includes('/messaging');
+  // Only hide footer on mobile when a conversation is actually open
+  const hasConversationOpen = isFullHeightPage && !!searchParams?.get('conversationId');
 
   return (
     <DashboardLayout enableRightPanel>
       <AppSidebar user={user} sections={navSections} staffOverride={staffOverride} />
-      <DashboardContent fullHeight={isFullHeightPage}>{children}</DashboardContent>
+      <DashboardContent fullHeight={isFullHeightPage} hideFooterOnMobile={hasConversationOpen}>{children}</DashboardContent>
     </DashboardLayout>
   );
 }

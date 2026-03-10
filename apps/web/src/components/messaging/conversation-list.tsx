@@ -236,7 +236,7 @@ export function ConversationList({
             <button
               onClick={() => onListToggle(false)}
               className={cn(
-                "p-1 sm:p-1.5 -mr-1 text-muted-foreground/60 hover:text-foreground transition-all duration-200",
+                "hidden lg:block p-1 sm:p-1.5 -mr-1 text-muted-foreground/60 hover:text-foreground transition-all duration-200",
                 !listOpen && "opacity-0 pointer-events-none w-0 p-0 -mr-0"
               )}
               title="Hide messages"

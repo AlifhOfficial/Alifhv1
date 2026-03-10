@@ -10,7 +10,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getStaticUrl } from '@/utils';
 import { useRouter } from 'next/navigation';
 import { 
   CheckCircle2,
@@ -54,7 +53,7 @@ export function HowRankingWorksPage() {
           {/* Hero Image */}
           <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1] overflow-hidden rounded-lg">
             <Image
-              src={getStaticUrl("/Abstract/rsxx2.png")}
+              src="/Abstract/rsxx2.png"
               alt="Revvup Ranking"
               fill
               priority
@@ -247,55 +246,55 @@ function WhyQualityInfographic() {
 
       <div className="flex flex-col-reverse md:flex-row">
         {/* Left - Others: macOS window with paid rankings (80%) */}
-        <div className="w-full md:w-[80%] flex flex-col items-center justify-center md:border-r border-t md:border-t-0 border-border/20 p-3 sm:p-6 lg:p-8">
-          <span className="text-[10px] sm:text-xs font-medium text-muted-foreground/60 mb-3 sm:mb-6">Others</span>
+        <div className="w-full md:w-[75%] lg:w-[80%] flex flex-col items-center justify-center md:border-r border-t md:border-t-0 border-border/20 p-2 sm:p-4 lg:p-8">
+          <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-muted-foreground/60 mb-2 sm:mb-4 lg:mb-6">Others</span>
           
           {/* macOS Window Frame */}
-          <div className="relative w-full max-w-2xl lg:max-w-3xl">
-            <MacOSWindow url="marketplace.ae" contentClassName="p-4 sm:p-8 lg:p-12 flex items-center justify-center overflow-visible">
+          <div className="relative w-full max-w-sm sm:max-w-xl lg:max-w-3xl">
+            <MacOSWindow url="marketplace.ae" contentClassName="p-3 sm:p-6 lg:p-12 flex items-center justify-center overflow-visible">
                 <div className="relative">
                   {/* Car image */}
-                  <div className="w-36 sm:w-56 lg:w-80 aspect-[4/3] rounded-xl overflow-hidden border border-white/10">
+                  <div className="w-28 sm:w-44 lg:w-64 xl:w-80 aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10">
                     <img 
-                      src={getStaticUrl("/Marketing/m7.jpeg")} 
+                      src="/Marketing/m7.jpeg" 
                       alt="" 
                       className="w-full h-full object-cover opacity-60"
                     />
                   </div>
                   
                   {/* Paid ranking badges */}
-                  <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-4 px-2 sm:px-4 py-1 sm:py-2 rounded-md bg-amber-500 text-[8px] sm:text-xs font-bold text-white shadow-xl rotate-3 z-10">
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-3 lg:-top-3 lg:-right-4 px-1.5 sm:px-2.5 lg:px-4 py-0.5 sm:py-1 lg:py-2 rounded-md bg-amber-500 text-[6px] sm:text-[9px] lg:text-xs font-bold text-white shadow-xl rotate-3 z-10">
                     PAID #1
                   </div>
-                  <div className="absolute top-8 sm:top-14 -left-2 sm:-left-4 px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-md bg-amber-600 text-[7px] sm:text-[11px] font-semibold text-white shadow-lg -rotate-6 z-10">
+                  <div className="absolute top-5 sm:top-10 lg:top-14 -left-1 sm:-left-2 lg:-left-4 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-amber-600 text-[5px] sm:text-[8px] lg:text-[11px] font-semibold text-white shadow-lg -rotate-6 z-10">
                     +Boost
                   </div>
-                  <div className="absolute -bottom-1 sm:-bottom-3 right-4 sm:right-10 px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-md bg-amber-700 text-[7px] sm:text-[11px] font-semibold text-white shadow-lg rotate-2 z-10">
+                  <div className="absolute -bottom-0.5 sm:-bottom-2 lg:-bottom-3 right-2 sm:right-6 lg:right-10 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-amber-700 text-[5px] sm:text-[8px] lg:text-[11px] font-semibold text-white shadow-lg rotate-2 z-10">
                     Featured
                   </div>
                 </div>
             </MacOSWindow>
           </div>
           
-          <p className="text-[9px] sm:text-xs text-muted-foreground/50 mt-4 sm:mt-8 text-center">Pay to rank</p>
+          <p className="text-[8px] sm:text-[9px] lg:text-xs text-muted-foreground/50 mt-2 sm:mt-4 lg:mt-8 text-center">Pay to rank</p>
         </div>
         
         {/* Right - Revvup: Quality-based (20%) */}
-        <div className="w-full md:w-[20%] flex flex-col items-center justify-center py-6 md:py-4 px-4 sm:p-6">
-          <span className="text-[10px] sm:text-xs font-medium text-primary mb-3 sm:mb-4">Revvup</span>
+        <div className="w-full md:w-[25%] lg:w-[20%] flex flex-col items-center justify-center py-4 md:py-4 px-3 sm:p-4 lg:p-6">
+          <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-primary mb-2 sm:mb-3 lg:mb-4">Revvup</span>
           
           <div className="flex flex-col items-center text-center">
             <div 
               className="text-primary leading-none"
               style={{ animation: 'glow-quality 3s ease-in-out infinite' }}
             >
-              <CheckCircle2 className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14" />
+              <CheckCircle2 className="w-6 h-6 sm:w-10 sm:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14" />
             </div>
-            <span className="text-[10px] sm:text-xs text-primary/80 font-medium mt-2 sm:mt-3">Quality</span>
-            <span className="text-[9px] sm:text-xs text-primary/60 mt-0.5">ranks</span>
+            <span className="text-[9px] sm:text-[10px] lg:text-xs text-primary/80 font-medium mt-1.5 sm:mt-2 lg:mt-3">Quality</span>
+            <span className="text-[8px] sm:text-[9px] lg:text-xs text-primary/60 mt-0.5">ranks</span>
           </div>
           
-          <p className="text-[8px] sm:text-[10px] text-primary/50 mt-3 sm:mt-6">Earn visibility</p>
+          <p className="text-[7px] sm:text-[8px] lg:text-[10px] text-primary/50 mt-2 sm:mt-4 lg:mt-6">Earn visibility</p>
         </div>
       </div>
     </div>

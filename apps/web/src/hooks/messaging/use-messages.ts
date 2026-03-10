@@ -367,19 +367,28 @@ export function useSendMessage() {
         };
       });
 
-      // Update conversation preview
+      // Update conversation preview in cache optimistically
       queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
         const data2 = old as { conversations?: Array<{ id: string; lastMessageAt?: unknown; lastMessagePreview?: string }> };
         if (!data2?.conversations) return old;
+        
+        const exists = data2.conversations.some(c => c.id === conversationId);
+        if (!exists) return old;
+        
         return {
           ...data2,
-          conversations: data2.conversations.map(c =>
-            c.id === conversationId
-              ? { ...c, lastMessageAt: data.message.createdAt, lastMessagePreview: data.message.text }
-              : c
-          ),
+          conversations: data2.conversations
+            .map(c =>
+              c.id === conversationId
+                ? { ...c, lastMessageAt: data.message.createdAt, lastMessagePreview: data.message.text }
+                : c
+            )
+            .sort((a, b) => new Date(b.lastMessageAt as string).getTime() - new Date(a.lastMessageAt as string).getTime()),
         };
       });
+
+      // Always refetch to ensure new conversations appear in the list
+      queryClient.refetchQueries({ queryKey: ['conversations'] });
     },
 
     onError: (_err, { conversationId }, ctx) => {
@@ -460,19 +469,32 @@ export function useSendLocationMessage() {
         };
       });
 
-      // Update conversation preview
+      // Update conversation preview in cache optimistically
       queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
         const data2 = old as { conversations?: Array<{ id: string; lastMessageAt?: unknown; lastMessagePreview?: string }> };
         if (!data2?.conversations) return old;
+        
+        const exists = data2.conversations.some(c => c.id === conversationId);
+        if (!exists) {
+          // Conversation not in cache, return unchanged (will refetch below)
+          return old;
+        }
+        
         return {
           ...data2,
-          conversations: data2.conversations.map(c =>
-            c.id === conversationId
-              ? { ...c, lastMessageAt: data.message.createdAt, lastMessagePreview: '📍 Location' }
-              : c
-          ),
+          conversations: data2.conversations
+            .map(c =>
+              c.id === conversationId
+                ? { ...c, lastMessageAt: data.message.createdAt, lastMessagePreview: '📍 Location' }
+                : c
+            )
+            .sort((a, b) => new Date(b.lastMessageAt as string).getTime() - new Date(a.lastMessageAt as string).getTime()),
         };
       });
+
+      // Always refetch to ensure new conversations appear in the list
+      // Force immediate refetch of all conversation queries
+      queryClient.refetchQueries({ queryKey: ['conversations'] });
     },
 
     onError: (_err, { conversationId }, ctx) => {

@@ -6,7 +6,6 @@
 'use client';
 
 import Image from 'next/image';
-import { getStaticUrl } from '@/utils';
 
 export function VisionHeroSection() {
   return (
@@ -28,7 +27,7 @@ export function VisionHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
-            src={getStaticUrl("/Marketing/vision_page/vision-hero-uae2031.jpg")}
+            src="/Marketing/vision_page/vision-hero-uae2031.jpg"
             alt="Revvup - Inspired by We the UAE 2031 Vision"
             fill
             priority

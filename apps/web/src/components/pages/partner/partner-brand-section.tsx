@@ -6,7 +6,6 @@
 'use client';
 
 import { Star, Clock, Package, CheckCircle2 } from 'lucide-react';
-import { getStaticUrl } from '@/utils';
 
 export function PartnerBrandSection() {
   return (
@@ -97,7 +96,7 @@ function ListingDetailInfographic() {
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-14">
       <div className="relative w-full rounded-lg overflow-hidden border border-border/30 shadow-2xl">
         <video 
-          src={getStaticUrl("/Marketing/lookgood6.mp4")} 
+          src="/Marketing/lookgood6.mp4" 
           autoPlay
           loop
           muted

@@ -11,7 +11,6 @@ import { CheckCircle2 } from 'lucide-react';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import { MacOSWindow } from '@/components/ui/macos-window';
-import { getStaticUrl } from '@/utils';
 
 function SellButton() {
   const router = useRouter();
@@ -118,7 +117,7 @@ function CarPeopleInfographic() {
         playsInline
         className="w-full h-full object-cover"
       >
-        <source src={getStaticUrl("/Marketing/classiccar.mp4")} type="video/mp4" />
+        <source src="/Marketing/classiccar.mp4" type="video/mp4" />
       </video>
     </MacOSWindow>
   );

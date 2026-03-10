@@ -66,7 +66,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
   };
 
   return (
-    <div className={cn('flex h-full min-h-0 gap-3 overflow-hidden overscroll-contain', className)}>
+    <div className={cn('flex h-full min-h-0 lg:gap-3 overflow-hidden overscroll-contain', className)}>
       {/* List Panel - Rounded window like sidebar on desktop, full on mobile */}
       <div className={cn(
         'flex-shrink-0 min-h-0 transition-all duration-200 overflow-hidden',
@@ -93,10 +93,10 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
         />
       </div>
 
-      {/* Chat Panel - Rounded window like sidebar on desktop, full on mobile */}
+      {/* Chat Panel - Rounded window like sidebar on desktop, clean on mobile */}
       <div className={cn(
         'flex-1 min-w-0 min-h-0 hidden lg:flex relative overflow-hidden',
-        'rounded-xl border border-border bg-background shadow-sm',
+        'lg:rounded-xl lg:border lg:border-border bg-background lg:shadow-sm',
         showMobile && 'flex'
       )}>
           {/* Show list button when collapsed AND no chat selected */}
