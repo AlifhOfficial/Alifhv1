@@ -3,9 +3,13 @@
  * 
  * Premium showroom directory for Black tier members.
  * Showcases verified dealerships with signature showroom pages.
+ * 
+ * Architecture: Server-side data fetch for instant display
  */
 
+import { getPublishedShowrooms } from '@alifh/database';
 import { BlackDirectoryView } from '@/components/pages/black';
+import { getPublicUrl } from '@/utils';
 
 export const metadata = {
   title: 'Black | Premium Car Showrooms & Dealers in UAE | Revvup',
@@ -22,9 +26,51 @@ export const metadata = {
   },
 };
 
-// ISR: Cache for 1 day - data fetched client-side
-export const revalidate = 86400;
+// Revalidate every 5 minutes (300 seconds)
+export const revalidate = 300;
 
-export default function BlackPage() {
-  return <BlackDirectoryView />;
+/**
+ * Transform showroom data to card format with URLs (same as API)
+ */
+function attachCardUrls(showroom: any) {
+  const cacheBuster = new Date(showroom.updatedAt).getTime();
+  
+  return {
+    id: showroom.id,
+    partnerId: showroom.partnerId,
+    slug: showroom.slug,
+    heroVideoUrl: showroom.heroVideoUrl || null,
+    heroVideoFileUrl: getPublicUrl(showroom.heroVideoFile, cacheBuster),
+    heroImageUrl: getPublicUrl(showroom.heroImage, cacheBuster),
+    heroTagline: showroom.heroTagline,
+    partner: {
+      brandName: showroom.partner.brandName,
+      logoUrl: getPublicUrl(showroom.partner.logo, cacheBuster),
+      heroImageUrl: getPublicUrl(showroom.partner.heroImage, cacheBuster),
+      isVerified: showroom.partner.isVerified,
+      tier: showroom.partner.tier,
+      googleRating: showroom.partner.googleRating,
+      googleReviewCount: showroom.partner.googleReviewCount,
+      city: showroom.partner.city,
+      emirate: showroom.partner.emirate,
+    },
+    totalCarsSold: showroom.totalCarsSold,
+    yearsInBusiness: showroom.yearsInBusiness,
+    publishedAt: showroom.publishedAt,
+  };
+}
+
+export default async function BlackPage() {
+  // Fetch showrooms server-side for instant display
+  let initialShowrooms = null;
+  
+  try {
+    const { showrooms } = await getPublishedShowrooms(1, 50);
+    initialShowrooms = showrooms.map(attachCardUrls);
+  } catch (error) {
+    console.error('[BlackPage] Failed to fetch showrooms:', error);
+    // Client will fetch if server fails
+  }
+  
+  return <BlackDirectoryView initialShowrooms={initialShowrooms} />;
 }

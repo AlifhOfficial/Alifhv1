@@ -50,13 +50,27 @@ async function fetchShowrooms(page: number = 1, limit: number = 10): Promise<Sho
 // Component
 // ============================================================================
 
-export function BlackDirectoryView() {
+interface BlackDirectoryViewProps {
+  /**
+   * Initial showrooms data from server-side fetch.
+   * When provided, content renders immediately.
+   */
+  initialShowrooms?: ShowroomCardData[] | null;
+}
+
+export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps = {}) {
   const [searchQuery, setSearchQuery] = useState('');
   
   const { data, isLoading, error } = useQuery({
     queryKey: queryKeys.showroom.list(1, 50),
     queryFn: () => fetchShowrooms(1, 50),
-
+    // Use server-side data if available
+    initialData: initialShowrooms ? {
+      showrooms: initialShowrooms,
+      pagination: { page: 1, limit: 50, total: initialShowrooms.length, totalPages: 1, hasMore: false }
+    } : undefined,
+    initialDataUpdatedAt: initialShowrooms ? Date.now() : undefined,
+    staleTime: initialShowrooms ? 30_000 : 0,
   });
 
   // Filter showrooms by search query (dealer name)
