@@ -146,13 +146,26 @@ export interface UseListingDetailOptions {
    * React Query will still refetch in background if stale.
    */
   initialListing?: CarDetailedData | null;
+  /**
+   * Initial seller data from server-side fetch.
+   * When provided, seller profile renders immediately.
+   */
+  initialSellerData?: SellerData | null;
 }
 
 export function useListingDetail(
   id: string | null | undefined,
   options: UseListingDetailOptions = {}
 ) {
-  const { enabled = true, initialListing } = options;
+  const { enabled = true, initialListing, initialSellerData } = options;
+
+  // Build initial data from server-side props
+  const hasInitialData = !!(initialListing || initialSellerData);
+  const initialData = hasInitialData ? {
+    listing: initialListing ?? null,
+    sellerData: initialSellerData ?? null,
+    isAdminPreview: false,
+  } : undefined;
 
   const query = useQuery({
     queryKey: ['listing', 'detail', id],
@@ -160,17 +173,12 @@ export function useListingDetail(
     enabled: !!id && enabled,
     retry: 1,
     // If we have server-side data, use it immediately
-    // This makes images render on first paint
-    initialData: initialListing ? {
-      listing: initialListing,
-      sellerData: null, // Will be fetched client-side
-      isAdminPreview: false,
-    } : undefined,
+    initialData: initialData as ListingDetailResponse | undefined,
     // Mark when initial data was set (for stale calculation)
-    initialDataUpdatedAt: initialListing ? Date.now() : undefined,
-    // Always refetch immediately to get seller data
-    // The initial listing shows images instantly, refetch gets seller info
-    staleTime: 0,
+    initialDataUpdatedAt: hasInitialData ? Date.now() : undefined,
+    // Only refetch if we're missing seller data
+    // If we have both, no need to refetch
+    staleTime: (initialListing && initialSellerData) ? 30_000 : 0,
   });
 
   return {

@@ -42,9 +42,14 @@ interface ListingDetailViewProps {
    * When provided, images render immediately without waiting for client fetch.
    */
   initialListing?: CarDetailedData | null;
+  /**
+   * Initial seller data from server-side fetch.
+   * When provided, seller profile renders immediately.
+   */
+  initialSellerData?: SellerData | null;
 }
 
-export function ListingDetailView({ listingId, initialListing }: ListingDetailViewProps) {
+export function ListingDetailView({ listingId, initialListing, initialSellerData }: ListingDetailViewProps) {
   const router = useRouter();
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -55,9 +60,10 @@ export function ListingDetailView({ listingId, initialListing }: ListingDetailVi
   // Fetch favorites status once (only if signed in) - CarCardDetailed subscribes to this data
   useFavoritesStatus({ enabled: isAuthenticated });
   
-  // Fetch listing data via hook - pass initialListing for instant image display
+  // Fetch listing data via hook - pass initial data for instant display
   const { listing, sellerData, isAdminPreview, isLoading, error } = useListingDetail(listingId, {
     initialListing,
+    initialSellerData,
   });
   
   // Track view when listing loads successfully (fire-and-forget)

@@ -3,14 +3,21 @@
  * Public page showing comprehensive car listing details
  * 
  * Architecture: Server component with generateMetadata for SEO/OG tags
- * - Data fetched once server-side, passed to client for instant display
+ * - All data fetched server-side, passed to client for instant display
  * - Primary image preloaded for immediate render (no flash)
+ * - No client-side fetch waterfall - everything renders instantly
  */
 
 import { Metadata } from 'next';
-import { getListingDetailed } from '@alifh/database';
+import { 
+  getListingDetailed, 
+  getDealerBaseProfile, 
+  getUserProfileByUserId,
+  getStaffEffectivePhone,
+} from '@alifh/database';
 import { ListingDetailView } from '@/components/listings/listing-detail';
 import { ImagePreloader } from '@/components/ui/image-preloader';
+import type { SellerData } from '@/hooks/listings';
 
 
 interface PageProps {
@@ -23,6 +30,48 @@ function getImageUrl(key: string | null | undefined): string | null {
   if (!key) return null;
   if (key.startsWith('http://') || key.startsWith('https://')) return key;
   return `${CDN_URL}/${key}`;
+}
+
+// Fetch seller data based on listing type (same logic as API route)
+type ListingResult = NonNullable<Awaited<ReturnType<typeof getListingDetailed>>>;
+
+async function fetchSellerData(listing: ListingResult): Promise<SellerData | null> {
+  try {
+    if (listing.partnerId) {
+      // Partner listing - fetch dealer profile and staff phone
+      const [partnerProfile, staffContact] = await Promise.all([
+        getDealerBaseProfile(listing.partnerId),
+        listing.postedByRole === 'staff' && listing.userId
+          ? getStaffEffectivePhone(listing.userId, listing.partnerId)
+          : Promise.resolve(null),
+      ]);
+      
+      // Cast through unknown - DB type is compatible but TypeScript can't verify
+      return { 
+        type: 'partner' as const, 
+        partnerId: listing.partnerId,
+        partner: partnerProfile, 
+        partnerStats: null, // Loaded separately via /api/sellers/stats
+        staffContact: staffContact ? {
+          phone: staffContact.phone,
+          displayName: staffContact.displayName,
+        } : null,
+      } as unknown as SellerData;
+    } else {
+      // User listing - fetch profile
+      const userProfile = await getUserProfileByUserId(listing.userId);
+      
+      // Cast through unknown - DB type is compatible but TypeScript can't verify
+      return { 
+        type: 'user' as const, 
+        userId: listing.userId,
+        userProfile,
+      } as unknown as SellerData;
+    }
+  } catch (error) {
+    console.error('[fetchSellerData] Failed:', error);
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -96,14 +145,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ListingDetailPage({ params }: PageProps) {
   const { id } = await params;
 
-  // Fetch listing server-side for instant image display
-  // This data is passed to the client component as initialData
+  // Fetch listing AND seller data server-side for instant display
+  // No client-side fetch waterfall - everything renders immediately
   let initialListing = null;
+  let initialSellerData: SellerData | null = null;
+  
   try {
     const listing = await getListingDetailed(id);
     // Only pass public, approved listings as initial data
     if (listing?.moderationStatus === 'approved' && listing?.lifecycleStatus === 'active') {
       initialListing = listing;
+      // Fetch seller data in parallel would be nice, but we need listing first
+      initialSellerData = await fetchSellerData(listing);
     }
   } catch (error) {
     // Silently fail - client will fetch and show error state
@@ -125,7 +178,11 @@ export default async function ListingDetailPage({ params }: PageProps) {
           fetchPriority="high"
         />
       )}
-      <ListingDetailView listingId={id} initialListing={initialListing} />
+      <ListingDetailView 
+        listingId={id} 
+        initialListing={initialListing} 
+        initialSellerData={initialSellerData}
+      />
     </>
   );
 }
