@@ -27,7 +27,7 @@ interface UserAvatarProps {
   name?: string | null;
   
   /** Avatar size */
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+  size?: 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
   
   /**
    * @deprecated No longer used - always shows initials when no photo
@@ -37,6 +37,7 @@ interface UserAvatarProps {
 
 // Avatar sizes mapped to theme tokens
 const sizes = {
+  xxs: Sizes.iconSm,                          // 16
   xs: Sizes.iconLg,                           // 24
   sm: Sizes.avatarSm,                         // 32
   md: Sizes.avatarMd,                         // 40
@@ -47,6 +48,7 @@ const sizes = {
 
 // Font sizes for initials - proportional to avatar size
 const fontSizes = {
+  xxs: 8,                                     // tiny
   xs: Typography.labelBadge.fontSize,         // ~10
   sm: Typography.labelSmall.fontSize,         // ~12
   md: Typography.labelMedium.fontSize,        // ~14
@@ -106,7 +108,7 @@ export function UserAvatar({
       {showImage && resolvedSrc && (
         <Image
           source={{ uri: resolvedSrc }}
-          style={styles.image}
+          style={[styles.image, { borderRadius: pixelSize / 2 }]}
           onError={() => setImageError(true)}
           resizeMode="cover"
         />

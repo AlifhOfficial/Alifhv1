@@ -195,7 +195,7 @@ export function MessageBubble({
             <UserAvatar
               src={otherUserAvatar}
               name={otherUserName || 'User'}
-              size="xs"
+              size="xxs"
             />
           </View>
         )}
