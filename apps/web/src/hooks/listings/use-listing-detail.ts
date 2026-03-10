@@ -140,19 +140,35 @@ async function fetchListingDetail(id: string): Promise<ListingDetailResponse> {
 
 export interface UseListingDetailOptions {
   enabled?: boolean;
+  /** 
+   * Initial listing data from server-side fetch.
+   * When provided, images render immediately without waiting for client fetch.
+   * React Query will still refetch in background if stale.
+   */
+  initialListing?: CarDetailedData | null;
 }
 
 export function useListingDetail(
   id: string | null | undefined,
   options: UseListingDetailOptions = {}
 ) {
-  const { enabled = true } = options;
+  const { enabled = true, initialListing } = options;
 
   const query = useQuery({
     queryKey: ['listing', 'detail', id],
     queryFn: () => fetchListingDetail(id!),
     enabled: !!id && enabled,
     retry: 1,
+    // If we have server-side data, use it immediately
+    // This makes images render on first paint
+    initialData: initialListing ? {
+      listing: initialListing,
+      sellerData: null, // Will be fetched client-side
+      isAdminPreview: false,
+    } : undefined,
+    // Consider initial data fresh for 10 seconds to avoid immediate refetch
+    initialDataUpdatedAt: initialListing ? Date.now() : undefined,
+    staleTime: initialListing ? 10_000 : 0,
   });
 
   return {

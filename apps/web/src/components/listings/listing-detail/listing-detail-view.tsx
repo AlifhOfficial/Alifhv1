@@ -30,15 +30,21 @@ import { useCreateConversation } from '@/hooks/messaging';
 import { useListingDetail, useTrackView, type SellerData } from '@/hooks/listings';
 import { useFavoritesStatus } from '@/hooks/engagement';
 import { useAuth } from '@/providers/auth-provider';
+import type { CarDetailedData } from '@alifh/database';
 
 // Re-export types for backwards compatibility
 export type { PartnerSellerData, UserSellerData, SellerData } from '@/hooks/listings';
 
 interface ListingDetailViewProps {
   listingId: string;
+  /** 
+   * Initial listing data from server-side fetch.
+   * When provided, images render immediately without waiting for client fetch.
+   */
+  initialListing?: CarDetailedData | null;
 }
 
-export function ListingDetailView({ listingId }: ListingDetailViewProps) {
+export function ListingDetailView({ listingId, initialListing }: ListingDetailViewProps) {
   const router = useRouter();
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -49,8 +55,10 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
   // Fetch favorites status once (only if signed in) - CarCardDetailed subscribes to this data
   useFavoritesStatus({ enabled: isAuthenticated });
   
-  // Fetch listing data via hook
-  const { listing, sellerData, isAdminPreview, isLoading, error } = useListingDetail(listingId);
+  // Fetch listing data via hook - pass initialListing for instant image display
+  const { listing, sellerData, isAdminPreview, isLoading, error } = useListingDetail(listingId, {
+    initialListing,
+  });
   
   // Track view when listing loads successfully (fire-and-forget)
   // Only track for live/public listings - not admin previews
@@ -227,16 +235,8 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
             </div>
           )}
           
-          {/* Breadcrumb */}
-          {isLoading ? (
-            <div className="flex items-center gap-2 py-4 mb-4 sm:mb-6">
-              <Skeleton className="h-4 w-16" />
-              <span className="text-muted-foreground/40">/</span>
-              <Skeleton className="h-4 w-20" />
-              <span className="text-muted-foreground/40">/</span>
-              <Skeleton className="h-4 w-24" />
-            </div>
-          ) : listing ? (
+          {/* Breadcrumb - show content immediately if we have listing data */}
+          {listing ? (
             <nav className="flex items-center gap-2 text-sm font-bold tracking-tight py-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
               <Link 
                 href="/listings" 
@@ -267,33 +267,41 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
                 </>
               )}
             </nav>
-          ) : null}
+          ) : (
+            <div className="flex items-center gap-2 py-4 mb-4 sm:mb-6">
+              <Skeleton className="h-4 w-16" />
+              <span className="text-muted-foreground/40">/</span>
+              <Skeleton className="h-4 w-20" />
+              <span className="text-muted-foreground/40">/</span>
+              <Skeleton className="h-4 w-24" />
+            </div>
+          )}
 
           {/* Main Content */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10 pb-6 lg:pb-8">
             {/* Main Column - Car Details (60%) */}
             <div className="lg:col-span-3 min-w-0">
-              {isLoading ? (
-                <CarCardDetailed.Skeleton />
-              ) : listing ? (
+              {/* Show content immediately if we have listing data (from initialData or fetch) */}
+              {/* Only show skeleton if no data yet */}
+              {listing ? (
                 <CarCardDetailed listing={listing} kycVerified={sellerKycVerified} />
-              ) : null}
+              ) : (
+                <CarCardDetailed.Skeleton />
+              )}
             </div>
 
             {/* Sidebar - Clean stacked cards (40%) */}
             <div className="lg:col-span-2 min-w-0">
               <div className="lg:sticky lg:top-24 space-y-6">
-                {/* 1. Seller Profile */}
-                {isLoading ? (
-                  <SellerProfileCard.Skeleton />
-                ) : hasSellerData && sellerData ? (
+                {/* 1. Seller Profile - shows skeleton until seller data loads */}
+                {hasSellerData && sellerData ? (
                   <SellerProfileCard sellerData={sellerData} />
-                ) : null}
+                ) : (
+                  <SellerProfileCard.Skeleton />
+                )}
 
                 {/* 2. Actions Section - Contact + Booking combined */}
-                {isLoading ? (
-                  <ContactSection.Skeleton />
-                ) : hasSellerData && sellerData && listing ? (
+                {hasSellerData && sellerData && listing ? (
                   <ContactSection
                     sellerData={sellerData}
                     listingId={listing.id}
@@ -307,12 +315,12 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
                     onBookTestDrive={() => setIsBookingModalOpen(true)}
                     partnerName={listing.partnerBrandName || 'Dealer'}
                   />
-                ) : null}
+                ) : (
+                  <ContactSection.Skeleton />
+                )}
 
                 {/* 3. Listing Timestamp */}
-                {isLoading ? (
-                  <ListingTimestamp.Skeleton />
-                ) : listing ? (
+                {listing ? (
                   <ListingTimestamp
                     createdAt={listing.createdAt}
                     updatedAt={listing.updatedAt}
@@ -320,27 +328,29 @@ export function ListingDetailView({ listingId }: ListingDetailViewProps) {
                     originalPublishedAt={listing.originalPublishedAt}
                     lastEditedAt={listing.lastEditedAt}
                   />
-                ) : null}
+                ) : (
+                  <ListingTimestamp.Skeleton />
+                )}
 
                 {/* 4. EMI Calculator */}
-                {isLoading ? (
-                  <EMICalculator.Skeleton />
-                ) : listing ? (
+                {listing ? (
                   <EMICalculator
                     price={listing.price}
                     currency={listing.currency}
                   />
-                ) : null}
+                ) : (
+                  <EMICalculator.Skeleton />
+                )}
 
-                {/* 5. Location */}
-                {isLoading ? (
-                  <LocationSection.Skeleton />
-                ) : hasSellerData && sellerData ? (
+                {/* 5. Location - shows skeleton until seller data loads */}
+                {hasSellerData && sellerData ? (
                   <LocationSection sellerData={sellerData} />
-                ) : null}
+                ) : (
+                  <LocationSection.Skeleton />
+                )}
 
-                {/* Safety Note */}
-                {!isLoading && listing && (
+                {/* Safety Note - shows once we have listing data */}
+                {listing && (
                   <div className="py-4 border-t border-border flex items-start gap-3">
                     {isDealerListing ? (
                       <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />

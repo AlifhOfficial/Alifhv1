@@ -3,12 +3,14 @@
  * Public page showing comprehensive car listing details
  * 
  * Architecture: Server component with generateMetadata for SEO/OG tags
- * Data for display fetched client-side via ListingDetailView
+ * - Data fetched once server-side, passed to client for instant display
+ * - Primary image preloaded for immediate render (no flash)
  */
 
 import { Metadata } from 'next';
 import { getListingDetailed } from '@alifh/database';
 import { ListingDetailView } from '@/components/listings/listing-detail';
+import { ImagePreloader } from '@/components/ui/image-preloader';
 
 
 interface PageProps {
@@ -94,5 +96,36 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ListingDetailPage({ params }: PageProps) {
   const { id } = await params;
 
-  return <ListingDetailView listingId={id} />;
+  // Fetch listing server-side for instant image display
+  // This data is passed to the client component as initialData
+  let initialListing = null;
+  try {
+    const listing = await getListingDetailed(id);
+    // Only pass public, approved listings as initial data
+    if (listing?.moderationStatus === 'approved' && listing?.lifecycleStatus === 'active') {
+      initialListing = listing;
+    }
+  } catch (error) {
+    // Silently fail - client will fetch and show error state
+    console.error('[ListingDetailPage] Server fetch failed:', error);
+  }
+
+  // Preload primary image for instant display (browser starts fetch during HTML parse)
+  const primaryImageUrl = initialListing 
+    ? getImageUrl(initialListing.thumbnail || initialListing.images?.[0])
+    : null;
+
+  return (
+    <>
+      {/* Preload primary image - browser fetches immediately, before React hydrates */}
+      {primaryImageUrl && (
+        <ImagePreloader 
+          src={primaryImageUrl} 
+          as="image"
+          fetchPriority="high"
+        />
+      )}
+      <ListingDetailView listingId={id} initialListing={initialListing} />
+    </>
+  );
 }
