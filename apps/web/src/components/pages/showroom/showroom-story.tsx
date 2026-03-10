@@ -57,7 +57,7 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
 
         {/* Description - Below Media */}
         <div className="px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl space-y-4">
+          <div className="space-y-4">
             {showroom.brandStoryContent.split('\n\n').slice(0, 3).map((paragraph, idx) => (
               <p key={idx} className="text-base text-muted-foreground leading-relaxed">{paragraph}</p>
             ))}

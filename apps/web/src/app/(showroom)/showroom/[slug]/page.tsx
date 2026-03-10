@@ -96,6 +96,37 @@ async function fetchShowroomMetadata(slug: string) {
   }
 }
 
+/**
+ * Server-side fetch for showroom listings
+ * Fetches initial inventory to avoid client-side waterfall
+ */
+async function fetchShowroomListings(partnerId: string, partnerName: string) {
+  try {
+    const headersList = await headers();
+    const host = headersList.get('host') || 'localhost:3000';
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    
+    const params = new URLSearchParams({
+      partnerId: partnerId,
+      partnerName: partnerName,
+      limit: '24',
+    });
+    
+    const response = await fetch(`${protocol}://${host}/api/listings/search?${params}`, {
+      next: { revalidate: 300 }, // 5 min cache
+      cache: 'force-cache',
+    });
+    
+    if (!response.ok) {
+      return null;
+    }
+    
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
 // ============================================================================
 // Metadata
 // ============================================================================
@@ -170,6 +201,11 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
     notFound();
   }
   
+  // Fetch initial listings server-side to avoid client-side waterfall
+  const initialListings = showroom.partner?.id 
+    ? await fetchShowroomListings(showroom.partner.id, showroom.partner.brandName || '')
+    : null;
+  
   const heroVideoUrl = showroom?.heroVideoFileUrl || null;
   const heroImageUrl = showroom?.heroImageUrl || null;
 
@@ -196,7 +232,7 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
         />
       )}
       {/* Pass showroom data to client - renders instantly, no client fetch needed */}
-      <ShowroomPageClient slug={slug} initialShowroom={showroom} />
+      <ShowroomPageClient slug={slug} initialShowroom={showroom} initialListings={initialListings} />
     </>
   );
 }

@@ -11,9 +11,9 @@ import { Metadata } from 'next';
 import { ListingsView } from '@/components/listings/listings-view';
 import { 
   searchListings, 
-  getSearchFacets, 
   urlToSearchParams,
 } from '@alifh/database';
+import { getCachedSearchFacets } from '@/lib/search-cache';
 import type { SearchResponse } from '@/lib/search-utils';
 
 interface PageProps {
@@ -124,7 +124,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
         skipFacets: true,
         skipTotalCount: false,
       }),
-      getSearchFacets(searchParamsObj),
+      getCachedSearchFacets(searchParamsObj),
     ]);
     
     // Cast to web's SearchResponse type (database type is compatible)

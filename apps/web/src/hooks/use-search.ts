@@ -9,7 +9,7 @@
  * @module hooks/use-search
  */
 
-import { useCallback, useMemo, useRef, useEffect } from 'react';
+import { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -95,10 +95,18 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Parse current params from URL (or use initial params if URL sync disabled)
+  // Local state for params when URL sync is disabled
+  const [localParams, setLocalParams] = useState<SearchParams>(() => ({
+    limit: defaultLimit,
+    ...initialParams,
+    ...forcedParams,
+  }));
+
+  // Parse current params from URL (or use local state if URL sync disabled)
   const params = useMemo<SearchParams>(() => {
     if (disableUrlSync) {
-      return { limit: defaultLimit, ...initialParams, ...forcedParams };
+      // Use local state, but always apply forced params
+      return { ...localParams, ...forcedParams };
     }
     
     const urlParams = urlToSearchParams(searchParams);
@@ -111,7 +119,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
       // Apply forced params last - cannot be overridden by URL
       ...forcedParams,
     };
-  }, [searchParams, initialParams, forcedParams, disableUrlSync, defaultLimit]);
+  }, [searchParams, initialParams, forcedParams, disableUrlSync, defaultLimit, localParams]);
 
   // Sync default sort to URL on initial load (better UX - URL reflects actual state)
   // Use native history API to avoid interfering with browser scroll restoration
@@ -141,6 +149,20 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     return ['listings', 'search', keyParams];
   }, [params]);
 
+  // Track the initial query key to know when we've moved away from it
+  // initialData should only be used for the exact initial query
+  const initialQueryKeyRef = useRef<string | null>(null);
+  const currentQueryKeyString = JSON.stringify(queryKey);
+  
+  // Set initial query key on first render only
+  if (initialQueryKeyRef.current === null && initialData) {
+    initialQueryKeyRef.current = currentQueryKeyString;
+  }
+  
+  // Only use initialData if we're still on the initial query
+  const isInitialQuery = initialQueryKeyRef.current === currentQueryKeyString;
+  const effectiveInitialData = isInitialQuery ? initialData : undefined;
+
   // Fetch search results
   const { 
     data, 
@@ -151,21 +173,25 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   } = useQuery({
     queryKey,
     queryFn: () => fetchSearch(params),
-    // Server-side data for instant display
-    initialData: initialData ?? undefined,
-    initialDataUpdatedAt: initialData ? Date.now() : undefined,
+    // Server-side data for instant display - only for the initial query
+    initialData: effectiveInitialData ?? undefined,
+    initialDataUpdatedAt: effectiveInitialData ? Date.now() : undefined,
     // Cache settings for smooth back navigation
     // Use 30s stale time when we have initial data (server already fetched fresh data)
-    staleTime: initialData ? 30_000 : 5 * 60 * 1000,
+    staleTime: effectiveInitialData ? 30_000 : 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache for back navigation
     refetchOnWindowFocus: false,
     refetchOnMount: false, // Don't refetch on mount if we have cached data
     placeholderData: (previousData) => previousData, // Keep previous data visible while fetching
   });
 
-  // Update URL with new params
+  // Update URL with new params (or local state if URL sync disabled)
   const updateUrl = useCallback((newParams: SearchParams) => {
-    if (disableUrlSync) return;
+    if (disableUrlSync) {
+      // Update local state instead of URL
+      setLocalParams(newParams);
+      return;
+    }
     
     const urlParams = searchParamsToUrl(newParams);
     const newUrl = urlParams.toString() 
@@ -205,13 +231,15 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     updateUrl(newParams);
   }, [params, updateUrl]);
 
-  // Clear all filters (keep only limit, reset sort to default)
+  // Clear all filters (keep limit and initialParams, reset sort to default)
   const clearFilters = useCallback(() => {
     const newParams: SearchParams = {
       limit: params.limit,
+      // When URL sync is disabled, preserve initial params (e.g., partnerId)
+      ...(disableUrlSync ? initialParams : {}),
     };
     updateUrl(newParams);
-  }, [params.limit, updateUrl]);
+  }, [params.limit, updateUrl, disableUrlSync, initialParams]);
 
   // Set sort option
   const setSort = useCallback((sortBy: SearchSortOption) => {

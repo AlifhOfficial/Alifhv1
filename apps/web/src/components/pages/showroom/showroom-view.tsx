@@ -33,6 +33,11 @@ interface ShowroomViewProps {
    * When provided, content renders immediately.
    */
   initialShowroom?: ShowroomData | null;
+  /**
+   * Initial listings data from server-side fetch.
+   * Avoids client-side waterfall for inventory section.
+   */
+  initialListings?: any | null;
 }
 
 /**
@@ -126,7 +131,7 @@ function ShowroomError() {
   );
 }
 
-export function ShowroomView({ slug, initialShowroom }: ShowroomViewProps) {
+export function ShowroomView({ slug, initialShowroom, initialListings }: ShowroomViewProps) {
   // Guard against undefined/invalid slug - must be valid CUID-like (20+ chars)
   const isValidSlug = !!slug && slug !== 'undefined' && slug !== 'null' && slug.length >= 10;
   
@@ -152,7 +157,7 @@ export function ShowroomView({ slug, initialShowroom }: ShowroomViewProps) {
   return (
     <div className="min-h-screen bg-background">
       <ShowroomHero showroom={showroomData} />
-      <ShowroomInventory showroom={showroomData} />
+      <ShowroomInventory showroom={showroomData} initialListings={initialListings} />
       <ShowroomStory showroom={showroomData} />
       <ShowroomFounder showroom={showroomData} />
       <ShowroomGallery showroom={showroomData} />

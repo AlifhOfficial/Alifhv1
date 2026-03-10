@@ -17,8 +17,13 @@ interface ShowroomPageClientProps {
    * When provided, content renders immediately.
    */
   initialShowroom?: ShowroomData | null;
+  /**
+   * Initial listings data from server-side fetch.
+   * Avoids client-side waterfall for inventory section.
+   */
+  initialListings?: any | null;
 }
 
-export function ShowroomPageClient({ slug, initialShowroom }: ShowroomPageClientProps) {
-  return <ShowroomView slug={slug} initialShowroom={initialShowroom} />;
+export function ShowroomPageClient({ slug, initialShowroom, initialListings }: ShowroomPageClientProps) {
+  return <ShowroomView slug={slug} initialShowroom={initialShowroom} initialListings={initialListings} />;
 }

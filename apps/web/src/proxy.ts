@@ -33,6 +33,11 @@ const BYPASS_SITE_PASSWORD = [
  * Returns NextResponse if access denied, or null if access granted/not required
  */
 function checkSitePassword(request: NextRequest): NextResponse | null {
+  // Skip protection in development mode
+  if (process.env.NODE_ENV === 'development') {
+    return null;
+  }
+  
   const sitePassword = process.env.SITE_PASSWORD;
   
   // No password set = no protection

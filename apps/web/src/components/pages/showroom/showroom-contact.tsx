@@ -168,8 +168,11 @@ function LeafletMap({ lat, lng, markerTitle }: LeafletMapProps) {
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
       });
 
+      // Guard against unmounted component (ref may be null after async import)
+      if (!mapRef.current) return;
+
       // Initialize map
-      const map = L.map(mapRef.current!, {
+      const map = L.map(mapRef.current, {
         scrollWheelZoom: false,
       }).setView([lat, lng], 15);
 

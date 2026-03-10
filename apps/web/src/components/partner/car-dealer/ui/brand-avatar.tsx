@@ -67,7 +67,8 @@ export function BrandAvatar({
       return logoUrl;
     }
     // Storage key - convert to URL with cache buster
-    const cacheBuster = updatedAt ? new Date(updatedAt).getTime() : Date.now();
+    // Don't use Date.now() as fallback - causes hydration mismatch (server vs client time differs)
+    const cacheBuster = updatedAt ? new Date(updatedAt).getTime() : undefined;
     return getPublicUrl(logoUrl, cacheBuster);
   }, [logoUrl, updatedAt]);
 

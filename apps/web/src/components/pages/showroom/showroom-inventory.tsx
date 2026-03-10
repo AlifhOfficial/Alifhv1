@@ -30,13 +30,18 @@ import { getAmbientTheme } from './types';
 
 interface ShowroomInventoryProps {
   showroom: ShowroomData;
+  /**
+   * Initial listings data from server-side fetch.
+   * Avoids client-side waterfall.
+   */
+  initialListings?: any | null;
 }
 
 // ============================================================================
 // Main Component
 // ============================================================================
 
-export function ShowroomInventory({ showroom }: ShowroomInventoryProps) {
+export function ShowroomInventory({ showroom, initialListings }: ShowroomInventoryProps) {
   const partnerId = showroom.partner?.id;
   const partnerName = showroom.partner?.brandName;
   
@@ -82,10 +87,12 @@ export function ShowroomInventory({ showroom }: ShowroomInventoryProps) {
     loadMore,
     goToPage,
   } = useSearch({ 
-    initialParams: { 
+    // Use forcedParams to lock partnerId - cannot be removed or overwritten
+    forcedParams: { 
       partnerId: partnerId || undefined,
       partnerName: partnerName || undefined,
     },
+    initialData: initialListings,
     disableUrlSync: true,
     defaultLimit: 24,
   });
