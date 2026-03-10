@@ -166,9 +166,11 @@ export function useListingDetail(
       sellerData: null, // Will be fetched client-side
       isAdminPreview: false,
     } : undefined,
-    // Consider initial data fresh for 10 seconds to avoid immediate refetch
+    // Mark when initial data was set (for stale calculation)
     initialDataUpdatedAt: initialListing ? Date.now() : undefined,
-    staleTime: initialListing ? 10_000 : 0,
+    // Always refetch immediately to get seller data
+    // The initial listing shows images instantly, refetch gets seller info
+    staleTime: 0,
   });
 
   return {

@@ -293,17 +293,15 @@ export function ListingDetailView({ listingId, initialListing }: ListingDetailVi
             {/* Sidebar - Clean stacked cards (40%) */}
             <div className="lg:col-span-2 min-w-0">
               <div className="lg:sticky lg:top-24 space-y-6">
-                {/* 1. Seller Profile */}
-                {isLoading ? (
-                  <SellerProfileCard.Skeleton />
-                ) : hasSellerData && sellerData ? (
+                {/* 1. Seller Profile - show skeleton until seller data loads */}
+                {hasSellerData && sellerData ? (
                   <SellerProfileCard sellerData={sellerData} />
-                ) : null}
+                ) : (
+                  <SellerProfileCard.Skeleton />
+                )}
 
                 {/* 2. Actions Section - Contact + Booking combined */}
-                {isLoading ? (
-                  <ContactSection.Skeleton />
-                ) : hasSellerData && sellerData && listing ? (
+                {hasSellerData && sellerData && listing ? (
                   <ContactSection
                     sellerData={sellerData}
                     listingId={listing.id}
@@ -317,7 +315,9 @@ export function ListingDetailView({ listingId, initialListing }: ListingDetailVi
                     onBookTestDrive={() => setIsBookingModalOpen(true)}
                     partnerName={listing.partnerBrandName || 'Dealer'}
                   />
-                ) : null}
+                ) : (
+                  <ContactSection.Skeleton />
+                )}
 
                 {/* 3. Listing Timestamp */}
                 {listing ? (
@@ -342,15 +342,15 @@ export function ListingDetailView({ listingId, initialListing }: ListingDetailVi
                   <EMICalculator.Skeleton />
                 )}
 
-                {/* 5. Location */}
-                {isLoading ? (
-                  <LocationSection.Skeleton />
-                ) : hasSellerData && sellerData ? (
+                {/* 5. Location - show skeleton until seller data loads */}
+                {hasSellerData && sellerData ? (
                   <LocationSection sellerData={sellerData} />
-                ) : null}
+                ) : (
+                  <LocationSection.Skeleton />
+                )}
 
                 {/* Safety Note */}
-                {!isLoading && listing && (
+                {listing && (
                   <div className="py-4 border-t border-border flex items-start gap-3">
                     {isDealerListing ? (
                       <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
