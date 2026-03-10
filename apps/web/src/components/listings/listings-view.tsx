@@ -15,6 +15,7 @@ import { useUser } from '@/hooks/auth/use-auth';
 import { useFavoritesStatus } from '@/hooks/engagement';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import type { SearchResponse } from '@/lib/search-utils';
 
 interface ListingsViewProps {
   /** When true, removes top padding for embedding in dashboards */
@@ -27,6 +28,8 @@ interface ListingsViewProps {
   defaultBrand?: string;
   /** Default model filter (for model hub pages) */
   defaultModel?: string;
+  /** Server-fetched initial data (for instant display) */
+  initialData?: SearchResponse | null;
 }
 
 const VIEW_MODE_KEY = 'listings-view-mode';
@@ -37,6 +40,7 @@ export function ListingsView({
   defaultLocation,
   defaultBrand,
   defaultModel,
+  initialData,
 }: ListingsViewProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>(() => {
     if (typeof window !== 'undefined') {
@@ -87,6 +91,7 @@ export function ListingsView({
       ...(defaultBrand && { make: [defaultBrand] }),
       ...(defaultModel && { model: [defaultModel] }),
     },
+    initialData,
   });
 
   // Scroll to top when user changes pagination (not on initial mount/back navigation)

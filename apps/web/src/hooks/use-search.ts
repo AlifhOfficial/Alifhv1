@@ -31,6 +31,8 @@ interface UseSearchOptions {
   disableUrlSync?: boolean;
   /** Default limit */
   defaultLimit?: number;
+  /** Server-fetched initial data (for instant display) */
+  initialData?: SearchResponse | null;
 }
 
 interface UseSearchResult {
@@ -86,6 +88,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     forcedParams = {},
     disableUrlSync = false,
     defaultLimit = 30,
+    initialData,
   } = options;
 
   const router = useRouter();
@@ -148,8 +151,12 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   } = useQuery({
     queryKey,
     queryFn: () => fetchSearch(params),
+    // Server-side data for instant display
+    initialData: initialData ?? undefined,
+    initialDataUpdatedAt: initialData ? Date.now() : undefined,
     // Cache settings for smooth back navigation
-    staleTime: 5 * 60 * 1000, // 5 minutes - data considered fresh
+    // Use 30s stale time when we have initial data (server already fetched fresh data)
+    staleTime: initialData ? 30_000 : 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache for back navigation
     refetchOnWindowFocus: false,
     refetchOnMount: false, // Don't refetch on mount if we have cached data

@@ -2,11 +2,19 @@
  * Inventory/Listings Page - Revvup Design System
  * Clean compact layout
  * Note: Navbar is rendered by the public layout wrapper
+ * 
+ * Architecture: Server-side data fetch for instant display
  */
 
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { ListingsView } from '@/components/listings/listings-view';
+import { 
+  searchListings, 
+  getSearchFacets, 
+  urlToSearchParams,
+} from '@alifh/database';
+import type { SearchResponse } from '@/lib/search-utils';
 
 interface PageProps {
   searchParams: Promise<{
@@ -79,13 +87,59 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   return baseMetadata;
 }
 
-// ISR: Cache listings page shell for 1 day - data fetched client-side via API
-export const revalidate = 86400;
+// Revalidate every 5 minutes (300 seconds)
+export const revalidate = 300;
 
-export default function InventoryPage({ searchParams }: PageProps) {
+export default async function InventoryPage({ searchParams }: PageProps) {
+  // Parse search params for server-side fetch
+  const params = await searchParams;
+  const urlParams = new URLSearchParams();
+  
+  // Convert params to URLSearchParams
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) {
+      if (Array.isArray(value)) {
+        value.forEach(v => urlParams.append(key, v));
+      } else {
+        urlParams.set(key, value);
+      }
+    }
+  });
+  
+  // Parse to search params format
+  const searchParamsObj = urlToSearchParams(urlParams);
+  const limit = searchParamsObj.limit || 30;
+  
+  // Normalize sortBy to 'relevance' if not specified
+  if (!searchParamsObj.sortBy) {
+    searchParamsObj.sortBy = 'relevance';
+  }
+  
+  // Fetch initial data server-side for instant display
+  let initialData: SearchResponse | null = null;
+  
+  try {
+    const [searchResult, facets] = await Promise.all([
+      searchListings({ ...searchParamsObj, limit }, { 
+        skipFacets: true,
+        skipTotalCount: false,
+      }),
+      getSearchFacets(searchParamsObj),
+    ]);
+    
+    // Cast to web's SearchResponse type (database type is compatible)
+    initialData = {
+      ...searchResult,
+      facets,
+    } as SearchResponse;
+  } catch (error) {
+    console.error('[ListingsPage] Failed to fetch initial data:', error);
+    // Client will fetch if server fails
+  }
+  
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <ListingsView />
+      <ListingsView initialData={initialData} />
     </Suspense>
   );
 }
