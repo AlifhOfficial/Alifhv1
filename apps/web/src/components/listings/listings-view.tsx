@@ -89,9 +89,16 @@ export function ListingsView({
     },
   });
 
-  // Scroll to top when pagination changes
+  // Scroll to top when user changes pagination (not on initial mount/back navigation)
+  // Skip initial mount to let browser restore scroll position naturally
   const prevPageRef = useRef(currentPage);
+  const isInitialMount = useRef(true);
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      prevPageRef.current = currentPage;
+      return;
+    }
     if (prevPageRef.current !== currentPage && !isFetching) {
       window.scrollTo({ top: 0, behavior: 'instant' });
       prevPageRef.current = currentPage;

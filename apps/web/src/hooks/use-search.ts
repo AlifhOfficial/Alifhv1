@@ -111,6 +111,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   }, [searchParams, initialParams, forcedParams, disableUrlSync, defaultLimit]);
 
   // Sync default sort to URL on initial load (better UX - URL reflects actual state)
+  // Use native history API to avoid interfering with browser scroll restoration
   const hasInitializedSort = useRef(false);
   useEffect(() => {
     if (disableUrlSync || hasInitializedSort.current) return;
@@ -120,9 +121,10 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
       hasInitializedSort.current = true;
       const newUrlParams = new URLSearchParams(searchParams.toString());
       newUrlParams.set('sort', 'relevance');
-      router.replace(`${pathname}?${newUrlParams.toString()}`, { scroll: false });
+      // Use native replaceState to avoid triggering Next.js navigation/scroll logic
+      window.history.replaceState(null, '', `${pathname}?${newUrlParams.toString()}`);
     }
-  }, [searchParams, pathname, router, disableUrlSync]);
+  }, [searchParams, pathname, disableUrlSync]);
 
   // Generate stable query key
   const queryKey = useMemo(() => {
@@ -146,6 +148,9 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   } = useQuery({
     queryKey,
     queryFn: () => fetchSearch(params),
+    // Cache settings for smooth back navigation
+    staleTime: 5 * 60 * 1000, // 5 minutes - data considered fresh
+    gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache for back navigation
     refetchOnWindowFocus: false,
     refetchOnMount: false, // Don't refetch on mount if we have cached data
     placeholderData: (previousData) => previousData, // Keep previous data visible while fetching
