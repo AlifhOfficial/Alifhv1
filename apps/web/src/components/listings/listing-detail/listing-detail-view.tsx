@@ -235,8 +235,16 @@ export function ListingDetailView({ listingId, initialListing }: ListingDetailVi
             </div>
           )}
           
-          {/* Breadcrumb - show content immediately if we have listing data */}
-          {listing ? (
+          {/* Breadcrumb */}
+          {isLoading ? (
+            <div className="flex items-center gap-2 py-4 mb-4 sm:mb-6">
+              <Skeleton className="h-4 w-16" />
+              <span className="text-muted-foreground/40">/</span>
+              <Skeleton className="h-4 w-20" />
+              <span className="text-muted-foreground/40">/</span>
+              <Skeleton className="h-4 w-24" />
+            </div>
+          ) : listing ? (
             <nav className="flex items-center gap-2 text-sm font-bold tracking-tight py-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
               <Link 
                 href="/listings" 
@@ -267,15 +275,7 @@ export function ListingDetailView({ listingId, initialListing }: ListingDetailVi
                 </>
               )}
             </nav>
-          ) : (
-            <div className="flex items-center gap-2 py-4 mb-4 sm:mb-6">
-              <Skeleton className="h-4 w-16" />
-              <span className="text-muted-foreground/40">/</span>
-              <Skeleton className="h-4 w-20" />
-              <span className="text-muted-foreground/40">/</span>
-              <Skeleton className="h-4 w-24" />
-            </div>
-          )}
+          ) : null}
 
           {/* Main Content */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10 pb-6 lg:pb-8">
@@ -293,15 +293,17 @@ export function ListingDetailView({ listingId, initialListing }: ListingDetailVi
             {/* Sidebar - Clean stacked cards (40%) */}
             <div className="lg:col-span-2 min-w-0">
               <div className="lg:sticky lg:top-24 space-y-6">
-                {/* 1. Seller Profile - shows skeleton until seller data loads */}
-                {hasSellerData && sellerData ? (
-                  <SellerProfileCard sellerData={sellerData} />
-                ) : (
+                {/* 1. Seller Profile */}
+                {isLoading ? (
                   <SellerProfileCard.Skeleton />
-                )}
+                ) : hasSellerData && sellerData ? (
+                  <SellerProfileCard sellerData={sellerData} />
+                ) : null}
 
                 {/* 2. Actions Section - Contact + Booking combined */}
-                {hasSellerData && sellerData && listing ? (
+                {isLoading ? (
+                  <ContactSection.Skeleton />
+                ) : hasSellerData && sellerData && listing ? (
                   <ContactSection
                     sellerData={sellerData}
                     listingId={listing.id}
@@ -315,9 +317,7 @@ export function ListingDetailView({ listingId, initialListing }: ListingDetailVi
                     onBookTestDrive={() => setIsBookingModalOpen(true)}
                     partnerName={listing.partnerBrandName || 'Dealer'}
                   />
-                ) : (
-                  <ContactSection.Skeleton />
-                )}
+                ) : null}
 
                 {/* 3. Listing Timestamp */}
                 {listing ? (
@@ -342,15 +342,15 @@ export function ListingDetailView({ listingId, initialListing }: ListingDetailVi
                   <EMICalculator.Skeleton />
                 )}
 
-                {/* 5. Location - shows skeleton until seller data loads */}
-                {hasSellerData && sellerData ? (
-                  <LocationSection sellerData={sellerData} />
-                ) : (
+                {/* 5. Location */}
+                {isLoading ? (
                   <LocationSection.Skeleton />
-                )}
+                ) : hasSellerData && sellerData ? (
+                  <LocationSection sellerData={sellerData} />
+                ) : null}
 
-                {/* Safety Note - shows once we have listing data */}
-                {listing && (
+                {/* Safety Note */}
+                {!isLoading && listing && (
                   <div className="py-4 border-t border-border flex items-start gap-3">
                     {isDealerListing ? (
                       <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
