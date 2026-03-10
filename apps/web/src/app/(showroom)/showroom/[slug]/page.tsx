@@ -162,7 +162,7 @@ export async function generateMetadata({ params }: ShowroomPageProps): Promise<M
 export default async function ShowroomPage({ params }: ShowroomPageProps) {
   const { slug } = await params;
   
-  // Fetch showroom data to verify it exists
+  // Fetch showroom data - used for both validation and passing to client
   const showroom = await fetchShowroomMetadata(slug);
   
   // Return 404 if partner doesn't exist
@@ -195,7 +195,8 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
           fetchpriority="high"
         />
       )}
-      <ShowroomPageClient slug={slug} />
+      {/* Pass showroom data to client - renders instantly, no client fetch needed */}
+      <ShowroomPageClient slug={slug} initialShowroom={showroom} />
     </>
   );
 }

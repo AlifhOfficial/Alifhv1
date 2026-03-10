@@ -8,11 +8,17 @@
 'use client';
 
 import { ShowroomView } from '@/components/pages/showroom';
+import type { ShowroomData } from '@/components/pages/showroom/types';
 
 interface ShowroomPageClientProps {
   slug: string;
+  /**
+   * Initial showroom data from server-side fetch.
+   * When provided, content renders immediately.
+   */
+  initialShowroom?: ShowroomData | null;
 }
 
-export function ShowroomPageClient({ slug }: ShowroomPageClientProps) {
-  return <ShowroomView slug={slug} />;
+export function ShowroomPageClient({ slug, initialShowroom }: ShowroomPageClientProps) {
+  return <ShowroomView slug={slug} initialShowroom={initialShowroom} />;
 }

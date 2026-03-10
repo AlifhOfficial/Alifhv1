@@ -8,6 +8,7 @@
 'use client';
 
 import { usePublicShowroom } from '@/hooks/showroom';
+import type { ShowroomData } from '@/components/pages/showroom/types';
 import {
   ShowroomHero,
   ShowroomInventory,
@@ -27,6 +28,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface ShowroomViewProps {
   slug: string;
+  /**
+   * Initial showroom data from server-side fetch.
+   * When provided, content renders immediately.
+   */
+  initialShowroom?: ShowroomData | null;
 }
 
 /**
@@ -120,16 +126,18 @@ function ShowroomError() {
   );
 }
 
-export function ShowroomView({ slug }: ShowroomViewProps) {
+export function ShowroomView({ slug, initialShowroom }: ShowroomViewProps) {
   // Guard against undefined/invalid slug - must be valid CUID-like (20+ chars)
   const isValidSlug = !!slug && slug !== 'undefined' && slug !== 'null' && slug.length >= 10;
   
   const { showroom, isLoading, error } = usePublicShowroom(
-    isValidSlug ? slug : null
+    isValidSlug ? slug : null,
+    { initialShowroom }
   );
   
-  // Loading state (or waiting for valid slug)
-  if (!isValidSlug || isLoading) {
+  // Show content immediately if we have initial data
+  // Only show skeleton if we have no data yet
+  if (!showroom && (!isValidSlug || isLoading)) {
     return <ShowroomSkeleton />;
   }
   

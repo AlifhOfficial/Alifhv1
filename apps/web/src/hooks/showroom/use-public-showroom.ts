@@ -38,6 +38,11 @@ export interface UsePublicShowroomOptions {
    * Disable the query (for conditional fetching)
    */
   enabled?: boolean;
+  /**
+   * Initial showroom data from server-side fetch.
+   * When provided, content renders immediately without client fetch.
+   */
+  initialShowroom?: ShowroomData | null;
 }
 
 export interface UsePublicShowroomReturn {
@@ -62,7 +67,7 @@ export function usePublicShowroom(
   partnerId: string | null | undefined,
   options: UsePublicShowroomOptions = {}
 ): UsePublicShowroomReturn {
-  const { enabled = true } = options;
+  const { enabled = true, initialShowroom } = options;
   
   const query = useQuery<ShowroomApiResponse, Error>({
     queryKey: queryKeys.showroom.detail(partnerId || ''),
@@ -80,6 +85,10 @@ export function usePublicShowroom(
     },
     enabled: enabled && !!partnerId && partnerId.length >= 3,
     retry: 1,
+    // If we have server-side data, use it immediately
+    initialData: initialShowroom ? { showroom: initialShowroom as ShowroomApiResponse['showroom'] } : undefined,
+    initialDataUpdatedAt: initialShowroom ? Date.now() : undefined,
+    staleTime: initialShowroom ? 30_000 : 0, // Don't refetch for 30s if we have data
   });
   
   return {
