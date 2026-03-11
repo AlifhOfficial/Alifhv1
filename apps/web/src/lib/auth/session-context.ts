@@ -23,13 +23,21 @@ const SESSION_CACHE_TTL = 300;
  * Extract session token from cookies.
  * Better Auth uses __Secure- prefix in production (HTTPS).
  */
-async function getSessionToken(): Promise<string | null> {
+async function getCookieSessionToken(): Promise<string | null> {
   const cookieStore = await cookies();
   return (
     cookieStore.get("__Secure-better-auth.session_token")?.value ??
     cookieStore.get("better-auth.session_token")?.value ??
     null
   );
+}
+
+function getBearerSessionToken(headerEntries: [string, string][]): string | null {
+  const authHeader = headerEntries.find(([key]) => key.toLowerCase() === "authorization")?.[1] ?? null;
+  if (!authHeader) return null;
+
+  const match = authHeader.match(/^Bearer\s+(.+)$/i);
+  return match?.[1] ?? null;
 }
 
 /**
@@ -63,12 +71,14 @@ function getCachedSession(sessionToken: string, headerEntries: [string, string][
  */
 export const getSessionUser = cache(async (): Promise<ExtendedUser | null> => {
   try {
-    const sessionToken = await getSessionToken();
-    if (!sessionToken) return null;
-
     // Resolve dynamic sources outside the cache scope
     const headersList = await headers();
     const headerEntries = Array.from(headersList.entries()) as [string, string][];
+    const cookieSessionToken = await getCookieSessionToken();
+    const bearerSessionToken = getBearerSessionToken(headerEntries);
+    const sessionToken = cookieSessionToken ?? bearerSessionToken;
+
+    if (!sessionToken) return null;
 
     return await getCachedSession(sessionToken, headerEntries);
   } catch (error: any) {
