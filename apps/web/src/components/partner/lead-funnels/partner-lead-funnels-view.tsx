@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect, useTransition } from 'react';
 import { 
   RefreshCw,
   ChevronDown,
@@ -26,6 +26,7 @@ import Link from 'next/link';
 import { useDebouncedCallback } from 'use-debounce';
 import { getThumbUrl } from '@/utils/storage';
 import { FunnelMatchesView } from '@/components/staff/consignment/funnel-matches-view';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 // ============================================================================
 // Constants
@@ -86,37 +87,78 @@ interface FunnelPreview {
 interface PartnerLeadFunnelsViewProps {
   partnerId: string;
   partnerName: string;
+  initialData: {
+    funnels: ConsignmentFunnel[];
+    stats: FunnelStats | null;
+    staffList: StaffMember[];
+    total: number;
+  };
+  filters: {
+    page: number;
+    q: string;
+    staffId: string;
+  };
 }
 
 // ============================================================================
 // Main Component
 // ============================================================================
 
-export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFunnelsViewProps) {
-  // Data state
-  const [funnels, setFunnels] = useState<ConsignmentFunnel[]>([]);
-  const [stats, setStats] = useState<FunnelStats | null>(null);
-  const [staffList, setStaffList] = useState<StaffMember[]>([]);
-  
-  // Server-side filter state
-  const [selectedStaffFilter, setSelectedStaffFilter] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+export function PartnerLeadFunnelsView({
+  partnerId: _partnerId,
+  partnerName,
+  initialData,
+  filters,
+}: PartnerLeadFunnelsViewProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  const [searchQuery, setSearchQuery] = useState(filters.q);
   
   // UI state
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedFunnels, setExpandedFunnels] = useState<Set<string>>(new Set());
   const [viewingFunnel, setViewingFunnel] = useState<ConsignmentFunnel | null>(null);
-  const hasFetchedInitialRef = useRef(false);
-  const abortRef = useRef<AbortController | null>(null);
+
+  const funnels = initialData.funnels;
+  const stats = initialData.stats;
+  const staffList = initialData.staffList;
+  const totalItems = initialData.total;
+  const selectedStaffFilter = filters.staffId;
+  const debouncedSearch = filters.q;
+  const currentPage = filters.page;
+  const isLoading = isPending;
+  const isRefreshing = isPending;
+
+  useEffect(() => {
+    setSearchQuery(filters.q);
+  }, [filters.q]);
+
+  const updateRoute = useCallback((updates: Partial<PartnerLeadFunnelsViewProps['filters']>) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? '');
+    const nextPage = updates.page ?? currentPage;
+    const nextQuery = updates.q ?? debouncedSearch;
+    const nextStaffId = updates.staffId ?? selectedStaffFilter;
+
+    if (nextPage <= 1) params.delete('page');
+    else params.set('page', String(nextPage));
+
+    if (!nextQuery.trim()) params.delete('q');
+    else params.set('q', nextQuery.trim());
+
+    if (!nextStaffId || nextStaffId === 'all') params.delete('staffId');
+    else params.set('staffId', nextStaffId);
+
+    const nextUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    startTransition(() => {
+      router.replace(nextUrl, { scroll: false });
+    });
+  }, [searchParams, currentPage, debouncedSearch, selectedStaffFilter, pathname, router]);
 
   // Debounce search input
   const debouncedSetSearch = useDebouncedCallback((value: string) => {
-    setDebouncedSearch(value);
-    setCurrentPage(1);
+    updateRoute({ q: value, page: 1 });
   }, 400);
 
   const handleSearchChange = useCallback((value: string) => {
@@ -124,82 +166,11 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
     debouncedSetSearch(value);
   }, [debouncedSetSearch]);
 
-  // Fetch funnels with server-side filters
-  const fetchFunnels = useCallback(async (isRefresh = false) => {
-    if (!partnerId) return;
-    
-    abortRef.current?.abort();
-    abortRef.current = new AbortController();
-
-    try {
-      if (isRefresh) {
-        setIsRefreshing(true);
-      } else {
-        setIsLoading(true);
-      }
-      setError(null);
-
-      // Build query params
-      const params = new URLSearchParams({
-        partnerId,
-        includeStats: '1',
-        limit: String(ITEMS_PER_PAGE),
-        offset: String((currentPage - 1) * ITEMS_PER_PAGE),
-      });
-
-      if (selectedStaffFilter !== 'all') {
-        params.set('staffId', selectedStaffFilter);
-      }
-
-      if (debouncedSearch.trim()) {
-        params.set('q', debouncedSearch.trim());
-      }
-
-      const response = await fetch(`/api/partner/consignment/funnels/all?${params.toString()}`, {
-        method: 'GET',
-        credentials: 'include',
-        cache: 'no-store',
-        signal: abortRef.current.signal,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch funnels');
-      }
-
-      const data = await response.json();
-      setFunnels(data.funnels || []);
-      
-      if (data.stats) {
-        setStats(data.stats);
-      }
-      
-      if (data.staffList) {
-        setStaffList(data.staffList);
-      }
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') return;
-      setError(err instanceof Error ? err.message : 'Failed to fetch funnels');
-      console.error('[PartnerLeadFunnelsView] Error:', err);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [partnerId, currentPage, selectedStaffFilter, debouncedSearch]);
-
-  // Initial fetch
-  useEffect(() => {
-    if (!hasFetchedInitialRef.current) {
-      hasFetchedInitialRef.current = true;
-    }
-    fetchFunnels();
-    return () => { abortRef.current?.abort(); };
-  }, [fetchFunnels]);
-
   // Filter change handlers
   const handleStaffFilterChange = useCallback((value: string) => {
-    setSelectedStaffFilter(value);
-    setCurrentPage(1);
-  }, []);
+    setError(null);
+    updateRoute({ staffId: value, page: 1 });
+  }, [updateRoute]);
 
   // Staff options for combobox
   const staffOptions = useMemo(() => {
@@ -213,23 +184,20 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
     return options;
   }, [staffList]);
 
-  // Calculate total pages from stats
-  const totalItems = stats?.total ?? 0;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   // Clear filters
   const clearFilters = useCallback(() => {
-    setSelectedStaffFilter('all');
+    setError(null);
     setSearchQuery('');
-    setDebouncedSearch('');
-    setCurrentPage(1);
-  }, []);
+    updateRoute({ staffId: 'all', q: '', page: 1 });
+  }, [updateRoute]);
 
   const hasActiveFilters = selectedStaffFilter !== 'all' || searchQuery.trim() !== '';
 
   // Handle refresh
   const handleRefresh = async () => {
-    await fetchFunnels(true);
+    router.refresh();
   };
 
   // Toggle funnel expansion
@@ -419,7 +387,7 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-1 mt-12">
               <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                 disabled={currentPage === 1}
                 className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
@@ -441,7 +409,7 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
                 return (
                   <button
                     key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
+                    onClick={() => updateRoute({ page: pageNum })}
                     className={`w-8 h-8 rounded-lg text-sm transition-colors ${
                       currentPage === pageNum
                         ? 'bg-secondary text-foreground font-medium'
@@ -454,7 +422,7 @@ export function PartnerLeadFunnelsView({ partnerId, partnerName }: PartnerLeadFu
               })}
               
               <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                 disabled={currentPage === totalPages}
                 className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >

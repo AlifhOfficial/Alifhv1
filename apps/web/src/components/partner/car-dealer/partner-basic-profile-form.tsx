@@ -23,6 +23,7 @@ import {
   X,
 } from 'lucide-react';
 import { BrandAvatar } from './ui/brand-avatar';
+import { BrandHero } from './ui/brand-hero';
 import { cn } from '@/utils/cn';
 import { getPublicUrl } from '@/utils';
 import Link from 'next/link';
@@ -33,6 +34,8 @@ const LocationMap = lazy(() =>
 
 interface PartnerBasicProfileFormProps {
   partnerId: string;
+  initialProfile?: any | null;
+  initialStats?: any | null;
 }
 
 type EditingField = 
@@ -155,10 +158,14 @@ const EditableField = React.memo(function EditableField({
   );
 });
 
-export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormProps) {
+export function PartnerBasicProfileForm({
+  partnerId,
+  initialProfile = null,
+  initialStats = null,
+}: PartnerBasicProfileFormProps) {
   const { toast } = useToast();
-  const { profile, isLoading, updateProfile, isUpdating, refetchFresh } = usePartnerProfile(partnerId);
-  const { stats, isLoading: statsLoading } = usePartnerStats(partnerId);
+  const { profile, isLoading, updateProfile, isUpdating, refetchFresh } = usePartnerProfile(partnerId, initialProfile);
+  const { stats, isLoading: statsLoading } = usePartnerStats(partnerId, initialStats);
 
   const [editingField, setEditingField] = useState<EditingField>(null);
   const [logoUploading, setLogoUploading] = useState(false);
@@ -168,6 +175,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   const [customSpecialty, setCustomSpecialty] = useState('');
   const [syncingReviews, setSyncingReviews] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(initialProfile?.logoUrl ?? null);
+  const [heroPreviewUrl, setHeroPreviewUrl] = useState<string | null>(initialProfile?.heroImageUrl ?? null);
 
   const [form, setForm] = useState({
     brandName: '',
@@ -188,6 +197,8 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   // Initialize form from profile
   useEffect(() => {
     if (profile) {
+      setLogoPreviewUrl(profile.logoUrl ?? null);
+      setHeroPreviewUrl(profile.heroImageUrl ?? null);
       setForm({
         brandName: profile.brandName ?? '',
         website: profile.website ?? '',
@@ -232,6 +243,9 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
   const updateField = (updates: Partial<typeof form>) => {
     setForm(f => ({ ...f, ...updates }));
   };
+
+  const displayLogoUrl = logoPreviewUrl || profile?.logoUrl || (form.logo ? getPublicUrl(form.logo) : null);
+  const displayHeroUrl = heroPreviewUrl || profile?.heroImageUrl || (form.heroImage ? getPublicUrl(form.heroImage) : null);
 
   // Save single field
   const saveField = async (field: EditingField) => {
@@ -321,39 +335,83 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
     setEditingField(null);
   };
 
-  // Image upload - client-side compression + direct R2 upload
-  const uploadImage = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: 'logo' | 'heroImage'
-  ) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (!file) return;
-
-    // Basic check - compression handles more
+  const validateImageFile = (file: File) => {
     if (!file.type.startsWith('image/') && file.type !== '' && file.type !== 'application/octet-stream') {
       toast({ title: 'Only image files are allowed', variant: 'destructive' });
-      return;
+      return false;
     }
     if (file.size > 30 * 1024 * 1024) {
       toast({ title: 'Max 30MB', variant: 'destructive' });
-      return;
+      return false;
     }
+    return true;
+  };
 
-    const setUploading = field === 'logo' ? setLogoUploading : setBannerUploading;
-    setUploading(true);
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!validateImageFile(file)) return;
+
+    setLogoUploading(true);
     try {
-      const imageType = field === 'heroImage' ? 'hero' : 'logo';
-      // Client-side compression + direct R2 upload (fast!)
-      const result = await compressAndUploadPartnerImage(file, partnerId, imageType);
-      
-      await updateProfile({ [field]: result.key });
-      updateField({ [field]: result.key });
-      toast({ title: `${field === 'logo' ? 'Logo' : 'Banner'} updated` });
+      const result = await compressAndUploadPartnerImage(file, partnerId, 'logo');
+      setLogoPreviewUrl(result.url);
+      await updateProfile({ logo: result.key });
+      updateField({ logo: result.key });
+      toast({ title: 'Logo updated' });
     } catch (err: any) {
       toast({ title: err.message || 'Upload failed', variant: 'destructive' });
     } finally {
-      setUploading(false);
+      setLogoUploading(false);
+    }
+  };
+
+  const handleHeroUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!validateImageFile(file)) return;
+
+    setBannerUploading(true);
+    try {
+      const result = await compressAndUploadPartnerImage(file, partnerId, 'hero');
+      setHeroPreviewUrl(result.url);
+      await updateProfile({ heroImage: result.key });
+      updateField({ heroImage: result.key });
+      toast({ title: 'Banner updated' });
+    } catch (err: any) {
+      toast({ title: err.message || 'Upload failed', variant: 'destructive' });
+    } finally {
+      setBannerUploading(false);
+    }
+  };
+
+  const removeLogo = async () => {
+    setLogoUploading(true);
+    try {
+      await updateProfile({ logo: null });
+      setLogoPreviewUrl(null);
+      updateField({ logo: null });
+      toast({ title: 'Logo removed' });
+    } catch {
+      toast({ title: 'Failed to remove', variant: 'destructive' });
+    } finally {
+      setLogoUploading(false);
+    }
+  };
+
+  const removeHero = async () => {
+    setBannerUploading(true);
+    try {
+      await updateProfile({ heroImage: null });
+      setHeroPreviewUrl(null);
+      updateField({ heroImage: null });
+      toast({ title: 'Banner removed' });
+    } catch {
+      toast({ title: 'Failed to remove', variant: 'destructive' });
+    } finally {
+      setBannerUploading(false);
     }
   };
 
@@ -505,16 +563,17 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
           accept="image/*"
           className="hidden"
           id="banner-upload"
-          onChange={(e) => uploadImage(e, 'heroImage')}
+          onChange={handleHeroUpload}
           disabled={bannerUploading}
         />
         
-        {form.heroImage ? (
+        {displayHeroUrl ? (
           <>
-            <img
-              src={profile?.heroImageUrl || getPublicUrl(form.heroImage) || form.heroImage}
-              alt="Banner"
-              className="w-full h-full object-cover"
+            <BrandHero
+              heroImageUrl={displayHeroUrl}
+              brandName={profile.brandName}
+              height="sm"
+              className="h-full"
             />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
               <label
@@ -524,10 +583,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
                 {bannerUploading ? <Loader2 className="w-4 h-4 text-white animate-spin" /> : <Camera className="w-4 h-4 text-white" />}
               </label>
               <button
-                onClick={async () => {
-                  await updateProfile({ heroImage: null });
-                  updateField({ heroImage: null });
-                }}
+                onClick={removeHero}
                 className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-red-500/50 transition-colors"
               >
                 <X className="w-4 h-4 text-white" />
@@ -560,18 +616,18 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
             accept="image/*" 
             className="hidden" 
             id="logo-upload" 
-            onChange={(e) => uploadImage(e, 'logo')} 
+            onChange={handleLogoUpload} 
             disabled={logoUploading}
           />
           <label htmlFor="logo-upload" className="block cursor-pointer">
             <BrandAvatar 
-              logoUrl={profile.logoUrl || form.logo} 
+              logoUrl={displayLogoUrl} 
               brandName={profile.brandName} 
               size="xl"
               className={cn("w-20 h-20 sm:w-24 sm:h-24 border-4 border-background", logoUploading && "opacity-50")}
             />
             <div className={cn(
-              "absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl transition-opacity",
+              "absolute inset-0 flex items-center justify-center bg-black/40 rounded-full transition-opacity",
               logoUploading ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             )}>
               {logoUploading ? (
@@ -588,16 +644,7 @@ export function PartnerBasicProfileForm({ partnerId }: PartnerBasicProfileFormPr
               onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setLogoUploading(true);
-                try {
-                  await updateProfile({ logo: null });
-                  updateField({ logo: null });
-                  toast({ title: 'Logo removed' });
-                } catch {
-                  toast({ title: 'Failed to remove', variant: 'destructive' });
-                } finally {
-                  setLogoUploading(false);
-                }
+                await removeLogo();
               }}
               className="absolute -top-1 -right-1 z-10 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/90"
               title="Remove logo"

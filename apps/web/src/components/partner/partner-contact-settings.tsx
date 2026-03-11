@@ -26,7 +26,7 @@ interface PartnerProfile {
 
 type EditingField = null | 'adminName' | 'adminPhone' | 'tollNumber';
 
-export function PartnerContactSettings() {
+export function PartnerContactSettings({ initialProfile = null }: { initialProfile?: PartnerProfile | null }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -37,6 +37,10 @@ export function PartnerContactSettings() {
       if (!res.ok) throw new Error('Failed to fetch profile');
       return res.json();
     },
+    initialData: initialProfile ? { profile: initialProfile } : undefined,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
 
   const profile = data?.profile;

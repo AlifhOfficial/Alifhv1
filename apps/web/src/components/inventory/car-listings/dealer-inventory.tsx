@@ -16,10 +16,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ShoppingCart, RefreshCw, Crown, Search, ChevronLeft, ChevronRight, X, Box, ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState, useEffect, useCallback, useRef } from "react";
+import { useMemo, useState, useEffect, useCallback, useTransition } from "react";
 import { cn } from "@/utils";
 import { getThumbUrl } from "@/utils/storage";
 import { useDebouncedCallback } from 'use-debounce';
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 // Status tab types - maps to lifecycleStatus API param
 type StatusTab = 'active' | 'sold' | 'archived' | 'expired' | 'all';
@@ -29,6 +30,19 @@ interface DealerInventoryProps {
   partnerName?: string;
   partnerVerified?: boolean;
   userRole?: string;
+  initialTeamMembers: TeamMember[];
+  initialBlackQuota: BlackQuotaData | null;
+  initialData: {
+    listings: ListingData[];
+    total: number;
+    stats: ListingStats;
+  };
+  filters: {
+    status: StatusTab;
+    page: number;
+    q: string;
+    staffUserId: string;
+  };
 }
 
 interface ListingData {
@@ -69,18 +83,6 @@ interface BlackQuotaData {
   hasAvailableSlots: boolean;
 }
 
-interface StaffApiResponse {
-  id: string;
-  userId: string;
-  status: 'active' | 'left';
-  role?: string;
-  isOwner?: boolean;
-  displayName?: string;
-  userName?: string;
-  userEmail?: string;
-  userAvatar?: string | null;
-}
-
 interface ListingStats {
   all: number;
   active: number;
@@ -107,41 +109,74 @@ interface TeamMember {
 const ITEMS_PER_PAGE = 15;
 
 export function DealerInventory({ 
-  partnerId, 
+  partnerId: _partnerId, 
   partnerName: _partnerName, 
   partnerVerified: _partnerVerified,
-  userRole 
+  userRole,
+  initialTeamMembers,
+  initialBlackQuota,
+  initialData,
+  filters,
 }: DealerInventoryProps) {
-  // Data state
-  const [listings, setListings] = useState<ListingData[]>([]);
-  const [stats, setStats] = useState<ListingStats | null>(null);
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [blackQuota, setBlackQuota] = useState<BlackQuotaData | null>(null);
-  
-  // Server-side filter state (these trigger API calls)
-  const [selectedStaffFilter, setSelectedStaffFilter] = useState<string>('all');
-  const [selectedStatusTab, setSelectedStatusTab] = useState<StatusTab>('active');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  const [searchQuery, setSearchQuery] = useState(filters.q);
   
   // UI state
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const hasFetchedInitialRef = useRef(false);
-  const abortRef = useRef<AbortController | null>(null);
   
   // Reassign state
   const [reassigningListingId, setReassigningListingId] = useState<string | null>(null);
 
+  const listings = initialData.listings;
+  const totalItems = initialData.total;
+  const stats = initialData.stats;
+  const teamMembers = initialTeamMembers;
+  const blackQuota = initialBlackQuota;
+  const selectedStaffFilter = filters.staffUserId;
+  const selectedStatusTab = filters.status;
+  const currentPage = filters.page;
+  const debouncedSearch = filters.q;
+  const isLoading = isPending;
+  const isRefreshing = isPending;
+
   // Check if user can reassign (owner or admin)
   const canReassign = userRole === 'owner' || userRole === 'admin';
 
+  useEffect(() => {
+    setSearchQuery(filters.q);
+  }, [filters.q]);
+
+  const updateRoute = useCallback((updates: Partial<DealerInventoryProps['filters']>) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? '');
+    const nextStatus = updates.status ?? selectedStatusTab;
+    const nextPage = updates.page ?? currentPage;
+    const nextQuery = updates.q ?? debouncedSearch;
+    const nextStaffUserId = updates.staffUserId ?? selectedStaffFilter;
+
+    if (nextStatus === 'active') params.delete('status');
+    else params.set('status', nextStatus);
+
+    if (nextPage <= 1) params.delete('page');
+    else params.set('page', String(nextPage));
+
+    if (!nextQuery.trim()) params.delete('q');
+    else params.set('q', nextQuery.trim());
+
+    if (!nextStaffUserId || nextStaffUserId === 'all') params.delete('staffUserId');
+    else params.set('staffUserId', nextStaffUserId);
+
+    const nextUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    startTransition(() => {
+      router.replace(nextUrl, { scroll: false });
+    });
+  }, [searchParams, selectedStatusTab, currentPage, debouncedSearch, selectedStaffFilter, pathname, router]);
+
   // Debounce search input to avoid too many API calls
   const debouncedSetSearch = useDebouncedCallback((value: string) => {
-    setDebouncedSearch(value);
-    setCurrentPage(1); // Reset to first page on new search
+    updateRoute({ q: value, page: 1 });
   }, 400);
 
   // Handle search input change
@@ -150,150 +185,16 @@ export function DealerInventory({
     debouncedSetSearch(value);
   }, [debouncedSetSearch]);
 
-  // Fetch team members once on mount
-  const fetchTeamData = useCallback(async (signal: AbortSignal) => {
-    try {
-      const [teamResponse, blackQuotaResponse] = await Promise.all([
-        fetch('/api/partner/staff', {
-          method: 'GET',
-          credentials: 'include',
-          cache: 'no-store',
-          signal,
-        }),
-        fetch('/api/partner/black-quota', {
-          method: 'GET',
-          credentials: 'include',
-          cache: 'no-store',
-          signal,
-        }),
-      ]);
-
-      // Process team data
-      if (teamResponse.ok) {
-        const teamData = await teamResponse.json();
-        const allStaff: StaffApiResponse[] = teamData.data || [];
-        
-        const members = allStaff
-          .filter((m) => !m.isOwner && m.role !== 'owner')
-          .map((m) => ({
-            id: m.id,
-            userId: m.userId,
-            status: m.status,
-            displayName: m.userName || m.userEmail,
-            username: m.userEmail?.split('@')[0] || '',
-            avatar: m.userAvatar,
-          }));
-        setTeamMembers(members);
-      }
-
-      // Process black quota
-      if (blackQuotaResponse.ok) {
-        const quotaData = await blackQuotaResponse.json();
-        if (quotaData.success && quotaData.data) {
-          setBlackQuota(quotaData.data);
-        }
-      }
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') return;
-      console.error('[DealerInventory] Error fetching team data:', err);
-    }
-  }, []);
-
-  // Fetch listings with server-side filters
-  const fetchListings = useCallback(async (isRefresh = false) => {
-    if (!partnerId) return;
-    
-    // Cancel any in-flight request
-    abortRef.current?.abort();
-    abortRef.current = new AbortController();
-
-    try {
-      if (isRefresh) {
-        setIsRefreshing(true);
-      } else {
-        setIsLoading(true);
-      }
-      setError(null);
-
-      // Build query params for server-side filtering
-      const params = new URLSearchParams({
-        listingType: 'work',
-        partnerId,
-        includeStats: '1',
-        limit: String(ITEMS_PER_PAGE),
-        offset: String((currentPage - 1) * ITEMS_PER_PAGE),
-      });
-
-      // Add lifecycle status filter (maps to our status tabs)
-      if (selectedStatusTab !== 'all') {
-        params.set('lifecycleStatus', selectedStatusTab);
-      }
-
-      // Add staff filter
-      if (selectedStaffFilter !== 'all') {
-        params.set('staffMemberUserId', selectedStaffFilter);
-      }
-
-      // Add search query
-      if (debouncedSearch.trim()) {
-        params.set('q', debouncedSearch.trim());
-      }
-
-      const response = await fetch(`/api/listings/my-listings?${params.toString()}`, {
-        method: 'GET',
-        credentials: 'include',
-        cache: 'no-store',
-        signal: abortRef.current.signal,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Failed to fetch listings: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setListings(data.data || data.listings || []);
-      
-      if (data.stats) {
-        setStats(data.stats);
-      }
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') return;
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch listings';
-      setError(errorMessage);
-      console.error('[DealerInventory] Error:', err);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [partnerId, currentPage, selectedStatusTab, selectedStaffFilter, debouncedSearch]);
-
-  // Initial fetch - team data once, listings will be fetched by effect below
-  useEffect(() => {
-    if (!hasFetchedInitialRef.current) {
-      hasFetchedInitialRef.current = true;
-      const controller = new AbortController();
-      fetchTeamData(controller.signal);
-      return () => controller.abort();
-    }
-  }, [fetchTeamData]);
-
-  // Fetch listings whenever filters change
-  useEffect(() => {
-    fetchListings();
-    return () => { abortRef.current?.abort(); };
-  }, [fetchListings]);
-
   // Reset page when filters change (except for page itself)
   const handleStatusTabChange = useCallback((tab: StatusTab) => {
-    setSelectedStatusTab(tab);
-    setCurrentPage(1);
-  }, []);
+    setError(null);
+    updateRoute({ status: tab, page: 1 });
+  }, [updateRoute]);
 
   const handleStaffFilterChange = useCallback((value: string) => {
-    setSelectedStaffFilter(value);
-    setCurrentPage(1);
-  }, []);
+    setError(null);
+    updateRoute({ staffUserId: value, page: 1 });
+  }, [updateRoute]);
 
   // Handle reassigning a listing to a different staff member
   const handleReassign = async (listingId: string, newUserId: string) => {
@@ -312,8 +213,7 @@ export function DealerInventory({
         throw new Error(errorData.error || 'Failed to reassign listing');
       }
       
-      // Refresh listings
-      await fetchListings(true);
+      router.refresh();
     } catch (err) {
       console.error('Reassign failed:', err);
     } finally {
@@ -349,30 +249,19 @@ export function DealerInventory({
   // With server-side filtering, listings are already filtered - no client-side filtering needed
   // The listings we receive are already the result for current page
 
-  // Calculate total pages from stats based on current filter
-  const getTotalForCurrentFilter = useCallback(() => {
-    if (!stats) return 0;
-    switch (selectedStatusTab) {
-      case 'active': return stats.active;
-      case 'sold': return stats.sold;
-      case 'archived': return stats.archived;
-      case 'expired': return stats.expired;
-      case 'all': return stats.all;
-      default: return stats.all;
-    }
-  }, [stats, selectedStatusTab]);
-
-  const totalItems = getTotalForCurrentFilter();
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   // Clear filters
   const clearFilters = useCallback(() => {
-    setSelectedStaffFilter('all');
-    setSelectedStatusTab('active');
+    setError(null);
     setSearchQuery('');
-    setDebouncedSearch('');
-    setCurrentPage(1);
-  }, []);
+    updateRoute({
+      staffUserId: 'all',
+      status: 'active',
+      q: '',
+      page: 1,
+    });
+  }, [updateRoute]);
 
   const hasActiveFilters = selectedStaffFilter !== 'all' || selectedStatusTab !== 'active' || searchQuery.trim() !== '';
 
@@ -428,7 +317,7 @@ export function DealerInventory({
             </div>
           )}
           <button
-            onClick={() => fetchListings(true)}
+            onClick={() => router.refresh()}
             disabled={isRefreshing}
             className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
             aria-label="Refresh"
@@ -680,7 +569,7 @@ export function DealerInventory({
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-1 mt-12">
               <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                 disabled={currentPage === 1}
                 className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
@@ -702,7 +591,7 @@ export function DealerInventory({
                 return (
                   <button
                     key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
+                    onClick={() => updateRoute({ page: pageNum })}
                     className={`w-8 h-8 rounded-lg text-sm transition-colors ${
                       currentPage === pageNum
                         ? 'bg-secondary text-foreground font-medium'
@@ -715,7 +604,7 @@ export function DealerInventory({
               })}
               
               <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                 disabled={currentPage === totalPages}
                 className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >

@@ -12,6 +12,22 @@
 import { redirect } from 'next/navigation';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { PartnerBasicProfileForm } from "@/components/partner";
+import { calculatePartnerStats, getDealerBaseProfile } from '@alifh/database';
+
+function attachImageUrls(profile: any) {
+  const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+  if (!publicUrl || !profile) return profile;
+  const cacheBuster = profile.updatedAt ? new Date(profile.updatedAt).getTime() : Date.now();
+  return {
+    ...profile,
+    logoUrl: profile.logo
+      ? (profile.logo.startsWith('http') ? profile.logo : `${publicUrl.replace(/\/$/, '')}/${profile.logo}?v=${cacheBuster}`)
+      : null,
+    heroImageUrl: profile.heroImage
+      ? (profile.heroImage.startsWith('http') ? profile.heroImage : `${publicUrl.replace(/\/$/, '')}/${profile.heroImage}?v=${cacheBuster}`)
+      : null,
+  };
+}
 
 export default async function PartnerBasicProfilePage() {
   const user = await getSessionUser();
@@ -24,5 +40,16 @@ export default async function PartnerBasicProfilePage() {
     redirect("/access-denied");
   }
 
-  return <PartnerBasicProfileForm partnerId={partnerId} />;
+  const [profile, stats] = await Promise.all([
+    getDealerBaseProfile(partnerId),
+    calculatePartnerStats(partnerId),
+  ]);
+
+  return (
+    <PartnerBasicProfileForm
+      partnerId={partnerId}
+      initialProfile={attachImageUrls(profile)}
+      initialStats={stats}
+    />
+  );
 }

@@ -35,6 +35,8 @@ import type { SimilarListingCard } from '@/hooks/listings/use-similar-listings';
 // Re-export types for backwards compatibility
 export type { PartnerSellerData, UserSellerData, SellerData } from '@/hooks/listings';
 
+const LAST_PUBLIC_LISTINGS_URL_KEY = 'revvup:last-public-listings-url';
+
 interface ListingDetailViewProps {
   listingId: string;
   /** 
@@ -179,6 +181,31 @@ export function ListingDetailView({ listingId, initialListing, initialSellerData
     window.location.href = `/?auth=signin&redirect=${encodeURIComponent(`/listings/${listingId}`)}`;
   };
 
+  const handleBackToAllCars = () => {
+    if (typeof window === 'undefined') {
+      router.push('/listings');
+      return;
+    }
+
+    try {
+      const referrer = document.referrer ? new URL(document.referrer) : null;
+      const cameFromListings =
+        referrer &&
+        referrer.origin === window.location.origin &&
+        referrer.pathname === '/listings';
+
+      if (cameFromListings && window.history.length > 1) {
+        router.back();
+        return;
+      }
+    } catch {
+      // Fall through to stored URL / default route.
+    }
+
+    const savedListingsUrl = window.sessionStorage.getItem(LAST_PUBLIC_LISTINGS_URL_KEY);
+    router.push(savedListingsUrl || '/listings');
+  };
+
   // Get partner address for booking modal
   const partnerAddress = sellerData?.type === 'partner' && sellerData.partner 
     ? sellerData.partner.address 
@@ -250,12 +277,13 @@ export function ListingDetailView({ listingId, initialListing, initialSellerData
             </div>
           ) : listing ? (
             <nav className="flex items-center gap-2 text-sm font-bold tracking-tight py-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
-              <Link 
-                href="/listings" 
+              <button
+                type="button"
+                onClick={handleBackToAllCars}
                 className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
               >
                 All Cars
-              </Link>
+              </button>
               <span className="text-muted-foreground/40">/</span>
               <Link 
                 href={`/listings?make=${encodeURIComponent(listing.make)}`}

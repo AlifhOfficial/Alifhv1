@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Trash2, Mail, User, UserMinus, Clock, RefreshCw, Search, X, UserPlus, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/forms/select';
+import { useRouter } from 'next/navigation';
 
 interface TeamMember {
   id: string;
@@ -45,9 +46,9 @@ const ROLE_CONFIG: Record<string, { color: string; bg: string }> = {
   staff: { color: 'text-foreground', bg: 'bg-secondary' },
 };
 
-export function PartnerStaffManagement() {
+export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: any }) {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const router = useRouter();
   
   // UI State
   const [showInviteForm, setShowInviteForm] = useState(false);
@@ -62,15 +63,9 @@ export function PartnerStaffManagement() {
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; member: TeamMember | null }>({ open: false, member: null });
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  // Fetch all team members
-  const { data: teamData, isLoading, refetch, isRefetching } = useQuery({
-    queryKey: ['staff', 'team'],
-    queryFn: async () => {
-      const res = await fetch('/api/partner/staff');
-      if (!res.ok) throw new Error('Failed to fetch team');
-      return res.json();
-    },
-  });
+  const teamData = initialTeamData;
+  const isLoading = false;
+  const isRefetching = false;
 
   const team: TeamMember[] = teamData?.data || [];
   const activeTeam = team.filter(m => m.status === 'active');
@@ -123,11 +118,10 @@ export function PartnerStaffManagement() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff', 'team'] });
-      queryClient.invalidateQueries({ queryKey: ['staff', 'overview'] });
       toast({ title: 'Invite sent successfully' });
       setInviteFormData({ email: '', role: 'staff', title: '', department: '' });
       setShowInviteForm(false);
+      router.refresh();
     },
     onError: (error) => {
       toast({
@@ -153,12 +147,11 @@ export function PartnerStaffManagement() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff', 'team'] });
-      queryClient.invalidateQueries({ queryKey: ['staff', 'overview'] });
       toast({ title: 'Member removed successfully' });
       setTimeout(() => {
         setDeleteModal({ open: false, member: null });
         setDeleteError(null);
+        router.refresh();
       }, 1500);
     },
     onError: (error) => {
@@ -181,9 +174,8 @@ export function PartnerStaffManagement() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff', 'team'] });
-      queryClient.invalidateQueries({ queryKey: ['staff', 'overview'] });
       toast({ title: 'Invite cancelled' });
+      router.refresh();
     },
     onError: (error) => {
       toast({
@@ -209,9 +201,8 @@ export function PartnerStaffManagement() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff', 'team'] });
-      queryClient.invalidateQueries({ queryKey: ['staff', 'overview'] });
       toast({ title: 'Role updated' });
+      router.refresh();
     },
     onError: (error) => {
       toast({
@@ -309,7 +300,7 @@ export function PartnerStaffManagement() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => refetch()}
+              onClick={() => router.refresh()}
               disabled={isRefetching}
               className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
               aria-label="Refresh"

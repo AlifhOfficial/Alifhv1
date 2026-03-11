@@ -10,10 +10,11 @@ import { Combobox } from "@/components/ui/forms/combobox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X, Phone, Mail, User, Clock, Users, Hash, MessageSquare, FileText, XCircle, ChevronDown, ImageIcon, Copy, Check } from "lucide-react";
-import { useMemo, useState, useEffect, useCallback, useRef } from "react";
+import { useMemo, useState, useEffect, useCallback, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { cn } from "@/utils";
 import { getThumbUrl } from "@/utils/storage";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const BOOKING_TIME_ZONE = 'Asia/Dubai';
 
@@ -21,6 +22,18 @@ interface PartnerBookingsClientProps {
   partnerId: string;
   partnerName: string;
   userRole?: string;
+  initialTeamMembers: TeamMember[];
+  initialData: {
+    bookings: BookingData[];
+    total: number;
+    stats: BookingStats | null;
+  };
+  filters: {
+    status: StatusFilter;
+    page: number;
+    q: string;
+    staffUserId: string;
+  };
 }
 
 interface BookingData {
@@ -71,14 +84,6 @@ interface BookingStats {
   upcomingCount: number;
 }
 
-interface StaffBookingStats {
-  staffUserId: string;
-  staffName: string;
-  bookingCount: number;
-  avatar?: string | null;
-  isActive?: boolean;
-}
-
 interface TeamMember {
   id: string;
   userId: string;
@@ -112,39 +117,67 @@ const STATUS_CONFIG: Record<StatusFilter, { label: string; color: string; bg: st
 const ITEMS_PER_PAGE = 20;
 
 export function PartnerBookingsClient({ 
-  partnerId, 
+  partnerId: _partnerId, 
   partnerName,
-  userRole,
+  userRole: _userRole,
+  initialTeamMembers,
+  initialData,
+  filters,
 }: PartnerBookingsClientProps) {
-  // Data state - now holds server-filtered results
-  const [bookings, setBookings] = useState<BookingData[]>([]);
-  const [totalBookings, setTotalBookings] = useState(0);
-  const [stats, setStats] = useState<BookingStats | null>(null);
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [ownerUserId, setOwnerUserId] = useState<string | null>(null);
-  
-  // Filter state - sent to server
-  const [selectedStaffFilter, setSelectedStaffFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  const [searchQuery, setSearchQuery] = useState(filters.q);
   
   // UI state
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedBooking, setExpandedBooking] = useState<string | null>(null);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
-  
-  // Refs
-  const hasFetchedTeamRef = useRef(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const bookings = initialData.bookings;
+  const totalBookings = initialData.total;
+  const stats = initialData.stats;
+  const teamMembers = initialTeamMembers;
+  const selectedStaffFilter = filters.staffUserId;
+  const statusFilter = filters.status;
+  const debouncedSearch = filters.q;
+  const currentPage = filters.page;
+  const isLoading = isPending;
+  const isRefreshing = isPending;
+
+  useEffect(() => {
+    setSearchQuery(filters.q);
+  }, [filters.q]);
+
+  const updateRoute = useCallback((updates: Partial<PartnerBookingsClientProps['filters']>) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? '');
+    const nextStatus = updates.status ?? statusFilter;
+    const nextPage = updates.page ?? currentPage;
+    const nextQuery = updates.q ?? debouncedSearch;
+    const nextStaffUserId = updates.staffUserId ?? selectedStaffFilter;
+
+    if (nextStatus === 'all') params.delete('status');
+    else params.set('status', nextStatus);
+
+    if (nextPage <= 1) params.delete('page');
+    else params.set('page', String(nextPage));
+
+    if (!nextQuery.trim()) params.delete('q');
+    else params.set('q', nextQuery.trim());
+
+    if (!nextStaffUserId || nextStaffUserId === 'all') params.delete('staffUserId');
+    else params.set('staffUserId', nextStaffUserId);
+
+    const nextUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    startTransition(() => {
+      router.replace(nextUrl, { scroll: false });
+    });
+  }, [searchParams, statusFilter, currentPage, debouncedSearch, selectedStaffFilter, pathname, router]);
 
   // Debounced search handler
   const debouncedSetSearch = useDebouncedCallback((value: string) => {
-    setDebouncedSearch(value);
-    setCurrentPage(1);
+    updateRoute({ q: value, page: 1 });
   }, 400);
 
   const handleSearchChange = useCallback((value: string) => {
@@ -152,133 +185,15 @@ export function PartnerBookingsClient({
     debouncedSetSearch(value);
   }, [debouncedSetSearch]);
 
-  // Fetch team data once on mount
-  const fetchTeamData = useCallback(async () => {
-    try {
-      const response = await fetch('/api/partner/staff', {
-        method: 'GET',
-        credentials: 'include',
-        cache: 'no-store',
-      });
-
-      if (response.ok) {
-        const teamData = await response.json();
-        const allStaff = teamData.data || [];
-        
-        // Find and store owner's userId
-        const owner = allStaff.find((m: any) => m.isOwner || m.role === 'owner');
-        if (owner) {
-          setOwnerUserId(owner.userId);
-        }
-        
-        // Filter out owners - they shouldn't appear in staff list for filtering
-        const members = allStaff
-          .filter((m: any) => !m.isOwner && m.role !== 'owner')
-          .map((m: any) => ({
-            id: m.id,
-            userId: m.userId,
-            status: m.status,
-            displayName: m.userName || m.userEmail,
-            username: m.userEmail?.split('@')[0] || '',
-            avatar: m.userAvatar,
-          }));
-        setTeamMembers(members);
-      }
-    } catch (err) {
-      console.error('Error fetching team data:', err);
-    }
-  }, []);
-
-  // Fetch bookings with server-side filtering
-  const fetchBookings = useCallback(async (isRefresh = false) => {
-    // Cancel any in-flight request to prevent race conditions
-    abortControllerRef.current?.abort();
-    abortControllerRef.current = new AbortController();
-
-    try {
-      if (isRefresh) {
-        setIsRefreshing(true);
-      } else {
-        setIsLoading(true);
-      }
-      setError(null);
-
-      const params = new URLSearchParams({
-        partnerId,
-        includeStats: 'true',
-        limit: String(ITEMS_PER_PAGE),
-        offset: String((currentPage - 1) * ITEMS_PER_PAGE),
-      });
-
-      // Add server-side filters
-      if (selectedStaffFilter !== 'all') {
-        params.set('staffUserId', selectedStaffFilter);
-      }
-      if (statusFilter !== 'all') {
-        params.set('status', statusFilter);
-      }
-      if (debouncedSearch.trim()) {
-        params.set('q', debouncedSearch.trim());
-      }
-
-      const response = await fetch(`/api/bookings?staffView=true&${params}`, {
-        credentials: 'include',
-        cache: 'no-store',
-        signal: abortControllerRef.current.signal,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Failed to fetch bookings' }));
-        throw new Error(errorData.error || 'Failed to fetch bookings');
-      }
-
-      const data = await response.json();
-      setBookings(data.bookings || []);
-      setTotalBookings(data.total || 0);
-      if (data.stats) {
-        setStats(data.stats);
-      }
-    } catch (err) {
-      // Ignore aborted requests - they are intentional
-      if (err instanceof Error && err.name === 'AbortError') {
-        return;
-      }
-      console.error('Error fetching bookings:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load bookings');
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [partnerId, currentPage, selectedStaffFilter, statusFilter, debouncedSearch]);
-
-  // Initial team fetch
-  useEffect(() => {
-    if (!hasFetchedTeamRef.current) {
-      hasFetchedTeamRef.current = true;
-      fetchTeamData();
-    }
-  }, [fetchTeamData]);
-
-  // Fetch bookings when filters change
-  useEffect(() => {
-    fetchBookings();
-    
-    // Cleanup: abort in-flight requests on unmount
-    return () => {
-      abortControllerRef.current?.abort();
-    };
-  }, [fetchBookings]);
-
-  // Reset page when filters change (except page itself)
   const handleStaffFilterChange = useCallback((value: string) => {
-    setSelectedStaffFilter(value);
-    setCurrentPage(1);
-  }, []);
+    setError(null);
+    updateRoute({ staffUserId: value, page: 1 });
+  }, [updateRoute]);
 
   const handleStatusFilterChange = useCallback((value: StatusFilter) => {
-    setStatusFilter(value);
-    setCurrentPage(1);
-  }, []);
+    setError(null);
+    updateRoute({ status: value, page: 1 });
+  }, [updateRoute]);
 
   // Create a Map for O(1) team member lookups
   const teamMemberMap = useMemo(() => {
@@ -344,12 +259,15 @@ export function PartnerBookingsClient({
 
   // Clear all filters
   const clearFilters = useCallback(() => {
-    setSelectedStaffFilter('all');
-    setStatusFilter('all');
+    setError(null);
     setSearchQuery('');
-    setDebouncedSearch('');
-    setCurrentPage(1);
-  }, []);
+    updateRoute({
+      staffUserId: 'all',
+      status: 'all',
+      q: '',
+      page: 1,
+    });
+  }, [updateRoute]);
 
   const hasActiveFilters = selectedStaffFilter !== 'all' || statusFilter !== 'all' || debouncedSearch.trim() !== '';
 
@@ -398,7 +316,7 @@ export function PartnerBookingsClient({
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => fetchBookings(true)}
+            onClick={() => router.refresh()}
             disabled={isRefreshing}
             className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
             aria-label="Refresh"
@@ -517,7 +435,7 @@ export function PartnerBookingsClient({
         <div className="flex flex-col items-center justify-center py-16 sm:py-20">
           <p className="text-xs sm:text-sm text-destructive font-medium">{error}</p>
           <button
-            onClick={() => fetchBookings(true)}
+            onClick={() => router.refresh()}
             className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Try again
@@ -842,7 +760,7 @@ export function PartnerBookingsClient({
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-1 mt-12">
               <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                 disabled={currentPage === 1}
                 className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
@@ -864,7 +782,7 @@ export function PartnerBookingsClient({
                 return (
                   <button
                     key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
+                    onClick={() => updateRoute({ page: pageNum })}
                     className={`w-8 h-8 rounded-lg text-sm transition-colors ${
                       currentPage === pageNum
                         ? 'bg-secondary text-foreground font-medium'
@@ -877,7 +795,7 @@ export function PartnerBookingsClient({
               })}
               
               <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                 disabled={currentPage === totalPages}
                 className="p-2 rounded-lg hover:bg-secondary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >

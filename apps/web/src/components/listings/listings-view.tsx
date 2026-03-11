@@ -16,6 +16,7 @@ import { useFavoritesStatus } from '@/hooks/engagement';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import type { SearchResponse } from '@/lib/search-utils';
+import { usePathname } from 'next/navigation';
 
 interface ListingsViewProps {
   /** When true, removes top padding for embedding in dashboards */
@@ -37,6 +38,7 @@ interface ListingsViewProps {
 }
 
 const VIEW_MODE_KEY = 'listings-view-mode';
+const LAST_PUBLIC_LISTINGS_URL_KEY = 'revvup:last-public-listings-url';
 
 export function ListingsView({ 
   embedded = false, 
@@ -48,6 +50,7 @@ export function ListingsView({
   serverDriven = false,
   hydrateFavoritesStatus = true,
 }: ListingsViewProps) {
+  const pathname = usePathname();
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(VIEW_MODE_KEY);
@@ -59,11 +62,6 @@ export function ListingsView({
   });
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(defaultFiltersOpen);
-
-  // Persist view mode to localStorage
-  useEffect(() => {
-    localStorage.setItem(VIEW_MODE_KEY, viewMode);
-  }, [viewMode]);
 
   const { isSignedIn } = useUser();
   useFavoritesStatus({ enabled: hydrateFavoritesStatus && isSignedIn });
@@ -97,6 +95,19 @@ export function ListingsView({
     initialData,
     serverDriven,
   });
+
+  // Persist view mode to localStorage
+  useEffect(() => {
+    localStorage.setItem(VIEW_MODE_KEY, viewMode);
+  }, [viewMode]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (pathname !== '/listings') return;
+
+    const currentUrl = `${pathname}${window.location.search}`;
+    window.sessionStorage.setItem(LAST_PUBLIC_LISTINGS_URL_KEY, currentUrl);
+  }, [pathname, params]);
 
   // Scroll to top when user changes pagination (not on initial mount/back navigation)
   // Skip initial mount to let browser restore scroll position naturally

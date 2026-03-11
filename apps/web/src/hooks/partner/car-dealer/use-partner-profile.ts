@@ -143,7 +143,10 @@ async function updatePartnerProfileAPI(partnerId: string, updates: PartnerProfil
 // Main Hook
 // ============================================================================
 
-export function usePartnerProfile(partnerId: string | null | undefined) {
+export function usePartnerProfile(
+  partnerId: string | null | undefined,
+  initialData?: PartnerProfile | null
+) {
   const queryClient = useQueryClient();
   const { session, setSessionUser } = useAuth();
 
@@ -151,6 +154,12 @@ export function usePartnerProfile(partnerId: string | null | undefined) {
     queryKey: ['partner-profile', partnerId],
     queryFn: () => fetchPartnerProfile(partnerId!),
     enabled: !!partnerId,
+    initialData: initialData ?? undefined,
+    staleTime: initialData ? Infinity : 0,
+    gcTime: initialData ? Infinity : undefined,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
 
   const mutation = useMutation({

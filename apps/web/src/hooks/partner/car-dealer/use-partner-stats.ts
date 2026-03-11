@@ -47,13 +47,20 @@ async function fetchPartnerStats(partnerId: string): Promise<PartnerStats> {
 // Main Hook
 // ============================================================================
 
-export function usePartnerStats(partnerId: string | null | undefined) {
+export function usePartnerStats(
+  partnerId: string | null | undefined,
+  initialData?: PartnerStats | null
+) {
   const query = useQuery({
     queryKey: ['partner-stats', partnerId],
     queryFn: () => fetchPartnerStats(partnerId!),
     enabled: !!partnerId,
+    initialData: initialData ?? undefined,
+    staleTime: initialData ? Infinity : 0,
+    gcTime: initialData ? Infinity : undefined,
     refetchOnWindowFocus: false, // Don't refetch on focus - expensive
     refetchOnMount: false, // Don't refetch if we have data
+    refetchOnReconnect: false,
   });
 
   return {

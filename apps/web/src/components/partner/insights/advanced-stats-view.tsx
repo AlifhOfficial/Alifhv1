@@ -7,7 +7,7 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { TrendBadge, ProgressStat, TopListings, ColdListings } from './insight-components';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -926,37 +926,11 @@ function formatNumber(value: number): string {
 // Main Component
 // ============================================================================
 
-export function AdvancedStatsView() {
-  const [stats, setStats] = useState<AdvancedStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStats }) {
+  const [stats] = useState<AdvancedStats | null>(initialStats);
   const [visibleTopListings, setVisibleTopListings] = useState(4);
 
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        const res = await fetch('/api/partner/stats');
-        if (!res.ok) throw new Error('Failed to fetch stats');
-        const data = await res.json();
-        if (data.success) {
-          setStats(data.data);
-        } else {
-          throw new Error(data.error || 'Unknown error');
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load stats');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchStats();
-  }, []);
-
-  if (loading) {
-    return <AdvancedStatsSkeleton />;
-  }
-
-  if (error || !stats) {
+  if (!stats) {
     return (
       <div className="min-h-screen bg-background">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
@@ -974,7 +948,7 @@ export function AdvancedStatsView() {
               <AlertCircle className="w-5 h-5 text-muted-foreground" />
             </div>
             <p className="text-sm font-medium text-foreground mb-1">Unable to load analytics</p>
-            <p className="text-xs text-muted-foreground">{error || 'Please try again later'}</p>
+            <p className="text-xs text-muted-foreground">Please try again later</p>
           </div>
         </div>
       </div>

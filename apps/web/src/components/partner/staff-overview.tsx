@@ -5,12 +5,12 @@
  */
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { Users, Clock, ArrowRight, RefreshCw, Mail, UserPlus } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 interface StaffStats {
   totalStaff: number;
@@ -51,16 +51,11 @@ const ROLE_CONFIG: Record<string, { color: string; bg: string }> = {
   staff: { color: 'text-foreground', bg: 'bg-secondary' },
 };
 
-export function StaffOverview() {
-  // V1: Single API call returns staff, stats, and invites
-  const { data, isLoading, refetch, isRefetching } = useQuery<StaffOverviewData>({
-    queryKey: ['staff', 'overview'],
-    queryFn: async () => {
-      const res = await fetch('/api/partner/staff');
-      if (!res.ok) throw new Error('Failed to fetch staff');
-      return res.json();
-    },
-  });
+export function StaffOverview({ initialData }: { initialData: StaffOverviewData }) {
+  const router = useRouter();
+  const data = initialData;
+  const isLoading = false;
+  const isRefetching = false;
 
   const stats = data?.stats ?? null;
   const team = data?.data?.filter(m => m.status !== 'invited') ?? [];
@@ -81,7 +76,7 @@ export function StaffOverview() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => refetch()}
+            onClick={() => router.refresh()}
             disabled={isRefetching}
             className="p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
             aria-label="Refresh"

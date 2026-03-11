@@ -7,8 +7,19 @@ import { redirect } from 'next/navigation';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { PartnerLeadFunnelsView } from "@/components/partner/lead-funnels/partner-lead-funnels-view";
+import { getAllPartnerFunnels, getPartnerFunnelStats, getPartnerFunnelStaff } from '@alifh/database';
 
-export default async function PartnerLeadFunnelsPage() {
+interface PageProps {
+  searchParams: Promise<{
+    [key: string]: string | string[] | undefined;
+  }>;
+}
+
+function getSingle(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function PartnerLeadFunnelsPage({ searchParams }: PageProps) {
   const user = await getSessionUser();
   
   if (!user) redirect('/?auth=signin');
@@ -31,11 +42,41 @@ export default async function PartnerLeadFunnelsPage() {
     );
   }
 
+  const params = await searchParams;
+  const rawPage = Number(getSingle(params.page) || '1');
+  const staffId = getSingle(params.staffId);
+  const q = getSingle(params.q)?.trim() || '';
+  const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+  const limit = 12;
+  const offset = (page - 1) * limit;
+
+  const [funnels, stats, staffList] = await Promise.all([
+    getAllPartnerFunnels(membership.partnerId, {
+      staffId: staffId && staffId !== 'all' ? staffId : undefined,
+      q: q || undefined,
+      limit,
+      offset,
+    }),
+    getPartnerFunnelStats(membership.partnerId),
+    getPartnerFunnelStaff(membership.partnerId),
+  ]);
+
   return (
     <DashboardDisplayArea>
       <PartnerLeadFunnelsView
         partnerId={membership.partnerId}
         partnerName={membership.partnerName || "Partner"}
+        initialData={{
+          funnels: funnels as any[],
+          stats: stats as any,
+          staffList: staffList as any[],
+          total: stats.total,
+        }}
+        filters={{
+          page,
+          q,
+          staffId: staffId && staffId !== 'all' ? staffId : 'all',
+        }}
       />
     </DashboardDisplayArea>
   );

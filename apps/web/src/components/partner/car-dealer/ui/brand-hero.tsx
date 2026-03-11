@@ -34,8 +34,10 @@ export function BrandHero({
   const [hasError, setHasError] = useState(false);
   
   // Resolve URL with cache busting
-  const resolvedUrl = heroImageUrl 
-    ? getPublicUrl(heroImageUrl, updatedAt ? new Date(updatedAt).getTime() : undefined) 
+  const resolvedUrl = heroImageUrl
+    ? (heroImageUrl.startsWith('http://') || heroImageUrl.startsWith('https://')
+        ? heroImageUrl
+        : getPublicUrl(heroImageUrl, updatedAt ? new Date(updatedAt).getTime() : undefined))
     : null;
 
   return (
