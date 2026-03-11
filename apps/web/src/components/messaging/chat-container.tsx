@@ -13,14 +13,20 @@ import { ChatWindow } from './chat-window';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useConversations } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
+import type { Conversation } from '@/hooks/messaging';
 
 interface ChatContainerProps {
   userId: string;
   inbox?: 'personal' | 'staff';
   className?: string;
+  initialData?: {
+    conversations: Conversation[];
+    totalUnread: number;
+    hasMore: boolean;
+  };
 }
 
-function ChatContainerInner({ userId, inbox = 'personal', className }: ChatContainerProps) {
+function ChatContainerInner({ userId, inbox = 'personal', className, initialData }: ChatContainerProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -39,7 +45,12 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
   const showMobile = showMobileOverride ?? !!selectedId;
 
   // useConversations includes real-time WebSocket updates for messages, unread counts, and sorting
-  const { conversations, isLoading, totalUnread, refetch } = useConversations({ userId, scope: inbox, limit: 50 });
+  const { conversations, isLoading, totalUnread, refetch } = useConversations({
+    userId,
+    scope: inbox,
+    limit: 50,
+    initialData,
+  });
 
   // Fetch if conversation not in list (newly created) - but only once per ID
   useEffect(() => {

@@ -13,8 +13,20 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/providers/auth-provider';
 import Link from 'next/link';
 import { cn } from '@/utils';
+import type { PartnerRequest } from '@/hooks/partner/partner-request/use-partner-request';
 
 type View = 'overview' | 'apply' | 'invites';
+interface StaffInvite {
+  id: string;
+  partnerId: string;
+  partnerName: string;
+  partnerLogo: string | null;
+  partnerEmail: string;
+  role: 'owner' | 'admin' | 'sales' | 'viewer' | 'manager';
+  title: string | null;
+  department: string | null;
+  invitedAt: Date;
+}
 
 // ============================================================================
 // Shared Components
@@ -100,11 +112,16 @@ function ActionRow({
 // Main Component
 // ============================================================================
 
-export function UserRequestsHub() {
+interface UserRequestsHubProps {
+  initialPartnerRequest?: PartnerRequest | null;
+  initialInvites?: StaffInvite[];
+}
+
+export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: UserRequestsHubProps) {
   const [view, setView] = useState<View>('overview');
   const [confirmCancel, setConfirmCancel] = useState(false);
   const { session: user } = useAuth();
-  const { data: partnerRequest, isLoading: loadingPartner } = usePartnerRequest();
+  const { data: partnerRequest, isLoading: loadingPartner } = usePartnerRequest(initialPartnerRequest);
   const { cancel, isCancelling } = usePartnerRequestCancel();
   
   const { data: invitesData, isLoading: loadingInvites } = useQuery({
@@ -114,6 +131,9 @@ export function UserRequestsHub() {
       if (!res.ok) throw new Error('Failed to fetch invites');
       return res.json();
     },
+    initialData: { data: initialInvites },
+    initialDataUpdatedAt: Date.now(),
+    staleTime: 60_000,
   });
   
   const inviteCount = invitesData?.data?.length || 0;
@@ -164,7 +184,7 @@ export function UserRequestsHub() {
           >
             ← Back
           </button>
-          <UserStaffInvites />
+          <UserStaffInvites initialInvites={{ data: initialInvites }} />
         </div>
       </div>
     );

@@ -27,6 +27,7 @@ import { AuthManager, AuthModalType } from "@/components/auth";
 import { useFloatingChatSafe } from "@/components/messaging/floating-chat-manager";
 import { useUser } from "@/hooks/auth/use-auth";
 import { handleSignOut } from "@/lib/auth/sign-out";
+import type { AuthUser } from "@/components/auth";
 
 export type { NavItem };
 
@@ -45,7 +46,7 @@ export function Navbar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { theme, setTheme } = useTheme();
-  const { user, isSignedIn: isAuthenticated, refetch: refetchAuth } = useUser();
+  const { user, isSignedIn: isAuthenticated, setSessionUser } = useUser();
   const { openChat } = useFloatingChatSafe();
 
   // Mark as mounted after hydration
@@ -348,7 +349,13 @@ export function Navbar() {
       <AuthManager
         currentModal={currentAuthModal}
         onModalChange={setCurrentAuthModal}
-        onSuccess={() => refetchAuth()}
+        onSuccess={(authUser?: AuthUser) => {
+          if (authUser) {
+            setSessionUser(authUser as typeof user);
+            return;
+          }
+          router.refresh();
+        }}
       />
     </>
   );

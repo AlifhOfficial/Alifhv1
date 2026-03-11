@@ -17,14 +17,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, sql } from '@alifh/database';
 import { serviceHealth } from '@alifh/database';
-import { redis } from '@/lib/redis';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
-
-// Redis cache key for status
-const STATUS_CACHE_KEY = 'status:current';
 
 // Service URLs
 const WS_HEALTH_URL = process.env.NEXT_PUBLIC_WS_URL 
@@ -185,34 +181,6 @@ export async function GET(req: NextRequest) {
     );
 
     await Promise.all(insertPromises);
-
-    // Cache current status in Redis for SSE stream (no DB queries per viewer)
-    const statuses = results.map(r => r.status);
-    let overallStatus: 'healthy' | 'degraded' | 'unhealthy';
-    if (statuses.some(s => s === 'unhealthy')) {
-      overallStatus = 'unhealthy';
-    } else if (statuses.some(s => s === 'degraded')) {
-      overallStatus = 'degraded';
-    } else {
-      overallStatus = 'healthy';
-    }
-
-    const statusCache = {
-      overallStatus,
-      services: results.map(r => ({
-        name: r.service,
-        status: r.status,
-        latency: r.latency,
-      })),
-      timestamp: new Date().toISOString(),
-    };
-
-    // Cache for 10 min (cron runs every 5 min, so always fresh)
-    try {
-      await redis.set(STATUS_CACHE_KEY, statusCache, { ex: 600 });
-    } catch (cacheError) {
-      console.warn('[cron/health-check] Redis cache write failed:', cacheError);
-    }
 
     const duration = Math.round(performance.now() - startTime);
 

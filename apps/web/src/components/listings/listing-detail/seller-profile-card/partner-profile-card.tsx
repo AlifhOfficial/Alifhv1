@@ -27,8 +27,7 @@ export function PartnerProfileCard({ sellerData }: PartnerProfileCardProps) {
   const partner = sellerData.partner;
   const staffContact = sellerData.staffContact;
   
-  // Load stats lazily
-  const { stats, isLoading: statsLoading } = useSellerStats('partner', sellerData.partnerId);
+  const { stats, isLoading: statsLoading } = useSellerStats('partner', sellerData.partnerId, sellerData.partnerStats);
   
   if (!partner) return null;
 

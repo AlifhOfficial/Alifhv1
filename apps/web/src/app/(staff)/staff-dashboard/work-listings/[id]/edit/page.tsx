@@ -1,121 +1,60 @@
 /**
  * Staff Edit Work Listing Page
  * Edit a partner (work) listing owned by the staff user.
+ * Server-side auth + data fetch for faster initial load
  */
 
-'use client';
-
-import { redirect } from 'next/navigation';
-import { useAuth } from '@/providers/auth-provider';
+import { redirect, notFound } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { getSessionUser } from '@/lib/auth/session-context';
 import { EditListingView } from '@/components/listings/edit-listing';
-import { Skeleton } from '@/components/ui/skeleton';
-import { use, useEffect, useState } from 'react';
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default function StaffEditWorkListingPage({ params }: PageProps) {
-  const { id } = use(params);
-  const { session, isLoading } = useAuth();
-  const [listing, setListing] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+async function fetchListing(id: string) {
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore.getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ');
+  
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const res = await fetch(`${baseUrl}/api/listings/${id}`, {
+    headers: { Cookie: cookieHeader },
+    cache: 'no-store',
+  });
+  
+  if (!res.ok) return null;
+  return res.json();
+}
 
-  useEffect(() => {
-    async function fetchListing() {
-      try {
-        // Use /api/listings/[id] which allows staff to access partner listings
-        // regardless of moderation status (drafts, submitted, rejected, etc.)
-        const res = await fetch(`/api/listings/${id}`);
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          setError(errData.error || 'Listing not found');
-          return;
-        }
-        const data = await res.json();
-        setListing(data);
-      } catch (err) {
-        setError('Failed to load listing');
-      } finally {
-        setLoading(false);
-      }
-    }
-    if (id) fetchListing();
-  }, [id]);
-
-  if (isLoading || loading) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
-        {/* Header Skeleton */}
-        <div>
-          <Skeleton className="h-4 w-20 mb-4" />
-          <Skeleton className="h-8 w-64 mb-2" />
-          <Skeleton className="h-4 w-40" />
-        </div>
-        
-        {/* Image Upload Skeleton */}
-        <div className="grid grid-cols-4 gap-3">
-          <Skeleton className="aspect-video rounded-xl col-span-2 row-span-2" />
-          <Skeleton className="aspect-video rounded-xl" />
-          <Skeleton className="aspect-video rounded-xl" />
-          <Skeleton className="aspect-video rounded-xl" />
-          <Skeleton className="aspect-video rounded-xl" />
-        </div>
-        
-        {/* Form Fields Skeleton */}
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Skeleton className="h-3 w-16 mb-2" />
-              <Skeleton className="h-10 w-full rounded-xl" />
-            </div>
-            <div>
-              <Skeleton className="h-3 w-20 mb-2" />
-              <Skeleton className="h-10 w-full rounded-xl" />
-            </div>
-          </div>
-          <div>
-            <Skeleton className="h-3 w-24 mb-2" />
-            <Skeleton className="h-24 w-full rounded-xl" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!session) {
+export default async function StaffEditWorkListingPage({ params }: PageProps) {
+  const { id } = await params;
+  const user = await getSessionUser();
+  
+  if (!user) {
     redirect(`/?auth=signin&redirect=/staff-dashboard/work-listings/${id}/edit`);
   }
 
-  if (error || !listing) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <h1 className="text-2xl font-semibold">Listing Not Found</h1>
-        <p className="text-muted-foreground">{error || 'The listing you are looking for does not exist.'}</p>
-        <a 
-          href="/staff-dashboard/work-listings" 
-          className="px-4 py-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-        >
-          Back to Work Listings
-        </a>
-      </div>
-    );
+  const listing = await fetchListing(id);
+  
+  if (!listing) {
+    notFound();
   }
 
   if (!listing?.partnerId) {
     redirect('/access-denied?reason=not-work-listing');
   }
 
-  const isAdmin = (session as any).role === 'admin' || (session as any).role === 'super_admin';
-  const isOwner = listing.userId === session.id;
-
-  const membership = (session as any).partnerMemberships?.find((m: any) => m.partnerId === listing.partnerId);
+  const isAdmin = (user as any).role === 'admin' || (user as any).role === 'super_admin';
+  const isOwner = listing.userId === user.id;
+  const membership = (user as any).partnerMemberships?.find((m: any) => m.partnerId === listing.partnerId);
   const staffRole = membership?.staffRole;
 
   if (!isAdmin && !isOwner && (!membership || staffRole === 'viewer')) {
     redirect('/access-denied');
   }
 
-  return <EditListingView listing={listing} userId={session.id} listingType="work" />;
+  return <EditListingView listing={listing} userId={user.id} listingType="work" />;
 }

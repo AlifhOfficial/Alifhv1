@@ -37,7 +37,11 @@ interface DealerProfile {
   badges: string[] | null;
 }
 
-export function StaffWorksFor() {
+interface StaffWorksForProps {
+  initialProfile?: DealerProfile | null;
+}
+
+export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
   const { session, isLoading: sessionLoading } = useAuth();
   const user = session as unknown as ExtendedUser | null;
   const membership = user?.partnerMemberships?.[0];
@@ -51,6 +55,9 @@ export function StaffWorksFor() {
       return res.json();
     },
     enabled: !!membership?.partnerId,
+    initialData: initialProfile ?? undefined,
+    initialDataUpdatedAt: initialProfile ? Date.now() : undefined,
+    staleTime: initialProfile ? 60_000 : 0,
   });
 
   const isLoading = sessionLoading || profileLoading;

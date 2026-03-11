@@ -28,9 +28,9 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useCreateConversation } from '@/hooks/messaging';
 import { useListingDetail, useTrackView, type SellerData } from '@/hooks/listings';
-import { useFavoritesStatus } from '@/hooks/engagement';
 import { useAuth } from '@/providers/auth-provider';
 import type { CarDetailedData } from '@alifh/database';
+import type { SimilarListingCard } from '@/hooks/listings/use-similar-listings';
 
 // Re-export types for backwards compatibility
 export type { PartnerSellerData, UserSellerData, SellerData } from '@/hooks/listings';
@@ -47,18 +47,16 @@ interface ListingDetailViewProps {
    * When provided, seller profile renders immediately.
    */
   initialSellerData?: SellerData | null;
+  initialSimilarListings?: SimilarListingCard[];
 }
 
-export function ListingDetailView({ listingId, initialListing, initialSellerData }: ListingDetailViewProps) {
+export function ListingDetailView({ listingId, initialListing, initialSellerData, initialSimilarListings }: ListingDetailViewProps) {
   const router = useRouter();
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const { createConversation } = useCreateConversation();
   const { session: user, isAuthenticated } = useAuth();
   const { trackView } = useTrackView();
-  
-  // Fetch favorites status once (only if signed in) - CarCardDetailed subscribes to this data
-  useFavoritesStatus({ enabled: isAuthenticated });
   
   // Fetch listing data via hook - pass initial data for instant display
   const { listing, sellerData, isAdminPreview, isLoading, error } = useListingDetail(listingId, {
@@ -382,6 +380,7 @@ export function ListingDetailView({ listingId, initialListing, initialSellerData
             <SimilarListings 
               listingId={listing.id} 
               enabled={listing.isPublic}
+              initialListings={initialSimilarListings}
             />
           )}
         </div>

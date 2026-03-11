@@ -7,7 +7,7 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { TrendBadge } from './insight-components';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HealthStatus } from '@/components/shared/health-status';
@@ -29,7 +29,6 @@ import {
   TrendingUp,
   Zap,
 } from 'lucide-react';
-import { useAuth } from '@/providers/auth-provider';
 import { 
   ResponsiveContainer, 
   AreaChart, 
@@ -37,6 +36,8 @@ import {
   BarChart,
   Bar,
 } from 'recharts';
+import type { ExtendedUser } from '@/types/auth';
+import type { HealthCheckResponse } from '@/lib/health';
 
 // ============================================================================
 // Types
@@ -396,86 +397,35 @@ function StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
   );
 }
 
+interface PartnerInsightsViewProps {
+  user: ExtendedUser;
+  initialStats: PartnerStats;
+  initialHealth: HealthCheckResponse | null;
+}
+
 // ============================================================================
 // Main Component
 // ============================================================================
 
-export function PartnerInsightsView() {
-  const { session } = useAuth();
-  const [stats, setStats] = useState<PartnerStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function PartnerInsightsView({
+  user,
+  initialStats,
+  initialHealth,
+}: PartnerInsightsViewProps) {
+  const stats = initialStats;
 
   // Get current hour for greeting
   const currentHour = new Date().getHours();
 
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        const res = await fetch('/api/partner/stats');
-        if (!res.ok) throw new Error('Failed to fetch stats');
-        const data = await res.json();
-        if (data.success) {
-          setStats(data.data);
-        } else {
-          throw new Error(data.error || 'Unknown error');
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load insights');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchStats();
-  }, []);
-
-  // Get user info - eslint-disable for session typing
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sessionData = session as any;
+  const sessionData = user as any;
   const partnerMembership = sessionData?.partnerMemberships?.find(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (m: any) => m.staffRole === 'owner'
+    (m: any) =>
+      m.staffRole === 'owner' || m.staffRole === 'admin' || m.staffRole === 'manager'
   );
   const partnerName = partnerMembership?.partnerName;
   const firstName = sessionData?.firstName || 'there';
 
-  if (loading) {
-    return <InsightsSkeleton />;
-  }
-
-  if (error || !stats) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
-          {/* Header even on error */}
-          <header>
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold tracking-tight">
-                {getGreeting(currentHour)}, <span className="text-foreground/80">{firstName}</span>
-              </h1>
-              <p className="text-[15px] font-medium text-muted-foreground/70">
-                Here's your business overview
-              </p>
-            </div>
-          </header>
-
-          <div className="rounded-xl border border-border/40 bg-sidebar p-8 text-center">
-            <p className="text-sm text-muted-foreground">{error || 'Unable to load data'}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const { inventory, sales, engagement, bookings, trends } = stats;
-
-  // Count items needing attention
-  const attentionItems = [
-    { count: inventory.pendingApprovalCount, label: 'pending approval', href: '/partner-dashboard/inventory?status=pending' },
-    { count: inventory.needsRemoderationCount, label: 'need updates', href: '/partner-dashboard/inventory?status=remoderation' },
-    { count: inventory.expiringCount, label: 'expiring soon', href: '/partner-dashboard/inventory?status=expiring' },
-    { count: bookings.pendingBookings, label: 'booking requests', href: '/partner-dashboard/bookings?status=pending' },
-  ].filter(item => item.count > 0);
 
   return (
     <>
@@ -494,7 +444,7 @@ export function PartnerInsightsView() {
               </div>
               
               <div className="flex-shrink-0">
-                <HealthStatus />
+                <HealthStatus initialHealth={initialHealth} enableFetch={false} />
               </div>
             </div>
           </header>

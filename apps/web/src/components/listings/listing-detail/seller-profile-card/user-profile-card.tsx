@@ -23,8 +23,7 @@ interface UserProfileCardProps {
 export function UserProfileCard({ sellerData }: UserProfileCardProps) {
   const profile = sellerData.userProfile;
   
-  // Load stats lazily
-  const { stats, isLoading: statsLoading } = useSellerStats('user', sellerData.userId);
+  const { stats, isLoading: statsLoading } = useSellerStats('user', sellerData.userId, sellerData.userStats ?? null);
   
   if (!profile) return null;
 

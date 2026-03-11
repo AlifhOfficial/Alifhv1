@@ -27,7 +27,11 @@ function formatRole(role: string) {
   return role.charAt(0).toUpperCase() + role.slice(1);
 }
 
-export function UserStaffInvites() {
+interface UserStaffInvitesProps {
+  initialInvites?: { data: StaffInvite[] };
+}
+
+export function UserStaffInvites({ initialInvites }: UserStaffInvitesProps) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [modalOpen, setModalOpen] = useState(false);
@@ -42,6 +46,9 @@ export function UserStaffInvites() {
       if (!res.ok) throw new Error('Failed to fetch invites');
       return res.json();
     },
+    initialData: initialInvites,
+    initialDataUpdatedAt: initialInvites ? Date.now() : undefined,
+    staleTime: initialInvites ? 60_000 : 0,
   });
 
   const invites: StaffInvite[] = invitesData?.data || [];

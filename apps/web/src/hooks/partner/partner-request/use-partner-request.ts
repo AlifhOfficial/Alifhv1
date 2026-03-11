@@ -124,11 +124,14 @@ async function cancelPartnerRequestAPI(): Promise<void> {
 // Main Hook: Get Partner Request Status
 // ============================================================================
 
-export function usePartnerRequest() {
+export function usePartnerRequest(initialData?: PartnerRequest | null) {
   return useQuery<PartnerRequest | null>({
     queryKey: ['partner-request'],
     queryFn: fetchPartnerRequest,
     refetchOnWindowFocus: true,
+    initialData: initialData ?? undefined,
+    initialDataUpdatedAt: initialData !== undefined ? Date.now() : undefined,
+    staleTime: initialData !== undefined ? 60_000 : 0,
   });
 }
 
@@ -241,5 +244,4 @@ export function usePartnerRequestDismiss() {
     reset: mutation.reset,
   };
 }
-
 

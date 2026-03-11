@@ -1,17 +1,20 @@
-'use client';
+/**
+ * Partner Inventory Page
+ * Server-side auth for faster initial load
+ */
 
+import { redirect } from 'next/navigation';
+import { getSessionUser } from '@/lib/auth/session-context';
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { DealerInventory } from "@/components/inventory";
-import { useAuth } from "@/providers/auth-provider";
-import { redirect } from "next/navigation";
 
-export default function PartnerInventoryPage() {
-  const { session } = useAuth();
+export default async function PartnerInventoryPage() {
+  const user = await getSessionUser();
   
-  if (!session) redirect('/');
+  if (!user) redirect('/?auth=signin');
 
   // Get the first partner membership (if any)
-  const membership = (session as any).partnerMemberships?.[0];
+  const membership = (user as any).partnerMemberships?.[0];
 
   if (!membership?.partnerId) {
     return (
@@ -27,9 +30,7 @@ export default function PartnerInventoryPage() {
   }
 
   return (
-    <DashboardDisplayArea
-     
-    >
+    <DashboardDisplayArea>
       <DealerInventory
         partnerId={membership.partnerId}
         partnerName={membership.partnerName || "Partner"}

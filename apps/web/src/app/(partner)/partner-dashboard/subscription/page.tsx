@@ -3,14 +3,13 @@
  * 
  * Lightweight page that fetches all data from Stripe directly.
  * No heavy DB sync - Stripe is the source of truth.
+ * Server-side auth for faster initial load.
  */
 
 'use client';
 
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { useAuth } from '@/providers/auth-provider';
-import { redirect } from 'next/navigation';
 import { 
   CreditCard, 
   RefreshCw, 
@@ -122,7 +121,6 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 export default function PartnerBillingPage() {
-  const { session: user, isLoading: authLoading } = useAuth();
   const [portalLoading, setPortalLoading] = useState(false);
   const [checkoutPlan, setCheckoutPlan] = useState<'flow' | 'black' | null>(null);
 
@@ -139,7 +137,6 @@ export default function PartnerBillingPage() {
       if (!res.ok) throw new Error('Failed to fetch subscription');
       return res.json();
     },
-    enabled: !!user,
   });
 
   // Fetch invoices
@@ -155,7 +152,6 @@ export default function PartnerBillingPage() {
       if (!res.ok) throw new Error('Failed to fetch invoices');
       return res.json();
     },
-    enabled: !!user,
   });
 
   // Open Stripe portal mutation
@@ -216,36 +212,6 @@ export default function PartnerBillingPage() {
     refetchSub();
     refetchInvoices();
   };
-
-  if (authLoading) {
-    return (
-      <div className="space-y-4 sm:space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-base sm:text-lg font-semibold text-foreground">Billing</h1>
-            <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Manage your subscription and billing</p>
-          </div>
-        </div>
-        <div className="animate-pulse space-y-6">
-          <div className="h-40 bg-muted/20 rounded-xl" />
-          <div className="h-64 bg-muted/20 rounded-xl" />
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    redirect('/');
-  }
-
-  // Get partner membership (owner only)
-  const partnerMembership = (user as any).partnerMemberships?.find(
-    (m: any) => m.staffRole === 'owner'
-  );
-
-  if (!partnerMembership) {
-    redirect('/access-denied?reason=not-partner-owner');
-  }
 
   const subData = subscription?.data;
   const invoices = invoicesResponse?.data?.invoices || [];

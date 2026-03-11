@@ -1,12 +1,6 @@
-"use client";
-
-import { Suspense } from "react";
-import { DashboardLayout, DashboardContent } from "@/components/shared/layout/dashboard-layout";
-import { AppSidebar } from "@/components/shared/layout/app-sidebar";
-import { PageLoader } from "@/components/shared/page-loader";
-import { useAuth } from "@/providers/auth-provider";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { redirect } from "next/navigation";
+import { getSessionUser } from "@/lib/auth/session-context";
+import { UserDashboardShell } from "./shell";
 
 const navSections = [
   {
@@ -32,64 +26,25 @@ const navSections = [
       { label: "Profile", href: "/user-dashboard/profile", icon: "user" },
       { label: "Settings", href: "/user-dashboard/settings", icon: "settings" },
       { label: "Requests", href: "/user-dashboard/requests", icon: "inbox" },
-
     ]
   },
 ];
 
-interface UserDashboardLayoutProps {
-  children: React.ReactNode;
-}
+export default async function UserDashboardLayout({ children }: { children: React.ReactNode }) {
+  const user = await getSessionUser();
 
-export default function UserDashboardLayout({ children }: UserDashboardLayoutProps) {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <UserDashboardLayoutInner>{children}</UserDashboardLayoutInner>
-    </Suspense>
-  );
-}
-
-function UserDashboardLayoutInner({ children }: UserDashboardLayoutProps) {
-  const { session: user, isLoading } = useAuth();
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  
-  // Check if user is banned - must be before any conditional returns
-  const isBanned = user ? (user as any).isBanned === true : false;
-  const isOnBannedPage = pathname === '/user-dashboard/banned';
-  
-  // Handle redirects properly in client component
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/access-denied?reason=not-authenticated');
-    } else if (user && isBanned && !isOnBannedPage) {
-      router.push('/user-dashboard/banned');
-    }
-  }, [user, isBanned, isOnBannedPage, isLoading, router]);
-  
-  if (isLoading) {
-    return <PageLoader />;
-  }
-  
   if (!user) {
-    return <PageLoader />;
+    redirect('/?auth=signin');
   }
 
-  // If banned and not on banned page, show loader while redirecting
-  if (isBanned && !isOnBannedPage) {
-    return <PageLoader />;
+  // Check if user is banned
+  if ((user as any).banned) {
+    redirect('/user-dashboard/banned');
   }
-
-  // Check if current page needs full height (no padding, full container)
-  const isFullHeightPage = pathname?.includes('/messaging');
-  // Only hide footer on mobile when a conversation is actually open
-  const hasConversationOpen = isFullHeightPage && !!searchParams?.get('conversationId');
 
   return (
-    <DashboardLayout enableRightPanel>
-      <AppSidebar user={user} sections={navSections} />
-      <DashboardContent fullHeight={isFullHeightPage} hideFooterOnMobile={hasConversationOpen}>{children}</DashboardContent>
-    </DashboardLayout>
+    <UserDashboardShell user={user} sections={navSections}>
+      {children}
+    </UserDashboardShell>
   );
 }

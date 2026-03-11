@@ -7,32 +7,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { HealthCheckResponse } from '@/lib/health';
 
-interface ServiceStatus {
-  status: 'healthy' | 'degraded' | 'unhealthy';
-  latency?: number;
-  message?: string;
-  details?: Record<string, any>;
-}
-
-interface HealthData {
-  status: 'healthy' | 'degraded' | 'unhealthy';
-  timestamp: string;
-  uptime: number;
-  services: {
-    database: ServiceStatus;
-    websocket: ServiceStatus;
-    runtime: ServiceStatus;
-    api: ServiceStatus;
-  };
-}
-
-export function useHealthCheck() {
-  const [health, setHealth] = useState<HealthData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export function useHealthCheck(initialData?: HealthCheckResponse | null, enableFetch = true) {
+  const [health, setHealth] = useState<HealthCheckResponse | null>(initialData ?? null);
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!enableFetch) {
+      setIsLoading(false);
+      return;
+    }
+
     let mounted = true;
 
     async function fetchHealth() {
@@ -67,7 +54,7 @@ export function useHealthCheck() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [enableFetch]);
 
   return {
     health,

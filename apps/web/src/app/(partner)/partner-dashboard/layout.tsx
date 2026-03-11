@@ -1,11 +1,6 @@
-'use client';
-
-import { useMemo } from "react";
-import { DashboardLayout, DashboardContent } from "@/components/shared/layout/dashboard-layout";
-import { AppSidebar } from "@/components/shared/layout/app-sidebar";
-import { PageLoader } from "@/components/shared/page-loader";
-import { useAuth } from "@/providers/auth-provider";
 import { redirect } from "next/navigation";
+import { getSessionUser } from "@/lib/auth/session-context";
+import { PartnerDashboardShell } from "./shell";
 
 const getNavSections = (isBlackTier: boolean) => [
   {
@@ -32,37 +27,31 @@ const getNavSections = (isBlackTier: boolean) => [
   },
 ];
 
-export default function PartnerDashboardLayout({ children }: { children: React.ReactNode }) {
-  const { session: user, isLoading } = useAuth();
+export default async function PartnerDashboardLayout({ children }: { children: React.ReactNode }) {
+  const user = await getSessionUser();
 
-  // Get partner membership (owner)
-  const partnerMembership = (user as any)?.partnerMemberships?.find((m: any) => m.staffRole === 'owner');
-  
-  const isBlackTier = partnerMembership?.partnerTier === 'black';
-  const navSections = useMemo(() => getNavSections(isBlackTier), [isBlackTier]);
-  
-  if (isLoading) {
-    return <PageLoader />;
-  }
-  
   if (!user) {
     redirect('/');
   }
+
+  // Get partner membership (owner)
+  const partnerMembership = (user as any).partnerMemberships?.find((m: any) => m.staffRole === 'owner');
 
   if (!partnerMembership) {
     redirect('/access-denied?reason=not-partner-owner');
   }
 
-  // Get company info for sidebar
+  const isBlackTier = partnerMembership.partnerTier === 'black';
+  const navSections = getNavSections(isBlackTier);
+
   const staffOverride = {
-    companyLogo: partnerMembership?.partnerLogo,
-    companyName: partnerMembership?.partnerName || 'Partner',
+    companyLogo: partnerMembership.partnerLogo,
+    companyName: partnerMembership.partnerName || 'Partner',
   };
 
   return (
-    <DashboardLayout enableRightPanel>
-      <AppSidebar user={user} sections={navSections} staffOverride={staffOverride} />
-      <DashboardContent>{children}</DashboardContent>
-    </DashboardLayout>
+    <PartnerDashboardShell user={user} sections={navSections} staffOverride={staffOverride}>
+      {children}
+    </PartnerDashboardShell>
   );
 }

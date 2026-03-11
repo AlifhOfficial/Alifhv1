@@ -11,6 +11,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/providers/auth-provider';
 import { queryKeys } from '@/lib/query-keys';
 import { invalidateUserData } from '@/lib/query-helpers';
+import type { ExtendedUser } from '@/types/auth';
 
 // ============================================================================
 // Types
@@ -118,18 +119,21 @@ async function updateUserProfileAPI(updates: UserProfileUpdate): Promise<UserPro
 // Main Hook
 // ============================================================================
 
-export function useUserProfile() {
+export function useUserProfile(initialData?: UserProfileResponse | null) {
   const queryClient = useQueryClient();
-  const { refetch: refetchSession, isAuthenticated } = useAuth();
+  const { session, setSessionUser, isAuthenticated } = useAuth();
 
   const query = useQuery<UserProfileResponse | null>({
     queryKey: ['user-profile'],
     queryFn: fetchUserProfile,
     refetchOnWindowFocus: false, // No auto refetch
-    refetchOnMount: true, // Fetch on mount if no data
+    refetchOnMount: initialData ? false : true,
     refetchOnReconnect: false, // No auto refetch on reconnect
     retry: false, // Don't retry on 401
     enabled: isAuthenticated, // Only fetch when user is logged in
+    staleTime: initialData ? 60_000 : 0,
+    initialData: initialData ?? undefined,
+    initialDataUpdatedAt: initialData ? Date.now() : undefined,
   });
 
   // Update profile mutation
@@ -149,8 +153,26 @@ export function useUserProfile() {
         'lastName' in variables ||
         'preferences' in variables;
 
-      if (touchesSession && refetchSession) {
-        await refetchSession();
+      if (touchesSession && session) {
+        const currentSession = session as ExtendedUser;
+        const nextFirstName = updatedProfile.firstName ?? currentSession.firstName ?? null;
+        const nextLastName = updatedProfile.lastName ?? currentSession.lastName ?? null;
+        const nextName =
+          [nextFirstName, nextLastName].filter(Boolean).join(' ').trim() ||
+          currentSession.name;
+
+        setSessionUser({
+          ...currentSession,
+          name: nextName,
+          firstName: nextFirstName,
+          lastName: nextLastName,
+          avatar: updatedProfile.avatar ?? currentSession.avatar ?? null,
+          avatarUrl: updatedProfile.avatarUrl ?? currentSession.avatarUrl ?? null,
+          useGeneratedAvatar:
+            updatedProfile.preferences?.useGeneratedAvatar ??
+            (currentSession as ExtendedUser & { useGeneratedAvatar?: boolean }).useGeneratedAvatar ??
+            true,
+        } as ExtendedUser);
       }
     },
   });

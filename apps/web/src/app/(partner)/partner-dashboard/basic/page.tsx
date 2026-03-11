@@ -6,21 +6,19 @@
  * - Description, specialties
  * 
  * For full settings including features/hours/notifications, see /profile
+ * Server-side auth for faster initial load
  */
 
-'use client';
-
+import { redirect } from 'next/navigation';
+import { getSessionUser } from '@/lib/auth/session-context';
 import { PartnerBasicProfileForm } from "@/components/partner";
-import { useAuth } from "@/providers/auth-provider";
-import { redirect } from "next/navigation";
 
-export default function PartnerBasicProfilePage() {
-  const { session } = useAuth();
+export default async function PartnerBasicProfilePage() {
+  const user = await getSessionUser();
   
-  if (!session) redirect('/');
+  if (!user) redirect('/?auth=signin');
 
-  // Get the first active partner membership
-  const partnerId = (session as any).partnerMemberships?.[0]?.partnerId;
+  const partnerId = (user as any).partnerMemberships?.[0]?.partnerId;
 
   if (!partnerId) {
     redirect("/access-denied");

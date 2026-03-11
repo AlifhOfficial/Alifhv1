@@ -139,7 +139,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
   
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <ListingsView initialData={initialData} />
+      <ListingsView initialData={initialData} serverDriven hydrateFavoritesStatus={false} />
     </Suspense>
   );
 }

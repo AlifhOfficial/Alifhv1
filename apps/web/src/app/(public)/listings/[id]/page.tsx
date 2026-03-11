@@ -14,10 +14,14 @@ import {
   getDealerBaseProfile, 
   getUserProfileByUserId,
   getStaffEffectivePhone,
+  calculatePartnerStats,
+  calculateUserStats,
+  getSimilarListings,
 } from '@alifh/database';
 import { ListingDetailView } from '@/components/listings/listing-detail';
 import { ImagePreloader } from '@/components/ui/image-preloader';
 import type { SellerData } from '@/hooks/listings';
+import type { SimilarListingCard } from '@/hooks/listings/use-similar-listings';
 
 
 interface PageProps {
@@ -39,11 +43,12 @@ async function fetchSellerData(listing: ListingResult): Promise<SellerData | nul
   try {
     if (listing.partnerId) {
       // Partner listing - fetch dealer profile and staff phone
-      const [partnerProfile, staffContact] = await Promise.all([
+      const [partnerProfile, staffContact, partnerStats] = await Promise.all([
         getDealerBaseProfile(listing.partnerId),
         listing.postedByRole === 'staff' && listing.userId
           ? getStaffEffectivePhone(listing.userId, listing.partnerId)
           : Promise.resolve(null),
+        calculatePartnerStats(listing.partnerId),
       ]);
       
       // Cast through unknown - DB type is compatible but TypeScript can't verify
@@ -51,7 +56,7 @@ async function fetchSellerData(listing: ListingResult): Promise<SellerData | nul
         type: 'partner' as const, 
         partnerId: listing.partnerId,
         partner: partnerProfile, 
-        partnerStats: null, // Loaded separately via /api/sellers/stats
+        partnerStats,
         staffContact: staffContact ? {
           phone: staffContact.phone,
           displayName: staffContact.displayName,
@@ -59,13 +64,17 @@ async function fetchSellerData(listing: ListingResult): Promise<SellerData | nul
       } as unknown as SellerData;
     } else {
       // User listing - fetch profile
-      const userProfile = await getUserProfileByUserId(listing.userId);
+      const [userProfile, userStats] = await Promise.all([
+        getUserProfileByUserId(listing.userId),
+        calculateUserStats(listing.userId),
+      ]);
       
       // Cast through unknown - DB type is compatible but TypeScript can't verify
       return { 
         type: 'user' as const, 
         userId: listing.userId,
         userProfile,
+        userStats,
       } as unknown as SellerData;
     }
   } catch (error) {
@@ -149,14 +158,27 @@ export default async function ListingDetailPage({ params }: PageProps) {
   // No client-side fetch waterfall - everything renders immediately
   let initialListing = null;
   let initialSellerData: SellerData | null = null;
+  let initialSimilarListings: SimilarListingCard[] = [];
   
   try {
     const listing = await getListingDetailed(id);
     // Only pass public, approved listings as initial data
     if (listing?.moderationStatus === 'approved' && listing?.lifecycleStatus === 'active') {
       initialListing = listing;
-      // Fetch seller data in parallel would be nice, but we need listing first
-      initialSellerData = await fetchSellerData(listing);
+      const [sellerData, similarListings] = await Promise.all([
+        fetchSellerData(listing),
+        getSimilarListings({
+          excludeId: listing.id,
+          price: listing.price,
+          bodyType: listing.bodyType,
+          make: listing.make,
+          model: listing.model,
+          mileage: listing.mileage,
+          fuelType: listing.fuelType,
+        }),
+      ]);
+      initialSellerData = sellerData;
+      initialSimilarListings = similarListings;
     }
   } catch (error) {
     // Silently fail - client will fetch and show error state
@@ -182,6 +204,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
         listingId={id} 
         initialListing={initialListing} 
         initialSellerData={initialSellerData}
+        initialSimilarListings={initialSimilarListings}
       />
     </>
   );

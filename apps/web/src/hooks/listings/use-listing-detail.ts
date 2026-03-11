@@ -176,9 +176,10 @@ export function useListingDetail(
     initialData: initialData as ListingDetailResponse | undefined,
     // Mark when initial data was set (for stale calculation)
     initialDataUpdatedAt: hasInitialData ? Date.now() : undefined,
-    // Only refetch if we're missing seller data
-    // If we have both, no need to refetch
-    staleTime: (initialListing && initialSellerData) ? 30_000 : 0,
+    // If the server already provided full detail data, keep it as source of truth.
+    staleTime: (initialListing && initialSellerData) ? Infinity : 0,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   return {

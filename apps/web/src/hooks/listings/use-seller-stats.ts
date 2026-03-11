@@ -22,7 +22,7 @@ export interface PartnerStats {
   totalSales: number;
   responseTime: number | null;
   responseRate: number | null;
-  hasShowroom: boolean;
+  hasShowroom?: boolean;
 }
 
 export interface UserStats {
@@ -54,12 +54,18 @@ async function fetchSellerStats(type: 'partner' | 'user', id: string): Promise<S
 
 export function useSellerStats(
   type: 'partner' | 'user' | null,
-  id: string | null | undefined
+  id: string | null | undefined,
+  initialData?: SellerStats | null
 ) {
   const query = useQuery({
     queryKey: ['seller-stats', type, id],
     queryFn: () => fetchSellerStats(type!, id!),
     enabled: !!type && !!id,
+    initialData: initialData ?? undefined,
+    initialDataUpdatedAt: initialData ? Date.now() : undefined,
+    staleTime: initialData ? Infinity : 0,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   return {

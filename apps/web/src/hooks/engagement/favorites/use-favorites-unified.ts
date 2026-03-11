@@ -105,12 +105,21 @@ async function toggleSuperlikeAPI(listingId: string): Promise<{
 // Main Hook: Get All Status Data
 // ============================================================================
 
-export function useFavoritesStatus(options?: { enabled?: boolean }) {
+export function useFavoritesStatus(options?: {
+  enabled?: boolean;
+  initialData?: FavoritesStatusData;
+}) {
   return useQuery<FavoritesStatusData>({
     queryKey: ['favorites-status'],
     queryFn: fetchFavoritesStatus,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
     enabled: options?.enabled ?? true,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    initialData: options?.initialData,
+    initialDataUpdatedAt: options?.initialData ? Date.now() : undefined,
   });
 }
 
@@ -317,8 +326,13 @@ async function fetchListingCards(ids: string[]): Promise<ListingCardData[]> {
  * Fetch full listing data for favorites.
  * Caches indefinitely, refetches only after invalidation.
  */
-export function useFavoritesListings() {
-  const { data: favoritesData, isLoading: isLoadingStatus } = useFavoritesStatus();
+export function useFavoritesListings(options?: {
+  initialStatus?: FavoritesStatusData;
+  initialListings?: ListingCardData[];
+}) {
+  const { data: favoritesData, isLoading: isLoadingStatus } = useFavoritesStatus({
+    initialData: options?.initialStatus,
+  });
   const favoriteIds = favoritesData?.favorites || [];
 
   const listingsQuery = useQuery({
@@ -327,6 +341,9 @@ export function useFavoritesListings() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     enabled: favoriteIds.length > 0,
+    staleTime: 60_000,
+    initialData: options?.initialListings,
+    initialDataUpdatedAt: options?.initialListings ? Date.now() : undefined,
   });
 
   return {
@@ -341,8 +358,13 @@ export function useFavoritesListings() {
  * Fetch full listing data for superlikes.
  * Caches indefinitely, refetches only after invalidation.
  */
-export function useSuperlikesListings() {
-  const { data: favoritesData, isLoading: isLoadingStatus } = useFavoritesStatus();
+export function useSuperlikesListings(options?: {
+  initialStatus?: FavoritesStatusData;
+  initialListings?: ListingCardData[];
+}) {
+  const { data: favoritesData, isLoading: isLoadingStatus } = useFavoritesStatus({
+    initialData: options?.initialStatus,
+  });
   const superlikeIds = favoritesData?.superlikes || [];
 
   const listingsQuery = useQuery({
@@ -351,6 +373,9 @@ export function useSuperlikesListings() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     enabled: superlikeIds.length > 0,
+    staleTime: 60_000,
+    initialData: options?.initialListings,
+    initialDataUpdatedAt: options?.initialListings ? Date.now() : undefined,
   });
 
   return {

@@ -3,11 +3,12 @@
  * GET /api/status/stream
  * 
  * Server-Sent Events endpoint for real-time status updates.
- * Reads from Redis cache (written by cron) - zero DB load per viewer.
+ * Reads latest health check from DB (written by cron every 5 min).
  */
 
 import { NextRequest } from 'next/server';
-import { redis } from '@/lib/redis';
+import { db, desc } from '@alifh/database';
+import { serviceHealth } from '@alifh/database';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -24,20 +25,37 @@ interface StatusUpdate {
   timestamp: string;
 }
 
-const STATUS_CACHE_KEY = 'status:current';
-
 async function getCurrentStatus(): Promise<StatusUpdate> {
-  // Read from Redis cache (written by cron every 5 min)
   try {
-    const cached = await redis.get<StatusUpdate>(STATUS_CACHE_KEY);
-    if (cached) {
-      return cached;
+    // Get latest health check per service (cron writes every 5 min)
+    const rows = await db
+      .select()
+      .from(serviceHealth)
+      .orderBy(desc(serviceHealth.checkedAt))
+      .limit(3);
+
+    if (rows.length > 0) {
+      const services = rows.map(r => ({
+        name: r.serviceName,
+        status: r.status as ServiceStatus,
+        latency: r.latency,
+      }));
+
+      const statuses = services.map(s => s.status);
+      let overallStatus: ServiceStatus = 'healthy';
+      if (statuses.includes('unhealthy')) overallStatus = 'unhealthy';
+      else if (statuses.includes('degraded')) overallStatus = 'degraded';
+
+      return {
+        overallStatus,
+        services,
+        timestamp: rows[0].checkedAt.toISOString(),
+      };
     }
   } catch {
-    // Redis error, return default
+    // DB error, return default
   }
   
-  // Fallback if no cache yet
   return {
     overallStatus: 'healthy',
     services: [

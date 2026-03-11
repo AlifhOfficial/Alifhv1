@@ -30,6 +30,10 @@ interface ListingsViewProps {
   defaultModel?: string;
   /** Server-fetched initial data (for instant display) */
   initialData?: SearchResponse | null;
+  /** Route owns search fetching; client only drives URL */
+  serverDriven?: boolean;
+  /** Subscribe to favorites-status from this parent */
+  hydrateFavoritesStatus?: boolean;
 }
 
 const VIEW_MODE_KEY = 'listings-view-mode';
@@ -41,6 +45,8 @@ export function ListingsView({
   defaultBrand,
   defaultModel,
   initialData,
+  serverDriven = false,
+  hydrateFavoritesStatus = true,
 }: ListingsViewProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>(() => {
     if (typeof window !== 'undefined') {
@@ -60,10 +66,7 @@ export function ListingsView({
   }, [viewMode]);
 
   const { isSignedIn } = useUser();
-
-  // Fetch favorites status once at the parent level (only if signed in)
-  // Child components (CarCard) will subscribe to this data without triggering refetch
-  useFavoritesStatus({ enabled: isSignedIn });
+  useFavoritesStatus({ enabled: hydrateFavoritesStatus && isSignedIn });
 
   // Note: CarCard is responsive - shows mobile layout on <sm and desktop layout on sm+
   // On desktop (lg+), 'list' mode uses CarListItem (full width rows)
@@ -92,6 +95,7 @@ export function ListingsView({
       ...(defaultModel && { model: [defaultModel] }),
     },
     initialData,
+    serverDriven,
   });
 
   // Scroll to top when user changes pagination (not on initial mount/back navigation)

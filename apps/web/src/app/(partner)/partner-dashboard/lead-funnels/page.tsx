@@ -1,17 +1,20 @@
-'use client';
+/**
+ * Partner Lead Funnels Page
+ * Server-side auth for faster initial load
+ */
 
+import { redirect } from 'next/navigation';
+import { getSessionUser } from '@/lib/auth/session-context';
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { PartnerLeadFunnelsView } from "@/components/partner/lead-funnels/partner-lead-funnels-view";
-import { useAuth } from "@/providers/auth-provider";
-import { redirect } from "next/navigation";
 
-export default function PartnerLeadFunnelsPage() {
-  const { session } = useAuth();
+export default async function PartnerLeadFunnelsPage() {
+  const user = await getSessionUser();
   
-  if (!session) redirect('/');
+  if (!user) redirect('/?auth=signin');
 
   // Get the first partner membership (if any) - must be manager or owner
-  const membership = (session as any).partnerMemberships?.find(
+  const membership = (user as any).partnerMemberships?.find(
     (m: any) => m.staffRole === 'manager' || m.staffRole === 'owner'
   );
 

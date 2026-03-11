@@ -1,9 +1,6 @@
-'use client';
-
-import { DashboardLayout, DashboardContent } from "@/components/shared/layout/dashboard-layout";
-import { AppSidebar } from "@/components/shared/layout/app-sidebar";
-import { PageLoader } from "@/components/shared/page-loader";
-import { useAuth } from "@/providers/auth-provider";
+import { redirect } from "next/navigation";
+import { getSessionUser } from "@/lib/auth/session-context";
+import { AdminDashboardShell } from "./shell";
 
 const navSections = [
   {
@@ -43,24 +40,20 @@ const navSections = [
   },
 ];
 
-export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
-  const { session, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <PageLoader />;
+export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
+  const user = await getSessionUser();
+
+  if (!user) {
+    redirect('/access-denied?reason=not-authenticated');
   }
-  
-  if (!session) {
-    if (typeof window !== 'undefined') {
-      window.location.href = '/access-denied?reason=not-authenticated';
-    }
-    return <PageLoader />;
+
+  if (!user.isAlifhAdmin) {
+    redirect('/access-denied?reason=insufficient-permissions');
   }
 
   return (
-    <DashboardLayout enableRightPanel>
-      <AppSidebar user={session as any} sections={navSections} />
-      <DashboardContent>{children}</DashboardContent>
-    </DashboardLayout>
+    <AdminDashboardShell user={user} sections={navSections}>
+      {children}
+    </AdminDashboardShell>
   );
 }

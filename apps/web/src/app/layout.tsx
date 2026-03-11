@@ -5,6 +5,8 @@ import { QueryProvider } from '@/components/shared/providers/query-provider'
 import { AuthProvider } from '@/providers/auth-provider'
 import { GlobalChatProvider } from '@/components/shared/providers/global-chat-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { getSessionUser } from '@/lib/auth/session-context'
+import { getFavoriteStatusForListings, getSuperlikeQuotaForUser, getUserConversations } from '@alifh/database'
 
 export const viewport: Viewport = {
   themeColor: '#000000',
@@ -36,11 +38,65 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const initialSession = await getSessionUser();
+  const initialFavoritesStatus = initialSession
+    ? await (async () => {
+        const [{ favorites, superlikes }, quota] = await Promise.all([
+          getFavoriteStatusForListings(initialSession.id),
+          getSuperlikeQuotaForUser(initialSession.id),
+        ]);
+        return {
+          favorites,
+          superlikes,
+          quota: {
+            currentMonthSuperlikesUsed: quota.currentMonthSuperlikesUsed,
+            maxSuperlikesPerMonth: quota.maxSuperlikesPerMonth,
+            premiumSuperlikesBonus: quota.premiumSuperlikesBonus || 0,
+            remaining:
+              (quota.maxSuperlikesPerMonth + (quota.premiumSuperlikesBonus || 0)) -
+              quota.currentMonthSuperlikesUsed,
+            periodEndDate: quota.periodEndDate,
+            periodStartDate: quota.periodStartDate,
+          },
+        };
+      })()
+    : undefined;
+  const initialPersonalConversations = initialSession
+    ? await (async () => {
+        const partnerIds = (initialSession.partnerMemberships ?? [])
+          .map((m) => m.partnerId)
+          .filter(Boolean);
+        const conversations = await getUserConversations(initialSession.id, {
+          limit: 50,
+          offset: 0,
+          includeArchived: false,
+          partnerIds,
+          partnerScope: partnerIds.length > 0 ? 'exclude' : undefined,
+        });
+        return {
+          conversations: conversations.map((conversation) => ({
+            ...conversation,
+            lastMessageAt: conversation.lastMessageAt.toISOString(),
+            myLastReadAt: conversation.myLastReadAt?.toISOString() ?? null,
+            otherParticipant: conversation.otherParticipant
+              ? {
+                  ...conversation.otherParticipant,
+                  lastReadAt: conversation.otherParticipant.lastReadAt?.toISOString() ?? null,
+                  lastSeenAt: conversation.otherParticipant.lastSeenAt?.toISOString() ?? null,
+                }
+              : null,
+          })),
+          totalUnread: conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0),
+          hasMore: conversations.length === 50,
+        };
+      })()
+    : undefined;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -76,8 +132,12 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <ThemeProvider>
-          <AuthProvider>
-            <QueryProvider>
+          <AuthProvider initialSession={initialSession}>
+            <QueryProvider
+              initialFavoritesStatus={initialFavoritesStatus}
+              initialPersonalConversations={initialPersonalConversations}
+              initialUserId={initialSession?.id}
+            >
               <GlobalChatProvider>
                 {children}
               </GlobalChatProvider>

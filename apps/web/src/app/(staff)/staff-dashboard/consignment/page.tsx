@@ -5,12 +5,33 @@
  */
 
 import { Suspense } from 'react';
+import { getSessionUser } from '@/lib/auth/session-context';
+import { getPartnerFunnels, getPartnerFunnelCounts } from '@alifh/database';
 import { ConsignmentFunnelsView } from '@/components/staff/consignment/funnels-view';
 
-export default function ConsignmentFunnelsPage() {
+export default async function ConsignmentFunnelsPage() {
+  const user = await getSessionUser();
+  if (!user) return null;
+  const membership = user.partnerMemberships?.find((m) => m.staffRole !== 'viewer');
+  if (!membership) return null;
+
+  const [funnels, counts] = await Promise.all([
+    getPartnerFunnels(membership.partnerId, user.id),
+    getPartnerFunnelCounts(membership.partnerId, user.id),
+  ]);
+
+  const initialData = {
+    funnels: funnels.map((f) => ({
+      ...f,
+      createdAt: f.createdAt.toISOString(),
+      updatedAt: f.updatedAt.toISOString(),
+      matchCount: counts[f.id] ?? 0,
+    })),
+  };
+
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <ConsignmentFunnelsView />
+      <ConsignmentFunnelsView initialData={initialData} />
     </Suspense>
   );
 }

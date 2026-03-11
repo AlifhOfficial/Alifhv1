@@ -6,13 +6,73 @@
 
 import { Suspense } from 'react';
 import { ListingsView } from '@/components/listings/listings-view';
+import {
+  searchListings,
+  urlToSearchParams,
+} from '@alifh/database';
+import { getCachedSearchFacets } from '@/lib/search-cache';
+import type { SearchResponse } from '@/lib/search-utils';
 
-export default function StaffInventoryPage() {
+interface PageProps {
+  searchParams: Promise<{
+    [key: string]: string | string[] | undefined;
+  }>;
+}
+
+export default async function StaffInventoryPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const urlParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) {
+      if (Array.isArray(value)) {
+        value.forEach((v) => urlParams.append(key, v));
+      } else {
+        urlParams.set(key, value);
+      }
+    }
+  });
+
+  const searchParamsObj = urlToSearchParams(urlParams);
+  const limit = searchParamsObj.limit || 30;
+
+  if (!searchParamsObj.sortBy) {
+    searchParamsObj.sortBy = 'relevance';
+  }
+
+  let initialData: SearchResponse | null = null;
+
+  try {
+    const [searchResult, facets] = await Promise.all([
+      searchListings(
+        { ...searchParamsObj, limit },
+        {
+          skipFacets: true,
+          skipTotalCount: false,
+        }
+      ),
+      getCachedSearchFacets(searchParamsObj),
+    ]);
+
+    initialData = {
+      ...searchResult,
+      facets,
+    } as SearchResponse;
+  } catch (error) {
+    console.error('[StaffInventoryPage] Failed to fetch initial data:', error);
+  }
+
   return (
     <Suspense fallback={<PageSkeleton />}>
       {/* DashboardContent wraps pages in p-4; cancel all margins for full-bleed listings */}
       <div className="-mx-4 -mt-4 -mb-4">
-        <ListingsView embedded defaultFiltersOpen={false} />
+        <ListingsView
+          embedded
+          defaultFiltersOpen={false}
+          initialData={initialData}
+          serverDriven
+          hydrateFavoritesStatus={false}
+        />
       </div>
     </Suspense>
   );

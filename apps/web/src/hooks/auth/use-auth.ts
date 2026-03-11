@@ -12,7 +12,7 @@
 import { useAuth } from '@/providers/auth-provider';
 
 export function useUser() {
-  const { session: user, isLoading, error, isAuthenticated, refetch } = useAuth();
+  const { session: user, isLoading, error, isAuthenticated, refetch, setSessionUser } = useAuth();
 
   return {
     user,
@@ -21,5 +21,6 @@ export function useUser() {
     error,
     session: user ? { user } : null,
     refetch,
+    setSessionUser,
   };
 }

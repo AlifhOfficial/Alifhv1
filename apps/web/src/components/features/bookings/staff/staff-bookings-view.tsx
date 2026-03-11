@@ -5,8 +5,9 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useTransition } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { AlertCircle, RefreshCw, CheckCircle2, Settings, Search, X, ChevronDown } from 'lucide-react';
 import type { BookingData, BookingStats, AvailabilityRule, BookingSettings } from './types';
 import { BookingList } from './booking-list';
@@ -46,6 +47,22 @@ interface LookedUpBooking {
   confirmationToken: string;
 }
 
+interface StaffBookingsInitialData {
+  bookings: BookingData[];
+  total: number;
+  stats: BookingStats | null;
+}
+
+interface StaffBookingsViewProps {
+  initialData: StaffBookingsInitialData;
+  filters: {
+    status: string;
+    sort: BookingSort;
+    page: number;
+    q: string;
+  };
+}
+
 // Main status tabs (always visible)
 const MAIN_STATUS_TABS = [
   { key: 'all', label: 'All', color: 'purple' },
@@ -73,18 +90,22 @@ function getColorClasses(color?: string) {
   }
 }
 
-export function StaffBookingsView() {
+export function StaffBookingsView({ initialData, filters }: StaffBookingsViewProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState<TabType>('bookings');
-  const [bookings, setBookings] = useState<BookingData[]>([]);
-  const [totalBookings, setTotalBookings] = useState(0);
-  const [stats, setStats] = useState<BookingStats | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState(filters.q);
   const [error, setError] = useState<string | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<string>('confirmed');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [sort, setSort] = useState<BookingSort>('newest');
-  const [currentPage, setCurrentPage] = useState(1);
+  const bookings = initialData.bookings;
+  const totalBookings = initialData.total;
+  const stats = initialData.stats;
+  const selectedStatus = filters.status;
+  const debouncedSearch = filters.q;
+  const sort = filters.sort;
+  const currentPage = filters.page;
+  const isLoading = isPending;
   
   // Availability state
   const [availability, setAvailability] = useState<AvailabilityRule[]>([]);
@@ -112,68 +133,41 @@ export function StaffBookingsView() {
   const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
   const [quickCheckOpen, setQuickCheckOpen] = useState(false);
   
-  // Abort controller for cancelling in-flight requests
-  const abortControllerRef = useRef<AbortController | null>(null);
-
   const ITEMS_PER_PAGE = 50;
+
+  useEffect(() => {
+    setSearchQuery(filters.q);
+  }, [filters.q]);
+
+  const updateRoute = useCallback((updates: Partial<StaffBookingsViewProps['filters']>) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? '');
+    const nextStatus = updates.status ?? selectedStatus;
+    const nextSort = updates.sort ?? sort;
+    const nextPage = updates.page ?? currentPage;
+    const nextQuery = updates.q ?? debouncedSearch;
+
+    if (nextStatus === 'confirmed') params.delete('status');
+    else params.set('status', nextStatus);
+
+    if (nextSort === 'newest') params.delete('sort');
+    else params.set('sort', nextSort);
+
+    if (nextPage <= 1) params.delete('page');
+    else params.set('page', String(nextPage));
+
+    if (!nextQuery.trim()) params.delete('q');
+    else params.set('q', nextQuery.trim());
+
+    const nextUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    startTransition(() => {
+      router.replace(nextUrl, { scroll: false });
+    });
+  }, [searchParams, selectedStatus, sort, currentPage, debouncedSearch, pathname, router]);
 
   // Debounced search handler
   const handleSearchChange = useDebouncedCallback((value: string) => {
-    setDebouncedSearch(value);
-    setCurrentPage(1);
+    updateRoute({ q: value, page: 1 });
   }, 400);
-
-  // Server-side filtered fetch
-  const fetchBookings = useCallback(async () => {
-    // Cancel any in-flight request to prevent race conditions
-    abortControllerRef.current?.abort();
-    abortControllerRef.current = new AbortController();
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Build query params for server-side filtering
-      const params = new URLSearchParams();
-      params.set('includeStats', 'true');
-      params.set('limit', String(ITEMS_PER_PAGE));
-      params.set('offset', String((currentPage - 1) * ITEMS_PER_PAGE));
-      params.set('sort', sort);
-      
-      // Status filter (handle 'no_show' which includes 'expired')
-      if (selectedStatus !== 'all') {
-        if (selectedStatus === 'no_show') {
-          params.set('status', 'no_show,expired');
-        } else {
-          params.set('status', selectedStatus);
-        }
-      }
-      
-      // Search query
-      if (debouncedSearch.trim()) {
-        params.set('q', debouncedSearch.trim());
-      }
-
-      const res = await fetch(`/api/bookings?staffView=true&myListings=true&${params.toString()}`, {
-        signal: abortControllerRef.current.signal,
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to load bookings');
-      }
-
-      setBookings(data.bookings || []);
-      setTotalBookings(data.total || 0);
-      setStats(data.stats || null);
-    } catch (err) {
-      // Ignore aborted requests
-      if (err instanceof Error && err.name === 'AbortError') return;
-      setError(err instanceof Error ? err.message : 'Failed to load bookings');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [selectedStatus, debouncedSearch, sort, currentPage]);
 
   const fetchAvailability = useCallback(async () => {
     setAvailabilityLoading(true);
@@ -191,16 +185,6 @@ export function StaffBookingsView() {
       setAvailabilityLoading(false);
     }
   }, []);
-
-  // Fetch bookings when filters change
-  useEffect(() => {
-    fetchBookings();
-    
-    // Cleanup: abort in-flight requests on unmount
-    return () => {
-      abortControllerRef.current?.abort();
-    };
-  }, [fetchBookings]);
 
   // Fetch availability only when tab switches to settings
   useEffect(() => {
@@ -282,7 +266,9 @@ export function StaffBookingsView() {
       };
       setVerifyMessage(messages[action] || 'Done');
       resetQuickAction();
-      fetchBookings();
+      startTransition(() => {
+        router.refresh();
+      });
       
       setTimeout(() => setVerifyMessage(null), 3000);
     } catch (e) {
@@ -456,7 +442,9 @@ export function StaffBookingsView() {
         throw new Error(result.error || 'Action failed');
       }
 
-      fetchBookings();
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Action failed');
     }
@@ -487,7 +475,13 @@ export function StaffBookingsView() {
       setCancelModal(null);
       setCancelReason('');
       setCancelNotes('');
-      fetchBookings();
+      if (selectedStatus !== 'cancelled') {
+        updateRoute({ status: 'cancelled', page: 1 });
+      } else {
+        startTransition(() => {
+          router.refresh();
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to cancel booking');
     } finally {
@@ -523,7 +517,13 @@ export function StaffBookingsView() {
 
       setRejectModal(null);
       setRejectReason('');
-      fetchBookings();
+      if (selectedStatus !== 'rejected') {
+        updateRoute({ status: 'rejected', page: 1 });
+      } else {
+        startTransition(() => {
+          router.refresh();
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to reject booking');
     } finally {
@@ -562,7 +562,9 @@ export function StaffBookingsView() {
               <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
             <button
-              onClick={activeTab === 'bookings' ? fetchBookings : fetchAvailability}
+              onClick={activeTab === 'bookings'
+                ? () => startTransition(() => router.refresh())
+                : fetchAvailability}
               disabled={activeTab === 'bookings' ? isLoading : availabilityLoading}
               className="p-1.5 sm:p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
               title="Refresh"
@@ -607,8 +609,8 @@ export function StaffBookingsView() {
 
                 {/* Sort */}
                 <Select value={sort} onValueChange={(v) => {
-                  setSort(v as BookingSort);
-                  setCurrentPage(1);
+                  setError(null);
+                  updateRoute({ sort: v as BookingSort, page: 1 });
                 }}>
                   <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-xs sm:text-sm shrink-0">
                     <SelectValue placeholder="Sort" />
@@ -756,8 +758,8 @@ export function StaffBookingsView() {
                       <button
                         key={tab.key}
                         onClick={() => {
-                          setSelectedStatus(tab.key);
-                          setCurrentPage(1);
+                          setError(null);
+                          updateRoute({ status: tab.key, page: 1 });
                         }}
                         className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all capitalize whitespace-nowrap ${
                           isActive
@@ -816,8 +818,8 @@ export function StaffBookingsView() {
                             <DropdownMenuItem
                               key={tab.key}
                               onClick={() => {
-                                setSelectedStatus(tab.key);
-                                setCurrentPage(1);
+                                setError(null);
+                                updateRoute({ status: tab.key, page: 1 });
                               }}
                               className={`text-xs cursor-pointer ${
                                 selectedStatus === tab.key ? 'bg-secondary' : ''
@@ -863,14 +865,14 @@ export function StaffBookingsView() {
                   </p>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                       disabled={currentPage === 1 || isLoading}
                       className="px-3 py-1.5 text-[11px] sm:text-xs font-medium rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       Previous
                     </button>
                     <button
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                       disabled={currentPage === totalPages || isLoading}
                       className="px-3 py-1.5 text-[11px] sm:text-xs font-medium rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >

@@ -9,7 +9,7 @@
  * @module hooks/use-search
  */
 
-import { useCallback, useMemo, useRef, useEffect, useState } from 'react';
+import { useCallback, useMemo, useRef, useEffect, useState, useTransition } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -33,6 +33,8 @@ interface UseSearchOptions {
   defaultLimit?: number;
   /** Server-fetched initial data (for instant display) */
   initialData?: SearchResponse | null;
+  /** Let the route own fetching; client only updates the URL */
+  serverDriven?: boolean;
 }
 
 interface UseSearchResult {
@@ -89,11 +91,13 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     disableUrlSync = false,
     defaultLimit = 30,
     initialData,
+    serverDriven = false,
   } = options;
 
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   // Local state for params when URL sync is disabled
   const [localParams, setLocalParams] = useState<SearchParams>(() => ({
@@ -164,13 +168,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   const effectiveInitialData = isInitialQuery ? initialData : undefined;
 
   // Fetch search results
-  const { 
-    data, 
-    isLoading, 
-    isFetching, 
-    error,
-    refetch,
-  } = useQuery({
+  const query = useQuery({
     queryKey,
     queryFn: () => fetchSearch(params),
     // Server-side data for instant display - only for the initial query
@@ -183,7 +181,13 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     refetchOnWindowFocus: false,
     refetchOnMount: false, // Don't refetch on mount if we have cached data
     placeholderData: (previousData) => previousData, // Keep previous data visible while fetching
+    enabled: !serverDriven,
   });
+
+  const data = serverDriven ? (initialData ?? undefined) : query.data;
+  const isLoading = serverDriven ? isPending : query.isLoading;
+  const isFetching = serverDriven ? isPending : query.isFetching;
+  const error = serverDriven ? null : (query.error as Error | null);
 
   // Update URL with new params (or local state if URL sync disabled)
   const updateUrl = useCallback((newParams: SearchParams) => {
@@ -199,8 +203,14 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
       : pathname;
     
     // Use replace to avoid adding to history for every filter change
+    if (serverDriven) {
+      startTransition(() => {
+        router.replace(newUrl, { scroll: false });
+      });
+      return;
+    }
     router.replace(newUrl, { scroll: false });
-  }, [router, pathname, disableUrlSync]);
+  }, [router, pathname, disableUrlSync, serverDriven]);
 
   // Set text query
   const setQuery = useCallback((q: string) => {
@@ -285,8 +295,14 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
 
   // Force refresh
   const refresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+    if (serverDriven) {
+      startTransition(() => {
+        router.refresh();
+      });
+      return;
+    }
+    query.refetch();
+  }, [query, router, serverDriven]);
 
   // Count active filters
   const activeFilterCount = useMemo(() => countActiveFilters(params), [params]);
@@ -302,7 +318,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     activeFilterCount,
     isLoading,
     isFetching,
-    error: error as Error | null,
+    error,
     
     // Pagination
     currentPage,

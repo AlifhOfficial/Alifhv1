@@ -14,15 +14,26 @@ async function fetchUnreadCount(): Promise<{ unreadCount: number }> {
   return res.json();
 }
 
-export function useUnreadCount(userId?: string, activeConversationId?: string) {
+interface UseUnreadCountOptions {
+  activeConversationId?: string;
+  enableFetch?: boolean;
+}
+
+export function useUnreadCount(
+  userId?: string,
+  initialCount?: number,
+  options: UseUnreadCountOptions = {}
+) {
   const queryClient = useQueryClient();
   const { subscribe } = useWebSocket();
+  const { activeConversationId, enableFetch = true } = options;
 
   const query = useQuery({
     queryKey: ['unread-count'],
     queryFn: fetchUnreadCount,
     refetchInterval: 2 * 60 * 1000,
-    enabled: !!userId,
+    enabled: !!userId && enableFetch,
+    ...(initialCount !== undefined && { initialData: { unreadCount: initialCount } }),
   });
 
   useEffect(() => {

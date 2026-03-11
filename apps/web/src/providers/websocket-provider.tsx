@@ -190,6 +190,8 @@ export const useWebSocketContext = () => {
   return ctx;
 };
 
+export const useOptionalWebSocketContext = () => useContext(WSContext);
+
 // ============================================================================
 // Provider
 // ============================================================================

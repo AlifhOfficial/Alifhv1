@@ -1,26 +1,24 @@
 /**
  * Partner Showroom Editor Page
  * Black tier exclusive - premium brand manifesto editor
+ * Server-side auth for faster initial load
  */
 
-'use client';
-
-import { PartnerShowroomForm } from '@/components/partner/car-dealer/partner-showroom-form';
-import { useAuth } from '@/providers/auth-provider';
 import { redirect } from 'next/navigation';
+import { getSessionUser } from '@/lib/auth/session-context';
+import { PartnerShowroomForm } from '@/components/partner/car-dealer/partner-showroom-form';
 
-export default function PartnerShowroomPage() {
-  const { session } = useAuth();
+export default async function PartnerShowroomPage() {
+  const user = await getSessionUser();
   
-  if (!session) redirect('/');
+  if (!user) redirect('/?auth=signin');
 
   // Get the first active Black tier partner membership
-  const membership = (session as any).partnerMemberships?.find(
+  const membership = (user as any).partnerMemberships?.find(
     (m: any) => m.partnerTier === 'black' && ['owner', 'admin'].includes(m.staffRole)
   );
 
   if (!membership) {
-    // Not a Black tier partner with proper permissions
     redirect('/partner-dashboard');
   }
 

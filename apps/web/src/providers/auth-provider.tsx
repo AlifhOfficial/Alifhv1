@@ -19,15 +19,21 @@ interface AuthContextValue {
   error: Error | null;
   isAuthenticated: boolean;
   refetch: () => Promise<void>;
+  setSessionUser: (user: Session['user'] | null) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session['user'] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+interface AuthProviderProps {
+  children: ReactNode;
+  initialSession?: Session['user'] | null;
+}
+
+export function AuthProvider({ children, initialSession }: AuthProviderProps) {
+  const [session, setSession] = useState<Session['user'] | null>(initialSession ?? null);
+  const [isLoading, setIsLoading] = useState(initialSession === undefined);
   const [error, setError] = useState<Error | null>(null);
-  const fetchedRef = useRef(false);
+  const fetchedRef = useRef(initialSession !== undefined);
 
   const fetchSession = useCallback(async (force = false) => {
     // Skip if already fetched (unless force refresh)
@@ -87,10 +93,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await fetchSession(true);
   }, [fetchSession]);
 
+  const setSessionUser = useCallback((user: Session['user'] | null) => {
+    fetchedRef.current = true;
+    setSession(user);
+    setIsLoading(false);
+    setError(null);
+  }, []);
+
+  useEffect(() => {
+    if (initialSession === undefined) return;
+    fetchedRef.current = true;
+    setSession(initialSession);
+    setIsLoading(false);
+    setError(null);
+  }, [initialSession]);
+
   // Fetch session ONCE on mount
   useEffect(() => {
+    if (initialSession !== undefined) {
+      return;
+    }
     fetchSession();
-  }, [fetchSession]);
+  }, [fetchSession, initialSession]);
 
   const value: AuthContextValue = {
     session,
@@ -98,6 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     error,
     isAuthenticated: !!session,
     refetch,
+    setSessionUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

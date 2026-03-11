@@ -9,24 +9,7 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useHealthCheck } from '@/hooks/use-health-check';
-
-interface ServiceStatus {
-  status: 'healthy' | 'degraded' | 'unhealthy';
-  latency?: number;
-  message?: string;
-}
-
-interface HealthData {
-  status: 'healthy' | 'degraded' | 'unhealthy';
-  timestamp: string;
-  uptime: number;
-  services: {
-    database: ServiceStatus;
-    websocket: ServiceStatus;
-    runtime: ServiceStatus;
-    api: ServiceStatus;
-  };
-}
+import type { HealthCheckResponse } from '@/lib/health';
 
 const SERVICE_LABELS = {
   database: 'Database',
@@ -42,8 +25,14 @@ const STATUS_COLORS = {
   unknown: 'bg-muted-foreground/30',
 } as const;
 
-export function HealthStatus() {
-  const { health, isLoading, error } = useHealthCheck();
+export function HealthStatus({
+  initialHealth,
+  enableFetch = true,
+}: {
+  initialHealth?: HealthCheckResponse | null;
+  enableFetch?: boolean;
+}) {
+  const { health, isLoading, error } = useHealthCheck(initialHealth, enableFetch);
 
   if (isLoading) {
     return (

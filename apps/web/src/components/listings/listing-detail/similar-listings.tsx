@@ -19,20 +19,23 @@ import { useSimilarListings } from '@/hooks/listings';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/utils';
+import type { SimilarListingCard } from '@/hooks/listings/use-similar-listings';
 
 interface SimilarListingsProps {
   listingId: string;
   /** Only fetch when main listing is loaded */
   enabled?: boolean;
   className?: string;
+  initialListings?: SimilarListingCard[];
 }
 
 export function SimilarListings({ 
   listingId, 
   enabled = true,
-  className 
+  className,
+  initialListings,
 }: SimilarListingsProps) {
-  const { listings, isLoading } = useSimilarListings(listingId, { enabled });
+  const { listings, isLoading } = useSimilarListings(listingId, { enabled, initialData: initialListings });
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showArrows, setShowArrows] = useState(false);
 

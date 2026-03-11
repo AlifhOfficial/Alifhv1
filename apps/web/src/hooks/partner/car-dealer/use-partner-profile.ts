@@ -145,7 +145,7 @@ async function updatePartnerProfileAPI(partnerId: string, updates: PartnerProfil
 
 export function usePartnerProfile(partnerId: string | null | undefined) {
   const queryClient = useQueryClient();
-  const { refetch: refetchSession } = useAuth();
+  const { session, setSessionUser } = useAuth();
 
   const query = useQuery({
     queryKey: ['partner-profile', partnerId],
@@ -160,10 +160,20 @@ export function usePartnerProfile(partnerId: string | null | undefined) {
       queryClient.setQueryData(['partner-profile', partnerId], updatedProfile);
       
       // If logo or brandName changed, refresh session so sidebar updates
-      // Fire-and-forget to avoid blocking and causing re-render cascades
       const touchesSession = 'logo' in variables || 'brandName' in variables;
-      if (touchesSession && refetchSession) {
-        refetchSession();
+      if (touchesSession && session?.partnerMemberships?.length) {
+        setSessionUser({
+          ...session,
+          partnerMemberships: session.partnerMemberships.map((membership) =>
+            membership.partnerId === partnerId
+              ? {
+                  ...membership,
+                  partnerName: updatedProfile.brandName,
+                  partnerLogo: updatedProfile.logo,
+                }
+              : membership
+          ),
+        });
       }
     },
   });

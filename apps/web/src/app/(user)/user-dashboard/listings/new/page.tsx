@@ -3,13 +3,11 @@
  * Authenticated users can create new car listings
  */
 
-'use client';
-
+import { getSessionUser } from '@/lib/auth/session-context';
 import { NewListingView } from '@/components/listings/new-listing';
-import { useAuth } from '@/providers/auth-provider';
 
-export default function NewListingPage() {
-  const { session } = useAuth();
+export default async function NewListingPage() {
+  const user = await getSessionUser();
 
-  return <NewListingView userId={session?.id} />;
+  return <NewListingView userId={user?.id} />;
 }

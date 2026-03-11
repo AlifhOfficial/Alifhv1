@@ -5,10 +5,11 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useTransition } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import Link from 'next/link';
-import { AlertTriangle, Package, Search, RefreshCw, Plus, X, Clock, FileText, XCircle, Archive, CheckCircle2, Timer, Ban, ChevronDown, Filter } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { AlertTriangle, Package, Search, RefreshCw, Plus, X, Clock, FileText, XCircle, Archive, CheckCircle2, Timer, Ban, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -121,38 +122,35 @@ interface ConfirmModalState {
 interface MyListingsViewProps {
   userId: string;
   listingType?: ListingType;
+  initialData: {
+    listings: ListingData[];
+    total: number;
+    stats: ListingStats;
+  };
+  initialBlackQuota?: BlackQuotaData | null;
+  filters: {
+    status: ListingStatus;
+    sort: ListingsSort;
+    page: number;
+    q: string;
+  };
 }
 
 const ITEMS_PER_PAGE = 50;
 
-export function MyListingsView({ userId, listingType = 'personal' }: MyListingsViewProps) {
-  // Server-filtered listings
-  const [listings, setListings] = useState<ListingData[]>([]);
-  const [totalListings, setTotalListings] = useState(0);
-  const [stats, setStats] = useState<ListingStats>({
-    all: 0,
-    active: 0,
-    public: 0,
-    inReview: 0,
-    draft: 0,
-    rejected: 0,
-    archived: 0,
-    suspended: 0,
-    sold: 0,
-    expired: 0,
-    deleted: 0,
-    deepInventory: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
+export function MyListingsView({
+  userId,
+  listingType = 'personal',
+  initialData,
+  initialBlackQuota = null,
+  filters,
+}: MyListingsViewProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
-  
-  // Filter state - sent to server
-  const [selectedStatus, setSelectedStatus] = useState<ListingStatus>('active');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [sort, setSort] = useState<ListingsSort>('newest');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(filters.q);
   
   // Confirmation modal state
   const [confirmModal, setConfirmModal] = useState<ConfirmModalState>({
@@ -167,13 +165,54 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
   const [isConfirming, setIsConfirming] = useState(false);
   
   // BLK listings quota state (only for work listings)
-  const [blackQuota, setBlackQuota] = useState<BlackQuotaData | null>(null);
+  const [blackQuota, setBlackQuota] = useState<BlackQuotaData | null>(initialBlackQuota);
   const [togglingBlkId, setTogglingBlkId] = useState<string | null>(null);
+
+  const listings = initialData.listings;
+  const totalListings = initialData.total;
+  const stats = initialData.stats;
+  const selectedStatus = filters.status;
+  const sort = filters.sort;
+  const currentPage = filters.page;
+  const debouncedSearch = filters.q;
+  const isLoading = isPending;
+
+  useEffect(() => {
+    setSearchQuery(filters.q);
+  }, [filters.q]);
+
+  useEffect(() => {
+    setBlackQuota(initialBlackQuota);
+  }, [initialBlackQuota]);
+
+  const updateRoute = useCallback((updates: Partial<MyListingsViewProps['filters']>) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? '');
+    const nextStatus = updates.status ?? selectedStatus;
+    const nextSort = updates.sort ?? sort;
+    const nextPage = updates.page ?? currentPage;
+    const nextQuery = updates.q ?? debouncedSearch;
+
+    if (nextStatus === 'active') params.delete('status');
+    else params.set('status', nextStatus);
+
+    if (nextSort === 'newest') params.delete('sort');
+    else params.set('sort', nextSort);
+
+    if (nextPage <= 1) params.delete('page');
+    else params.set('page', String(nextPage));
+
+    if (!nextQuery.trim()) params.delete('q');
+    else params.set('q', nextQuery.trim());
+
+    const nextUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    startTransition(() => {
+      router.replace(nextUrl, { scroll: false });
+    });
+  }, [searchParams, selectedStatus, sort, currentPage, debouncedSearch, pathname, router]);
 
   // Debounced search handler
   const debouncedSetSearch = useDebouncedCallback((value: string) => {
-    setDebouncedSearch(value);
-    setCurrentPage(1);
+    updateRoute({ q: value, page: 1 });
   }, 400);
 
   const handleSearchChange = useCallback((value: string) => {
@@ -181,145 +220,16 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
     debouncedSetSearch(value);
   }, [debouncedSetSearch]);
 
-  // Map UI status to API params
-  const getApiParams = useCallback((status: ListingStatus) => {
-    switch (status) {
-      case 'active':
-        return { lifecycleStatus: 'active' };
-      case 'public':
-        return { lifecycleStatus: 'active' }; // Will filter isPublic client-side or add API support
-      case 'in_review':
-        return { status: 'in_review' };
-      case 'draft':
-        return { moderationStatus: 'draft' };
-      case 'rejected':
-        return { moderationStatus: 'rejected' };
-      case 'archived':
-        return { status: 'archived' };
-      case 'sold':
-        return { lifecycleStatus: 'sold' };
-      case 'expired':
-        return { lifecycleStatus: 'expired' };
-      case 'suspended':
-        return { status: 'suspended' };
-      default:
-        return {};
-    }
-  }, []);
-
-  // Fetch listings with server-side filtering
-  const fetchData = useCallback(async (isRefresh = false) => {
-    abortRef.current?.abort();
-    abortRef.current = new AbortController();
-    
-    if (!isRefresh) {
-      setIsLoading(true);
-    }
-    setError(null);
-
-    try {
-      const params = new URLSearchParams();
-      params.set('listingType', listingType);
-      params.set('includeStats', '1');
-      params.set('limit', String(ITEMS_PER_PAGE));
-      params.set('offset', String((currentPage - 1) * ITEMS_PER_PAGE));
-      params.set('sort', sort);
-      
-      // For work listings, pass staffMemberUserId
-      if (listingType === 'work' && userId) {
-        params.set('staffMemberUserId', userId);
-      }
-      
-      // Add status filter params
-      if (selectedStatus !== 'all') {
-        const apiParams = getApiParams(selectedStatus);
-        Object.entries(apiParams).forEach(([key, value]) => {
-          if (value) params.set(key, value);
-        });
-      }
-      
-      // Add search query
-      if (debouncedSearch.trim()) {
-        params.set('q', debouncedSearch.trim());
-      }
-
-      const response = await fetch(`/api/listings/my-listings?${params}`, {
-        credentials: 'include',
-        cache: 'no-store',
-        signal: abortRef.current.signal,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Failed to fetch listings' }));
-        throw new Error(errorData.error || 'Failed to fetch listings');
-      }
-
-      const data = await response.json();
-      
-      const fetchedListings = data.data || data.listings || [];
-      setListings(fetchedListings);
-      setTotalListings(data.total || fetchedListings.length);
-      
-      // Use stats from API if available
-      if (data.stats) {
-        setStats({
-          all: data.stats.all || 0,
-          active: data.stats.active || 0,
-          public: data.stats.public || 0,
-          inReview: data.stats.inReview || data.stats.in_review || 0,
-          draft: data.stats.draft || 0,
-          rejected: data.stats.rejected || 0,
-          archived: data.stats.archived || 0,
-          suspended: data.stats.suspended || 0,
-          sold: data.stats.sold || 0,
-          expired: data.stats.expired || 0,
-          deleted: 0,
-          deepInventory: (data.stats.archived || 0) + (data.stats.suspended || 0) + (data.stats.sold || 0) + (data.stats.expired || 0),
-        });
-      }
-      
-      // Fetch BLK quota for work listings only (once)
-      if (listingType === 'work' && !blackQuota) {
-        try {
-          const quotaResponse = await fetch('/api/partner/black-quota', {
-            credentials: 'include',
-            signal: abortRef.current.signal,
-          });
-          if (quotaResponse.ok) {
-            const quotaData = await quotaResponse.json();
-            if (quotaData.data) {
-              setBlackQuota(quotaData.data);
-            }
-          }
-        } catch (quotaErr) {
-          console.error('Failed to fetch BLK quota:', quotaErr);
-        }
-      }
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') return;
-      console.error('Error fetching listings:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch listings');
-      setListings([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [listingType, userId, currentPage, sort, selectedStatus, debouncedSearch, getApiParams, blackQuota]);
-
-  useEffect(() => {
-    fetchData();
-    return () => { abortRef.current?.abort(); };
-  }, [fetchData]);
-
   // Handle filter changes - reset page
   const handleStatusChange = useCallback((status: ListingStatus) => {
-    setSelectedStatus(status);
-    setCurrentPage(1);
-  }, []);
+    setError(null);
+    updateRoute({ status, page: 1 });
+  }, [updateRoute]);
 
   const handleSortChange = useCallback((newSort: ListingsSort) => {
-    setSort(newSort);
-    setCurrentPage(1);
-  }, []);
+    setError(null);
+    updateRoute({ sort: newSort, page: 1 });
+  }, [updateRoute]);
 
   // Pagination
   const totalPages = Math.ceil(totalListings / ITEMS_PER_PAGE);
@@ -494,11 +404,13 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       }
 
       setConfirmModal({ ...confirmModal, isOpen: false });
-      await fetchData();
-      
-      // If we just cleared all listings in the current view, switch to 'all' tab
+
       if (confirmModal.action === 'bulkClear') {
-        setSelectedStatus('all');
+        updateRoute({ status: 'all', page: 1 });
+      } else {
+        startTransition(() => {
+          router.refresh();
+        });
       }
     } catch (err) {
       console.error('Error executing action:', err);
@@ -527,11 +439,6 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
       
       const result = await response.json();
       
-      // Update local state immediately
-      setListings(prev => prev.map(l => 
-        l.id === listingId ? { ...l, isBlkListing: !currentlyBlk } : l
-      ));
-      
       // Update quota
       if (result.data?.quota) {
         setBlackQuota(prev => prev ? {
@@ -540,6 +447,10 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
           hasAvailableSlots: result.data.quota.current < prev.blackListingQuota,
         } : null);
       }
+
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (err) {
       console.error('Failed to toggle BLK status:', err);
       setError(err instanceof Error ? err.message : 'Failed to update BLK status');
@@ -576,7 +487,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             )}
             
             <button 
-              onClick={() => fetchData()} 
+              onClick={() => startTransition(() => router.refresh())} 
               disabled={isLoading}
               className="p-1.5 sm:p-2 rounded-full hover:bg-secondary/50 active:bg-secondary transition-colors disabled:opacity-50"
               aria-label="Refresh"
@@ -802,7 +713,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-border/30">
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                   disabled={currentPage === 1}
                   className="px-3 py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
@@ -812,7 +723,7 @@ export function MyListingsView({ userId, listingType = 'personal' }: MyListingsV
                   {currentPage} / {totalPages}
                 </span>
                 <button
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >

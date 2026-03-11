@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CheckCircle2, Key, Loader2, Trash2, Fingerprint } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { authClient } from '@/lib/auth/client';
+import type { UserProfileResponse } from '@/hooks/profile/user/use-user-profile';
 
 // ============================================================================
 // Toggle Component
@@ -84,8 +85,12 @@ function SettingRow({
 // Main Component
 // ============================================================================
 
-export function SettingsView() {
-  const { profile, updateProfile, passkeys: hookPasskeys, refresh } = useUserProfile();
+interface SettingsViewProps {
+  initialData?: UserProfileResponse | null;
+}
+
+export function SettingsView({ initialData }: SettingsViewProps) {
+  const { profile, updateProfile, passkeys: hookPasskeys, refresh } = useUserProfile(initialData);
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
 

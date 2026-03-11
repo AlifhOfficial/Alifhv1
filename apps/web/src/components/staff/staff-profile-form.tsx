@@ -13,6 +13,7 @@ import { useUserProfile } from '@/hooks/profile';
 import { Loader2, CheckCircle2, Info } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { UserProfileResponse } from '@/hooks/profile/user/use-user-profile';
 
 interface StaffProfile {
   id: string;
@@ -27,10 +28,15 @@ interface StaffProfile {
 
 type EditingField = null | 'displayName' | 'workPhone';
 
-export function StaffProfileForm() {
+interface StaffProfileFormProps {
+  initialProfile?: StaffProfile | null;
+  initialUserProfile?: UserProfileResponse | null;
+}
+
+export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffProfileFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { profile: userProfile } = useUserProfile();
+  const { profile: userProfile } = useUserProfile(initialUserProfile);
 
   const { data: profile, isLoading } = useQuery<StaffProfile>({
     queryKey: ['staff-profile'],
@@ -39,6 +45,9 @@ export function StaffProfileForm() {
       if (!res.ok) throw new Error('Failed to fetch profile');
       return res.json();
     },
+    initialData: initialProfile ?? undefined,
+    initialDataUpdatedAt: initialProfile ? Date.now() : undefined,
+    staleTime: initialProfile ? 60_000 : 0,
   });
 
   const [editingField, setEditingField] = useState<EditingField>(null);

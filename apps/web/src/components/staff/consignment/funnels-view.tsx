@@ -60,7 +60,11 @@ interface FunnelWithCount extends ConsignmentFunnel {
 const SYNC_COOLDOWN = 30000; // 30 seconds between syncs
 const SYNC_STORAGE_KEY = 'funnel-last-sync';
 
-export function ConsignmentFunnelsView() {
+interface ConsignmentFunnelsViewProps {
+  initialData?: { funnels: FunnelWithCount[] };
+}
+
+export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewProps) {
   const queryClient = useQueryClient();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingFunnel, setEditingFunnel] = useState<ConsignmentFunnel | null>(null);
@@ -119,7 +123,10 @@ export function ConsignmentFunnelsView() {
       if (!res.ok) throw new Error('Failed to fetch funnels');
       return res.json();
     },
-    refetchOnMount: 'always', // Always refetch when component mounts
+    refetchOnMount: initialData ? false : 'always',
+    initialData,
+    initialDataUpdatedAt: initialData ? Date.now() : undefined,
+    staleTime: initialData ? 60_000 : 0,
   });
 
   const deleteMutation = useMutation({

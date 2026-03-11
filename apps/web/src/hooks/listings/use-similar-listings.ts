@@ -51,6 +51,7 @@ interface SimilarListingsResponse {
 export interface UseSimilarListingsOptions {
   /** Only fetch when true (e.g., after main listing loads) */
   enabled?: boolean;
+  initialData?: SimilarListingCard[];
 }
 
 // ============================================================================
@@ -79,7 +80,7 @@ export function useSimilarListings(
   listingId: string | null | undefined,
   options: UseSimilarListingsOptions = {}
 ) {
-  const { enabled = true } = options;
+  const { enabled = true, initialData } = options;
 
   const query = useQuery({
     queryKey: ['listing', 'similar', listingId],
@@ -87,8 +88,12 @@ export function useSimilarListings(
     enabled: !!listingId && enabled,
     // Don't retry - if it fails, just don't show the section
     retry: false,
-    // Return empty array on error (graceful degradation)
-    placeholderData: [],
+    initialData,
+    initialDataUpdatedAt: initialData ? Date.now() : undefined,
+    staleTime: initialData ? Infinity : 0,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    placeholderData: initialData ?? [],
   });
 
   return {

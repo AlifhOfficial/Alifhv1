@@ -4,8 +4,14 @@
 
 'use client';
 
-import { useWebSocketContext } from '@/providers/websocket-provider';
+import { useOptionalWebSocketContext } from '@/providers/websocket-provider';
+
+const NOOP_WEBSOCKET = {
+  isConnected: false,
+  send: () => {},
+  subscribe: () => () => {},
+};
 
 export function useWebSocket() {
-  return useWebSocketContext();
+  return useOptionalWebSocketContext() ?? NOOP_WEBSOCKET;
 }

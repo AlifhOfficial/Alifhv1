@@ -44,8 +44,6 @@ const twilioClient = Twilio(
   process.env.TWILIO_AUTH_TOKEN!
 );
 
-// TODO: Add Upstash Redis session cache for distributed session management
-
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || process.env.NEXTAUTH_URL || "http://localhost:3000",
   database: drizzleAdapter(db, {
@@ -66,7 +64,7 @@ export const auth = betterAuth({
   session: {
     expiresIn: AUTH_CONFIG.SESSION.EXPIRES_IN,
     updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
-    // Cookie cache disabled - will use Upstash Redis for distributed session caching
+    // Cookie cache disabled — session caching handled by unstable_cache in getSessionUser()
     cookieCache: {
       enabled: false,
     },
@@ -187,7 +185,7 @@ export const auth = betterAuth({
     }),
     customSession(async ({ user, session }) => {
       // Always fetch fresh session data from DB
-      // TODO: Add Upstash Redis session cache for performance
+      // Cached cross-request by unstable_cache in getSessionUser() (5min TTL)
 
       // OPTIMIZED: Single SQL query with LEFT JOINs instead of 3 parallel queries
       // This reduces 3 HTTP round-trips to Neon down to 1
@@ -366,11 +364,9 @@ export const auth = betterAuth({
             .where(eq(schema.partner.id, partnerId));
           
           console.log(`[Stripe] Partner ${partnerId} subscribed to ${plan.name} plan`);
-          // TODO: Invalidate Upstash Redis session cache for partner staff
         },
         onSubscriptionUpdate: async ({ subscription }) => {
           console.log(`[Stripe] Subscription ${subscription.id} updated: ${subscription.status}`);
-          // TODO: Invalidate Upstash Redis session cache for partner staff
         },
         onSubscriptionCancel: async ({ subscription }) => {
           // Downgrade partner to flow tier on cancellation
@@ -384,7 +380,6 @@ export const auth = betterAuth({
             .where(eq(schema.partner.id, partnerId));
           
           console.log(`[Stripe] Partner ${partnerId} subscription cancelled`);
-          // TODO: Invalidate Upstash Redis session cache for partner staff
         },
       },
     })] : []),

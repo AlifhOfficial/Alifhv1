@@ -28,6 +28,7 @@ import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { KycVerificationModal } from '@/components/kyc';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/utils/cn';
+import type { UserProfileResponse } from '@/hooks/profile/user/use-user-profile';
 
 // ============================================================================
 // Constants
@@ -56,9 +57,13 @@ type EditingField = null | 'firstName' | 'lastName' | 'phone' | 'bio' | 'tags';
 // Main Component
 // ============================================================================
 
-export function ProfileView() {
+interface ProfileViewProps {
+  initialData?: UserProfileResponse | null;
+}
+
+export function ProfileView({ initialData }: ProfileViewProps) {
   const { session: user } = useAuth();
-  const { profile, updateProfile, refresh, isLoading: profileLoading, stats } = useUserProfile();
+  const { profile, updateProfile, refresh, isLoading: profileLoading, stats } = useUserProfile(initialData);
   const { toast } = useToast();
 
   const [editingField, setEditingField] = useState<EditingField>(null);

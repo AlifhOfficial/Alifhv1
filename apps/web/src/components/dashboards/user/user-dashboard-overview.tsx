@@ -9,7 +9,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/providers/auth-provider';
 import { 
   LayoutGrid, 
   TrendingUp, 
@@ -26,7 +25,7 @@ import {
 } from 'lucide-react';
 import { UserBanNotice } from '@/components/dashboards/user';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
-import { useDashboardStats } from '@/hooks/profile';
+import type { DashboardStats } from '@/hooks/profile';
 import { useUnreadCount } from '@/hooks/messaging';
 import { 
   Tooltip,
@@ -42,6 +41,8 @@ import {
   Bar,
 } from 'recharts';
 import { HealthStatus } from '@/components/shared/health-status';
+import type { ExtendedUser } from '@/types/auth';
+import type { HealthCheckResponse } from '@/lib/health';
 
 // ============================================================================
 // Stat Label with Tooltip
@@ -168,12 +169,16 @@ function ActivityDots({ days = 28 }: { days?: number }) {
 // Main Component
 // ============================================================================
 
-export function UserDashboardOverview() {
-  const { session: user } = useAuth();
-  const { stats, isLoading } = useDashboardStats();
-  const { unreadCount } = useUnreadCount(user?.id);
+interface UserDashboardOverviewProps {
+  user: ExtendedUser;
+  initialStats: DashboardStats;
+  initialUnreadCount: number;
+  initialHealth: HealthCheckResponse;
+}
 
-  if (!user) return null;
+export function UserDashboardOverview({ user, initialStats: stats, initialUnreadCount, initialHealth }: UserDashboardOverviewProps) {
+  // Real-time unread count via WebSocket, seeded with server-fetched value
+  const { unreadCount } = useUnreadCount(user.id, initialUnreadCount, { enableFetch: false });
 
   const firstName = (user as any)?.firstName || user?.name?.split(' ')[0] || 'there';
   const lastName = (user as any)?.lastName || '';
@@ -209,7 +214,7 @@ export function UserDashboardOverview() {
             
             {/* System Health - Top Right */}
             <div className="flex-shrink-0 self-start">
-              <HealthStatus />
+              <HealthStatus initialHealth={initialHealth} enableFetch={false} />
             </div>
           </div>
         </header>
@@ -222,7 +227,7 @@ export function UserDashboardOverview() {
               tooltip="Approximate count of your live listings visible to buyers" 
             />
             <span className="text-xl sm:text-2xl font-semibold text-blue-500">
-              {isLoading ? '—' : (stats?.activeListings ?? 0)}
+              {stats.activeListings ?? 0}
             </span>
           </div>
           <div className="p-4 sm:p-6 flex flex-col gap-1.5 sm:gap-2">
@@ -231,7 +236,7 @@ export function UserDashboardOverview() {
               tooltip="Estimated total views across all your listings" 
             />
             <span className="text-xl sm:text-2xl font-semibold text-purple-500">
-              {isLoading ? '—' : formatNumber(stats?.totalViews ?? 0)}
+              {formatNumber(stats.totalViews ?? 0)}
             </span>
           </div>
           <div className="p-4 sm:p-6 flex flex-col gap-1.5 sm:gap-2">
@@ -240,7 +245,7 @@ export function UserDashboardOverview() {
               tooltip="Approximate number of times your listings were saved" 
             />
             <span className="text-xl sm:text-2xl font-semibold text-amber-500">
-              {isLoading ? '—' : formatNumber(stats?.totalSaves ?? 0)}
+              {formatNumber(stats.totalSaves ?? 0)}
             </span>
           </div>
           <div className="p-4 sm:p-6 flex flex-col gap-1.5 sm:gap-2">
@@ -249,7 +254,7 @@ export function UserDashboardOverview() {
               tooltip="Listings you've marked as sold" 
             />
             <span className="text-xl sm:text-2xl font-semibold text-green-500">
-              {isLoading ? '—' : formatNumber(stats?.soldCount ?? 0)}
+              {formatNumber(stats.soldCount ?? 0)}
             </span>
           </div>
         </div>
@@ -262,7 +267,7 @@ export function UserDashboardOverview() {
               <div>
                 <p className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-1.5 sm:mb-2">Total Views</p>
                 <span className="text-2xl sm:text-3xl font-semibold text-purple-500">
-                  {isLoading ? '—' : formatNumber(stats?.totalViews ?? 0)}
+                  {formatNumber(stats.totalViews ?? 0)}
                 </span>
               </div>
               <div className="sm:text-right">

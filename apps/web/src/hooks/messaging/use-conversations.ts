@@ -20,7 +20,7 @@ export interface Conversation {
   listingId: string | null;
   partnerId: string | null;
   subject: string | null;
-  lastMessageAt: Date;
+  lastMessageAt: Date | string;
   lastMessagePreview: string | null;
   messageCount: number;
   unreadCount: number;
@@ -40,7 +40,7 @@ export interface Conversation {
   partner: { id: string; name: string; logo: string | null } | null;
 }
 
-interface ConversationsResponse {
+export interface ConversationsResponse {
   conversations: Conversation[];
   totalUnread: number;
   hasMore: boolean;
@@ -90,6 +90,7 @@ interface UseConversationsOptions {
   userId?: string;
   scope?: 'personal' | 'staff';
   limit?: number; // Not used in query key, just for API
+  initialData?: ConversationsResponse;
 }
 
 export function useConversations(options: UseConversationsOptions = {}) {
@@ -103,6 +104,13 @@ export function useConversations(options: UseConversationsOptions = {}) {
     queryKey,
     queryFn: () => fetchConversations(options.scope),
     enabled: !!options.userId,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    initialData: options.initialData,
+    initialDataUpdatedAt: options.initialData ? Date.now() : undefined,
   });
 
   // WebSocket updates

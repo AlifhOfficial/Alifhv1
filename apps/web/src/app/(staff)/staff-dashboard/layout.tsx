@@ -1,11 +1,6 @@
-'use client';
-
-import { Suspense } from "react";
-import { DashboardLayout, DashboardContent } from "@/components/shared/layout/dashboard-layout";
-import { AppSidebar } from "@/components/shared/layout/app-sidebar";
-import { PageLoader } from "@/components/shared/page-loader";
-import { useAuth } from "@/providers/auth-provider";
-import { redirect, usePathname, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
+import { getSessionUser } from "@/lib/auth/session-context";
+import { StaffDashboardShell } from "./shell";
 
 const navSections = [
   {
@@ -25,23 +20,9 @@ const navSections = [
   },
 ];
 
-export default function StaffDashboardLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <StaffDashboardLayoutInner>{children}</StaffDashboardLayoutInner>
-    </Suspense>
-  );
-}
+export default async function StaffDashboardLayout({ children }: { children: React.ReactNode }) {
+  const user = await getSessionUser();
 
-function StaffDashboardLayoutInner({ children }: { children: React.ReactNode }) {
-  const { session: user, isLoading } = useAuth();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  
-  if (isLoading) {
-    return <PageLoader />;
-  }
-  
   if (!user) {
     redirect('/');
   }
@@ -57,15 +38,9 @@ function StaffDashboardLayoutInner({ children }: { children: React.ReactNode }) 
     companyName: staffMembership.partnerName,
   };
 
-  // Check if current page needs full height (no padding, full container)
-  const isFullHeightPage = pathname?.includes('/messaging');
-  // Only hide footer on mobile when a conversation is actually open
-  const hasConversationOpen = isFullHeightPage && !!searchParams?.get('conversationId');
-
   return (
-    <DashboardLayout enableRightPanel>
-      <AppSidebar user={user} sections={navSections} staffOverride={staffOverride} />
-      <DashboardContent fullHeight={isFullHeightPage} hideFooterOnMobile={hasConversationOpen}>{children}</DashboardContent>
-    </DashboardLayout>
+    <StaffDashboardShell user={user} sections={navSections} staffOverride={staffOverride}>
+      {children}
+    </StaffDashboardShell>
   );
 }
