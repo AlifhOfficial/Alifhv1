@@ -381,9 +381,7 @@ export function PartnerBookingsClient({
                 }`}
               >
                 {tab.label}
-                {tab.key !== 'all' && tab.count > 0 && (
-                  <span className="ml-1 sm:ml-1.5 text-muted-foreground">{tab.count}</span>
-                )}
+                <span className="ml-1 sm:ml-1.5 text-muted-foreground">{tab.count}</span>
               </button>
             );
           })}

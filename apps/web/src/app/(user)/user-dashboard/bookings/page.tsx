@@ -1,7 +1,7 @@
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getBookings } from '@alifh/database';
 import { UserBookingsView } from '@/components/features/bookings/user';
-import type { UserBookingData } from '@/components/features/bookings/user/types';
+import type { UserBookingData, UserBookingStats } from '@/components/features/bookings/user/types';
 
 interface PageProps {
   searchParams: Promise<{
@@ -45,10 +45,20 @@ export default async function UserBookingsPage({ searchParams }: PageProps) {
     sort,
     limit,
     offset,
+    includeStats: true,
   });
 
-  const normalizedInitialData: { bookings: UserBookingData[]; total: number } = {
+  const normalizedInitialData: { bookings: UserBookingData[]; total: number; stats: UserBookingStats } = {
     total: initialData.total,
+    stats: {
+      total: initialData.stats?.total ?? 0,
+      pending: initialData.stats?.pending ?? 0,
+      confirmed: initialData.stats?.confirmed ?? 0,
+      completed: initialData.stats?.completed ?? 0,
+      cancelled: initialData.stats?.cancelled ?? 0,
+      rejected: initialData.stats?.rejected ?? 0,
+      noShow: (initialData.stats?.noShow ?? 0),
+    },
     bookings: initialData.bookings.map((booking) => ({
       id: booking.id,
       status: booking.status,

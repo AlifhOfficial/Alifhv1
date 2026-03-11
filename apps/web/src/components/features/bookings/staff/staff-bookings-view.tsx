@@ -768,9 +768,7 @@ export function StaffBookingsView({ initialData, filters }: StaffBookingsViewPro
                         }`}
                       >
                         {tab.label}
-                        {tab.key !== 'all' && count > 0 && (
-                          <span className="ml-1 sm:ml-1.5 text-muted-foreground">{count}</span>
-                        )}
+                        <span className="ml-1 sm:ml-1.5 text-muted-foreground">{count}</span>
                       </button>
                     );
                   })}

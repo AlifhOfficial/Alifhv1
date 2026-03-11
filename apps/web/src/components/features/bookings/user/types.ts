@@ -43,6 +43,16 @@ export interface UserBookingData {
   };
 }
 
+export interface UserBookingStats {
+  total: number;
+  pending: number;
+  confirmed: number;
+  completed: number;
+  cancelled: number;
+  rejected: number;
+  noShow: number;
+}
+
 export const USER_BOOKING_STATUS_COLORS: Record<string, string> = {
   pending: 'bg-yellow-500/10 text-yellow-600',
   confirmed: 'bg-green-500/10 text-green-600',

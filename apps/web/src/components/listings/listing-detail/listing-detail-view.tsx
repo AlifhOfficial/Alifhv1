@@ -31,6 +31,7 @@ import { useListingDetail, useTrackView, type SellerData } from '@/hooks/listing
 import { useAuth } from '@/providers/auth-provider';
 import type { CarDetailedData } from '@alifh/database';
 import type { SimilarListingCard } from '@/hooks/listings/use-similar-listings';
+import type { PublicBookingAvailabilityResponse } from '@/lib/bookings/public-availability';
 
 // Re-export types for backwards compatibility
 export type { PartnerSellerData, UserSellerData, SellerData } from '@/hooks/listings';
@@ -50,9 +51,16 @@ interface ListingDetailViewProps {
    */
   initialSellerData?: SellerData | null;
   initialSimilarListings?: SimilarListingCard[];
+  initialBookingAvailability?: PublicBookingAvailabilityResponse | null;
 }
 
-export function ListingDetailView({ listingId, initialListing, initialSellerData, initialSimilarListings }: ListingDetailViewProps) {
+export function ListingDetailView({
+  listingId,
+  initialListing,
+  initialSellerData,
+  initialSimilarListings,
+  initialBookingAvailability,
+}: ListingDetailViewProps) {
   const router = useRouter();
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -426,6 +434,7 @@ export function ListingDetailView({ listingId, initialListing, initialSellerData
           partnerAddress={partnerAddress}
           isAuthenticated={!!user?.id}
           onLoginRequired={handleLoginRequired}
+          initialAvailability={initialBookingAvailability ?? null}
         />
       )}
     </div>

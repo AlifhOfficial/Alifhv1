@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 type BookingSort = 'newest' | 'oldest';
-import type { UserBookingData } from './types';
+import type { UserBookingData, UserBookingStats } from './types';
 import { UserBookingList } from './user-booking-list';
 import { CancelBookingModal } from './cancel-booking-modal';
 
@@ -32,6 +32,7 @@ interface UserBookingsViewProps {
   initialData: {
     bookings: UserBookingData[];
     total: number;
+    stats: UserBookingStats;
   };
   filters: {
     status: string;
@@ -55,6 +56,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
 
   const bookings = initialData.bookings;
   const totalBookings = initialData.total;
+  const stats = initialData.stats;
   const selectedStatus = filters.status;
   const debouncedSearch = filters.q;
   const sort = filters.sort;
@@ -99,17 +101,17 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
 
   // Main status tabs (always visible)
   const mainStatusTabs = [
-    { key: 'all', label: 'All' },
-    { key: 'pending', label: 'Pending' },
-    { key: 'confirmed', label: 'Confirmed' },
-    { key: 'completed', label: 'Completed' },
+    { key: 'all', label: 'All', count: stats.total },
+    { key: 'pending', label: 'Pending', count: stats.pending },
+    { key: 'confirmed', label: 'Confirmed', count: stats.confirmed },
+    { key: 'completed', label: 'Completed', count: stats.completed },
   ];
 
   // Secondary status tabs (in More dropdown)
   const secondaryStatusTabs = [
-    { key: 'cancelled', label: 'Cancelled' },
-    { key: 'rejected', label: 'Rejected' },
-    { key: 'no_show', label: 'No Show' },
+    { key: 'cancelled', label: 'Cancelled', count: stats.cancelled },
+    { key: 'rejected', label: 'Rejected', count: stats.rejected },
+    { key: 'no_show', label: 'No Show', count: stats.noShow },
   ];
   
   const isSecondaryStatusSelected = secondaryStatusTabs.some(tab => tab.key === selectedStatus);
@@ -249,6 +251,9 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
                   }`}
                 >
                   {tab.label}
+                  <span className={`ml-1.5 ${isActive ? 'text-foreground/70' : 'text-muted-foreground/70'}`}>
+                    {tab.count}
+                  </span>
                 </button>
               );
             })}
@@ -264,7 +269,10 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
                   }`}
                 >
                   {isSecondaryStatusSelected && selectedSecondaryTab ? (
-                    selectedSecondaryTab.label
+                    <>
+                      {selectedSecondaryTab.label}
+                      <span className="text-foreground/70">{selectedSecondaryTab.count}</span>
+                    </>
                   ) : (
                     'More'
                   )}
@@ -283,7 +291,8 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
                       selectedStatus === tab.key ? 'bg-secondary' : ''
                     }`}
                   >
-                    {tab.label}
+                    <span>{tab.label}</span>
+                    <span className="ml-auto text-muted-foreground/70">{tab.count}</span>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>

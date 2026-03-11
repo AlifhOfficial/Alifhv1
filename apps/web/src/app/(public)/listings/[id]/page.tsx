@@ -22,6 +22,7 @@ import { ListingDetailView } from '@/components/listings/listing-detail';
 import { ImagePreloader } from '@/components/ui/image-preloader';
 import type { SellerData } from '@/hooks/listings';
 import type { SimilarListingCard } from '@/hooks/listings/use-similar-listings';
+import { getPublicBookingAvailability, type PublicBookingAvailabilityResponse } from '@/lib/bookings/public-availability';
 
 
 interface PageProps {
@@ -159,6 +160,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
   let initialListing = null;
   let initialSellerData: SellerData | null = null;
   let initialSimilarListings: SimilarListingCard[] = [];
+  let initialBookingAvailability: PublicBookingAvailabilityResponse | null = null;
   
   try {
     const listing = await getListingDetailed(id);
@@ -179,6 +181,12 @@ export default async function ListingDetailPage({ params }: PageProps) {
       ]);
       initialSellerData = sellerData;
       initialSimilarListings = similarListings;
+      if (listing.partnerId) {
+        initialBookingAvailability = await getPublicBookingAvailability(listing.id, {
+          mode: 'dates',
+          prefetchSlots: true,
+        });
+      }
     }
   } catch (error) {
     // Silently fail - client will fetch and show error state
@@ -205,6 +213,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
         initialListing={initialListing} 
         initialSellerData={initialSellerData}
         initialSimilarListings={initialSimilarListings}
+        initialBookingAvailability={initialBookingAvailability}
       />
     </>
   );

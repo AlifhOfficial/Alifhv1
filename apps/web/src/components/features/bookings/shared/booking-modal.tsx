@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/forms/select';
-import { 
+import {
   CarFront, 
   CheckCircle2,
   ChevronLeft,
@@ -30,6 +30,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import { cn } from '@/utils';
+import type { PublicBookingAvailabilityResponse } from '@/lib/bookings/public-availability';
 
 interface TimeSlot {
   id: string;
@@ -62,6 +63,7 @@ interface BookingModalProps {
   partnerAddress?: string | null;
   isAuthenticated: boolean;
   onLoginRequired: () => void;
+  initialAvailability?: PublicBookingAvailabilityResponse | null;
 }
 
 type BookingStep = 'date' | 'time' | 'confirm' | 'success';
@@ -87,6 +89,7 @@ export function BookingModal({
   partnerAddress,
   isAuthenticated,
   onLoginRequired,
+  initialAvailability,
 }: BookingModalProps) {
   const router = useRouter();
   const [step, setStep] = useState<BookingStep>('date');
@@ -115,20 +118,36 @@ export function BookingModal({
     bookingId: string;
     confirmationToken: string;
   } | null>(null);
+  const hasHydratedAvailabilityRef = React.useRef(false);
 
   // Fetch available dates when modal opens
   useEffect(() => {
     if (isOpen && listingId) {
+      if (!hasHydratedAvailabilityRef.current && initialAvailability) {
+        hasHydratedAvailabilityRef.current = true;
+        setError(initialAvailability.available ? null : (initialAvailability.reason || 'Bookings not available'));
+        setAvailableDates(initialAvailability.dates || []);
+        setSettings(initialAvailability.settings || null);
+        return;
+      }
       fetchAvailableDates();
     }
-  }, [isOpen, listingId]);
+  }, [isOpen, listingId, initialAvailability]);
 
   // Fetch time slots when date is selected
   useEffect(() => {
     if (selectedDate) {
+      const dateKey = toUtcDateKey(selectedDate);
+      const prefetchedSlots = initialAvailability?.slotsByDate?.[dateKey];
+      if (prefetchedSlots) {
+        setTimeSlots(prefetchedSlots);
+        setStep('time');
+        setError(null);
+        return;
+      }
       fetchTimeSlots(selectedDate);
     }
-  }, [selectedDate]);
+  }, [selectedDate, initialAvailability]);
 
   // Reset state when modal closes
   useEffect(() => {
