@@ -27,7 +27,7 @@ export function AboutHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
-            src="/Abstract/pic.png"
+            src="/Abstract/revb4.jpg"
             alt="Revvup - UAE Car Marketplace"
             fill
             priority

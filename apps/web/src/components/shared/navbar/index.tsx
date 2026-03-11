@@ -352,7 +352,6 @@ export function Navbar() {
         onSuccess={(authUser?: AuthUser) => {
           if (authUser) {
             setSessionUser(authUser as typeof user);
-            return;
           }
           router.refresh();
         }}
