@@ -23,8 +23,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getThumbUrl, isCdnUrl } from '@/utils/storage';
-import Image from 'next/image';
+import { getThumbUrl } from '@/utils/storage';
 import Link from 'next/link';
 import { FunnelFormDrawer } from './funnel-form-drawer';
 import { FunnelMatchesView } from './funnel-matches-view';
@@ -476,13 +475,12 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
                     {/* Image */}
                     <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
                       {getThumbUrl(listing.thumbnail) ? (
-                        <Image
+                        <img
                           src={getThumbUrl(listing.thumbnail)!}
                           alt={`${listing.year} ${listing.make} ${listing.model}`}
-                          fill
-                          unoptimized={isCdnUrl(getThumbUrl(listing.thumbnail)!)}
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 640px) 140px, 180px"
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-secondary">

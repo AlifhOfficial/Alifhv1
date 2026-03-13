@@ -9,10 +9,8 @@
 
 import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import Image from 'next/image';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/utils';
-import { isCdnUrl } from '@/utils/storage';
 
 // ============================================================================
 // Types
@@ -132,14 +130,13 @@ export function ImageLightbox({
         onClick={(e) => e.stopPropagation()}
       >
         {currentImage && (
-          <Image
+          <img
             src={currentImage}
             alt={`${title} - Image ${safeIndex + 1}`}
-            fill
-            unoptimized={isCdnUrl(currentImage)}
-            className="object-contain"
-            sizes="100vw"
-            priority
+            className="absolute inset-0 h-full w-full object-contain"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
           />
         )}
       </div>
@@ -184,13 +181,12 @@ export function ImageLightbox({
               idx === safeIndex ? 'opacity-100 scale-105' : 'opacity-50 hover:opacity-100'
             )}
           >
-            <Image
+            <img
               src={img}
               alt={`Thumbnail ${idx + 1}`}
-              fill
-              unoptimized={isCdnUrl(img)}
-              className="object-cover"
-              sizes="56px"
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
           </button>
         ))}

@@ -5,7 +5,6 @@
 
 'use client';
 
-import Image from "next/image";
 import { Combobox } from "@/components/ui/forms/combobox";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -18,7 +17,7 @@ import { ShoppingCart, RefreshCw, Crown, Search, ChevronLeft, ChevronRight, X, B
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback, useTransition } from "react";
 import { cn } from "@/utils";
-import { getThumbUrl, isCdnUrl } from "@/utils/storage";
+import { getThumbUrl } from "@/utils/storage";
 import { useDebouncedCallback } from 'use-debounce';
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -468,13 +467,12 @@ export function DealerInventory({
                     {/* Thumbnail */}
                     <div className="w-24 h-16 sm:w-32 sm:h-20 rounded-xl overflow-hidden bg-secondary flex-shrink-0 relative">
                       {getThumbUrl(listing.thumbnail) ? (
-                        <Image
+                        <img
                           src={getThumbUrl(listing.thumbnail)!}
                           alt=""
-                          fill
-                          unoptimized={isCdnUrl(getThumbUrl(listing.thumbnail)!)}
-                          className="object-cover"
-                          sizes="128px"
+                          className="absolute inset-0 h-full w-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">

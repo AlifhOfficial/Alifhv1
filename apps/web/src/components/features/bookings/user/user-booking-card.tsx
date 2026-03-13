@@ -14,9 +14,8 @@ import {
   MapPin
 } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { cn } from '@/utils';
-import { getThumbUrl, isCdnUrl } from '@/utils/storage';
+import { getThumbUrl } from '@/utils/storage';
 import type { UserBookingData } from './types';
 
 interface UserBookingCardProps {
@@ -99,13 +98,12 @@ export function UserBookingCard({
           onClick={e => e.stopPropagation()}
         >
           {listingThumbnailUrl ? (
-            <Image
+            <img
               src={listingThumbnailUrl}
               alt={booking.listingTitle}
-              fill
-              unoptimized={isCdnUrl(listingThumbnailUrl)}
-              className="object-cover"
-              sizes="(max-width: 640px) 112px, 144px"
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted/50">

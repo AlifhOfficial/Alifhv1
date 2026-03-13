@@ -7,7 +7,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { getPublicUrl } from '@/utils';
 import { compressAndUploadShowroomImage } from '@/lib/storage';
 import { Plus, X, Loader2, GripVertical } from 'lucide-react';
@@ -70,12 +69,12 @@ function SortableGalleryImage({ id, url, index, onRemove }: SortableGalleryImage
       }`}
     >
       {imageUrl ? (
-        <Image 
+        <img 
           src={imageUrl}
           alt={`Gallery ${index + 1}`} 
-          fill 
-          className="object-cover pointer-events-none" 
-          unoptimized 
+          className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+          loading="lazy"
+          decoding="async"
         />
       ) : (
         <div className="absolute inset-0 bg-muted/40 pointer-events-none" />

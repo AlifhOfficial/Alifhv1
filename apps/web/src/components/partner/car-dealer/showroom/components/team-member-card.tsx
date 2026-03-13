@@ -6,7 +6,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 import { getPublicUrl } from '@/utils';
 import { Camera, Trash2, Loader2 } from 'lucide-react';
 import type { TeamMemberCardProps } from '../types';
@@ -41,13 +40,13 @@ export function TeamMemberCard({ member, onUpdate, onRemove, onImageUpload, isUp
           />
           {memberImageUrl ? (
             <>
-              <Image 
+              <img 
                 key={memberImageUrl}
                 src={memberImageUrl}
                 alt={member.name} 
-                fill 
-                className="object-cover" 
-                unoptimized
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
               <label
                 htmlFor={`team-${member.id}-image`}

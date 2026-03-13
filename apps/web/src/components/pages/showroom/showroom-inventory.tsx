@@ -7,7 +7,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ArrowRight, ChevronUp } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ListingsHeader } from '@/components/listings/listings-header';
 import { ListingsSidebar } from '@/components/listings/listings-sidebar';
@@ -20,7 +19,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { getThumbUrl, isCdnUrl } from '@/utils';
+import { getThumbUrl } from '@/utils';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -418,14 +417,13 @@ function ShowroomCarCard({ listing, priority = false, index, theme }: ShowroomCa
       {/* Image Container */}
       <div className="relative aspect-[16/9] overflow-hidden">
         {displayImage ? (
-          <Image
+          <img
             src={displayImage}
             alt={`${listing.year} ${listing.make} ${listing.model}`}
-            fill
-            priority={priority}
-            unoptimized={isCdnUrl(displayImage)}
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 768px) 300px, 340px"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading={priority ? 'eager' : 'lazy'}
+            fetchPriority={priority ? 'high' : 'auto'}
+            decoding="async"
           />
         ) : (
           <div className="absolute inset-0 bg-muted/30" />

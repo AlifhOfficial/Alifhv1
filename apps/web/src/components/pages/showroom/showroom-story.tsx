@@ -6,11 +6,10 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import Image from 'next/image';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
-import { getPublicUrl, isCdnUrl } from '@/utils/storage';
+import { getPublicUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -158,12 +157,12 @@ function StoryMedia({ storyVideoFileUrl, embedUrl, firstImage, title }: StoryMed
   if (firstImage) {
     return (
       <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
-        <Image
+        <img
           src={firstImage}
           alt="Showroom"
-          fill
-          unoptimized={isCdnUrl(firstImage)}
-          className="object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+          decoding="async"
         />
       </div>
     );

@@ -6,7 +6,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { Loader2, X, Upload } from 'lucide-react';
 import { getPublicUrl } from '@/utils';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
@@ -78,13 +77,13 @@ export function SeoSection({
             <div className="relative aspect-[1200/630] max-w-[300px] rounded-lg overflow-hidden bg-muted/30 border border-border/40 group">
               {seoImageUrl ? (
                 <>
-                  <Image
+                  <img
                     key={seoImageUrl}
                     src={seoImageUrl}
                     alt="SEO preview"
-                    fill
-                    className="object-cover"
-                    unoptimized
+                    className="absolute inset-0 h-full w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <button
                     onClick={() => removeImage('seoImage')}

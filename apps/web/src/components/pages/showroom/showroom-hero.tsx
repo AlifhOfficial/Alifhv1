@@ -7,12 +7,11 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Volume2, VolumeX, Pause, Play } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
-import { getPublicUrl, isCdnUrl } from '@/utils/storage';
+import { getPublicUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -109,14 +108,13 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
               <>
                 {/* Poster image while video loads */}
                 {heroImageUrl && (
-                  <Image
+                  <img
                     src={heroImageUrl}
                     alt={showroom.heroTagline || partner.brandName}
-                    fill
-                    priority
-                    unoptimized={isCdnUrl(heroImageUrl)}
-                    className="object-cover"
-                    sizes="100vw"
+                    className="absolute inset-0 h-full w-full object-cover"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
                   />
                 )}
                 <video
@@ -180,14 +178,13 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 allowFullScreen
               />
             ) : showImage && heroImageUrl ? (
-              <Image
+              <img
                 src={heroImageUrl}
                 alt={showroom.heroTagline || partner.brandName}
-                fill
-                priority
-                unoptimized={isCdnUrl(heroImageUrl)}
-                className="object-cover"
-                sizes="100vw"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
               />
             ) : showGradient ? (
               <div 

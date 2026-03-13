@@ -9,7 +9,6 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import Image from 'next/image';
 import { 
   Share2, 
   Heart, 
@@ -24,7 +23,7 @@ import {
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/lib/utils';
-import { getListingImageUrls, isCdnUrl } from '@/utils/storage';
+import { getListingImageUrls } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
@@ -157,14 +156,13 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
           }}
         >
           {currentImage && (
-            <Image
+            <img
               src={currentImage}
               alt={title}
-              fill
-              unoptimized={isCdnUrl(currentImage)}
-              className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
-              sizes="(max-width: 1024px) 100vw, 66vw"
-              priority
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
             />
           )}
 
@@ -217,13 +215,12 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
                       : "opacity-50 hover:opacity-80"
                   )}
                 >
-                  <Image 
+                  <img 
                     src={img} 
                     alt={`View ${idx + 1}`} 
-                    fill 
-                    unoptimized={isCdnUrl(img)}
-                    className="object-cover" 
-                    sizes="64px" 
+                    className="absolute inset-0 h-full w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </button>
               )

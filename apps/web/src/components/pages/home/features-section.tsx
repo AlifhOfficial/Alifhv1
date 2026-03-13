@@ -5,6 +5,7 @@
 
 'use client';
 
+import Image from 'next/image';
 import { Clock, PenLine, Zap, Timer } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
 
@@ -97,9 +98,9 @@ function BuiltInDubaiInfographic() {
   return (
     <MacOSWindow
       url="revvup.ae"
-      contentClassName="flex items-center justify-center p-6 sm:p-10 lg:p-16 aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]"
+      contentClassName="flex flex-col md:flex-row items-stretch p-6 sm:p-10 lg:p-16 gap-8 lg:gap-12 aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]"
     >
-      <div className="w-full max-w-3xl">
+      <div className="w-full md:w-[52%] max-w-3xl flex flex-col justify-center">
         <span className="block text-[10px] sm:text-xs font-medium text-white/40 mb-5 sm:mb-7 lg:mb-8">
           What you don't see
         </span>
@@ -115,6 +116,16 @@ function BuiltInDubaiInfographic() {
         <p className="mt-6 sm:mt-8 lg:mt-10 text-sm sm:text-base lg:text-lg font-medium text-white/70">
           No noise. Ever.
         </p>
+      </div>
+
+      <div className="relative w-full md:w-[48%] aspect-[4/3] sm:aspect-[16/10] md:aspect-auto min-h-[220px] sm:min-h-[280px] md:min-h-0 max-w-[520px] md:max-w-none mx-auto">
+        <Image
+          src="/Abstract/revx0.png"
+          alt="Revvup marketplace preview"
+          fill
+          className="object-contain object-center"
+          sizes="(max-width: 767px) 100vw, 48vw"
+        />
       </div>
     </MacOSWindow>
   );

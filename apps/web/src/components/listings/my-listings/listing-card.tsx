@@ -7,7 +7,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { 
   Zap, 
   Heart, 
@@ -183,12 +182,12 @@ export function ListingCard({
           className="relative w-28 sm:w-36 md:w-44 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30"
         >
           {displayImage ? (
-            <Image
+            <img
               src={displayImage}
               alt={`${listing.year} ${listing.make} ${listing.model}`}
-              fill
-              className="object-cover"
-              sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 176px"
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             <div className="absolute inset-0 bg-muted/30" />

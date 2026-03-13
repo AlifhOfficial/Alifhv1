@@ -9,10 +9,8 @@
 
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import Image from 'next/image';
 import { X } from 'lucide-react';
 import { cn } from '@/utils';
-import { isCdnUrl } from '@/utils/storage';
 
 // ============================================================================
 // Types
@@ -85,7 +83,7 @@ export function ImageGridModal({
               onClick={() => onImageClick(baseIndex)}
               className="relative col-span-2 sm:col-span-2 aspect-[4/3] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
             >
-              <Image src={mainImg} alt={`Photo ${baseIndex + 1}`} fill unoptimized={isCdnUrl(mainImg)} className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="66vw" />
+              <img src={mainImg} alt={`Photo ${baseIndex + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
               <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{baseIndex + 1}</div>
             </button>
@@ -100,7 +98,7 @@ export function ImageGridModal({
                     onClick={() => onImageClick(imgIdx)}
                     className="relative aspect-[4/3] sm:aspect-auto sm:flex-1 overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
                   >
-                    <Image src={img} alt={`Photo ${imgIdx + 1}`} fill unoptimized={isCdnUrl(img)} className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="33vw" />
+                    <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
                     <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{imgIdx + 1}</div>
                   </button>
@@ -127,7 +125,7 @@ export function ImageGridModal({
                     offset === 2 && 'col-span-2 sm:col-span-1 aspect-[2/1] sm:aspect-square'
                   )}
                 >
-                  <Image src={img} alt={`Photo ${imgIdx + 1}`} fill unoptimized={isCdnUrl(img)} className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="33vw" />
+                  <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
                   <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{imgIdx + 1}</div>
                 </button>
@@ -145,7 +143,7 @@ export function ImageGridModal({
               onClick={() => onImageClick(baseIndex + 2)}
               className="relative col-span-2 sm:col-span-2 sm:order-2 aspect-[4/3] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
             >
-              <Image src={mainImg} alt={`Photo ${baseIndex + 3}`} fill unoptimized={isCdnUrl(mainImg)} className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="66vw" />
+              <img src={mainImg} alt={`Photo ${baseIndex + 3}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
               <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{baseIndex + 3}</div>
             </button>
@@ -160,7 +158,7 @@ export function ImageGridModal({
                     onClick={() => onImageClick(imgIdx)}
                     className="relative aspect-[4/3] sm:aspect-auto sm:flex-1 overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
                   >
-                    <Image src={img} alt={`Photo ${imgIdx + 1}`} fill unoptimized={isCdnUrl(img)} className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="33vw" />
+                    <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
                     <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{imgIdx + 1}</div>
                   </button>
@@ -184,7 +182,7 @@ export function ImageGridModal({
                   onClick={() => onImageClick(imgIdx)}
                   className="relative aspect-[4/3] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
                 >
-                  <Image src={img} alt={`Photo ${imgIdx + 1}`} fill unoptimized={isCdnUrl(img)} className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="50vw" />
+                  <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
                   <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{imgIdx + 1}</div>
                 </button>
@@ -202,7 +200,7 @@ export function ImageGridModal({
               onClick={() => onImageClick(baseIndex)}
               className="relative w-full aspect-[16/9] overflow-hidden rounded-lg sm:rounded-xl bg-muted/30 group cursor-pointer"
             >
-              <Image src={img} alt={`Photo ${baseIndex + 1}`} fill unoptimized={isCdnUrl(img)} className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="100vw" />
+              <img src={img} alt={`Photo ${baseIndex + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
               <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-xs font-bold rounded">{baseIndex + 1}</div>
             </button>

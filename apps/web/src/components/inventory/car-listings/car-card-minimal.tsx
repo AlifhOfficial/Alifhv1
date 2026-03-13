@@ -5,11 +5,10 @@
 
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/utils';
-import { getThumbUrl, isCdnUrl } from '@/utils/storage';
+import { getThumbUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
@@ -72,14 +71,13 @@ export function CarCardMinimal({
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
         {displayImage ? (
-          <Image
+          <img
             src={displayImage}
             alt={`${make} ${model}`}
-            fill
-            priority={priority}
-            unoptimized={isCdnUrl(displayImage)}
-            className="object-cover"
-            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            className="absolute inset-0 h-full w-full object-cover"
+            loading={priority ? 'eager' : 'lazy'}
+            fetchPriority={priority ? 'high' : 'auto'}
+            decoding="async"
           />
         ) : (
           <div className="absolute inset-0 bg-muted/30" />

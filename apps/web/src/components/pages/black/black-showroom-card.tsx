@@ -14,12 +14,10 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Volume2, VolumeX, Play, Pause } from 'lucide-react';
 import { cn } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { isCdnUrl } from '@/utils/storage';
 
 // ============================================================================
 // Types
@@ -161,14 +159,13 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
           
           {/* Image fallback */}
           {!hasVideoFile && displayImage && (
-            <Image
+            <img
               src={displayImage}
               alt={partner.brandName}
-              fill
-              priority={priority}
-              unoptimized={isCdnUrl(displayImage)}
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-              sizes="(max-width: 1024px) 100vw, 75vw"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+              loading={priority ? 'eager' : 'lazy'}
+              fetchPriority={priority ? 'high' : 'auto'}
+              decoding="async"
             />
           )}
           
@@ -192,13 +189,12 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
                 {/* Desktop Logo - above brand name */}
                 {partner.logoUrl && (
                   <div className="hidden lg:block h-14 w-auto mb-4">
-                    <Image
+                    <img
                       src={partner.logoUrl}
                       alt={`${partner.brandName} logo`}
-                      width={120}
-                      height={56}
-                      unoptimized={isCdnUrl(partner.logoUrl)}
                       className="object-contain h-14 w-auto"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 )}
@@ -244,13 +240,12 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
               {/* Mobile Logo - right side */}
               {partner.logoUrl && (
                 <div className="lg:hidden h-12 w-auto flex-shrink-0">
-                  <Image
+                  <img
                     src={partner.logoUrl}
                     alt={`${partner.brandName} logo`}
-                    width={80}
-                    height={48}
-                    unoptimized={isCdnUrl(partner.logoUrl)}
                     className="object-contain h-12 w-auto"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               )}

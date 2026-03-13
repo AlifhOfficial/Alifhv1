@@ -5,9 +5,8 @@
 
 'use client';
 
-import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPublicUrl, isCdnUrl } from '@/utils/storage';
+import { getPublicUrl } from '@/utils/storage';
 import {
   Dialog,
   DialogContent,
@@ -51,12 +50,12 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
         {ambientImage && (
           <div className="px-4 sm:px-6 lg:px-8 mb-8">
             <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
-              <Image
+              <img
                 src={ambientImage}
                 alt="Showroom Services"
-                fill
-                unoptimized={isCdnUrl(ambientImage)}
-                className="object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>

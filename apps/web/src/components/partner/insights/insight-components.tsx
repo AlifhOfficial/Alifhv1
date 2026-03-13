@@ -11,8 +11,7 @@ import { cn } from '@/lib/utils';
 import { TrendingUp, TrendingDown, Minus, AlertCircle, Clock, Eye } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
-import Image from 'next/image';
-import { getThumbUrl, isCdnUrl } from '@/utils/storage';
+import { getThumbUrl } from '@/utils/storage';
 
 // ============================================================================
 // Types
@@ -173,13 +172,12 @@ export function TopListings({ title, listings, emptyMessage = "No data", classNa
             >
               <div className="relative w-12 h-9 rounded overflow-hidden bg-muted flex-shrink-0">
                 {getThumbUrl(listing.thumbnail) ? (
-                  <Image
+                  <img
                     src={getThumbUrl(listing.thumbnail)!}
                     alt={listing.title}
-                    fill
-                    unoptimized={isCdnUrl(getThumbUrl(listing.thumbnail)!)}
-                    className="object-cover"
-                    sizes="48px"
+                    className="absolute inset-0 h-full w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                 ) : (
                   <div className="absolute inset-0 bg-muted/40" />
@@ -240,13 +238,12 @@ export function ColdListings({
           >
             <div className="relative w-12 h-9 rounded overflow-hidden bg-muted flex-shrink-0">
               {getThumbUrl(listing.thumbnail) ? (
-                <Image
+                <img
                   src={getThumbUrl(listing.thumbnail)!}
                   alt={listing.title}
-                  fill
-                  unoptimized={isCdnUrl(getThumbUrl(listing.thumbnail)!)}
-                  className="object-cover"
-                  sizes="48px"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <div className="absolute inset-0 bg-muted/40" />

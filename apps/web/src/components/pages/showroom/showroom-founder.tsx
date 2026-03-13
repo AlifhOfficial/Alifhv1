@@ -3,9 +3,8 @@
  * Personal touch. The face behind the brand.
  */
 
-import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPublicUrl, isCdnUrl } from '@/utils/storage';
+import { getPublicUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -28,12 +27,12 @@ export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
           {/* Image Side */}
           {founderImageUrl && (
             <div className="relative aspect-[4/5] lg:aspect-auto lg:min-h-[500px] rounded-xl lg:rounded-r-none overflow-hidden">
-              <Image
+              <img
                 src={founderImageUrl}
                 alt={showroom.founderName}
-                fill
-                unoptimized={isCdnUrl(founderImageUrl)}
-                className="object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           )}

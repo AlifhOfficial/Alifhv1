@@ -5,12 +5,11 @@
 
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { Share2, Heart, Zap, CheckCircle2 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { cn } from '@/lib/utils';
-import { getThumbUrl, isCdnUrl } from '@/utils/storage';
+import { getThumbUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
@@ -228,13 +227,12 @@ export function CarListItem({
           isBlkListing ? "bg-zinc-900" : "bg-muted/20"
         )}>
           {displayImage ? (
-            <Image
+            <img
               src={displayImage}
               alt={`${year} ${make} ${model}`}
-              fill
-              unoptimized={isCdnUrl(displayImage)}
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 288px"
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             <div className="absolute inset-0 bg-muted/30" />

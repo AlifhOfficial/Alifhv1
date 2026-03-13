@@ -5,9 +5,8 @@
 
 'use client';
 
-import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPublicUrl, isCdnUrl } from '@/utils/storage';
+import { getPublicUrl } from '@/utils/storage';
 import {
   Dialog,
   DialogContent,
@@ -50,12 +49,12 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
         {ambientImage && (
           <div className="px-4 sm:px-6 lg:px-8 mb-8">
             <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
-              <Image
+              <img
                 src={ambientImage}
                 alt="Our Team"
-                fill
-                unoptimized={isCdnUrl(ambientImage)}
-                className="object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>
@@ -83,12 +82,12 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                     {/* Avatar */}
                     <div className="relative w-14 h-14 rounded-full overflow-hidden bg-muted mb-4 ring-2 ring-border/40 group-hover:ring-primary/30 transition-colors">
                       {getPublicUrl(member.image) ? (
-                        <Image
+                        <img
                           src={getPublicUrl(member.image)!}
                           alt={member.name}
-                          fill
-                          unoptimized={isCdnUrl(getPublicUrl(member.image)!)}
-                          className="object-cover"
+                          className="absolute inset-0 h-full w-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -120,12 +119,12 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                     <div className="flex items-center gap-4">
                       <div className="relative w-16 h-16 rounded-full overflow-hidden bg-muted ring-2 ring-border/40 flex-shrink-0">
                         {getPublicUrl(member.image) ? (
-                          <Image
+                          <img
                             src={getPublicUrl(member.image)!}
                             alt={member.name}
-                            fill
-                            unoptimized={isCdnUrl(getPublicUrl(member.image)!)}
-                            className="object-cover"
+                            className="absolute inset-0 h-full w-full object-cover"
+                            loading="lazy"
+                            decoding="async"
                           />
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center">

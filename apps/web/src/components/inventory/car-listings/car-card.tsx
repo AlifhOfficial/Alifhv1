@@ -6,13 +6,12 @@
 
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { Share2, Heart, CheckCircle2, Zap } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/utils';
-import { getThumbUrl, isCdnUrl } from '@/utils/storage';
+import { getThumbUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
@@ -286,14 +285,13 @@ export function CarCard({
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
         {displayImage ? (
-          <Image
+          <img
             src={displayImage}
             alt={`${year} ${make} ${model}`}
-            fill
-            priority={priority}
-            unoptimized={isCdnUrl(displayImage)}
-            className="object-cover"
-            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            className="absolute inset-0 h-full w-full object-cover"
+            loading={priority ? 'eager' : 'lazy'}
+            fetchPriority={priority ? 'high' : 'auto'}
+            decoding="async"
           />
         ) : (
           <div className="absolute inset-0 bg-muted/30" />

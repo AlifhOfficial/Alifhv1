@@ -6,12 +6,11 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import Image from 'next/image';
 import { Expand, Images, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
-import { getPublicUrl, isCdnUrl } from '@/utils/storage';
+import { getPublicUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -40,13 +39,13 @@ function GalleryImage({
       className={`relative overflow-hidden rounded-xl cursor-pointer group ${className}`}
       onClick={onClick}
     >
-      <Image
+      <img
         src={src}
         alt={alt}
-        fill
-        unoptimized={isCdnUrl(src)}
-        className="object-cover transition-transform duration-700 group-hover:scale-105"
-        priority={priority}
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : 'auto'}
+        decoding="async"
       />
       {/* Hover Overlay */}
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
@@ -98,13 +97,13 @@ function ImageSlider({
         className="absolute inset-0 cursor-pointer"
         onClick={() => onImageClick(currentIndex)}
       >
-        <Image
+        <img
           src={images[currentIndex]}
           alt={`Showroom ${currentIndex + 1}`}
-          fill
-          unoptimized={isCdnUrl(images[currentIndex])}
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-          priority
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
         />
         {/* Hover Overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">

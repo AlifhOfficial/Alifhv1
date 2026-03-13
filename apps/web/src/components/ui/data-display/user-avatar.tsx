@@ -24,9 +24,7 @@
  */
 
 import * as React from "react";
-import Image from "next/image";
 import { cn, getPublicUrl } from "@/utils";
-import { isCdnUrl } from "@/utils/storage";
 
 interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   /** 
@@ -119,16 +117,15 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
         {...props}
       >
         {showImage && resolvedUrl && (
-          <Image
+          <img
             key={resolvedUrl}
             src={resolvedUrl}
             alt={alt}
-            fill
-            sizes={`${pixelSize * 2}px`}
-            className="object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
             onError={() => setImageError(true)}
             referrerPolicy="no-referrer"
-            unoptimized={isCdnUrl(resolvedUrl)}
+            loading="lazy"
+            decoding="async"
           />
         )}
         {!showImage && (

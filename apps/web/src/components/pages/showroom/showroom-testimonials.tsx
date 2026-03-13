@@ -6,10 +6,9 @@
 'use client';
 
 import { useRef } from 'react';
-import Image from 'next/image';
 import { Star } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPublicUrl, isCdnUrl } from '@/utils/storage';
+import { getPublicUrl } from '@/utils/storage';
 import type { ShowroomData, AmbientTheme } from './types';
 import { getAmbientTheme } from './types';
 import type { ShowroomTestimonial } from '@alifh/database';
@@ -47,12 +46,12 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
         {sectionImage && (
           <div className="px-4 sm:px-6 lg:px-8 mb-12">
             <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
-              <Image
+              <img
                 src={sectionImage}
                 alt="Client experiences"
-                fill
-                unoptimized={isCdnUrl(sectionImage)}
-                className="object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </div>

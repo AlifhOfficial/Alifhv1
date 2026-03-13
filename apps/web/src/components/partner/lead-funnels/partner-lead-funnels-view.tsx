@@ -21,10 +21,9 @@ import {
 import { cn } from '@/lib/utils';
 import { Combobox } from '@/components/ui/forms/combobox';
 import { Skeleton } from '@/components/ui/skeleton';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useDebouncedCallback } from 'use-debounce';
-import { getThumbUrl, isCdnUrl } from '@/utils/storage';
+import { getThumbUrl } from '@/utils/storage';
 import { FunnelMatchesView } from '@/components/staff/consignment/funnel-matches-view';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -609,13 +608,12 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
                     {/* Image */}
                     <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
                       {getThumbUrl(listing.thumbnail) ? (
-                        <Image
+                        <img
                           src={getThumbUrl(listing.thumbnail)!}
                           alt=""
-                          fill
-                          unoptimized={isCdnUrl(getThumbUrl(listing.thumbnail)!)}
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 768px) 33vw, 16vw"
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-secondary">

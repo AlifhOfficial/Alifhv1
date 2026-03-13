@@ -11,8 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useFavoritesStatus } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import Link from 'next/link';
-import Image from 'next/image';
-import { getThumbUrl, isCdnUrl } from '@/utils/storage';
+import { getThumbUrl } from '@/utils/storage';
 
 interface NavbarFavoritesProps {
   userId?: string;
@@ -218,13 +217,12 @@ function FavoritePreviewItem({ listing, onClose }: FavoritePreviewItemProps) {
       {/* Thumbnail */}
       <div className="relative w-16 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
         {thumbnailUrl ? (
-          <Image
+          <img
             src={thumbnailUrl}
             alt={title}
-            fill
-            unoptimized={isCdnUrl(thumbnailUrl)}
-            className="object-cover"
-            sizes="64px"
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

@@ -6,7 +6,6 @@
 'use client';
 
 import React, { useRef } from 'react';
-import Image from 'next/image';
 import { cn } from '@/utils';
 import { getPublicUrl } from '@/utils';
 import { Camera, Upload, X, Loader2 } from 'lucide-react';
@@ -46,13 +45,13 @@ export function ImageUpload({
       
       {imageUrl ? (
         <>
-          <Image
+          <img
             key={imageUrl}
             src={imageUrl}
             alt={label}
-            fill
-            className="object-cover"
-            unoptimized
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
             <button
