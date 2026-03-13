@@ -17,6 +17,7 @@ import {
   calculatePartnerStats,
   calculateUserStats,
   getSimilarListings,
+  hasPublishedShowroom,
 } from '@alifh/database';
 import { ListingDetailView } from '@/components/listings/listing-detail';
 import { ImagePreloader } from '@/components/ui/image-preloader';
@@ -35,12 +36,13 @@ async function fetchSellerData(listing: ListingResult): Promise<SellerData | nul
   try {
     if (listing.partnerId) {
       // Partner listing - fetch dealer profile and staff phone
-      const [partnerProfile, staffContact, partnerStats] = await Promise.all([
+      const [partnerProfile, staffContact, partnerStats, hasShowroom] = await Promise.all([
         getDealerBaseProfile(listing.partnerId),
         listing.postedByRole === 'staff' && listing.userId
           ? getStaffEffectivePhone(listing.userId, listing.partnerId)
           : Promise.resolve(null),
         calculatePartnerStats(listing.partnerId),
+        hasPublishedShowroom(listing.partnerId),
       ]);
       
       // Cast through unknown - DB type is compatible but TypeScript can't verify
@@ -48,7 +50,7 @@ async function fetchSellerData(listing: ListingResult): Promise<SellerData | nul
         type: 'partner' as const, 
         partnerId: listing.partnerId,
         partner: partnerProfile, 
-        partnerStats,
+        partnerStats: partnerStats ? { ...partnerStats, hasShowroom } : null,
         staffContact: staffContact ? {
           phone: staffContact.phone,
           displayName: staffContact.displayName,

@@ -561,7 +561,7 @@ export async function getPublishedShowrooms(
         eq(partner.status, 'active'),
         eq(partner.tier, 'black'),
       ))
-      .orderBy(desc(partnerShowroom.publishedAt))
+      .orderBy(desc(partnerShowroom.createdAt))
       .limit(limit)
       .offset(offset),
     
