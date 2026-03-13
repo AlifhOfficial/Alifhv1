@@ -23,16 +23,15 @@
 import { drizzle, type NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { neon, neonConfig, type NeonQueryFunction } from '@neondatabase/serverless';
 import * as schema from './schema';
-import { getDatabaseUrl, isDatabaseConfigured } from './env';
 
 // Lazy-loaded client to avoid build-time initialization
 let _sql: NeonQueryFunction<false, false> | null = null;
 let _db: NeonHttpDatabase<typeof schema> | null = null;
 
 function getConnectionString(): string {
-  const connectionString = getDatabaseUrl();
+  const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
-    throw new Error('DATABASE_URL or STAGING_DATABASE_URL environment variable is required');
+    throw new Error('DATABASE_URL environment variable is required');
   }
   return connectionString;
 }
@@ -110,15 +109,17 @@ function getDb(): NeonHttpDatabase<typeof schema> {
 }
 
 // Check if DATABASE_URL is available - allows build-time imports without throwing
+const isDatabaseConfigured = !!process.env.DATABASE_URL;
+
 // Export as getter that lazily initializes
 // During build time (no DATABASE_URL), property access returns functions that throw when called
 export const db = new Proxy({} as NeonHttpDatabase<typeof schema>, {
   get(_, prop) {
-    if (!isDatabaseConfigured()) {
+    if (!isDatabaseConfigured) {
       // Return a function that throws when actually called
       // This allows imports during build but fails on actual DB usage
       return (..._args: unknown[]) => {
-        throw new Error('DATABASE_URL or STAGING_DATABASE_URL environment variable is required');
+        throw new Error('DATABASE_URL environment variable is required');
       };
     }
     return (getDb() as any)[prop];

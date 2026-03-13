@@ -15,7 +15,6 @@ import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { ShowroomPageClient } from './client';
-import { isDatabaseConfigured } from '@/lib/env/database';
 
 // ============================================================================
 // Types
@@ -35,8 +34,8 @@ interface ShowroomPageProps {
  */
 export async function generateStaticParams() {
   // Skip during build time when DATABASE_URL is not available
-  if (!isDatabaseConfigured()) {
-    console.log('[generateStaticParams] Skipping - no database URL configured (build time)');
+  if (!process.env.DATABASE_URL) {
+    console.log('[generateStaticParams] Skipping - no DATABASE_URL (build time)');
     return [];
   }
   

@@ -7,9 +7,10 @@ import {
   doublePrecision,
   jsonb,
   index,
+  uniqueIndex,
   pgEnum,
-  unique,
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { user } from './auth';
 import { partner } from './partner';
 import { carListing } from './listing';
@@ -79,8 +80,12 @@ export const partnerAvailability = pgTable('partner_availability', {
   index('partner_availability_staffUserId_idx').on(table.staffUserId),
   index('partner_availability_dayOfWeek_idx').on(table.dayOfWeek),
   index('partner_availability_isActive_idx').on(table.isActive),
-  // Ensure one rule per partner per staff per day (staffUserId null = partner default)
-  unique('partner_availability_partnerId_staffUserId_dayOfWeek_unique').on(table.partnerId, table.staffUserId, table.dayOfWeek),
+  uniqueIndex('partner_availability_partnerId_dayOfWeek_default_unique')
+    .on(table.partnerId, table.dayOfWeek)
+    .where(sql`${table.staffUserId} is null`),
+  uniqueIndex('partner_availability_partnerId_staffUserId_dayOfWeek_unique')
+    .on(table.partnerId, table.staffUserId, table.dayOfWeek)
+    .where(sql`${table.staffUserId} is not null`),
 ]);
 
 /**
@@ -365,6 +370,10 @@ export const partnerBookingSettings = pgTable('partner_booking_settings', {
   index('partner_booking_settings_partnerId_idx').on(table.partnerId),
   index('partner_booking_settings_staffUserId_idx').on(table.staffUserId),
   index('partner_booking_settings_bookingEnabled_idx').on(table.bookingEnabled),
-  // Ensure one settings row per partner per staff (staffUserId null = partner default)
-  unique('partner_booking_settings_partnerId_staffUserId_unique').on(table.partnerId, table.staffUserId),
+  uniqueIndex('partner_booking_settings_partnerId_default_unique')
+    .on(table.partnerId)
+    .where(sql`${table.staffUserId} is null`),
+  uniqueIndex('partner_booking_settings_partnerId_staffUserId_unique')
+    .on(table.partnerId, table.staffUserId)
+    .where(sql`${table.staffUserId} is not null`),
 ]);
