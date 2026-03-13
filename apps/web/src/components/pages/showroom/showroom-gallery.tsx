@@ -8,7 +8,6 @@
 import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { Expand, Images, ChevronLeft, ChevronRight } from 'lucide-react';
-import { getPublicUrl } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
@@ -41,7 +40,7 @@ function GalleryImage({
       onClick={onClick}
     >
       <Image
-        src={getPublicUrl(src) || src}
+        src={src}
         alt={alt}
         fill
         className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -98,7 +97,7 @@ function ImageSlider({
         onClick={() => onImageClick(currentIndex)}
       >
         <Image
-          src={getPublicUrl(images[currentIndex]) || images[currentIndex]}
+          src={images[currentIndex]}
           alt={`Showroom ${currentIndex + 1}`}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
@@ -176,7 +175,7 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   
   // Prepare all images with public URLs for lightbox
-  const lightboxImages = allImages.map(img => getPublicUrl(img) || img);
+  const lightboxImages = allImages;
   
   const handleImageClick = useCallback((index: number) => {
     setLightboxIndex(index);
@@ -192,7 +191,7 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
   const theme = getAmbientTheme(showroom.ambientStyle);
   
   // Check for uploaded video file first, then YouTube/Vimeo URL
-  const videoTourFileUrl = showroom.showroomVideoTourFile ? getPublicUrl(showroom.showroomVideoTourFile) : null;
+  const videoTourFileUrl = showroom.showroomVideoTourFile || null;
   const { embedUrl: videoTourEmbedUrl } = getVideoEmbedUrl(showroom.showroomVideoTourUrl);
   const hasVideoTour = videoTourFileUrl || videoTourEmbedUrl;
 
@@ -239,7 +238,7 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
                     muted
                     loop
                     playsInline
-                    poster={allImages[0] ? getPublicUrl(allImages[0]) : undefined}
+                    poster={allImages[0] || undefined}
                   />
                 ) : videoTourEmbedUrl ? (
                   <iframe

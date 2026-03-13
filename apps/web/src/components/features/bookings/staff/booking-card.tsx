@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/utils';
-import { getThumbUrl } from '@/utils/storage';
+import { getCdnThumbUrl } from '@/utils/storage';
 import type { BookingData } from './types';
 
 const BOOKING_TIME_ZONE = 'Asia/Dubai';
@@ -98,6 +98,7 @@ export function BookingCard({
   const scheduledEnd = new Date(booking.scheduledEndTime);
   const hasStarted = scheduledStart <= now;
   const hasEnded = scheduledEnd <= now;
+  const listingThumbnailUrl = getCdnThumbUrl(booking.listingThumbnail);
 
   return (
     <div className="group relative">
@@ -105,9 +106,9 @@ export function BookingCard({
       <div className="flex gap-4 p-4">
         {/* Image */}
         <div className="relative w-28 sm:w-36 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/20">
-          {booking.listingThumbnail ? (
+          {listingThumbnailUrl ? (
             <img
-              src={getThumbUrl(booking.listingThumbnail) || booking.listingThumbnail}
+              src={listingThumbnailUrl}
               alt={booking.listingTitle}
               className="w-full h-full object-cover"
             />

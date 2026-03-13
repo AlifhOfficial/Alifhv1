@@ -4,7 +4,6 @@
  */
 
 import Image from 'next/image';
-import { getPublicUrl } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
@@ -16,7 +15,7 @@ interface ShowroomFounderProps {
 export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
   if (!showroom.founderName) return null;
 
-  const founderImageUrl = showroom.founderImage ? getPublicUrl(showroom.founderImage) : null;
+  const founderImageUrl = showroom.founderImage;
   const theme = getAmbientTheme(showroom.ambientStyle);
 
   return (

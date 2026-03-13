@@ -18,6 +18,7 @@ import {
 import { useAuth } from '@/providers/auth-provider';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import { MacOSWindow } from '@/components/ui/macos-window';
+import { m7, rsxx2 } from '@/components/pages/marketing-image-assets';
 
 export function HowRankingWorksPage() {
   const router = useRouter();
@@ -53,7 +54,7 @@ export function HowRankingWorksPage() {
           {/* Hero Image */}
           <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1] overflow-hidden rounded-lg">
             <Image
-              src="/Abstract/rsxx2.png"
+              src={rsxx2}
               alt="Revvup Ranking"
               fill
               priority
@@ -255,11 +256,7 @@ function WhyQualityInfographic() {
                 <div className="relative">
                   {/* Car image */}
                   <div className="w-28 sm:w-44 lg:w-64 xl:w-80 aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10">
-                    <img 
-                      src="/Marketing/m7.jpeg" 
-                      alt="" 
-                      className="w-full h-full object-cover opacity-60"
-                    />
+                    <Image src={m7} alt="" className="w-full h-full object-cover opacity-60" sizes="(max-width: 640px) 112px, (max-width: 1280px) 256px, 320px" />
                   </div>
                   
                   {/* Paid ranking badges */}

@@ -6,6 +6,7 @@
 'use client';
 
 import Image from 'next/image';
+import { rsxx5 } from '@/components/pages/marketing-image-assets';
 
 export function PricingHeroSection() {
   return (
@@ -30,7 +31,7 @@ export function PricingHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-12">
           <Image
-            src="/Abstract/rsxx5.png"
+            src={rsxx5}
             alt="Revvup Pricing"
             fill
             priority

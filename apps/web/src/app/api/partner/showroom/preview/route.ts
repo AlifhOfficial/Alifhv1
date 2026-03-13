@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getShowroomPreviewByPartnerId } from '@alifh/database';
-import { getPublicUrl } from '@/utils';
+import { getCdnPublicUrl } from '@/utils';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,47 +21,62 @@ export const dynamic = 'force-dynamic';
  */
 function attachPublicUrls(showroom: any) {
   const cacheBuster = new Date(showroom.updatedAt).getTime();
+  const toCdn = (key: string | null | undefined) => getCdnPublicUrl(key, cacheBuster);
+  const toCdnArray = (keys: string[] | null | undefined) => (keys || []).map((key) => toCdn(key)).filter((key): key is string => Boolean(key));
   
   return {
     ...showroom,
+    heroVideoThumbnail: toCdn(showroom.heroVideoThumbnail),
+    heroImage: toCdn(showroom.heroImage),
+    founderImage: toCdn(showroom.founderImage),
+    showroomImages: toCdnArray(showroom.showroomImages),
+    showroomExteriorImages: toCdnArray(showroom.showroomExteriorImages),
+    clientLogos: toCdnArray(showroom.clientLogos),
+    seoImage: toCdn(showroom.seoImage),
     // Hero
-    heroVideoThumbnailUrl: getPublicUrl(showroom.heroVideoThumbnail, cacheBuster),
-    heroImageUrl: getPublicUrl(showroom.heroImage, cacheBuster),
+    heroVideoThumbnailUrl: toCdn(showroom.heroVideoThumbnail),
+    heroImageUrl: toCdn(showroom.heroImage),
     // Founder
-    founderImageUrl: getPublicUrl(showroom.founderImage, cacheBuster),
+    founderImageUrl: toCdn(showroom.founderImage),
     // Gallery
-    showroomImagesUrls: (showroom.showroomImages || []).map((key: string) => getPublicUrl(key, cacheBuster)),
+    showroomImagesUrls: toCdnArray(showroom.showroomImages),
     // Exterior
-    showroomExteriorImagesUrls: (showroom.showroomExteriorImages || []).map((key: string) => getPublicUrl(key, cacheBuster)),
+    showroomExteriorImagesUrls: toCdnArray(showroom.showroomExteriorImages),
     // Client logos
-    clientLogosUrls: (showroom.clientLogos || []).map((key: string) => getPublicUrl(key, cacheBuster)),
+    clientLogosUrls: toCdnArray(showroom.clientLogos),
     // SEO
-    seoImageUrl: getPublicUrl(showroom.seoImage, cacheBuster),
+    seoImageUrl: toCdn(showroom.seoImage),
     // Partner branding
     partner: {
       ...showroom.partner,
-      logoUrl: getPublicUrl(showroom.partner.logo, cacheBuster),
-      heroImageUrl: getPublicUrl(showroom.partner.heroImage, cacheBuster),
+      logo: toCdn(showroom.partner.logo),
+      heroImage: toCdn(showroom.partner.heroImage),
+      logoUrl: toCdn(showroom.partner.logo),
+      heroImageUrl: toCdn(showroom.partner.heroImage),
     },
     // Team members
     teamMembers: (showroom.teamMembers || []).map((member: any) => ({
       ...member,
-      imageUrl: getPublicUrl(member.image, cacheBuster),
+      image: toCdn(member.image),
+      imageUrl: toCdn(member.image),
     })),
     // Achievements
     achievements: (showroom.achievements || []).map((achievement: any) => ({
       ...achievement,
-      imageUrl: getPublicUrl(achievement.image, cacheBuster),
+      image: toCdn(achievement.image),
+      imageUrl: toCdn(achievement.image),
     })),
     // Testimonials
     featuredTestimonials: (showroom.featuredTestimonials || []).map((testimonial: any) => ({
       ...testimonial,
-      customerImageUrl: getPublicUrl(testimonial.customerImage, cacheBuster),
+      customerImage: toCdn(testimonial.customerImage),
+      customerImageUrl: toCdn(testimonial.customerImage),
     })),
     // Press features
     pressFeatures: (showroom.pressFeatures || []).map((feature: any) => ({
       ...feature,
-      logoUrl: getPublicUrl(feature.logo, cacheBuster),
+      logo: toCdn(feature.logo),
+      logoUrl: toCdn(feature.logo),
     })),
   };
 }

@@ -6,6 +6,7 @@
 'use client';
 
 import Image from 'next/image';
+import { visionHeroUae2031 } from '@/components/pages/marketing-image-assets';
 
 export function VisionHeroSection() {
   return (
@@ -27,7 +28,7 @@ export function VisionHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
-            src="/Marketing/vision_page/vision-hero-uae2031.jpg"
+            src={visionHeroUae2031}
             alt="Revvup - Inspired by We the UAE 2031 Vision"
             fill
             priority

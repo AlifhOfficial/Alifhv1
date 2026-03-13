@@ -24,7 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useDebouncedCallback } from 'use-debounce';
-import { getThumbUrl } from '@/utils/storage';
+import { getCdnThumbUrl } from '@/utils/storage';
 import { FunnelMatchesView } from '@/components/staff/consignment/funnel-matches-view';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -608,9 +608,9 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
                   <div className="rounded-lg border border-border/40 bg-card overflow-hidden hover:border-border/60 hover:shadow-md transition-all">
                     {/* Image */}
                     <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
-                      {listing.thumbnail ? (
+                      {getCdnThumbUrl(listing.thumbnail) ? (
                         <Image
-                          src={getThumbUrl(listing.thumbnail) || listing.thumbnail}
+                          src={getCdnThumbUrl(listing.thumbnail)!}
                           alt=""
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"

@@ -5,9 +5,11 @@
 
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { CircleDollarSign, Ban, CalendarCheck, Layout, CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
+import { m12 } from '@/components/pages/marketing-image-assets';
 
 export function DifferentiatorsSection() {
   return (
@@ -178,11 +180,7 @@ function HumanFirstInfographic() {
             className="relative w-40 sm:w-56 lg:w-80 xl:w-[480px] aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10 flex-shrink-0"
             style={{ animation: 'card-elevate 6s ease-out infinite' }}
           >
-            <img 
-              src="/Marketing/m12.jpeg" 
-              alt="" 
-              className="w-full h-full object-cover"
-            />
+            <Image src={m12} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 160px, (max-width: 1280px) 320px, 480px" />
           </div>
         </div>
       </MacOSWindow>

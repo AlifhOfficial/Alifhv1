@@ -5,7 +5,9 @@
 
 'use client';
 
+import Image from 'next/image';
 import { Star, Clock, Package, CheckCircle2 } from 'lucide-react';
+import { revx7 } from '@/components/pages/marketing-image-assets';
 
 export function PartnerBrandSection() {
   return (
@@ -93,17 +95,14 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
 
 function ListingDetailInfographic() {
   return (
-    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-14">
-      <div className="relative w-full rounded-lg overflow-hidden border border-border/30 shadow-2xl">
-        <video 
-          src="/Marketing/lookgood6.mp4" 
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-auto"
-        />
-      </div>
-    </div>
+    <Image
+      src={revx7}
+      alt="Revvup partner brand showcase"
+      width={2400}
+      height={1600}
+      className="w-full h-auto"
+      priority
+      sizes="(max-width: 1600px) 100vw, 1600px"
+    />
   );
 }

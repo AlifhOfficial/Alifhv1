@@ -15,7 +15,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { getPublishedShowrooms } from '@alifh/database';
-import { getPublicUrl } from '@/utils';
+import { getCdnPublicUrl } from '@/utils';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic'; // Uses searchParams
@@ -25,6 +25,7 @@ export const dynamic = 'force-dynamic'; // Uses searchParams
  */
 function attachCardUrls(showroom: any) {
   const cacheBuster = new Date(showroom.updatedAt).getTime();
+  const toCdn = (key: string | null | undefined) => getCdnPublicUrl(key, cacheBuster);
   
   return {
     // Essential card data
@@ -34,15 +35,19 @@ function attachCardUrls(showroom: any) {
     
     // Hero - Video first, then image fallback
     heroVideoUrl: showroom.heroVideoUrl || null,
-    heroVideoFileUrl: getPublicUrl(showroom.heroVideoFile, cacheBuster),
-    heroImageUrl: getPublicUrl(showroom.heroImage, cacheBuster),
+    heroVideoFile: toCdn(showroom.heroVideoFile),
+    heroImage: toCdn(showroom.heroImage),
+    heroVideoFileUrl: toCdn(showroom.heroVideoFile),
+    heroImageUrl: toCdn(showroom.heroImage),
     heroTagline: showroom.heroTagline,
     
     // Partner branding
     partner: {
       brandName: showroom.partner.brandName,
-      logoUrl: getPublicUrl(showroom.partner.logo, cacheBuster),
-      heroImageUrl: getPublicUrl(showroom.partner.heroImage, cacheBuster),
+      logo: toCdn(showroom.partner.logo),
+      heroImage: toCdn(showroom.partner.heroImage),
+      logoUrl: toCdn(showroom.partner.logo),
+      heroImageUrl: toCdn(showroom.partner.heroImage),
       isVerified: showroom.partner.isVerified,
       tier: showroom.partner.tier,
       googleRating: showroom.partner.googleRating,

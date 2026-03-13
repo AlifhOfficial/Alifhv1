@@ -14,7 +14,7 @@
  * ```
  */
 
-import { preload } from 'react-dom';
+import { preconnect, preload } from 'react-dom';
 
 interface ImagePreloaderProps {
   /** Image URL to preload */
@@ -42,6 +42,13 @@ interface ImagePreloaderProps {
  * With preload, step 5 happens at step 0 (HTML parse time).
  */
 export function ImagePreloader({ src, as = 'image', fetchPriority = 'high' }: ImagePreloaderProps) {
+  try {
+    const origin = new URL(src).origin;
+    preconnect(origin);
+  } catch {
+    // Ignore invalid or relative URLs.
+  }
+
   // React's preload() injects <link rel="preload"> into <head>
   // This runs during SSR, so the link tag is in initial HTML
   preload(src, { 

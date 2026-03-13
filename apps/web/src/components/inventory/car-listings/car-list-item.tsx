@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Share2, Heart, Zap, CheckCircle2 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { cn } from '@/lib/utils';
-import { getThumbUrl } from '@/utils/storage';
+import { getCdnThumbUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
@@ -109,8 +109,7 @@ export function CarListItem({
   };
 
   // Use thumb URL for list items (480w, ~30-90KB) - bandwidth optimization
-  const rawImageUrl = thumbnail || images?.[0] || '/assets/cars/car1.avif';
-  const displayImage = getThumbUrl(rawImageUrl) || rawImageUrl;
+  const displayImage = getCdnThumbUrl(thumbnail || images?.[0]);
   const displaySpecs = formatSpecs(specs || 'GCC');
   const displayEmirate = formatEmirate(emirate);
   const displaySellerName = partnerName || sellerName || 'Private Seller';
@@ -228,13 +227,17 @@ export function CarListItem({
           "relative aspect-[4/3] w-full overflow-hidden rounded-lg block",
           isBlkListing ? "bg-zinc-900" : "bg-muted/20"
         )}>
-          <Image
-            src={displayImage}
-            alt={`${year} ${make} ${model}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 288px"
-          />
+          {displayImage ? (
+            <Image
+              src={displayImage}
+              alt={`${year} ${make} ${model}`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 288px"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-muted/30" />
+          )}
         </Link>
       </div>
 

@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
+import { revvupab2 } from '@/components/pages/marketing-image-assets';
 
 function SellButton() {
   const router = useRouter();
@@ -78,7 +79,7 @@ export function HeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-8">
           <Image
-            src="/Abstract/revvupab2.png"
+            src={revvupab2}
             alt="Revvup - UAE Car Marketplace"
             fill
             priority

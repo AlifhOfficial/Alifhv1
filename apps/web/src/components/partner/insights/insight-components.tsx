@@ -12,7 +12,7 @@ import { TrendingUp, TrendingDown, Minus, AlertCircle, Clock, Eye } from 'lucide
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getThumbUrl } from '@/utils/storage';
+import { getCdnThumbUrl } from '@/utils/storage';
 
 // ============================================================================
 // Types
@@ -172,13 +172,17 @@ export function TopListings({ title, listings, emptyMessage = "No data", classNa
               className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-accent/50 transition-colors"
             >
               <div className="relative w-12 h-9 rounded overflow-hidden bg-muted flex-shrink-0">
-                <Image
-                  src={getThumbUrl(listing.thumbnail) || listing.thumbnail || '/assets/cars/placeholder.avif'}
-                  alt={listing.title}
-                  fill
-                  className="object-cover"
-                  sizes="48px"
-                />
+                {getCdnThumbUrl(listing.thumbnail) ? (
+                  <Image
+                    src={getCdnThumbUrl(listing.thumbnail)!}
+                    alt={listing.title}
+                    fill
+                    className="object-cover"
+                    sizes="48px"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-muted/40" />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">
@@ -234,13 +238,17 @@ export function ColdListings({
             className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-accent/50 transition-colors"
           >
             <div className="relative w-12 h-9 rounded overflow-hidden bg-muted flex-shrink-0">
-              <Image
-                src={getThumbUrl(listing.thumbnail) || listing.thumbnail || '/assets/cars/placeholder.avif'}
-                alt={listing.title}
-                fill
-                className="object-cover"
-                sizes="48px"
-              />
+              {getCdnThumbUrl(listing.thumbnail) ? (
+                <Image
+                  src={getCdnThumbUrl(listing.thumbnail)!}
+                  alt={listing.title}
+                  fill
+                  className="object-cover"
+                  sizes="48px"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-muted/40" />
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate">

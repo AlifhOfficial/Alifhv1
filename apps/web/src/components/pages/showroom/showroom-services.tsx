@@ -6,8 +6,6 @@
 'use client';
 
 import Image from 'next/image';
-
-import { getPublicUrl } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Dialog,
@@ -53,7 +51,7 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
           <div className="px-4 sm:px-6 lg:px-8 mb-8">
             <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
               <Image
-                src={getPublicUrl(ambientImage) || ambientImage}
+                src={ambientImage}
                 alt="Showroom Services"
                 fill
                 className="object-cover"

@@ -8,7 +8,6 @@
 import { useRef } from 'react';
 import Image from 'next/image';
 import { Star } from 'lucide-react';
-import { getPublicUrl } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { ShowroomData, AmbientTheme } from './types';
 import { getAmbientTheme } from './types';
@@ -48,7 +47,7 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
           <div className="px-4 sm:px-6 lg:px-8 mb-12">
             <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
               <Image
-                src={getPublicUrl(sectionImage)}
+                src={sectionImage}
                 alt="Client experiences"
                 fill
                 className="object-cover"

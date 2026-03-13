@@ -23,18 +23,9 @@ import { ImagePreloader } from '@/components/ui/image-preloader';
 import type { SellerData } from '@/hooks/listings';
 import type { SimilarListingCard } from '@/hooks/listings/use-similar-listings';
 import { getPublicBookingAvailability, type PublicBookingAvailabilityResponse } from '@/lib/bookings/public-availability';
-
-
+import { getCdnPublicUrl } from '@/utils/storage';
 interface PageProps {
   params: Promise<{ id: string }>;
-}
-
-const CDN_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || 'https://cdn.revvup.ae';
-
-function getImageUrl(key: string | null | undefined): string | null {
-  if (!key) return null;
-  if (key.startsWith('http://') || key.startsWith('https://')) return key;
-  return `${CDN_URL}/${key}`;
 }
 
 // Fetch seller data based on listing type (same logic as API route)
@@ -114,7 +105,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ].filter(Boolean).join(' ');
 
     // Get primary image for OG
-    const ogImage = getImageUrl(listing.thumbnail || listing.images?.[0]);
+    const ogImage = getCdnPublicUrl(listing.thumbnail || listing.images?.[0]);
 
     return {
       title,
@@ -195,7 +186,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
   // Preload primary image for instant display (browser starts fetch during HTML parse)
   const primaryImageUrl = initialListing 
-    ? getImageUrl(initialListing.thumbnail || initialListing.images?.[0])
+    ? getCdnPublicUrl(initialListing.thumbnail || initialListing.images?.[0])
     : null;
 
   return (

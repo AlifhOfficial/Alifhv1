@@ -6,8 +6,6 @@
 'use client';
 
 import Image from 'next/image';
-
-import { getPublicUrl } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Dialog,
@@ -52,7 +50,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
           <div className="px-4 sm:px-6 lg:px-8 mb-8">
             <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
               <Image
-                src={getPublicUrl(ambientImage) || ambientImage}
+                src={ambientImage}
                 alt="Our Team"
                 fill
                 className="object-cover"
@@ -84,7 +82,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                     <div className="relative w-14 h-14 rounded-full overflow-hidden bg-muted mb-4 ring-2 ring-border/40 group-hover:ring-primary/30 transition-colors">
                       {member.image ? (
                         <Image
-                          src={getPublicUrl(member.image) || member.image}
+                          src={member.image}
                           alt={member.name}
                           fill
                           className="object-cover"
@@ -120,7 +118,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                       <div className="relative w-16 h-16 rounded-full overflow-hidden bg-muted ring-2 ring-border/40 flex-shrink-0">
                         {member.image ? (
                           <Image
-                            src={getPublicUrl(member.image) || member.image}
+                            src={member.image}
                             alt={member.name}
                             fill
                             className="object-cover"

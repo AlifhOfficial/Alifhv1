@@ -18,7 +18,7 @@ import { ShoppingCart, RefreshCw, Crown, Search, ChevronLeft, ChevronRight, X, B
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback, useTransition } from "react";
 import { cn } from "@/utils";
-import { getThumbUrl } from "@/utils/storage";
+import { getCdnThumbUrl } from "@/utils/storage";
 import { useDebouncedCallback } from 'use-debounce';
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -467,9 +467,9 @@ export function DealerInventory({
                   <div className="flex items-start gap-4 sm:gap-5">
                     {/* Thumbnail */}
                     <div className="w-24 h-16 sm:w-32 sm:h-20 rounded-xl overflow-hidden bg-secondary flex-shrink-0 relative">
-                      {listing.thumbnail ? (
+                      {getCdnThumbUrl(listing.thumbnail) ? (
                         <Image
-                          src={getThumbUrl(listing.thumbnail) || listing.thumbnail}
+                          src={getCdnThumbUrl(listing.thumbnail)!}
                           alt=""
                           fill
                           className="object-cover"

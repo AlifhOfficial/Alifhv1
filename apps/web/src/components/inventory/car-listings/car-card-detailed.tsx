@@ -24,7 +24,7 @@ import {
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/lib/utils';
-import { getThumbUrl, getPublicUrl } from '@/utils/storage';
+import { getCdnListingImageUrls } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
@@ -95,27 +95,29 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
     [imageArray]
   );
   
-  // Full URLs for main carousel and lightbox (high quality display)
-  const fullImages = useMemo(() => 
-    validImages.length > 0 
-      ? validImages.map(img => getPublicUrl(img) || img)
-      : ['/assets/cars/placeholder.avif'],
+  // Resolve image pairs strictly through the CDN.
+  // Any image that cannot resolve to the CDN is skipped.
+  const resolvedImages = useMemo(
+    () =>
+      validImages
+        .map((img) => getCdnListingImageUrls(img))
+        .filter((img): img is { thumb: string; full: string } => Boolean(img.full && img.thumb)),
     [validImages]
   );
-  
-  // Thumb URLs for tiny thumbnails only (64x48px display)
-  const thumbImages = useMemo(() => 
-    validImages.length > 0 
-      ? validImages.map(img => getThumbUrl(img) || getPublicUrl(img) || img)
-      : ['/assets/cars/placeholder.avif'],
-    [validImages]
+
+  const fullImages = useMemo(
+    () => resolvedImages.map((img) => img.full),
+    [resolvedImages]
+  );
+
+  const thumbImages = useMemo(
+    () => resolvedImages.map((img) => img.thumb),
+    [resolvedImages]
   );
   
   // Ensure currentIndex is always valid
-  const safeCurrentIndex = Math.min(Math.max(0, currentIndex), fullImages.length - 1);
-  
-  // Main carousel uses full images for quality
-  const currentImage = fullImages[safeCurrentIndex] || '/assets/cars/placeholder.avif';
+  const safeCurrentIndex = Math.min(Math.max(0, currentIndex), Math.max(0, fullImages.length - 1));
+  const currentImage = fullImages[safeCurrentIndex] || null;
 
   const next = useCallback(() => {
     setCurrentIndex((i) => (i + 1) % fullImages.length);
@@ -148,17 +150,24 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
         {/* Main Image */}
         <div 
           className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-muted/20 cursor-pointer group"
-          onClick={() => { setLightboxIndex(safeCurrentIndex); setIsLightboxOpen(true); }}
+          onClick={() => {
+            if (!currentImage) return;
+            setLightboxIndex(safeCurrentIndex);
+            setIsLightboxOpen(true);
+          }}
         >
           {currentImage && (
-            <Image
-              src={currentImage}
+            <ProgressiveGalleryImage
+              fullSrc={currentImage}
+              thumbSrc={thumbImages[safeCurrentIndex] || currentImage}
               alt={title}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-              sizes="(max-width: 1024px) 100vw, 66vw"
-              priority
             />
+          )}
+
+          {!currentImage && (
+            <div className="flex h-full items-center justify-center">
+              <span className="text-sm font-medium text-muted-foreground">No photos available</span>
+            </div>
           )}
           
           {/* Navigation Arrows */}
@@ -182,9 +191,11 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
           )}
 
           {/* Image Counter */}
-          <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 text-white text-xs font-medium tabular-nums rounded">
-            {safeCurrentIndex + 1}/{thumbImages.length}
-          </div>
+          {thumbImages.length > 0 && (
+            <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 text-white text-xs font-medium tabular-nums rounded">
+              {safeCurrentIndex + 1}/{thumbImages.length}
+            </div>
+          )}
         </div>
 
         {/* Thumbnails Row */}
@@ -241,6 +252,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
       {/* Fullscreen Lightbox - uses full-res images */}
       <ImageLightbox
         images={fullImages}
+        thumbnailImages={thumbImages}
         currentIndex={lightboxIndex}
         isOpen={isLightboxOpen}
         title={title}
@@ -255,6 +267,48 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
         title="All Photos"
         onClose={() => setShowAllImages(false)}
         onImageClick={handleGridImageClick}
+      />
+    </>
+  );
+}
+
+function ProgressiveGalleryImage({
+  fullSrc,
+  thumbSrc,
+  alt,
+}: {
+  fullSrc: string;
+  thumbSrc: string;
+  alt: string;
+}) {
+  const [isFullLoaded, setIsFullLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsFullLoaded(false);
+  }, [fullSrc]);
+
+  return (
+    <>
+      <Image
+        src={thumbSrc}
+        alt=""
+        aria-hidden="true"
+        fill
+        className="object-cover scale-[1.02] blur-sm"
+        sizes="(max-width: 1024px) 100vw, 66vw"
+        priority
+      />
+      <Image
+        src={fullSrc}
+        alt={alt}
+        fill
+        className={cn(
+          "object-cover transition-all duration-300 group-hover:scale-[1.02]",
+          isFullLoaded ? "opacity-100" : "opacity-0"
+        )}
+        sizes="(max-width: 1024px) 100vw, 66vw"
+        priority
+        onLoad={() => setIsFullLoaded(true)}
       />
     </>
   );

@@ -5,7 +5,9 @@
 
 'use client';
 
+import Image from 'next/image';
 import { CheckCircle2 } from 'lucide-react';
+import { m4, m5 } from '@/components/pages/marketing-image-assets';
 
 export function PartnerCompareSection() {
   return (
@@ -97,11 +99,7 @@ function CompareInfographic() {
             <div className="relative">
               {/* Car image - faded */}
               <div className="w-32 sm:w-40 lg:w-48 aspect-[4/3] rounded-xl overflow-hidden border border-border/30">
-                <img 
-                  src="/Marketing/m5.jpeg" 
-                  alt="" 
-                  className="w-full h-full object-cover opacity-50 grayscale"
-                />
+                <Image src={m5} alt="" className="w-full h-full object-cover opacity-50 grayscale" sizes="(max-width: 640px) 128px, (max-width: 1024px) 160px, 192px" />
               </div>
               
               {/* Fee badges */}
@@ -132,11 +130,7 @@ function CompareInfographic() {
             <div className="relative">
               {/* Car image - vibrant */}
               <div className="w-32 sm:w-40 lg:w-48 aspect-[4/3] rounded-xl overflow-hidden border-2 border-primary/40">
-                <img 
-                  src="/Marketing/m4.jpeg" 
-                  alt="" 
-                  className="w-full h-full object-cover"
-                />
+                <Image src={m4} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 128px, (max-width: 1024px) 160px, 192px" />
               </div>
               
               {/* Single clean badge */}

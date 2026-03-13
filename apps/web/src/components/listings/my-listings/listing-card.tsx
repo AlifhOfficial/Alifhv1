@@ -22,7 +22,7 @@ import {
   ChevronDown,
   Eye
 } from 'lucide-react';
-import { cn, getThumbUrl } from '@/utils';
+import { cn, getCdnThumbUrl } from '@/utils';
 import type { ListingData, ListingType } from './types';
 import {
   DropdownMenu,
@@ -104,7 +104,7 @@ export function ListingCard({
     ? `/staff-dashboard/work-listings/${listing.id}/edit`
     : `/user-dashboard/listings/${listing.id}/edit`;
 
-  const displayImage = getThumbUrl(listing.thumbnail) || listing.thumbnail || '/assets/cars/car1.avif';
+  const displayImage = getCdnThumbUrl(listing.thumbnail);
 
   // Time calculations
   const expiresAt = listing.expiresAt ? new Date(listing.expiresAt as any) : null;
@@ -182,13 +182,17 @@ export function ListingCard({
           href={`/listings/${listing.id}`} 
           className="relative w-28 sm:w-36 md:w-44 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30"
         >
-          <Image
-            src={displayImage}
-            alt={`${listing.year} ${listing.make} ${listing.model}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 176px"
-          />
+          {displayImage ? (
+            <Image
+              src={displayImage}
+              alt={`${listing.year} ${listing.make} ${listing.model}`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 176px"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-muted/30" />
+          )}
           
           {listing.isBlkListing && (
             <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black text-white">

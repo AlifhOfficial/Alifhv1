@@ -5,8 +5,10 @@
 
 'use client';
 
+import Image from 'next/image';
 import { CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
+import { avatarMock, m14, m15, m17 } from '@/components/pages/marketing-image-assets';
 
 export function PartnerFlatFeeSection() {
   return (
@@ -142,8 +144,8 @@ function UnlimitedListingsInfographic() {
             <div className="grid grid-cols-3 gap-1.5 sm:gap-3 lg:gap-6 w-full max-w-3xl">
               {/* Card 1 */}
               <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
-                <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                  <img src="/Marketing/m14.jpeg" alt="" className="w-full h-full object-cover" />
+                <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted/20">
+                  <Image src={m14} alt="" fill className="object-cover" sizes="(max-width: 640px) 120px, (max-width: 1280px) 220px, 300px" />
                 </div>
                 <div className="flex items-center justify-between gap-0.5 sm:gap-1 lg:gap-2 p-1 sm:p-2 lg:p-3">
                   <div className="min-w-0 flex-1">
@@ -153,14 +155,14 @@ function UnlimitedListingsInfographic() {
                       <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-blue-500" />
                     </div>
                   </div>
-                  <img src="/Marketing/avatarmock.png" alt="" className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
+                  <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
                 </div>
               </div>
               
               {/* Card 2 */}
               <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
-                <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                  <img src="/Marketing/m15.jpeg" alt="" className="w-full h-full object-cover" />
+                <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted/20">
+                  <Image src={m15} alt="" fill className="object-cover" sizes="(max-width: 640px) 120px, (max-width: 1280px) 220px, 300px" />
                 </div>
                 <div className="flex items-center justify-between gap-0.5 sm:gap-1 lg:gap-2 p-1 sm:p-2 lg:p-3">
                   <div className="min-w-0 flex-1">
@@ -170,14 +172,14 @@ function UnlimitedListingsInfographic() {
                       <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-blue-500" />
                     </div>
                   </div>
-                  <img src="/Marketing/avatarmock.png" alt="" className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
+                  <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
                 </div>
               </div>
               
               {/* Card 3 */}
               <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
-                <div className="aspect-[3/2] w-full overflow-hidden bg-muted/20">
-                  <img src="/Marketing/m17.jpeg" alt="" className="w-full h-full object-cover" />
+                <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted/20">
+                  <Image src={m17} alt="" fill className="object-cover" sizes="(max-width: 640px) 120px, (max-width: 1280px) 220px, 300px" />
                 </div>
                 <div className="flex items-center justify-between gap-0.5 sm:gap-1 lg:gap-2 p-1 sm:p-2 lg:p-3">
                   <div className="min-w-0 flex-1">
@@ -187,7 +189,7 @@ function UnlimitedListingsInfographic() {
                       <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-blue-500" />
                     </div>
                   </div>
-                  <img src="/Marketing/avatarmock.png" alt="" className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" />
+                  <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
                 </div>
               </div>
             </div>

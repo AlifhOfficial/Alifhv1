@@ -20,7 +20,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { getPublicUrl, getThumbUrl } from '@/utils';
+import { getCdnPublicUrl, getCdnThumbUrl } from '@/utils';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -402,11 +402,11 @@ interface ShowroomCarCardProps {
 }
 
 function ShowroomCarCard({ listing, priority = false, index, theme }: ShowroomCarCardProps) {
-  const displayImage = listing.thumbnail 
-    ? getThumbUrl(listing.thumbnail) || getPublicUrl(listing.thumbnail) 
-    : listing.images?.[0] 
-      ? getThumbUrl(listing.images[0]) || getPublicUrl(listing.images[0]) 
-      : '/assets/cars/car1.avif';
+  const displayImage = listing.thumbnail
+    ? getCdnThumbUrl(listing.thumbnail) || getCdnPublicUrl(listing.thumbnail)
+    : listing.images?.[0]
+      ? getCdnThumbUrl(listing.images[0]) || getCdnPublicUrl(listing.images[0])
+      : null;
 
   const price = listing.price ? `AED ${listing.price.toLocaleString()}` : null;
 
@@ -417,14 +417,18 @@ function ShowroomCarCard({ listing, priority = false, index, theme }: ShowroomCa
     >
       {/* Image Container */}
       <div className="relative aspect-[16/9] overflow-hidden">
-        <Image
-          src={displayImage}
-          alt={`${listing.year} ${listing.make} ${listing.model}`}
-          fill
-          priority={priority}
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width: 768px) 300px, 340px"
-        />
+        {displayImage ? (
+          <Image
+            src={displayImage}
+            alt={`${listing.year} ${listing.make} ${listing.model}`}
+            fill
+            priority={priority}
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 300px, 340px"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-muted/30" />
+        )}
       </div>
       
       {/* Info */}

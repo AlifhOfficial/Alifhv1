@@ -8,7 +8,6 @@
 import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
-import { getPublicUrl } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import type { ShowroomData } from './types';
@@ -25,7 +24,7 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
   const firstImage = showroom.showroomImages?.[0];
   
   // Check for uploaded video file first, then YouTube/Vimeo URL
-  const storyVideoFileUrl = showroom.brandStoryVideoFile ? getPublicUrl(showroom.brandStoryVideoFile) : null;
+  const storyVideoFileUrl = showroom.brandStoryVideoFile || null;
   const { embedUrl } = getVideoEmbedUrl(showroom.brandStoryVideoUrl);
   const theme = getAmbientTheme(showroom.ambientStyle);
 
@@ -96,7 +95,7 @@ function StoryMedia({ storyVideoFileUrl, embedUrl, firstImage, title }: StoryMed
           loop
           playsInline
           controls={false}
-          poster={firstImage ? getPublicUrl(firstImage) : undefined}
+          poster={firstImage || undefined}
         />
         
         {/* Video Controls */}
@@ -159,7 +158,7 @@ function StoryMedia({ storyVideoFileUrl, embedUrl, firstImage, title }: StoryMed
     return (
       <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
         <Image
-          src={getPublicUrl(firstImage) || firstImage}
+          src={firstImage}
           alt="Showroom"
           fill
           className="object-cover"

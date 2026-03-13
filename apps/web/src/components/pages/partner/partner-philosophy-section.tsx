@@ -5,7 +5,9 @@
 
 'use client';
 
+import Image from 'next/image';
 import { CheckCircle2 } from 'lucide-react';
+import { m5, m6, m7 } from '@/components/pages/marketing-image-assets';
 
 export function PartnerPhilosophySection() {
   return (
@@ -73,13 +75,13 @@ function PhilosophyInfographic() {
           <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">
             <div className="relative w-32 sm:w-40 lg:w-48">
               <div className="absolute top-0 left-0 w-20 sm:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-40 -rotate-6 shadow-lg">
-                <img src="/Marketing/m5.jpeg" alt="" className="w-full h-full object-cover grayscale" />
+                <Image src={m5} alt="" className="w-full h-full object-cover grayscale" sizes="(max-width: 640px) 80px, 96px" />
               </div>
               <div className="absolute top-2 left-4 w-20 sm:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-50 rotate-3 shadow-lg">
-                <img src="/Marketing/m6.jpeg" alt="" className="w-full h-full object-cover grayscale" />
+                <Image src={m6} alt="" className="w-full h-full object-cover grayscale" sizes="(max-width: 640px) 80px, 96px" />
               </div>
               <div className="absolute top-4 left-8 w-20 sm:w-24 aspect-[4/3] rounded-lg overflow-hidden border border-border/30 opacity-60 -rotate-2 shadow-lg">
-                <img src="/Marketing/m7.jpeg" alt="" className="w-full h-full object-cover grayscale" />
+                <Image src={m7} alt="" className="w-full h-full object-cover grayscale" sizes="(max-width: 640px) 80px, 96px" />
               </div>
             </div>
           </div>

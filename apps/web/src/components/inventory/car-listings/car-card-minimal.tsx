@@ -9,7 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/utils';
-import { getThumbUrl } from '@/utils/storage';
+import { getCdnThumbUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
@@ -51,8 +51,7 @@ export function CarCardMinimal({
   priority = false,
 }: CarCardMinimalProps) {
   // Use thumb URL for grid cards (480w, ~30-90KB) - bandwidth optimization
-  const rawImageUrl = thumbnail || images?.[0] || '/assets/cars/car1.avif';
-  const displayImage = getThumbUrl(rawImageUrl) || rawImageUrl;
+  const displayImage = getCdnThumbUrl(thumbnail || images?.[0]);
   const displaySellerName = partnerName || sellerName || 'Private Seller';
   const isVerified = partnerVerified || kycVerified;
   const isPartnerListing = Boolean(partnerLogo || partnerName);
@@ -72,14 +71,18 @@ export function CarCardMinimal({
         "relative aspect-[16/9] w-full overflow-hidden rounded-lg",
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
-        <Image
-          src={displayImage}
-          alt={`${make} ${model}`}
-          fill
-          priority={priority}
-          className="object-cover"
-          sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-        />
+        {displayImage ? (
+          <Image
+            src={displayImage}
+            alt={`${make} ${model}`}
+            fill
+            priority={priority}
+            className="object-cover"
+            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-muted/30" />
+        )}
       </div>
 
       {/* Content - Clean & Minimal */}

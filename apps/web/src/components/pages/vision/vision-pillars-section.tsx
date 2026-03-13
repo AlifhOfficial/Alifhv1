@@ -7,6 +7,12 @@
 
 import Image from 'next/image';
 import { Users, Shield, TrendingUp, Globe, Cpu, Leaf, Building2, CheckCircle2, Heart, Scale } from 'lucide-react';
+import {
+  pillarDiplomacyGlobal,
+  pillarEconomyGrowth,
+  pillarEcosystemDigital,
+  pillarSocietyTrust,
+} from '@/components/pages/marketing-image-assets';
 
 // ============================================================================
 // Types
@@ -69,7 +75,7 @@ export function VisionPillarsSection() {
           {/* Image */}
           <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
             <Image
-              src="/Marketing/vision_page/pillar-society-trust.jpg"
+              src={pillarSocietyTrust}
               alt="Forward Society - Building trust in UAE automotive"
               fill
               className="object-cover"
@@ -126,7 +132,7 @@ export function VisionPillarsSection() {
           {/* Image */}
           <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
             <Image
-              src="/Marketing/vision_page/pillar-economy-growth.jpg"
+              src={pillarEconomyGrowth}
               alt="Forward Economy - Supporting UAE economic growth"
               fill
               className="object-cover"
@@ -183,7 +189,7 @@ export function VisionPillarsSection() {
           {/* Image */}
           <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
             <Image
-              src="/Marketing/vision_page/pillar-diplomacy-global.jpg"
+              src={pillarDiplomacyGlobal}
               alt="Forward Diplomacy - UAE as a global automotive hub"
               fill
               className="object-cover"
@@ -240,7 +246,7 @@ export function VisionPillarsSection() {
           {/* Image */}
           <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
             <Image
-              src="/Marketing/vision_page/pillar-ecosystem-digital.jpg"
+              src={pillarEcosystemDigital}
               alt="Forward Ecosystem - Digital automotive infrastructure"
               fill
               className="object-cover"

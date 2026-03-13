@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
+import { homescreen } from '@/components/pages/marketing-image-assets';
 
 function FoundingProgramButton() {
   const router = useRouter();
@@ -79,12 +80,13 @@ export function PartnerHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full overflow-hidden rounded-lg mb-8">
           <Image
-            src="/Abstract/homescreen.png"
+            src={homescreen}
             alt="Revvup - For Dealers"
             width={1600}
             height={900}
             priority
             className="w-full h-auto"
+            sizes="(max-width: 1600px) 100vw, 1600px"
           />
         </div>
 

@@ -6,6 +6,7 @@
 'use client';
 
 import Image from 'next/image';
+import { signin } from '@/components/pages/marketing-image-assets';
 
 export function BadgesHeroSection() {
   return (
@@ -27,7 +28,7 @@ export function BadgesHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1] overflow-hidden rounded-lg">
           <Image
-            src="/Abstract/signin.png"
+            src={signin}
             alt="Revvup Badges"
             fill
             priority

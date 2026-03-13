@@ -5,7 +5,8 @@
 
 'use client';
 
-import { Crown, UserCog, Compass, Package, Calendar, Inbox, BarChart3, Users, MessageCircle } from 'lucide-react';
+import { Crown, UserCog } from 'lucide-react';
+import { MacOSWindow } from '@/components/ui/macos-window';
 
 export function PartnerRolesSection() {
   return (
@@ -63,110 +64,23 @@ export function PartnerRolesSection() {
 }
 
 // ============================================================================
-// INFOGRAPHIC: Actual dashboard screenshots with tab switcher
+// INFOGRAPHIC: MacOS window with simple role separation
 // ============================================================================
 
-import { useState, useEffect } from 'react';
-
-const OWNER_SCREENS = [
-  '/Marketing/Partner_dashboard_shots/overviewtab.png',
-  '/Marketing/Partner_dashboard_shots/inventorytab.png',
-  '/Marketing/Partner_dashboard_shots/teamtab.png',
-  '/Marketing/Partner_dashboard_shots/analyticstab.png',
-];
-
-const STAFF_SCREENS = [
-  '/Marketing/Staff_dashboard_shots/invenotrytab.png',
-  '/Marketing/Staff_dashboard_shots/leadstab.png',
-  '/Marketing/Staff_dashboard_shots/bookingtab.png',
-  '/Marketing/Staff_dashboard_shots/messeagestab.png',
-];
-
 function RolesInfographic() {
-  const [activeRole, setActiveRole] = useState<'owner' | 'staff'>('owner');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  
-  const screens = activeRole === 'owner' ? OWNER_SCREENS : STAFF_SCREENS;
-  
-  // Auto-cycle through screens
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % screens.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [screens.length, activeRole]);
-  
-  // Reset index when switching roles
-  useEffect(() => {
-    setCurrentIndex(0);
-  }, [activeRole]);
-
   return (
-    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40">
-      {/* Tab Switcher */}
-      <div className="flex items-center justify-center gap-1.5 sm:gap-2 p-3 sm:p-4 border-b border-border/20">
-        <button
-          onClick={() => setActiveRole('owner')}
-          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
-            activeRole === 'owner' 
-              ? 'bg-primary text-primary-foreground' 
-              : 'bg-muted/50 text-muted-foreground hover:bg-muted'
-          }`}
-        >
-          <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          Owner
-        </button>
-        <button
-          onClick={() => setActiveRole('staff')}
-          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
-            activeRole === 'staff' 
-              ? 'bg-primary text-primary-foreground' 
-              : 'bg-muted/50 text-muted-foreground hover:bg-muted'
-          }`}
-        >
-          <UserCog className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          Staff
-        </button>
-      </div>
-      
-      {/* Screenshot Display */}
-      <div className="relative aspect-[4/3] sm:aspect-[16/9] md:aspect-[2/1] overflow-hidden">
-        {screens.map((src, index) => (
-          <img
-            key={src}
-            src={src}
-            alt={`${activeRole} dashboard`}
-            className={`absolute inset-0 w-full h-full object-contain object-top transition-opacity duration-500 ${
-              index === currentIndex ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
-        ))}
-      </div>
-      
-      {/* Dots indicator */}
-      <div className="flex items-center justify-center gap-1 sm:gap-1.5 p-3 sm:p-4 border-t border-border/20">
-        {screens.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${
-              index === currentIndex ? 'bg-primary' : 'bg-muted-foreground/30'
-            }`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
+    <MacOSWindow
+      url="revvup.ae/team"
+      contentClassName="flex items-center justify-center aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1] p-4 sm:p-8 lg:p-16"
+    >
+      <div className="flex max-w-4xl flex-col items-center text-center">
+        <h3 className="text-[2rem] font-semibold tracking-[-0.04em] text-white sm:text-5xl lg:text-7xl leading-[0.95]">
+          Run the team.
+          <br />
+          <span className="text-white/38">Not the chaos.</span>
+        </h3>
 
-function SidebarNavItem({ icon: Icon, label, active, badge }: { icon: React.ComponentType<{ className?: string }>; label: string; active?: boolean; badge?: boolean }) {
-  return (
-    <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${active ? 'bg-sidebar-accent' : 'hover:bg-sidebar-accent/50'}`}>
-      <Icon className={`w-4 h-4 ${active ? 'text-foreground' : 'text-muted-foreground'}`} />
-      <span className={`text-sm font-semibold tracking-tight ${active ? 'text-foreground' : 'text-muted-foreground'}`}>{label}</span>
-      {badge && (
-        <span className="ml-auto text-[10px] font-bold text-[#0066FF] bg-[#0066FF]/10 px-1.5 py-0.5 rounded">NEW</span>
-      )}
-    </div>
+      </div>
+    </MacOSWindow>
   );
 }

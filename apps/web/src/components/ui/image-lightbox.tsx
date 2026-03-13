@@ -19,6 +19,7 @@ import { cn } from '@/utils';
 
 export interface ImageLightboxProps {
   images: string[];
+  thumbnailImages?: string[];
   currentIndex: number;
   isOpen: boolean;
   title?: string;
@@ -32,6 +33,7 @@ export interface ImageLightboxProps {
 
 export function ImageLightbox({
   images,
+  thumbnailImages,
   currentIndex,
   isOpen,
   title = 'Image',
@@ -41,6 +43,7 @@ export function ImageLightbox({
   // Use images directly - parent should pass pre-validated images
   // This ensures indices match between parent and this component
   const validImages = images;
+  const validThumbnailImages = thumbnailImages?.length === images.length ? thumbnailImages : images;
   const totalImages = validImages.length;
   
   // Ensure currentIndex is always valid
@@ -167,7 +170,7 @@ export function ImageLightbox({
 
       {/* Thumbnail Strip */}
       <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 hidden sm:flex gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-muted/80 backdrop-blur-sm rounded-xl max-w-[90vw] overflow-x-auto scrollbar-thin">
-        {validImages.map((img, idx) => (
+        {validThumbnailImages.map((img, idx) => (
           <button
             key={idx}
             onClick={(e) => {

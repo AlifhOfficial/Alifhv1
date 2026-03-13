@@ -5,8 +5,10 @@
 
 'use client';
 
+import Image from 'next/image';
 import { CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
+import { m3, m5, m8 } from '@/components/pages/marketing-image-assets';
 
 export function PartnerPainPointSection() {
   return (
@@ -119,17 +121,17 @@ function MarketplaceGameInfographic() {
               <div className="relative h-32 sm:h-44 lg:h-56 xl:h-80 w-full flex items-center justify-center">
                 {/* Card 1 - back left - hidden on mobile */}
                 <div className="hidden sm:block absolute left-2 lg:left-4 xl:left-8 top-4 sm:top-6 lg:top-8 w-20 sm:w-28 lg:w-40 xl:w-56 aspect-[4/3] rounded-md lg:rounded-lg overflow-hidden border border-white/10 shadow-lg -rotate-3 opacity-60 sm:opacity-70">
-                  <img src="/Marketing/m3.jpeg" alt="" className="w-full h-full object-cover" />
+                  <Image src={m3} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 0px, (max-width: 1280px) 160px, 224px" />
                 </div>
                 
                 {/* Card 2 - back right - hidden on mobile */}
                 <div className="hidden sm:block absolute right-2 lg:right-4 xl:right-8 top-4 sm:top-6 lg:top-8 w-20 sm:w-28 lg:w-40 xl:w-56 aspect-[4/3] rounded-md lg:rounded-lg overflow-hidden border border-white/10 shadow-lg rotate-3 opacity-60 sm:opacity-70">
-                  <img src="/Marketing/m5.jpeg" alt="" className="w-full h-full object-cover" />
+                  <Image src={m5} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 0px, (max-width: 1280px) 160px, 224px" />
                 </div>
                 
                 {/* Card 3 - front center */}
                 <div className="absolute left-1/2 -translate-x-1/2 top-0 sm:top-0 w-36 sm:w-36 lg:w-48 xl:w-72 aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10 shadow-xl z-10">
-                  <img src="/Marketing/m8.jpeg" alt="" className="w-full h-full object-cover" />
+                  <Image src={m8} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 144px, (max-width: 1280px) 192px, 288px" />
                 </div>
                 
                 {/* Moving mouse cursor */}

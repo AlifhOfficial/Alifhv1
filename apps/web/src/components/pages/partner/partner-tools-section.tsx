@@ -5,7 +5,9 @@
 
 'use client';
 
-import { Calendar, MessageCircle, BarChart3, Package, Filter } from 'lucide-react';
+import Image from 'next/image';
+import { Calendar, BarChart3, Package, Filter } from 'lucide-react';
+import { mk1 } from '@/components/pages/marketing-image-assets';
 
 export function PartnerToolsSection() {
   return (
@@ -93,29 +95,14 @@ function ToolCard({ icon: Icon, title, description }: ToolCardProps) {
 
 function MessagingInfographic() {
   return (
-    <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40">
-      <div className="flex flex-col md:flex-row min-h-[auto] md:min-h-[480px] lg:min-h-[600px]">
-        {/* Left - Video (80% on desktop) */}
-        <div className="w-full md:w-[80%] md:border-r border-border/20 p-3 sm:p-6 lg:p-14 flex items-center">
-          <div className="relative w-full rounded-lg overflow-hidden border border-border/30 shadow-2xl">
-            <video 
-              src="/Marketing/messegingui2.mp4" 
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-auto"
-            />
-          </div>
-        </div>
-        
-        {/* Right - The Point (20% on desktop) */}
-        <div className="w-full md:w-[20%] flex flex-col items-center justify-center py-6 md:py-4 px-4 sm:p-6 lg:p-8 border-t md:border-t-0 bg-sidebar/50">
-          <MessageCircle className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 text-primary mb-3 sm:mb-5" />
-          <p className="text-sm sm:text-base lg:text-lg font-semibold text-foreground text-center mb-1 sm:mb-2">One car, one thread</p>
-          <p className="text-[10px] sm:text-sm text-muted-foreground text-center leading-relaxed">Every message tied to a listing.</p>
-        </div>
-      </div>
-    </div>
+    <Image
+      src={mk1}
+      alt="Revvup partner tools overview"
+      width={2400}
+      height={1600}
+      className="w-full h-auto"
+      priority
+      sizes="(max-width: 1600px) 100vw, 1600px"
+    />
   );
 }

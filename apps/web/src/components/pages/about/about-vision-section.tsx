@@ -7,6 +7,7 @@
 
 import Image from 'next/image';
 import { Car, CreditCard, Wrench, BookOpen, Calendar, Tag } from 'lucide-react';
+import { revx4 } from '@/components/pages/marketing-image-assets';
 
 export function AboutVisionSection() {
   return (
@@ -28,7 +29,7 @@ export function AboutVisionSection() {
         {/* Image */}
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
-            src="/Abstract/pic4.png"
+            src={revx4}
             alt="Revvup Vision"
             fill
             className="object-cover"

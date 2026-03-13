@@ -15,6 +15,10 @@ import type { StorageData, UploadFileParams } from "@/lib/storage/types";
 // ============================================================================
 
 const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+const R2_PUBLIC_HOST = R2_PUBLIC_URL ? new URL(R2_PUBLIC_URL).hostname : null;
+const CDN_HOSTS = new Set(
+  ['cdn.revvup.ae', R2_PUBLIC_HOST].filter((value): value is string => Boolean(value))
+);
 
 /** CDN base URL for static assets (public folder) */
 const CDN_STATIC_URL = process.env.NEXT_PUBLIC_CDN_STATIC_URL;
@@ -99,6 +103,29 @@ export function getPublicUrl(key: string | null | undefined, cacheBuster?: strin
 }
 
 /**
+ * Converts a listing image key to a strict CDN URL.
+ * Non-CDN absolute URLs and local/public paths are rejected.
+ */
+export function getCdnPublicUrl(key: string | null | undefined, cacheBuster?: string | number): string | null {
+  if (!key) return null;
+
+  if (key.startsWith('/')) {
+    return null;
+  }
+
+  if (key.startsWith('http://') || key.startsWith('https://')) {
+    try {
+      const parsed = new URL(key);
+      return CDN_HOSTS.has(parsed.hostname) ? key : null;
+    } catch {
+      return null;
+    }
+  }
+
+  return getPublicUrl(key, cacheBuster);
+}
+
+/**
  * Get thumbnail URL from a full-size image URL/key.
  * 
  * For listing images uploaded after Feb 2026, images are stored as pairs:
@@ -139,6 +166,26 @@ export function getThumbUrl(url: string | null | undefined, cacheBuster?: string
 }
 
 /**
+ * Strict CDN-only thumbnail resolution.
+ */
+export function getCdnThumbUrl(url: string | null | undefined, cacheBuster?: string | number): string | null {
+  if (!url) return null;
+
+  const fullUrl = getCdnPublicUrl(url, cacheBuster);
+  if (!fullUrl) return null;
+
+  if (fullUrl.includes('_full.webp')) {
+    return fullUrl.replace('_full.webp', '_thumb.webp');
+  }
+
+  if (fullUrl.includes('_full.jpg')) {
+    return fullUrl.replace('_full.jpg', '_thumb.jpg');
+  }
+
+  return fullUrl;
+}
+
+/**
  * Get listing image URLs with both thumb and full variants.
  * Useful for responsive images where thumb is used for grid cards
  * and full is used for detail pages/lightbox.
@@ -172,6 +219,36 @@ export function getListingImageUrls(url: string | null | undefined): { thumb: st
   return {
     thumb: publicUrl,
     full: publicUrl,
+  };
+}
+
+/**
+ * Strict CDN-only listing image variants.
+ * Returns nulls when the source cannot be resolved to the CDN.
+ */
+export function getCdnListingImageUrls(url: string | null | undefined): { thumb: string | null; full: string | null } {
+  if (!url) return { thumb: null, full: null };
+
+  const full = getCdnPublicUrl(url);
+  if (!full) return { thumb: null, full: null };
+
+  if (full.includes('_full.webp')) {
+    return {
+      thumb: full.replace('_full.webp', '_thumb.webp'),
+      full,
+    };
+  }
+
+  if (full.includes('_full.jpg')) {
+    return {
+      thumb: full.replace('_full.jpg', '_thumb.jpg'),
+      full,
+    };
+  }
+
+  return {
+    thumb: full,
+    full,
   };
 }
 

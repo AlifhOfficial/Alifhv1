@@ -6,6 +6,7 @@
 'use client';
 
 import Image from 'next/image';
+import { revx } from '@/components/pages/marketing-image-assets';
 
 export function AboutHeroSection() {
   return (
@@ -27,7 +28,7 @@ export function AboutHeroSection() {
         {/* Hero Image */}
         <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-sidebar border border-border/40 mb-12">
           <Image
-            src="/Abstract/revb4.jpg"
+            src={revx}
             alt="Revvup - UAE Car Marketplace"
             fill
             priority

@@ -5,12 +5,13 @@
 
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CheckCircle2 } from 'lucide-react';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import { MacOSWindow } from '@/components/ui/macos-window';
+import { revx9 } from '@/components/pages/marketing-image-assets';
 
 function SellButton() {
   const router = useRouter();
@@ -70,21 +71,8 @@ export function ClosingSection() {
 
           {/* Description */}
           <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
-            We built the marketplace we wished existed. No fees, no clutter, just cars.
+            We built the marketplace we wished existed in Dubai. Free for private sellers, built for new and used cars, with no fees, no clutter, just cars.
           </p>
-
-          {/* Principles */}
-          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-12">
-            <span className="text-sm font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary" />Free for private sellers
-            </span>
-            <span className="text-sm font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary" />New & used cars
-            </span>
-            <span className="text-sm font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary" />Based in Dubai
-            </span>
-          </div>
 
           {/* CTA - Main page CTA */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -110,15 +98,14 @@ export function ClosingSection() {
 function CarPeopleInfographic() {
   return (
     <MacOSWindow url="revvup.ae" contentClassName="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2.4/1]">
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="w-full h-full object-cover"
-      >
-        <source src="/Marketing/classiccar.mp4" type="video/mp4" />
-      </video>
+      <Image
+        src={revx9}
+        alt="Revvup closing showcase"
+        fill
+        className="object-cover object-center object-[center_35%]"
+        priority
+        sizes="(max-width: 1600px) 100vw, 1600px"
+      />
     </MacOSWindow>
   );
 }

@@ -5,8 +5,10 @@
 
 'use client';
 
+import Image from 'next/image';
 import { CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
+import { m8, m12 } from '@/components/pages/marketing-image-assets';
 
 const COMPARISON_DATA = [
   { label: 'Listing cost', others: 'AED 500–1,000+', alifh: 'Free' },
@@ -109,7 +111,7 @@ function ComparisonInfographic() {
               {/* Listing with image */}
               <div className="p-1.5 sm:p-2 lg:p-2.5 rounded-md sm:rounded-lg bg-white/5 border border-white/10">
                 <div className="aspect-[16/9] rounded overflow-hidden bg-white/10 mb-1.5 sm:mb-2">
-                  <img src="/Marketing/m8.jpeg" alt="" className="w-full h-full object-cover opacity-70 grayscale-[30%]" />
+                  <Image src={m8} alt="" className="w-full h-full object-cover opacity-70 grayscale-[30%]" sizes="(max-width: 768px) 200px, 260px" />
                 </div>
                 <div className="h-1.5 sm:h-2 lg:h-2.5 w-3/4 rounded bg-white/15" />
               </div>
@@ -117,7 +119,7 @@ function ComparisonInfographic() {
               {/* Your listing - buried and faded */}
               <div className="p-1.5 sm:p-2 lg:p-2.5 rounded-md sm:rounded-lg bg-white/5 border border-white/5 opacity-40">
                 <div className="aspect-[16/9] rounded overflow-hidden bg-white/10 mb-1.5 sm:mb-2">
-                  <img src="/Marketing/m12.jpeg" alt="" className="w-full h-full object-cover opacity-50 grayscale" />
+                  <Image src={m12} alt="" className="w-full h-full object-cover opacity-50 grayscale" sizes="(max-width: 768px) 200px, 260px" />
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="h-1 sm:h-1.5 lg:h-2 w-1/2 rounded bg-white/10" />
