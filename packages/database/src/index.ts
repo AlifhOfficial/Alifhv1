@@ -24,6 +24,7 @@ export { createId } from '@paralleldrive/cuid2';
 
 // Re-export UUID utilities
 export { generateId } from './utils/uuid';
+export * from './env';
 
 export * from './dbclient';
 export * from './schema';

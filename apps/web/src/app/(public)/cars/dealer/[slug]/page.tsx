@@ -7,6 +7,7 @@
 
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
+import { isDatabaseConfigured } from '@/lib/env/database';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -14,7 +15,7 @@ interface PageProps {
 
 export async function generateStaticParams() {
   // Skip during build time when DATABASE_URL is not available
-  if (!process.env.DATABASE_URL) {
+  if (!isDatabaseConfigured()) {
     return [];
   }
   
