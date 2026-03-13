@@ -5,6 +5,7 @@
 
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getPublicUrl, isCdnUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -15,7 +16,7 @@ interface ShowroomFounderProps {
 export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
   if (!showroom.founderName) return null;
 
-  const founderImageUrl = showroom.founderImage;
+  const founderImageUrl = getPublicUrl(showroom.founderImage);
   const theme = getAmbientTheme(showroom.ambientStyle);
 
   return (
@@ -31,6 +32,7 @@ export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
                 src={founderImageUrl}
                 alt={showroom.founderName}
                 fill
+                unoptimized={isCdnUrl(founderImageUrl)}
                 className="object-cover"
               />
             </div>

@@ -17,7 +17,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getCdnThumbUrl } from '@/utils/storage';
+import { getThumbUrl, isCdnUrl } from '@/utils/storage';
 
 interface ConsignmentFunnel {
   id: string;
@@ -139,11 +139,12 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
                 <div className="rounded-lg border border-sidebar-border bg-sidebar overflow-hidden hover:border-sidebar-border/80 hover:shadow-md transition-all">
                   {/* Image */}
                   <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
-                    {getCdnThumbUrl(listing.thumbnail) ? (
+                    {getThumbUrl(listing.thumbnail) ? (
                       <Image
-                        src={getCdnThumbUrl(listing.thumbnail)!}
+                        src={getThumbUrl(listing.thumbnail)!}
                         alt={`${listing.year} ${listing.make} ${listing.model}`}
                         fill
+                        unoptimized={isCdnUrl(getThumbUrl(listing.thumbnail)!)}
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                       />

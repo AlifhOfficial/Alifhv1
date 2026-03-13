@@ -7,6 +7,7 @@
 
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getPublicUrl, isCdnUrl } from '@/utils/storage';
 import {
   Dialog,
   DialogContent,
@@ -29,7 +30,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
   const theme = getAmbientTheme(showroom.ambientStyle);
   
   // Use ambient image (index 8 or fallback)
-  const ambientImage = showroom.showroomImages?.[8] || showroom.showroomImages?.[2];
+  const ambientImage = getPublicUrl(showroom.showroomImages?.[8]) || getPublicUrl(showroom.showroomImages?.[2]);
 
   return (
     <section id="showroom-team" className={`${theme.sectionSpacing}`}>
@@ -53,6 +54,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                 src={ambientImage}
                 alt="Our Team"
                 fill
+                unoptimized={isCdnUrl(ambientImage)}
                 className="object-cover"
               />
             </div>
@@ -80,11 +82,12 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                   >
                     {/* Avatar */}
                     <div className="relative w-14 h-14 rounded-full overflow-hidden bg-muted mb-4 ring-2 ring-border/40 group-hover:ring-primary/30 transition-colors">
-                      {member.image ? (
+                      {getPublicUrl(member.image) ? (
                         <Image
-                          src={member.image}
+                          src={getPublicUrl(member.image)!}
                           alt={member.name}
                           fill
+                          unoptimized={isCdnUrl(getPublicUrl(member.image)!)}
                           className="object-cover"
                         />
                       ) : (
@@ -116,11 +119,12 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                   <DialogHeader>
                     <div className="flex items-center gap-4">
                       <div className="relative w-16 h-16 rounded-full overflow-hidden bg-muted ring-2 ring-border/40 flex-shrink-0">
-                        {member.image ? (
+                        {getPublicUrl(member.image) ? (
                           <Image
-                            src={member.image}
+                            src={getPublicUrl(member.image)!}
                             alt={member.name}
                             fill
+                            unoptimized={isCdnUrl(getPublicUrl(member.image)!)}
                             className="object-cover"
                           />
                         ) : (

@@ -22,7 +22,7 @@ import {
   ChevronDown,
   Eye
 } from 'lucide-react';
-import { cn, getCdnThumbUrl } from '@/utils';
+import { cn, getThumbUrl } from '@/utils';
 import type { ListingData, ListingType } from './types';
 import {
   DropdownMenu,
@@ -104,7 +104,7 @@ export function ListingCard({
     ? `/staff-dashboard/work-listings/${listing.id}/edit`
     : `/user-dashboard/listings/${listing.id}/edit`;
 
-  const displayImage = getCdnThumbUrl(listing.thumbnail);
+  const displayImage = getThumbUrl(listing.thumbnail);
 
   // Time calculations
   const expiresAt = listing.expiresAt ? new Date(listing.expiresAt as any) : null;

@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { Volume2, VolumeX, Pause, Play } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
+import { getPublicUrl, isCdnUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -28,10 +29,10 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
 
-  const heroImageUrl = showroom.heroImage;
+  const heroImageUrl = getPublicUrl(showroom.heroImage);
   
   // Check for uploaded video file first, then YouTube/Vimeo URL
-  const heroVideoFileUrl = (showroom as any).heroVideoFile || null;
+  const heroVideoFileUrl = getPublicUrl((showroom as any).heroVideoFile);
   const { embedUrl: heroVideoEmbedUrl } = getVideoEmbedUrl(showroom.heroVideoUrl);
   
   // Priority: Video first, then image, then gradient
@@ -113,6 +114,7 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                     alt={showroom.heroTagline || partner.brandName}
                     fill
                     priority
+                    unoptimized={isCdnUrl(heroImageUrl)}
                     className="object-cover"
                     sizes="100vw"
                   />
@@ -183,6 +185,7 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 alt={showroom.heroTagline || partner.brandName}
                 fill
                 priority
+                unoptimized={isCdnUrl(heroImageUrl)}
                 className="object-cover"
                 sizes="100vw"
               />

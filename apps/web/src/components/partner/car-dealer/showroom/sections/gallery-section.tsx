@@ -44,6 +44,7 @@ interface SortableGalleryImageProps {
 }
 
 function SortableGalleryImage({ id, url, index, onRemove }: SortableGalleryImageProps) {
+  const imageUrl = getPublicUrl(url);
   const {
     attributes,
     listeners,
@@ -68,13 +69,17 @@ function SortableGalleryImage({ id, url, index, onRemove }: SortableGalleryImage
         isDragging ? 'ring-2 ring-primary shadow-lg' : ''
       }`}
     >
-      <Image 
-        src={getPublicUrl(url) || url} 
-        alt={`Gallery ${index + 1}`} 
-        fill 
-        className="object-cover pointer-events-none" 
-        unoptimized 
-      />
+      {imageUrl ? (
+        <Image 
+          src={imageUrl}
+          alt={`Gallery ${index + 1}`} 
+          fill 
+          className="object-cover pointer-events-none" 
+          unoptimized 
+        />
+      ) : (
+        <div className="absolute inset-0 bg-muted/40 pointer-events-none" />
+      )}
       
       {/* Drag handle - top left */}
       <button

@@ -9,6 +9,7 @@ import { useRef } from 'react';
 import Image from 'next/image';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { getPublicUrl, isCdnUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -60,13 +61,14 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
                   )}
                   
                   {/* Achievement Image */}
-                  {achievement.image && (
+                  {getPublicUrl(achievement.image) && (
                     <div className="w-14 h-14 rounded-xl overflow-hidden bg-muted ring-1 ring-border/40">
                       <Image
-                        src={achievement.image}
+                        src={getPublicUrl(achievement.image)!}
                         alt={achievement.title}
                         width={56}
                         height={56}
+                        unoptimized={isCdnUrl(getPublicUrl(achievement.image)!)}
                         className="object-cover w-full h-full"
                       />
                     </div>

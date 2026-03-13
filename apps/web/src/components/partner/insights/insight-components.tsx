@@ -12,7 +12,7 @@ import { TrendingUp, TrendingDown, Minus, AlertCircle, Clock, Eye } from 'lucide
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getCdnThumbUrl } from '@/utils/storage';
+import { getThumbUrl, isCdnUrl } from '@/utils/storage';
 
 // ============================================================================
 // Types
@@ -172,11 +172,12 @@ export function TopListings({ title, listings, emptyMessage = "No data", classNa
               className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-accent/50 transition-colors"
             >
               <div className="relative w-12 h-9 rounded overflow-hidden bg-muted flex-shrink-0">
-                {getCdnThumbUrl(listing.thumbnail) ? (
+                {getThumbUrl(listing.thumbnail) ? (
                   <Image
-                    src={getCdnThumbUrl(listing.thumbnail)!}
+                    src={getThumbUrl(listing.thumbnail)!}
                     alt={listing.title}
                     fill
+                    unoptimized={isCdnUrl(getThumbUrl(listing.thumbnail)!)}
                     className="object-cover"
                     sizes="48px"
                   />
@@ -238,11 +239,12 @@ export function ColdListings({
             className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-accent/50 transition-colors"
           >
             <div className="relative w-12 h-9 rounded overflow-hidden bg-muted flex-shrink-0">
-              {getCdnThumbUrl(listing.thumbnail) ? (
+              {getThumbUrl(listing.thumbnail) ? (
                 <Image
-                  src={getCdnThumbUrl(listing.thumbnail)!}
+                  src={getThumbUrl(listing.thumbnail)!}
                   alt={listing.title}
                   fill
+                  unoptimized={isCdnUrl(getThumbUrl(listing.thumbnail)!)}
                   className="object-cover"
                   sizes="48px"
                 />

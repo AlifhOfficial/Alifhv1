@@ -9,6 +9,7 @@ import { useRef } from 'react';
 import Image from 'next/image';
 import { Star } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getPublicUrl, isCdnUrl } from '@/utils/storage';
 import type { ShowroomData, AmbientTheme } from './types';
 import { getAmbientTheme } from './types';
 import type { ShowroomTestimonial } from '@alifh/database';
@@ -26,7 +27,7 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
   const theme = getAmbientTheme(showroom.ambientStyle);
   
   // Get an image for the section header
-  const sectionImage = showroom.showroomImages?.[2] || showroom.showroomImages?.[0];
+  const sectionImage = getPublicUrl(showroom.showroomImages?.[2]) || getPublicUrl(showroom.showroomImages?.[0]);
 
   return (
     <section id="showroom-testimonials" className={`${theme.sectionSpacing}`}>
@@ -50,6 +51,7 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
                 src={sectionImage}
                 alt="Client experiences"
                 fill
+                unoptimized={isCdnUrl(sectionImage)}
                 className="object-cover"
               />
             </div>

@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
+import { getPublicUrl, isCdnUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -21,10 +22,10 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
   if (!showroom.brandStoryContent) return null;
 
   const partner = showroom.partner;
-  const firstImage = showroom.showroomImages?.[0];
+  const firstImage = getPublicUrl(showroom.showroomImages?.[0]) || undefined;
   
   // Check for uploaded video file first, then YouTube/Vimeo URL
-  const storyVideoFileUrl = showroom.brandStoryVideoFile || null;
+  const storyVideoFileUrl = getPublicUrl(showroom.brandStoryVideoFile);
   const { embedUrl } = getVideoEmbedUrl(showroom.brandStoryVideoUrl);
   const theme = getAmbientTheme(showroom.ambientStyle);
 
@@ -161,6 +162,7 @@ function StoryMedia({ storyVideoFileUrl, embedUrl, firstImage, title }: StoryMed
           src={firstImage}
           alt="Showroom"
           fill
+          unoptimized={isCdnUrl(firstImage)}
           className="object-cover"
         />
       </div>

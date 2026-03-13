@@ -24,6 +24,21 @@ const CDN_HOSTS = new Set(
 const CDN_STATIC_URL = process.env.NEXT_PUBLIC_CDN_STATIC_URL;
 
 /**
+ * Returns true when a URL points at our direct image CDN / R2 public host.
+ * These should bypass Next.js image optimization to avoid the extra proxy hop.
+ */
+export function isCdnUrl(url: unknown): url is string {
+  if (typeof url !== 'string') return false;
+  if (!url.startsWith('http://') && !url.startsWith('https://')) return false;
+
+  try {
+    return CDN_HOSTS.has(new URL(url).hostname);
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Get CDN URL for static assets from the public folder.
  * 
  * In production, serves files from cdn.revvup.ae/static/... instead of the Next.js server.

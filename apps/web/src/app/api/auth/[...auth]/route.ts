@@ -109,6 +109,23 @@ function addCorsHeaders(response: Response, origin: string | null): Response {
   return response;
 }
 
+function applySessionCacheHeaders(response: Response, request: Request): Response {
+  const pathname = new URL(request.url).pathname;
+
+  if (!pathname.endsWith('/get-session')) {
+    return response;
+  }
+
+  const headers = new Headers(response.headers);
+  headers.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=60');
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export async function OPTIONS(request: Request) {
   const origin = request.headers.get("origin");
   
@@ -140,7 +157,7 @@ export async function GET(request: Request) {
     duplex: "half",
   });
   const response = await auth.handler(modifiedRequest);
-  return addCorsHeaders(response, origin);
+  return addCorsHeaders(applySessionCacheHeaders(response, request), origin);
 }
 
 export async function POST(request: Request) {

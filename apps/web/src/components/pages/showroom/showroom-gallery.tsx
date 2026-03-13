@@ -11,6 +11,7 @@ import { Expand, Images, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
+import { getPublicUrl, isCdnUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -43,6 +44,7 @@ function GalleryImage({
         src={src}
         alt={alt}
         fill
+        unoptimized={isCdnUrl(src)}
         className="object-cover transition-transform duration-700 group-hover:scale-105"
         priority={priority}
       />
@@ -100,6 +102,7 @@ function ImageSlider({
           src={images[currentIndex]}
           alt={`Showroom ${currentIndex + 1}`}
           fill
+          unoptimized={isCdnUrl(images[currentIndex])}
           className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
           priority
         />
@@ -163,8 +166,8 @@ function ImageSlider({
 }
 
 export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
-  const interiorImages = showroom.showroomImages || [];
-  const exteriorImages = showroom.showroomExteriorImages || [];
+  const interiorImages = (showroom.showroomImages || []).map((img) => getPublicUrl(img)).filter((img): img is string => Boolean(img));
+  const exteriorImages = (showroom.showroomExteriorImages || []).map((img) => getPublicUrl(img)).filter((img): img is string => Boolean(img));
   const allImages = [...interiorImages, ...exteriorImages];
   
   // Slider state
@@ -191,7 +194,7 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
   const theme = getAmbientTheme(showroom.ambientStyle);
   
   // Check for uploaded video file first, then YouTube/Vimeo URL
-  const videoTourFileUrl = showroom.showroomVideoTourFile || null;
+  const videoTourFileUrl = getPublicUrl(showroom.showroomVideoTourFile);
   const { embedUrl: videoTourEmbedUrl } = getVideoEmbedUrl(showroom.showroomVideoTourUrl);
   const hasVideoTour = videoTourFileUrl || videoTourEmbedUrl;
 

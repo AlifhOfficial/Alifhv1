@@ -35,6 +35,7 @@ export function PartnerProfileCard({ sellerData }: PartnerProfileCardProps) {
   const location = [partner.city, partner.emirate].filter(Boolean).join(', ');
   const badges = partner.badges ?? [];
   const specialties = partner.specialties ?? [];
+  const hasPublishedShowroom = stats && 'hasShowroom' in stats ? stats.hasShowroom === true : false;
 
   return (
     <div className="space-y-5">
@@ -49,7 +50,10 @@ export function PartnerProfileCard({ sellerData }: PartnerProfileCardProps) {
       />
 
       {/* Website & Showroom Links */}
-      <PartnerLinks partner={partner} isBlackTier={isBlackTier} />
+      <PartnerLinks
+        partner={partner}
+        hasPublishedShowroom={hasPublishedShowroom}
+      />
 
       {/* Badges */}
       <PartnerBadges badges={badges} />
@@ -150,11 +154,11 @@ function PartnerHeader({ partner, isBlackTier, location }: PartnerHeaderProps) {
 
 interface PartnerLinksProps {
   partner: NonNullable<PartnerSellerData['partner']>;
-  isBlackTier: boolean;
+  hasPublishedShowroom: boolean;
 }
 
-function PartnerLinks({ partner, isBlackTier }: PartnerLinksProps) {
-  if (!partner.website && !(isBlackTier && partner.id)) return null;
+function PartnerLinks({ partner, hasPublishedShowroom }: PartnerLinksProps) {
+  if (!partner.website && !(hasPublishedShowroom && partner.id)) return null;
 
   return (
     <div className="flex items-center gap-4">
@@ -169,7 +173,7 @@ function PartnerLinks({ partner, isBlackTier }: PartnerLinksProps) {
           <ExternalLink className="w-4 h-4 flex-shrink-0" />
         </Link>
       )}
-      {isBlackTier && partner.id && (
+      {hasPublishedShowroom && partner.id && (
         <Link
           href={`/showroom/${partner.id}`}
           prefetch={false}

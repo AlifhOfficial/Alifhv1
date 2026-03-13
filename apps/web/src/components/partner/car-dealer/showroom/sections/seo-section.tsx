@@ -38,6 +38,8 @@ export function SeoSection({
   uploadImage,
   removeImage,
 }: SeoSectionProps) {
+  const seoImageUrl = getPublicUrl(form.seoImage);
+
   return (
     <div className="space-y-6">
       {/* URL & Slug - Hidden from UI, auto-generated */}
@@ -74,11 +76,11 @@ export function SeoSection({
               <p className="mt-1.5 text-muted-foreground/50">Best size: 1200×630px (landscape). Use your logo on a branded background.</p>
             </div>
             <div className="relative aspect-[1200/630] max-w-[300px] rounded-lg overflow-hidden bg-muted/30 border border-border/40 group">
-              {form.seoImage ? (
+              {seoImageUrl ? (
                 <>
                   <Image
-                    key={form.seoImage}
-                    src={getPublicUrl(form.seoImage) || form.seoImage}
+                    key={seoImageUrl}
+                    src={seoImageUrl}
                     alt="SEO preview"
                     fill
                     className="object-cover"

@@ -6,7 +6,7 @@
 
 import Link from 'next/link';
 import { Eye, Heart, User, Building2, Clock, Calendar, AlertTriangle, Zap, Bot } from 'lucide-react';
-import { getCdnThumbUrl } from '@/utils/storage';
+import { getThumbUrl } from '@/utils/storage';
 
 interface Listing {
   id: string;
@@ -122,9 +122,9 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
       <div className="flex gap-6">
         {/* Thumbnail */}
         <div className="w-40 h-28 bg-secondary/50 rounded-xl overflow-hidden flex-shrink-0">
-          {getCdnThumbUrl(listing.thumbnail) ? (
+          {getThumbUrl(listing.thumbnail) ? (
             <img
-              src={getCdnThumbUrl(listing.thumbnail)!}
+              src={getThumbUrl(listing.thumbnail)!}
               alt={`${listing.year} ${listing.make} ${listing.model}`}
               className="w-full h-full object-cover"
             />

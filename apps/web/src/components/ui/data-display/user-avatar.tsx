@@ -26,6 +26,7 @@
 import * as React from "react";
 import Image from "next/image";
 import { cn, getPublicUrl } from "@/utils";
+import { isCdnUrl } from "@/utils/storage";
 
 interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   /** 
@@ -127,7 +128,7 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
             className="object-cover"
             onError={() => setImageError(true)}
             referrerPolicy="no-referrer"
-            unoptimized={resolvedUrl.includes('r2.dev')}
+            unoptimized={isCdnUrl(resolvedUrl)}
           />
         )}
         {!showImage && (

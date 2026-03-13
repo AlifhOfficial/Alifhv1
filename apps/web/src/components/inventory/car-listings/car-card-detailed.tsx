@@ -24,7 +24,7 @@ import {
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/lib/utils';
-import { getCdnListingImageUrls } from '@/utils/storage';
+import { getListingImageUrls, isCdnUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
@@ -100,7 +100,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
   const resolvedImages = useMemo(
     () =>
       validImages
-        .map((img) => getCdnListingImageUrls(img))
+        .map((img) => getListingImageUrls(img))
         .filter((img): img is { thumb: string; full: string } => Boolean(img.full && img.thumb)),
     [validImages]
   );
@@ -157,10 +157,14 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
           }}
         >
           {currentImage && (
-            <ProgressiveGalleryImage
-              fullSrc={currentImage}
-              thumbSrc={thumbImages[safeCurrentIndex] || currentImage}
+            <Image
+              src={currentImage}
               alt={title}
+              fill
+              unoptimized={isCdnUrl(currentImage)}
+              className="object-cover group-hover:scale-[1.02] transition-transform duration-300"
+              sizes="(max-width: 1024px) 100vw, 66vw"
+              priority
             />
           )}
 
@@ -217,6 +221,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
                     src={img} 
                     alt={`View ${idx + 1}`} 
                     fill 
+                    unoptimized={isCdnUrl(img)}
                     className="object-cover" 
                     sizes="64px" 
                   />
@@ -267,48 +272,6 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
         title="All Photos"
         onClose={() => setShowAllImages(false)}
         onImageClick={handleGridImageClick}
-      />
-    </>
-  );
-}
-
-function ProgressiveGalleryImage({
-  fullSrc,
-  thumbSrc,
-  alt,
-}: {
-  fullSrc: string;
-  thumbSrc: string;
-  alt: string;
-}) {
-  const [isFullLoaded, setIsFullLoaded] = useState(false);
-
-  useEffect(() => {
-    setIsFullLoaded(false);
-  }, [fullSrc]);
-
-  return (
-    <>
-      <Image
-        src={thumbSrc}
-        alt=""
-        aria-hidden="true"
-        fill
-        className="object-cover scale-[1.02] blur-sm"
-        sizes="(max-width: 1024px) 100vw, 66vw"
-        priority
-      />
-      <Image
-        src={fullSrc}
-        alt={alt}
-        fill
-        className={cn(
-          "object-cover transition-all duration-300 group-hover:scale-[1.02]",
-          isFullLoaded ? "opacity-100" : "opacity-0"
-        )}
-        sizes="(max-width: 1024px) 100vw, 66vw"
-        priority
-        onLoad={() => setIsFullLoaded(true)}
       />
     </>
   );

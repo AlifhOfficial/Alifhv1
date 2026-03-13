@@ -7,6 +7,7 @@
 
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getPublicUrl, isCdnUrl } from '@/utils/storage';
 import {
   Dialog,
   DialogContent,
@@ -30,7 +31,7 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
   const theme = getAmbientTheme(showroom.ambientStyle);
   
   // Single ambient image (index 6)
-  const ambientImage = showroom.showroomImages?.[6];
+  const ambientImage = getPublicUrl(showroom.showroomImages?.[6]);
 
   return (
     <section id="showroom-services" className={`${theme.sectionSpacing}`}>
@@ -54,6 +55,7 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
                 src={ambientImage}
                 alt="Showroom Services"
                 fill
+                unoptimized={isCdnUrl(ambientImage)}
                 className="object-cover"
               />
             </div>

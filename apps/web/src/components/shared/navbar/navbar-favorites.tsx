@@ -12,7 +12,7 @@ import { useFavoritesStatus } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getCdnThumbUrl } from '@/utils/storage';
+import { getThumbUrl, isCdnUrl } from '@/utils/storage';
 
 interface NavbarFavoritesProps {
   userId?: string;
@@ -204,7 +204,7 @@ interface FavoritePreviewItemProps {
 
 function FavoritePreviewItem({ listing, onClose }: FavoritePreviewItemProps) {
   const { id, make, model, year, price, thumbnail } = listing;
-  const thumbnailUrl = getCdnThumbUrl(thumbnail);
+  const thumbnailUrl = getThumbUrl(thumbnail);
   
   const title = [year, make, model].filter(Boolean).join(' ') || 'Vehicle';
   const priceText = price ? `AED ${price.toLocaleString()}` : 'Price TBD';
@@ -222,6 +222,7 @@ function FavoritePreviewItem({ listing, onClose }: FavoritePreviewItemProps) {
             src={thumbnailUrl}
             alt={title}
             fill
+            unoptimized={isCdnUrl(thumbnailUrl)}
             className="object-cover"
             sizes="64px"
           />

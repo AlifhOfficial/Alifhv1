@@ -14,6 +14,7 @@ import type { TeamMemberCardProps } from '../types';
 export function TeamMemberCard({ member, onUpdate, onRemove, onImageUpload, isUploading }: TeamMemberCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState(member);
+  const memberImageUrl = getPublicUrl(member.image);
 
   // Sync form state when member prop changes (e.g., after save)
   React.useEffect(() => {
@@ -38,11 +39,11 @@ export function TeamMemberCard({ member, onUpdate, onRemove, onImageUpload, isUp
             }}
             disabled={isUploading}
           />
-          {member.image ? (
+          {memberImageUrl ? (
             <>
               <Image 
-                key={member.image}
-                src={getPublicUrl(member.image) || member.image} 
+                key={memberImageUrl}
+                src={memberImageUrl}
                 alt={member.name} 
                 fill 
                 className="object-cover" 

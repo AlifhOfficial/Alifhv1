@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/utils';
-import { getCdnThumbUrl } from '@/utils/storage';
+import { getThumbUrl, isCdnUrl } from '@/utils/storage';
 import type { UserBookingData } from './types';
 
 interface UserBookingCardProps {
@@ -86,7 +86,7 @@ export function UserBookingCard({
     const cutoffTime = new Date(scheduledTime.getTime() - 2 * 60 * 60 * 1000);
     return new Date() < cutoffTime;
   };
-  const listingThumbnailUrl = getCdnThumbUrl(booking.listingThumbnail);
+  const listingThumbnailUrl = getThumbUrl(booking.listingThumbnail);
 
   return (
     <div className="group relative">
@@ -103,6 +103,7 @@ export function UserBookingCard({
               src={listingThumbnailUrl}
               alt={booking.listingTitle}
               fill
+              unoptimized={isCdnUrl(listingThumbnailUrl)}
               className="object-cover"
               sizes="(max-width: 640px) 112px, 144px"
             />

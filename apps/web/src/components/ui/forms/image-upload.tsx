@@ -47,6 +47,7 @@ interface SortableImageProps {
 }
 
 function SortableImage({ id, url, index, onRemove }: SortableImageProps) {
+  const imageUrl = getPublicUrl(url);
   const {
     attributes,
     listeners,
@@ -71,11 +72,15 @@ function SortableImage({ id, url, index, onRemove }: SortableImageProps) {
         isDragging ? 'ring-2 ring-primary shadow-lg' : ''
       }`}
     >
-      <img
-        src={getPublicUrl(url) || url}
-        alt={`Upload ${index + 1}`}
-        className="w-full h-full object-cover pointer-events-none"
-      />
+      {imageUrl ? (
+        <img
+          src={imageUrl}
+          alt={`Upload ${index + 1}`}
+          className="w-full h-full object-cover pointer-events-none"
+        />
+      ) : (
+        <div className="w-full h-full bg-muted/40 pointer-events-none" />
+      )}
       
       {/* Drag handle - top left (always visible on mobile, hover on desktop) */}
       <button

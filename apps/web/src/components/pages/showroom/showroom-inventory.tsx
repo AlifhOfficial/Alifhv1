@@ -20,7 +20,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { getCdnPublicUrl, getCdnThumbUrl } from '@/utils';
+import { getThumbUrl, isCdnUrl } from '@/utils';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -403,9 +403,9 @@ interface ShowroomCarCardProps {
 
 function ShowroomCarCard({ listing, priority = false, index, theme }: ShowroomCarCardProps) {
   const displayImage = listing.thumbnail
-    ? getCdnThumbUrl(listing.thumbnail) || getCdnPublicUrl(listing.thumbnail)
+    ? getThumbUrl(listing.thumbnail)
     : listing.images?.[0]
-      ? getCdnThumbUrl(listing.images[0]) || getCdnPublicUrl(listing.images[0])
+      ? getThumbUrl(listing.images[0])
       : null;
 
   const price = listing.price ? `AED ${listing.price.toLocaleString()}` : null;
@@ -423,6 +423,7 @@ function ShowroomCarCard({ listing, priority = false, index, theme }: ShowroomCa
             alt={`${listing.year} ${listing.make} ${listing.model}`}
             fill
             priority={priority}
+            unoptimized={isCdnUrl(displayImage)}
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 768px) 300px, 340px"
           />

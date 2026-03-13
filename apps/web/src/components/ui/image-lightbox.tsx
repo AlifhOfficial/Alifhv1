@@ -12,6 +12,7 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/utils';
+import { isCdnUrl } from '@/utils/storage';
 
 // ============================================================================
 // Types
@@ -135,6 +136,7 @@ export function ImageLightbox({
             src={currentImage}
             alt={`${title} - Image ${safeIndex + 1}`}
             fill
+            unoptimized={isCdnUrl(currentImage)}
             className="object-contain"
             sizes="100vw"
             priority
@@ -186,6 +188,7 @@ export function ImageLightbox({
               src={img}
               alt={`Thumbnail ${idx + 1}`}
               fill
+              unoptimized={isCdnUrl(img)}
               className="object-cover"
               sizes="56px"
             />

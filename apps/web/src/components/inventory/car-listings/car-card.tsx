@@ -12,7 +12,7 @@ import { Share2, Heart, CheckCircle2, Zap } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/utils';
-import { getCdnThumbUrl } from '@/utils/storage';
+import { getThumbUrl, isCdnUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
@@ -127,7 +127,7 @@ export function CarCard({
 }: CarCardProps) {
   // Derived display values
   // Use thumb URL for grid cards (480w, ~30-90KB) - bandwidth optimization
-  const displayImage = getCdnThumbUrl(thumbnail || images?.[0]);
+  const displayImage = getThumbUrl(thumbnail || images?.[0]);
   const displaySpecs = formatSpecs(specs || 'GCC');
   const displayEmirate = formatEmirate(emirate);
   const displaySellerName = partnerName || sellerName || 'Private Seller';
@@ -291,6 +291,7 @@ export function CarCard({
             alt={`${year} ${make} ${model}`}
             fill
             priority={priority}
+            unoptimized={isCdnUrl(displayImage)}
             className="object-cover"
             sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
           />

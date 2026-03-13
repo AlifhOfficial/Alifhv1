@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { ArrowRight, Volume2, VolumeX, Play, Pause } from 'lucide-react';
 import { cn } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { isCdnUrl } from '@/utils/storage';
 
 // ============================================================================
 // Types
@@ -165,6 +166,7 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
               alt={partner.brandName}
               fill
               priority={priority}
+              unoptimized={isCdnUrl(displayImage)}
               className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
               sizes="(max-width: 1024px) 100vw, 75vw"
             />
@@ -195,6 +197,7 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
                       alt={`${partner.brandName} logo`}
                       width={120}
                       height={56}
+                      unoptimized={isCdnUrl(partner.logoUrl)}
                       className="object-contain h-14 w-auto"
                     />
                   </div>
@@ -246,6 +249,7 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
                     alt={`${partner.brandName} logo`}
                     width={80}
                     height={48}
+                    unoptimized={isCdnUrl(partner.logoUrl)}
                     className="object-contain h-12 w-auto"
                   />
                 </div>

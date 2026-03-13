@@ -49,11 +49,6 @@ export function AuthProvider({ children, initialSession }: AuthProviderProps) {
       const res = await fetch(url, {
         method: 'GET',
         credentials: 'include',
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache', // Safari compatibility
-        },
       });
       
       if (!res.ok) {
