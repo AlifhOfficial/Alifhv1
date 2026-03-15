@@ -554,6 +554,41 @@
       "when": 1773071341627,
       "tag": "0078_skinny_the_order",
       "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "7",
+      "when": 1773611990607,
+      "tag": "0079_fix_function_search_path_and_pg_trgm_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1773612059476,
+      "tag": "0080_dashing_gideon",
+      "breakpoints": true
+    },
+    {
+      "idx": 81,
+      "version": "7",
+      "when": 1773612393356,
+      "tag": "0081_curved_warlock",
+      "breakpoints": true
+    },
+    {
+      "idx": 82,
+      "version": "7",
+      "when": 1773612795655,
+      "tag": "0082_add_public_search_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 83,
+      "version": "7",
+      "when": 1773613044548,
+      "tag": "0083_public_identity_trgm_index",
+      "breakpoints": true
     }
   ]
 }

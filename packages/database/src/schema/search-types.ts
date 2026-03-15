@@ -96,8 +96,9 @@ export interface AdvancedFilterParams {
 export interface SearchParams extends BasicSearchParams, MediumFilterParams, AdvancedFilterParams {
   // Pagination
   limit?: number;
-  offset?: number;
-  cursor?: string; // For cursor-based pagination (future)
+  cursor?: string;
+  pageToken?: string;
+  page?: number;
   
   // Sorting
   sortBy?: SearchSortOption;
@@ -190,7 +191,8 @@ export interface SearchResponse {
     /** Total count (undefined if skipTotalCount=true) */
     total?: number;
     limit: number;
-    offset: number;
+    currentPage?: number;
+    nextCursor?: string | null;
     hasMore: boolean;
     /** Time to execute search in ms */
     took: number;
@@ -335,7 +337,9 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   
   // Pagination & Sort
   if (params.limit) urlParams.set('limit', String(params.limit));
-  if (params.offset) urlParams.set('offset', String(params.offset));
+  if (params.pageToken) urlParams.set('token', params.pageToken);
+  else if (params.cursor) urlParams.set('cursor', params.cursor);
+  if (params.page && params.page > 1) urlParams.set('page', String(params.page));
   if (params.sortBy) urlParams.set('sort', params.sortBy);
   if (params.sortOrder) urlParams.set('order', params.sortOrder);
   
@@ -399,7 +403,9 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     sellerId: urlParams.get('sellerId') || undefined,
     
     limit: parseNumber('limit'),
-    offset: parseNumber('offset'),
+    cursor: urlParams.get('cursor') || undefined,
+    pageToken: urlParams.get('token') || undefined,
+    page: parseNumber('page'),
     sortBy: urlParams.get('sort') as SearchParams['sortBy'],
     sortOrder: urlParams.get('order') as SearchParams['sortOrder'],
   };
@@ -411,7 +417,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
 export function countActiveFilters(params: SearchParams): number {
   let count = 0;
   
-  // Don't count q, limit, offset, sort
+  // Don't count q, limit, page, cursor, sort
   if (params.make?.length) count++;
   if (params.model?.length) count++;
   if (params.yearMin || params.yearMax) count++;

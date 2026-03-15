@@ -166,6 +166,7 @@ export const notification = pgTable('notification', {
   index('notification_user_created_idx').on(table.userId, table.createdAt),
   index('notification_user_unread_idx').on(table.userId, table.isRead),
   index('notification_type_idx').on(table.type),
+  index('notification_actorId_idx').on(table.actorId),
 ]);
 
 export type Notification = typeof notification.$inferSelect;

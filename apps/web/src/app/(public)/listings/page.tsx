@@ -124,29 +124,33 @@ export default async function InventoryPage({ searchParams }: PageProps) {
   // Parse to search params format
   const searchParamsObj = urlToSearchParams(urlParams);
   const limit = searchParamsObj.limit || 30;
+  if (!searchParamsObj.cursor && searchParamsObj.pageToken) {
+    searchParamsObj.cursor = searchParamsObj.pageToken;
+  }
   
   // Normalize sortBy to 'relevance' if not specified
   if (!searchParamsObj.sortBy) {
     searchParamsObj.sortBy = 'relevance';
   }
+
+  const canUseServerData = (searchParamsObj.page || 1) <= 1 || Boolean(searchParamsObj.cursor || searchParamsObj.pageToken);
   
   // Fetch initial data server-side for instant display
   let initialData: SearchResponse | null = null;
   
   try {
-    const [searchResult, facets] = await Promise.all([
-      searchListings({ ...searchParamsObj, limit }, { 
-        skipFacets: true,
-        skipTotalCount: false,
-      }),
-      getCachedSearchFacets(searchParamsObj),
-    ]);
-    
-    // Cast to web's SearchResponse type (database type is compatible)
-    initialData = {
-      ...searchResult,
-      facets,
-    } as SearchResponse;
+    if (canUseServerData) {
+      const [searchResult, facets] = await Promise.all([
+        searchListings({ ...searchParamsObj, limit }, { fast: true }),
+        getCachedSearchFacets(searchParamsObj),
+      ]);
+      
+      // Cast to web's SearchResponse type (database type is compatible)
+      initialData = {
+        ...searchResult,
+        facets,
+      } as SearchResponse;
+    }
   } catch (error) {
     console.error('[ListingsPage] Failed to fetch initial data:', error);
     // Client will fetch if server fails
@@ -154,7 +158,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
   
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <ListingsView initialData={initialData} serverDriven hydrateFavoritesStatus={false} />
+      <ListingsView initialData={initialData} serverDriven={canUseServerData} hydrateFavoritesStatus={false} />
     </Suspense>
   );
 }

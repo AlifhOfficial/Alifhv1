@@ -34,9 +34,9 @@ export default function BlkScreen() {
   const [listings, setListings] = useState<ListingCard[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
   const requestIdRef = useRef(0);
   const isLoadingMore = useRef(false);
 
@@ -47,19 +47,20 @@ export default function BlkScreen() {
   // API CALLS
   // ──────────────────────────────────────────────────────────────────────────
 
-  const fetchListings = useCallback(async (pageNum: number = 1, append: boolean = false) => {
+  const fetchListings = useCallback(async (cursor?: string | null, append: boolean = false) => {
     const requestId = ++requestIdRef.current;
     
     try {
       if (!append) {
         setIsLoading(true);
         setListings([]);
+        setNextCursor(null);
       }
 
       const response = await searchApi.search({
         isBlkListing: true,
         sortBy: 'newest',
-        page: pageNum,
+        cursor: cursor || undefined,
         limit: 20,
       });
 
@@ -75,9 +76,9 @@ export default function BlkScreen() {
         setListings(response.listings);
       }
       
-      setTotal(response.meta.total);
+      setTotal(response.meta.total ?? 0);
       setHasMore(response.meta.hasMore);
-      setPage(pageNum);
+      setNextCursor(response.meta.nextCursor ?? null);
     } catch (error) {
       console.error('[BLK] Search error:', error);
     } finally {
@@ -100,15 +101,15 @@ export default function BlkScreen() {
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
-    fetchListings(1);
+    fetchListings();
   }, [fetchListings]);
 
   const handleLoadMore = useCallback(() => {
-    if (hasMore && !isLoading && !isLoadingMore.current) {
+    if (hasMore && nextCursor && !isLoading && !isLoadingMore.current) {
       isLoadingMore.current = true;
-      fetchListings(page + 1, true);
+      fetchListings(nextCursor, true);
     }
-  }, [hasMore, isLoading, page, fetchListings]);
+  }, [hasMore, nextCursor, isLoading, fetchListings]);
 
   const handleCardPress = useCallback((id: string) => {
     router.push(`/listing/${id}` as any);

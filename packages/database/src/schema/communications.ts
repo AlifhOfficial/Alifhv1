@@ -55,6 +55,8 @@ export const communications = pgTable('communications', {
   index('communications_email_idx').on(table.email),
   index('communications_createdAt_idx').on(table.createdAt),
   index('communications_isRead_idx').on(table.isRead),
+  index('communications_assignedTo_idx').on(table.assignedTo),
+  index('communications_resolvedBy_idx').on(table.resolvedBy),
 ]);
 
 // Type exports for convenience

@@ -41,20 +41,28 @@ WHERE moderation_status = 'approved'
 -- TEXT SEARCH OPTIMIZATION (requires pg_trgm extension)
 -- ============================================================================
 
--- Enable trigram extension if not exists (for fuzzy text search)
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- Enable trigram extension in a dedicated schema (avoid installing in public)
+CREATE SCHEMA IF NOT EXISTS extensions;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm') THEN
+    EXECUTE 'ALTER EXTENSION pg_trgm SET SCHEMA extensions';
+  ELSE
+    EXECUTE 'CREATE EXTENSION pg_trgm WITH SCHEMA extensions';
+  END IF;
+END $$;
 
 -- GIN index for fuzzy make search
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_car_listing_make_trgm 
-ON car_listing USING gin (make gin_trgm_ops);
+ON car_listing USING gin (make extensions.gin_trgm_ops);
 
 -- GIN index for fuzzy model search  
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_car_listing_model_trgm
-ON car_listing USING gin (model gin_trgm_ops);
+ON car_listing USING gin (model extensions.gin_trgm_ops);
 
 -- Combined make+model for "Toyota Camry" style searches
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_car_listing_make_model_combined
-ON car_listing USING gin ((make || ' ' || model) gin_trgm_ops);
+ON car_listing USING gin ((make || ' ' || model) extensions.gin_trgm_ops);
 
 -- ============================================================================
 -- FACET COUNT OPTIMIZATION

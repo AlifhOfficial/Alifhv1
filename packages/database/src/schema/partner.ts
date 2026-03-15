@@ -283,6 +283,7 @@ export const partnerRequest = pgTable('partner_request', {
   index('partner_request_reviewedBy_idx').on(table.reviewedBy),
   index('partner_request_tradeLicense_idx').on(table.tradeLicense),
   index('partner_request_createdAt_idx').on(table.createdAt),
+  index('partner_request_partnerId_idx').on(table.partnerId),
 ]);
 
 /**
@@ -541,4 +542,3 @@ export const partnerShowroom = pgTable('partner_showroom', {
   // Editor tracking
   index('partner_showroom_lastEditedBy_idx').on(table.lastEditedBy),
 ]);
-

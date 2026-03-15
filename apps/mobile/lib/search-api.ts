@@ -81,7 +81,7 @@ interface DBSearchParams {
   sellerId?: string;
   sortBy?: SearchSortOption;
   limit?: number;
-  offset?: number;
+  cursor?: string;
 }
 
 // Re-export sort options (mobile-friendly labels)
@@ -98,8 +98,7 @@ export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
   { value: 'year_old', label: 'Year: Oldest' },
 ];
 
-// Extend SearchParams for mobile (page instead of offset)
-export interface SearchParams extends Omit<DBSearchParams, 'offset'> {
+export interface SearchParams extends DBSearchParams {
   page?: number;
 }
 
@@ -127,15 +126,49 @@ export interface ListingCard {
   sellerKycVerified: boolean;
 }
 
-// Mobile search response (with page-based pagination)
+interface SearchResultItem {
+  id: string;
+  slug: string | null;
+  make: string | null;
+  model: string | null;
+  year: number | null;
+  trim: string | null;
+  price: number | null;
+  mileage: number | null;
+  emirate: string | null;
+  specs: string | null;
+  thumbnail: string | null;
+  isBlkListing: boolean | null;
+  sellerType: 'dealer' | 'private' | null;
+  partnerName: string | null;
+  partnerLogo: string | null;
+  partnerVerified: boolean | null;
+  isBlackTierPartner: boolean | null;
+  sellerName: string | null;
+  sellerAvatarUrl: string | null;
+  sellerKycVerified: boolean | null;
+}
+
+interface DBSearchResponse {
+  data: SearchResultItem[];
+  facets?: SearchFacets;
+  meta: {
+    total?: number;
+    limit: number;
+    hasMore: boolean;
+    nextCursor?: string | null;
+  };
+}
+
+// Mobile search response
 export interface SearchResponse {
   listings: ListingCard[];
   facets?: SearchFacets;
   meta: {
-    total: number;
+    total?: number;
     limit: number;
-    page: number;
     hasMore: boolean;
+    nextCursor?: string | null;
   };
 }
 
@@ -203,14 +236,7 @@ function paramsToUrl(params: SearchParams): URLSearchParams {
       return;
     }
     
-    // Convert page to offset for web API
-    if (key === 'page') {
-      const limit = params.limit || 20;
-      const offset = ((value as number) - 1) * limit;
-      urlParams.set('offset', String(offset));
-    } else {
-      urlParams.set(urlKey, String(value));
-    }
+    urlParams.set(urlKey, String(value));
   });
   
   return urlParams;
@@ -240,6 +266,11 @@ function transformItem(item: SearchResultItem): ListingCard {
     sellerAvatarUrl: toAbsoluteUrl(item.sellerAvatarUrl),
     sellerKycVerified: item.sellerKycVerified || false,
   };
+}
+
+function toArray(value?: string | string[]): string[] {
+  if (!value) return [];
+  return Array.isArray(value) ? value : [value];
 }
 
 // ============================================================================
@@ -308,16 +339,14 @@ export const searchApi = {
     }
     
     const webResponse: DBSearchResponse = await response.json();
-    const page = params.page || 1;
-    
     return {
       listings: webResponse.data.map(transformItem),
       facets: webResponse.facets,
       meta: {
-        total: webResponse.meta.total || 0,
+        total: webResponse.meta.total,
         limit: webResponse.meta.limit,
-        page,
         hasMore: webResponse.meta.hasMore,
+        nextCursor: webResponse.meta.nextCursor,
       },
     };
   },
@@ -432,6 +461,7 @@ export const searchApi = {
    */
   async getResultCount(params: SearchParams): Promise<number> {
     const urlParams = paramsToUrl({ ...params, limit: 0 });
+    urlParams.set('includeTotal', 'true');
     const url = `${API_BASE}/api/listings/search?${urlParams}`;
     
     const response = await fetch(url);
@@ -506,24 +536,31 @@ export interface FilterChip {
  */
 export function getFilterChips(params: SearchParams): FilterChip[] {
   const chips: FilterChip[] = [];
+  const makes = toArray(params.make);
+  const models = toArray(params.model);
+  const trims = toArray(params.trim);
+  const emirates = toArray(params.emirate);
+  const bodyTypes = toArray(params.bodyType);
+  const fuelTypes = toArray(params.fuelType);
+  const transmissions = toArray(params.transmission);
 
   // Make chips
-  if (params.make?.length) {
-    params.make.forEach(make => {
+  if (makes.length) {
+    makes.forEach((make) => {
       chips.push({ key: 'make', label: make, value: make });
     });
   }
 
   // Model chips
-  if (params.model?.length) {
-    params.model.forEach(model => {
+  if (models.length) {
+    models.forEach((model) => {
       chips.push({ key: 'model', label: model, value: model });
     });
   }
 
   // Trim chips
-  if (params.trim?.length) {
-    params.trim.forEach(trim => {
+  if (trims.length) {
+    trims.forEach((trim) => {
       chips.push({ key: 'trim', label: trim, value: trim });
     });
   }
@@ -564,23 +601,23 @@ export function getFilterChips(params: SearchParams): FilterChip[] {
   }
 
   // Emirates
-  if (params.emirate?.length) {
-    chips.push({ key: 'emirate', label: params.emirate.join(', '), value: params.emirate });
+  if (emirates.length) {
+    chips.push({ key: 'emirate', label: emirates.join(', '), value: emirates });
   }
 
   // Body type
-  if (params.bodyType?.length) {
-    chips.push({ key: 'bodyType', label: params.bodyType.join(', '), value: params.bodyType });
+  if (bodyTypes.length) {
+    chips.push({ key: 'bodyType', label: bodyTypes.join(', '), value: bodyTypes });
   }
 
   // Fuel type
-  if (params.fuelType?.length) {
-    chips.push({ key: 'fuelType', label: params.fuelType.join(', '), value: params.fuelType });
+  if (fuelTypes.length) {
+    chips.push({ key: 'fuelType', label: fuelTypes.join(', '), value: fuelTypes });
   }
 
   // Transmission
-  if (params.transmission?.length) {
-    chips.push({ key: 'transmission', label: params.transmission.join(', '), value: params.transmission });
+  if (transmissions.length) {
+    chips.push({ key: 'transmission', label: transmissions.join(', '), value: transmissions });
   }
 
   // Condition
@@ -618,8 +655,9 @@ export function removeFilter(
   switch (key) {
     case 'make':
       if (value && newParams.make) {
-        newParams.make = newParams.make.filter(m => m !== value);
-        if (!newParams.make.length) {
+        const nextMakes = toArray(newParams.make).filter((make) => make !== value);
+        newParams.make = nextMakes;
+        if (!nextMakes.length) {
           delete newParams.make;
           // Clear downstream
           delete newParams.model;
@@ -633,8 +671,9 @@ export function removeFilter(
       break;
     case 'model':
       if (value && newParams.model) {
-        newParams.model = newParams.model.filter(m => m !== value);
-        if (!newParams.model.length) {
+        const nextModels = toArray(newParams.model).filter((model) => model !== value);
+        newParams.model = nextModels;
+        if (!nextModels.length) {
           delete newParams.model;
           delete newParams.trim;
         }
@@ -645,8 +684,9 @@ export function removeFilter(
       break;
     case 'trim':
       if (value && newParams.trim) {
-        newParams.trim = newParams.trim.filter(t => t !== value);
-        if (!newParams.trim.length) delete newParams.trim;
+        const nextTrims = toArray(newParams.trim).filter((trim) => trim !== value);
+        newParams.trim = nextTrims;
+        if (!nextTrims.length) delete newParams.trim;
       } else {
         delete newParams.trim;
       }

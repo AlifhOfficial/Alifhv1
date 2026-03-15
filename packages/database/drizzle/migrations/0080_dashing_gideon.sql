@@ -1,0 +1,7 @@
+ALTER TABLE "partner_availability" DROP CONSTRAINT "partner_availability_partnerId_staffUserId_dayOfWeek_unique";--> statement-breakpoint
+ALTER TABLE "partner_booking_settings" DROP CONSTRAINT "partner_booking_settings_partnerId_staffUserId_unique";--> statement-breakpoint
+ALTER TABLE "partner_booking_settings" ADD COLUMN "allow_same_day_booking" boolean DEFAULT true NOT NULL;--> statement-breakpoint
+CREATE UNIQUE INDEX "partner_availability_partnerId_dayOfWeek_default_unique" ON "partner_availability" USING btree ("partner_id","day_of_week") WHERE "partner_availability"."staff_user_id" is null;--> statement-breakpoint
+CREATE UNIQUE INDEX "partner_availability_partnerId_staffUserId_dayOfWeek_unique" ON "partner_availability" USING btree ("partner_id","staff_user_id","day_of_week") WHERE "partner_availability"."staff_user_id" is not null;--> statement-breakpoint
+CREATE UNIQUE INDEX "partner_booking_settings_partnerId_default_unique" ON "partner_booking_settings" USING btree ("partner_id") WHERE "partner_booking_settings"."staff_user_id" is null;--> statement-breakpoint
+CREATE UNIQUE INDEX "partner_booking_settings_partnerId_staffUserId_unique" ON "partner_booking_settings" USING btree ("partner_id","staff_user_id") WHERE "partner_booking_settings"."staff_user_id" is not null;

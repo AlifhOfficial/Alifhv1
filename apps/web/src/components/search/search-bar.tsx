@@ -331,7 +331,7 @@ export function SearchBar({
 
   // Size classes - use text-base (16px) on mobile to prevent iOS auto-zoom
   const sizeClasses = {
-    sm: 'h-10 text-base sm:text-sm px-1',
+    sm: 'h-10 sm:h-9 text-base sm:text-sm px-1',
     md: 'h-12 sm:h-11 text-base sm:text-sm px-1',
     lg: 'h-14 sm:h-12 text-base px-2',
   };

@@ -72,8 +72,9 @@ export interface SearchParams {
   sellerId?: string;
   randomize?: boolean;
   limit?: number;
-  offset?: number;
   cursor?: string;
+  pageToken?: string;
+  page?: number;
   sortBy?: SearchSortOption;
   sortOrder?: 'asc' | 'desc';
 }
@@ -134,9 +135,10 @@ export interface SearchResponse {
   data: SearchResultItem[];
   facets: SearchFacets;
   meta: {
-    total: number;
+    total?: number;
     limit: number;
-    offset: number;
+    currentPage?: number;
+    nextCursor?: string | null;
     hasMore: boolean;
     took: number;
     cached?: boolean;
@@ -191,7 +193,8 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   if (params.sellerId) urlParams.set('sellerId', params.sellerId);
   
   if (params.limit) urlParams.set('limit', String(params.limit));
-  if (params.offset) urlParams.set('offset', String(params.offset));
+  if (params.pageToken) urlParams.set('token', params.pageToken);
+  if (params.page && params.page > 1) urlParams.set('page', String(params.page));
   if (params.sortBy) urlParams.set('sort', params.sortBy);
   if (params.sortOrder) urlParams.set('order', params.sortOrder);
   
@@ -256,7 +259,9 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     sellerId: urlParams.get('sellerId') || undefined,
     
     limit: parseNumber('limit'),
-    offset: parseNumber('offset'),
+    cursor: urlParams.get('cursor') || undefined,
+    pageToken: urlParams.get('token') || undefined,
+    page: parseNumber('page'),
     sortBy: urlParams.get('sort') as SearchParams['sortBy'],
     sortOrder: urlParams.get('order') as SearchParams['sortOrder'],
   };

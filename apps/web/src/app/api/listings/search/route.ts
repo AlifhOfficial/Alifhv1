@@ -56,14 +56,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const includeTotal = urlParams.get('includeTotal') === 'true';
+
     // Execute queries in parallel
     // skipFacets: true — facets cached separately (1hr TTL) to reduce DB load
     const queryStart = Date.now();
     const [searchResult, facets] = await Promise.all([
-      searchListings(params, { 
-        skipFacets: true,
-        skipTotalCount: false,
-      }),
+      searchListings(params, includeTotal ? { skipFacets: true, skipTotalCount: false } : { fast: true }),
       getCachedSearchFacets(params),
     ]);
     const queryMs = Date.now() - queryStart;

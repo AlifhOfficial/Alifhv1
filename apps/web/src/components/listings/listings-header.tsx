@@ -46,7 +46,7 @@ interface ListingsHeaderProps {
   /** Facets for filters */
   facets: SearchFacets | null;
   /** Meta information */
-  meta: { total: number } | null;
+  meta: { total?: number; hasMore?: boolean } | null;
   /** Number of active filters */
   activeFilterCount: number;
   /** Loading state */
@@ -245,9 +245,11 @@ export function ListingsHeader({
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-lg font-bold tracking-tight">Filters</h3>
-                      <p className="text-sm text-muted-foreground mt-0.5">
-                        {meta?.total ?? 0} cars {activeFilterCount > 0 && `• ${activeFilterCount} filter${activeFilterCount > 1 ? 's' : ''}`}
-                      </p>
+                      {activeFilterCount > 0 && (
+                        <p className="text-sm text-muted-foreground mt-0.5">
+                          {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} applied
+                        </p>
+                      )}
                     </div>
                     <button
                       onClick={() => setMobileSearchOpen(false)}
@@ -544,7 +546,7 @@ export function ListingsHeader({
                       onClick={() => setMobileSearchOpen(false)}
                       className="flex-1 h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-all touch-manipulation shadow-lg"
                     >
-                      Show {meta?.total ?? 0} results
+                      Apply filters
                     </button>
                   </div>
                 </div>
@@ -627,13 +629,6 @@ export function ListingsHeader({
 
           {/* Row 2: Results + Breadcrumb + Active chips */}
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1">
-            {/* Results count */}
-            {!isLoading && (
-              <span className="text-xs font-bold text-foreground tabular-nums shrink-0">
-                {meta?.total ?? 0} cars
-              </span>
-            )}
-            
             {/* Breadcrumb */}
             {breadcrumbItems.length > 1 && (
               <nav className="flex items-center gap-0.5 shrink-0">
@@ -779,7 +774,7 @@ export function ListingsHeader({
                     onClick={() => onMobileFiltersToggle(false)}
                     className="w-full h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-all touch-manipulation shadow-lg"
                   >
-                    Show {meta?.total ?? 0} results
+                    Apply filters
                   </button>
                 </div>
               </SheetContent>
@@ -1033,13 +1028,8 @@ export function ListingsHeader({
                 <ChevronDown className="size-3.5" />
               </button>
 
-              {/* Results count + Clear All */}
+              {/* Clear All */}
               <div className="shrink-0 ml-auto flex items-center gap-2">
-                {!isLoading && (
-                  <span className="text-xs font-medium text-muted-foreground tabular-nums">
-                    {meta?.total ?? 0} results
-                  </span>
-                )}
                 {activeFilterCount > 0 && (
                   <button
                     onClick={clearFilters}
@@ -1059,11 +1049,6 @@ export function ListingsHeader({
               <div className="flex items-center justify-between pb-2">
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-semibold text-foreground">Refine your search</span>
-                  {!isLoading && (
-                    <span className="text-xs font-medium text-muted-foreground tabular-nums">
-                      {meta?.total ?? 0} results
-                    </span>
-                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   {activeFilterCount > 0 && (

@@ -79,12 +79,14 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
     isFetching,
     error,
     currentPage,
-    totalPages,
+    canGoBack,
+    hasNextPage,
     setFilters,
     clearFilters,
     setSort,
     loadMore,
-    goToPage,
+    goToNextPage,
+    goToPreviousPage,
   } = useSearch({ 
     // Use forcedParams to lock partnerId - cannot be removed or overwritten
     forcedParams: { 
@@ -208,10 +210,11 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
                   {!isLoading && !isFetching && listings.length > 0 && (
                     <ListingsPagination
                       currentPage={currentPage}
-                      totalPages={totalPages}
-                      totalResults={meta?.total ?? 0}
+                      canGoBack={canGoBack}
+                      hasNextPage={hasNextPage}
                       isFetching={isFetching}
-                      goToPage={goToPage}
+                      goToPreviousPage={goToPreviousPage}
+                      goToNextPage={goToNextPage}
                     />
                   )}
                 </div>
@@ -269,10 +272,11 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
                     {!isLoading && !isFetching && listings.length > 0 && (
                       <ListingsPagination
                         currentPage={currentPage}
-                        totalPages={totalPages}
-                        totalResults={meta?.total ?? 0}
+                        canGoBack={canGoBack}
+                        hasNextPage={hasNextPage}
                         isFetching={isFetching}
-                        goToPage={goToPage}
+                        goToPreviousPage={goToPreviousPage}
+                        goToNextPage={goToNextPage}
                       />
                     )}
                   </div>

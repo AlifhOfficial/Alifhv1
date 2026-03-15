@@ -227,6 +227,11 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
     
     if (keywords.length > 0) {
       const keywordConditions: SQL[] = [];
+
+      const identityText = sql<string>`(${carListing.make} || ' ' || ${carListing.model} || ' ' || COALESCE(${carListing.trim}, ''))`;
+
+      // If a query is only short/unresolved tokens (e.g. "bm"), don't force an expensive DB scan.
+      // Resolved tokens (makes/models/etc) still apply even if they are short (e.g. "x5").
       
       for (const keyword of keywords) {
         const resolved = resolveKeyword(keyword);
@@ -256,16 +261,12 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
           // JSONB contains check for extra
           keywordConditions.push(sql`${carListing.extras} @> ${JSON.stringify([resolved.extra])}::jsonb`);
         } else {
-          // Unresolved keyword → ILIKE fallback on vehicle identity columns only
-          // These columns have GIN pg_trgm indexes for fast '%keyword%' matching
-          const searchTerm = `%${keyword}%`;
-          keywordConditions.push(
-            or(
-              ilike(carListing.make, searchTerm),
-              ilike(carListing.model, searchTerm),
-              ilike(carListing.trim, searchTerm),
-            )!
-          );
+          // Unresolved keyword → ILIKE fallback on combined identity text.
+          // Important: pg_trgm indexes generally don't help for 1–2 char terms, so skip those to avoid scans.
+          if (keyword.length >= 3) {
+            const searchTerm = `%${keyword}%`;
+            keywordConditions.push(ilike(identityText, searchTerm));
+          }
         }
       }
       
@@ -439,64 +440,215 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
   return conditions;
 }
 
-/**
- * Build ORDER BY clause
- * 
- * For "newest" and "relevance" sorts, we use originalPublishedAt instead of publishedAt
- * to prevent "bump to top" abuse where users delete and repost to get a fresh date.
- * 
- * Uses COALESCE to fall back to publishedAt if originalPublishedAt is NULL
- * (handles edge cases where anti-abuse wasn't triggered)
- */
-function buildOrderBy(params: SearchParams): SQL[] {
-  const { sortBy = 'relevance', sortOrder } = params;
+type CursorSortField = 'sortDate' | 'numeric';
 
-  // COALESCE ensures we have a valid date even if originalPublishedAt is NULL
-  const sortDateCol = sql`COALESCE(${carListing.originalPublishedAt}, ${carListing.publishedAt})`;
+type SearchCursorPayload = {
+  v: 1;
+  primary: string | number;
+  createdAt: string;
+  id: string;
+};
+
+type SortPlan = {
+  sortBy: NonNullable<SearchParams['sortBy']>;
+  field: CursorSortField;
+  primaryExpr: SQL;
+  createdAtExpr: typeof carListing.createdAt;
+  orderBy: SQL[];
+};
+
+function encodeSearchCursor(payload: SearchCursorPayload): string {
+  const primaryValue = typeof payload.primary === 'number'
+    ? String(payload.primary)
+    : String(new Date(payload.primary).getTime());
+  const createdAtValue = String(new Date(payload.createdAt).getTime());
+
+  return Buffer.from(`1~${primaryValue}~${createdAtValue}~${payload.id}`).toString('base64url');
+}
+
+function decodeSearchCursor(cursor: string | undefined, field: CursorSortField): SearchCursorPayload | null {
+  if (!cursor) return null;
+
+  try {
+    const decoded = Buffer.from(cursor, 'base64url').toString('utf8');
+    const [version, primaryRaw, createdAtRaw, id] = decoded.split('~');
+
+    if (version !== '1' || !primaryRaw || !createdAtRaw || !id) {
+      return null;
+    }
+
+    const primaryNumber = Number(primaryRaw);
+    const createdAtMs = Number(createdAtRaw);
+    if (!Number.isFinite(primaryNumber) || !Number.isFinite(createdAtMs)) {
+      return null;
+    }
+
+    return {
+      v: 1,
+      primary: field === 'sortDate'
+        ? new Date(primaryNumber).toISOString()
+        : primaryNumber,
+      createdAt: new Date(createdAtMs).toISOString(),
+      id,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function buildSortPlan(params: SearchParams): SortPlan {
+  const sortBy = params.sortBy || 'relevance';
+  const sortDateExpr = sql`COALESCE(${carListing.originalPublishedAt}, ${carListing.publishedAt})`;
 
   switch (sortBy) {
     case 'newest':
-      // Use originalPublishedAt to prevent repost abuse (falls back to createdAt if null)
-      return [sql`${sortDateCol} desc`, desc(carListing.createdAt)];
+      return {
+        sortBy,
+        field: 'sortDate',
+        primaryExpr: sortDateExpr,
+        createdAtExpr: carListing.createdAt,
+        orderBy: [sql`${sortDateExpr} DESC`, sql`${carListing.createdAt} DESC`, sql`${carListing.id} DESC`],
+      };
     case 'oldest':
-      return [sql`${sortDateCol} asc`, asc(carListing.createdAt)];
+      return {
+        sortBy,
+        field: 'sortDate',
+        primaryExpr: sortDateExpr,
+        createdAtExpr: carListing.createdAt,
+        orderBy: [sql`${sortDateExpr} ASC`, sql`${carListing.createdAt} ASC`, sql`${carListing.id} ASC`],
+      };
     case 'price_low':
-      return [asc(carListing.price), desc(carListing.createdAt)];
+      return {
+        sortBy,
+        field: 'numeric',
+        primaryExpr: sql`${carListing.price}`,
+        createdAtExpr: carListing.createdAt,
+        orderBy: [sql`${carListing.price} ASC`, sql`${carListing.createdAt} DESC`, sql`${carListing.id} DESC`],
+      };
     case 'price_high':
-      return [desc(carListing.price), desc(carListing.createdAt)];
+      return {
+        sortBy,
+        field: 'numeric',
+        primaryExpr: sql`${carListing.price}`,
+        createdAtExpr: carListing.createdAt,
+        orderBy: [sql`${carListing.price} DESC`, sql`${carListing.createdAt} DESC`, sql`${carListing.id} DESC`],
+      };
     case 'mileage_low':
-      return [asc(carListing.mileage), desc(carListing.createdAt)];
+      return {
+        sortBy,
+        field: 'numeric',
+        primaryExpr: sql`${carListing.mileage}`,
+        createdAtExpr: carListing.createdAt,
+        orderBy: [sql`${carListing.mileage} ASC`, sql`${carListing.createdAt} DESC`, sql`${carListing.id} DESC`],
+      };
     case 'mileage_high':
-      return [desc(carListing.mileage), desc(carListing.createdAt)];
+      return {
+        sortBy,
+        field: 'numeric',
+        primaryExpr: sql`${carListing.mileage}`,
+        createdAtExpr: carListing.createdAt,
+        orderBy: [sql`${carListing.mileage} DESC`, sql`${carListing.createdAt} DESC`, sql`${carListing.id} DESC`],
+      };
     case 'year_new':
-      return [desc(carListing.year), desc(carListing.createdAt)];
+      return {
+        sortBy,
+        field: 'numeric',
+        primaryExpr: sql`${carListing.year}`,
+        createdAtExpr: carListing.createdAt,
+        orderBy: [sql`${carListing.year} DESC`, sql`${carListing.createdAt} DESC`, sql`${carListing.id} DESC`],
+      };
     case 'year_old':
-      return [asc(carListing.year), desc(carListing.createdAt)];
-    case 'popular':
-      return [
-        sql`(${carListing.viewCount} + ${carListing.favouriteCount} * 2) desc`,
-        desc(carListing.createdAt),
-      ];
+      return {
+        sortBy,
+        field: 'numeric',
+        primaryExpr: sql`${carListing.year}`,
+        createdAtExpr: carListing.createdAt,
+        orderBy: [sql`${carListing.year} ASC`, sql`${carListing.createdAt} DESC`, sql`${carListing.id} DESC`],
+      };
+    case 'popular': {
+      const primaryExpr = sql`(${carListing.viewCount} + ${carListing.favouriteCount} * 2)`;
+      return {
+        sortBy,
+        field: 'numeric',
+        primaryExpr,
+        createdAtExpr: carListing.createdAt,
+        orderBy: [sql`${primaryExpr} DESC`, sql`${carListing.createdAt} DESC`, sql`${carListing.id} DESC`],
+      };
+    }
     case 'relevance':
-    default:
-      // Lightweight relevance ranking using pre-computed qiScore
-      // Total: ~100 points = Quality(70 from qiScore) + Freshness(20) + Engagement(10)
-      // 
-      // qiScore is pre-computed on create/update with:
-      // - Photos (25), Description (15), Completeness (20), Trust (10) = 70 points max
-      //
-      // Runtime adds only:
-      // - Freshness decay (1 datetime calc) 
-      // - Engagement boost (2 indexed integer reads)
-      return [
-        sql`(
-          COALESCE(${carListing.qiScore}, 35) +
-          GREATEST(1 - EXTRACT(EPOCH FROM (now() - ${sortDateCol})) / 2073600, 0.1) * 20 +
-          LEAST(${carListing.favouriteCount} + ${carListing.superlikeCount} * 3, 100) * 0.1
-        ) DESC`,
-        desc(carListing.createdAt),
-      ];
+    default: {
+      const primaryExpr = sql`(
+        COALESCE(${carListing.qiScore}, 35) +
+        GREATEST(1 - EXTRACT(EPOCH FROM (now() - ${sortDateExpr})) / 2073600, 0.1) * 20 +
+        LEAST(${carListing.favouriteCount} + ${carListing.superlikeCount} * 3, 100) * 0.1
+      )`;
+      return {
+        sortBy: 'relevance',
+        field: 'numeric',
+        primaryExpr,
+        createdAtExpr: carListing.createdAt,
+        orderBy: [sql`${primaryExpr} DESC`, sql`${carListing.createdAt} DESC`, sql`${carListing.id} DESC`],
+      };
+    }
   }
+}
+
+function buildCursorWhereClause(plan: SortPlan, decodedCursor: SearchCursorPayload | null): SQL | undefined {
+  if (!decodedCursor) {
+    return undefined;
+  }
+
+  const createdAt = new Date(decodedCursor.createdAt);
+  if (Number.isNaN(createdAt.getTime())) {
+    return undefined;
+  }
+
+  const createdAtSql = sql`${createdAt}`;
+  const idSql = sql`${decodedCursor.id}`;
+
+  if (plan.field === 'sortDate') {
+    const primaryValue = new Date(String(decodedCursor.primary));
+    if (Number.isNaN(primaryValue.getTime())) {
+      return undefined;
+    }
+
+    const primarySql = sql`${primaryValue}`;
+    const primaryDesc = plan.sortBy === 'newest';
+
+    return primaryDesc
+      ? sql`(
+          ${plan.primaryExpr} < ${primarySql}
+          OR (${plan.primaryExpr} = ${primarySql} AND ${plan.createdAtExpr} < ${createdAtSql})
+          OR (${plan.primaryExpr} = ${primarySql} AND ${plan.createdAtExpr} = ${createdAtSql} AND ${carListing.id} < ${idSql})
+        )`
+      : sql`(
+          ${plan.primaryExpr} > ${primarySql}
+          OR (${plan.primaryExpr} = ${primarySql} AND ${plan.createdAtExpr} > ${createdAtSql})
+          OR (${plan.primaryExpr} = ${primarySql} AND ${plan.createdAtExpr} = ${createdAtSql} AND ${carListing.id} > ${idSql})
+        )`;
+  }
+
+  const primaryValue = Number(decodedCursor.primary);
+  if (!Number.isFinite(primaryValue)) {
+    return undefined;
+  }
+
+  const primarySql = sql`${primaryValue}`;
+  const primaryDesc = !['price_low', 'mileage_low', 'year_old'].includes(plan.sortBy);
+
+  if (primaryDesc) {
+    return sql`(
+      ${plan.primaryExpr} < ${primarySql}
+      OR (${plan.primaryExpr} = ${primarySql} AND ${plan.createdAtExpr} < ${createdAtSql})
+      OR (${plan.primaryExpr} = ${primarySql} AND ${plan.createdAtExpr} = ${createdAtSql} AND ${carListing.id} < ${idSql})
+    )`;
+  }
+
+  return sql`(
+    ${plan.primaryExpr} > ${primarySql}
+    OR (${plan.primaryExpr} = ${primarySql} AND ${plan.createdAtExpr} < ${createdAtSql})
+    OR (${plan.primaryExpr} = ${primarySql} AND ${plan.createdAtExpr} = ${createdAtSql} AND ${carListing.id} < ${idSql})
+  )`;
 }
 
 /**
@@ -824,6 +976,8 @@ interface SearchOptions {
   skipFacets?: boolean;
   /** Skip total count query (default: false) - uses hasMore from extra row fetch */
   skipTotalCount?: boolean;
+  /** Fast mode: implies skipFacets + skipTotalCount unless explicitly set */
+  fast?: boolean;
 }
 
 /**
@@ -836,34 +990,52 @@ export async function searchListings(
   const startTime = Date.now();
   const now = new Date();
   
-  const { skipFacets = false, skipTotalCount = false } = options;
+  const skipFacets = options.skipFacets ?? options.fast ?? false;
+  const skipTotalCount = options.skipTotalCount ?? options.fast ?? false;
   
   const limit = Math.min(Math.max(params.limit || DEFAULT_LIMIT, 1), MAX_LIMIT);
-  const offset = Math.max(params.offset || 0, 0);
-  
   const conditions = buildSearchConditions(params, now);
-  const orderBy = buildOrderBy(params);
+  const sortPlan = buildSortPlan(params);
+  const decodedCursor = decodeSearchCursor(params.cursor, sortPlan.field);
+  const cursorCondition = buildCursorWhereClause(sortPlan, decodedCursor);
+  const allConditions = cursorCondition ? [...conditions, cursorCondition] : conditions;
+  const currentPage = Math.max(((params as SearchParams & { page?: number }).page) || 1, 1);
 
   // Build parallel query array dynamically
   const queries: Promise<any>[] = [
     // STEP 1: Get IDs with pagination
     (async () => {
       const idStart = Date.now();
-      const listingIds = await db
-        .select({ id: carListing.id })
+      const listingRows = await db
+        .select({
+          id: carListing.id,
+          primary: sortPlan.primaryExpr.as('primary'),
+          createdAt: carListing.createdAt,
+        })
         .from(carListing)
-        .where(conditions.length > 0 ? and(...conditions) : undefined)
-        .orderBy(...orderBy)
-        .limit(limit + 1) // Fetch one extra to check hasMore
-        .offset(offset);
+        .where(allConditions.length > 0 ? and(...allConditions) : undefined)
+        .orderBy(...sortPlan.orderBy)
+        .limit(limit + 1);
       const idMs = Date.now() - idStart;
 
-      if (listingIds.length === 0) {
-        return { listings: [], hasMoreFromFetch: false, timing: { ids: idMs, cards: 0 } };
+      if (listingRows.length === 0) {
+        return { listings: [], hasMoreFromFetch: false, nextCursor: null, timing: { ids: idMs, cards: 0 } };
       }
 
-      const hasMoreFromFetch = listingIds.length > limit;
-      const idsToFetch = listingIds.slice(0, limit).map(l => l.id);
+      const hasMoreFromFetch = listingRows.length > limit;
+      const pageRows = listingRows.slice(0, limit);
+      const idsToFetch = pageRows.map(l => l.id);
+      const lastRow = pageRows[pageRows.length - 1];
+      const nextCursor = hasMoreFromFetch && lastRow
+        ? encodeSearchCursor({
+            v: 1,
+            primary: sortPlan.field === 'sortDate'
+              ? new Date(String(lastRow.primary)).toISOString()
+              : Number(lastRow.primary),
+            createdAt: new Date(lastRow.createdAt as Date).toISOString(),
+            id: lastRow.id,
+          })
+        : null;
 
       // STEP 2: Use shared card query for batch fetch (avoids duplicate JOIN logic)
       const cardStart = Date.now();
@@ -876,6 +1048,7 @@ export async function searchListings(
       return {
         listings,
         hasMoreFromFetch,
+        nextCursor,
         timing: { ids: idMs, cards: cardMs },
       };
     })(),
@@ -905,7 +1078,12 @@ export async function searchListings(
   const results = await Promise.all(queries);
   
   // Extract results based on what was queried
-  const searchResult = results[0] as { listings: SearchResultItem[]; hasMoreFromFetch: boolean; timing: { ids: number; cards: number } };
+  const searchResult = results[0] as {
+    listings: SearchResultItem[];
+    hasMoreFromFetch: boolean;
+    nextCursor: string | null;
+    timing: { ids: number; cards: number };
+  };
   let facets: SearchFacets | undefined;
   let total: number | undefined;
   let countMs = 0;
@@ -918,10 +1096,6 @@ export async function searchListings(
     const countResult = results[resultIdx] as { result: Array<{ count: number }>; countMs: number };
     total = Number(countResult.result[0]?.count || 0);
     countMs = countResult.countMs;
-  } else {
-    // When skipping total count, estimate from current batch
-    // This prevents showing "0 cars" when facets are cached
-    total = offset + searchResult.listings.length + (searchResult.hasMoreFromFetch ? 1 : 0);
   }
 
   const took = Date.now() - startTime;
@@ -932,9 +1106,7 @@ export async function searchListings(
   }
 
   // Use hasMore from extra row fetch if total count was skipped
-  const hasMore = skipTotalCount 
-    ? searchResult.hasMoreFromFetch
-    : (offset + searchResult.listings.length) < (total ?? 0);
+  const hasMore = searchResult.hasMoreFromFetch;
 
   return {
     data: searchResult.listings,
@@ -942,7 +1114,8 @@ export async function searchListings(
     meta: {
       total,
       limit,
-      offset,
+      currentPage,
+      nextCursor: searchResult.nextCursor,
       hasMore,
       took,
     },

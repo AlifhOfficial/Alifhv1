@@ -76,7 +76,9 @@ export const conversation = pgTable('conversation', {
   index('conversation_lastMessageAt_idx').on(table.lastMessageAt),
   index('conversation_listingId_idx').on(table.listingId),
   index('conversation_partnerId_idx').on(table.partnerId),
-  // ❌ Removed: status, type, lastMessageSenderId (low usage in V1)
+  // Foreign keys should be indexed (helps joins + FK maintenance on user deletion)
+  index('conversation_initiatedBy_idx').on(table.initiatedBy),
+  index('conversation_lastMessageSenderId_idx').on(table.lastMessageSenderId),
 ]);
 
 /**

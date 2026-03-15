@@ -151,15 +151,15 @@ export default function BrowseScreen() {
     refetch,
   } = useInfiniteQuery({
     queryKey: searchQueryKey,
-    queryFn: ({ pageParam = 1, signal }) => {
+    queryFn: ({ pageParam = undefined, signal }) => {
       return searchApi.search({
         ...searchQueryParams,
-        page: pageParam,
+        cursor: pageParam,
         limit: 20,
       }, signal);
     },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => lastPage.meta.hasMore ? lastPage.meta.page + 1 : undefined,
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.meta.hasMore ? lastPage.meta.nextCursor ?? undefined : undefined,
     placeholderData: (previousData) => previousData,
   });
 

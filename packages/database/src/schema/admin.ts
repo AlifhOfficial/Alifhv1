@@ -17,4 +17,5 @@ export const banAppeal = pgTable('ban_appeal', {
 }, (table) => [
   index('ban_appeal_userId_idx').on(table.userId),
   index('ban_appeal_status_idx').on(table.status),
+  index('ban_appeal_reviewedBy_idx').on(table.reviewedBy),
 ]);

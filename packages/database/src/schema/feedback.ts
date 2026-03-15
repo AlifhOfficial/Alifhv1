@@ -20,4 +20,5 @@ export const feedback = pgTable('feedback', {
   index('feedback_userId_idx').on(table.userId),
   index('feedback_status_idx').on(table.status),
   index('feedback_createdAt_idx').on(table.createdAt),
+  index('feedback_reviewedBy_idx').on(table.reviewedBy),
 ]);

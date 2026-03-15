@@ -10,116 +10,58 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 interface ListingsPaginationProps {
   /** Current page (1-indexed) */
   currentPage: number;
-  /** Total number of pages */
-  totalPages: number;
-  /** Total results count */
-  totalResults: number;
+  /** Whether a previous page exists */
+  canGoBack: boolean;
+  /** Whether a next page exists */
+  hasNextPage: boolean;
   /** Whether data is being fetched */
   isFetching: boolean;
-  /** Go to specific page callback */
-  goToPage: (page: number) => void;
+  /** Go to previous page callback */
+  goToPreviousPage: () => void;
+  /** Go to next page callback */
+  goToNextPage: () => void;
 }
 
 export function ListingsPagination({
   currentPage,
-  totalPages,
-  totalResults,
+  canGoBack,
+  hasNextPage,
   isFetching,
-  goToPage,
+  goToPreviousPage,
+  goToNextPage,
 }: ListingsPaginationProps) {
-  if (totalPages <= 1) return null;
+  if (!canGoBack && !hasNextPage) return null;
 
   return (
-    <div className="flex flex-col items-center gap-4 py-6 sm:py-8 md:py-10 px-4">
-      {/* Page info */}
-      <p className="text-xs sm:text-sm text-muted-foreground text-center">
-        Page {currentPage} of {totalPages} • {totalResults} results
-      </p>
-      
-      {/* Pagination controls */}
-      <div className="flex items-center gap-1 sm:gap-1.5">
-        {/* Previous button */}
+    <div className="px-4 py-6 sm:py-8 md:py-10">
+      <div className="mx-auto flex w-full max-w-md items-center justify-between gap-3 rounded-full border border-sidebar-border bg-sidebar/80 p-2 shadow-sm backdrop-blur">
         <button
-          onClick={() => goToPage(currentPage - 1)}
-          disabled={currentPage === 1 || isFetching}
-          className="p-2.5 sm:p-2 rounded-lg hover:bg-secondary/50 active:bg-secondary/70 disabled:opacity-30 disabled:cursor-not-allowed transition-colors touch-manipulation"
+          onClick={goToPreviousPage}
+          disabled={!canGoBack || isFetching}
+          className="inline-flex h-11 min-w-[120px] items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-sidebar-foreground transition-colors hover:bg-muted/60 active:bg-muted/80 disabled:pointer-events-none disabled:opacity-35 touch-manipulation"
           aria-label="Previous page"
         >
-          <ChevronLeft className="w-5 h-5 sm:w-4 sm:h-4" />
+          <ChevronLeft className="h-4 w-4" />
+          <span>Previous</span>
         </button>
-        
-        {/* Page numbers */}
-        {(() => {
-          const pages: (number | 'ellipsis')[] = [];
-          const maxVisible = 5;
-          
-          if (totalPages <= maxVisible + 2) {
-            // Show all pages if there aren't many
-            for (let i = 1; i <= totalPages; i++) {
-              pages.push(i);
-            }
-          } else {
-            // Always show first page
-            pages.push(1);
-            
-            if (currentPage <= 3) {
-              // Near start: 1 2 3 4 ... last
-              for (let i = 2; i <= 4; i++) {
-                pages.push(i);
-              }
-              pages.push('ellipsis');
-              pages.push(totalPages);
-            } else if (currentPage >= totalPages - 2) {
-              // Near end: 1 ... n-3 n-2 n-1 n
-              pages.push('ellipsis');
-              for (let i = totalPages - 3; i <= totalPages; i++) {
-                pages.push(i);
-              }
-            } else {
-              // Middle: 1 ... current-1 current current+1 ... last
-              pages.push('ellipsis');
-              pages.push(currentPage - 1);
-              pages.push(currentPage);
-              pages.push(currentPage + 1);
-              pages.push('ellipsis');
-              pages.push(totalPages);
-            }
-          }
-          
-          return pages.map((page, idx) => {
-            if (page === 'ellipsis') {
-              return (
-                <span key={`ellipsis-${idx}`} className="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center text-muted-foreground">
-                  …
-                </span>
-              );
-            }
-            
-            return (
-              <button
-                key={page}
-                onClick={() => goToPage(page)}
-                disabled={isFetching}
-                className={`min-w-[36px] h-9 sm:min-w-[32px] sm:h-8 px-2 sm:px-1.5 rounded-lg text-sm transition-colors disabled:cursor-not-allowed touch-manipulation ${
-                  currentPage === page
-                    ? 'bg-foreground text-background font-medium'
-                    : 'text-muted-foreground hover:bg-secondary/50 active:bg-secondary/70'
-                }`}
-              >
-                {page}
-              </button>
-            );
-          });
-        })()}
-        
-        {/* Next button */}
+
+        <div className="flex min-w-[84px] flex-col items-center justify-center px-2 text-center">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Page
+          </span>
+          <span className="text-base font-semibold text-foreground">
+            {currentPage}
+          </span>
+        </div>
+
         <button
-          onClick={() => goToPage(currentPage + 1)}
-          disabled={currentPage === totalPages || isFetching}
-          className="p-2.5 sm:p-2 rounded-lg hover:bg-secondary/50 active:bg-secondary/70 disabled:opacity-30 disabled:cursor-not-allowed transition-colors touch-manipulation"
+          onClick={goToNextPage}
+          disabled={!hasNextPage || isFetching}
+          className="inline-flex h-11 min-w-[120px] items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-background transition-all hover:opacity-95 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35 touch-manipulation"
           aria-label="Next page"
         >
-          <ChevronRight className="w-5 h-5 sm:w-4 sm:h-4" />
+          <span>{hasNextPage ? 'Next page' : 'No more'}</span>
+          <ChevronRight className="h-4 w-4" />
         </button>
       </div>
     </div>

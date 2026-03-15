@@ -79,12 +79,14 @@ export function ListingsView({
     isFetching,
     error,
     currentPage,
-    totalPages,
+    canGoBack,
+    hasNextPage,
     setFilters,
     clearFilters,
     setSort,
     loadMore,
-    goToPage,
+    goToNextPage,
+    goToPreviousPage,
   } = useSearch({ 
     defaultLimit: 30,
     initialParams: {
@@ -182,10 +184,11 @@ export function ListingsView({
             {!isLoading && !isFetching && listings.length > 0 && (
               <ListingsPagination
                 currentPage={currentPage}
-                totalPages={totalPages}
-                totalResults={meta?.total ?? 0}
+                canGoBack={canGoBack}
+                hasNextPage={hasNextPage}
                 isFetching={isFetching}
-                goToPage={goToPage}
+                goToPreviousPage={goToPreviousPage}
+                goToNextPage={goToNextPage}
               />
             )}
           </div>
@@ -258,10 +261,11 @@ export function ListingsView({
               {!isLoading && !isFetching && listings.length > 0 && (
                 <ListingsPagination
                   currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalResults={meta?.total ?? 0}
+                  canGoBack={canGoBack}
+                  hasNextPage={hasNextPage}
                   isFetching={isFetching}
-                  goToPage={goToPage}
+                  goToPreviousPage={goToPreviousPage}
+                  goToNextPage={goToNextPage}
                 />
               )}
             </div>

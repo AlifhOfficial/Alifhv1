@@ -320,6 +320,8 @@ export const carListing = pgTable('car_listing', {
   index('car_listing_slug_idx').on(table.slug),
   index('car_listing_partnerId_idx').on(table.partnerId),
   index('car_listing_userId_idx').on(table.userId),
+  index('car_listing_reservedBy_idx').on(table.reservedBy),
+  index('car_listing_soldTo_idx').on(table.soldTo),
   index('car_listing_userId_createdAt_idx').on(table.userId, table.createdAt.desc()),
   index('car_listing_userId_updatedAt_idx').on(table.userId, table.updatedAt.desc()),
   index('car_listing_partnerId_createdAt_idx').on(table.partnerId, table.createdAt.desc()),
@@ -470,6 +472,7 @@ export const listingPriceHistory = pgTable('listing_price_history', {
 }, (table) => [
   index('listing_price_history_listingId_idx').on(table.listingId),
   index('listing_price_history_createdAt_idx').on(table.createdAt),
+  index('listing_price_history_changedBy_idx').on(table.changedBy),
 ]);
 
 export const listingView = pgTable('listing_view', {
@@ -535,4 +538,5 @@ export const vinPublicationHistory = pgTable('vin_publication_history', {
   index('vin_publication_history_vin_idx').on(table.vin),
   // Find all VINs a user has published
   index('vin_publication_history_userId_idx').on(table.userId),
+  index('vin_publication_history_currentListingId_idx').on(table.currentListingId),
 ]);
