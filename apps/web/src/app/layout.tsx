@@ -18,6 +18,11 @@ import {
 } from '@/lib/brand-assets'
 
 export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f5f5f5' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+  ],
+  colorScheme: 'dark light',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -135,10 +140,10 @@ export default async function RootLayout({
         {/* Inter Font - Preconnect for performance */}
         <link key="preconnect-google-fonts" rel="preconnect" href="https://fonts.googleapis.com" />
         <link key="preconnect-gstatic" rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link 
+        <link
           key="google-fonts-inter"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" 
-          rel="stylesheet" 
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
         />
         <link key="favicon-svg" rel="icon" type="image/svg+xml" href={BRAND_FAVICON_SVG_URL} />
         <link key="favicon-png" rel="icon" type="image/png" sizes="32x32" href={BRAND_FAVICON_PNG_URL} />
@@ -149,9 +154,8 @@ export default async function RootLayout({
         <link key="mask-icon-512" rel="preload" as="image" href={BRAND_ICON_512_URL} />
         <meta key="apple-webapp-capable" name="apple-mobile-web-app-capable" content="yes" />
         <meta key="mobile-webapp-capable" name="mobile-web-app-capable" content="yes" />
-        <meta key="theme-color" id="revvup-theme-color" name="theme-color" content="#000000" />
-        <meta key="color-scheme" id="revvup-color-scheme" name="color-scheme" content="dark" />
-        <meta key="apple-status-bar" id="revvup-apple-status-bar-style" name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta key="color-scheme" name="color-scheme" content="dark" />
+        <meta key="apple-status-bar" name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body suppressHydrationWarning>
         <ThemeProvider>

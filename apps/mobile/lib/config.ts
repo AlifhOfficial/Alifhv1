@@ -59,8 +59,20 @@ function getWsUrl(): string {
 // API URL - auto-detected in dev, from env in production
 export const API_BASE = getApiBaseUrl();
 
+export const PUBLIC_SITE_URL =
+  (process.env.EXPO_PUBLIC_SITE_URL || process.env.EXPO_PUBLIC_API_URL || 'https://www.revvup.ae').replace(/\/$/, '');
+
 // WebSocket URL - auto-detected in dev, from env in production
 export const WS_URL = getWsUrl();
+
+export function buildPublicUrl(path: string): string {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${PUBLIC_SITE_URL}${normalizedPath}`;
+}
+
+export function buildPublicListingUrl(listingIdOrSlug: string): string {
+  return buildPublicUrl(`/listings/${listingIdOrSlug}`);
+}
 
 // Log detected endpoints in development
 if (__DEV__) {

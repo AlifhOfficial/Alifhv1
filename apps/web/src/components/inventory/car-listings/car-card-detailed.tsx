@@ -9,7 +9,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { 
+import {
   Share2, 
   Heart, 
   Zap,
@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
+import { shareListing } from '@/lib/listing-share';
 import { cn } from '@/lib/utils';
 import { getAppListingImageUrls } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -320,20 +321,11 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
 
   // Handlers with useCallback to prevent recreation on every render
   const handleShare = useCallback(async () => {
-    const url = `${window.location.origin}/listings/${listing.slug || listing.id}`;
-    const text = `${carTitle} - ${formatPrice(listing.price)}\n${formatMileage(listing.mileage)} km • ${formatEnumValue(listing.specs)} Specs • ${listing.emirate}`;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: carTitle, text, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-      }
-    } catch (error) {
-      if ((error as Error).name !== 'AbortError') {
-        console.error('Share error:', error);
-      }
-    }
+    await shareListing({
+      listingIdOrSlug: listing.slug || listing.id,
+      title: carTitle,
+      details: `${formatPrice(listing.price)} • ${formatMileage(listing.mileage)} km • ${formatEnumValue(listing.specs)} Specs • ${listing.emirate}`,
+    });
   }, [listing.slug, listing.id, listing.price, listing.mileage, listing.specs, listing.emirate, carTitle]);
 
   const handleFavoriteClick = useCallback(() => {

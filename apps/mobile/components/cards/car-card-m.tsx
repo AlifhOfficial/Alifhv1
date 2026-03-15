@@ -7,7 +7,7 @@
  */
 
 import React, { useCallback, memo, useMemo } from 'react';
-import { StyleSheet, View, Share } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import { Share2, CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -15,6 +15,7 @@ import * as Haptics from 'expo-haptics';
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
+import { shareListing } from '@/lib/listing-share';
 import { 
   HapticPressable,
   Skeleton, 
@@ -243,10 +244,7 @@ export const CarCardM = memo(function CarCardM({
       return;
     }
     try {
-      await Share.share({
-        title: carTitle,
-        message: `Buy and sell cars on Revvup. Free. Forever.\n${carTitle}\nhttps://revvup.ae/listings/${id}`,
-      });
+      await shareListing({ listingIdOrSlug: id, title: carTitle });
     } catch {
       // Share cancelled or failed
     }

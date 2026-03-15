@@ -5,13 +5,14 @@
  */
 
 import React, { useCallback, memo } from 'react';
-import { StyleSheet, View, Share } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import { Share2, CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { getAppThumbUrl } from '@/lib/config';
+import { shareListing } from '@/lib/listing-share';
 import { 
   HapticPressable,
   Text,
@@ -183,10 +184,7 @@ export const BlkCard = memo(function BlkCard({
       return;
     }
     try {
-      await Share.share({
-        title: carTitle,
-        message: `Buy and sell cars on Revvup. Free. Forever.\n${carTitle}\nhttps://revvup.ae/listings/${id}`,
-      });
+      await shareListing({ listingIdOrSlug: id, title: carTitle });
     } catch {
       // Share cancelled or failed
     }

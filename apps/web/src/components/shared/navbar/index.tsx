@@ -206,11 +206,11 @@ export function Navbar() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-40 bg-background">
-        <div className="flex h-14 items-center max-w-[1600px] mx-auto px-4 sm:h-16 sm:px-6">
+        <div className="flex h-14 items-center max-w-[1600px] mx-auto px-4 sm:h-16 sm:px-6 lg:px-8">
             <div className="flex min-w-0 flex-1 items-baseline">
               <Link
                 href="/"
-                className="inline-flex flex-shrink-0 items-baseline rounded-md px-4 py-2.5"
+                className="inline-flex flex-shrink-0 items-baseline rounded-md pl-0 pr-4 py-2.5"
                 suppressHydrationWarning
               >
                 <span

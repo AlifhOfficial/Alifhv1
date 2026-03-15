@@ -8,6 +8,7 @@
 import Link from 'next/link';
 import { Share2, Heart, Zap, CheckCircle2 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
+import { shareListing } from '@/lib/listing-share';
 import { cn } from '@/lib/utils';
 import { getAppThumbUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -141,18 +142,12 @@ export function CarListItem({
   const showSuperlikeLimit = showSuperlikeLimitRaw && !authDialogOpen;
 
   const handleShare = useCallback(async () => {
-    const url = `${window.location.origin}/listings/${id}`;
     const title = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({ title, url });
-      } catch {
-        // User cancelled or share failed silently
-      }
-    } else {
-      await navigator.clipboard.writeText(url);
-    }
+
+    await shareListing({
+      listingIdOrSlug: id,
+      title,
+    });
   }, [id, year, make, model, trim]);
 
   const handleSuperlikeClick = useCallback(() => {

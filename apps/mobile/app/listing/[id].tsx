@@ -12,8 +12,6 @@ import {
   StyleSheet, 
   RefreshControl,
   Text,
-  Share,
-  Platform,
   InteractionManager,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -29,6 +27,7 @@ import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import { FloatingListingActions } from '@/components/listings';
 import { useListingDetail } from '@/hooks/use-listing-query';
+import { shareListing } from '@/lib/listing-share';
 
 export default function ListingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -83,25 +82,7 @@ export default function ListingDetailScreen() {
     if (!listing) return;
     try {
       const carTitle = `${listing.listing.year} ${listing.listing.make} ${listing.listing.model}`;
-      const shareUrl = `https://revvup.ae/listings/${listingId}`;
-      if (Platform.OS === 'web') {
-        if (navigator?.clipboard) {
-          await navigator.clipboard.writeText(shareUrl);
-        }
-      } else if (Platform.OS === 'ios') {
-        // iOS automatically appends URL to message, so don't include in message
-        await Share.share({
-          title: carTitle,
-          message: `Buy and sell cars on Revvup. Free. Forever.\n${carTitle}`,
-          url: shareUrl,
-        });
-      } else {
-        // Android doesn't use url parameter, include in message
-        await Share.share({
-          title: carTitle,
-          message: `Buy and sell cars on Revvup. Free. Forever.\n${carTitle}\n${shareUrl}`,
-        });
-      }
+      await shareListing({ listingIdOrSlug: listingId, title: carTitle });
     } catch (error) {
       console.error('Share failed:', error);
     }

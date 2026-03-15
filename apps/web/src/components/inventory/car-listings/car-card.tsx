@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Share2, Heart, CheckCircle2, Zap } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
+import { shareListing } from '@/lib/listing-share';
 import { cn } from '@/utils';
 import { getAppThumbUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -160,32 +161,10 @@ export function CarCard({
   }, []);
 
   const handleShare = useCallback(async () => {
-    if (typeof window === 'undefined') return;
-    
-    const url = `${window.location.origin}/listings/${id}`;
-    const shareData = {
+    await shareListing({
+      listingIdOrSlug: id,
       title: carTitle,
-      text: `Check out this ${carTitle}`,
-      url,
-    };
-    
-    try {
-      if (navigator.share && navigator.canShare?.(shareData)) {
-        await navigator.share(shareData);
-      } else if (navigator.share) {
-        await navigator.share(shareData);
-      } else if (navigator.clipboard) {
-        await navigator.clipboard.writeText(url);
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
-        try {
-          await navigator.clipboard.writeText(url);
-        } catch {
-          // Silent fail
-        }
-      }
-    }
+    });
   }, [id, carTitle]);
 
   // Derive dialog visibility - close dialogs when auth is required
