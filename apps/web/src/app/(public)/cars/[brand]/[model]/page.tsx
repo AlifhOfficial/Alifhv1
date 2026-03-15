@@ -61,6 +61,7 @@ function getModelFromSlug(brand: CarMake, slug: string): string | null {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { brand: brandSlug, model: modelSlug } = await params;
   const brand = getBrandFromSlug(brandSlug);
+  const ogImage = '/opengraph-image';
   
   if (!brand) {
     return { title: 'Brand Not Found | Revvup' };
@@ -84,6 +85,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       type: 'website',
       url: `https://revvup.ae/cars/${brandSlug}/${modelSlug}`,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${brand} ${model} listings on Revvup`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/twitter-image'],
     },
     alternates: {
       canonical: `https://revvup.ae/cars/${brandSlug}/${modelSlug}`,

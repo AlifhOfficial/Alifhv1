@@ -243,7 +243,10 @@ export const CarCardM = memo(function CarCardM({
       return;
     }
     try {
-      await Share.share({ message: `Check out this ${carTitle}`, title: carTitle });
+      await Share.share({
+        title: carTitle,
+        message: `Buy and sell cars on Revvup. Free. Forever.\n${carTitle}\nhttps://revvup.ae/listings/${id}`,
+      });
     } catch {
       // Share cancelled or failed
     }

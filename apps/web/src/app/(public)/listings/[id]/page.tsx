@@ -25,6 +25,7 @@ import type { SellerData } from '@/hooks/listings';
 import type { SimilarListingCard } from '@/hooks/listings/use-similar-listings';
 import { getPublicBookingAvailability, type PublicBookingAvailabilityResponse } from '@/lib/bookings/public-availability';
 import { getCdnPublicUrl } from '@/utils/storage';
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }
@@ -91,23 +92,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       };
     }
 
-    const title = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''} for Sale in Dubai | Revvup`;
     const priceFormatted = new Intl.NumberFormat('en-AE', { 
       style: 'currency', 
       currency: listing.currency || 'AED',
       maximumFractionDigits: 0,
     }).format(listing.price);
-    
+    const carTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
+    const title = `${carTitle} — ${priceFormatted} | Revvup`;
+    const locationLabel = listing.emirate ? listing.emirate.replace(/_/g, ' ') : null;
+    const summaryBits = [
+      listing.mileage ? `${listing.mileage.toLocaleString()} km` : null,
+      listing.specs ? `${listing.specs} Specs` : null,
+      locationLabel,
+    ].filter(Boolean);
     const description = [
-      `Buy this ${listing.year} ${listing.make} ${listing.model} for ${priceFormatted}.`,
-      listing.mileage ? `${listing.mileage.toLocaleString()} km.` : null,
-      listing.transmission ? `${listing.transmission} transmission.` : null,
-      listing.fuelType ? `${listing.fuelType} engine.` : null,
-      'Book test drive online. Revvup UAE.',,
+      `${carTitle} for ${priceFormatted}.`,
+      summaryBits.length > 0 ? `${summaryBits.join(' • ')}.` : null,
+      'Buy and sell cars on Revvup. Free. Forever.',
     ].filter(Boolean).join(' ');
 
-    // Get primary image for OG
-    const ogImage = getCdnPublicUrl(listing.thumbnail || listing.images?.[0]);
+    const ogImageUrl = `/listings/${id}/opengraph-image`;
 
     return {
       title,
@@ -119,18 +123,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         type: 'website',
         url: `https://revvup.ae/listings/${id}`,
         siteName: 'Revvup',
-        images: ogImage ? [{
-          url: ogImage,
+        images: [{
+          url: ogImageUrl,
           width: 1200,
           height: 630,
-          alt: `${listing.year} ${listing.make} ${listing.model}`,
-        }] : undefined,
+          alt: `${carTitle} on Revvup`,
+        }],
       },
       twitter: {
         card: 'summary_large_image',
         title,
         description,
-        images: ogImage ? [ogImage] : undefined,
+        images: [ogImageUrl],
       },
       alternates: {
         canonical: `https://revvup.ae/listings/${id}`,

@@ -66,6 +66,7 @@ async function getPartnerBySlug(slug: string) {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const partnerData = await getPartnerBySlug(slug);
+  const ogImage = '/opengraph-image';
 
   if (!partnerData) {
     return { title: 'Not Found | Revvup' };
@@ -96,6 +97,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       type: 'website',
       url: `https://revvup.ae/cars/dealer/${slug}`,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${brandName} dealer listings on Revvup`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/twitter-image'],
     },
     alternates: {
       canonical: `https://revvup.ae/cars/dealer/${slug}`,

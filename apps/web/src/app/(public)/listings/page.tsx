@@ -60,6 +60,7 @@ function shouldNoindex(params: Record<string, string | string[] | undefined>): b
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const params = await searchParams;
   const noindex = shouldNoindex(params);
+  const ogImage = '/opengraph-image';
 
   const baseMetadata: Metadata = {
     title: 'Used Cars for Sale in Dubai | No Ads | Revvup',
@@ -67,9 +68,23 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     keywords: 'used cars for sale dubai, buy used car dubai, second hand cars dubai, cars for sale uae, used cars dubai, car marketplace dubai, buy car dubai, dubai used cars, 2nd hand cars dubai, dubizzle cars dubai, dubicars uae, yallmotors, cars24 dubai, shoofi cars, ayeshi uae, automotive classifieds uae, car shopping dubai',
     openGraph: {
       title: 'Used Cars for Sale in Dubai | No Ads | Revvup',
-      description: 'Browse used cars in Dubai. No sponsored ads. Book test drives anytime.',
+      description: 'Browse used cars in Dubai. No sponsored ads. Buy and sell cars on Revvup. Free. Forever.',
       type: 'website',
       url: 'https://revvup.ae/listings',
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: 'Revvup UAE car marketplace — buy and sell cars free',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Used Cars for Sale in Dubai | No Ads | Revvup',
+      description: 'Browse used cars in Dubai. No sponsored ads. Buy and sell cars on Revvup. Free. Forever.',
+      images: ['/twitter-image'],
     },
     alternates: {
       canonical: 'https://revvup.ae/listings',

@@ -180,6 +180,7 @@ function getBrandFromSlug(slug: string): CarMake | null {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { brand: slug } = await params;
+  const ogImage = '/opengraph-image';
   
   // Check if it's Black listings first (highest priority)
   const isBlack = getBlackFromSlug(slug);
@@ -193,6 +194,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         description: BLACK_META.description,
         type: 'website',
         url: `https://revvup.ae/cars/${slug}`,
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: `${BLACK_META.displayName} on Revvup`,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${BLACK_META.displayName} for Sale in UAE | Revvup`,
+        description: BLACK_META.description,
+        images: ['/twitter-image'],
       },
       alternates: {
         canonical: `https://revvup.ae/cars/${slug}`,
@@ -213,6 +228,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         description: spec.description,
         type: 'website',
         url: `https://revvup.ae/cars/${slug}`,
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: `${spec.displayName} cars on Revvup`,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${spec.displayName} Cars for Sale in UAE | Revvup`,
+        description: spec.description,
+        images: ['/twitter-image'],
       },
       alternates: {
         canonical: `https://revvup.ae/cars/${slug}`,
@@ -233,6 +262,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         description: emirate.description,
         type: 'website',
         url: `https://revvup.ae/cars/${slug}`,
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: `Used cars for sale in ${emirate.displayName} on Revvup`,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `Used Cars for Sale in ${emirate.displayName} | Revvup`,
+        description: emirate.description,
+        images: ['/twitter-image'],
       },
       alternates: {
         canonical: `https://revvup.ae/cars/${slug}`,
@@ -258,6 +301,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       type: 'website',
       url: `https://revvup.ae/cars/${slug}`,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${brand} cars for sale on Revvup`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${brand} Cars for Sale in UAE | Revvup`,
+      description,
+      images: ['/twitter-image'],
     },
     alternates: {
       canonical: `https://revvup.ae/cars/${slug}`,

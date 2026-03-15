@@ -148,7 +148,7 @@ export async function generateMetadata({ params }: ShowroomPageProps): Promise<M
     showroom.brandPhilosophy || 
     `Explore ${brandName}'s premium car showroom in UAE. Browse verified inventory, read reviews, and connect with trusted dealers.`;
   
-  const image = showroom.seoImageUrl || showroom.heroImageUrl;
+  const image = showroom.seoImageUrl || showroom.heroImageUrl || '/opengraph-image';
   const location = showroom.partner?.emirate || 'UAE';
   const isBlackTier = showroom.partner?.tier === 'black';
   
@@ -170,7 +170,12 @@ export async function generateMetadata({ params }: ShowroomPageProps): Promise<M
     openGraph: {
       title,
       description,
-      images: image ? [image] : [],
+      images: [
+        {
+          url: image,
+          alt: `${brandName} showroom on Revvup`,
+        },
+      ],
       type: 'website',
       url: `https://revvup.ae/showroom/${slug}`,
     },
@@ -178,7 +183,7 @@ export async function generateMetadata({ params }: ShowroomPageProps): Promise<M
       card: 'summary_large_image',
       title,
       description,
-      images: image ? [image] : [],
+      images: [image],
     },
     alternates: {
       canonical: `https://revvup.ae/showroom/${slug}`,

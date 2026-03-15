@@ -92,14 +92,14 @@ export default function ListingDetailScreen() {
         // iOS automatically appends URL to message, so don't include in message
         await Share.share({
           title: carTitle,
-          message: `Check out this ${carTitle} on Revvup!`,
+          message: `Buy and sell cars on Revvup. Free. Forever.\n${carTitle}`,
           url: shareUrl,
         });
       } else {
         // Android doesn't use url parameter, include in message
         await Share.share({
           title: carTitle,
-          message: `Check out this ${carTitle} on Revvup!\n${shareUrl}`,
+          message: `Buy and sell cars on Revvup. Free. Forever.\n${carTitle}\n${shareUrl}`,
         });
       }
     } catch (error) {

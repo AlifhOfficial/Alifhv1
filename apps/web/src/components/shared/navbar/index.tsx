@@ -228,7 +228,7 @@ export function Navbar() {
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="relative top-px hidden lg:flex items-baseline gap-1">
+              <div className="hidden lg:flex items-baseline gap-1">
                 {navItems.map((item) => (
                   <div 
                     key={item.label}
