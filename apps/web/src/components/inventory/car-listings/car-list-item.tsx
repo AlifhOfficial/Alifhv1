@@ -242,7 +242,7 @@ export function CarListItem({
           <Link href={`/listings/${id}`} className="group/title flex-1 min-w-0">
             <div className="flex items-baseline gap-2">
               <h3 className={cn(
-                "text-[15px] font-bold tracking-tight transition-colors line-clamp-1",
+                "text-lg lg:text-[15px] font-bold tracking-tight transition-colors line-clamp-1",
                 isBlkListing 
                   ? "text-zinc-900 dark:text-white group-hover/title:text-zinc-600 dark:group-hover/title:text-zinc-300" 
                   : "text-foreground group-hover/title:text-primary"
@@ -250,7 +250,7 @@ export function CarListItem({
                 {make} {model}
               </h3>
               <span className={cn(
-                "text-xs font-semibold tabular-nums flex-shrink-0",
+                "text-sm lg:text-xs font-semibold tabular-nums flex-shrink-0",
                 isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
               )}>
                 {year}
@@ -266,29 +266,35 @@ export function CarListItem({
             )}
           </Link>
           <p className={cn(
-            "text-lg font-bold tracking-tight whitespace-nowrap",
-            isBlkListing ? "text-zinc-900 dark:text-white" : "text-blue-600"
+            "text-xl lg:text-lg font-black tracking-tight leading-none whitespace-nowrap",
+            isBlkListing ? "text-zinc-900 dark:text-white" : "text-blue-600 dark:text-blue-500"
           )}>
             {formatPrice(price)}
           </p>
         </div>
 
         {/* Specs Row */}
-        <div className="flex items-center gap-1.5 text-sm">
+        <div className="flex items-center gap-2 lg:gap-1.5 text-sm">
           <span className={cn(
             "font-semibold",
             isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
           )}>
             {formatMileage(mileage)} km
           </span>
-          <span className={isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"}>·</span>
+          <span className={cn(
+            "hidden lg:inline",
+            isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"
+          )}>·</span>
           <span className={cn(
             "font-semibold",
             isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
           )}>
             {displaySpecs}
           </span>
-          <span className={isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"}>·</span>
+          <span className={cn(
+            "hidden lg:inline",
+            isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"
+          )}>·</span>
           <span className={cn(
             "font-semibold truncate",
             isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
@@ -348,7 +354,7 @@ export function CarListItem({
               />
             )}
             <span className={cn(
-              "text-[13px] font-medium",
+              "text-sm lg:text-[13px] font-medium",
               isBlkListing ? "text-zinc-700 dark:text-zinc-200" : "text-foreground"
             )}>
               {displaySellerName}
@@ -511,21 +517,21 @@ function CarListItemSkeletonComponent({ className }: CarListItemSkeletonProps) {
           <div className="flex-1 min-w-0 space-y-1">
             {/* Title with year */}
             <div className="flex items-baseline gap-2">
-              <Skeleton className="h-[15px] w-32" />
-              <Skeleton className="h-3 w-8" />
+              <Skeleton className="h-5 lg:h-[15px] w-32" />
+              <Skeleton className="h-4 lg:h-3 w-8" />
             </div>
             {/* Trim */}
             <Skeleton className="h-3 w-24" />
           </div>
           {/* Price */}
-          <Skeleton className="h-[18px] w-28 flex-shrink-0" />
+          <Skeleton className="h-6 lg:h-[18px] w-28 flex-shrink-0" />
         </div>
 
         {/* Specs Row - mileage · specs · emirate */}
-        <div className="flex items-center gap-1.5">
-          <Skeleton className="h-3.5 w-14" />
-          <Skeleton className="h-3.5 w-8" />
-          <Skeleton className="h-3.5 w-12" />
+        <div className="flex items-center gap-2 lg:gap-1.5">
+          <Skeleton className="h-4 lg:h-3.5 w-14" />
+          <Skeleton className="h-4 lg:h-3.5 w-8" />
+          <Skeleton className="h-4 lg:h-3.5 w-12" />
         </div>
 
         {/* Bottom Section - Seller and Actions */}

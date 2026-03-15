@@ -279,12 +279,12 @@ export function CarCard({
       </Link>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col p-2 sm:p-4 gap-0.5 sm:gap-1.5">
+      <div className="flex flex-1 flex-col p-3 sm:p-4 gap-2 sm:gap-1.5">
         {/* Title with Year */}
         <Link href={`/listings/${id}`} className="group/title">
           <div className="flex items-baseline justify-between gap-2">
             <h3 className={cn(
-              "text-sm sm:text-[15px] font-bold tracking-tight line-clamp-1 transition-colors flex-1 min-w-0",
+              "text-lg sm:text-[15px] font-bold tracking-tight line-clamp-1 transition-colors flex-1 min-w-0 leading-tight",
               isBlkListing 
                 ? "text-zinc-900 dark:text-white group-hover/title:text-zinc-600 dark:group-hover/title:text-zinc-300" 
                 : "text-foreground group-hover/title:text-primary"
@@ -292,8 +292,8 @@ export function CarCard({
               {make} {model}
             </h3>
             <span className={cn(
-              "text-[11px] sm:text-xs font-semibold tabular-nums flex-shrink-0",
-              isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
+              "text-sm sm:text-xs font-semibold tabular-nums flex-shrink-0",
+              isBlkListing ? "text-zinc-500 dark:text-zinc-500" : "text-muted-foreground/80"
             )}>
               {year}
             </span>
@@ -302,26 +302,27 @@ export function CarCard({
 
         {/* Price */}
         <p className={cn(
-          "text-base sm:text-lg font-bold tracking-tight",
-          isBlkListing ? "text-zinc-900 dark:text-white" : "text-blue-600"
+          "text-xl sm:text-lg font-black tracking-tight leading-none",
+          isBlkListing ? "text-zinc-900 dark:text-white" : "text-blue-600 dark:text-blue-500"
         )}>
           {formatPrice(price)}
         </p>
 
         {/* Mobile: Stats Row */}
         <div className={cn(
-          "flex items-center gap-1 text-[11px] xs:text-xs min-w-0 overflow-hidden sm:hidden",
+          "flex items-center gap-2 text-sm min-w-0 overflow-hidden sm:hidden",
           isBlkListing ? "text-zinc-500 dark:text-zinc-400" : "text-muted-foreground"
         )}>
-          <span className="font-semibold tabular-nums whitespace-nowrap">{formatMileage(mileage)} km</span>
-          <span className={cn("opacity-40", isBlkListing ? "text-zinc-400 dark:text-zinc-600" : "")}>·</span>
-          <span className="font-semibold whitespace-nowrap">{displaySpecs}</span>
-          <span className={cn("opacity-40", isBlkListing ? "text-zinc-400 dark:text-zinc-600" : "")}>·</span>
-          <span className="font-semibold truncate">{displayEmirate}</span>
+          <span className="font-medium tabular-nums whitespace-nowrap">{formatMileage(mileage)} km</span>
+          <span className="font-medium whitespace-nowrap">{displaySpecs}</span>
+          <span className="font-medium truncate">{displayEmirate}</span>
         </div>
 
         {/* Mobile: Footer - Seller + Actions */}
-        <div className="flex items-center justify-between pt-2 sm:hidden">
+        <div className={cn(
+          "flex items-center justify-between pt-3 mt-1 sm:hidden border-t",
+          isBlkListing ? "border-zinc-100 dark:border-zinc-800" : "border-border/40"
+        )}>
           {/* Seller Info */}
           <div className="flex items-center gap-2 min-w-0 flex-1">
             {isBlackTierPartner ? (
@@ -370,7 +371,7 @@ export function CarCard({
               />
             )}
             <span className={cn(
-              "text-[11px] font-semibold truncate",
+              "text-sm sm:text-[11px] font-semibold truncate",
               isBlkListing ? "text-zinc-600 dark:text-zinc-300" : "text-foreground"
             )}>
               {displaySellerName}
@@ -389,7 +390,7 @@ export function CarCard({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-0.5 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button 
               className={cn(
                 "rounded-full p-1.5 transition-colors touch-manipulation",
@@ -710,25 +711,25 @@ function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
       </div>
       
       {/* Content Section */}
-      <div className="flex flex-1 flex-col p-2 sm:p-4 gap-0.5 sm:gap-1">
+      <div className="flex flex-1 flex-col p-3 sm:p-4 gap-2 sm:gap-1">
         {/* Title + Year row */}
         <div className="flex items-baseline justify-between gap-2">
-          <Skeleton className="h-3.5 sm:h-[15px] w-2/3" />
-          <Skeleton className="h-2.5 sm:h-3 w-8 flex-shrink-0" />
+          <Skeleton className="h-5 sm:h-[15px] w-2/3" />
+          <Skeleton className="h-4 sm:h-3 w-8 flex-shrink-0" />
         </div>
 
         {/* Price */}
-        <Skeleton className="h-4 sm:h-[18px] w-24 sm:w-28" />
+        <Skeleton className="h-6 sm:h-[18px] w-24 sm:w-28" />
 
         {/* Mobile: Stats Row */}
-        <div className="flex items-center gap-1 sm:hidden">
-          <Skeleton className="h-3 w-10" />
-          <Skeleton className="h-3 w-6" />
-          <Skeleton className="h-3 w-12" />
+        <div className="flex items-center gap-2 sm:hidden">
+          <Skeleton className="h-4 w-10" />
+          <Skeleton className="h-4 w-12" />
+          <Skeleton className="h-4 w-12" />
         </div>
 
         {/* Mobile: Footer - Seller + Actions */}
-        <div className="flex items-center justify-between pt-2 sm:hidden">
+        <div className="flex items-center justify-between pt-3 mt-1 border-t border-border/40 sm:hidden">
           <div className="flex items-center gap-2 min-w-0">
             <Skeleton className="w-6 h-6 rounded-full flex-shrink-0" />
             <Skeleton className="h-3 w-20" />

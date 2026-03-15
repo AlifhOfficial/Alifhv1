@@ -396,13 +396,19 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
         {/* Title & Actions Row */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0 space-y-1.5">
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
+            <h1 className={cn(
+              "text-lg sm:text-xl font-bold tracking-tight",
+              listing.isBlkListing ? "text-zinc-900 dark:text-white" : "text-foreground"
+            )}>
               {carTitle}
             </h1>
             
             {/* Price */}
             <div className="flex items-baseline gap-2.5 flex-wrap">
-              <p className="text-xl sm:text-2xl font-bold tabular-nums text-blue-500">
+              <p className={cn(
+                "text-xl sm:text-2xl font-black tabular-nums tracking-tight leading-none",
+                listing.isBlkListing ? "text-zinc-900 dark:text-white" : "text-blue-600 dark:text-blue-500"
+              )}>
                 {formatPrice(listing.price)}
               </p>
               {listing.isNegotiable && (

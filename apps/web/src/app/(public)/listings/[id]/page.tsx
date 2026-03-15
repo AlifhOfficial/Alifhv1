@@ -24,6 +24,7 @@ import { ImagePreloader } from '@/components/ui/image-preloader';
 import type { SellerData } from '@/hooks/listings';
 import type { SimilarListingCard } from '@/hooks/listings/use-similar-listings';
 import { getPublicBookingAvailability, type PublicBookingAvailabilityResponse } from '@/lib/bookings/public-availability';
+import { buildListingBrandedImageUrl } from '@/lib/listing-share';
 import { getCdnPublicUrl } from '@/utils/storage';
 
 interface PageProps {
@@ -111,7 +112,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       'Buy and sell cars on Revvup. Free. Forever.',
     ].filter(Boolean).join(' ');
 
-    const ogImageUrl = `/listings/${id}/opengraph-image`;
+    const ogImageUrl = buildListingBrandedImageUrl(id);
 
     return {
       title,

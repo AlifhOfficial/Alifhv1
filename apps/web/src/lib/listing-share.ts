@@ -1,4 +1,14 @@
-import { buildPublicListingUrl } from '@/lib/site-url';
+import { buildPublicListingUrl, buildPublicUrl } from '@/lib/site-url';
+
+const BRAND_TAGLINE = 'Buy and sell cars on Revvup. Free. Forever.';
+
+/**
+ * Canonical branded OG image URL for a listing.
+ * Used by web metadata, mobile share payloads, and any preview surface.
+ */
+export function buildListingBrandedImageUrl(listingIdOrSlug: string): string {
+  return buildPublicUrl(`/listings/${listingIdOrSlug}/opengraph-image`);
+}
 
 interface ShareListingOptions {
   listingIdOrSlug: string;
@@ -8,8 +18,8 @@ interface ShareListingOptions {
 
 function buildShareText(title: string, details?: string | null) {
   return details
-    ? `Buy and sell cars on Revvup. Free. Forever.\n${title}\n${details}`
-    : `Buy and sell cars on Revvup. Free. Forever.\n${title}`;
+    ? `${BRAND_TAGLINE}\n${title}\n${details}`
+    : `${BRAND_TAGLINE}\n${title}`;
 }
 
 export async function shareListing({

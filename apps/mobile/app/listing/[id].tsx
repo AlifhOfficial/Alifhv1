@@ -81,8 +81,17 @@ export default function ListingDetailScreen() {
   const handleShare = useCallback(async (listingId: string) => {
     if (!listing) return;
     try {
-      const carTitle = `${listing.listing.year} ${listing.listing.make} ${listing.listing.model}`;
-      await shareListing({ listingIdOrSlug: listingId, title: carTitle });
+      const l = listing.listing;
+      const carTitle = `${l.year} ${l.make} ${l.model}${l.trim ? ` ${l.trim}` : ''}`;
+      const price = l.price
+        ? new Intl.NumberFormat('en-AE', { style: 'currency', currency: 'AED', maximumFractionDigits: 0 }).format(l.price)
+        : null;
+      const details = [
+        price,
+        l.mileage ? `${l.mileage.toLocaleString()} km` : null,
+        l.emirate ?? null,
+      ].filter(Boolean).join(' · ') || null;
+      await shareListing({ listingIdOrSlug: listingId, title: carTitle, details });
     } catch (error) {
       console.error('Share failed:', error);
     }
