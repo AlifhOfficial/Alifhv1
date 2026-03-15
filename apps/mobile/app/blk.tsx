@@ -8,10 +8,8 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { 
   View, 
   StyleSheet, 
-  ScrollView, 
+  FlatList, 
   RefreshControl,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -30,7 +28,7 @@ import { searchApi, type ListingCard } from '@/lib/search-api';
 export default function BlkScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<FlatList<ListingCard>>(null);
 
   // State
   const [listings, setListings] = useState<ListingCard[]>([]);
@@ -112,17 +110,72 @@ export default function BlkScreen() {
     }
   }, [hasMore, isLoading, page, fetchListings]);
 
-  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    const paddingToBottom = 200;
-    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom) {
-      handleLoadMore();
-    }
-  }, [handleLoadMore]);
-
   const handleCardPress = useCallback((id: string) => {
     router.push(`/listing/${id}` as any);
   }, [router]);
+
+  const renderItem = useCallback(({ item }: { item: ListingCard }) => (
+    <View style={styles.cardWrapper}>
+      <BlkCard
+        id={item.id}
+        make={item.make}
+        model={item.model}
+        year={item.year}
+        trim={item.trim}
+        price={item.price}
+        mileage={item.mileage}
+        emirate={item.emirate}
+        specs={item.specs}
+        thumbnail={item.thumbnail}
+        partnerName={item.partnerName}
+        partnerLogo={item.partnerLogo}
+        partnerVerified={item.partnerVerified}
+        isBlackTierPartner={item.isBlackTierPartner}
+        sellerName={item.sellerName}
+        sellerAvatarUrl={item.sellerAvatarUrl}
+        kycVerified={item.sellerKycVerified}
+        onPress={handleCardPress}
+      />
+    </View>
+  ), [handleCardPress]);
+
+  const keyExtractor = useCallback((item: ListingCard) => item.id, []);
+
+  const renderEmpty = useCallback(() => {
+    if (isLoading && listings.length === 0) {
+      return (
+        <>
+          <View style={styles.cardWrapper}>
+            <BlkCardSkeleton />
+          </View>
+          <View style={styles.cardWrapper}>
+            <BlkCardSkeleton />
+          </View>
+          <View style={styles.cardWrapper}>
+            <BlkCardSkeleton />
+          </View>
+        </>
+      );
+    }
+
+    return (
+      <View style={styles.empty}>
+        <Body size="large" style={styles.emptyText}>No BLK listings available</Body>
+      </View>
+    );
+  }, [isLoading, listings.length]);
+
+  const renderFooter = useCallback(() => {
+    if (!hasMore || !isLoadingMore.current) {
+      return <View style={styles.bottomSpacer} />;
+    }
+
+    return (
+      <View style={styles.loadingMore}>
+        <LogoLoader size={40} />
+      </View>
+    );
+  }, [hasMore]);
 
   // ──────────────────────────────────────────────────────────────────────────
   // RENDER
@@ -144,18 +197,21 @@ export default function BlkScreen() {
       {/* BLK Header - Absolute positioned (outside ScrollView) */}
       <BlkHeader total={total} />
 
-      {/* Scrollable Content */}
-      <ScrollView
+      <FlatList
         ref={scrollRef}
-        style={styles.scrollView}
+        data={listings}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        ListEmptyComponent={renderEmpty}
+        ListFooterComponent={renderFooter}
         contentContainerStyle={[
           styles.scrollContent,
-          { 
+          {
             paddingTop: contentTopPadding,
             paddingBottom: insets.bottom + Layout.tabBarHeight + Spacing.xl,
+            flexGrow: listings.length === 0 ? 1 : undefined,
           },
         ]}
-        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -164,64 +220,15 @@ export default function BlkScreen() {
             progressBackgroundColor="#000000"
           />
         }
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-      >
-        {isLoading && listings.length === 0 ? (
-          // Skeletons
-          <>
-            <View style={styles.cardWrapper}>
-              <BlkCardSkeleton />
-            </View>
-            <View style={styles.cardWrapper}>
-              <BlkCardSkeleton />
-            </View>
-            <View style={styles.cardWrapper}>
-              <BlkCardSkeleton />
-            </View>
-          </>
-        ) : listings.length === 0 ? (
-          // Empty state
-          <View style={styles.empty}>
-            <Body size="large" style={styles.emptyText}>No BLK listings available</Body>
-          </View>
-        ) : (
-          // Listings
-          <>
-            {listings.map((listing, index) => (
-              <View key={`${listing.id}-${index}`} style={styles.cardWrapper}>
-                <BlkCard
-                  id={listing.id}
-                  make={listing.make}
-                  model={listing.model}
-                  year={listing.year}
-                  trim={listing.trim}
-                  price={listing.price}
-                  mileage={listing.mileage}
-                  emirate={listing.emirate}
-                  specs={listing.specs}
-                  thumbnail={listing.thumbnail}
-                  partnerName={listing.partnerName}
-                  partnerLogo={listing.partnerLogo}
-                  partnerVerified={listing.partnerVerified}
-                  isBlackTierPartner={listing.isBlackTierPartner}
-                  sellerName={listing.sellerName}
-                  sellerAvatarUrl={listing.sellerAvatarUrl}
-                  kycVerified={listing.sellerKycVerified}
-                  onPress={handleCardPress}
-                />
-              </View>
-            ))}
-
-            {/* Loading more indicator */}
-            {hasMore && isLoadingMore.current && (
-              <View style={styles.loadingMore}>
-                <LogoLoader size={40} />
-              </View>
-            )}
-          </>
-        )}
-      </ScrollView>
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.4}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={6}
+        maxToRenderPerBatch={6}
+        updateCellsBatchingPeriod={40}
+        windowSize={7}
+        removeClippedSubviews
+      />
 
       {/* Bottom Safe Area Gradient */}
       <LinearGradient
@@ -243,9 +250,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
   },
-  scrollView: {
-    flex: 1,
-  },
   scrollContent: {
     paddingHorizontal: Spacing.sm,
   },
@@ -262,6 +266,9 @@ const styles = StyleSheet.create({
   loadingMore: {
     alignItems: 'center',
     paddingVertical: Spacing.lg,
+  },
+  bottomSpacer: {
+    height: Spacing.lg,
   },
   bottomGradient: {
     position: 'absolute',

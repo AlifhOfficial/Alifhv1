@@ -185,6 +185,9 @@ interface CacheEntry<T> {
 }
 
 const cache = new Map<string, CacheEntry<unknown>>();
+const inFlightListingRequests = new Map<string, Promise<ListingCard[]>>();
+const inFlightPartnersRequest = new Map<string, Promise<PartnerListItem[]>>();
+const inFlightGridDataRequests = new Map<string, Promise<GridData>>();
 
 function getCached<T>(key: string): T | null {
   const entry = cache.get(key);
@@ -438,14 +441,27 @@ export async function fetchGridListings(config: AnyGridConfig): Promise<ListingC
   const cacheKey = `listings:${JSON.stringify(config.searchParams)}`;
   const cached = getCached<ListingCard[]>(cacheKey);
   if (cached) return cached;
+
+  const existingRequest = inFlightListingRequests.get(cacheKey);
+  if (existingRequest) return existingRequest;
   
+  const request = (async () => {
+    try {
+      const response = await searchApi.search(config.searchParams);
+      setCache(cacheKey, response.listings);
+      return response.listings;
+    } catch (error) {
+      console.error(`[GridAPI] Failed to fetch listings for ${config.id}:`, error);
+      return [];
+    }
+  })();
+
+  inFlightListingRequests.set(cacheKey, request);
+
   try {
-    const response = await searchApi.search(config.searchParams);
-    setCache(cacheKey, response.listings);
-    return response.listings;
-  } catch (error) {
-    console.error(`[GridAPI] Failed to fetch listings for ${config.id}:`, error);
-    return [];
+    return await request;
+  } finally {
+    inFlightListingRequests.delete(cacheKey);
   }
 }
 
@@ -454,14 +470,27 @@ export async function fetchPartners(): Promise<PartnerListItem[]> {
   const cacheKey = 'partners';
   const cached = getCached<PartnerListItem[]>(cacheKey);
   if (cached) return cached;
+
+  const existingRequest = inFlightPartnersRequest.get(cacheKey);
+  if (existingRequest) return existingRequest;
   
+  const request = (async () => {
+    try {
+      const partners = await getPartnersList();
+      setCache(cacheKey, partners);
+      return partners;
+    } catch (error) {
+      console.error('[GridAPI] Failed to fetch partners:', error);
+      return [];
+    }
+  })();
+
+  inFlightPartnersRequest.set(cacheKey, request);
+
   try {
-    const partners = await getPartnersList();
-    setCache(cacheKey, partners);
-    return partners;
-  } catch (error) {
-    console.error('[GridAPI] Failed to fetch partners:', error);
-    return [];
+    return await request;
+  } finally {
+    inFlightPartnersRequest.delete(cacheKey);
   }
 }
 
@@ -472,89 +501,102 @@ export async function fetchGridData(config: AnyGridConfig): Promise<GridData> {
   const cached = getCached<GridData>(cacheKey);
   if (cached) return cached;
 
-  const result: GridData = {
-    config,
-    listings: [],
-  };
+  const existingRequest = inFlightGridDataRequests.get(cacheKey);
+  if (existingRequest) return existingRequest;
 
-  // Handle partner-specific grids
-  if (config.type === 'founding') {
-    const partners = await fetchPartners();
-    // Sort by createdAt (oldest first = founding partners)
-    result.partners = partners
-      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-      .slice(0, 10);
-    setCache(cacheKey, result);
-    return result;
-  }
+  const request = (async () => {
+    const result: GridData = {
+      config,
+      listings: [],
+    };
 
-  if (config.type === 'partner' && (config as PartnerGridConfig).partnerId) {
-    const partnerId = (config as PartnerGridConfig).partnerId!;
-    console.log('[fetchGridData] Fetching partner grid for partnerId:', partnerId);
-    
-    const partners = await fetchPartners();
-    const partner = partners.find(p => p.id === partnerId);
-    
-    if (partner) {
-      console.log('[fetchGridData] Found partner:', partner.brandName);
-      result.partner = partner;
+    // Handle partner-specific grids
+    if (config.type === 'founding') {
+      const partners = await fetchPartners();
+      // Sort by createdAt (oldest first = founding partners)
+      result.partners = partners
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+        .slice(0, 10);
+      setCache(cacheKey, result);
+      return result;
+    }
+
+    if (config.type === 'partner' && (config as PartnerGridConfig).partnerId) {
+      const partnerId = (config as PartnerGridConfig).partnerId!;
+      console.log('[fetchGridData] Fetching partner grid for partnerId:', partnerId);
       
-      // Fetch partner's listings using partnerId filter
+      const partners = await fetchPartners();
+      const partner = partners.find(p => p.id === partnerId);
+      
+      if (partner) {
+        console.log('[fetchGridData] Found partner:', partner.brandName);
+        result.partner = partner;
+        
+        // Fetch partner's listings using partnerId filter
+        try {
+          const response = await searchApi.search({
+            partnerId: partnerId,
+            partnerName: partner.brandName,
+            sortBy: 'newest',
+            limit: 6,
+          });
+          console.log('[fetchGridData] Partner listings fetched:', response.listings.length);
+          result.listings = response.listings;
+          result.total = response.meta.total;
+          result.hasMore = response.meta.hasMore;
+        } catch (err) {
+          console.error('[fetchGridData] Failed to fetch partner listings:', err);
+        }
+      } else {
+        console.log('[fetchGridData] Partner not found for id:', partnerId);
+      }
+      setCache(cacheKey, result);
+      return result;
+    }
+
+    // Handle showroom grids - fetch showroom at specified index
+    if (config.type === 'showroom') {
+      const showroomIndex = (config as ShowroomGridConfig).showroomIndex || 0;
       try {
-        const response = await searchApi.search({
-          partnerId: partnerId,
-          partnerName: partner.brandName,
-          sortBy: 'newest',
-          limit: 6,
-        });
-        console.log('[fetchGridData] Partner listings fetched:', response.listings.length);
+        // Fetch enough showrooms to get the one at index (page 1, limit = index + 1)
+        const showroomData = await getShowroomsList(1, showroomIndex + 1);
+        if (showroomData.showrooms.length > showroomIndex) {
+          result.showroom = showroomData.showrooms[showroomIndex];
+        }
+      } catch (err) {
+        console.error('[fetchGridData] Failed to fetch showroom:', err);
+      }
+      setCache(cacheKey, result);
+      return result;
+    }
+
+    // Fetch listings for other grid types
+    if (config.searchParams) {
+      try {
+        const response = await searchApi.search(config.searchParams);
         result.listings = response.listings;
         result.total = response.meta.total;
         result.hasMore = response.meta.hasMore;
       } catch (err) {
-        console.error('[fetchGridData] Failed to fetch partner listings:', err);
+        console.error(`[fetchGridData] Failed to fetch listings for ${config.type}:`, err);
+        // Return empty result instead of failing
+        result.listings = [];
+        result.total = 0;
+        result.hasMore = false;
       }
-    } else {
-      console.log('[fetchGridData] Partner not found for id:', partnerId);
     }
+
     setCache(cacheKey, result);
     return result;
-  }
+  })();
 
-  // Handle showroom grids - fetch showroom at specified index
-  if (config.type === 'showroom') {
-    const showroomIndex = (config as ShowroomGridConfig).showroomIndex || 0;
-    try {
-      // Fetch enough showrooms to get the one at index (page 1, limit = index + 1)
-      const showroomData = await getShowroomsList(1, showroomIndex + 1);
-      if (showroomData.showrooms.length > showroomIndex) {
-        result.showroom = showroomData.showrooms[showroomIndex];
-      }
-    } catch (err) {
-      console.error('[fetchGridData] Failed to fetch showroom:', err);
-    }
-    setCache(cacheKey, result);
-    return result;
-  }
+  inFlightGridDataRequests.set(cacheKey, request);
 
-  // Fetch listings for other grid types
-  if (config.searchParams) {
-    try {
-      const response = await searchApi.search(config.searchParams);
-      result.listings = response.listings;
-      result.total = response.meta.total;
-      result.hasMore = response.meta.hasMore;
-    } catch (err) {
-      console.error(`[fetchGridData] Failed to fetch listings for ${config.type}:`, err);
-      // Return empty result instead of failing
-      result.listings = [];
-      result.total = 0;
-      result.hasMore = false;
-    }
+  try {
+    return await request;
+  } finally {
+    inFlightGridDataRequests.delete(cacheKey);
   }
-
-  setCache(cacheKey, result);
-  return result;
 }
 
 /** Batch fetch multiple grids - continues even if some fail */

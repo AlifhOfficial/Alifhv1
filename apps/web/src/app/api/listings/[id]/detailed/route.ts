@@ -97,6 +97,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     }
 
     const listing = await getListingDetailed(id);
+    logTiming('listing-query');
 
     if (!listing) {
       return NextResponse.json(
@@ -104,21 +105,28 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
         { status: 404 }
       );
     }
-    
-    // Check if user is admin for preview access to non-public listings
-    const user = await getSessionUser();
-    const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
-    const isAdminPreview = !listing.isPublic && isAdmin;
-    
-    // Non-public listings: only allow admin preview
-    if (!listing.isPublic && !isAdmin) {
-      return NextResponse.json(
-        { error: 'Listing not found' },
-        { status: 404 }
-      );
+
+    let isAdminPreview = false;
+
+    // Session lookup is only needed for non-public listings.
+    if (!listing.isPublic) {
+      const user = await getSessionUser();
+      logTiming('session-check');
+
+      const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+      isAdminPreview = isAdmin;
+
+      // Non-public listings: only allow admin preview
+      if (!isAdmin) {
+        return NextResponse.json(
+          { error: 'Listing not found' },
+          { status: 404 }
+        );
+      }
     }
 
     const sellerData = await fetchSellerData(listing);
+    logTiming('seller-query');
 
     // Filter sensitive data based on visibility settings
     // VIN: Only expose if vinVisibility is 'public' (or admin preview)

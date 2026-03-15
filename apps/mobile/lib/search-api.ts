@@ -256,6 +256,10 @@ async function fetchWithRetry(
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
+      if (options.signal?.aborted) {
+        throw new DOMException('Request aborted', 'AbortError');
+      }
+
       const response = await fetch(url, options);
       
       // Retry on 5xx server errors
@@ -268,6 +272,10 @@ async function fetchWithRetry(
       return response;
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
+
+      if (lastError.name === 'AbortError') {
+        throw lastError;
+      }
       
       if (attempt < maxRetries) {
         console.log(`[SearchAPI] Fetch failed, retrying (${attempt + 1}/${maxRetries})...`);
@@ -288,13 +296,13 @@ export const searchApi = {
    * Full search with facets
    * Supports multi-select for make/model/trim
    */
-  async search(params: SearchParams = {}): Promise<SearchResponse> {
+  async search(params: SearchParams = {}, signal?: AbortSignal): Promise<SearchResponse> {
     const urlParams = paramsToUrl(params);
     const url = `${API_BASE}/api/listings/search?${urlParams}`;
     
     console.log('[SearchAPI] Fetching:', url);
     
-    const response = await fetchWithRetry(url);
+    const response = await fetchWithRetry(url, { signal });
     if (!response.ok) {
       throw new Error(`Search failed: ${response.status}`);
     }

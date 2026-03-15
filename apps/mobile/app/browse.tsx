@@ -3,15 +3,16 @@
  * Header + Listings Results
  * 
  * ARCHITECTURE: Uses SearchContext as single source of truth for all filters.
- * Data fetching via React Query (useSearchListings) for caching + dedup.
+ * No local filter state - all updates go through context.
  */
 
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { ScreenContainer, TopSafeAreaGradient } from '@/components/layout';
+import { TopSafeAreaGradient } from '@/components/layout';
 import { BrowseHeader, type FilterPillType } from '@/components/browse';
 import { ACTIVE_CHIPS_HEIGHT } from '@/components/layout/active-search-chips';
 import { 
@@ -26,10 +27,10 @@ import {
 } from '@/components/sheets';
 import { CarInfoSheet } from '@/components/sheets';
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
-import { LogoLoader, Body } from '@/components/ui';
-import { useSearchListings } from '@/hooks/use-search-query';
-import { type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/search-api';
-import { Colors, Spacing, Layout, Typography, Sizes } from '@/constants/theme';
+import { Body, Supporting } from '@/components/ui';
+import { searchApi, type ListingCard, type SearchParams } from '@/lib/search-api';
+import { queryKeys } from '@/lib/query-client';
+import { Colors, Spacing, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type FilterParams } from '@/context/search-context';
 import { getModelsForMake } from '@/lib/filter-constants';
@@ -77,6 +78,16 @@ const filtersToParams = (f: FilterParams, searchParams: { make?: string[]; model
   isBlackTierPartner: f.isBlackTierPartner,
 });
 
+function compactSearchParams(params: SearchParams): SearchParams {
+  return Object.fromEntries(
+    Object.entries(params).filter(([, value]) => {
+      if (value === undefined || value === null || value === '') return false;
+      if (Array.isArray(value) && value.length === 0) return false;
+      return true;
+    })
+  ) as SearchParams;
+}
+
 // ============================================================================
 // BROWSE SCREEN
 // ============================================================================
@@ -95,11 +106,8 @@ export default function BrowseScreen() {
     searchParams,
     applySearch,
     clearSearch,
-    subscribeToSearch,
     // Sort
     sortBy,
-    applySort,
-    subscribeToSort, 
     // Filters - THE source of truth
     filterParams,
     updateFilterParams,
@@ -108,7 +116,7 @@ export default function BrowseScreen() {
   } = useSearch();
 
   // Scroll ref for auto-scroll to top
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<FlatList<ListingCard>>(null);
 
   // Check if we have active search/filter chips
   const hasActiveChips = useMemo(() => {
@@ -120,30 +128,60 @@ export default function BrowseScreen() {
   // Build filter context for dynamic facet fetching in sheets
   const filterContext = useMemo(() => filtersToParams(filterParams, searchParams), [filterParams, searchParams]);
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // DATA FETCHING - React Query (automatic caching, dedup, pagination)
-  // ─────────────────────────────────────────────────────────────────────────
-  
-  // Build search params from context
-  const searchQueryParams = useMemo(() => ({
-    ...filtersToParams(filterParams, searchParams),
-    sortBy: sortBy,
-  }), [filterParams, searchParams, sortBy]);
-  
-  // Use React Query infinite query for listings
+  const searchQueryParams = useMemo(
+    () => compactSearchParams({
+      ...filtersToParams(filterParams, searchParams),
+      sortBy,
+    }),
+    [filterParams, searchParams, sortBy]
+  );
+
+  const searchQueryKey = useMemo(
+    () => queryKeys.searchInfinite({ ...searchQueryParams, limit: 20 }),
+    [searchQueryParams]
+  );
+
   const {
-    listings,
-    facets,
-    total,
-    hasMore,
+    data,
     isLoading,
-    isRefreshing,
+    isRefetching,
     isFetchingNextPage,
     fetchNextPage,
-    refresh,
-  } = useSearchListings({
-    params: searchQueryParams,
+    hasNextPage,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: searchQueryKey,
+    queryFn: ({ pageParam = 1, signal }) => {
+      return searchApi.search({
+        ...searchQueryParams,
+        page: pageParam,
+        limit: 20,
+      }, signal);
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.meta.hasMore ? lastPage.meta.page + 1 : undefined,
+    placeholderData: (previousData) => previousData,
   });
+
+  const listings = useMemo(() => {
+    if (!data?.pages) return [];
+
+    const seenIds = new Set<string>();
+    const merged: ListingCard[] = [];
+
+    for (const page of data.pages) {
+      for (const listing of page.listings) {
+        if (seenIds.has(listing.id)) continue;
+        seenIds.add(listing.id);
+        merged.push(listing);
+      }
+    }
+
+    return merged;
+  }, [data?.pages]);
+
+  const hasMore = hasNextPage ?? false;
+  const isRefreshing = isRefetching && !isFetchingNextPage;
 
   // View mode (persisted across tab switches via module-level variable)
   const [viewMode, setViewModeState] = useState<ViewMode>(persistedViewMode);
@@ -165,21 +203,17 @@ export default function BrowseScreen() {
   const [infoSheetListingId, setInfoSheetListingId] = useState<string | null>(null);
   const [infoSheetMeta, setInfoSheetMeta] = useState<{ make?: string; model?: string; year?: number; price?: number; sellerName?: string }>({});
 
-  // ──────────────────────────────────────────────────────────────────────────
-  // SCROLL HANDLING
-  // ──────────────────────────────────────────────────────────────────────────
-
-  // Scroll to top when filters change
+  // Scroll to top when query context changes
   useEffect(() => {
     setTimeout(() => {
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
+      scrollRef.current?.scrollToOffset({ offset: 0, animated: true });
     }, 100);
-  }, [searchQueryParams]);
+  }, [searchQueryKey]);
 
   // Subscribe to scroll to top from tab bar double-tap
   useEffect(() => {
     const unsubscribe = subscribeToScrollToTop(() => {
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
+      scrollRef.current?.scrollToOffset({ offset: 0, animated: true });
     });
 
     return unsubscribe;
@@ -190,12 +224,14 @@ export default function BrowseScreen() {
   // ──────────────────────────────────────────────────────────────────────────
 
   const handleRefresh = useCallback(() => {
-    refresh();
-  }, [refresh]);
+    refetch();
+  }, [refetch]);
 
   const handleLoadMore = useCallback(() => {
-    fetchNextPage();
-  }, [fetchNextPage]);
+    if (hasMore && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasMore, isFetchingNextPage]);
 
   const handleCardPress = useCallback((id: string) => {
     router.push(`/listing/${id}`);
@@ -241,7 +277,7 @@ export default function BrowseScreen() {
 
   // Handle Browse pill press - scroll to top
   const handleBrowsePress = useCallback(() => {
-    scrollRef.current?.scrollTo({ y: 0, animated: true });
+    scrollRef.current?.scrollToOffset({ offset: 0, animated: true });
   }, []);
 
   // Handle make filter apply — updates searchParams in context
@@ -363,6 +399,98 @@ export default function BrowseScreen() {
 
   // Dynamic top padding based on safe area + header
   const contentTopPadding = insets.top + HEADER_HEIGHT + Spacing.md;
+  const bottomPadding = Layout.tabBarHeight + insets.bottom + (hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0);
+
+  const renderListing = useCallback(({ item }: { item: ListingCard }) => {
+    if (viewMode === 'grid') {
+      return (
+        <CarCardM
+          id={item.id}
+          make={item.make}
+          model={item.model}
+          year={item.year}
+          trim={item.trim}
+          price={item.price}
+          mileage={item.mileage}
+          emirate={item.emirate}
+          specs={item.specs}
+          thumbnail={item.thumbnail}
+          isBlkListing={item.isBlkListing}
+          partnerName={item.partnerName}
+          partnerLogo={item.partnerLogo}
+          partnerVerified={item.partnerVerified}
+          isBlackTierPartner={item.isBlackTierPartner}
+          sellerName={item.sellerName}
+          sellerAvatarUrl={item.sellerAvatarUrl}
+          kycVerified={item.sellerKycVerified}
+          onPress={handleCardPress}
+          onLongPress={handleCardLongPress}
+        />
+      );
+    }
+
+    return (
+      <CarCardList
+        id={item.id}
+        make={item.make}
+        model={item.model}
+        year={item.year}
+        trim={item.trim}
+        price={item.price}
+        mileage={item.mileage}
+        emirate={item.emirate}
+        specs={item.specs}
+        thumbnail={item.thumbnail}
+        isBlkListing={item.isBlkListing}
+        partnerName={item.partnerName}
+        partnerLogo={item.partnerLogo}
+        partnerVerified={item.partnerVerified}
+        isBlackTierPartner={item.isBlackTierPartner}
+        sellerName={item.sellerName}
+        sellerAvatarUrl={item.sellerAvatarUrl}
+        kycVerified={item.sellerKycVerified}
+        onPress={handleCardPress}
+      />
+    );
+  }, [handleCardLongPress, handleCardPress, viewMode]);
+
+  const keyExtractor = useCallback((item: ListingCard) => item.id, []);
+
+  const renderEmptyState = useCallback(() => {
+    if (isLoading && listings.length === 0) {
+      return viewMode === 'grid' ? (
+        <>
+          <CarCardMSkeleton />
+          <CarCardMSkeleton />
+          <CarCardMSkeleton />
+        </>
+      ) : (
+        <>
+          <CarCardListSkeleton />
+          <CarCardListSkeleton />
+          <CarCardListSkeleton />
+          <CarCardListSkeleton />
+          <CarCardListSkeleton />
+        </>
+      );
+    }
+
+    return (
+      <View style={styles.empty}>
+        <Body size="large" tone="secondary">No cars found</Body>
+      </View>
+    );
+  }, [isLoading, listings.length, viewMode]);
+
+  const renderFooter = useCallback(() => {
+    if (!hasMore || !isFetchingNextPage) return <View style={styles.bottomSpacer} />;
+
+    return (
+      <View style={styles.loadingMore}>
+        <Supporting size="small">Loading...</Supporting>
+      </View>
+    );
+  }, [hasMore, isFetchingNextPage]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}> 
@@ -449,104 +577,39 @@ export default function BrowseScreen() {
         sellerName={infoSheetMeta.sellerName}
       />
 
-      {/* Listings */}
-      <ScreenContainer
+      <FlatList
         ref={scrollRef}
-        refreshing={isRefreshing}
-        onRefresh={handleRefresh}
+        data={listings}
+        key={viewMode}
+        renderItem={renderListing}
+        keyExtractor={keyExtractor}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
-        horizontalPadding="sm"
-        verticalPadding={0}
-        contentContainerStyle={{ paddingTop: contentTopPadding }}
-        extraBottomPadding={hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0}
-        keyboardAvoiding={false}
-      >
-        {isLoading && (!listings || listings.length === 0) ? (
-          viewMode === 'grid' ? (
-            <>
-              <CarCardMSkeleton />
-              <CarCardMSkeleton />
-              <CarCardMSkeleton />
-            </>
-          ) : (
-            <>
-              <CarCardListSkeleton />
-              <CarCardListSkeleton />
-              <CarCardListSkeleton />
-              <CarCardListSkeleton />
-              <CarCardListSkeleton />
-            </>
-          )
-        ) : !listings || listings.length === 0 ? (
-          <View style={styles.empty}>
-            <Body size="large" tone="secondary">No cars found</Body>
-          </View>
-        ) : (
-          <>
-            {viewMode === 'grid' ? (
-              // Grid View - CarCardM handles BLK styling automatically
-              listings.map((listing, index) => (
-                <CarCardM
-                  key={`${listing.id}-${index}`}
-                  id={listing.id}
-                  make={listing.make}
-                  model={listing.model}
-                  year={listing.year}
-                  trim={listing.trim}
-                  price={listing.price}
-                  mileage={listing.mileage}
-                  emirate={listing.emirate}
-                  specs={listing.specs}
-                  thumbnail={listing.thumbnail}
-                  isBlkListing={listing.isBlkListing}
-                  partnerName={listing.partnerName}
-                  partnerLogo={listing.partnerLogo}
-                  partnerVerified={listing.partnerVerified}
-                  isBlackTierPartner={listing.isBlackTierPartner}
-                  sellerName={listing.sellerName}
-                  sellerAvatarUrl={listing.sellerAvatarUrl}
-                  kycVerified={listing.sellerKycVerified}
-                  onPress={handleCardPress}
-                  onLongPress={handleCardLongPress}
-                />
-              ))
-            ) : (
-              // List View - Compact Layout
-              listings.map((listing, index) => (
-                <CarCardList
-                  key={`${listing.id}-${index}`}
-                  id={listing.id}
-                  make={listing.make}
-                  model={listing.model}
-                  year={listing.year}
-                  trim={listing.trim}
-                  price={listing.price}
-                  mileage={listing.mileage}
-                  emirate={listing.emirate}
-                  specs={listing.specs}
-                  thumbnail={listing.thumbnail}
-                  isBlkListing={listing.isBlkListing}
-                  partnerName={listing.partnerName}
-                  partnerLogo={listing.partnerLogo}
-                  partnerVerified={listing.partnerVerified}
-                  isBlackTierPartner={listing.isBlackTierPartner}
-                  sellerName={listing.sellerName}
-                  sellerAvatarUrl={listing.sellerAvatarUrl}
-                  kycVerified={listing.sellerKycVerified}
-                  onPress={handleCardPress}
-                />
-              ))
-            )}
-
-            {hasMore && isFetchingNextPage && (
-              <View style={styles.loadingMore}>
-                <LogoLoader size={40} />
-              </View>
-            )}
-          </>
-        )}
-      </ScreenContainer>
+        ListEmptyComponent={renderEmptyState}
+        ListFooterComponent={renderFooter}
+        contentContainerStyle={{
+          paddingTop: contentTopPadding,
+          paddingBottom: bottomPadding,
+          paddingHorizontal: Spacing.sm,
+          flexGrow: listings.length === 0 ? 1 : undefined,
+        }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        removeClippedSubviews
+        maxToRenderPerBatch={6}
+        updateCellsBatchingPeriod={40}
+        windowSize={7}
+        initialNumToRender={6}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+            progressBackgroundColor={colors.background}
+          />
+        }
+      />
     </View>
   );
 }
@@ -566,5 +629,8 @@ const styles = StyleSheet.create({
   loadingMore: {
     alignItems: 'center',
     paddingVertical: Spacing.lg,
+  },
+  bottomSpacer: {
+    height: Spacing.lg,
   },
 });

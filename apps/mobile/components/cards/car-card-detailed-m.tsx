@@ -13,8 +13,8 @@
  * and a thin divider keeps the rhythm.
  */
 
-import React, { memo, useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { InteractionManager, StyleSheet, View } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -94,11 +94,55 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
   const [featuresSheetVisible, setFeaturesSheetVisible] = useState(false);
   const openFeaturesSheet = useCallback(() => setFeaturesSheetVisible(true), []);
   const closeFeaturesSheet = useCallback(() => setFeaturesSheetVisible(false), []);
+  const [showDeferredSections, setShowDeferredSections] = useState(false);
 
   // Navigate to the dedicated seller contact screen
   const handleTalkToSeller = useCallback(() => {
     router.push(`/seller-contact/${listingId}`);
   }, [router, listingId]);
+
+  useEffect(() => {
+    setShowDeferredSections(false);
+
+    const interaction = InteractionManager.runAfterInteractions(() => {
+      setShowDeferredSections(true);
+    });
+
+    return () => {
+      interaction.cancel();
+    };
+  }, [listing.id]);
+
+  const specsSheetItems = useMemo(
+    () => [
+      { label: 'Condition', value: listing.condition ? getEnumLabel(VEHICLE_CONDITIONS, listing.condition) : null },
+      { label: 'Body Type', value: listing.bodyType ? getEnumLabel(BODY_TYPES, listing.bodyType) : null },
+      { label: 'Transmission', value: listing.transmission ? getEnumLabel(TRANSMISSION_TYPES, listing.transmission) : null },
+      { label: 'Fuel Type', value: listing.fuelType ? getEnumLabel(FUEL_TYPES, listing.fuelType) : null },
+      { label: 'Engine', value: listing.engineSize ? getEnumLabel(ENGINE_SIZES, listing.engineSize) : null },
+      { label: 'Cylinders', value: listing.cylinders },
+      { label: 'Power', value: listing.powerRange ? getEnumLabel(POWER_RANGES, listing.powerRange) : null },
+      { label: 'Exterior Color', value: listing.exteriorColor ? getEnumLabel(EXTERIOR_COLORS, listing.exteriorColor) : null },
+      { label: 'Interior Color', value: listing.interiorColor ? getEnumLabel(INTERIOR_COLORS, listing.interiorColor) : null },
+      { label: 'Doors', value: listing.doors ? getEnumLabel(DOORS_OPTIONS, listing.doors) : null },
+      { label: 'Seats', value: listing.seatingCapacity ? getEnumLabel(SEATING_OPTIONS, listing.seatingCapacity) : null },
+      { label: 'Steering', value: listing.steeringSide ? getEnumLabel(STEERING_SIDES, listing.steeringSide) : null },
+    ].filter(s => s.value != null),
+    [
+      listing.bodyType,
+      listing.condition,
+      listing.cylinders,
+      listing.doors,
+      listing.engineSize,
+      listing.exteriorColor,
+      listing.fuelType,
+      listing.interiorColor,
+      listing.powerRange,
+      listing.seatingCapacity,
+      listing.steeringSide,
+      listing.transmission,
+    ]
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
@@ -136,62 +180,62 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           vinVisibility={listing.vinVisibility}
         />
 
-        {/* 3. Description (optional) */}
-        {listing.description && (
+        {showDeferredSections ? (
           <>
-            <ListingDescription
-              description={listing.description}
-              onReadMore={openDescSheet}
+            {/* 3. Description (optional) */}
+            {listing.description && (
+              <ListingDescription
+                description={listing.description}
+                onReadMore={openDescSheet}
+              />
+            )}
+
+            {/* 4. Specifications */}
+            <ListingSpecs
+              condition={listing.condition}
+              bodyType={listing.bodyType}
+              transmission={listing.transmission}
+              fuelType={listing.fuelType}
+              engineSize={listing.engineSize}
+              cylinders={listing.cylinders}
+              powerRange={listing.powerRange}
+              exteriorColor={listing.exteriorColor}
+              interiorColor={listing.interiorColor}
+              doors={listing.doors}
+              seatingCapacity={listing.seatingCapacity}
+              steeringSide={listing.steeringSide}
+              onViewAll={openSpecsSheet}
             />
+
+            {/* 5. Features / Extras */}
+            <ListingFeatures extras={listing.extras} onViewAll={openFeaturesSheet} />
+
+            {/* 6. Timestamp — subtle, non-blocking */}
+            <ListingTimestamp
+              createdAt={listing.createdAt}
+              lastEditedAt={listing.lastEditedAt}
+              publishedAt={listing.publishedAt}
+              originalPublishedAt={listing.originalPublishedAt}
+            />
+
+            {/* 7. Seller Section — merged profile + contact action */}
+            {sellerData && (
+              <HapticPressable onPress={handleTalkToSeller}>
+                <SellerCard
+                  sellerData={sellerData}
+                  action={
+                    <View style={styles.contactAction}>
+                      <Data size="medium" tone="primary">
+                        Contact
+                      </Data>
+                      <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />
+                    </View>
+                  }
+                />
+              </HapticPressable>
+            )}
           </>
-        )}
-
-        {/* 4. Specifications */}
-        <ListingSpecs
-          condition={listing.condition}
-          bodyType={listing.bodyType}
-          transmission={listing.transmission}
-          fuelType={listing.fuelType}
-          engineSize={listing.engineSize}
-          cylinders={listing.cylinders}
-          powerRange={listing.powerRange}
-          exteriorColor={listing.exteriorColor}
-          interiorColor={listing.interiorColor}
-          doors={listing.doors}
-          seatingCapacity={listing.seatingCapacity}
-          steeringSide={listing.steeringSide}
-          onViewAll={openSpecsSheet}
-        />
-
-        {/* 5. Features / Extras */}
-        <ListingFeatures extras={listing.extras} onViewAll={openFeaturesSheet} />
-
-        {/* 6. Timestamp — subtle, non-blocking */}
-        <ListingTimestamp
-          createdAt={listing.createdAt}
-          lastEditedAt={listing.lastEditedAt}
-          publishedAt={listing.publishedAt}
-          originalPublishedAt={listing.originalPublishedAt}
-        />
-
-        {/* 7. Seller Section — merged profile + contact action */}
-        {sellerData && (
-          <HapticPressable 
-            onPress={handleTalkToSeller}
-          >
-            <SellerCard 
-              sellerData={sellerData}
-              action={
-                <View style={styles.contactAction}>
-                  <Data size="medium" tone="primary">
-                    Contact
-                  </Data>
-                  <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />
-                </View>
-              }
-            />
-          </HapticPressable>
-        )}
+        ) : null}
       </View>
 
       {/* Description Sheet — rendered at root level for proper gesture handling */}
@@ -207,20 +251,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
       <SpecsSheet
         visible={specsSheetVisible}
         onClose={closeSpecsSheet}
-        specs={[
-          { label: 'Condition', value: listing.condition ? getEnumLabel(VEHICLE_CONDITIONS, listing.condition) : null },
-          { label: 'Body Type', value: listing.bodyType ? getEnumLabel(BODY_TYPES, listing.bodyType) : null },
-          { label: 'Transmission', value: listing.transmission ? getEnumLabel(TRANSMISSION_TYPES, listing.transmission) : null },
-          { label: 'Fuel Type', value: listing.fuelType ? getEnumLabel(FUEL_TYPES, listing.fuelType) : null },
-          { label: 'Engine', value: listing.engineSize ? getEnumLabel(ENGINE_SIZES, listing.engineSize) : null },
-          { label: 'Cylinders', value: listing.cylinders },
-          { label: 'Power', value: listing.powerRange ? getEnumLabel(POWER_RANGES, listing.powerRange) : null },
-          { label: 'Exterior Color', value: listing.exteriorColor ? getEnumLabel(EXTERIOR_COLORS, listing.exteriorColor) : null },
-          { label: 'Interior Color', value: listing.interiorColor ? getEnumLabel(INTERIOR_COLORS, listing.interiorColor) : null },
-          { label: 'Doors', value: listing.doors ? getEnumLabel(DOORS_OPTIONS, listing.doors) : null },
-          { label: 'Seats', value: listing.seatingCapacity ? getEnumLabel(SEATING_OPTIONS, listing.seatingCapacity) : null },
-          { label: 'Steering', value: listing.steeringSide ? getEnumLabel(STEERING_SIDES, listing.steeringSide) : null },
-        ].filter(s => s.value != null)}
+        specs={specsSheetItems}
       />
 
       {/* Features Sheet — rendered at root level for proper gesture handling */}

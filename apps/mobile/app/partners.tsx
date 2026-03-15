@@ -7,7 +7,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { 
   View, 
   StyleSheet, 
-  ScrollView, 
+  FlatList, 
   RefreshControl,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -89,6 +89,33 @@ export default function PartnersScreen() {
     router.push('/browse' as any);
   }, [applySearch, clearSearch, clearFilterParams, resetSort, router]);
 
+  const renderItem = useCallback(({ item }: { item: PartnerListItem }) => (
+    <PartnerCard
+      partner={item}
+      onPress={handlePartnerPress}
+    />
+  ), [handlePartnerPress]);
+
+  const keyExtractor = useCallback((item: PartnerListItem) => item.id, []);
+
+  const renderEmpty = useCallback(() => {
+    if (isLoading && partners.length === 0) {
+      return (
+        <>
+          <PartnerCardSkeleton />
+          <PartnerCardSkeleton />
+          <PartnerCardSkeleton />
+        </>
+      );
+    }
+
+    return (
+      <View style={styles.empty}>
+        <Body size="large" tone="secondary">No partners available</Body>
+      </View>
+    );
+  }, [isLoading, partners.length]);
+
   // ──────────────────────────────────────────────────────────────────────────
   // RENDER
   // ──────────────────────────────────────────────────────────────────────────
@@ -101,16 +128,19 @@ export default function PartnersScreen() {
       {/* Safe Area Gradient */}
       <TopSafeAreaGradient />
 
-      {/* Scrollable Content */}
-      <ScrollView
-        style={styles.scrollView}
+      <FlatList
+        data={partners}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
         contentContainerStyle={[
           styles.scrollContent,
           { 
             paddingTop: contentTopPadding,
             paddingBottom: insets.bottom + Layout.tabBarHeight + Spacing.xl,
+            flexGrow: partners.length === 0 ? 1 : undefined,
           },
         ]}
+        ListEmptyComponent={renderEmpty}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -119,30 +149,12 @@ export default function PartnersScreen() {
             tintColor={colors.text}
           />
         }
-      >
-        {isLoading && partners.length === 0 ? (
-          // Skeletons
-          <>
-            <PartnerCardSkeleton />
-            <PartnerCardSkeleton />
-            <PartnerCardSkeleton />
-          </>
-        ) : partners.length === 0 ? (
-          // Empty state
-          <View style={styles.empty}>
-            <Body size="large" tone="secondary">No partners available</Body>
-          </View>
-        ) : (
-          // Partner cards
-          partners.map((partner) => (
-            <PartnerCard
-              key={partner.id}
-              partner={partner}
-              onPress={handlePartnerPress}
-            />
-          ))
-        )}
-      </ScrollView>
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        updateCellsBatchingPeriod={40}
+        windowSize={7}
+        removeClippedSubviews
+      />
     </View>
   );
 }
@@ -153,9 +165,6 @@ export default function PartnersScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  scrollView: {
     flex: 1,
   },
   scrollContent: {

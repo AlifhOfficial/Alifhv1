@@ -6,12 +6,14 @@
  * UI follows listing detail patterns: unapologetic, content-first, minimal cards.
  */
 
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   StyleSheet,
   View,
   Pressable,
   Alert,
+  FlatList,
+  RefreshControl,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
@@ -29,7 +31,6 @@ import { useSearch } from '@/context/search-context';
 import { useListingDetail, useSellerListings } from '@/hooks/use-listing-query';
 import { normalizeSellerData, SellerInfo } from '@/lib/seller-api';
 import { createConversation } from '@/lib/messaging-api';
-import { ScreenContainer } from '@/components/layout/ScreenContainer';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { PhoneActionSheet, FinancingSheet, BookingSheet, SellerDescriptionSheet } from '@/components/sheets';
@@ -306,6 +307,109 @@ export default function SellerContactScreen() {
 
   // Combined tags for display
   const combinedTags = [...seller.specialties, ...seller.badges];
+  const flatListData = useMemo(() => [{ key: 'seller-contact-body' }], []);
+  const sellerContentPaddingTop = insets.top + Spacing.lg;
+  const sellerContentPaddingBottom = insets.bottom + Layout.bottomGradientExtension + Spacing.xl;
+
+  const renderSellerContent = useCallback(() => (
+    <>
+      <SellerHero seller={seller} colors={colors} topInset={insets.top} />
+
+      {seller.description && (
+        <Pressable
+          style={styles.section}
+          onPress={() => setDescriptionSheetVisible(true)}
+        >
+          <Label size="medium" tone="muted">ABOUT</Label>
+          <Body size="medium" tone="secondary" numberOfLines={3}>
+            {seller.description}
+          </Body>
+          {seller.description.length > 120 && (
+            <Body size="small" tone="primary">Read more</Body>
+          )}
+        </Pressable>
+      )}
+
+      {!isOwnListing && (
+        <SellerActions
+          seller={seller}
+          isChatLoading={isChatLoading}
+          onChat={handleChat}
+          onBookViewing={handleBookViewing}
+          onShowPhone={handleShowPhoneSheet}
+        />
+      )}
+
+      <SellerStatsGrid
+        seller={seller}
+        listingsCount={otherListingsTotal + 1}
+        colors={colors}
+      />
+
+      {!seller.isDealer && (
+        <SellerTags
+          tags={seller.tags}
+          label="INTERESTS"
+          colors={colors}
+        />
+      )}
+
+      <SellerTags
+        tags={combinedTags}
+        label={seller.isDealer ? 'SPECIALTIES' : 'BADGES'}
+        colors={colors}
+      />
+
+      <SellerListings
+        listings={otherListings}
+        totalCount={otherListingsTotal}
+        onViewListing={handleViewListing}
+        onViewAll={handleViewAllListings}
+        colors={colors}
+      />
+
+      <FinancingCalculator
+        price={listing.listing.price}
+        downPaymentPercent={downPaymentPercent}
+        loanTermMonths={loanTermMonths}
+        interestRate={interestRate}
+        onDownPaymentChange={setDownPaymentPercent}
+        onTermChange={setLoanTermMonths}
+        onCustomize={handleCustomizeFinancing}
+        colors={colors}
+      />
+
+      <SellerLocation
+        seller={seller}
+        onViewMap={handleViewOnMap}
+        onGetDirections={handleGetDirections}
+        onWebsite={handleWebsite}
+        colors={colors}
+      />
+    </>
+  ), [
+    colors,
+    combinedTags,
+    downPaymentPercent,
+    handleBookViewing,
+    handleChat,
+    handleCustomizeFinancing,
+    handleGetDirections,
+    handleShowPhoneSheet,
+    handleViewAllListings,
+    handleViewListing,
+    handleViewOnMap,
+    handleWebsite,
+    insets.top,
+    interestRate,
+    isChatLoading,
+    isOwnListing,
+    listing.listing.price,
+    loanTermMonths,
+    otherListings,
+    otherListingsTotal,
+    seller,
+  ]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -314,99 +418,32 @@ export default function SellerContactScreen() {
       {/* Top Safe Area Gradient - visible on scroll */}
       {showTopGradient && <TopSafeAreaGradient />}
 
-      <ScreenContainer
-        refreshing={isRefreshing}
-        onRefresh={refresh}
-        horizontalPadding="lg"
-        verticalPadding={0}
-        tabBarClearance={false}
-        extraBottomPadding={Layout.bottomGradientExtension}
+      <FlatList
+        data={flatListData}
+        renderItem={() => null}
+        ListHeaderComponent={renderSellerContent}
+        keyExtractor={(item) => item.key}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: sellerContentPaddingTop,
+            paddingBottom: sellerContentPaddingBottom,
+            paddingHorizontal: Spacing.lg,
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
-        contentContainerStyle={[styles.content, { paddingTop: insets.top + Spacing.lg }]}
-      >
-        {/* Seller Hero */}
-        <SellerHero seller={seller} colors={colors} topInset={insets.top} />
-
-        {/* About Section — truncated, tap to expand in sheet */}
-        {seller.description && (
-          <Pressable
-            style={styles.section}
-            onPress={() => setDescriptionSheetVisible(true)}
-          >
-            <Label size="medium" tone="muted">ABOUT</Label>
-            <Body size="medium" tone="secondary" numberOfLines={3}>
-              {seller.description}
-            </Body>
-            {seller.description.length > 120 && (
-              <Body size="small" tone="primary">Read more</Body>
-            )}
-          </Pressable>
-        )}
-
-        {/* Actions: Chat, Book, Phone — hidden for own listings */}
-        {!isOwnListing && (
-          <SellerActions
-            seller={seller}
-            isChatLoading={isChatLoading}
-            onChat={handleChat}
-            onBookViewing={handleBookViewing}
-            onShowPhone={handleShowPhoneSheet}
+        scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={refresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+            progressBackgroundColor={colors.background}
           />
-        )}
-
-        {/* Stats Grid (private sellers only) */}
-        <SellerStatsGrid
-          seller={seller}
-          listingsCount={otherListingsTotal + 1}
-          colors={colors}
-        />
-
-        {/* User Tags (interests) for private sellers */}
-        {!seller.isDealer && (
-          <SellerTags
-            tags={seller.tags}
-            label="INTERESTS"
-            colors={colors}
-          />
-        )}
-
-        {/* Specialties & Badges */}
-        <SellerTags
-          tags={combinedTags}
-          label={seller.isDealer ? 'SPECIALTIES' : 'BADGES'}
-          colors={colors}
-        />
-
-        {/* Other Listings */}
-        <SellerListings
-          listings={otherListings}
-          totalCount={otherListingsTotal}
-          onViewListing={handleViewListing}
-          onViewAll={handleViewAllListings}
-          colors={colors}
-        />
-
-        {/* Financing Calculator */}
-        <FinancingCalculator
-          price={listing.listing.price}
-          downPaymentPercent={downPaymentPercent}
-          loanTermMonths={loanTermMonths}
-          interestRate={interestRate}
-          onDownPaymentChange={setDownPaymentPercent}
-          onTermChange={setLoanTermMonths}
-          onCustomize={handleCustomizeFinancing}
-          colors={colors}
-        />
-
-        {/* Location & Website */}
-        <SellerLocation
-          seller={seller}
-          onViewMap={handleViewOnMap}
-          onGetDirections={handleGetDirections}
-          onWebsite={handleWebsite}
-          colors={colors}
-        />
-      </ScreenContainer>
+        }
+      />
 
       {/* Bottom Safe Area Gradient */}
       <BottomSafeAreaGradient />

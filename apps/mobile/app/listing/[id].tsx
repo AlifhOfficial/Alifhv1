@@ -14,13 +14,14 @@ import {
   Text,
   Share,
   Platform,
+  InteractionManager,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { useLocalSearchParams, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors, Spacing, Typography, Layout, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useTabBar } from '@/context/tab-bar-context';
 import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
@@ -31,7 +32,6 @@ import { useListingDetail } from '@/hooks/use-listing-query';
 
 export default function ListingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
   const { colorScheme } = useTheme();
   const { hideChrome, showChrome } = useTabBar();
   const colors = Colors[colorScheme];
@@ -44,11 +44,12 @@ export default function ListingDetailScreen() {
   });
   
   const [showTopGradient, setShowTopGradient] = useState(false);
+  const [showActions, setShowActions] = useState(false);
 
   // Handle scroll to show/hide top gradient
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const scrollY = event.nativeEvent.contentOffset.y;
-    setShowTopGradient(scrollY > 10);
+    const nextVisible = event.nativeEvent.contentOffset.y > 10;
+    setShowTopGradient((current) => (current === nextVisible ? current : nextVisible));
   }, []);
 
   // Hide tab bar on this screen for immersive view
@@ -58,6 +59,21 @@ export default function ListingDetailScreen() {
       showChrome();
     };
   }, [hideChrome, showChrome]);
+
+  useEffect(() => {
+    if (!listing) {
+      setShowActions(false);
+      return;
+    }
+
+    const interaction = InteractionManager.runAfterInteractions(() => {
+      setShowActions(true);
+    });
+
+    return () => {
+      interaction.cancel();
+    };
+  }, [listing]);
 
   const handleRefresh = useCallback(() => {
     refresh();
@@ -110,7 +126,7 @@ export default function ListingDetailScreen() {
         ]}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
-        scrollEventThrottle={16}
+        scrollEventThrottle={32}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -139,7 +155,7 @@ export default function ListingDetailScreen() {
       </ScrollView>
 
       {/* Floating Listing Actions - uses useFavoriteActions internally */}
-      {listing && (
+      {listing && showActions && (
         <FloatingListingActions
           id={id!}
           onSharePress={handleShare}

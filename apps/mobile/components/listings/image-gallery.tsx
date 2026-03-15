@@ -10,7 +10,6 @@ import {
   View,
   Dimensions,
   FlatList,
-  Pressable,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
@@ -66,7 +65,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
   
   const allImages = thumbImages.length > 0 ? thumbImages : [];
 
-  const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const onMomentumScrollEnd = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = e.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / SCREEN_WIDTH);
     if (index !== currentIndex && index >= 0 && index < allImages.length) {
@@ -119,9 +118,12 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          onScroll={onScroll}
-          scrollEventThrottle={16}
+          onMomentumScrollEnd={onMomentumScrollEnd}
           keyExtractor={(_, idx) => `img-${idx}`}
+          initialNumToRender={1}
+          maxToRenderPerBatch={2}
+          windowSize={3}
+          removeClippedSubviews
           getItemLayout={(_, index) => ({
             length: SCREEN_WIDTH,
             offset: SCREEN_WIDTH * index,
@@ -157,6 +159,15 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.thumbnailList}
           keyExtractor={(_, idx) => `thumb-${idx}`}
+          initialNumToRender={6}
+          maxToRenderPerBatch={6}
+          windowSize={4}
+          removeClippedSubviews
+          getItemLayout={(_, index) => ({
+            length: THUMBNAIL_SIZE + Spacing.xs,
+            offset: (THUMBNAIL_SIZE + Spacing.xs) * index,
+            index,
+          })}
           renderItem={({ item, index }) => (
             <HapticPressable
               onPress={() => onThumbnailPress(index)}
@@ -193,23 +204,27 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
       </View>
 
       {/* Lightbox Modal - uses full-res images */}
-      <ImageLightbox
-        images={fullImages}
-        currentIndex={currentIndex}
-        isOpen={lightboxOpen}
-        title={title}
-        onClose={() => setLightboxOpen(false)}
-        onIndexChange={setCurrentIndex}
-      />
+      {lightboxOpen ? (
+        <ImageLightbox
+          images={fullImages}
+          currentIndex={currentIndex}
+          isOpen={lightboxOpen}
+          title={title}
+          onClose={() => setLightboxOpen(false)}
+          onIndexChange={setCurrentIndex}
+        />
+      ) : null}
 
       {/* Grid Modal - uses thumbs for grid, lightbox opens full-res */}
-      <ImageGridModal
-        images={thumbImages}
-        isOpen={gridModalOpen}
-        title={title}
-        onClose={() => setGridModalOpen(false)}
-        onImageClick={onGridImageClick}
-      />
+      {gridModalOpen ? (
+        <ImageGridModal
+          images={thumbImages}
+          isOpen={gridModalOpen}
+          title={title}
+          onClose={() => setGridModalOpen(false)}
+          onImageClick={onGridImageClick}
+        />
+      ) : null}
     </View>
   );
 }
