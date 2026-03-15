@@ -136,6 +136,10 @@ export function ListingCard({
   const isSold = listing.lifecycleStatus === 'sold';
   const isExpired = listing.lifecycleStatus === 'expired';
   const isArchived = listing.lifecycleStatus === 'archived';
+  const canViewPublicDetail =
+    listing.isPublic &&
+    listing.lifecycleStatus === 'active' &&
+    listing.moderationStatus === 'approved';
 
   // Permissions - simplified logic
   // Active/Archived: full options
@@ -177,47 +181,86 @@ export function ListingCard({
       {/* Main Card */}
       <div className="flex gap-4 p-4">
         {/* Image */}
-        <Link 
-          href={`/listings/${listing.id}`} 
-          className="relative w-28 sm:w-36 md:w-44 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30"
-        >
-          {displayImage ? (
-            <img
-              src={displayImage}
-              alt={`${listing.year} ${listing.make} ${listing.model}`}
-              className="absolute inset-0 h-full w-full object-cover"
-              loading="lazy"
-              decoding="async"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-muted/30" />
-          )}
-          
-          {listing.isBlkListing && (
-            <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black text-white">
-              <span className="text-[9px] font-bold tracking-widest">BLK</span>
-            </div>
-          )}
+        {canViewPublicDetail ? (
+          <Link 
+            href={`/listings/${listing.id}`} 
+            className="relative w-28 sm:w-36 md:w-44 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30"
+          >
+            {displayImage ? (
+              <img
+                src={displayImage}
+                alt={`${listing.year} ${listing.make} ${listing.model}`}
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-muted/30" />
+            )}
+            
+            {listing.isBlkListing && (
+              <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black text-white">
+                <span className="text-[9px] font-bold tracking-widest">BLK</span>
+              </div>
+            )}
 
-          {isExpiringSoon && daysRemaining !== null && (
-            <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-white">
-              <span className="text-[10px] font-bold">{daysRemaining}d left</span>
-            </div>
-          )}
-        </Link>
+            {isExpiringSoon && daysRemaining !== null && (
+              <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-white">
+                <span className="text-[10px] font-bold">{daysRemaining}d left</span>
+              </div>
+            )}
+          </Link>
+        ) : (
+          <div className="relative w-28 sm:w-36 md:w-44 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/30">
+            {displayImage ? (
+              <img
+                src={displayImage}
+                alt={`${listing.year} ${listing.make} ${listing.model}`}
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-muted/30" />
+            )}
+
+            {listing.isBlkListing && (
+              <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black text-white">
+                <span className="text-[9px] font-bold tracking-widest">BLK</span>
+              </div>
+            )}
+
+            {isExpiringSoon && daysRemaining !== null && (
+              <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-white">
+                <span className="text-[10px] font-bold">{daysRemaining}d left</span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Top: Title + Menu */}
           <div className="flex items-start justify-between gap-3">
-            <Link href={`/listings/${listing.id}`} className="flex-1 min-w-0">
-              <h3 className="text-sm sm:text-base font-semibold text-foreground tracking-tight line-clamp-1">
-                {listing.year} {listing.make} {listing.model}
-              </h3>
-              {listing.trim && (
-                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{listing.trim}</p>
-              )}
-            </Link>
+            {canViewPublicDetail ? (
+              <Link href={`/listings/${listing.id}`} className="flex-1 min-w-0">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground tracking-tight line-clamp-1">
+                  {listing.year} {listing.make} {listing.model}
+                </h3>
+                {listing.trim && (
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{listing.trim}</p>
+                )}
+              </Link>
+            ) : (
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground tracking-tight line-clamp-1">
+                  {listing.year} {listing.make} {listing.model}
+                </h3>
+                {listing.trim && (
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{listing.trim}</p>
+                )}
+              </div>
+            )}
 
             {/* Hide menu for deleted listings - no actions available */}
             {!isDeleted && (

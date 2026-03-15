@@ -64,6 +64,7 @@ import {
   formatExpiryCountdown,
   buildListingTitle,
   formatPrice,
+  canOpenPublicListing,
 } from './utilities/listing-helpers';
 import {
   EditStatusSheet,
@@ -322,10 +323,11 @@ export function InventoryScreen() {
 
       const rawDisplayImage = item.thumbnail || item.images?.[0];
       const displayImage = getThumbUrl(rawDisplayImage) || rawDisplayImage;
+      const canViewPublicDetail = canOpenPublicListing(item.moderationStatus, item.lifecycleStatus);
 
       return (
         <HapticPressable
-          onPress={() => router.push(`/listing/${item.id}`)}
+          onPress={canViewPublicDetail ? () => router.push(`/listing/${item.id}`) : undefined}
           style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
           {/* ── Image + Status Overlay ──────────────────────────────────── */}

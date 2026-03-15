@@ -77,6 +77,17 @@ export function getStatusColor(
   }
 }
 
+/**
+ * Whether this listing should navigate to the public listing detail screen.
+ * Public detail is only meaningful for live, publicly viewable listings.
+ */
+export function canOpenPublicListing(
+  moderation: ModerationStatus,
+  lifecycle: LifecycleStatus,
+): boolean {
+  return moderation === 'approved' && lifecycle === 'active';
+}
+
 // ─── Expiry Helpers ──────────────────────────────────────────────────────────
 
 export interface ExpiryCountdown {
