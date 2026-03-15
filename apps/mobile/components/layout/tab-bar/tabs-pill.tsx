@@ -8,12 +8,14 @@ import { MotiPressable } from 'moti/interactions';
 import { useRouter, usePathname } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Home, MessageCircle, LayoutGrid } from 'lucide-react-native';
+import { useQuery } from '@tanstack/react-query';
 
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { useAuth } from '@/context/auth-context';
 import { Colors, Sizes, Shadows, Spacing } from '@/constants/theme';
 import { getUnreadCount } from '@/lib/messaging-api';
+import { queryKeys } from '@/lib/query-client';
 
 type TabRoute = {
   name: string;
@@ -35,17 +37,16 @@ export function TabsPill() {
   const router = useRouter();
   const pathname = usePathname();
   
-  const [messagesUnread, setMessagesUnread] = React.useState(0);
   const lastBrowseTapRef = React.useRef<number>(0);
 
-  // Fetch unread count on mount and when auth changes
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      setMessagesUnread(0);
-      return;
-    }
-    getUnreadCount().then(setMessagesUnread).catch(() => {});
-  }, [isAuthenticated]);
+  // Fetch unread count with React Query (deduped + cached)
+  const { data: messagesUnread = 0 } = useQuery({
+    queryKey: queryKeys.unreadCount(),
+    queryFn: getUnreadCount,
+    enabled: isAuthenticated,
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   const getIsActive = (tab: TabRoute) => {
     if (tab.name === 'index') {
@@ -74,11 +75,6 @@ export function TabsPill() {
     }
     
     router.push(tab.path as any);
-
-    // Refresh unread count when navigating to messages
-    if (tab.name === 'messages' && isAuthenticated) {
-      getUnreadCount().then(setMessagesUnread).catch(() => {});
-    }
   };
 
   return (

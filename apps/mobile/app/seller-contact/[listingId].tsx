@@ -2,7 +2,7 @@
  * Seller Contact Screen - Full seller/contact flow
  * Route: /seller-contact/[listingId]
  * 
- * Dedicated screen for seller interactions.
+ * Uses React Query for data fetching (shares cache with listing detail screen).
  * UI follows listing detail patterns: unapologetic, content-first, minimal cards.
  */
 
@@ -26,8 +26,8 @@ import { Label, Body, Supporting } from '@/components/ui/text';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { useSearch } from '@/context/search-context';
-import { getListingDetailed, ListingDetailed } from '@/lib/listing-api';
-import { normalizeSellerData, SellerInfo, getSellerListings, SellerListingCard } from '@/lib/seller-api';
+import { useListingDetail, useSellerListings } from '@/hooks/use-listing-query';
+import { normalizeSellerData, SellerInfo } from '@/lib/seller-api';
 import { createConversation } from '@/lib/messaging-api';
 import { ScreenContainer } from '@/components/layout/ScreenContainer';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
@@ -59,64 +59,36 @@ export default function SellerContactScreen() {
   const { applySearch, clearSearch, clearFilterParams } = useSearch();
   const insets = useSafeAreaInsets();
 
-  const [listing, setListing] = useState<ListingDetailed | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  // Data fetching via React Query (shares cache with listing detail screen!)
+  const { listing, isLoading, isRefreshing, refresh } = useListingDetail({
+    listingId,
+    trackView: false, // Don't track view on seller contact screen
+  });
+  
+  // Derive seller ID/type from listing for other listings query
+  const sellerId = listing?.sellerData?.partnerId || listing?.sellerData?.userId;
+  const sellerType = listing?.sellerData?.type;
+  
+  // Fetch other listings from this seller
+  const { listings: otherListings, total: otherListingsTotal } = useSellerListings({
+    sellerId,
+    sellerType,
+    excludeListingId: listingId,
+    limit: 4,
+    enabled: !!sellerId && !!sellerType,
+  });
+
   const [phoneSheetVisible, setPhoneSheetVisible] = useState(false);
   const [financingSheetVisible, setFinancingSheetVisible] = useState(false);
   const [bookingSheetVisible, setBookingSheetVisible] = useState(false);
   const [descriptionSheetVisible, setDescriptionSheetVisible] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
-  const [otherListings, setOtherListings] = useState<SellerListingCard[]>([]);
-  const [otherListingsTotal, setOtherListingsTotal] = useState(0);
   const [showTopGradient, setShowTopGradient] = useState(false);
   
   // Calculator state
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
   const [loanTermMonths, setLoanTermMonths] = useState(48);
   const [interestRate] = useState(3.5);
-
-  // Fetch listing data
-  const fetchListing = useCallback(async (showRefreshing = false) => {
-    if (!listingId) return;
-    if (showRefreshing) setIsRefreshing(true);
-    else setIsLoading(true);
-
-    try {
-      const data = await getListingDetailed(listingId);
-      setListing(data);
-      
-      // Fetch other listings from this seller
-      const sellerId = data.sellerData.partnerId || data.sellerData.userId;
-      if (sellerId) {
-        try {
-          const otherListingsRes = await getSellerListings(
-            sellerId,
-            data.sellerData.type,
-            { limit: 4, excludeListingId: listingId }
-          );
-          setOtherListings(otherListingsRes.listings);
-          setOtherListingsTotal(otherListingsRes.meta.total);
-        } catch (err) {
-          console.log('[SellerScreen] Failed to fetch other listings:', err);
-        }
-      }
-    } catch (err: any) {
-      if (err?.message?.includes('not found')) {
-        console.log('[SellerScreen] Listing not found or expired:', listingId);
-      } else {
-        console.error('[SellerScreen] Failed to fetch listing:', err);
-      }
-      // Error is handled by showing error state when listing is null
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [listingId]);
-
-  useEffect(() => {
-    fetchListing();
-  }, [fetchListing]);
 
   // Normalize seller data
   const seller = useMemo<SellerInfo | null>(() => {
@@ -344,7 +316,7 @@ export default function SellerContactScreen() {
 
       <ScreenContainer
         refreshing={isRefreshing}
-        onRefresh={() => fetchListing(true)}
+        onRefresh={refresh}
         horizontalPadding="lg"
         verticalPadding={0}
         tabBarClearance={false}

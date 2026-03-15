@@ -77,28 +77,28 @@ function generateListingKeys(userId: string, vin: string): { thumbKey: string; f
   const id = createId();
   const prefix = `listings/${datePath}/${userId.slice(0, 8)}/${vin}/${id}`;
   return {
-    thumbKey: `${prefix}_thumb.jpg`,
-    fullKey: `${prefix}_full.jpg`,
+    thumbKey: `${prefix}_thumb.webp`,
+    fullKey: `${prefix}_full.webp`,
   };
 }
 
 function generateAvatarKey(userId: string): string {
   const datePath = getDatePath();
   const ts = Date.now();
-  return `users/${userId}/${datePath}/avatar-${ts}.jpg`;
+  return `users/${userId}/${datePath}/avatar-${ts}.webp`;
 }
 
 function generateShowroomKey(partnerId: string, assetType: string): string {
   const datePath = getDatePath();
   const ts = Date.now();
   const id = createId();
-  return `brands/${partnerId}/showroom/${datePath}/${assetType}-${ts}-${id}.jpg`;
+  return `brands/${partnerId}/showroom/${datePath}/${assetType}-${ts}-${id}.webp`;
 }
 
 function generatePartnerKey(partnerId: string, imageType: string): string {
   const datePath = getDatePath();
   const ts = Date.now();
-  return `brands/${partnerId}/${datePath}/${imageType}-${ts}.jpg`;
+  return `brands/${partnerId}/${datePath}/${imageType}-${ts}.webp`;
 }
 
 // ============================================================================
@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
           new PutObjectCommand({
             Bucket: bucketName,
             Key: thumbKey,
-            ContentType: 'image/jpeg',
+            ContentType: 'image/webp',
             CacheControl: CDN_CACHE,
           }),
           { expiresIn: 600 }
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
           new PutObjectCommand({
             Bucket: bucketName,
             Key: fullKey,
-            ContentType: 'image/jpeg',
+            ContentType: 'image/webp',
             CacheControl: CDN_CACHE,
           }),
           { expiresIn: 600 }
@@ -185,7 +185,7 @@ export async function POST(req: NextRequest) {
         new PutObjectCommand({
           Bucket: bucketName,
           Key: key,
-          ContentType: 'image/jpeg',
+          ContentType: 'image/webp',
           CacheControl: CDN_CACHE,
         }),
         { expiresIn: 600 }
@@ -227,7 +227,7 @@ export async function POST(req: NextRequest) {
         new PutObjectCommand({
           Bucket: bucketName,
           Key: key,
-          ContentType: 'image/jpeg',
+          ContentType: 'image/webp',
           CacheControl: CDN_CACHE,
         }),
         { expiresIn: 600 }
@@ -271,7 +271,7 @@ export async function POST(req: NextRequest) {
         new PutObjectCommand({
           Bucket: bucketName,
           Key: key,
-          ContentType: 'image/jpeg',
+          ContentType: 'image/webp',
           CacheControl: CDN_CACHE,
         }),
         { expiresIn: 600 }

@@ -38,6 +38,7 @@ import {
   type FacetBucket,
   type SearchFacets,
 } from '@/lib/search-api';
+import { useFacets } from '@/hooks/use-search-query';
 
 // ============================================================================
 // TYPES
@@ -151,11 +152,9 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
   const [selectedCondition, setSelectedCondition] = useState<'new' | 'used' | null>(null);
   const [selectedSellerType, setSelectedSellerType] = useState<'dealer' | 'private' | null>(null);
 
-  // State - Facets
-  const [facets, setFacets] = useState<SearchFacets | null>(null);
+  // State - Facets (models/trims are fetched dynamically, makes use cached hook)
   const [modelFacets, setModelFacets] = useState<FacetBucket[]>([]);
   const [trimFacets, setTrimFacets] = useState<FacetBucket[]>([]);
-  const [isLoadingFacets, setIsLoadingFacets] = useState(false);
 
   // Snap points
   const snapPoints = useMemo(() => SNAP_POINTS, []);
@@ -213,17 +212,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
     return ctx;
   }, [selectedTags, selectedExtras, selectedPartner, selectedBodyTypes, selectedFuelTypes, selectedTransmission, selectedSpecs, selectedCondition, selectedSellerType]);
 
-  // Fetch makes (re-fetch when filter context changes)
-  useEffect(() => {
-    if (visible) {
-      setIsLoadingFacets(true);
-      searchApi
-        .getFacets(filterContext)
-        .then((f) => setFacets(f))
-        .catch(console.error)
-        .finally(() => setIsLoadingFacets(false));
-    }
-  }, [visible, filterContext]);
+  // Fetch makes using cached React Query hook (1h stale time)
+  const { facets, isLoading: isLoadingFacets } = useFacets({
+    filterContext,
+    enabled: visible,
+  });
 
   // Fetch models when makes change (pass filter context)
   useEffect(() => {

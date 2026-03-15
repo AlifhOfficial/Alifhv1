@@ -3,7 +3,7 @@
  * Header + Listings Results
  * 
  * ARCHITECTURE: Uses SearchContext as single source of truth for all filters.
- * No local filter state - all updates go through context.
+ * Data fetching via React Query (useSearchListings) for caching + dedup.
  */
 
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
@@ -27,7 +27,8 @@ import {
 import { CarInfoSheet } from '@/components/sheets';
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
 import { LogoLoader, Body } from '@/components/ui';
-import { searchApi, type ListingCard, type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/search-api';
+import { useSearchListings } from '@/hooks/use-search-query';
+import { type SearchParams, type SearchFacets, type SearchSortOption } from '@/lib/search-api';
 import { Colors, Spacing, Layout, Typography, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type FilterParams } from '@/context/search-context';
@@ -119,15 +120,30 @@ export default function BrowseScreen() {
   // Build filter context for dynamic facet fetching in sheets
   const filterContext = useMemo(() => filtersToParams(filterParams, searchParams), [filterParams, searchParams]);
 
-  // Results state (not filters - those come from context)
-  const [facets, setFacets] = useState<SearchFacets | undefined>(undefined);
-  const [listings, setListings] = useState<ListingCard[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [total, setTotal] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
-  const [page, setPage] = useState(1);
-  const requestIdRef = useRef(0);
+  // ─────────────────────────────────────────────────────────────────────────
+  // DATA FETCHING - React Query (automatic caching, dedup, pagination)
+  // ─────────────────────────────────────────────────────────────────────────
+  
+  // Build search params from context
+  const searchQueryParams = useMemo(() => ({
+    ...filtersToParams(filterParams, searchParams),
+    sortBy: sortBy,
+  }), [filterParams, searchParams, sortBy]);
+  
+  // Use React Query infinite query for listings
+  const {
+    listings,
+    facets,
+    total,
+    hasMore,
+    isLoading,
+    isRefreshing,
+    isFetchingNextPage,
+    fetchNextPage,
+    refresh,
+  } = useSearchListings({
+    params: searchQueryParams,
+  });
 
   // View mode (persisted across tab switches via module-level variable)
   const [viewMode, setViewModeState] = useState<ViewMode>(persistedViewMode);
@@ -150,57 +166,15 @@ export default function BrowseScreen() {
   const [infoSheetMeta, setInfoSheetMeta] = useState<{ make?: string; model?: string; year?: number; price?: number; sellerName?: string }>({});
 
   // ──────────────────────────────────────────────────────────────────────────
-  // API CALLS
+  // SCROLL HANDLING
   // ──────────────────────────────────────────────────────────────────────────
 
-  // Fetch listings - reads from latest context values
-  const fetchListingsStable = useCallback(async () => {
-    const requestId = ++requestIdRef.current;
-    try {
-      setIsLoading(true);
-      setPage(1);
-      // Clear listings immediately to show skeletons (prevents stale cards)
-      setListings([]);
-
-      const params = {
-        ...filtersToParams(filterParams, searchParams),
-        sortBy: sortBy,
-        page: 1,
-        limit: 20,
-      };
-      
-      console.log('[Browse] Fetching with params:', params);
-
-      const response = await searchApi.search(params);
-
-      if (requestId !== requestIdRef.current) {
-        return;
-      }
-
-      console.log('[Browse] Response facets:', response.facets ? Object.keys(response.facets) : 'none');
-
-      setListings(response.listings);
-      setFacets(response.facets);
-      setTotal(response.meta.total);
-      setHasMore(response.meta.hasMore);
-    } catch (error) {
-      console.error('Search error:', error);
-    } finally {
-      if (requestId === requestIdRef.current) {
-        setIsLoading(false);
-        setIsRefreshing(false);
-      }
-    }
-  }, [filterParams, searchParams, sortBy]);
-
-  // Re-fetch when filters change and scroll to top
+  // Scroll to top when filters change
   useEffect(() => {
-    fetchListingsStable();
-    // Scroll to top when filters change
     setTimeout(() => {
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     }, 100);
-  }, [fetchListingsStable]);
+  }, [searchQueryParams]);
 
   // Subscribe to scroll to top from tab bar double-tap
   useEffect(() => {
@@ -216,43 +190,12 @@ export default function BrowseScreen() {
   // ──────────────────────────────────────────────────────────────────────────
 
   const handleRefresh = useCallback(() => {
-    setIsRefreshing(true);
-    fetchListingsStable();
-  }, [fetchListingsStable]);
+    refresh();
+  }, [refresh]);
 
-  const isLoadingMore = useRef(false);
-  const handleLoadMore = useCallback(async () => {
-    if (hasMore && !isLoading && !isLoadingMore.current) {
-      isLoadingMore.current = true;
-      const requestId = ++requestIdRef.current;
-      const nextPage = page + 1;
-      
-      try {
-        const response = await searchApi.search({
-          ...filtersToParams(filterParams, searchParams),
-          sortBy: sortBy,
-          page: nextPage,
-          limit: 20,
-        });
-
-        if (requestId !== requestIdRef.current) {
-          return;
-        }
-
-        setListings((prev) => {
-          const existingIds = new Set(prev.map(l => l.id));
-          const newListings = response.listings.filter(l => !existingIds.has(l.id));
-          return [...prev, ...newListings];
-        });
-        setPage(nextPage);
-        setHasMore(response.meta.hasMore);
-      } catch (error) {
-        console.error('Load more error:', error);
-      } finally {
-        isLoadingMore.current = false;
-      }
-    }
-  }, [hasMore, isLoading, page, filterParams, searchParams, sortBy]);
+  const handleLoadMore = useCallback(() => {
+    fetchNextPage();
+  }, [fetchNextPage]);
 
   const handleCardPress = useCallback((id: string) => {
     router.push(`/listing/${id}`);
@@ -596,7 +539,7 @@ export default function BrowseScreen() {
               ))
             )}
 
-            {hasMore && isLoading && (
+            {hasMore && isFetchingNextPage && (
               <View style={styles.loadingMore}>
                 <LogoLoader size={40} />
               </View>

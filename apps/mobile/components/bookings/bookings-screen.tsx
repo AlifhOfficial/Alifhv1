@@ -13,7 +13,7 @@
  * @module components/bookings/bookings-screen
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -46,12 +46,8 @@ import {
   Label,
   Skeleton,
 } from '@/components/ui';
-import {
-  getUserBookings,
-  type UserBooking,
-  type BookingFilter,
-  type BookingStatus,
-} from '@/lib/booking-api';
+import { useBookings, useCancelBooking } from '@/hooks/use-booking-query';
+import { type UserBooking, type BookingFilter } from '@/lib/booking-api';
 import {
   formatBookingStatus,
   getBookingStatusColor,
@@ -69,7 +65,6 @@ import { ProfileMenu } from '@/components/home/profile-menu';
 
 const IMAGE_WIDTH = Sizes.cardThumbnailWidth;
 const IMAGE_HEIGHT = Sizes.cardThumbnailHeight;
-const PAGE_SIZE = 20;
 
 /** Empty state icon container — derived from theme */
 const EMPTY_ICON_SIZE = Spacing['5xl'] + Spacing['3xl'];
@@ -99,14 +94,22 @@ export function BookingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
-  // ── Data State ───────────────────────────────────────────────────────────
+  // ── Data State (via React Query) ─────────────────────────────────────────
   const [activeTab, setActiveTab] = useState<BookingFilter>('all');
-  const [bookings, setBookings] = useState<UserBooking[]>([]);
-  const [total, setTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  
+  const {
+    bookings,
+    total,
+    isLoading,
+    isRefreshing,
+    isFetchingNextPage: isLoadingMore,
+    hasNextPage,
+    error,
+    fetchNextPage,
+    refresh,
+  } = useBookings({ filter: activeTab });
+
+  const cancelMutation = useCancelBooking();
 
   // ── Sheet State ──────────────────────────────────────────────────────────
   const [selectedBooking, setSelectedBooking] = useState<UserBooking | null>(null);
@@ -115,54 +118,13 @@ export function BookingsScreen() {
 
   const flatListRef = useRef<FlatList>(null);
 
-  // ── Fetch ────────────────────────────────────────────────────────────────
+  // ── Handlers ─────────────────────────────────────────────────────────────
 
-  const fetchBookings = useCallback(
-    async (opts: { refresh?: boolean; loadMore?: boolean } = {}) => {
-      const { refresh = false, loadMore = false } = opts;
-
-      if (refresh) setIsRefreshing(true);
-      else if (loadMore) setIsLoadingMore(true);
-      else setIsLoading(true);
-
-      try {
-        const offset = loadMore ? bookings.length : 0;
-        const response = await getUserBookings({
-          status: activeTab === 'all' ? undefined : activeTab as BookingStatus,
-          limit: PAGE_SIZE,
-          offset,
-          sort: 'newest',
-        });
-
-        if (loadMore) {
-          setBookings((prev) => [...prev, ...response.bookings]);
-        } else {
-          setBookings(response.bookings);
-        }
-
-        setTotal(response.total);
-        setError(null);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load bookings');
-      } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
-        setIsLoadingMore(false);
-      }
-    },
-    [activeTab, bookings.length],
-  );
-
-  useEffect(() => {
-    fetchBookings();
-    flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
-  }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleRefresh = useCallback(() => fetchBookings({ refresh: true }), [fetchBookings]);
+  const handleRefresh = useCallback(() => refresh(), [refresh]);
 
   const handleLoadMore = useCallback(() => {
-    if (!isLoadingMore && bookings.length < total) fetchBookings({ loadMore: true });
-  }, [fetchBookings, isLoadingMore, bookings.length, total]);
+    if (hasNextPage && !isLoadingMore) fetchNextPage();
+  }, [fetchNextPage, hasNextPage, isLoadingMore]);
 
   // ── Tab ──────────────────────────────────────────────────────────────────
 
@@ -191,8 +153,8 @@ export function BookingsScreen() {
 
   const handleCancelSuccess = useCallback(() => {
     setShowCancel(false);
-    fetchBookings({ refresh: true });
-  }, [fetchBookings]);
+    // Cache is automatically invalidated by useCancelBooking mutation
+  }, []);
 
   const handleViewListing = useCallback((listingId: string) => {
     setShowDetails(false);
@@ -439,7 +401,7 @@ export function BookingsScreen() {
             size="medium"
             style={{ color: colors.error, textAlign: 'center', marginTop: Spacing.md }}
           >
-            {error}
+            {error.message || 'Failed to load bookings'}
           </Body>
           <HapticPressable onPress={handleRefresh} style={{ marginTop: Spacing.lg }}>
             <ButtonText size="medium" tone="primary">Try Again</ButtonText>

@@ -131,6 +131,7 @@ export interface CarCardMProps {
   isSuperliked?: boolean;
   // Callbacks
   onPress?: (id: string) => void;
+  onPressIn?: (id: string) => void;
   onLongPress?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
   onSuperlikePress?: (id: string) => void;
@@ -201,6 +202,7 @@ export const CarCardM = memo(function CarCardM({
   isFavorite: isFavoriteProp,
   isSuperliked: isSuperlikedProp,
   onPress,
+  onPressIn,
   onLongPress,
   onFavoritePress,
   onSuperlikePress,
@@ -226,6 +228,10 @@ export const CarCardM = memo(function CarCardM({
     onPress?.(id);
   }, [id, onPress]);
 
+  const handlePressIn = useCallback(() => {
+    onPressIn?.(id);
+  }, [id, onPressIn]);
+
   const handleLongPress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     onLongPress?.(id);
@@ -246,6 +252,7 @@ export const CarCardM = memo(function CarCardM({
   return (
     <HapticPressable
       onPress={handlePress}
+      onPressIn={onPressIn ? handlePressIn : undefined}
       onLongPress={onLongPress ? handleLongPress : undefined}
       delayLongPress={400}
       style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}

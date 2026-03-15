@@ -26,6 +26,8 @@ LogBox.ignoreLogs([
 ]);
 
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/lib/query-client';
 import { Colors, Fonts } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
@@ -301,30 +303,32 @@ export default function RootLayout() {
     <ErrorBoundary>
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
         <SafeAreaProvider>
-          <ThemeProvider>
-            <AlertProvider>
-              <KeyboardProvider>
-                <NetworkProvider>
-                  <BottomSheetModalProvider>
-                    <TabBarProvider>
-                      <SearchProvider>
-                        <AuthProvider>
-                          <FavoritesProvider>
-                            <WebSocketWrapper>
-                              <NotificationWrapper>
-                                <RootLayoutNav />
-                                <OfflineBanner />
-                              </NotificationWrapper>
-                            </WebSocketWrapper>
-                          </FavoritesProvider>
-                        </AuthProvider>
-                      </SearchProvider>
-                    </TabBarProvider>
-                  </BottomSheetModalProvider>
-                </NetworkProvider>
-              </KeyboardProvider>
-            </AlertProvider>
-          </ThemeProvider>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <AlertProvider>
+                <KeyboardProvider>
+                  <NetworkProvider>
+                    <BottomSheetModalProvider>
+                      <TabBarProvider>
+                        <SearchProvider>
+                          <AuthProvider>
+                            <FavoritesProvider>
+                              <WebSocketWrapper>
+                                <NotificationWrapper>
+                                  <RootLayoutNav />
+                                  <OfflineBanner />
+                                </NotificationWrapper>
+                              </WebSocketWrapper>
+                            </FavoritesProvider>
+                          </AuthProvider>
+                        </SearchProvider>
+                      </TabBarProvider>
+                    </BottomSheetModalProvider>
+                  </NetworkProvider>
+                </KeyboardProvider>
+              </AlertProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>
     </ErrorBoundary>

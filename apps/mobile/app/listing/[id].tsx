@@ -1,6 +1,8 @@
 /**
  * Listing Detail Screen - Individual Car Listing View
  * Route: /listing/[id]
+ * 
+ * Uses React Query for data fetching (caching, dedup, prefetch support).
  */
 
 import { useEffect, useState, useCallback } from 'react';
@@ -25,8 +27,7 @@ import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import { FloatingListingActions } from '@/components/listings';
-import { listingApi, ListingDetailed } from '@/lib/listing-api';
-import { useRef } from 'react';
+import { useListingDetail } from '@/hooks/use-listing-query';
 
 export default function ListingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -36,12 +37,13 @@ export default function ListingDetailScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   
-  const [listing, setListing] = useState<ListingDetailed | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Data fetching via React Query (caching, dedup, view tracking)
+  const { listing, isLoading, isRefreshing, error, refresh } = useListingDetail({
+    listingId: id,
+    trackView: true,
+  });
+  
   const [showTopGradient, setShowTopGradient] = useState(false);
-  const viewTrackedRef = useRef(false);
 
   // Handle scroll to show/hide top gradient
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -57,51 +59,9 @@ export default function ListingDetailScreen() {
     };
   }, [hideChrome, showChrome]);
 
-  const fetchListing = useCallback(async (showRefreshing = false) => {
-    if (!id) return;
-    
-    if (showRefreshing) {
-      setIsRefreshing(true);
-    } else {
-      setIsLoading(true);
-    }
-    setError(null);
-
-    try {
-      const data = await listingApi.getDetailed(id);
-      setListing(data);
-    } catch (err: any) {
-      if (err?.message?.includes('not found')) {
-        console.log('[ListingScreen] Listing not found or expired:', id);
-        setError('This listing is no longer available or may have expired');
-      } else {
-        console.error('Failed to fetch listing:', err);
-        setError('Failed to load listing. Please try again.');
-      }
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [id]);
-
-  useEffect(() => {
-    fetchListing();
-  }, [fetchListing]);
-
-  // Track view when listing loads successfully (fire-and-forget)
-  // Only track for live/public listings - not admin previews
-  useEffect(() => {
-    const isPublic = listing?.listing?.isPublic ?? false;
-    const isAdminPreview = listing?.isAdminPreview ?? false;
-    if (listing?.listing?.id && isPublic && !isAdminPreview && !viewTrackedRef.current) {
-      viewTrackedRef.current = true;
-      listingApi.trackView(listing.listing.id);
-    }
-  }, [listing?.listing?.id, listing?.listing?.isPublic, listing?.isAdminPreview]);
-
   const handleRefresh = useCallback(() => {
-    fetchListing(true);
-  }, [fetchListing]);
+    refresh();
+  }, [refresh]);
 
   const handleShare = useCallback(async (listingId: string) => {
     if (!listing) return;
@@ -164,7 +124,9 @@ export default function ListingDetailScreen() {
         ) : error ? (
           <View style={styles.errorContainer}>
             <Text style={[styles.errorText, { color: colors.textSecondary }]}>
-              {error}
+              {error.message?.includes('not found') 
+                ? 'This listing is no longer available or may have expired'
+                : 'Failed to load listing. Please try again.'}
             </Text>
           </View>
         ) : listing ? (

@@ -359,7 +359,7 @@ function generateListing(
   const specialNotes = generateSpecialNotes(year);
   
   // Quality scores
-  const qiScore = randomInt(65, 98) / 100;
+  const qiScore = randomInt(65, 98);
   
   // Engagement metrics
   const isPublicish = status === 'published' || status === 'reserved';

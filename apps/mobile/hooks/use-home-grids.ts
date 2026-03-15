@@ -1,16 +1,18 @@
 /**
- * useHomeGrids Hook - Smart Grid Loading
+ * useHomeGrids Hook - Smart Grid Loading with React Query
  * 
  * Manages home feed grid loading with:
- * - Lazy loading (4 grids at a time)
- * - Caching loaded data
+ * - Lazy loading (4 grids at a time via infinite query)
+ * - Automatic caching
  * - Error recovery
  * - Loading states per grid
  * 
  * @module apps/mobile/hooks/use-home-grids
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useMemo, useCallback } from 'react';
+import { useQuery, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-client';
 import {
   type AnyGridConfig,
   type GridData,
@@ -57,196 +59,172 @@ export interface UseHomeGridsReturn {
 // ============================================================================
 
 const BATCH_SIZE = 4;
-const INITIAL_LOAD = 4; // Load first 4 grids on mount
+
+// ============================================================================
+// HELPER: Build grid sequence from partners
+// ============================================================================
+
+function buildGridSequence(partners: PartnerListItem[]): AnyGridConfig[] {
+  // Get base sequence
+  const baseSequence = generateHomeGridSequence();
+  
+  // Create partner showcase grids (one per partner with listings)
+  const partnerGrids = partners
+    .slice(0, 8) // Limit to 8 partner showcases
+    .map(p => createPartnerGridConfig(p));
+  
+  // Interleave partner grids into the sequence
+  const sequence: AnyGridConfig[] = [];
+  let partnerIndex = 0;
+  
+  baseSequence.forEach((config, i) => {
+    sequence.push(config);
+    
+    // Insert partner grids starting after position 2 (after BLK and Founding)
+    // Then every 3 grids
+    if (i >= 2 && (i - 2) % 3 === 0 && partnerIndex < partnerGrids.length) {
+      sequence.push(partnerGrids[partnerIndex]);
+      partnerIndex++;
+    }
+  });
+  
+  // Add remaining partner grids at the end
+  while (partnerIndex < partnerGrids.length) {
+    sequence.push(partnerGrids[partnerIndex]);
+    partnerIndex++;
+  }
+  
+  return sequence;
+}
 
 // ============================================================================
 // HOOK
 // ============================================================================
 
 export function useHomeGrids(): UseHomeGridsReturn {
-  // Grid sequence and states
-  const [gridSequence, setGridSequence] = useState<AnyGridConfig[]>([]);
-  const [gridStates, setGridStates] = useState<Map<string, GridState>>(new Map());
-  const [loadedCount, setLoadedCount] = useState(0);
-  
-  // Partners cache
-  const [partners, setPartners] = useState<PartnerListItem[]>([]);
-  const [partnersLoaded, setPartnersLoaded] = useState(false);
-  
-  // Loading states
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-  
-  // Prevent concurrent loads
-  const loadingRef = useRef(false);
+  const queryClient = useQueryClient();
 
-  // Load partners first, then initialize grid sequence
-  useEffect(() => {
-    const loadPartners = async () => {
-      try {
-        const partnerList = await fetchPartners();
-        setPartners(partnerList);
-        setPartnersLoaded(true);
-      } catch (err) {
-        console.error('[useHomeGrids] Failed to load partners:', err);
-        setPartnersLoaded(true); // Continue without partners
-      }
-    };
-    loadPartners();
-  }, []);
+  // ── Query 1: Fetch partners ──────────────────────────────────────────────
+  const {
+    data: partners = [],
+    isLoading: isLoadingPartners,
+    error: partnersError,
+  } = useQuery({
+    queryKey: queryKeys.partners(),
+    queryFn: fetchPartners,
+    staleTime: 5 * 60 * 1000, // Partners don't change often
+  });
 
-  // Initialize grid sequence after partners load
-  useEffect(() => {
-    if (!isInitialized && partnersLoaded) {
-      console.log('[useHomeGrids] Initializing with', partners.length, 'partners');
-      
-      // Get base sequence
-      const baseSequence = generateHomeGridSequence();
-      
-      // Create partner showcase grids (one per partner with listings)
-      const partnerGrids = partners
-        .slice(0, 8) // Limit to 8 partner showcases
-        .map(p => createPartnerGridConfig(p));
-      
-      console.log('[useHomeGrids] Created', partnerGrids.length, 'partner grids');
-      
-      // Interleave partner grids into the sequence
-      // Insert first partner grid at position 3 (after BLK and Founding)
-      // Then every 3 grids after that
-      const sequence: AnyGridConfig[] = [];
-      let partnerIndex = 0;
-      
-      baseSequence.forEach((config, i) => {
-        sequence.push(config);
-        
-        // Insert partner grids starting after position 2 (after BLK and Founding)
-        // Then every 3 grids
-        if (i >= 2 && (i - 2) % 3 === 0 && partnerIndex < partnerGrids.length) {
-          sequence.push(partnerGrids[partnerIndex]);
-          console.log('[useHomeGrids] Inserted partner grid at position', sequence.length - 1);
-          partnerIndex++;
-        }
-      });
-      
-      // Add remaining partner grids at the end
-      while (partnerIndex < partnerGrids.length) {
-        sequence.push(partnerGrids[partnerIndex]);
-        partnerIndex++;
-      }
-      
-      console.log('[useHomeGrids] Final sequence length:', sequence.length);
-      
-      setGridSequence(sequence);
-      
-      // Initialize all grid states as pending
-      const initialStates = new Map<string, GridState>();
-      sequence.forEach(config => {
-        initialStates.set(config.id, {
-          config,
-          isLoading: false,
-        });
-      });
-      setGridStates(initialStates);
-      setIsInitialized(true);
-    }
-  }, [isInitialized, partnersLoaded, partners]);
+  // ── Compute grid sequence (memoized) ─────────────────────────────────────
+  const gridSequence = useMemo(() => {
+    if (isLoadingPartners) return [];
+    return buildGridSequence(partners);
+  }, [partners, isLoadingPartners]);
 
-  // Initial load
-  useEffect(() => {
-    if (isInitialized && loadedCount === 0 && gridSequence.length > 0) {
-      loadMore();
-    }
-  }, [isInitialized, gridSequence.length]);
+  // Stable key for the sequence to trigger query reset when it changes
+  const sequenceKey = useMemo(() => {
+    return gridSequence.map(g => g.id).join(',');
+  }, [gridSequence]);
 
-  // Load more grids
-  const loadMore = useCallback(async () => {
-    if (loadingRef.current || loadedCount >= gridSequence.length) return;
-    
-    loadingRef.current = true;
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const startIndex = loadedCount;
+  // ── Query 2: Infinite query for grid data ────────────────────────────────
+  const {
+    data: gridsData,
+    isLoading: isLoadingGrids,
+    isFetchingNextPage,
+    hasNextPage = false,
+    error: gridsError,
+    fetchNextPage,
+    refetch,
+  } = useInfiniteQuery({
+    // Include sequence key so query resets when grid sequence changes
+    queryKey: [...queryKeys.homeGrids(), sequenceKey],
+    queryFn: async ({ pageParam = 0 }) => {
+      const startIndex = pageParam;
       const endIndex = Math.min(startIndex + BATCH_SIZE, gridSequence.length);
       const batchConfigs = gridSequence.slice(startIndex, endIndex);
+      
+      if (batchConfigs.length === 0) {
+        return { grids: [], nextOffset: undefined };
+      }
 
-      // Mark batch as loading
-      setGridStates(prev => {
-        const next = new Map(prev);
-        batchConfigs.forEach(config => {
-          const existing = next.get(config.id);
-          if (existing) {
-            next.set(config.id, { ...existing, isLoading: true });
-          }
-        });
-        return next;
-      });
-
-      // Fetch batch data
       const batchData = await fetchGridsBatch(batchConfigs);
+      
+      return {
+        grids: batchData.map(data => ({
+          config: data.config,
+          data,
+          isLoading: false,
+        })),
+        nextOffset: endIndex < gridSequence.length ? endIndex : undefined,
+      };
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage.nextOffset,
+    enabled: !isLoadingPartners && gridSequence.length > 0,
+    // Show cached data instantly
+    placeholderData: (prev) => prev,
+    staleTime: 2 * 60 * 1000,
+  });
 
-      // Update states with data
-      setGridStates(prev => {
-        const next = new Map(prev);
-        batchData.forEach(data => {
-          next.set(data.config.id, {
-            config: data.config,
-            data,
-            isLoading: false,
-          });
-        });
-        return next;
-      });
+  // ── Flatten pages into grid states (deduplicated) ─────────────────────────
+  const loadedGrids = useMemo(() => {
+    if (!gridsData?.pages) return [];
+    const allGrids = gridsData.pages.flatMap(page => page.grids);
+    // Dedupe by config.id to prevent React key warnings
+    const seen = new Set<string>();
+    return allGrids.filter(g => {
+      if (seen.has(g.config.id)) return false;
+      seen.add(g.config.id);
+      return true;
+    });
+  }, [gridsData]);
 
-      setLoadedCount(endIndex);
-    } catch (err) {
-      console.error('[useHomeGrids] Failed to load batch:', err);
-      setError(err instanceof Error ? err : new Error('Failed to load grids'));
-    } finally {
-      setIsLoading(false);
-      loadingRef.current = false;
+  // ── Build complete grid state list (loaded + pending) ────────────────────
+  const grids = useMemo(() => {
+    const loadedIds = new Set(loadedGrids.map(g => g.config.id));
+    
+    // Create pending states for unloaded grids
+    const pendingGrids: GridState[] = gridSequence
+      .filter(config => !loadedIds.has(config.id))
+      .map(config => ({
+        config,
+        isLoading: false,
+      }));
+    
+    return [...loadedGrids, ...pendingGrids];
+  }, [loadedGrids, gridSequence]);
+
+  // ── Handlers ─────────────────────────────────────────────────────────────
+  const loadMore = useCallback(async () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      await fetchNextPage();
     }
-  }, [loadedCount, gridSequence]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Refresh all grids
   const refresh = useCallback(async () => {
-    // Clear cache to force fresh data
+    // Clear local cache first
     clearGridCache();
     
-    // Reset state
-    setLoadedCount(0);
-    setError(null);
-    setIsInitialized(false);
-    setPartnersLoaded(false);
+    // Invalidate both queries to force refetch
+    await queryClient.invalidateQueries({ queryKey: queryKeys.partners() });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.homeGrids() });
     
-    // Reload partners - this will trigger sequence regeneration
-    try {
-      const partnerList = await fetchPartners();
-      setPartners(partnerList);
-      setPartnersLoaded(true);
-    } catch (err) {
-      console.error('[useHomeGrids] Failed to refresh partners:', err);
-      setPartnersLoaded(true);
-    }
-  }, []);
+    // Refetch
+    await refetch();
+  }, [queryClient, refetch]);
 
-  // Compute derived values
-  const grids = Array.from(gridStates.values());
-  // Only include grids with data - parent component shows skeleton when list is empty
-  const loadedGrids = grids.filter(g => g.data !== undefined);
-  const hasMore = loadedCount < gridSequence.length;
+  // ── Error handling ───────────────────────────────────────────────────────
+  const error = partnersError || gridsError;
 
   return {
     grids,
     loadedGrids,
-    hasMore,
-    isLoading,
+    hasMore: hasNextPage,
+    isLoading: isLoadingPartners || (isLoadingGrids && loadedGrids.length === 0),
     loadMore,
     refresh,
     partners,
-    error,
+    error: error instanceof Error ? error : error ? new Error('Failed to load grids') : null,
   };
 }
 

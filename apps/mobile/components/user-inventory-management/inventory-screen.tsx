@@ -52,7 +52,6 @@ import {
   Skeleton,
 } from '@/components/ui';
 import {
-  getMyListings,
   getListingForEdit,
   type MyListingCard,
   type MyListingsStats,
@@ -81,6 +80,7 @@ import { PendingReviewReasonSheet } from './sub-operations/pending-review-reason
 import { ProfileMenu } from '@/components/home/profile-menu';
 import { CreateListingFlow } from '@/components/sheets/create-listing/create-listing-flow';
 import type { CreateListingData } from '@/components/sheets/create-listing/types';
+import { useInventory } from '@/hooks/use-inventory-query';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -124,8 +124,6 @@ const STATUS_TABS: StatusTab[] = [
   { key: 'archived', label: 'Archived', count: (s) => s?.archived ?? 0 },
 ];
 
-const PAGE_SIZE = 20;
-
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function InventoryScreen() {
@@ -143,15 +141,23 @@ export function InventoryScreen() {
     return 'all';
   }, [tab]);
 
-  // ── Data State ───────────────────────────────────────────────────────────
+  // ── Data State (React Query) ─────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState<MyListingsFilter>(initialTab);
-  const [listings, setListings] = useState<MyListingCard[]>([]);
-  const [stats, setStats] = useState<MyListingsStats | null>(null);
-  const [total, setTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  
+  // React Query hook for listings data
+  const {
+    listings,
+    stats,
+    total,
+    isLoading,
+    isRefreshing,
+    isLoadingMore,
+    hasMore,
+    error,
+    loadMore,
+    refresh,
+    invalidate,
+  } = useInventory({ filter: activeTab });
 
   // Sync active tab when URL param changes
   useEffect(() => {
@@ -182,56 +188,16 @@ export function InventoryScreen() {
 
   const flatListRef = useRef<FlatList>(null);
 
-  // ── Fetch ────────────────────────────────────────────────────────────────
-
-  const fetchListings = useCallback(
-    async (opts: { refresh?: boolean; loadMore?: boolean } = {}) => {
-      const { refresh = false, loadMore = false } = opts;
-
-      if (refresh) setIsRefreshing(true);
-      else if (loadMore) setIsLoadingMore(true);
-      else setIsLoading(true);
-
-      try {
-        const offset = loadMore ? listings.length : 0;
-        const response = await getMyListings({
-          status: activeTab === 'all' ? undefined : activeTab,
-          includeStats: true,
-          limit: PAGE_SIZE,
-          offset,
-          sort: 'newest',
-        });
-
-        if (loadMore) {
-          setListings((prev) => [...prev, ...response.listings]);
-        } else {
-          setListings(response.listings);
-        }
-
-        if (response.stats) setStats(response.stats);
-        setTotal(response.total);
-        setError(null);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load listings');
-      } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
-        setIsLoadingMore(false);
-      }
-    },
-    [activeTab, listings.length],
-  );
-
+  // Scroll to top when tab changes
   useEffect(() => {
-    fetchListings();
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
-  }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
-  const handleRefresh = useCallback(() => fetchListings({ refresh: true }), [fetchListings]);
+  const handleRefresh = useCallback(() => refresh(), [refresh]);
 
   const handleLoadMore = useCallback(() => {
-    if (!isLoadingMore && listings.length < total) fetchListings({ loadMore: true });
-  }, [fetchListings, isLoadingMore, listings.length, total]);
+    if (!isLoadingMore && hasMore) loadMore();
+  }, [loadMore, isLoadingMore, hasMore]);
 
   // ── Tab ──────────────────────────────────────────────────────────────────
 
@@ -315,7 +281,7 @@ export function InventoryScreen() {
     }
   }, [selectedListing]);
 
-  const handleSubOpSuccess = useCallback(() => fetchListings({ refresh: true }), [fetchListings]);
+  const handleSubOpSuccess = useCallback(() => invalidate(), [invalidate]);
 
   /** Handle delete success: navigate to 'deleted' tab for soft-deletes */
   const handleDeleteSuccess = useCallback((result: DeleteListingResponse) => {
@@ -324,9 +290,9 @@ export function InventoryScreen() {
       setActiveTab('deleted');
     } else {
       // Hard delete or already on deleted tab - just refresh
-      fetchListings({ refresh: true });
+      invalidate();
     }
-  }, [activeTab, fetchListings]);
+  }, [activeTab, invalidate]);
 
   const selectedTitle = useMemo(
     () =>
@@ -704,7 +670,7 @@ export function InventoryScreen() {
           setEditInitialData(undefined);
           setEditingListingId(null);
           setIsPublishedEdit(false);
-          fetchListings({ refresh: true });
+          invalidate();
         }}
         initialData={editInitialData}
         listingId={editingListingId ?? undefined}

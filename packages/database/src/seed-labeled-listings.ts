@@ -334,7 +334,7 @@ function generateListing(
   const specialNotes = generateSpecialNotes(year);
   
   // Quality scores
-  const qiScore = randomInt(80, 98) / 100;
+  const qiScore = randomInt(80, 98);
   
   // Engagement metrics
   const viewCount = randomInt(100, 2000);

@@ -484,7 +484,7 @@ export async function getListingUploadUrls(vin: string): Promise<ListingPresigne
 async function uploadToPresigned(uploadUrl: string, blob: Blob): Promise<void> {
   const res = await fetch(uploadUrl, {
     method: 'PUT',
-    headers: { 'Content-Type': 'image/jpeg' },
+    headers: { 'Content-Type': 'image/webp' },
     body: blob,
   });
 

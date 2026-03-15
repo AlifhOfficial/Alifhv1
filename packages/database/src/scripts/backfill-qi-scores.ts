@@ -19,13 +19,17 @@ config({ path: '../../.env.local' });
 
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { eq, isNull, sql } from 'drizzle-orm';
+import { eq, isNull, or, sql } from 'drizzle-orm';
 import * as schema from '../schema';
 import { computeQiScore } from '../queries/listings/car-listings/mutations/helpers';
 
 const { carListing } = schema;
 
 const BATCH_SIZE = 500;
+const NEEDS_QI_REPAIR = or(
+  isNull(carListing.qiScore),
+  sql`${carListing.qiScore} > 0 AND ${carListing.qiScore} <= 1`
+);
 
 interface ListingRow {
   id: string;
@@ -51,13 +55,13 @@ async function main() {
   const client = neon(process.env.DATABASE_URL);
   const db = drizzle(client, { schema });
 
-  // Count listings without qiScore
+  // Count listings without qiScore or with legacy fractional qiScore
   const [{ count: totalWithoutScore }] = await db
     .select({ count: sql<number>`count(*)::int` })
     .from(carListing)
-    .where(isNull(carListing.qiScore));
+    .where(NEEDS_QI_REPAIR);
 
-  console.log(`Found ${totalWithoutScore} listings without qiScore`);
+  console.log(`Found ${totalWithoutScore} listings needing qiScore repair`);
 
   if (totalWithoutScore === 0) {
     console.log('Nothing to do!');
@@ -69,7 +73,7 @@ async function main() {
   let offset = 0;
 
   while (offset < totalWithoutScore) {
-    // Fetch batch of listings without qiScore
+    // Fetch batch of listings needing qiScore repair
     const listings = await db
       .select({
         id: carListing.id,
@@ -82,7 +86,7 @@ async function main() {
         vinVisibility: carListing.vinVisibility,
       })
       .from(carListing)
-      .where(isNull(carListing.qiScore))
+      .where(NEEDS_QI_REPAIR)
       .limit(BATCH_SIZE)
       .offset(offset);
 

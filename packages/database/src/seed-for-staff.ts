@@ -340,7 +340,7 @@ function generateListing(
   const extras = getRandomSubarray(extrasValues, 3, 8);
   const specialNotes = generateSpecialNotes(year);
   
-  const qiScore = randomInt(65, 98) / 100;
+  const qiScore = randomInt(65, 98);
   
   const isPublicish = status === 'published' || status === 'reserved';
   const viewCount = isPublicish ? randomInt(50, 3000) : randomInt(0, 50);

@@ -117,6 +117,7 @@ export interface CarCardListProps {
   showSuperlike?: boolean;
   showShare?: boolean;
   onPress?: (id: string) => void;
+  onPressIn?: (id: string) => void;
   onFavoritePress?: (id: string) => void;
   onSuperlikePress?: (id: string) => void;
   onSharePress?: (id: string) => void;
@@ -174,6 +175,7 @@ export const CarCardList = memo(function CarCardList({
   showSuperlike = true,
   showShare = true,
   onPress,
+  onPressIn,
   onFavoritePress,
   onSuperlikePress,
   onSharePress,
@@ -191,11 +193,13 @@ export const CarCardList = memo(function CarCardList({
 
   // Handlers
   const handlePress = useCallback(() => onPress?.(id), [id, onPress]);
+  const handlePressIn = useCallback(() => onPressIn?.(id), [id, onPressIn]);
   const handleSharePress = useCallback(() => onSharePress?.(id), [id, onSharePress]);
 
   return (
     <HapticPressable
       onPress={handlePress}
+      onPressIn={onPressIn ? handlePressIn : undefined}
       style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}
     >
       {/* === IMAGE SECTION === */}

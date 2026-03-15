@@ -113,8 +113,8 @@ async function compressImage(
     maxSizeMB: config.maxSizeKB / 1024,
     maxWidthOrHeight: Math.max(config.maxWidth, config.maxHeight),
     useWebWorker: true,
-    fileType: 'image/jpeg' as const, // JPEG for max compatibility
-    initialQuality: config.quality ?? 0.75,
+    fileType: 'image/webp' as const, // WebP for better quality at same size
+    initialQuality: config.quality ?? 0.85,
     alwaysKeepResolution: false,
   };
 

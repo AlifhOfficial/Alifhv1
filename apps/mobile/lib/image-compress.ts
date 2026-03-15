@@ -130,7 +130,7 @@ async function resizeImage(
   const resized = await ImageManipulator.manipulateAsync(
     uri,
     [{ resize: { width: targetWidth } }],
-    { format: ImageManipulator.SaveFormat.JPEG }
+    { format: ImageManipulator.SaveFormat.WEBP }
   );
   
   return { uri: resized.uri, width: resized.width, height: resized.height };
@@ -170,7 +170,7 @@ async function compressImage(
       [], // Already resized
       {
         compress: quality,
-        format: ImageManipulator.SaveFormat.JPEG,
+        format: ImageManipulator.SaveFormat.WEBP,
       }
     );
     
@@ -197,7 +197,7 @@ async function compressImage(
       const smaller = await ImageManipulator.manipulateAsync(
         resized.uri,
         [{ resize: { width: newWidth } }],
-        { format: ImageManipulator.SaveFormat.JPEG }
+        { format: ImageManipulator.SaveFormat.WEBP }
       );
       currentUri = smaller.uri;
       currentDims = { width: smaller.width, height: smaller.height };
@@ -214,7 +214,7 @@ async function compressImage(
     width: result!.width,
     height: result!.height,
     size: blob!.size,
-    mimeType: 'image/jpeg',
+    mimeType: 'image/webp',
   };
 }
 

@@ -1,13 +1,14 @@
 /**
  * useProfile Hook
  * 
- * Manages profile state and API interactions.
- * Fetches profile data and provides update functions.
+ * React Query powered profile management.
+ * Fetches profile data with caching and provides mutation functions.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchProfile,
   updateProfile,
@@ -18,6 +19,7 @@ import {
   type UserStats,
   type ProfileUpdatePayload,
 } from '@/lib/profile-api';
+import { queryKeys } from '@/lib/query-client';
 import type { EditingField, ProfileFormData } from '../types';
 
 interface UseProfileOptions {
@@ -60,15 +62,11 @@ interface UseProfileReturn {
 }
 
 export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UseProfileOptions): UseProfileReturn {
-  // Loading states
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const queryClient = useQueryClient();
+  
+  // Local UI states (not cached)
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
-
-  // Data
-  const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [editingField, setEditingField] = useState<EditingField>(null);
 
   // Form state for editing
@@ -83,9 +81,39 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
   // Track original values for cancel
   const originalFormRef = useRef<ProfileFormData>(form);
 
+  // React Query for profile data
+  const {
+    data: profileData,
+    isLoading: isQueryLoading,
+    isFetching,
+    isRefetching,
+    error: queryError,
+    refetch,
+  } = useQuery<ProfileData>({
+    queryKey: queryKeys.profile(),
+    queryFn: async () => {
+      const result = await fetchProfile();
+      if (result.success && result.data) {
+        return result.data;
+      }
+      throw new Error(result.error || 'Failed to load profile');
+    },
+    enabled: isAuthenticated,
+    staleTime: 5 * 60 * 1000, // 5 minutes - profile is relatively stable
+    gcTime: 30 * 60 * 1000,
+    placeholderData: (prev) => prev,
+  });
+
   // Derived data
   const profile = profileData?.profile ?? null;
   const stats = profileData?.stats ?? null;
+
+  // Helper to update cache
+  const updateProfileCache = useCallback((updatedProfile: UserProfile) => {
+    queryClient.setQueryData<ProfileData>(queryKeys.profile(), (old) => 
+      old ? { ...old, profile: updatedProfile } : old
+    );
+  }, [queryClient]);
 
   // Sync form with profile data
   useEffect(() => {
@@ -123,36 +151,10 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
     prevEditingField.current = editingField;
   }, [editingField, profile]);
 
-  // Fetch profile data
-  const loadProfile = useCallback(async () => {
-    if (!isAuthenticated) {
-      setIsLoading(false);
-      return;
-    }
-
-    setError(null);
-    const result = await fetchProfile();
-
-    if (result.success && result.data) {
-      setProfileData(result.data);
-    } else {
-      setError(result.error || 'Failed to load profile');
-    }
-
-    setIsLoading(false);
-  }, [isAuthenticated]);
-
-  // Initial load
-  useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
-
   // Refresh handler
   const refresh = useCallback(async () => {
-    setIsRefreshing(true);
-    await loadProfile();
-    setIsRefreshing(false);
-  }, [loadProfile]);
+    await refetch();
+  }, [refetch]);
 
   // Update local form field
   const updateField = useCallback(
@@ -161,6 +163,29 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
     },
     []
   );
+
+  // Save field mutation
+  const { mutateAsync: saveFieldMutation } = useMutation({
+    mutationFn: async (payload: ProfileUpdatePayload) => {
+      const result = await updateProfile(payload);
+      if (!result.success || !result.profile) {
+        throw new Error(result.error || 'Failed to save');
+      }
+      return result.profile;
+    },
+    onSuccess: (updatedProfile) => {
+      updateProfileCache(updatedProfile);
+      originalFormRef.current = { ...form };
+      if (Platform.OS === 'ios') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+    },
+    onError: () => {
+      if (Platform.OS === 'ios') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+    },
+  });
 
   // Save field to API
   const saveField = useCallback(
@@ -190,38 +215,15 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
             break;
         }
 
-        const result = await updateProfile(payload);
-
-        if (result.success && result.profile) {
-          // Update profile data
-          setProfileData((prev) =>
-            prev ? { ...prev, profile: result.profile! } : null
-          );
-          
-          // Update original form ref
-          originalFormRef.current = { ...form };
-          
-          if (Platform.OS === 'ios') {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          }
-          
-          setEditingField(null);
-        } else {
-          if (Platform.OS === 'ios') {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-          }
-          showAlert('Error', result.error || 'Failed to save. Please try again.');
-        }
-      } catch {
-        if (Platform.OS === 'ios') {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        }
-        showAlert('Error', 'Failed to save. Please try again.');
+        await saveFieldMutation(payload);
+        setEditingField(null);
+      } catch (err) {
+        showAlert('Error', err instanceof Error ? err.message : 'Failed to save. Please try again.');
       } finally {
         setIsSaving(false);
       }
     },
-    [form]
+    [form, saveFieldMutation, showAlert]
   );
 
   // Cancel edit and restore original values
@@ -240,26 +242,27 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
       // Update local state immediately
       setForm((f: ProfileFormData) => ({ ...f, tags: newTags }));
 
-      // Save to API
-      const result = await updateProfile({ tags: newTags });
+      try {
+        const result = await updateProfile({ tags: newTags });
 
-      if (result.success && result.profile) {
-        // Update profile data
-        setProfileData((prev) =>
-          prev ? { ...prev, profile: result.profile! } : null
-        );
-        originalFormRef.current = { ...form, tags: newTags };
-        
-        if (Platform.OS === 'ios') {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        if (result.success && result.profile) {
+          updateProfileCache(result.profile);
+          originalFormRef.current = { ...form, tags: newTags };
+          
+          if (Platform.OS === 'ios') {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }
+        } else {
+          // Revert on error
+          setForm((f: ProfileFormData) => ({ ...f, tags: form.tags }));
+          showAlert('Error', result.error || 'Failed to save tag.');
         }
-      } else {
-        // Revert on error
+      } catch {
         setForm((f: ProfileFormData) => ({ ...f, tags: form.tags }));
-        showAlert('Error', result.error || 'Failed to save tag.');
+        showAlert('Error', 'Failed to save tag.');
       }
     },
-    [form]
+    [form, updateProfileCache, showAlert]
   );
 
   // Upload avatar photo
@@ -277,9 +280,7 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
         const updateResult = await updateProfile({ avatar: result.key });
         
         if (updateResult.success && updateResult.profile) {
-          setProfileData((prev) =>
-            prev ? { ...prev, profile: updateResult.profile! } : null
-          );
+          updateProfileCache(updateResult.profile);
           
           // Sync auth context so avatar updates across the app
           await onAvatarChange?.();
@@ -304,7 +305,7 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
     } finally {
       setIsUploadingAvatar(false);
     }
-  }, [profile?.avatar, onAvatarChange]);
+  }, [profile?.avatar, onAvatarChange, updateProfileCache, showAlert]);
 
   // Remove avatar photo
   const removePhoto = useCallback(async () => {
@@ -314,9 +315,7 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
       const result = await removeAvatar();
       
       if (result.success && result.profile) {
-        setProfileData((prev) =>
-          prev ? { ...prev, profile: result.profile! } : null
-        );
+        updateProfileCache(result.profile);
         
         // Sync auth context so avatar updates across the app
         await onAvatarChange?.();
@@ -332,7 +331,7 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
     } finally {
       setIsUploadingAvatar(false);
     }
-  }, [onAvatarChange]);
+  }, [onAvatarChange, updateProfileCache, showAlert]);
 
   // Remove phone number
   const removePhone = useCallback(async () => {
@@ -340,9 +339,7 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
     try {
       const result = await updateProfile({ phone: null });
       if (result.success && result.profile) {
-        setProfileData((prev) =>
-          prev ? { ...prev, profile: result.profile! } : null
-        );
+        updateProfileCache(result.profile);
         setForm((f: ProfileFormData) => ({ ...f, phone: '' }));
         originalFormRef.current = { ...originalFormRef.current, phone: '' };
         if (Platform.OS === 'ios') {
@@ -362,7 +359,7 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
     } finally {
       setIsSaving(false);
     }
-  }, []);
+  }, [updateProfileCache, showAlert]);
 
   // Called when phone is verified via OTP
   const onPhoneVerified = useCallback(() => {
@@ -371,8 +368,9 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
   }, [refresh]);
 
   return {
-    isLoading,
-    isRefreshing,
+    // Only show loading when no cached data
+    isLoading: isQueryLoading && !profileData,
+    isRefreshing: isRefetching || (isFetching && !!profileData),
     isSaving,
     isUploadingAvatar,
     profile,
@@ -389,6 +387,6 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
     removePhoto,
     removePhone,
     onPhoneVerified,
-    error,
+    error: queryError ? (queryError instanceof Error ? queryError.message : 'Failed to load profile') : null,
   };
 }
