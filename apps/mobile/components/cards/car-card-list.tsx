@@ -16,6 +16,7 @@ import {
   HapticPressable, 
   Skeleton, 
   SkeletonCircle,
+  Text,
   Data, 
   Label, 
   Supporting,
@@ -217,15 +218,15 @@ export const CarCardList = memo(function CarCardList({
       <View style={styles.infoSection}>
         {/* Content - Top */}
         <View style={styles.content}>
-          <Supporting size="medium" style={{ color: theme.text }} numberOfLines={1}>
+          <Data size="medium" style={{ color: theme.text }} numberOfLines={1}>
             {make} {model}
-          </Supporting>
+          </Data>
           <Supporting size="small" style={{ color: theme.meta }}>
             {year}
           </Supporting>
-          <Data size="small" style={{ color: theme.price }}>
+          <Text variant="priceMini" style={{ color: theme.price }}>
             {formatPrice(price)}
-          </Data>
+          </Text>
           <Supporting size="mini" style={{ color: theme.meta }}>
             {formatMileage(mileage)} · {displaySpecs} · {displayEmirate}
           </Supporting>

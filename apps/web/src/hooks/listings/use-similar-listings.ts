@@ -37,6 +37,7 @@ export interface SimilarListingCard {
   partnerName: string | null;
   partnerLogo: string | null;
   partnerVerified: boolean | null;
+  isBlackTierPartner: boolean;
   sellerName: string | null;
   sellerAvatarUrl: string | null;
   sellerKycVerified: boolean | null;

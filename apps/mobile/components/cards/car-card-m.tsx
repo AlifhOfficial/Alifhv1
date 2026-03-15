@@ -281,9 +281,9 @@ export const CarCardM = memo(function CarCardM({
         />
 
         {/* Price */}
-        <Heading size="small" style={{ color: theme.price }}>
+        <Text variant="priceTag" style={{ color: theme.price }}>
           {formatPrice(price)}
-        </Heading>
+        </Text>
 
         {/* Stats: Mileage · Specs · Location */}
         <CardStats

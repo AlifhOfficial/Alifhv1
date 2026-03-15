@@ -731,13 +731,13 @@ const SemanticTypography = {
     ...base, 
     fontSize: fontScale(18), 
     lineHeight: fontScale(24), 
-    fontFamily: 'Inter_700Bold' 
+    fontFamily: 'Inter_800ExtraBold' 
   },
   priceMini: { 
     ...base, 
     fontSize: fontScale(16), 
     lineHeight: fontScale(22), 
-    fontFamily: 'Inter_700Bold' 
+    fontFamily: 'Inter_800ExtraBold' 
   },
   vinCode: { 
     ...base, 

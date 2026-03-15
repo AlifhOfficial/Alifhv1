@@ -140,6 +140,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
   const [selectedMakes, setSelectedMakes] = useState<string[]>([]);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [selectedTrims, setSelectedTrims] = useState<string[]>([]);
+  const [showAllModels, setShowAllModels] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [selectedPartner, setSelectedPartner] = useState<{ id: string; name: string } | null>(null);
@@ -297,6 +298,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
         setSelectedModels([]);
         setSelectedTrims([]);
       }
+      setShowAllModels(false);
       return updated;
     });
   }, []);
@@ -796,7 +798,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                     {/* Unselected models */}
                     {modelFacets
                       .filter((m: FacetBucket) => !selectedModels.includes(m.value))
-                      .slice(0, MAX_VISIBLE_CHIPS - selectedModels.length)
+                      .slice(0, showAllModels ? undefined : MAX_VISIBLE_CHIPS - selectedModels.length)
                       .map((model: FacetBucket) =>
                         renderChip(
                           model.label ?? model.value,
@@ -806,6 +808,34 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                           `model-${model.value}`,
                         ),
                       )}
+                    {/* View All / Show Less toggle */}
+                    {modelFacets.filter((m: FacetBucket) => !selectedModels.includes(m.value)).length > MAX_VISIBLE_CHIPS - selectedModels.length && (
+                      <HapticPressable
+                        style={[
+                          styles.chip,
+                          {
+                            backgroundColor: colors.fillSecondary,
+                            borderColor: colors.border,
+                          },
+                        ]}
+                        onPress={() => {
+                          triggerHaptic();
+                          setShowAllModels((prev) => !prev);
+                        }}
+                      >
+                        <Supporting
+                          size="small"
+                          style={{ color: colors.primary }}
+                        >
+                          {showAllModels ? 'Show Less' : `View All (${modelFacets.length})`}
+                        </Supporting>
+                        <Ionicons
+                          name={showAllModels ? 'chevron-up' : 'chevron-down'}
+                          size={Spacing.md}
+                          color={colors.primary}
+                        />
+                      </HapticPressable>
+                    )}
                   </View>
                 )}
               </View>

@@ -48,6 +48,7 @@ export interface SimilarListingCard {
   partnerName: string | null;
   partnerLogo: string | null;
   partnerVerified: boolean | null;
+  isBlackTierPartner: boolean;
   sellerName: string | null;
   sellerAvatarUrl: string | null;
   sellerKycVerified: boolean | null;
@@ -124,6 +125,7 @@ export async function getSimilarListings(
     partnerName: sql<string | null>`coalesce(${partner.brandName}, ${carListing.partnerBrandName})`,
     partnerLogo: partner.logo,
     partnerVerified: sql<boolean | null>`coalesce(${partner.isVerified}, ${carListing.partnerVerified})`,
+    partnerTier: partner.tier,
     sellerName: user.name,
     sellerAvatarUrl: userProfile.avatar,
     sellerKycVerified: userProfile.kycVerified,
@@ -188,6 +190,7 @@ export async function getSimilarListings(
     partnerName: row.partnerName,
     partnerLogo: row.partnerLogo,
     partnerVerified: row.partnerVerified,
+    isBlackTierPartner: row.partnerTier === 'black',
     sellerName: row.sellerName,
     sellerAvatarUrl: row.sellerAvatarUrl,
     sellerKycVerified: row.sellerKycVerified,

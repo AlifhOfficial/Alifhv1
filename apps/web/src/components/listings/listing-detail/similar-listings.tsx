@@ -131,6 +131,7 @@ export function SimilarListings({
                 partnerName={listing.partnerName ?? undefined}
                 partnerLogo={listing.partnerLogo}
                 partnerVerified={listing.partnerVerified ?? undefined}
+                isBlackTierPartner={listing.isBlackTierPartner}
                 sellerName={listing.sellerName}
                 sellerAvatarUrl={listing.sellerAvatarUrl}
                 kycVerified={listing.sellerKycVerified ?? undefined}
