@@ -18,7 +18,11 @@ import {
 } from '@/lib/brand-assets'
 
 export const viewport: Viewport = {
-  themeColor: '#000000',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f5f5f5' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+  ],
+  colorScheme: 'dark light',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -60,7 +64,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'Revvup',
   },
   other: {
@@ -150,6 +154,8 @@ export default async function RootLayout({
         <link key="mask-icon-512" rel="preload" as="image" href={BRAND_ICON_512_URL} />
         <meta key="apple-webapp-capable" name="apple-mobile-web-app-capable" content="yes" />
         <meta key="mobile-webapp-capable" name="mobile-web-app-capable" content="yes" />
+        <meta key="color-scheme" name="color-scheme" content="dark" />
+        <meta key="apple-status-bar" name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body suppressHydrationWarning>
         <ThemeProvider>

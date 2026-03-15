@@ -210,7 +210,7 @@ export function Navbar() {
             <div className="flex min-w-0 flex-1 items-baseline">
               <Link
                 href="/"
-                className="inline-flex flex-shrink-0 items-baseline pr-8 sm:pr-10"
+                className="inline-flex flex-shrink-0 items-baseline rounded-md px-4 py-2.5"
                 suppressHydrationWarning
               >
                 <span
@@ -220,7 +220,7 @@ export function Navbar() {
                 >
                   <span
                     className="wordmark-geom block leading-none"
-                    style={{ fontSize: 18 }}
+                    style={{ fontSize: 20 }}
                   >
                     Revvup
                   </span>
@@ -228,7 +228,7 @@ export function Navbar() {
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="hidden lg:flex items-baseline gap-1">
+              <div className="relative top-px hidden lg:flex items-baseline gap-1">
                 {navItems.map((item) => (
                   <div 
                     key={item.label}
