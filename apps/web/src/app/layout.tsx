@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from 'next'
+import { Inter } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 import { ThemeProvider } from '@/components/shared/providers/theme-provider'
 import { QueryProvider } from '@/components/shared/providers/query-provider'
@@ -14,6 +16,21 @@ import {
   BRAND_FAVICON_SVG_URL,
   BRAND_LOGO_SCHEMA_URL,
 } from '@/lib/brand-assets'
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+  variable: '--font-inter',
+})
+
+const geomFont = localFont({
+  src: '../../public/assets/fonts/Geom-Black.ttf',
+  weight: '900',
+  style: 'normal',
+  display: 'swap',
+  variable: '--font-geom',
+})
 
 export const viewport: Viewport = {
   themeColor: [
@@ -135,14 +152,6 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Inter Font - Preconnect for performance */}
-        <link key="preconnect-google-fonts" rel="preconnect" href="https://fonts.googleapis.com" />
-        <link key="preconnect-gstatic" rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          key="google-fonts-inter"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
-        />
         <link key="favicon-svg" rel="icon" type="image/svg+xml" href={BRAND_FAVICON_SVG_URL} />
         <link key="favicon-png" rel="icon" type="image/png" sizes="32x32" href={BRAND_FAVICON_PNG_URL} />
         <link key="favicon-ico" rel="shortcut icon" href={BRAND_FAVICON_ICO_URL} />
@@ -155,7 +164,7 @@ export default async function RootLayout({
         <meta key="color-scheme" name="color-scheme" content="dark" />
         <meta key="apple-status-bar" name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body suppressHydrationWarning>
+      <body className={`${inter.variable} ${geomFont.variable}`} suppressHydrationWarning>
         <ThemeProvider>
           <AuthProvider initialSession={initialSession}>
             <QueryProvider
