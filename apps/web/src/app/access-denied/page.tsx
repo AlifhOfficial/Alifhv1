@@ -43,6 +43,9 @@ export default async function AccessDeniedPage({
         
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
+          <p className="wordmark-geom text-lg text-foreground">
+            Revvup
+          </p>
           <span className="text-sm font-semibold uppercase tracking-wider text-primary">
             {message.badge}
           </span>

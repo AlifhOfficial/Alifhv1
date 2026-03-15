@@ -6,9 +6,7 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { useTheme } from 'next-themes';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback } from 'react';
 
 // Table of Contents items
 const TOC_ITEMS = [
@@ -31,13 +29,6 @@ const TOC_ITEMS = [
 ] as const;
 
 export function TermsOfService() {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const scrollToSection = useCallback((id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -51,10 +42,6 @@ export function TermsOfService() {
       });
     }
   }, []);
-
-  const logoSrc = mounted && (resolvedTheme === 'dark' || resolvedTheme === 'charcoal')
-    ? "/assets/Revvup_logo_White.svg" 
-    : "/assets/Revvup_logo_Black.svg";
 
   return (
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">

@@ -28,6 +28,9 @@ export default function GlobalError({
             
             {/* Header */}
             <div className="text-center mb-12 space-y-4">
+              <p className="wordmark-geom text-lg text-neutral-900 dark:text-white">
+                Revvup
+              </p>
               <span className="text-sm font-semibold uppercase tracking-wider text-red-600 dark:text-red-500">
                 Critical Error
               </span>

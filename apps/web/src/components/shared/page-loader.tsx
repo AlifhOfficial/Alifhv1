@@ -9,9 +9,8 @@
  * @module components/shared/page-loader
  */
 
-import { useTheme } from 'next-themes';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { BRAND_LOGO_SVG } from '@/lib/brand-assets';
 import { cn } from '@/lib/utils';
 
 interface PageLoaderProps {
@@ -21,7 +20,6 @@ interface PageLoaderProps {
 }
 
 export function PageLoader({ message, compact = false }: PageLoaderProps) {
-  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
@@ -31,9 +29,6 @@ export function PageLoader({ message, compact = false }: PageLoaderProps) {
     const timer = setTimeout(() => setShowContent(true), 50);
     return () => clearTimeout(timer);
   }, []);
-
-  const isDark = mounted && (resolvedTheme === 'dark' || resolvedTheme === 'charcoal');
-  const logoSrc = isDark ? '/assets/Revvup_logo_White.svg' : '/assets/Revvup_logo_Black.svg';
 
   if (compact) {
     return (
@@ -50,17 +45,17 @@ export function PageLoader({ message, compact = false }: PageLoaderProps) {
         showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
       )}>
         {/* Logo */}
-        <div className="relative">
-          <Image
-            src={logoSrc}
+        <div
+          aria-label="Revvup"
+          className={cn(
+            'relative text-zinc-900 transition-opacity duration-300 dark:text-white',
+            mounted ? 'opacity-90' : 'opacity-0'
+          )}
+        >
+          <img
+            src={BRAND_LOGO_SVG}
             alt="Revvup"
-            width={160}
-            height={50}
-            priority
-            className={cn(
-              'h-14 w-auto transition-opacity duration-300',
-              mounted ? 'opacity-90' : 'opacity-0'
-            )}
+            className="h-14 w-auto invert dark:invert-0"
           />
         </div>
         

@@ -7,6 +7,7 @@
 import { Metadata } from 'next';
 import { AlternativesView } from '@/components/pages/alternatives/alternatives-view';
 import { faqData } from '@/data/faq-data';
+import { BRAND_LOGO_SCHEMA_URL } from '@/lib/brand-assets';
 
 // Get user FAQ items that are relevant to alternatives/comparison
 const userFaqItems = faqData.find((cat) => cat.id === 'users')?.items || [];
@@ -111,7 +112,7 @@ const articleSchema = {
     name: 'Revvup',
     logo: {
       '@type': 'ImageObject',
-      url: 'https://revvup.ae/icons/icon-512x512.png',
+      url: BRAND_LOGO_SCHEMA_URL,
     },
   },
   datePublished: '2026-01-15',

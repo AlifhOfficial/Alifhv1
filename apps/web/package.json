@@ -9,6 +9,7 @@
     "dev": "next dev -H 0.0.0.0 --turbo",
     "build": "next build",
     "start": "next start",
+    "generate:icons": "node ./scripts/generate-brand-icon-kit.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",

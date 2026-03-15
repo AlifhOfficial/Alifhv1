@@ -1,10 +1,9 @@
 /**
  * Logo Component
- * Theme-aware logo using pure CSS for instant switching
- * No JS-based theme detection to avoid hydration mismatches
+ * Shared canonical brand SVG wrapper.
  */
 
-import Image from "next/image";
+import { BRAND_LOGO_SVG } from "@/lib/brand-assets";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -16,22 +15,16 @@ interface LogoProps {
 
 export function Logo({ className, width = 100, height = 30, priority = false }: LogoProps) {
   return (
-    <span className={cn("inline-block", className)}>
-      <Image
-        src="/assets/Revvup_logo_Black.svg"
+    <span
+      aria-label="Revvup"
+      className={cn("inline-flex items-center text-zinc-900 dark:text-white", className)}
+      style={{ width, height }}
+      data-priority={priority ? "true" : undefined}
+    >
+      <img
+        src={BRAND_LOGO_SVG}
         alt="Revvup"
-        width={width}
-        height={height}
-        className="dark:hidden"
-        priority={priority}
-      />
-      <Image
-        src="/assets/Revvup_logo_White.svg"
-        alt="Revvup"
-        width={width}
-        height={height}
-        className="hidden dark:block"
-        priority={priority}
+        className="block h-full w-full object-contain invert dark:invert-0"
       />
     </span>
   );

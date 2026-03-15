@@ -9,6 +9,7 @@ import { useState } from "react";
 import { X, Fingerprint, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth/client";
+import { BRAND_LOGO_SVG } from "@/lib/brand-assets";
 
 interface SignInModalProps {
   open: boolean;
@@ -76,18 +77,14 @@ export function SignInModal({
         <div className="hidden md:flex w-[320px] relative bg-black flex-shrink-0 flex-col justify-between p-10">
           {/* Revvup Text - Top */}
           <div>
-            <h3 className="text-2xl font-extrabold text-white tracking-[-0.03em] italic">
-              Revvup.
+            <h3 className="wordmark-geom text-white" style={{ fontSize: 18 }}>
+              Revvup
             </h3>
           </div>
           
           {/* Logo - Center */}
           <div className="flex-1 flex items-center justify-center">
-            <img 
-              src="/assets/Revvup_logo_White.svg" 
-              alt="Revvup"
-              className="h-12 w-auto"
-            />
+            <img src={BRAND_LOGO_SVG} alt="Revvup" className="h-12 w-auto" />
           </div>
           
           {/* Tagline - Bottom */}

@@ -6,6 +6,8 @@
  * @see https://developers.google.com/search/docs/appearance/structured-data/vehicle-listing
  */
 
+import { BRAND_LOGO_SCHEMA_URL } from '@/lib/brand-assets';
+
 interface ListingForSchema {
   id: string;
   slug?: string | null;
@@ -179,8 +181,8 @@ export function generateOrganizationSchema() {
     '@type': 'Organization',
     name: 'Revvup',
     url: 'https://revvup.ae',
-    logo: 'https://revvup.ae/icons/icon-512x512.png',
-    description: 'UAE\'s transparent car marketplace. Buy and sell cars with no fees for private sellers. No commission.',
+    logo: BRAND_LOGO_SCHEMA_URL,
+    description: 'Revvup is a UAE car marketplace where buyers browse for free and dealers list on a flat subscription — no commissions, no pay-to-rank, no hidden fees.',
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'AE',

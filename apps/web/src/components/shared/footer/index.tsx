@@ -10,7 +10,6 @@ import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import { footerSections, footerBottomLinks } from '@/lib/navigation';
-import { Logo } from '@/components/shared/logo';
 
 function SellLink({ className }: { className?: string }) {
   const router = useRouter();
@@ -55,7 +54,9 @@ export function Footer() {
             {/* Brand */}
             <div className="flex-shrink-0">
               <Link href="/">
-                <Logo width={100} height={30} />
+                <span className="wordmark-geom text-foreground" style={{ fontSize: 40 }}>
+                  Revvup
+                </span>
               </Link>
               <p className="text-sm text-muted-foreground/60 mt-3 max-w-[200px]">
                 More than a marketplace.<br />Join the Revolution.

@@ -16,14 +16,28 @@ import { generateOrganizationSchema } from '@/lib/seo-schema';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Buy and Sell Cars in Dubai | Free Forever | Revvup',
-  description: 'Buy and sell new and used cars in Dubai. Free for private sellers. No fees, no ads, no paid boosts. Book test drives online. A better alternative car marketplace.',
-  keywords: 'sell my car dubai, sell car uae, used cars for sale dubai, buy used car dubai, second hand cars dubai, free car listing uae, list car free dubai, car marketplace dubai, cars for sale uae, buying used car dubai, dubai used cars, best place to sell car dubai, dubizzle alternative, dubicars alternative, yallmotors alternative, cars24 alternative, shoofi alternative, ayeshi alternative, car marketplace uae, automotive classifieds dubai',
+  title: 'Revvup — Buy & Sell Cars in the UAE | Free. Forever.',
+  description: 'The UAE\'s car marketplace built for dealers and buyers. No commissions. No listing fees. Quality-based rankings. Free forever. revvup.ae',
+  keywords: 'UAE car marketplace, buy cars Dubai, sell cars UAE, used cars Dubai, car listings UAE, no commission car platform',
   openGraph: {
-    title: 'Buy and Sell Cars in Dubai | Free Forever | Revvup',
-    description: 'Buy and sell new and used cars in Dubai. Free for private sellers. No fees, no ads. Book test drives online.',
+    title: 'Revvup — More than a marketplace.',
+    description: 'UAE\'s first flat-subscription car marketplace. Dealers pay one price, rank on quality — not payment. Free for buyers. Forever.',
     type: 'website',
     url: 'https://revvup.ae',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'Revvup UAE car marketplace — buy and sell cars free',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Revvup — More than a marketplace.',
+    description: 'UAE\'s first flat-subscription car marketplace. Dealers pay one price, rank on quality — not payment. Free for buyers. Forever.',
+    images: ['/twitter-image'],
   },
   alternates: {
     canonical: 'https://revvup.ae',

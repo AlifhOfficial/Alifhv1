@@ -13,7 +13,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Moon } from "lucide-react";
@@ -207,53 +206,53 @@ export function Navbar() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-40 bg-background">
-        <div className="flex items-center justify-between h-14 sm:h-16 max-w-[1600px] mx-auto px-4 sm:px-6">
-            {/* Logo - suppressHydrationWarning prevents Safari hydration issues with theme-based visibility */}
-            <Link href="/" className="flex items-center mr-8" suppressHydrationWarning>
-              <Image
-                src="/assets/Revvup_logo_Black.svg"
-                alt="Revvup"
-                width={20}
-                height={20}
-                className="h-5 w-auto dark:hidden"
-                priority
+        <div className="flex h-14 items-center max-w-[1600px] mx-auto px-4 sm:h-16 sm:px-6">
+            <div className="flex min-w-0 flex-1 items-baseline">
+              <Link
+                href="/"
+                className="inline-flex flex-shrink-0 items-baseline pr-8 sm:pr-10"
                 suppressHydrationWarning
-              />
-              <Image
-                src="/assets/Revvup_logo_White.svg"
-                alt="Revvup"
-                width={20}
-                height={20}
-                className="h-5 w-auto hidden dark:block"
-                priority
-                suppressHydrationWarning
-              />
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-1 flex-1">
-              {navItems.map((item) => (
-                <div 
-                  key={item.label}
-                  onMouseEnter={() => item.submenu && !item.hideSubmenu && handleDropdownOpen(item.label)}
-                  onMouseLeave={() => item.submenu && !item.hideSubmenu && handleDropdownClose()}
+              >
+                <span
+                  aria-label="Revvup"
+                  className="text-zinc-900 dark:text-white"
+                  suppressHydrationWarning
                 >
-                  <Link
-                    href={item.href}
-                    className={`px-4 py-2 text-[15px] font-semibold tracking-tight transition-colors rounded-md block ${
-                      pathname === item.href
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
+                  <span
+                    className="wordmark-geom block leading-none"
+                    style={{ fontSize: 18 }}
                   >
-                    {item.label}
-                  </Link>
-                </div>
-              ))}
+                    Revvup
+                  </span>
+                </span>
+              </Link>
+
+              {/* Desktop Navigation */}
+              <div className="hidden lg:flex items-baseline gap-1">
+                {navItems.map((item) => (
+                  <div 
+                    key={item.label}
+                    className="flex items-baseline"
+                    onMouseEnter={() => item.submenu && !item.hideSubmenu && handleDropdownOpen(item.label)}
+                    onMouseLeave={() => item.submenu && !item.hideSubmenu && handleDropdownClose()}
+                  >
+                    <Link
+                      href={item.href}
+                      className={`inline-flex items-baseline rounded-md px-4 py-2.5 text-[15px] font-semibold leading-none tracking-tight transition-colors ${
+                        pathname === item.href
+                          ? "text-foreground"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <span className="block">{item.label}</span>
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-2">
+            <div className="ml-auto flex flex-shrink-0 items-center gap-2">
               {/* Messaging - Only show when authenticated and mounted (prevents hydration mismatch) */}
               {mounted && isAuthenticated && user?.id && (
                 <NavbarMessaging userId={user.id} onOpenChat={openChat} />

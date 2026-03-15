@@ -14,6 +14,7 @@ import {
   PartnerClosingSection,
 } from '@/components/pages/partner';
 import { Metadata } from 'next';
+import { BRAND_LOGO_SCHEMA_URL } from '@/lib/brand-assets';
 
 export const metadata: Metadata = {
   title: 'Dealer Partner Program — 0% Commission, Unlimited Listings | Revvup',
@@ -40,7 +41,7 @@ const serviceSchema = {
     '@type': 'Organization',
     name: 'Revvup',
     url: 'https://revvup.ae',
-    logo: 'https://revvup.ae/icons/icon-512x512.png',
+    logo: BRAND_LOGO_SCHEMA_URL,
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'AE',

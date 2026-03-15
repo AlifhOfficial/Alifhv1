@@ -7,6 +7,7 @@
 import { Metadata } from 'next';
 import { DealerPartnersView } from '@/components/pages/dealer-partners/dealer-partners-view';
 import { faqData } from '@/data/faq-data';
+import { BRAND_LOGO_SCHEMA_URL } from '@/lib/brand-assets';
 
 // Get partner FAQ items for schema
 const partnerFaqItems = faqData.find((cat) => cat.id === 'partners')?.items || [];
@@ -118,7 +119,7 @@ const serviceSchema = {
     '@type': 'Organization',
     name: 'Revvup',
     url: 'https://revvup.ae',
-    logo: 'https://revvup.ae/icons/icon-512x512.png',
+    logo: BRAND_LOGO_SCHEMA_URL,
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'AE',

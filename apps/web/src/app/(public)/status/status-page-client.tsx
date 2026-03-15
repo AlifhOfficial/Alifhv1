@@ -135,6 +135,9 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
       <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10 space-y-4">
+            <p className="wordmark-geom text-lg text-foreground">
+              Revvup
+            </p>
             <span className="text-sm font-semibold uppercase tracking-wider text-primary">
               System Status
             </span>

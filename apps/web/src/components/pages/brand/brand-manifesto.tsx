@@ -6,9 +6,10 @@
 
 'use client';
 
-import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { CheckCircle2 } from 'lucide-react';
+import { BRAND_LOGO_SVG } from '@/lib/brand-assets';
+import { cn } from '@/lib/utils';
 import { MacOSWindow } from '@/components/ui/macos-window';
 
 // ============================================================================
@@ -17,9 +18,7 @@ import { MacOSWindow } from '@/components/ui/macos-window';
 
 function BrandHero() {
   const { resolvedTheme } = useTheme();
-  const logoSrc = resolvedTheme === 'light' 
-    ? '/assets/Revvup_logo_Black.svg' 
-    : '/assets/Revvup_logo_White.svg';
+  const isDark = resolvedTheme !== 'light';
 
   return (
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
@@ -37,7 +36,7 @@ function BrandHero() {
 
         {/* Hero Infographic - Logo in macOS window */}
         <div className="mb-12">
-          <LogoShowcaseInfographic logoSrc={logoSrc} />
+          <LogoShowcaseInfographic isDark={isDark} />
         </div>
 
         {/* Description */}
@@ -72,7 +71,7 @@ function BrandHero() {
 // LOGO SHOWCASE INFOGRAPHIC
 // ============================================================================
 
-function LogoShowcaseInfographic({ logoSrc }: { logoSrc: string }) {
+function LogoShowcaseInfographic({ isDark }: { isDark: boolean }) {
   return (
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
       {/* CSS Animations */}
@@ -88,12 +87,10 @@ function LogoShowcaseInfographic({ logoSrc }: { logoSrc: string }) {
             className="relative w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 xl:w-80 xl:h-80"
             style={{ animation: 'logo-pulse 4s ease-in-out infinite' }}
           >
-            <Image
-              src="/assets/Revvup_logo_White.svg"
+            <img
+              src={BRAND_LOGO_SVG}
               alt="Revvup"
-              fill
-              className="object-contain"
-              priority
+              className={cn('h-full w-auto', !isDark && 'invert')}
             />
           </div>
       </MacOSWindow>
@@ -226,11 +223,10 @@ function LogoVariantsInfographic() {
           {/* Light variant */}
           <div className="w-full md:w-1/2 bg-white flex flex-col items-center justify-center p-8 sm:p-12 lg:p-20 min-h-[220px] sm:min-h-[300px] lg:min-h-[400px]">
             <div className="relative w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 xl:w-48 xl:h-48">
-              <Image
-                src="/assets/Revvup_logo_Black.svg"
+              <img
+                src={BRAND_LOGO_SVG}
                 alt="Revvup Logo Dark"
-                fill
-                className="object-contain"
+                className="h-full w-auto invert"
               />
             </div>
             <span className="text-[10px] sm:text-xs lg:text-sm text-black/40 font-medium mt-4 sm:mt-6">Light backgrounds</span>
@@ -239,11 +235,10 @@ function LogoVariantsInfographic() {
           {/* Dark variant */}
           <div className="w-full md:w-1/2 bg-black flex flex-col items-center justify-center p-8 sm:p-12 lg:p-20 min-h-[220px] sm:min-h-[300px] lg:min-h-[400px] border-t md:border-t-0 md:border-l border-white/10">
             <div className="relative w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 xl:w-48 xl:h-48">
-              <Image
-                src="/assets/Revvup_logo_White.svg"
+              <img
+                src={BRAND_LOGO_SVG}
                 alt="Revvup Logo Light"
-                fill
-                className="object-contain"
+                className="h-full w-auto"
               />
             </div>
             <span className="text-[10px] sm:text-xs lg:text-sm text-white/40 font-medium mt-4 sm:mt-6">Dark backgrounds</span>
@@ -422,8 +417,8 @@ function ClosingInfographic() {
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
       <MacOSWindow showUrlBar={false} contentClassName="flex items-center justify-center min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] p-6 sm:p-10 lg:p-16">
           <div className="text-center">
-            <p className="text-5xl sm:text-7xl lg:text-9xl font-bold text-white tracking-tight">
-              Revvup.
+            <p className="wordmark-geom text-5xl sm:text-7xl lg:text-9xl text-white">
+              Revvup
             </p>
           </div>
       </MacOSWindow>

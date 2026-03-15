@@ -11,6 +11,7 @@ import {
 } from '@/components/pages/pricing';
 import { Metadata } from 'next';
 import { faqData } from '@/data/faq-data';
+import { BRAND_LOGO_SCHEMA_URL } from '@/lib/brand-assets';
 
 // Get pricing FAQ items for schema
 const pricingFaqItems = faqData.find((cat) => cat.id === 'pricing')?.items || [];
@@ -69,7 +70,7 @@ const serviceSchema = {
     '@type': 'Organization',
     name: 'Revvup',
     url: 'https://revvup.ae',
-    logo: 'https://revvup.ae/icons/icon-512x512.png',
+    logo: BRAND_LOGO_SCHEMA_URL,
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'AE',
