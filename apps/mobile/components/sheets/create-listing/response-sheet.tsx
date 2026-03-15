@@ -181,9 +181,6 @@ export function ResponseSheet({
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
       handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.container}>
         {/* Icon */}

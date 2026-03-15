@@ -227,9 +227,6 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <View style={styles.container}>
         {/* Loading / Message Overlay */}

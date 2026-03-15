@@ -239,8 +239,8 @@ export function CreateListingFlow({
       bottomSheetRef.current?.dismiss();
       
       if (approved) {
-        // AI moderation passed - show listing detail
-        router.replace(`/listing/${listingId}`);
+        // AI moderation passed - match web and return to inventory
+        router.replace('/inventory');
       } else if (isDraft) {
         // Saved as draft - go to inventory drafts tab
         router.replace('/inventory?tab=draft');
@@ -308,9 +308,6 @@ export function CreateListingFlow({
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <View style={styles.container}>
         {/* Fixed Header Section */}

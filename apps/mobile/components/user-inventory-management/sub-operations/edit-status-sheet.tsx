@@ -99,7 +99,7 @@ const ACTION_ROWS: ActionRow[] = [
   },
   {
     key: 'view_stats',
-    label: 'View Stats',
+    label: 'View Insights',
     icon: BarChart3,
     color: (c) => c.text,
     // Only show stats for listings that were/are live (approved)
@@ -254,9 +254,6 @@ export function EditStatusSheet({
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
       handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
-      detached
-      bottomInset={insets.bottom + 20}
-      style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}

@@ -128,9 +128,6 @@ export function AuthSheet({
       backgroundStyle={{ backgroundColor: colors.blkBackground, borderRadius: Radius['3xl'] }}
       handleIndicatorStyle={{ backgroundColor: colors.blkTextSecondary, width: Sizes.bubble }}
       containerStyle={{ zIndex: 100 }}
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
         {/* Doodle Background */}

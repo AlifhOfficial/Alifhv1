@@ -238,9 +238,6 @@ export function ModelFilterSheet({
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <View style={styles.content}>
         {/* Header */}

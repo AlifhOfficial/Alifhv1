@@ -88,9 +88,6 @@ export function SuperlikeConfirmationSheet({
       backdropComponent={renderBackdrop}
       handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      style={styles.sheetContainer}
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
@@ -207,9 +204,6 @@ export function SuperlikeQuotaExhaustedSheet({
       backdropComponent={renderBackdrop}
       handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      style={styles.sheetContainer}
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}

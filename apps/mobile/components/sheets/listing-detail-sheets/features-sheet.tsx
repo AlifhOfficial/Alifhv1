@@ -84,9 +84,6 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <View style={styles.content}>
         <View style={styles.header}>

@@ -157,9 +157,6 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       {/* Fixed Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>

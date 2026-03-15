@@ -643,6 +643,7 @@ export function InventoryScreen() {
             listingTitle={selectedTitle}
             listingThumbnail={selectedListing.thumbnail}
             viewCount={selectedListing.viewCount ?? 0}
+            impressionCount={selectedListing.impressionCount ?? 0}
             favouriteCount={selectedListing.favouriteCount ?? 0}
             superlikeCount={selectedListing.superlikeCount ?? 0}
           />

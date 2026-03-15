@@ -93,9 +93,6 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}

@@ -134,9 +134,6 @@ export function PriceFilterSheet({
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       stackBehavior="push"
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}

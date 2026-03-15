@@ -390,9 +390,6 @@ export const BookingSheet = memo(function BookingSheet({
       handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
         {/* Confetti overlay */}

@@ -78,9 +78,6 @@ export function SellerDescriptionSheet({ visible, onClose, description, sellerNa
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
       handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <View style={styles.content}>
         {/* Header */}

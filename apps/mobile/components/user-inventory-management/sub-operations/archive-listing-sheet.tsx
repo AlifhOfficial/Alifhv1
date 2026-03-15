@@ -116,9 +116,6 @@ export function ArchiveListingSheet({
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
       handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
-      detached
-      bottomInset={insets.bottom + 20}
-      style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}

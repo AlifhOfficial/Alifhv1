@@ -596,9 +596,6 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <View style={styles.container}>
         {/* Fixed Header with Search + Apply */}

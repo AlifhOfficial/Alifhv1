@@ -150,6 +150,7 @@ export interface MyListingCard {
   isArchived: boolean;
   // Engagement
   viewCount: number;
+  impressionCount: number;
   favouriteCount: number;
   superlikeCount: number;
   // Timestamps
@@ -393,6 +394,7 @@ function transformMyListingCard(raw: any): MyListingCard {
     lifecycleStatus: raw.lifecycleStatus ?? 'active',
     isArchived: raw.isArchived ?? raw.lifecycleStatus === 'archived',
     viewCount: raw.viewCount ?? 0,
+    impressionCount: raw.impressionCount ?? 0,
     favouriteCount: raw.favouriteCount ?? 0,
     superlikeCount: raw.superlikeCount ?? 0,
     createdAt: raw.createdAt,

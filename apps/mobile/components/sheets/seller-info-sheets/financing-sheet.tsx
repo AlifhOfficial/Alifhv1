@@ -103,9 +103,6 @@ export function FinancingSheet({
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}

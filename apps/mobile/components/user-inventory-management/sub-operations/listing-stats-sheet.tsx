@@ -1,8 +1,9 @@
 /**
- * ListingStatsSheet — Engagement statistics view
+ * ListingStatsSheet — Listing insights view
  *
- * Clean bottom sheet showing views, saves, and superlikes
- * for a single listing. Opened via the "View Stats" action in
+ * Clean bottom sheet showing views, impressions, CTR,
+ * saves, and superlikes for a single listing. Opened via
+ * the "View Insights" action in
  * EditStatusSheet.
  */
 
@@ -12,9 +13,9 @@ import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { Eye, Heart, Zap } from 'lucide-react-native';
+import { Eye, Heart, Zap, MousePointerClick, Flame } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getThumbUrl } from '@/lib/config';
 import { Heading, Body, Data, Supporting } from '@/components/ui';
@@ -27,6 +28,7 @@ export interface ListingStatsSheetProps {
   listingTitle: string;
   listingThumbnail?: string | null;
   viewCount: number;
+  impressionCount: number;
   favouriteCount: number;
   superlikeCount: number;
 }
@@ -39,6 +41,34 @@ function formatCount(n: number): string {
   return String(n);
 }
 
+function calculateHotScore({
+  viewCount,
+  impressionCount,
+  favouriteCount,
+  superlikeCount,
+}: {
+  viewCount: number;
+  impressionCount: number;
+  favouriteCount: number;
+  superlikeCount: number;
+}): number {
+  const ctr = impressionCount > 0 ? viewCount / impressionCount : 0;
+  const engagement = viewCount > 0 ? (favouriteCount + superlikeCount * 2) / viewCount : 0;
+
+  const ctrScore = Math.min(ctr * 1000, 50);
+  const engagementScore = Math.min(engagement * 1000, 40);
+  const volumeBonus = Math.min(Math.log10(viewCount + 1) * 5, 10);
+
+  return Math.round(ctrScore + engagementScore + volumeBonus);
+}
+
+function getHotLevel(score: number): { label: string; color: string } {
+  if (score >= 70) return { label: 'Hot', color: '#F97316' };
+  if (score >= 40) return { label: 'Warm', color: '#F59E0B' };
+  if (score >= 20) return { label: 'Active', color: '#10B981' };
+  return { label: 'New', color: '#9CA3AF' };
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function ListingStatsSheet({
@@ -47,6 +77,7 @@ export function ListingStatsSheet({
   listingTitle,
   listingThumbnail,
   viewCount,
+  impressionCount,
   favouriteCount,
   superlikeCount,
 }: ListingStatsSheetProps) {
@@ -55,7 +86,7 @@ export function ListingStatsSheet({
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => ['38%'], []);
+  const snapPoints = useMemo(() => ['52%'], []);
 
   useEffect(() => {
     if (visible) {
@@ -85,11 +116,29 @@ export function ListingStatsSheet({
     [],
   );
 
+  const ctr = useMemo(
+    () => (impressionCount > 0 ? ((viewCount / impressionCount) * 100).toFixed(1) : '0.0'),
+    [impressionCount, viewCount]
+  );
+
+  const hotScore = useMemo(
+    () => calculateHotScore({ viewCount, impressionCount, favouriteCount, superlikeCount }),
+    [viewCount, impressionCount, favouriteCount, superlikeCount]
+  );
+
+  const hotLevel = useMemo(() => getHotLevel(hotScore), [hotScore]);
+
   const stats = [
     {
       label: 'Views',
       value: viewCount,
       icon: Eye,
+      color: colors.textSecondary,
+    },
+    {
+      label: 'Impressions',
+      value: impressionCount,
+      icon: MousePointerClick,
       color: colors.textSecondary,
     },
     {
@@ -115,14 +164,11 @@ export function ListingStatsSheet({
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
       handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
-      detached
-      bottomInset={insets.bottom + 20}
-      style={styles.sheetContainer}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">Stats</Heading>
+          <Heading size="medium">Insights</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -147,6 +193,25 @@ export function ListingStatsSheet({
           <Data size="small" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
             {listingTitle}
           </Data>
+        </View>
+
+        <View style={styles.metricsGrid}>
+          <View style={[styles.metricCard, { backgroundColor: colors.fillSecondary }]}>
+            <Supporting size="small">Click Rate</Supporting>
+            <View style={styles.metricValueRow}>
+              <Data size="large">{ctr}%</Data>
+            </View>
+          </View>
+
+          <View style={[styles.metricCard, { backgroundColor: colors.fillSecondary }]}>
+            <Supporting size="small">Engagement</Supporting>
+            <View style={styles.metricValueRow}>
+              <Flame size={Sizes.iconSm} color={hotLevel.color} />
+              <Data size="large" style={{ color: hotLevel.color }}>
+                {hotLevel.label}
+              </Data>
+            </View>
+          </View>
         </View>
 
         {/* Stat rows */}
@@ -190,9 +255,6 @@ export function ListingStatsSheet({
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  sheetContainer: {
-    marginHorizontal: Layout.screenPadding,
-  },
   content: {
     paddingHorizontal: Spacing.lg,
   },
@@ -227,6 +289,23 @@ const styles = StyleSheet.create({
   },
   statsList: {
     gap: 0,
+  },
+  metricsGrid: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    marginBottom: Spacing.sm,
+  },
+  metricCard: {
+    flex: 1,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.lg,
+    gap: Spacing.xs,
+  },
+  metricValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
   },
   statRow: {
     flexDirection: 'row',
