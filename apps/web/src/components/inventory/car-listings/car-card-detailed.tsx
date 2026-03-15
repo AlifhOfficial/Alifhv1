@@ -23,7 +23,7 @@ import {
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/lib/utils';
-import { getListingImageUrls } from '@/utils/storage';
+import { getAppListingImageUrls } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
 import { SuperlikeLimitDialog } from '@/components/engagement/favorites/superlike-limit-dialog';
@@ -99,7 +99,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
   const resolvedImages = useMemo(
     () =>
       validImages
-        .map((img) => getListingImageUrls(img))
+        .map((img) => getAppListingImageUrls(img))
         .filter((img): img is { thumb: string; full: string } => Boolean(img.full && img.thumb)),
     [validImages]
   );

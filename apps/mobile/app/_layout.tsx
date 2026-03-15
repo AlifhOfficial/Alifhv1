@@ -14,7 +14,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState, useMemo } from 'react';
-import { Modal, View, LogBox, Platform } from 'react-native';
+import { Modal, View, LogBox, Platform, InteractionManager } from 'react-native';
 import 'react-native-reanimated';
 
 // Suppress warnings from third-party dependencies that can't be fixed in user code
@@ -146,9 +146,22 @@ function RootLayoutNav() {
   
   // Set native root view background color (fixes Android black flash during transitions)
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      SystemUI.setBackgroundColorAsync(colors.background);
+    if (Platform.OS !== 'android') {
+      return;
     }
+
+    let interactionTask: ReturnType<typeof InteractionManager.runAfterInteractions> | null = null;
+
+    const frameId = requestAnimationFrame(() => {
+      interactionTask = InteractionManager.runAfterInteractions(() => {
+        SystemUI.setBackgroundColorAsync(colors.background).catch(() => {});
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      interactionTask?.cancel();
+    };
   }, [colors.background]);
   
   // Memoize navigation theme to prevent full re-renders

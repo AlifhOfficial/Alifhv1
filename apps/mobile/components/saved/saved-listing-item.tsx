@@ -10,7 +10,7 @@ import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { Radius, Sizes, Spacing, Typography } from '@/constants/theme';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import { Data, Supporting, Price, Label, Body } from '@/components/ui';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors } from './types';
@@ -87,7 +87,7 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
       <View style={styles.imageContainer}>
         {listing.thumbnail ? (
           <Image
-            source={{ uri: getThumbUrl(listing.thumbnail) || listing.thumbnail }}
+            source={{ uri: getAppThumbUrl(listing.thumbnail) || listing.thumbnail }}
             style={styles.image}
             contentFit="cover"
             transition={200}

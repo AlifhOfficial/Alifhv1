@@ -20,8 +20,10 @@ export default function TabLayout() {
       <Tabs
         tabBar={() => null}
         screenOptions={{
+          freezeOnBlur: true,
           headerShown: false,
         }}
+        detachInactiveScreens
       />
     </View>
   );

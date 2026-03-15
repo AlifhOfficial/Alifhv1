@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/utils';
-import { getThumbUrl } from '@/utils/storage';
+import { getAppThumbUrl } from '@/utils/storage';
 import type { UserBookingData } from './types';
 
 interface UserBookingCardProps {
@@ -85,7 +85,7 @@ export function UserBookingCard({
     const cutoffTime = new Date(scheduledTime.getTime() - 2 * 60 * 60 * 1000);
     return new Date() < cutoffTime;
   };
-  const listingThumbnailUrl = getThumbUrl(booking.listingThumbnail);
+  const listingThumbnailUrl = getAppThumbUrl(booking.listingThumbnail);
 
   return (
     <div className="group relative">

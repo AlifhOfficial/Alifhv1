@@ -1,34 +1,37 @@
-import avatarMock from '../../../public/Marketing/avatarmock.png';
-import m3 from '../../../public/Marketing/m3.jpeg';
-import m4 from '../../../public/Marketing/m4.jpeg';
-import m5 from '../../../public/Marketing/m5.jpeg';
-import m6 from '../../../public/Marketing/m6.jpeg';
-import m7 from '../../../public/Marketing/m7.jpeg';
-import m8 from '../../../public/Marketing/m8.jpeg';
-import m12 from '../../../public/Marketing/m12.jpeg';
-import m14 from '../../../public/Marketing/m14.jpeg';
-import m15 from '../../../public/Marketing/m15.jpeg';
-import m17 from '../../../public/Marketing/m17.jpeg';
+import { getStaticUrl } from '@/utils/storage';
 
-import homescreen from '../../../public/Abstract/homescreen.png';
-import mk1 from '../../../public/Abstract/mk1.png';
-import revvupab2 from '../../../public/Abstract/revvupab2.png';
-import revx from '../../../public/Abstract/revx.jpg';
-import revx2 from '../../../public/Abstract/revx2.jpg';
-import revx3 from '../../../public/Abstract/revx3.jpg';
-import revx4 from '../../../public/Abstract/revx4.jpg';
-import revx6 from '../../../public/Abstract/revx6.jpg';
-import revx7 from '../../../public/Abstract/revx7.png';
-import revx9 from '../../../public/Abstract/revx9.jpg';
-import rsxx2 from '../../../public/Abstract/rsxx2.png';
-import rsxx5 from '../../../public/Abstract/rsxx5.png';
-import signin from '../../../public/Abstract/signin.png';
+const marketingAsset = (name: string) => getStaticUrl(`/marketing/${name}.webp`);
 
-import pillarDiplomacyGlobal from '../../../public/Marketing/vision_page/pillar-diplomacy-global.jpg';
-import pillarEconomyGrowth from '../../../public/Marketing/vision_page/pillar-economy-growth.jpg';
-import pillarEcosystemDigital from '../../../public/Marketing/vision_page/pillar-ecosystem-digital.jpg';
-import pillarSocietyTrust from '../../../public/Marketing/vision_page/pillar-society-trust.jpg';
-import visionHeroUae2031 from '../../../public/Marketing/vision_page/vision-hero-uae2031.jpg';
+const avatarMock = marketingAsset('avatarmock');
+const homescreen = marketingAsset('homescreen');
+const m3 = marketingAsset('m3');
+const m4 = marketingAsset('m4');
+const m5 = marketingAsset('m5');
+const m6 = marketingAsset('m6');
+const m7 = marketingAsset('m7');
+const m8 = marketingAsset('m8');
+const m12 = marketingAsset('m12');
+const m14 = marketingAsset('m14');
+const m15 = marketingAsset('m15');
+const m17 = marketingAsset('m17');
+const mk1 = marketingAsset('mk1');
+const pillarDiplomacyGlobal = marketingAsset('pillar-diplomacy-global');
+const pillarEconomyGrowth = marketingAsset('pillar-economy-growth');
+const pillarEcosystemDigital = marketingAsset('pillar-ecosystem-digital');
+const pillarSocietyTrust = marketingAsset('pillar-society-trust');
+const revvupab2 = marketingAsset('revvupab2');
+const revx = marketingAsset('revx');
+const revx0 = marketingAsset('revx0');
+const revx2 = marketingAsset('revx2');
+const revx3 = marketingAsset('revx3');
+const revx4 = marketingAsset('revx4');
+const revx6 = marketingAsset('revx6');
+const revx7 = marketingAsset('revx7');
+const revx9 = marketingAsset('revx02');
+const rsxx2 = marketingAsset('rsxx2');
+const rsxx5 = marketingAsset('rsxx5');
+const signin = marketingAsset('signin');
+const visionHeroUae2031 = marketingAsset('vision-hero-uae2031');
 
 export {
   avatarMock,
@@ -50,6 +53,7 @@ export {
   pillarSocietyTrust,
   revvupab2,
   revx,
+  revx0,
   revx2,
   revx3,
   revx4,

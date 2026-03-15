@@ -88,25 +88,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/Abstract/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/Marketing/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/Marketing_Media/:path*',
+        source: '/marketing/:path*',
         headers: [
           {
             key: 'Cache-Control',

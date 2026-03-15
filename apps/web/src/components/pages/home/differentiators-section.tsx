@@ -5,7 +5,7 @@
 
 'use client';
 
-import Image from 'next/image';
+import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import Link from 'next/link';
 import { CircleDollarSign, Ban, CalendarCheck, Layout, CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';

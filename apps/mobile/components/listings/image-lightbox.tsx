@@ -30,16 +30,20 @@ const THUMBNAIL_SIZE = Sizes.cardThumbnailWidth * 0.35; // ~56
 
 interface ImageLightboxProps {
   images: string[];
+  previewImages?: string[];
   currentIndex: number;
   isOpen: boolean;
+  useModal?: boolean;
   onClose: () => void;
   onIndexChange: (index: number) => void;
 }
 
 export function ImageLightbox({
   images,
+  previewImages,
   currentIndex,
   isOpen,
+  useModal = true,
   onClose,
   onIndexChange,
 }: ImageLightboxProps) {
@@ -107,14 +111,8 @@ export function ImageLightbox({
     return null;
   }
 
-  return (
-    <Modal
-      visible={isOpen}
-      animationType="fade"
-      presentationStyle="fullScreen"
-      onRequestClose={onClose}
-      statusBarTranslucent
-    >
+  const content = (
+    <>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
       <View style={styles.container}>
         {/* Header */}
@@ -155,9 +153,11 @@ export function ImageLightbox({
             <View style={styles.imageContainer}>
               <Image
                 source={{ uri: item }}
+                placeholder={previewImages?.[index] ? { uri: previewImages[index] } : undefined}
                 style={styles.fullImage}
                 contentFit="contain"
-                transition={200}
+                transition={100}
+                cachePolicy="memory-disk"
               />
             </View>
           )}
@@ -199,6 +199,22 @@ export function ImageLightbox({
           />
         </View>
       </View>
+    </>
+  );
+
+  if (!useModal) {
+    return content;
+  }
+
+  return (
+    <Modal
+      visible={isOpen}
+      animationType="fade"
+      presentationStyle="fullScreen"
+      onRequestClose={onClose}
+      statusBarTranslucent
+    >
+      {content}
     </Modal>
   );
 }

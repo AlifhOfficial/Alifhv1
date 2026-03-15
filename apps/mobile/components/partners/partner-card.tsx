@@ -11,7 +11,7 @@ import { MapPin, Star, Car, CheckCircle2, Calendar } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import { 
   HapticPressable,
   Skeleton, 
@@ -107,7 +107,7 @@ export const PartnerCard = memo(function PartnerCard({
   // Derived display values
   const logoUrl = partner.logoUrl || partner.logo;
   const rawHeroUrl = partner.heroImageUrl || partner.heroImage;
-  const heroUrl = getThumbUrl(rawHeroUrl) || rawHeroUrl;
+  const heroUrl = getAppThumbUrl(rawHeroUrl) || rawHeroUrl;
   const location = [partner.city, partner.emirate ? formatEmirate(partner.emirate) : null]
     .filter(Boolean)
     .join(', ');

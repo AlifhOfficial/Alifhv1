@@ -13,7 +13,7 @@ import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X, Phone, 
 import { useMemo, useState, useEffect, useCallback, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { cn } from "@/utils";
-import { getThumbUrl } from "@/utils/storage";
+import { getAppThumbUrl } from "@/utils/storage";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const BOOKING_TIME_ZONE = 'Asia/Dubai';
@@ -512,9 +512,9 @@ export function PartnerBookingsClient({
                   <div className="flex gap-4 p-4">
                     {/* Image */}
                     <div className="relative w-28 sm:w-36 aspect-[4/3] flex-shrink-0 overflow-hidden rounded-lg bg-muted/20">
-                      {getThumbUrl(booking.listingThumbnail) ? (
+                      {getAppThumbUrl(booking.listingThumbnail) ? (
                         <img
-                          src={getThumbUrl(booking.listingThumbnail)!}
+                          src={getAppThumbUrl(booking.listingThumbnail)!}
                           alt={booking.listingTitle}
                           className="w-full h-full object-cover"
                         />

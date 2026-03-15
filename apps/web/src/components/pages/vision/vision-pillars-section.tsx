@@ -5,7 +5,7 @@
 
 'use client';
 
-import Image from 'next/image';
+import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { Users, Shield, TrendingUp, Globe, Cpu, Leaf, Building2, CheckCircle2, Heart, Scale } from 'lucide-react';
 import {
   pillarDiplomacyGlobal,

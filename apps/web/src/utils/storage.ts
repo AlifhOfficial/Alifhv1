@@ -20,8 +20,9 @@ const CDN_HOSTS = new Set(
   ['cdn.revvup.ae', R2_PUBLIC_HOST].filter((value): value is string => Boolean(value))
 );
 
-/** CDN base URL for static assets (public folder) */
-const CDN_STATIC_URL = process.env.NEXT_PUBLIC_CDN_STATIC_URL;
+/** CDN base URL for marketing/static assets served directly from R2/CDN */
+const rawMarketingCdnUrl = process.env.NEXT_PUBLIC_CDN_MARKETING_URL || process.env.NEXT_PUBLIC_CDN_STATIC_URL;
+const CDN_STATIC_URL = rawMarketingCdnUrl?.replace(/\/static\/?$/, '');
 
 /**
  * Returns true when a URL points at our direct image CDN / R2 public host.
@@ -39,21 +40,20 @@ export function isCdnUrl(url: unknown): url is string {
 }
 
 /**
- * Get CDN URL for static assets from the public folder.
+ * Get CDN URL for static marketing assets from the public folder.
  * 
- * In production, serves files from cdn.revvup.ae/static/... instead of the Next.js server.
- * This offloads bandwidth from Railway to Cloudflare edge caching.
+ * In production, serves files from cdn.revvup.ae/marketing/... instead of the Next.js server.
  * 
- * Set NEXT_PUBLIC_CDN_STATIC_URL=https://cdn.revvup.ae/static in production.
+ * Set NEXT_PUBLIC_CDN_MARKETING_URL=https://cdn.revvup.ae in production.
  * Leave unset in development to serve from Next.js public folder.
  * 
- * @param path - Path relative to public folder (e.g., "/Marketing/Hero_img.png")
+ * @param path - Path relative to public folder (e.g., "/marketing/hero-image.webp")
  * @returns CDN URL in production, original path in development
  * 
  * @example
- * getStaticUrl("/Marketing/Hero_img.png") 
- * // Dev: "/Marketing/Hero_img.png"
- * // Prod: "https://cdn.revvup.ae/static/Marketing/Hero_img.png"
+ * getStaticUrl("/marketing/hero-image.webp") 
+ * // Dev: "/marketing/hero-image.webp"
+ * // Prod: "https://cdn.revvup.ae/marketing/hero-image.webp"
  */
 export function getStaticUrl(path: string): string {
   if (!path) return path;
@@ -201,6 +201,23 @@ export function getCdnThumbUrl(url: string | null | undefined, cacheBuster?: str
 }
 
 /**
+ * App image resolution policy:
+ * - user-uploaded / storage-backed app images should resolve directly to our CDN
+ * - non-CDN absolute URLs are not valid for app-served images
+ */
+export function getAppImageUrl(key: string | null | undefined, cacheBuster?: string | number): string | null {
+  return getCdnPublicUrl(key, cacheBuster);
+}
+
+/**
+ * App thumbnail resolution policy:
+ * - cards, rows, and compact surfaces should use CDN thumbs directly
+ */
+export function getAppThumbUrl(url: string | null | undefined, cacheBuster?: string | number): string | null {
+  return getCdnThumbUrl(url, cacheBuster);
+}
+
+/**
  * Get listing image URLs with both thumb and full variants.
  * Useful for responsive images where thumb is used for grid cards
  * and full is used for detail pages/lightbox.
@@ -235,6 +252,14 @@ export function getListingImageUrls(url: string | null | undefined): { thumb: st
     thumb: publicUrl,
     full: publicUrl,
   };
+}
+
+/**
+ * Strict app-only listing image resolution.
+ * Returns CDN-backed thumb/full variants only.
+ */
+export function getAppListingImageUrls(url: string | null | undefined): { thumb: string | null; full: string | null } {
+  return getCdnListingImageUrls(url);
 }
 
 /**

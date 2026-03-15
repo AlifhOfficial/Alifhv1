@@ -11,7 +11,7 @@ import { Image } from 'expo-image';
 import { CheckCircle2, Star, Clock } from 'lucide-react-native';
 
 import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import { Label, Heading, Supporting, Data, Text } from '@/components/ui';
 import type { SellerHeroProps } from './types';
 import { formatMemberSince } from './utils';
@@ -23,8 +23,8 @@ const LOGO_SIZE = Sizes.avatarLg + Spacing.lg; // 64
 
 export const SellerHero = memo(function SellerHero({ seller, colors, topInset }: SellerHeroProps) {
   // Convert to CDN URLs
-  const heroImageUrl = seller.heroImage ? (getThumbUrl(seller.heroImage) || seller.heroImage) : null;
-  const avatarUrl = seller.avatar ? (getThumbUrl(seller.avatar) || seller.avatar) : null;
+  const heroImageUrl = seller.heroImage ? (getAppThumbUrl(seller.heroImage) || seller.heroImage) : null;
+  const avatarUrl = seller.avatar ? (getAppThumbUrl(seller.avatar) || seller.avatar) : null;
   const hasHeroImage = heroImageUrl && seller.isDealer;
   
   return (

@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getThumbUrl } from '@/utils/storage';
+import { getAppThumbUrl } from '@/utils/storage';
 
 interface ConsignmentFunnel {
   id: string;
@@ -138,9 +138,9 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
                 <div className="rounded-lg border border-sidebar-border bg-sidebar overflow-hidden hover:border-sidebar-border/80 hover:shadow-md transition-all">
                   {/* Image */}
                   <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
-                    {getThumbUrl(listing.thumbnail) ? (
+                    {getAppThumbUrl(listing.thumbnail) ? (
                       <img
-                        src={getThumbUrl(listing.thumbnail)!}
+                        src={getAppThumbUrl(listing.thumbnail)!}
                         alt={`${listing.year} ${listing.make} ${listing.model}`}
                         className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                         loading="lazy"

@@ -24,7 +24,7 @@
  */
 
 import * as React from "react";
-import { cn, getPublicUrl } from "@/utils";
+import { cn, getAppImageUrl } from "@/utils";
 
 interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   /** 
@@ -94,7 +94,7 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
       const avatarSource = directSrc || profileAvatar;
       if (!avatarSource) return null;
       const cacheBuster = updatedAt ? new Date(updatedAt).getTime() : undefined;
-      return getPublicUrl(avatarSource, cacheBuster);
+      return getAppImageUrl(avatarSource, cacheBuster);
     }, [directSrc, profileAvatar, updatedAt]);
 
     // Reset error state when src changes

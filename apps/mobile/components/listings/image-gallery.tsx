@@ -20,7 +20,7 @@ import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { getThumbUrl, getPublicUrl } from '@/lib/config';
+import { getAppListingImageUrls } from '@/lib/config';
 import { Skeleton, Data, ButtonText } from '@/components/ui';
 import { ImageLightbox } from './image-lightbox';
 import { ImageGridModal } from './image-grid-modal';
@@ -52,14 +52,14 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
   );
   
   // Full URLs for lightbox (high-res viewing)
-  const fullImages = useMemo(() => 
-    validImages.map(img => getPublicUrl(img) || img),
+  const fullImages = useMemo(
+    () => validImages.map((img) => getAppListingImageUrls(img).full).filter((img): img is string => Boolean(img)),
     [validImages]
   );
   
   // Thumb URLs for carousel and grid (optimized for bandwidth)
-  const thumbImages = useMemo(() => 
-    validImages.map(img => getThumbUrl(img) || getPublicUrl(img) || img),
+  const thumbImages = useMemo(
+    () => validImages.map((img) => getAppListingImageUrls(img).thumb).filter((img): img is string => Boolean(img)),
     [validImages]
   );
   
@@ -87,15 +87,6 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
   const onViewAllPress = useCallback(() => {
     Haptics.selectionAsync();
     setGridModalOpen(true);
-  }, []);
-
-  const onGridImageClick = useCallback((index: number) => {
-    setGridModalOpen(false);
-    setCurrentIndex(index);
-    setTimeout(() => {
-      flatListRef.current?.scrollToIndex({ index, animated: false });
-      setLightboxOpen(true);
-    }, 100);
   }, []);
 
   if (allImages.length === 0) {
@@ -203,26 +194,29 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         </HapticPressable>
       </View>
 
+      {/* Grid Modal - uses thumbs for grid, lightbox opens full-res */}
+      {gridModalOpen ? (
+        <ImageGridModal
+          images={thumbImages}
+          fullImages={fullImages}
+          isOpen={gridModalOpen}
+          title={title}
+          currentIndex={currentIndex}
+          onClose={() => setGridModalOpen(false)}
+          onIndexChange={setCurrentIndex}
+        />
+      ) : null}
+
       {/* Lightbox Modal - uses full-res images */}
       {lightboxOpen ? (
         <ImageLightbox
           images={fullImages}
+          previewImages={thumbImages}
           currentIndex={currentIndex}
           isOpen={lightboxOpen}
           title={title}
           onClose={() => setLightboxOpen(false)}
           onIndexChange={setCurrentIndex}
-        />
-      ) : null}
-
-      {/* Grid Modal - uses thumbs for grid, lightbox opens full-res */}
-      {gridModalOpen ? (
-        <ImageGridModal
-          images={thumbImages}
-          isOpen={gridModalOpen}
-          title={title}
-          onClose={() => setGridModalOpen(false)}
-          onImageClick={onGridImageClick}
         />
       ) : null}
     </View>

@@ -28,7 +28,7 @@ import {
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -322,7 +322,7 @@ export function InventoryScreen() {
           : null;
 
       const rawDisplayImage = item.thumbnail || item.images?.[0];
-      const displayImage = getThumbUrl(rawDisplayImage) || rawDisplayImage;
+      const displayImage = getAppThumbUrl(rawDisplayImage) || rawDisplayImage;
       const canViewPublicDetail = canOpenPublicListing(item.moderationStatus, item.lifecycleStatus);
 
       return (

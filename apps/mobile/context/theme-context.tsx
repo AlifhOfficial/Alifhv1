@@ -3,8 +3,8 @@
  * Integrates with device preferences and persists user choice
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
-import { useColorScheme as useDeviceColorScheme, Appearance, Platform } from 'react-native';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode, startTransition } from 'react';
+import { useColorScheme as useDeviceColorScheme, Appearance, Platform, InteractionManager } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as NavigationBar from 'expo-navigation-bar';
 
@@ -55,7 +55,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   // Persist theme preference when changed (non-blocking)
   const setThemeMode = useCallback((mode: ThemeMode) => {
-    setThemeModeState(mode);
+    startTransition(() => {
+      setThemeModeState(mode);
+    });
     // Fire-and-forget storage update - don't block UI
     AsyncStorage.setItem(THEME_STORAGE_KEY, mode).catch(() => {});
   }, []);
@@ -85,31 +87,41 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // PERF: Defer native calls to avoid blocking theme switch animation
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
-    // Defer native bridge calls so UI updates first
+    let interactionTask: ReturnType<typeof InteractionManager.runAfterInteractions> | null = null;
+
+    // Let the React repaint land before running native bridge work.
     const frameId = requestAnimationFrame(() => {
-      if (Platform.OS === 'android') {
-        // Nav bar button colors (light/dark icons) for 3-button navigation
-        // Has no effect on gesture navigation - Android provides no API for that
-        NavigationBar.setStyle(colorScheme === 'dark' ? 'dark' : 'light');
-      }
-      if (Platform.OS === 'ios') {
-        // Keyboard, alerts, action sheets, pickers
-        Appearance.setColorScheme(themeMode === 'system' ? null : themeMode);
-      }
+      interactionTask = InteractionManager.runAfterInteractions(() => {
+        if (Platform.OS === 'android') {
+          // Nav bar button colors (light/dark icons) for 3-button navigation
+          // Has no effect on gesture navigation - Android provides no API for that
+          NavigationBar.setStyle(colorScheme === 'dark' ? 'dark' : 'light');
+        }
+        if (Platform.OS === 'ios') {
+          // Keyboard, alerts, action sheets, pickers
+          Appearance.setColorScheme(themeMode === 'system' ? null : themeMode);
+        }
+      });
     });
-    return () => cancelAnimationFrame(frameId);
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      interactionTask?.cancel();
+    };
   }, [themeMode, colorScheme]);
 
   const toggleTheme = useCallback(() => {
     // Toggle between light and dark (explicit choice, not system)
-    setThemeModeState(prev => {
-      const current = prev === 'system' ? (deviceColorScheme ?? 'dark') : prev;
-      const next = current === 'light' ? 'dark' : 'light';
-      // Fire-and-forget storage update
-      AsyncStorage.setItem(THEME_STORAGE_KEY, next).catch(() => {});
-      return next;
+    const current = themeMode === 'system' ? (deviceColorScheme ?? 'dark') : themeMode;
+    const next = current === 'light' ? 'dark' : 'light';
+
+    startTransition(() => {
+      setThemeModeState(next);
     });
-  }, [deviceColorScheme]);
+
+    // Fire-and-forget storage update
+    AsyncStorage.setItem(THEME_STORAGE_KEY, next).catch(() => {});
+  }, [deviceColorScheme, themeMode]);
 
   // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({

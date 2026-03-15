@@ -23,7 +23,7 @@ import { Combobox } from '@/components/ui/forms/combobox';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { useDebouncedCallback } from 'use-debounce';
-import { getThumbUrl } from '@/utils/storage';
+import { getAppThumbUrl } from '@/utils/storage';
 import { FunnelMatchesView } from '@/components/staff/consignment/funnel-matches-view';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -607,9 +607,9 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
                   <div className="rounded-lg border border-border/40 bg-card overflow-hidden hover:border-border/60 hover:shadow-md transition-all">
                     {/* Image */}
                     <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
-                      {getThumbUrl(listing.thumbnail) ? (
+                      {getAppThumbUrl(listing.thumbnail) ? (
                         <img
-                          src={getThumbUrl(listing.thumbnail)!}
+                          src={getAppThumbUrl(listing.thumbnail)!}
                           alt=""
                           className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                           loading="lazy"

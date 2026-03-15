@@ -9,7 +9,7 @@ import { View, Image, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Body, Data, Supporting } from '@/components/ui';
 import { LocationBubble } from './location-bubble';
@@ -101,7 +101,7 @@ export function MessageBubble({
           >
             {listing.thumbnail ? (
               <Image
-                source={{ uri: getThumbUrl(listing.thumbnail) || listing.thumbnail }}
+                source={{ uri: getAppThumbUrl(listing.thumbnail) || listing.thumbnail }}
                 style={styles.listingImage}
                 resizeMode="cover"
               />

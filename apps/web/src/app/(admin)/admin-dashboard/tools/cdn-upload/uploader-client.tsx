@@ -26,16 +26,11 @@ interface UploadedFile {
 }
 
 const FOLDERS = [
-  { value: 'Marketing', label: 'Marketing' },
-  { value: 'Marketing_Media', label: 'Marketing Media' },
-  { value: 'Labeled_Cars', label: 'Labeled Cars' },
-  { value: 'Black_cars', label: 'Black Cars' },
-  { value: 'Abstract', label: 'Abstract' },
-  { value: 'uploads', label: 'General Uploads' },
+  { value: 'marketing', label: 'Marketing' },
 ];
 
 export function R2UploaderClient() {
-  const [folder, setFolder] = useState('uploads');
+  const [folder, setFolder] = useState('marketing');
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -151,7 +146,7 @@ export function R2UploaderClient() {
           </Select>
         </div>
         <div className="text-sm text-muted-foreground pt-6">
-          Files uploaded to: <code className="bg-muted px-1.5 py-0.5 rounded">static/{folder}/</code>
+          Files uploaded to: <code className="bg-muted px-1.5 py-0.5 rounded">{folder}/</code>
         </div>
       </div>
 
@@ -282,7 +277,7 @@ export function R2UploaderClient() {
       <div className="rounded-lg bg-muted/30 border p-4 text-sm">
         <h4 className="font-medium mb-2">URL Pattern</h4>
         <code className="block bg-muted px-3 py-2 rounded text-xs">
-          {process.env.NEXT_PUBLIC_R2_PUBLIC_URL || 'https://cdn.revvup.ae'}/static/{folder}/[filename]
+          {process.env.NEXT_PUBLIC_R2_PUBLIC_URL || 'https://cdn.revvup.ae'}/{folder}/[filename]
         </code>
         <p className="mt-2 text-muted-foreground">
           Files are cached at edge locations worldwide with 1-year cache headers.

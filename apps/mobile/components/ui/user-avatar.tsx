@@ -13,7 +13,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Sizes, Spacing, Typography } from '@/constants/theme';
-import { getPublicUrl } from '@/lib/config';
+import { getAppImageUrl } from '@/lib/config';
 import { Body } from './text';
 
 interface UserAvatarProps {
@@ -85,7 +85,7 @@ export function UserAvatar({
   const fontSize = fontSizes[size];
 
   // Convert storage key to CDN URL if needed
-  const resolvedSrc = src ? getPublicUrl(src) : null;
+  const resolvedSrc = src ? getAppImageUrl(src) : null;
 
   // Show image if available, otherwise show initials
   const showImage = resolvedSrc && !imageError;

@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { Share2, Heart, Zap, CheckCircle2 } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { cn } from '@/lib/utils';
-import { getThumbUrl } from '@/utils/storage';
+import { getAppThumbUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
@@ -108,7 +108,7 @@ export function CarListItem({
   };
 
   // Use thumb URL for list items (480w, ~30-90KB) - bandwidth optimization
-  const displayImage = getThumbUrl(thumbnail || images?.[0]);
+  const displayImage = getAppThumbUrl(thumbnail || images?.[0]);
   const displaySpecs = formatSpecs(specs || 'GCC');
   const displayEmirate = formatEmirate(emirate);
   const displaySellerName = partnerName || sellerName || 'Private Seller';

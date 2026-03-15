@@ -14,7 +14,7 @@ import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import { 
   HapticPressable,
   Skeleton, 
@@ -214,14 +214,14 @@ export const CarCardM = memo(function CarCardM({
 
   // Derived display values - use thumb URL for optimized card display
   const rawImage = thumbnail || images?.[0];
-  const displayImage = getThumbUrl(rawImage) || rawImage;
+  const displayImage = getAppThumbUrl(rawImage) || rawImage;
   const displaySpecs = formatSpecs(specs || 'GCC');
   const displayEmirate = formatEmirate(emirate);
   const displaySellerName = partnerName || sellerName || 'Private Seller';
   const isVerified = partnerVerified || kycVerified;
   const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
   const rawSellerAvatar = partnerLogo || sellerAvatarUrl;
-  const sellerAvatar = getThumbUrl(rawSellerAvatar) || rawSellerAvatar;
+  const sellerAvatar = getAppThumbUrl(rawSellerAvatar) || rawSellerAvatar;
 
   // Handlers
   const handlePress = useCallback(() => {

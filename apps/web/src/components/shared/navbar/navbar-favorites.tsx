@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useFavoritesStatus } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import Link from 'next/link';
-import { getThumbUrl } from '@/utils/storage';
+import { getAppThumbUrl } from '@/utils/storage';
 
 interface NavbarFavoritesProps {
   userId?: string;
@@ -203,7 +203,7 @@ interface FavoritePreviewItemProps {
 
 function FavoritePreviewItem({ listing, onClose }: FavoritePreviewItemProps) {
   const { id, make, model, year, price, thumbnail } = listing;
-  const thumbnailUrl = getThumbUrl(thumbnail);
+  const thumbnailUrl = getAppThumbUrl(thumbnail);
   
   const title = [year, make, model].filter(Boolean).join(' ') || 'Vehicle';
   const priceText = price ? `AED ${price.toLocaleString()}` : 'Price TBD';

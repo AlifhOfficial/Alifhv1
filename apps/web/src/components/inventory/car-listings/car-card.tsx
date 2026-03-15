@@ -11,7 +11,7 @@ import { Share2, Heart, CheckCircle2, Zap } from 'lucide-react';
 import { useFavorite, useSuperlike } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import { cn } from '@/utils';
-import { getThumbUrl } from '@/utils/storage';
+import { getAppThumbUrl } from '@/utils/storage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { SuperlikeConfirmationDialog } from '@/components/engagement/favorites/superlike-confirmation-dialog';
@@ -126,7 +126,7 @@ export function CarCard({
 }: CarCardProps) {
   // Derived display values
   // Use thumb URL for grid cards (480w, ~30-90KB) - bandwidth optimization
-  const displayImage = getThumbUrl(thumbnail || images?.[0]);
+  const displayImage = getAppThumbUrl(thumbnail || images?.[0]);
   const displaySpecs = formatSpecs(specs || 'GCC');
   const displayEmirate = formatEmirate(emirate);
   const displaySellerName = partnerName || sellerName || 'Private Seller';

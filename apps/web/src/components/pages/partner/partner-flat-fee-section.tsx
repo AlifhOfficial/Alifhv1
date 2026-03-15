@@ -5,7 +5,7 @@
 
 'use client';
 
-import Image from 'next/image';
+import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
 import { avatarMock, m14, m15, m17 } from '@/components/pages/marketing-image-assets';

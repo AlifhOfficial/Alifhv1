@@ -97,6 +97,26 @@ export const CDN_BASE = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.revvup.a
 
 // CDN URL for avatars and media (R2 custom domain)
 export const R2_PUBLIC_URL = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.revvup.ae';
+const CDN_HOSTS = new Set(
+  [CDN_BASE, R2_PUBLIC_URL].map((value) => {
+    try {
+      return new URL(value).hostname;
+    } catch {
+      return null;
+    }
+  }).filter((value): value is string => Boolean(value))
+);
+
+export function isCdnUrl(url: unknown): url is string {
+  if (typeof url !== 'string') return false;
+  if (!url.startsWith('http://') && !url.startsWith('https://')) return false;
+
+  try {
+    return CDN_HOSTS.has(new URL(url).hostname);
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Convert a storage key or partial URL to full public CDN URL.
@@ -124,7 +144,29 @@ export function getPublicUrl(key: string | null | undefined, cacheBuster?: numbe
  * Handles null values and already-full URLs
  */
 export function getAvatarUrl(key: string | null | undefined, cacheBuster?: number): string | null {
-  return getPublicUrl(key, cacheBuster);
+  return getAppImageUrl(key, cacheBuster);
+}
+
+/**
+ * App image resolution policy:
+ * - user-uploaded / storage-backed app images should resolve directly to our CDN
+ * - non-CDN absolute URLs are not valid for app-served images
+ */
+export function getAppImageUrl(key: string | null | undefined, cacheBuster?: number): string | null {
+  if (!key) return null;
+
+  if (key.startsWith('/')) {
+    return null;
+  }
+
+  if (key.startsWith('http://') || key.startsWith('https://')) {
+    return isCdnUrl(key)
+      ? (cacheBuster ? `${key}${key.includes('?') ? '&' : '?'}v=${cacheBuster}` : key)
+      : null;
+  }
+
+  const baseUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${key}`;
+  return cacheBuster ? `${baseUrl}?v=${cacheBuster}` : baseUrl;
 }
 
 /**
@@ -162,6 +204,27 @@ export function getThumbUrl(url: string | null | undefined): string | null {
 }
 
 /**
+ * App thumbnail resolution policy:
+ * - cards, rows, and compact surfaces should use CDN thumbs directly
+ */
+export function getAppThumbUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+
+  const fullUrl = getAppImageUrl(url);
+  if (!fullUrl) return null;
+
+  if (fullUrl.includes('_full.webp')) {
+    return fullUrl.replace('_full.webp', '_thumb.webp');
+  }
+
+  if (fullUrl.includes('_full.jpg')) {
+    return fullUrl.replace('_full.jpg', '_thumb.jpg');
+  }
+
+  return fullUrl;
+}
+
+/**
  * Get listing image URLs with both thumb and full variants.
  * Useful for galleries where thumb is used for grid/thumbnails
  * and full is used for main view/lightbox.
@@ -189,6 +252,36 @@ export function getListingImageUrls(url: string | null | undefined): { thumb: st
   }
   
   // Legacy image - use same URL for both
+  return {
+    thumb: publicUrl,
+    full: publicUrl,
+  };
+}
+
+/**
+ * Strict app-only listing image resolution.
+ * Returns CDN-backed thumb/full variants only.
+ */
+export function getAppListingImageUrls(url: string | null | undefined): { thumb: string | null; full: string | null } {
+  if (!url) return { thumb: null, full: null };
+
+  const publicUrl = getAppImageUrl(url);
+  if (!publicUrl) return { thumb: null, full: null };
+
+  if (publicUrl.includes('_full.webp')) {
+    return {
+      thumb: publicUrl.replace('_full.webp', '_thumb.webp'),
+      full: publicUrl,
+    };
+  }
+
+  if (publicUrl.includes('_full.jpg')) {
+    return {
+      thumb: publicUrl.replace('_full.jpg', '_thumb.jpg'),
+      full: publicUrl,
+    };
+  }
+
   return {
     thumb: publicUrl,
     full: publicUrl,

@@ -7,7 +7,7 @@
 'use client';
 
 import { useState } from 'react';
-import { getPublicUrl } from '@/utils';
+import { getAppImageUrl } from '@/utils';
 
 interface BrandHeroProps {
   heroImageUrl?: string | null;
@@ -35,9 +35,7 @@ export function BrandHero({
   
   // Resolve URL with cache busting
   const resolvedUrl = heroImageUrl
-    ? (heroImageUrl.startsWith('http://') || heroImageUrl.startsWith('https://')
-        ? heroImageUrl
-        : getPublicUrl(heroImageUrl, updatedAt ? new Date(updatedAt).getTime() : undefined))
+    ? getAppImageUrl(heroImageUrl, updatedAt ? new Date(updatedAt).getTime() : undefined)
     : null;
 
   return (

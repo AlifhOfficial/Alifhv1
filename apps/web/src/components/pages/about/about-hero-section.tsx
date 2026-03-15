@@ -5,7 +5,7 @@
 
 'use client';
 
-import Image from 'next/image';
+import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { revx } from '@/components/pages/marketing-image-assets';
 
 export function AboutHeroSection() {

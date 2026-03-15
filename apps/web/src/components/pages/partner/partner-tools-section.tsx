@@ -5,7 +5,7 @@
 
 'use client';
 
-import Image from 'next/image';
+import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { Calendar, BarChart3, Package, Filter } from 'lucide-react';
 import { mk1 } from '@/components/pages/marketing-image-assets';
 

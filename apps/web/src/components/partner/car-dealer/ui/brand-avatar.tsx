@@ -13,7 +13,7 @@
 'use client';
 
 import * as React from 'react';
-import { cn, getPublicUrl } from '@/utils';
+import { cn, getAppImageUrl } from '@/utils';
 
 interface BrandAvatarProps {
   /** Logo storage key or full URL */
@@ -62,14 +62,8 @@ export function BrandAvatar({
   // Otherwise resolve storage key to public URL
   const resolvedUrl = React.useMemo(() => {
     if (!logoUrl) return null;
-    // Already a full URL - use as-is (API already added cache buster)
-    if (logoUrl.startsWith('http://') || logoUrl.startsWith('https://')) {
-      return logoUrl;
-    }
-    // Storage key - convert to URL with cache buster
-    // Don't use Date.now() as fallback - causes hydration mismatch (server vs client time differs)
     const cacheBuster = updatedAt ? new Date(updatedAt).getTime() : undefined;
-    return getPublicUrl(logoUrl, cacheBuster);
+    return getAppImageUrl(logoUrl, cacheBuster);
   }, [logoUrl, updatedAt]);
 
   // Reset error state when URL changes

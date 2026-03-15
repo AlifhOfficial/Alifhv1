@@ -5,9 +5,10 @@
 
 'use client';
 
-import Image from 'next/image';
+import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { Clock, PenLine, Zap, Timer } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
+import { revx0 } from '@/components/pages/marketing-image-assets';
 
 export function FeaturesSection() {
   return (
@@ -120,7 +121,7 @@ function BuiltInDubaiInfographic() {
 
       <div className="relative w-full md:w-[48%] aspect-[4/3] sm:aspect-[16/10] md:aspect-auto min-h-[220px] sm:min-h-[280px] md:min-h-0 max-w-[520px] md:max-w-none mx-auto">
         <Image
-          src="/Abstract/revx0.png"
+          src={revx0}
           alt="Revvup marketplace preview"
           fill
           className="object-contain object-center"

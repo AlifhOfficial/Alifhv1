@@ -5,7 +5,7 @@
 
 'use client';
 
-import Image from 'next/image';
+import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { CheckCircle2 } from 'lucide-react';
 import { m4, m5 } from '@/components/pages/marketing-image-assets';
 

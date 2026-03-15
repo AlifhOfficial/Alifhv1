@@ -7,7 +7,7 @@
 
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { cn } from '@/utils/cn';
-import { getThumbUrl } from '@/utils/storage';
+import { getAppThumbUrl } from '@/utils/storage';
 import { formatDistanceToNow } from 'date-fns';
 import type { Message } from '@/hooks/messaging';
 import { X } from 'lucide-react';
@@ -100,9 +100,9 @@ export function MessageBubble({
             href={`/listings/${listing.id}`}
             className="mb-1.5 sm:mb-2 max-w-[240px] sm:max-w-[280px] rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm block hover:border-primary/50 hover:shadow-md transition-all"
           >
-            {getThumbUrl(listing.thumbnail) ? (
+            {getAppThumbUrl(listing.thumbnail) ? (
               <img 
-                src={getThumbUrl(listing.thumbnail)!} 
+                src={getAppThumbUrl(listing.thumbnail)!} 
                 alt={listing.title} 
                 className="w-full aspect-[4/3] object-cover" 
               />

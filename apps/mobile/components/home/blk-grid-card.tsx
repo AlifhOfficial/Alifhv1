@@ -12,7 +12,7 @@ import { useRouter } from 'expo-router';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import { HapticPressable, Heading, Supporting, Skeleton, Data, FavoriteButton } from '@/components/ui';
 
 // ============================================================================
@@ -58,7 +58,7 @@ interface ProductItemProps {
 }
 
 const ProductItem = memo(function ProductItem({ listing, colors, onPress, onFavorite }: ProductItemProps) {
-  const imageUri = getThumbUrl(listing.thumbnail) || listing.thumbnail;
+  const imageUri = getAppThumbUrl(listing.thumbnail) || listing.thumbnail;
 
   return (
     <HapticPressable onPress={() => onPress(listing.id)} style={[styles.product, { backgroundColor: colors.oledWhite }]}>

@@ -3,7 +3,7 @@
  * Native mobile implementation
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   View,
@@ -22,6 +22,7 @@ import * as Haptics from 'expo-haptics';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Supporting, Data } from '@/components/ui';
+import { ImageLightbox } from './image-lightbox';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_GAP = Spacing.sm;
@@ -29,34 +30,58 @@ const PADDING = Spacing.md;
 
 interface ImageGridModalProps {
   images: string[];
+  fullImages?: string[];
   isOpen: boolean;
   title?: string;
+  currentIndex?: number;
   onClose: () => void;
-  onImageClick: (index: number) => void;
+  onIndexChange?: (index: number) => void;
 }
 
 export function ImageGridModal({
   images,
+  fullImages,
   isOpen,
   title = 'All Photos',
+  currentIndex = 0,
   onClose,
-  onImageClick,
+  onIndexChange,
 }: ImageGridModalProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+  const [selectedIndex, setSelectedIndex] = useState(currentIndex);
+  const [showLightbox, setShowLightbox] = useState(false);
 
   const validImages = useMemo(() => 
     images.filter(img => img && typeof img === 'string' && img.trim().length > 0),
     [images]
   );
+  const validFullImages = useMemo(
+    () => (fullImages ?? images).filter(img => img && typeof img === 'string' && img.trim().length > 0),
+    [fullImages, images]
+  );
 
   const totalImages = validImages.length;
 
-  const handleImagePress = (index: number) => {
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedIndex(currentIndex);
+      setShowLightbox(false);
+    }
+  }, [isOpen]);
+
+  const handleImagePress = useCallback((index: number) => {
     Haptics.selectionAsync();
-    onImageClick(index);
-  };
+    setSelectedIndex(index);
+    onIndexChange?.(index);
+    setShowLightbox(true);
+  }, [onIndexChange]);
+
+  const handleLightboxIndexChange = useCallback((index: number) => {
+    setSelectedIndex(index);
+    onIndexChange?.(index);
+  }, [onIndexChange]);
 
   // Build bento grid rows
   const buildRows = () => {
@@ -252,37 +277,51 @@ export function ImageGridModal({
   return (
     <Modal
       visible={isOpen}
-      animationType="slide"
+      animationType="fade"
       presentationStyle="fullScreen"
       onRequestClose={onClose}
       statusBarTranslucent
     >
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        {/* Header */}
-        <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.background, borderBottomColor: colors.glassBorder }]}>
-          <Supporting size="small">
-            {totalImages} photos
-          </Supporting>
-          <HapticPressable
-            onPress={onClose}
-            style={[styles.closeButton, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}
-            hitSlop={Layout.hitSlop}
-          >
-            {({ pressed }) => (
-              <X size={Sizes.iconMd} color={colors.text} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
-            )}
-          </HapticPressable>
-        </View>
+        {showLightbox ? (
+          <ImageLightbox
+            images={validFullImages}
+            previewImages={validImages}
+            currentIndex={selectedIndex}
+            isOpen={showLightbox}
+            useModal={false}
+            onClose={() => setShowLightbox(false)}
+            onIndexChange={handleLightboxIndexChange}
+          />
+        ) : (
+          <>
+            {/* Header */}
+            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.background, borderBottomColor: colors.glassBorder }]}>
+              <Supporting size="small">
+                {totalImages} photos
+              </Supporting>
+              <HapticPressable
+                onPress={onClose}
+                style={[styles.closeButton, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}
+                hitSlop={Layout.hitSlop}
+              >
+                {({ pressed }) => (
+                  <X size={Sizes.iconMd} color={colors.text} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+                )}
+              </HapticPressable>
+            </View>
 
-        {/* Image Grid */}
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={[styles.grid, { paddingBottom: insets.bottom + Spacing['2xl'] }]}
-          showsVerticalScrollIndicator={false}
-        >
-          {buildRows()}
-        </ScrollView>
+            {/* Image Grid */}
+            <ScrollView
+              style={styles.scrollView}
+              contentContainerStyle={[styles.grid, { paddingBottom: insets.bottom + Spacing['2xl'] }]}
+              showsVerticalScrollIndicator={false}
+            >
+              {buildRows()}
+            </ScrollView>
+          </>
+        )}
       </View>
     </Modal>
   );

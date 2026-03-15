@@ -5,7 +5,7 @@
 
 'use client';
 
-import Image from 'next/image';
+import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { Car, CreditCard, Wrench, BookOpen, Calendar, Tag } from 'lucide-react';
 import { revx4 } from '@/components/pages/marketing-image-assets';
 

@@ -12,7 +12,7 @@ import { useRouter } from 'expo-router';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import { HapticPressable, Heading, Data, Supporting, Skeleton, Label, FavoriteButton } from '@/components/ui';
 import { type PartnerListItem } from '@/lib/partner-api';
 import { type ListingCard } from '@/lib/search-api';
@@ -76,7 +76,7 @@ interface ProductCardProps {
 }
 
 const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavorite, isBlkPartner }: ProductCardProps) {
-  const imageUri = getThumbUrl(listing.thumbnail) || listing.thumbnail;
+  const imageUri = getAppThumbUrl(listing.thumbnail) || listing.thumbnail;
 
   return (
     <HapticPressable onPress={() => onPress(listing.id)} style={[styles.product, { backgroundColor: colors.oledWhite }]}>
@@ -157,7 +157,7 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
         {partner.logo ? (
           <View style={[styles.avatar, { backgroundColor: colors.surface }]}>
             <Image
-              source={{ uri: getThumbUrl(partner.logo) || partner.logo }}
+              source={{ uri: getAppThumbUrl(partner.logo) || partner.logo }}
               style={styles.avatarImage}
               contentFit="cover"
               transition={150}

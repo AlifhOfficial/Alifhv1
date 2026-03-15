@@ -36,7 +36,7 @@ import {
 
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import {
   Heading,
   Body,
@@ -181,7 +181,7 @@ export function BookingsScreen() {
           <View style={[styles.imageContainer, { backgroundColor: colors.backgroundSecondary }]}>
             {item.listingThumbnail ? (
               <Image
-                source={{ uri: getThumbUrl(item.listingThumbnail) || item.listingThumbnail }}
+                source={{ uri: getAppThumbUrl(item.listingThumbnail) || item.listingThumbnail }}
                 style={styles.image}
                 contentFit="cover"
                 transition={150}

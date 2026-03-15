@@ -1,6 +1,6 @@
 /**
- * R2 Static Asset Upload API with Image Processing
- * Upload static assets (images, videos) to R2 via drag-drop GUI
+ * R2 Marketing Asset Upload API with Image Processing
+ * Upload marketing assets to R2 via drag-drop GUI
  * 
  * Images are automatically processed to WebP for CDN optimization
  * unless skipProcessing=true is passed (for pre-optimized assets)
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
-    const folder = (formData.get("folder") as string) || "uploads";
+    const folder = (formData.get("folder") as string) || "marketing";
     const customKey = formData.get("key") as string | null;
     const skipProcessing = formData.get("skipProcessing") === "true"; // Allow bypassing for pre-optimized assets
 
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     // Process raster images to WebP (skip SVGs and videos)
     if (isImage && !isSvg && !isVideo && !skipProcessing) {
       try {
-        // Uses centralized quality settings, only override size for marketing assets
+        // Uses centralized quality settings, tuned for marketing assets
         const { buffer: processedBuffer } = await processSingleImage(buffer, {
           maxWidth: 1920,  // Full HD for static marketing assets
           maxHeight: 1920,
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         finalContentType = "image/webp";
         finalFileName = file.name.replace(/\.[^.]+$/, ".webp");
         
-        console.log(`[static-upload] Processed: ${detectedFormat} → webp, ${buffer.length} → ${processedBuffer.length} bytes`);
+        console.log(`[marketing-upload] Processed: ${detectedFormat} → webp, ${buffer.length} → ${processedBuffer.length} bytes`);
       } catch (err) {
         if (err instanceof ImageValidationError) {
           const status = err.code === 'FILE_TOO_LARGE' ? 413 
@@ -94,14 +94,14 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: err.message }, { status });
         }
         // For other errors, log and continue with original
-        console.error("[static-upload] Image processing failed, uploading original:", err);
+        console.error("[marketing-upload] Image processing failed, uploading original:", err);
         processedData = buffer;
       }
     }
     
     // Generate key
     const sanitizedName = finalFileName.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const key = customKey || `static/${folder}/${sanitizedName}`;
+    const key = customKey || `${folder}/${sanitizedName}`;
     
     const result = await storage.upload({
       key,
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// List existing static assets (optional)
+// List existing marketing asset folders (optional)
 export async function GET(request: NextRequest) {
   try {
     const user = await getSessionUser();
@@ -137,12 +137,7 @@ export async function GET(request: NextRequest) {
     // Return helpful info about available folders
     return NextResponse.json({
       folders: [
-        "Marketing",
-        "Marketing_Media", 
-        "Labeled_Cars",
-        "Black_cars",
-        "Abstract",
-        "uploads",
+        "marketing",
       ],
       allowedTypes: ALLOWED_TYPES,
       maxSize: MAX_SIZE,

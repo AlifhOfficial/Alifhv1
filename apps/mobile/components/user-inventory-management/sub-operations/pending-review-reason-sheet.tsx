@@ -15,7 +15,7 @@ import { Clock } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import { Heading, Body, Supporting } from '@/components/ui';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -114,7 +114,7 @@ export function PendingReviewReasonSheet({
         {/* Listing preview */}
         <View style={[styles.previewRow, { borderBottomColor: colors.border }]}>
           {listingThumbnail ? (
-            <Image source={{ uri: getThumbUrl(listingThumbnail) || listingThumbnail }} style={styles.thumbnail} />
+            <Image source={{ uri: getAppThumbUrl(listingThumbnail) || listingThumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
               <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.textMuted} />

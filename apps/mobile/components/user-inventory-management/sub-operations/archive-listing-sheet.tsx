@@ -16,7 +16,7 @@ import { Archive, ArchiveRestore } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import { toggleArchiveListing, type UpdateListingResponse } from '@/lib/sell-car-user-api';
 
@@ -137,7 +137,7 @@ export function ArchiveListingSheet({
         {/* Listing preview */}
         <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
           {listingThumbnail ? (
-            <Image source={{ uri: getThumbUrl(listingThumbnail) || listingThumbnail }} style={styles.thumbnail} />
+            <Image source={{ uri: getAppThumbUrl(listingThumbnail) || listingThumbnail }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
               <Ionicons name="image-outline" size={Sizes.iconLg} color={colors.textMuted} />

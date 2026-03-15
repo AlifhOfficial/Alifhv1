@@ -14,7 +14,7 @@ import { Image } from 'expo-image';
 
 import { Sizes, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { getThumbUrl } from '@/lib/config';
+import { getAppThumbUrl } from '@/lib/config';
 import { Heading } from './text';
 
 // ============================================================================
@@ -86,7 +86,7 @@ export const BrandAvatar = memo(function BrandAvatar({
   const shouldShowBorder = glass || showRing;
   
   // Convert to CDN URL if needed
-  const imageUri = src ? (getThumbUrl(src) || src) : null;
+  const imageUri = src ? getAppThumbUrl(src) : null;
   const showFallback = !imageUri || imageError;
 
   return (

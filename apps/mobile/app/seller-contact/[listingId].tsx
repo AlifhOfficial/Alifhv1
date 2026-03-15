@@ -275,8 +275,8 @@ export default function SellerContactScreen() {
 
   // Handle scroll to show/hide top gradient
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const scrollY = event.nativeEvent.contentOffset.y;
-    setShowTopGradient(scrollY > 10);
+    const nextVisible = event.nativeEvent.contentOffset.y > 10;
+    setShowTopGradient((current) => (current === nextVisible ? current : nextVisible));
   }, []);
 
   // Loading state
@@ -311,8 +311,8 @@ export default function SellerContactScreen() {
   const sellerContentPaddingTop = insets.top + Spacing.lg;
   const sellerContentPaddingBottom = insets.bottom + Layout.bottomGradientExtension + Spacing.xl;
 
-  const renderSellerContent = useCallback(() => (
-    <>
+  const sellerContent = useMemo(() => (
+    <View style={styles.sectionStack}>
       <SellerHero seller={seller} colors={colors} topInset={insets.top} />
 
       {seller.description && (
@@ -386,7 +386,7 @@ export default function SellerContactScreen() {
         onWebsite={handleWebsite}
         colors={colors}
       />
-    </>
+    </View>
   ), [
     colors,
     combinedTags,
@@ -421,7 +421,7 @@ export default function SellerContactScreen() {
       <FlatList
         data={flatListData}
         renderItem={() => null}
-        ListHeaderComponent={renderSellerContent}
+        ListHeaderComponent={sellerContent}
         keyExtractor={(item) => item.key}
         contentContainerStyle={[
           styles.content,
@@ -536,6 +536,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   content: {
+  },
+  sectionStack: {
     gap: Spacing.xl,
   },
   errorContainer: {

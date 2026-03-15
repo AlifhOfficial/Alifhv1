@@ -8,7 +8,7 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
+import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
