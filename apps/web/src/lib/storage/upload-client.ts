@@ -152,7 +152,10 @@ async function getListingUploadUrls(vin: string): Promise<{
 async function uploadToPresigned(uploadUrl: string, file: File | Blob): Promise<void> {
   const res = await fetch(uploadUrl, {
     method: 'PUT',
-    headers: { 'Content-Type': 'image/webp' },
+    headers: {
+      'Content-Type': 'image/webp',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+    },
     body: file,
   });
 
