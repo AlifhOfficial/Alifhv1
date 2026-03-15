@@ -2,13 +2,13 @@
  * Theme Color Sync
  * 
  * Updates browser chrome color (address bar, status bar) based on current theme.
- * Only modifies existing meta tag attributes - never adds/removes DOM nodes.
+ * Owns a dedicated set of meta tags so browser chrome stays in sync in production too.
  */
 
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 
 const THEME_COLORS: Record<string, string> = {
   light: "#f5f5f5",
@@ -29,33 +29,27 @@ const APPLE_STATUS_BAR_STYLES: Record<string, string> = {
 };
 
 export function ThemeColorSync() {
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
 
-  useEffect(() => {
-    if (!theme) return;
-    
-    const color = THEME_COLORS[theme] || THEME_COLORS.dark;
-    const colorScheme = THEME_SCHEMES[theme] || THEME_SCHEMES.dark;
+  useLayoutEffect(() => {
+    const activeTheme = resolvedTheme || theme;
+    if (!activeTheme) return;
+
+    const color = THEME_COLORS[activeTheme] || THEME_COLORS.dark;
+    const colorScheme = THEME_SCHEMES[activeTheme] || THEME_SCHEMES.dark;
     const appleStatusBarStyle =
-      APPLE_STATUS_BAR_STYLES[theme] || APPLE_STATUS_BAR_STYLES.dark;
+      APPLE_STATUS_BAR_STYLES[activeTheme] || APPLE_STATUS_BAR_STYLES.dark;
 
-    // Update all theme-color meta tags in place
-    document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
-      meta.setAttribute("content", color);
-    });
+    const themeColorMeta = document.querySelector<HTMLMetaElement>('#revvup-theme-color');
+    const colorSchemeMeta = document.querySelector<HTMLMetaElement>('#revvup-color-scheme');
+    const appleStatusMeta = document.querySelector<HTMLMetaElement>('#revvup-apple-status-bar-style');
 
-    document.querySelectorAll('meta[name="color-scheme"]').forEach((meta) => {
-      meta.setAttribute("content", colorScheme);
-    });
-
-    document
-      .querySelectorAll('meta[name="apple-mobile-web-app-status-bar-style"]')
-      .forEach((meta) => {
-        meta.setAttribute("content", appleStatusBarStyle);
-      });
+    themeColorMeta?.setAttribute("content", color);
+    colorSchemeMeta?.setAttribute("content", colorScheme);
+    appleStatusMeta?.setAttribute("content", appleStatusBarStyle);
 
     document.documentElement.style.colorScheme = colorScheme;
-  }, [theme]);
+  }, [theme, resolvedTheme]);
 
   return null;
 }
