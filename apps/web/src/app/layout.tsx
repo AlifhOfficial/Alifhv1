@@ -12,8 +12,6 @@ import {
   BRAND_FAVICON_ICO_URL,
   BRAND_FAVICON_PNG_URL,
   BRAND_FAVICON_SVG_URL,
-  BRAND_ICON_192_URL,
-  BRAND_ICON_512_URL,
   BRAND_LOGO_SCHEMA_URL,
 } from '@/lib/brand-assets'
 
@@ -148,10 +146,10 @@ export default async function RootLayout({
         <link key="favicon-svg" rel="icon" type="image/svg+xml" href={BRAND_FAVICON_SVG_URL} />
         <link key="favicon-png" rel="icon" type="image/png" sizes="32x32" href={BRAND_FAVICON_PNG_URL} />
         <link key="favicon-ico" rel="shortcut icon" href={BRAND_FAVICON_ICO_URL} />
+        {/* Safari pinned tab icon */}
+        <link key="mask-icon" rel="mask-icon" href="/favicon.svg" color="#000000" />
         {/* PWA - Apple Touch Icon */}
         <link key="apple-touch-icon" rel="apple-touch-icon" sizes="180x180" href={BRAND_APPLE_TOUCH_ICON_URL} />
-        <link key="mask-icon-192" rel="preload" as="image" href={BRAND_ICON_192_URL} />
-        <link key="mask-icon-512" rel="preload" as="image" href={BRAND_ICON_512_URL} />
         <meta key="apple-webapp-capable" name="apple-mobile-web-app-capable" content="yes" />
         <meta key="mobile-webapp-capable" name="mobile-web-app-capable" content="yes" />
         <meta key="color-scheme" name="color-scheme" content="dark" />

@@ -91,12 +91,10 @@ class WebSocketManager {
       url = `${protocol}//${host}:${port}/ws?userId=${userId}`;
     }
 
-    console.log(`🔌 [WS] Connecting: ${url}`);
     const ws = new WebSocket(url);
     this.ws = ws;
 
     ws.onopen = () => {
-      console.log(`✅ [WS] Connected for user: ${userId}`);
       this.attempts = 0;
       this.notifyConnectionChange(true);
       this.startHeartbeat();
@@ -105,15 +103,11 @@ class WebSocketManager {
     ws.onmessage = (e) => {
       try {
         const msg = JSON.parse(e.data) as WSMessage;
-        if (msg.type !== 'pong') {
-          console.log(`📨 [WS] Received:`, msg.type, msg.conversationId ? `conv:${msg.conversationId}` : '');
-        }
         this.handlers.forEach(h => h(msg));
       } catch { /* ignore */ }
     };
 
     ws.onclose = () => {
-      console.log(`❌ [WS] Disconnected for user: ${userId}`);
       this.ws = null;
       this.notifyConnectionChange(false);
       this.stopHeartbeat();
@@ -121,7 +115,6 @@ class WebSocketManager {
       // Reconnect with backoff (max 30s)
       if (this.currentUserId === userId && this.attempts < 10) {
         const delay = Math.min(1000 * Math.pow(2, this.attempts), 30000);
-        console.log(`🔄 [WS] Reconnecting in ${delay}ms (attempt ${this.attempts + 1})`);
         this.attempts++;
         this.reconnectTimeout = setTimeout(() => this.connect(userId), delay);
       }

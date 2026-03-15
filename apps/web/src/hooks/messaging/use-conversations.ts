@@ -120,7 +120,6 @@ export function useConversations(options: UseConversationsOptions = {}) {
     const unsub = subscribe((msg) => {
       // Handle new messages
       if (msg.type === 'new_message' && msg.conversationId) {
-        console.log(`📬 [useConversations] New message received for conv: ${msg.conversationId}`);
         const newMsg = msg.message as { createdAt?: string; text?: string; senderId?: string } | undefined;
         // Use msg.userId (from broadcast wrapper) for sender check
         const senderId = msg.userId || newMsg?.senderId;
@@ -128,18 +127,15 @@ export function useConversations(options: UseConversationsOptions = {}) {
 
         queryClient.setQueryData(queryKey, (old: ConversationsResponse | undefined) => {
           if (!old?.conversations) {
-            console.log(`📬 [useConversations] No cached conversations, invalidating`);
             return old;
           }
           
           const exists = old.conversations.some(c => c.id === msg.conversationId);
           if (!exists) {
-            console.log(`📬 [useConversations] Conversation not in cache, invalidating to fetch`);
             queryClient.invalidateQueries({ queryKey: ['conversations'] });
             return old;
           }
 
-          console.log(`📬 [useConversations] Updating conversation in cache, isOwnMessage: ${isOwnMessage}`);
           return {
             ...old,
             conversations: old.conversations
