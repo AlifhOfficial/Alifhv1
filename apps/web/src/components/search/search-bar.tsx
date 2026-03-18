@@ -448,7 +448,7 @@ export function SearchBar({
                 spellCheck="false"
                 className={cn(
                   'w-full h-full bg-transparent pl-10 sm:pl-11 pr-12 sm:pr-10',
-                  'placeholder:text-sidebar-foreground/50 placeholder:font-medium',
+                  'leading-none placeholder:text-sidebar-foreground/50 placeholder:font-medium placeholder:tracking-normal',
                   'focus:outline-none touch-manipulation',
                   'font-semibold tracking-tight',
                   query ? 'text-transparent caret-sidebar-foreground' : 'text-sidebar-foreground'

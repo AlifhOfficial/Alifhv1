@@ -162,10 +162,17 @@ export function CarCard({
 
   const handleShare = useCallback(async () => {
     await shareListing({
-      listingIdOrSlug: id,
-      title: carTitle,
+      listingId: id,
+      year,
+      make,
+      model,
+      trim,
+      price,
+      mileage,
+      emirate,
+      specs,
     });
-  }, [id, carTitle]);
+  }, [id, year, make, model, trim, price, mileage, emirate, specs]);
 
   // Derive dialog visibility - close dialogs when auth is required
   const authDialogOpen = favorite.authRequired || superlike.authRequired;

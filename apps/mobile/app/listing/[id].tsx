@@ -82,16 +82,17 @@ export default function ListingDetailScreen() {
     if (!listing) return;
     try {
       const l = listing.listing;
-      const carTitle = `${l.year} ${l.make} ${l.model}${l.trim ? ` ${l.trim}` : ''}`;
-      const price = l.price
-        ? new Intl.NumberFormat('en-AE', { style: 'currency', currency: 'AED', maximumFractionDigits: 0 }).format(l.price)
-        : null;
-      const details = [
-        price,
-        l.mileage ? `${l.mileage.toLocaleString()} km` : null,
-        l.emirate ?? null,
-      ].filter(Boolean).join(' · ') || null;
-      await shareListing({ listingIdOrSlug: listingId, title: carTitle, details });
+      await shareListing({
+        listingId,
+        year: l.year,
+        make: l.make,
+        model: l.model,
+        trim: l.trim,
+        price: l.price,
+        mileage: l.mileage,
+        emirate: l.emirate,
+        specs: l.specs,
+      });
     } catch (error) {
       console.error('Share failed:', error);
     }

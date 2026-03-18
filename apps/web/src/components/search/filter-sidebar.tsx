@@ -9,7 +9,7 @@
  * @module components/search/filter-sidebar
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -50,10 +50,38 @@ export function FilterSidebar({
   const locationCount = params.emirate?.length ?? 0;
   const negotiableCount = params.isNegotiable ? 1 : 0;
   const specsCount = params.specs?.length ?? 0;
+  const [sectionOpenState, setSectionOpenState] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const saved = window.sessionStorage.getItem('revvup:listings-filter-sections:v1');
+    if (!saved) return;
+
+    try {
+      setSectionOpenState(JSON.parse(saved) as Record<string, boolean>);
+    } catch {
+      // Ignore invalid stored state.
+    }
+  }, []);
+
+  const handleSectionOpenChange = useCallback((title: string, open: boolean) => {
+    setSectionOpenState((current) => {
+      const next = { ...current, [title]: open };
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem('revvup:listings-filter-sections:v1', JSON.stringify(next));
+      }
+      return next;
+    });
+  }, []);
 
   return (
     <div className="flex flex-col">
-      <FilterSection title="Popular" selectedCount={popularCount}>
+      <FilterSection
+        title="Popular"
+        selectedCount={popularCount}
+        open={sectionOpenState.Popular}
+        onOpenChange={(open) => handleSectionOpenChange('Popular', open)}
+      >
         <div className="flex flex-col gap-0.5">
           <button
             type="button"
@@ -98,7 +126,12 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Price Range */}
-      <FilterSection title="Price" selectedCount={priceCount}>
+      <FilterSection
+        title="Price"
+        selectedCount={priceCount}
+        open={sectionOpenState.Price}
+        onOpenChange={(open) => handleSectionOpenChange('Price', open)}
+      >
         <RangeFilter
           minValue={params.priceMin}
           maxValue={params.priceMax}
@@ -112,7 +145,12 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Year Range */}
-      <FilterSection title="Year" selectedCount={yearCount}>
+      <FilterSection
+        title="Year"
+        selectedCount={yearCount}
+        open={sectionOpenState.Year}
+        onOpenChange={(open) => handleSectionOpenChange('Year', open)}
+      >
         <RangeFilter
           minValue={params.yearMin}
           maxValue={params.yearMax}
@@ -124,7 +162,12 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Mileage */}
-      <FilterSection title="Mileage" selectedCount={mileageCount}>
+      <FilterSection
+        title="Mileage"
+        selectedCount={mileageCount}
+        open={sectionOpenState.Mileage}
+        onOpenChange={(open) => handleSectionOpenChange('Mileage', open)}
+      >
         <RangeFilter
           minValue={params.mileageMin}
           maxValue={params.mileageMax}
@@ -138,7 +181,12 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Location */}
-      <FilterSection title="Location" selectedCount={locationCount}>
+      <FilterSection
+        title="Location"
+        selectedCount={locationCount}
+        open={sectionOpenState.Location}
+        onOpenChange={(open) => handleSectionOpenChange('Location', open)}
+      >
         <MultiSelectFilter
           options={facets?.emirate ?? []}
           selected={params.emirate ?? []}
@@ -149,7 +197,12 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Negotiable Toggle */}
-      <FilterSection title="Negotiable" selectedCount={negotiableCount}>
+      <FilterSection
+        title="Negotiable"
+        selectedCount={negotiableCount}
+        open={sectionOpenState.Negotiable}
+        onOpenChange={(open) => handleSectionOpenChange('Negotiable', open)}
+      >
         <button
           type="button"
           onClick={() => onFilterChange({ isNegotiable: params.isNegotiable ? undefined : true })}
@@ -166,7 +219,12 @@ export function FilterSidebar({
       </FilterSection>
 
       {/* Regional Specs */}
-      <FilterSection title="Regional Specs" selectedCount={specsCount}>
+      <FilterSection
+        title="Regional Specs"
+        selectedCount={specsCount}
+        open={sectionOpenState['Regional Specs']}
+        onOpenChange={(open) => handleSectionOpenChange('Regional Specs', open)}
+      >
         <MultiSelectFilter
           options={facets?.specs ?? []}
           selected={params.specs ?? []}
@@ -188,11 +246,24 @@ interface FilterSectionProps {
   children: React.ReactNode;
   defaultOpen?: boolean;
   selectedCount?: number;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-function FilterSection({ title, children, defaultOpen = false, selectedCount = 0 }: FilterSectionProps) {
+function FilterSection({
+  title,
+  children,
+  defaultOpen = false,
+  selectedCount = 0,
+  open,
+  onOpenChange,
+}: FilterSectionProps) {
   return (
-    <Collapsible defaultOpen={defaultOpen} className="group/collapsible">
+    <Collapsible
+      open={open ?? defaultOpen}
+      onOpenChange={onOpenChange}
+      className="group/collapsible"
+    >
       <CollapsibleTrigger className="flex items-center justify-between w-full py-3 hover:bg-muted/30 rounded-lg transition-colors touch-manipulation">
         <span className="text-base font-semibold tracking-tight text-sidebar-foreground">{title}</span>
         <div className="flex items-center gap-2">

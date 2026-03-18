@@ -12,6 +12,7 @@ import { Share2 } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
+import { shareListing } from '@/lib/listing-share';
 import { 
   HapticPressable, 
   Skeleton, 
@@ -164,6 +165,7 @@ export const CarCardList = memo(function CarCardList({
   make,
   model,
   year,
+  trim,
   price,
   mileage,
   emirate,
@@ -195,7 +197,28 @@ export const CarCardList = memo(function CarCardList({
   // Handlers
   const handlePress = useCallback(() => onPress?.(id), [id, onPress]);
   const handlePressIn = useCallback(() => onPressIn?.(id), [id, onPressIn]);
-  const handleSharePress = useCallback(() => onSharePress?.(id), [id, onSharePress]);
+  const handleSharePress = useCallback(async () => {
+    if (onSharePress) {
+      onSharePress(id);
+      return;
+    }
+
+    try {
+      await shareListing({
+        listingId: id,
+        year,
+        make,
+        model,
+        trim,
+        price,
+        mileage,
+        emirate,
+        specs,
+      });
+    } catch {
+      // Share cancelled or failed
+    }
+  }, [id, year, make, model, trim, price, mileage, emirate, specs, onSharePress]);
 
   return (
     <HapticPressable

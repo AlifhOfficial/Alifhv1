@@ -220,7 +220,6 @@ export const CarCardM = memo(function CarCardM({
   const displayEmirate = formatEmirate(emirate);
   const displaySellerName = partnerName || sellerName || 'Private Seller';
   const isVerified = partnerVerified || kycVerified;
-  const carTitle = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
   const rawSellerAvatar = partnerLogo || sellerAvatarUrl;
   const sellerAvatar = getAppThumbUrl(rawSellerAvatar) || rawSellerAvatar;
 
@@ -244,11 +243,21 @@ export const CarCardM = memo(function CarCardM({
       return;
     }
     try {
-      await shareListing({ listingIdOrSlug: id, title: carTitle });
+      await shareListing({
+        listingId: id,
+        year,
+        make,
+        model,
+        trim,
+        price,
+        mileage,
+        emirate,
+        specs,
+      });
     } catch {
       // Share cancelled or failed
     }
-  }, [id, carTitle, onSharePress]);
+  }, [id, year, make, model, trim, price, mileage, emirate, specs, onSharePress]);
 
   return (
     <HapticPressable

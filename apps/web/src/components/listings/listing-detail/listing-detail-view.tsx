@@ -21,6 +21,7 @@ import { ListingTimestamp } from './listing-timestamp';
 import { SimilarListings } from './similar-listings';
 import { JsonLd } from '@/components/seo/json-ld';
 import { generateVehicleSchema } from '@/lib/seo-schema';
+import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronLeft, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
@@ -134,6 +135,12 @@ export function ListingDetailView({
   }
 
   const carTitle = listing ? `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}` : '';
+  const breadcrumbItems = listing ? [
+    { label: 'All Cars', type: 'button' as const },
+    { label: listing.make, href: `/listings?make=${encodeURIComponent(listing.make)}` },
+    { label: listing.model, href: `/listings?make=${encodeURIComponent(listing.make)}&model=${encodeURIComponent(listing.model)}` },
+    ...(listing.trim ? [{ label: listing.trim }] : []),
+  ] : [];
 
   // Check if this listing is from a dealer (has partnerId) - only dealer listings can be booked
   const isDealerListing = !!listing?.partnerId;
@@ -276,7 +283,7 @@ export function ListingDetailView({
           
           {/* Breadcrumb */}
           {isLoading ? (
-            <div className="flex items-center gap-2 py-4 mb-4 sm:mb-6">
+            <div className="flex items-center gap-2 py-4 mb-2 sm:mb-3 h-14 overflow-hidden">
               <Skeleton className="h-4 w-16" />
               <span className="text-muted-foreground/40">/</span>
               <Skeleton className="h-4 w-20" />
@@ -284,36 +291,41 @@ export function ListingDetailView({
               <Skeleton className="h-4 w-24" />
             </div>
           ) : listing ? (
-            <nav className="flex items-center gap-2 text-sm font-bold tracking-tight py-4 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide">
-              <button
-                type="button"
-                onClick={handleBackToAllCars}
-                className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
-              >
-                All Cars
-              </button>
-              <span className="text-muted-foreground/40">/</span>
-              <Link 
-                href={`/listings?make=${encodeURIComponent(listing.make)}`}
-                className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
-              >
-                {listing.make}
-              </Link>
-              <span className="text-muted-foreground/40">/</span>
-              <Link 
-                href={`/listings?make=${encodeURIComponent(listing.make)}&model=${encodeURIComponent(listing.model)}`}
-                className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
-              >
-                {listing.model}
-              </Link>
-              {listing.trim && (
-                <>
-                  <span className="text-muted-foreground/40">/</span>
-                  <span className="text-foreground font-bold whitespace-nowrap">
-                    {listing.trim}
-                  </span>
-                </>
-              )}
+            <nav className="flex items-center py-4 mb-2 sm:mb-3 h-14 overflow-hidden">
+              <div className="flex items-center gap-2 text-sm font-bold tracking-tight overflow-x-auto scrollbar-hide whitespace-nowrap min-w-0 max-w-full">
+                {breadcrumbItems.map((item, index) => {
+                  const isLast = index === breadcrumbItems.length - 1;
+
+                  return (
+                    <div key={`${item.label}-${index}`} className="flex items-center gap-2 shrink-0 min-w-0">
+                      {index > 0 && <span className="text-muted-foreground/40">/</span>}
+                      {'type' in item ? (
+                        <button
+                          type="button"
+                          onClick={handleBackToAllCars}
+                          className={cn(
+                            "transition-colors whitespace-nowrap",
+                            isLast ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          {item.label}
+                        </button>
+                      ) : item.href && !isLast ? (
+                        <Link
+                          href={item.href}
+                          className="text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+                        >
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <span className="text-foreground whitespace-nowrap max-w-[40vw] sm:max-w-[28vw] truncate">
+                          {item.label}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </nav>
           ) : null}
 
@@ -321,8 +333,6 @@ export function ListingDetailView({
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10 pb-6 lg:pb-8">
             {/* Main Column - Car Details (60%) */}
             <div className="lg:col-span-3 min-w-0">
-              {/* Show content immediately if we have listing data (from initialData or fetch) */}
-              {/* Only show skeleton if no data yet */}
               {listing ? (
                 <CarCardDetailed listing={listing} kycVerified={sellerKycVerified} />
               ) : (
@@ -391,7 +401,7 @@ export function ListingDetailView({
 
                 {/* Safety Note */}
                 {listing && (
-                  <div className="py-4 border-t border-border flex items-start gap-3">
+                  <div className="py-4 flex items-start gap-3">
                     {isDealerListing ? (
                       <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                     ) : (

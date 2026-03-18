@@ -30,8 +30,6 @@ export function ListingsPagination({
   goToPreviousPage,
   goToNextPage,
 }: ListingsPaginationProps) {
-  if (!canGoBack && !hasNextPage) return null;
-
   return (
     <div className="px-4 py-6 sm:py-8 md:py-10">
       <div className="mx-auto flex w-full max-w-md items-center justify-between gap-3 rounded-full border border-sidebar-border bg-sidebar/80 p-2 shadow-sm backdrop-blur">

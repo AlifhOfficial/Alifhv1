@@ -3,6 +3,9 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
+      "@alifh/shared": [
+        "../../packages/shared/src/index.ts"
+      ],
       "@/*": [
         "./*"
       ]

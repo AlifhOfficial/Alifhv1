@@ -18,6 +18,9 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "paths": {
+      "@alifh/shared": [
+        "../../packages/shared/src/index.ts"
+      ],
       "@/*": [
         "./src/*"
       ]

@@ -7,7 +7,6 @@
 
 import { FilterSidebar } from '@/components/search/filter-sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
 import { PanelLeftClose } from 'lucide-react';
 import type { SearchParams, SearchFacets } from '@/lib/search-utils';
 
@@ -38,18 +37,18 @@ export function ListingsSidebar({
   activeFilterCount,
   isLoading,
   embedded = false,
-  sidebarOpen,
   onSidebarToggle,
   setFilters,
   onClearAll,
 }: ListingsSidebarProps) {
   return (
-    <aside className={cn(
-      "w-64 flex-shrink-0 flex flex-col",
-      embedded 
-        ? "h-screen sticky top-0"
-        : "h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] sticky top-14 sm:top-16"
-    )}>
+    <aside
+      className={
+        embedded
+          ? 'flex max-h-[100dvh] min-h-0 w-64 flex-shrink-0 flex-col overflow-hidden'
+          : 'flex max-h-[calc(100dvh-4rem)] min-h-0 w-64 flex-shrink-0 flex-col overflow-hidden'
+      }
+    >
       {/* Header - Fixed */}
       <div className="flex items-center justify-between py-4 pr-6 flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -65,7 +64,7 @@ export function ListingsSidebar({
       </div>
       
       {/* Scrollable Filter Content */}
-      <div className="flex-1 overflow-y-auto overscroll-contain pr-6 py-4">
+      <div className="custom-scrollbar flex-1 overflow-y-auto overscroll-contain pr-6 pt-4 pb-4">
         <FilterSidebar
           params={params}
           facets={facets}
@@ -87,14 +86,9 @@ interface ListingsSidebarSkeletonProps {
   embedded?: boolean;
 }
 
-function ListingsSidebarSkeletonComponent({ embedded = false }: ListingsSidebarSkeletonProps) {
+function ListingsSidebarSkeletonComponent({ embedded: _embedded = false }: ListingsSidebarSkeletonProps) {
   return (
-    <aside className={cn(
-      "w-64 flex-shrink-0 flex flex-col",
-      embedded 
-        ? "h-screen sticky top-0"
-        : "h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] sticky top-14 sm:top-16"
-    )}>
+    <aside className="flex max-h-[calc(100dvh-4rem)] min-h-0 w-64 flex-shrink-0 flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between py-4 pr-6 flex-shrink-0 border-b border-border/50">
         <Skeleton className="h-5 w-16" />

@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { ListingsHeader } from './listings-header';
 import { ListingsSidebar } from './listings-sidebar';
 import { ListingsContent } from './listings-content';
@@ -39,6 +39,7 @@ interface ListingsViewProps {
 
 const VIEW_MODE_KEY = 'listings-view-mode';
 const LAST_PUBLIC_LISTINGS_URL_KEY = 'revvup:last-public-listings-url';
+const PUBLIC_LISTINGS_SIDEBAR_KEY = 'revvup:public-listings-sidebar-open:v1';
 
 export function ListingsView({ 
   embedded = false, 
@@ -51,6 +52,7 @@ export function ListingsView({
   hydrateFavoritesStatus = true,
 }: ListingsViewProps) {
   const pathname = usePathname();
+  const shouldPersistPublicSidebar = pathname === '/listings' && !embedded;
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(VIEW_MODE_KEY);
@@ -61,7 +63,22 @@ export function ListingsView({
     return 'grid';
   });
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(defaultFiltersOpen);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window === 'undefined') return defaultFiltersOpen;
+    if (!shouldPersistPublicSidebar) return defaultFiltersOpen;
+
+    const saved = window.sessionStorage.getItem(PUBLIC_LISTINGS_SIDEBAR_KEY);
+    if (saved === 'true') return true;
+    if (saved === 'false') return false;
+    return defaultFiltersOpen;
+  });
+
+  const updateSidebarOpen = useCallback((open: boolean) => {
+    setSidebarOpen(open);
+    if (typeof window !== 'undefined' && shouldPersistPublicSidebar) {
+      window.sessionStorage.setItem(PUBLIC_LISTINGS_SIDEBAR_KEY, String(open));
+    }
+  }, [shouldPersistPublicSidebar]);
 
   const { isSignedIn } = useUser();
   useFavoritesStatus({ enabled: hydrateFavoritesStatus && isSignedIn });
@@ -104,6 +121,11 @@ export function ListingsView({
   }, [viewMode]);
 
   useEffect(() => {
+    if (!shouldPersistPublicSidebar) return;
+    window.sessionStorage.setItem(PUBLIC_LISTINGS_SIDEBAR_KEY, String(sidebarOpen));
+  }, [sidebarOpen, shouldPersistPublicSidebar]);
+
+  useEffect(() => {
     if (typeof window === 'undefined') return;
     if (pathname !== '/listings') return;
 
@@ -142,7 +164,7 @@ export function ListingsView({
           <div className="lg:hidden">
             {/* TOP: Sticky Search Header */}
             <div className={cn(
-              "sticky z-30 bg-background pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6",
+              "sticky z-30 bg-background pb-1 -mx-4 px-4 sm:-mx-6 sm:px-6",
               embedded ? "top-0" : "top-14 sm:top-16"
             )}>
               <ListingsHeader
@@ -152,9 +174,8 @@ export function ListingsView({
                 activeFilterCount={activeFilterCount}
                 isLoading={isLoading}
                 listings={listings}
-                embedded={embedded}
                 sidebarOpen={false}
-                onSidebarToggle={setSidebarOpen}
+                onSidebarToggle={updateSidebarOpen}
                 mobileFiltersOpen={mobileFiltersOpen}
                 onMobileFiltersToggle={setMobileFiltersOpen}
                 viewMode={viewMode}
@@ -166,7 +187,7 @@ export function ListingsView({
             </div>
 
             {/* Content */}
-            <main className="py-3 sm:py-6">
+            <main className="pt-1 pb-3 sm:pt-2 sm:pb-6">
               <ListingsContent
                 listings={listings}
                 meta={meta}
@@ -193,35 +214,45 @@ export function ListingsView({
             )}
           </div>
 
-          {/* Desktop Layout - Uses window scroll for native back/forward restoration */}
-          <div className="hidden lg:flex gap-6">
-            {/* LEFT: Sidebar - sticky */}
+          {/* Desktop Layout - sticky L-shell with normal page scroll */}
+          <div
+            className={cn(
+              "hidden lg:grid gap-x-6",
+              sidebarOpen ? "grid-cols-[16rem_minmax(0,1fr)]" : "grid-cols-[minmax(0,1fr)]"
+            )}
+          >
+            {/* LEFT: Sidebar */}
             {sidebarOpen && (
-              <div className={cn(
-                "shrink-0 sticky self-start overflow-y-auto scrollbar-hide",
-                embedded ? "top-0 max-h-[calc(100vh-4rem)]" : "top-16 max-h-[calc(100vh-5rem)]"
-              )}>
-                <ListingsSidebar
-                  params={params}
-                  facets={facets}
-                  activeFilterCount={activeFilterCount}
-                  isLoading={isLoading}
-                  embedded={embedded}
-                  sidebarOpen={sidebarOpen}
-                  onSidebarToggle={setSidebarOpen}
-                  setFilters={setFilters}
-                  onClearAll={clearFilters}
-                />
+              <div className="min-w-0">
+                <div
+                  className={cn(
+                    "sticky overflow-hidden",
+                    embedded ? "top-0 max-h-[100dvh]" : "top-16 max-h-[calc(100dvh-4rem)]"
+                  )}
+                >
+                  <ListingsSidebar
+                    params={params}
+                    facets={facets}
+                    activeFilterCount={activeFilterCount}
+                    isLoading={isLoading}
+                    embedded={embedded}
+                    sidebarOpen={sidebarOpen}
+                    onSidebarToggle={updateSidebarOpen}
+                    setFilters={setFilters}
+                    onClearAll={clearFilters}
+                  />
+                </div>
               </div>
             )}
 
-            {/* RIGHT: Search Header + Content */}
-            <div className="flex-1 min-w-0">
-              {/* TOP: Search Header - sticky below navbar */}
-              <div className={cn(
-                "sticky z-30 bg-background pb-2",
-                embedded ? "top-0" : "top-14 sm:top-16"
-              )}>
+            {/* RIGHT COLUMN: Sticky header + page-flow content */}
+            <div className={cn("min-w-0", sidebarOpen && "col-start-2")}>
+              <div
+                className={cn(
+                  "sticky z-30 bg-background pb-1",
+                  embedded ? "top-0" : "top-16"
+                )}
+              >
                 <ListingsHeader
                   params={params}
                   facets={facets}
@@ -229,9 +260,8 @@ export function ListingsView({
                   activeFilterCount={activeFilterCount}
                   isLoading={isLoading}
                   listings={listings}
-                  embedded={embedded}
                   sidebarOpen={sidebarOpen}
-                  onSidebarToggle={setSidebarOpen}
+                  onSidebarToggle={updateSidebarOpen}
                   mobileFiltersOpen={mobileFiltersOpen}
                   onMobileFiltersToggle={setMobileFiltersOpen}
                   viewMode={viewMode}
@@ -242,8 +272,7 @@ export function ListingsView({
                 />
               </div>
 
-              {/* BOTTOM: Content */}
-              <main className="py-4 sm:py-6">
+              <main className="pt-1 pb-6 sm:pt-2">
                 <ListingsContent
                   listings={listings}
                   meta={meta}
@@ -256,20 +285,34 @@ export function ListingsView({
                   loadMore={loadMore}
                 />
               </main>
-
-              {/* Pagination */}
-              {!isLoading && !isFetching && listings.length > 0 && (
-                <ListingsPagination
-                  currentPage={currentPage}
-                  canGoBack={canGoBack}
-                  hasNextPage={hasNextPage}
-                  isFetching={isFetching}
-                  goToPreviousPage={goToPreviousPage}
-                  goToNextPage={goToNextPage}
-                />
-              )}
             </div>
           </div>
+
+          {!embedded && !isLoading && !isFetching && listings.length > 0 && (
+            <div className={cn("hidden lg:block pt-6", sidebarOpen && "pl-[18.5rem]")}>
+              <ListingsPagination
+                currentPage={currentPage}
+                canGoBack={canGoBack}
+                hasNextPage={hasNextPage}
+                isFetching={isFetching}
+                goToPreviousPage={goToPreviousPage}
+                goToNextPage={goToNextPage}
+              />
+            </div>
+          )}
+
+          {embedded && !isLoading && !isFetching && listings.length > 0 && (
+            <div className="hidden lg:block pt-6">
+              <ListingsPagination
+                currentPage={currentPage}
+                canGoBack={canGoBack}
+                hasNextPage={hasNextPage}
+                isFetching={isFetching}
+                goToPreviousPage={goToPreviousPage}
+                goToNextPage={goToNextPage}
+              />
+            </div>
+          )}
         </div>
       </div>
     </TooltipProvider>

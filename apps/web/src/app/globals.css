@@ -421,8 +421,12 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.2);
+    background: transparent;
     border-radius: 3px;
+  }
+
+  .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.2);
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {

@@ -11,7 +11,7 @@ import { SearchBar } from '@/components/search/search-bar';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
 import { AdvancedFilters } from '@/components/search/advanced-filters';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft, ChevronRight, Search } from 'lucide-react';
+import { ArrowUpDown, LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft, ChevronRight, Search } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -53,8 +53,6 @@ interface ListingsHeaderProps {
   isLoading: boolean;
   /** Listings for partner name derivation */
   listings?: Array<{ partnerName?: string | null }>;
-  /** When true, removes top padding for embedding in dashboards */
-  embedded?: boolean;
   /** Sidebar open state */
   sidebarOpen: boolean;
   /** Toggle sidebar */
@@ -82,7 +80,6 @@ export function ListingsHeader({
   activeFilterCount,
   isLoading,
   listings,
-  embedded = false,
   sidebarOpen,
   onSidebarToggle,
   mobileFiltersOpen,
@@ -209,10 +206,7 @@ export function ListingsHeader({
   return (
     <>
       {/* ===== MOBILE HEADER ===== */}
-      <div className={cn(
-        "sm:hidden sticky z-30 bg-background border-b border-border/20",
-        embedded ? "top-0" : "top-14"
-      )}>
+      <div className="sm:hidden z-30 bg-background border-b border-border/20">
         <div className="pt-2 pb-3 px-2 space-y-2">
           {/* Row 1: Search bar + controls */}
           <div className="flex items-center gap-2">
@@ -572,11 +566,13 @@ export function ListingsHeader({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className={cn(
-                  "flex items-center gap-1 h-10 px-3 text-sm font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 active:text-sidebar-foreground shadow-sm transition-all touch-manipulation shrink-0",
+                  "relative flex items-center justify-center h-10 w-10 bg-sidebar border border-sidebar-border rounded-full text-muted-foreground active:text-foreground shadow-sm transition-colors touch-manipulation shrink-0",
                   mobileSearchExpanded && "hidden"
                 )}>
-                  <span>Sort</span>
-                  <ChevronDown className="size-3.5" />
+                  <ArrowUpDown className="h-4 w-4" />
+                  {(params.sortBy || 'relevance') !== 'relevance' && (
+                    <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-primary" />
+                  )}
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52 bg-sidebar border border-sidebar-border rounded-lg shadow-lg p-1.5">
@@ -681,11 +677,7 @@ export function ListingsHeader({
       </div>
 
       {/* ===== DESKTOP HEADER ===== */}
-      <header className={cn(
-        "hidden sm:block sticky z-30 bg-background border-b border-transparent",
-        "[&:not(:first-child)]:border-border/20",
-        embedded ? "top-0" : "top-16 lg:top-0"
-      )}>
+      <header className="hidden sm:block z-30 bg-background border-b border-transparent [&:not(:first-child)]:border-border/20">
         <div className="pt-4 pb-4 relative">
           <div className="flex flex-wrap items-center gap-2">
             {/* Sidebar Toggle (Desktop) */}
@@ -796,10 +788,9 @@ export function ListingsHeader({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button 
-                    className="flex items-center gap-1.5 sm:gap-2 h-9 px-2.5 sm:px-4 text-sm font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 hover:text-sidebar-foreground shadow-sm transition-colors touch-manipulation"
+                    className="relative flex items-center gap-1.5 h-9 px-3 sm:px-4 bg-sidebar border border-sidebar-border rounded-full text-sm font-semibold text-muted-foreground hover:text-foreground shadow-sm transition-colors touch-manipulation"
                   >
-                    <span className="hidden xs:inline">{SORT_OPTIONS.find(s => s.value === (params.sortBy || 'relevance'))?.label || 'Sort'}</span>
-                    <span className="xs:hidden">Sort</span>
+                    <span>Sort</span>
                     <ChevronDown className="size-3.5" />
                   </button>
                 </DropdownMenuTrigger>
@@ -1475,39 +1466,34 @@ function getActiveFilterChips(
 // SKELETON
 // ============================================================================
 
-interface ListingsHeaderSkeletonProps {
-  embedded?: boolean;
-}
-
-function ListingsHeaderSkeletonComponent({ embedded = false }: ListingsHeaderSkeletonProps) {
+function ListingsHeaderSkeletonComponent() {
   return (
     <>
       {/* ===== MOBILE SKELETON ===== */}
-      <div className={cn(
-        "sm:hidden sticky z-30 bg-background",
-        embedded ? "top-0" : "top-14"
-      )}>
+      <div className="sm:hidden z-30 bg-background">
         <div className="py-2 px-2 space-y-2">
           {/* Row 1: Search bar + controls */}
           <div className="flex items-center gap-2">
             <Skeleton className="h-10 w-10 rounded-full shrink-0" />
             <Skeleton className="flex-1 h-10 rounded-full" />
-            <Skeleton className="h-10 w-16 rounded-full shrink-0" />
-            <Skeleton className="h-10 w-20 rounded-full shrink-0" />
+            <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+            <Skeleton className="h-10 w-[78px] rounded-full shrink-0" />
           </div>
-          {/* Row 2: Results */}
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-16" />
+          {/* Row 2: Filter context */}
+          <div className="space-y-1.5">
+            <Skeleton className="h-3 w-20 rounded-md" />
+            <div className="flex items-center gap-2 overflow-hidden">
+              <Skeleton className="h-4 w-24 rounded-md shrink-0" />
+              <Skeleton className="h-4 w-16 rounded-md shrink-0" />
+              <Skeleton className="h-4 w-20 rounded-md shrink-0" />
+              <Skeleton className="h-4 w-10 rounded-md shrink-0 ml-auto" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* ===== DESKTOP SKELETON ===== */}
-      <header className={cn(
-        "hidden sm:block sticky z-30 bg-background border-b border-transparent",
-        "[&:not(:first-child)]:border-sidebar-border/50",
-        embedded ? "top-0" : "top-16"
-      )}>
+      <header className="hidden sm:block z-30 bg-background border-b border-transparent [&:not(:first-child)]:border-sidebar-border/50">
         <div className="py-3 sm:py-4">
           {/* Search Row */}
           <div className="flex flex-wrap items-center gap-2">
@@ -1524,12 +1510,15 @@ function ListingsHeaderSkeletonComponent({ embedded = false }: ListingsHeaderSke
             </div>
           </div>
 
-          {/* Dynamic Island skeleton */}
-          <div className="flex items-center gap-3 mt-3 h-10">
-            <Skeleton className="h-7 w-16 rounded-full" />
-            <Skeleton className="h-7 w-20 rounded-full" />
-            <Skeleton className="h-7 w-24 rounded-full" />
-            <Skeleton className="h-7 w-18 rounded-full" />
+          {/* Filter summary skeleton */}
+          <div className="mt-3 space-y-2">
+            <Skeleton className="h-3.5 w-24 rounded-md" />
+            <div className="flex items-center gap-2 overflow-hidden">
+              <Skeleton className="h-5 w-20 rounded-md shrink-0" />
+              <Skeleton className="h-5 w-24 rounded-md shrink-0" />
+              <Skeleton className="h-5 w-18 rounded-md shrink-0" />
+              <Skeleton className="h-5 w-12 rounded-md shrink-0" />
+            </div>
           </div>
         </div>
       </header>

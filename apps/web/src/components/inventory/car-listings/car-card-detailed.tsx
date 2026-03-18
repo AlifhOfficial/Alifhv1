@@ -322,11 +322,17 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
   // Handlers with useCallback to prevent recreation on every render
   const handleShare = useCallback(async () => {
     await shareListing({
-      listingIdOrSlug: listing.slug || listing.id,
-      title: carTitle,
-      details: `${formatPrice(listing.price)} • ${formatMileage(listing.mileage)} km • ${formatEnumValue(listing.specs)} Specs • ${listing.emirate}`,
+      listingId: listing.id,
+      year: listing.year,
+      make: listing.make,
+      model: listing.model,
+      trim: listing.trim,
+      price: listing.price,
+      mileage: listing.mileage,
+      emirate: listing.emirate,
+      specs: listing.specs,
     });
-  }, [listing.slug, listing.id, listing.price, listing.mileage, listing.specs, listing.emirate, carTitle]);
+  }, [listing.id, listing.year, listing.make, listing.model, listing.trim, listing.price, listing.mileage, listing.emirate, listing.specs]);
 
   const handleFavoriteClick = useCallback(() => {
     if (!isSignedIn) {

@@ -167,11 +167,21 @@ function PageSkeleton() {
   return (
     <div className="min-h-screen bg-background pt-16 sm:pt-20 overflow-y-auto scrollbar-hide">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex gap-0">
-          <div className="w-64 flex-shrink-0 hidden lg:block" />
-          <main className="flex-1 min-w-0 lg:pl-8 overflow-y-auto scrollbar-hide">
+        <div className="hidden lg:grid h-[calc(100dvh-4rem)] grid-cols-[16rem_minmax(0,1fr)] gap-x-6 overflow-hidden">
+          <div className="h-full rounded-2xl bg-muted/10" />
+          <main className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)]">
             <div className="h-20 bg-muted/20 rounded-lg animate-pulse" />
-            <div className="mt-4 sm:mt-6 md:mt-8 space-y-3">
+            <div className="mt-4 min-h-0 space-y-3 overflow-hidden sm:mt-6 md:mt-8">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-32 bg-muted/20 rounded-lg animate-pulse" />
+              ))}
+            </div>
+          </main>
+        </div>
+        <div className="lg:hidden">
+          <main className="min-w-0 overflow-y-auto scrollbar-hide">
+            <div className="h-20 bg-muted/20 rounded-lg animate-pulse" />
+            <div className="mt-4 space-y-3 sm:mt-6 md:mt-8">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="h-32 bg-muted/20 rounded-lg animate-pulse" />
               ))}

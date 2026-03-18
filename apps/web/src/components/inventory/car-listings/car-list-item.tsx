@@ -142,13 +142,18 @@ export function CarListItem({
   const showSuperlikeLimit = showSuperlikeLimitRaw && !authDialogOpen;
 
   const handleShare = useCallback(async () => {
-    const title = `${year} ${make} ${model}${trim ? ` ${trim}` : ''}`;
-
     await shareListing({
-      listingIdOrSlug: id,
-      title,
+      listingId: id,
+      year,
+      make,
+      model,
+      trim,
+      price,
+      mileage,
+      emirate,
+      specs,
     });
-  }, [id, year, make, model, trim]);
+  }, [id, year, make, model, trim, price, mileage, emirate, specs]);
 
   const handleSuperlikeClick = useCallback(() => {
     // Check if user is authenticated first - show auth modal without API call

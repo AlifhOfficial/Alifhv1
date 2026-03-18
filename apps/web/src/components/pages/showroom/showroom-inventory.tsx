@@ -182,7 +182,6 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
                     activeFilterCount={activeFilterCount}
                     isLoading={isLoading}
                     listings={listings}
-                    embedded={true}
                     sidebarOpen={false}
                     onSidebarToggle={setSidebarOpen}
                     mobileFiltersOpen={mobileFiltersOpen}
@@ -244,7 +243,6 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
                       activeFilterCount={activeFilterCount}
                       isLoading={isLoading}
                       listings={listings}
-                      embedded={true}
                       sidebarOpen={sidebarOpen}
                       onSidebarToggle={setSidebarOpen}
                       mobileFiltersOpen={mobileFiltersOpen}
