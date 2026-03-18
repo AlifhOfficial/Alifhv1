@@ -26,18 +26,6 @@ type ListingPayload = {
   thumbnail: string | null;
 };
 
-async function fetchNavbarListings(ids: string[]): Promise<ListingPayload[]> {
-  if (!ids.length) return [];
-  // Take the 3 most recent favorites
-  const topIds = ids.slice(0, 3);
-  const res = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(topIds.join(','))}`, {
-    credentials: 'include',
-  });
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.data || [];
-}
-
 export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
   const [isOpen, setIsOpen] = useState(false);
   
@@ -45,18 +33,15 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
   
   // Only fetch when dropdown is open AND signed in (lazy load)
   const { data: favoritesData, isLoading: isLoadingFavorites } = useFavoritesStatus({ enabled: isSignedIn && isOpen });
-  const favoriteIds = favoritesData?.favorites ?? [];
+  const favoriteIds = useMemo(() => favoritesData?.favorites ?? [], [favoritesData?.favorites]);
   const count = favoriteIds.length;
 
-  // Fetch listings for navbar - only when dropdown is open
-  const { data: listings = [], isLoading: isLoadingListings } = useQuery({
+  const { data: listings = [], isLoading: isLoadingListings } = useQuery<ListingPayload[]>({
     queryKey: ['navbar-favorites-listings'],
-    queryFn: () => fetchNavbarListings(favoriteIds),
-
+    queryFn: async () => [],
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    // Only fetch when dropdown is open and we have favorites
-    enabled: isOpen && favoriteIds.length > 0,
+    enabled: false,
   });
 
   // Create a map for quick lookup, then order by favoriteIds (preserves order)

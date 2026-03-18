@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useMemo } from 'react';
 import { CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 
 interface Service {
@@ -32,6 +32,7 @@ interface StatusData {
     severity: string;
     createdAt: string;
   }>;
+  lastUpdated?: string;
 }
 
 interface StatusPageClientProps {
@@ -66,72 +67,20 @@ const statusConfig = {
 };
 
 export function StatusPageClient({ initialData }: StatusPageClientProps) {
-  const [data, setData] = useState<StatusData>(initialData);
-  const [isConnected, setIsConnected] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState<string>('');
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const data = initialData;
+  const lastUpdated = useMemo(() => {
+    if (!data.lastUpdated) {
+      return 'Just now';
+    }
 
-  // Set time on mount only
-  useEffect(() => {
-    setLastUpdated(new Date().toLocaleTimeString());
-  }, []);
-
-  // SSE connection
-  useEffect(() => {
-    const connect = () => {
-      const es = new EventSource('/api/status/stream');
-      eventSourceRef.current = es;
-
-      es.onopen = () => setIsConnected(true);
-
-      es.onmessage = (event) => {
-        try {
-          const streamData = JSON.parse(event.data);
-          // Only update status fields, preserve displayName and history
-          setData((prev) => ({
-            ...prev,
-            overallStatus: streamData.overallStatus || prev.overallStatus,
-            services: prev.services.map((svc) => {
-              const updated = streamData.services?.find(
-                (s: { name: string }) => s.name === svc.name
-              );
-              if (updated) {
-                return {
-                  ...svc,
-                  currentStatus: updated.status || svc.currentStatus,
-                  currentLatency: updated.latency ?? svc.currentLatency,
-                };
-              }
-              return svc;
-            }),
-          }));
-          setLastUpdated(new Date().toLocaleTimeString());
-        } catch {
-          // Ignore parse errors
-        }
-      };
-
-      es.onerror = () => {
-        setIsConnected(false);
-        es.close();
-        // Reconnect after 10s
-        setTimeout(connect, 10000);
-      };
-    };
-
-    connect();
-
-    return () => {
-      eventSourceRef.current?.close();
-    };
-  }, []);
+    return new Date(data.lastUpdated).toLocaleTimeString();
+  }, [data.lastUpdated]);
 
   const overallConfig = statusConfig[data.overallStatus] || statusConfig.healthy;
   const OverallIcon = overallConfig.icon;
 
   return (
     <>
-      {/* Hero */}
       <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10 space-y-4">
@@ -145,7 +94,7 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
               Revvup Status
             </h1>
             <p className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-              Real-time status of all Revvup services and infrastructure.
+              On-demand status of all Revvup services and infrastructure.
             </p>
           </div>
 
@@ -157,11 +106,13 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
                 {overallConfig.label}
               </span>
             </div>
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              Last checked at {lastUpdated}
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Services */}
       <section className="pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6">
@@ -184,7 +135,6 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
                   key={service.name}
                   className="rounded-xl border border-border/40 bg-sidebar p-5"
                 >
-                  {/* Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-semibold text-foreground">
@@ -204,7 +154,6 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
                     </div>
                   </div>
 
-                  {/* History Bars */}
                   <div className="flex gap-[2px] h-8 mb-3">
                     {history.length > 0 ? (
                       history.map((day) => {
@@ -224,7 +173,6 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
                     )}
                   </div>
 
-                  {/* Footer */}
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>90 days ago</span>
                     <span className="font-medium">{service.uptimePercent90d ?? 100}% uptime</span>
@@ -237,7 +185,6 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
         </div>
       </section>
 
-      {/* Incidents */}
       <section className="pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6">
@@ -258,24 +205,6 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground'
-                }`}
-              />
-              <span>{isConnected ? 'Live' : 'Connecting...'}</span>
-            </div>
-            <span>·</span>
-            <span suppressHydrationWarning>Updated: {lastUpdated || '—'}</span>
-          </div>
-        </div>
-      </footer>
     </>
   );
 }

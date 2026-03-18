@@ -14,7 +14,6 @@ import {
   getBookings,
   manageBooking,
   checkBookingRestrictions,
-  runBookingMaintenance,
   type BookingStatus,
   type BookingAction,
   type CancellationReason,
@@ -40,9 +39,6 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    // Fire-and-forget maintenance
-    runBookingMaintenance().catch(() => {});
 
     const { searchParams } = new URL(req.url);
     
@@ -107,9 +103,6 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    // Fire-and-forget maintenance
-    runBookingMaintenance().catch(() => {});
 
     const body = await req.json();
     const { action = 'create', ...data } = body;

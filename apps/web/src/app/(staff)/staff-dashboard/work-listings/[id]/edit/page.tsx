@@ -5,28 +5,33 @@
  */
 
 import { redirect, notFound } from 'next/navigation';
-import { cookies } from 'next/headers';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { EditListingView } from '@/components/listings/edit-listing';
+import {
+  getActivePartnerStaffMembershipByUserIdAndPartnerId,
+  getListingDetailed,
+} from '@alifh/database';
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 async function fetchListing(id: string) {
-  const cookieStore = await cookies();
-  const cookieHeader = cookieStore.getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ');
-  
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  const res = await fetch(`${baseUrl}/api/listings/${id}`, {
-    headers: { Cookie: cookieHeader },
-    cache: 'no-store',
-  });
-  
-  if (!res.ok) return null;
-  return res.json();
+  return getListingDetailed(id);
+}
+
+async function canManagePartnerListing(
+  user: { id: string; partnerMemberships?: any[] },
+  partnerId: string
+): Promise<boolean> {
+  const sessionMembership = user.partnerMemberships?.find((m) => m.partnerId === partnerId);
+  const roleFromSession = (sessionMembership as any)?.staffRole as string | undefined;
+  if (sessionMembership) {
+    return roleFromSession !== 'viewer';
+  }
+
+  const dbMembership = await getActivePartnerStaffMembershipByUserIdAndPartnerId(user.id, partnerId);
+  return !!dbMembership && dbMembership.role !== 'viewer';
 }
 
 export default async function StaffEditWorkListingPage({ params }: PageProps) {
@@ -49,10 +54,11 @@ export default async function StaffEditWorkListingPage({ params }: PageProps) {
 
   const isAdmin = (user as any).role === 'admin' || (user as any).role === 'super_admin';
   const isOwner = listing.userId === user.id;
-  const membership = (user as any).partnerMemberships?.find((m: any) => m.partnerId === listing.partnerId);
-  const staffRole = membership?.staffRole;
+  const canManagePartner = listing.partnerId
+    ? await canManagePartnerListing(user as any, listing.partnerId)
+    : false;
 
-  if (!isAdmin && !isOwner && (!membership || staffRole === 'viewer')) {
+  if (!isAdmin && !isOwner && !canManagePartner) {
     redirect('/access-denied');
   }
 

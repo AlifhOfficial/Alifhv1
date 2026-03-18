@@ -185,6 +185,9 @@ export async function getBookings(params: GetBookingsParams): Promise<GetBooking
     offset = 0,
   } = params;
 
+  const now = new Date();
+  const effectiveStatusSql = getEffectiveBookingStatusSql(now);
+
   // Build WHERE conditions
   const conditions: SQL[] = [];
 
@@ -220,7 +223,9 @@ export async function getBookings(params: GetBookingsParams): Promise<GetBooking
 
   // Status filter
   if (status && status.length > 0) {
-    conditions.push(inArray(booking.status, status));
+    conditions.push(
+      or(...status.map((value) => sql`${effectiveStatusSql} = ${value}`))!
+    );
   }
 
   // Date range
@@ -233,8 +238,13 @@ export async function getBookings(params: GetBookingsParams): Promise<GetBooking
 
   // Upcoming only
   if (upcoming) {
-    conditions.push(gte(booking.scheduledStartTime, new Date()));
-    conditions.push(inArray(booking.status, ACTIVE_STATUSES));
+    conditions.push(gte(booking.scheduledStartTime, now));
+    conditions.push(
+      or(
+        sql`${effectiveStatusSql} = 'pending'`,
+        sql`${effectiveStatusSql} = 'confirmed'`
+      )!
+    );
   }
 
   // Search query (user name, email, listing title, confirmation token)
@@ -263,7 +273,7 @@ export async function getBookings(params: GetBookingsParams): Promise<GetBooking
     .select({
       // Booking fields
       id: booking.id,
-      status: booking.status,
+      status: effectiveStatusSql.as('effective_status'),
       source: booking.source,
       scheduledDate: booking.scheduledDate,
       scheduledStartTime: booking.scheduledStartTime,
@@ -424,7 +434,6 @@ export async function getBookings(params: GetBookingsParams): Promise<GetBooking
     const statsUserId = userId;
     const statsStaffUserId = staffUserId;
     
-    const now = new Date();
     const todayStart = new Date(now);
     todayStart.setUTCHours(0, 0, 0, 0);
     const todayEnd = new Date(now);
@@ -443,14 +452,14 @@ export async function getBookings(params: GetBookingsParams): Promise<GetBooking
       ? db
           .select({
             total: sql<number>`count(*)::int`,
-            pending: sql<number>`count(*) filter (where ${booking.status} = 'pending')::int`,
-            confirmed: sql<number>`count(*) filter (where ${booking.status} = 'confirmed')::int`,
-            completed: sql<number>`count(*) filter (where ${booking.status} = 'completed')::int`,
-            cancelled: sql<number>`count(*) filter (where ${booking.status} = 'cancelled')::int`,
-            rejected: sql<number>`count(*) filter (where ${booking.status} = 'rejected')::int`,
-            noShow: sql<number>`count(*) filter (where ${booking.status} = 'no_show')::int`,
+            pending: sql<number>`count(*) filter (where ${effectiveStatusSql} = 'pending')::int`,
+            confirmed: sql<number>`count(*) filter (where ${effectiveStatusSql} = 'confirmed')::int`,
+            completed: sql<number>`count(*) filter (where ${effectiveStatusSql} = 'completed')::int`,
+            cancelled: sql<number>`count(*) filter (where ${effectiveStatusSql} = 'cancelled')::int`,
+            rejected: sql<number>`count(*) filter (where ${effectiveStatusSql} = 'rejected')::int`,
+            noShow: sql<number>`count(*) filter (where ${effectiveStatusSql} in ('no_show', 'expired'))::int`,
             todayCount: sql<number>`count(*) filter (where ${booking.scheduledDate} >= ${todayStart} and ${booking.scheduledDate} <= ${todayEnd})::int`,
-            upcomingCount: sql<number>`count(*) filter (where ${booking.scheduledStartTime} >= ${now} and ${booking.status} in ('pending', 'confirmed'))::int`,
+            upcomingCount: sql<number>`count(*) filter (where ${booking.scheduledStartTime} >= ${now} and ${effectiveStatusSql} in ('pending', 'confirmed'))::int`,
           })
           .from(booking)
           .innerJoin(carListing, eq(booking.listingId, carListing.id))
@@ -458,14 +467,14 @@ export async function getBookings(params: GetBookingsParams): Promise<GetBooking
       : db
           .select({
             total: sql<number>`count(*)::int`,
-            pending: sql<number>`count(*) filter (where ${booking.status} = 'pending')::int`,
-            confirmed: sql<number>`count(*) filter (where ${booking.status} = 'confirmed')::int`,
-            completed: sql<number>`count(*) filter (where ${booking.status} = 'completed')::int`,
-            cancelled: sql<number>`count(*) filter (where ${booking.status} = 'cancelled')::int`,
-            rejected: sql<number>`count(*) filter (where ${booking.status} = 'rejected')::int`,
-            noShow: sql<number>`count(*) filter (where ${booking.status} = 'no_show')::int`,
+            pending: sql<number>`count(*) filter (where ${effectiveStatusSql} = 'pending')::int`,
+            confirmed: sql<number>`count(*) filter (where ${effectiveStatusSql} = 'confirmed')::int`,
+            completed: sql<number>`count(*) filter (where ${effectiveStatusSql} = 'completed')::int`,
+            cancelled: sql<number>`count(*) filter (where ${effectiveStatusSql} = 'cancelled')::int`,
+            rejected: sql<number>`count(*) filter (where ${effectiveStatusSql} = 'rejected')::int`,
+            noShow: sql<number>`count(*) filter (where ${effectiveStatusSql} in ('no_show', 'expired'))::int`,
             todayCount: sql<number>`count(*) filter (where ${booking.scheduledDate} >= ${todayStart} and ${booking.scheduledDate} <= ${todayEnd})::int`,
-            upcomingCount: sql<number>`count(*) filter (where ${booking.scheduledStartTime} >= ${now} and ${booking.status} in ('pending', 'confirmed'))::int`,
+            upcomingCount: sql<number>`count(*) filter (where ${booking.scheduledStartTime} >= ${now} and ${effectiveStatusSql} in ('pending', 'confirmed'))::int`,
           })
           .from(booking)
           .where(baseWhere);
@@ -491,6 +500,16 @@ export async function getBookings(params: GetBookingsParams): Promise<GetBooking
 // ============================================================================
 // HELPERS
 // ============================================================================
+
+function getEffectiveBookingStatusSql(now: Date) {
+  return sql<BookingStatus>`
+    CASE
+      WHEN ${booking.status} = 'pending' AND ${booking.scheduledStartTime} < ${now} THEN 'expired'
+      WHEN ${booking.status} = 'confirmed' AND ${booking.scheduledStartTime} < ${now} THEN 'no_show'
+      ELSE ${booking.status}
+    END
+  `;
+}
 
 function formatListingTitle(
   year: number | null,

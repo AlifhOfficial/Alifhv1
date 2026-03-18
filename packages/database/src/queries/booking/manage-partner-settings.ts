@@ -6,7 +6,7 @@
  * @module queries/booking/manage-partner-settings
  */
 
-import { eq, and, isNull, or, gte, lt, inArray } from 'drizzle-orm';
+import { eq, and, isNull, or, gte, lt, inArray, sql } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 import { db } from '../../dbclient';
 import { partnerAvailability, partnerBookingSettings, booking } from '../../schema/booking';
@@ -547,13 +547,15 @@ export async function getAvailableSlots(
   dayStart.setUTCHours(0, 0, 0, 0);
   const dayEnd = new Date(date);
   dayEnd.setUTCHours(23, 59, 59, 999);
+  const now = new Date();
+  const effectiveBookingStatusSql = getEffectiveBookingStatusSql(now);
 
   // Build where conditions
   const bookingConditions = [
     eq(booking.partnerId, partnerId),
     gte(booking.scheduledDate, dayStart),
     lt(booking.scheduledDate, dayEnd),
-    inArray(booking.status, ['pending', 'confirmed']),
+    sql`${effectiveBookingStatusSql} in ('pending', 'confirmed')`,
   ];
 
   let existingBookings: { scheduledStartTime: Date; scheduledEndTime: Date }[];
@@ -597,7 +599,6 @@ export async function getAvailableSlots(
   });
 
   // Check if same-day booking is blocked
-  const now = new Date();
   const todayStr = now.toISOString().split('T')[0];
   if (dateStr === todayStr && staffSettings?.allowSameDayBooking === false) {
     return [];
@@ -658,6 +659,16 @@ export async function getAvailableSlots(
   }
 
   return slots;
+}
+
+function getEffectiveBookingStatusSql(now: Date) {
+  return sql`
+    CASE
+      WHEN ${booking.status} = 'pending' AND ${booking.scheduledStartTime} < ${now} THEN 'expired'
+      WHEN ${booking.status} = 'confirmed' AND ${booking.scheduledStartTime} < ${now} THEN 'no_show'
+      ELSE ${booking.status}
+    END
+  `;
 }
 
 /**

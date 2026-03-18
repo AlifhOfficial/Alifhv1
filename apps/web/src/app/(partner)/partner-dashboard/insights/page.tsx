@@ -7,7 +7,9 @@ import { redirect } from 'next/navigation';
 import { getPartnerDescriptiveStats } from '@alifh/database';
 import { PartnerInsightsView } from '@/components/partner/insights';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getHealthCheckResponse } from '@/lib/health';
+import { getCachedHealthCheckResponse } from '@/lib/health';
+
+const DASHBOARD_HEALTH_CACHE_TTL_MS = 60 * 60 * 1000;
 
 export default async function PartnerInsightsPage() {
   const user = await getSessionUser();
@@ -29,7 +31,7 @@ export default async function PartnerInsightsPage() {
 
   const [stats, health] = await Promise.all([
     getPartnerDescriptiveStats(partnerMembership.partnerId),
-    getHealthCheckResponse(),
+    getCachedHealthCheckResponse(DASHBOARD_HEALTH_CACHE_TTL_MS),
   ]);
 
   return (

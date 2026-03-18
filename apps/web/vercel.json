@@ -7,14 +7,6 @@
     {
       "path": "/api/cron/sync-google-reviews",
       "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/cron/health-check",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/cron/booking-maintenance",
-      "schedule": "*/5 * * * *"
     }
   ]
 }

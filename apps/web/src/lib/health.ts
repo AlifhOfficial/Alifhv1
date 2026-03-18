@@ -18,6 +18,14 @@ export interface HealthCheckResponse {
   };
 }
 
+const healthResponseCache = new Map<
+  number,
+  {
+    result: HealthCheckResponse;
+    expiresAt: number;
+  }
+>();
+
 const WS_HEALTH_URL = process.env.NEXT_PUBLIC_WS_URL
   ? `${process.env.NEXT_PUBLIC_WS_URL.replace('ws://', 'http://').replace('wss://', 'https://')}/health`
   : 'http://localhost:3001/health';
@@ -161,4 +169,22 @@ export async function getHealthCheckResponse(): Promise<HealthCheckResponse> {
     uptime: process.uptime(),
     services: { database, websocket, runtime },
   };
+}
+
+export async function getCachedHealthCheckResponse(ttlMs: number): Promise<HealthCheckResponse> {
+  const now = Date.now();
+  const cached = healthResponseCache.get(ttlMs);
+
+  if (cached && cached.expiresAt > now) {
+    return cached.result;
+  }
+
+  const result = await getHealthCheckResponse();
+
+  healthResponseCache.set(ttlMs, {
+    result,
+    expiresAt: now + ttlMs,
+  });
+
+  return result;
 }

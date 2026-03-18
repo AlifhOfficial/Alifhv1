@@ -405,24 +405,31 @@ export async function getPartnerInsightsBookingStats(partnerId: string): Promise
   const now = new Date();
   const monthStart = getMonthStart(now);
   const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const effectiveBookingStatusSql = sql`
+    CASE
+      WHEN ${booking.status} = 'pending' AND ${booking.scheduledStartTime} < ${now} THEN 'expired'
+      WHEN ${booking.status} = 'confirmed' AND ${booking.scheduledStartTime} < ${now} THEN 'no_show'
+      ELSE ${booking.status}
+    END
+  `;
 
   // Single query with conditional aggregation for all booking stats
   const [stats] = await db
     .select({
       // Pending bookings
-      pendingBookings: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'pending')`,
+      pendingBookings: sql<number>`COUNT(*) FILTER (WHERE ${effectiveBookingStatusSql} = 'pending')`,
       // Confirmed bookings (upcoming)
-      confirmedBookings: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'confirmed' AND ${booking.scheduledStartTime} >= ${now})`,
+      confirmedBookings: sql<number>`COUNT(*) FILTER (WHERE ${effectiveBookingStatusSql} = 'confirmed' AND ${booking.scheduledStartTime} >= ${now})`,
       // Completed this month
-      completedThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'completed' AND ${booking.scheduledStartTime} >= ${monthStart})`,
+      completedThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${effectiveBookingStatusSql} = 'completed' AND ${booking.scheduledStartTime} >= ${monthStart})`,
       // Bookings this week
       bookingsThisWeek: sql<number>`COUNT(*) FILTER (WHERE ${booking.createdAt} >= ${weekStart})`,
       // For no-show rate: past bookings this month
       totalPastBookingsMonth: sql<number>`COUNT(*) FILTER (WHERE ${booking.scheduledStartTime} >= ${monthStart} AND ${booking.scheduledStartTime} < ${now})`,
-      noShowCount: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'no_show' AND ${booking.scheduledStartTime} >= ${monthStart})`,
+      noShowCount: sql<number>`COUNT(*) FILTER (WHERE ${effectiveBookingStatusSql} in ('no_show', 'expired') AND ${booking.scheduledStartTime} >= ${monthStart})`,
       // For cancellation rate: bookings created this month
       totalCreatedMonth: sql<number>`COUNT(*) FILTER (WHERE ${booking.createdAt} >= ${monthStart})`,
-      cancelledCount: sql<number>`COUNT(*) FILTER (WHERE ${booking.status} = 'cancelled' AND ${booking.createdAt} >= ${monthStart})`,
+      cancelledCount: sql<number>`COUNT(*) FILTER (WHERE ${effectiveBookingStatusSql} = 'cancelled' AND ${booking.createdAt} >= ${monthStart})`,
     })
     .from(booking)
     .where(eq(booking.partnerId, partnerId));

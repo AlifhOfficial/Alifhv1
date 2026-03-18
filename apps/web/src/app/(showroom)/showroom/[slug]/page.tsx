@@ -5,16 +5,18 @@
  * Philosophy: Less is more. Let the brand breathe.
  * 
  * Architecture:
- * - Metadata: Server-side via API fetch for SEO
- * - Page content: Client component that fetches via API hook
- * 
- * No direct database imports - all data comes through /api/showroom/[slug]
+ * - Metadata: Server-side via shared server helpers
+ * - Page content: Client component hydrated from SSR data
  */
 
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { ShowroomPageClient } from './client';
+import {
+  getCachedPublicShowroom,
+  getCachedPublicShowroomListings,
+  incrementPublicShowroomViews,
+} from '@/lib/showroom-public';
 
 // ============================================================================
 // Types
@@ -35,7 +37,7 @@ interface ShowroomPageProps {
 export async function generateStaticParams() {
   // Skip during build time when DATABASE_URL is not available
   if (!process.env.DATABASE_URL) {
-    console.log('[generateStaticParams] Skipping - no DATABASE_URL (build time)');
+    console.warn('[generateStaticParams] Skipping - no DATABASE_URL (build time)');
     return [];
   }
   
@@ -74,26 +76,7 @@ export async function generateStaticParams() {
 // ============================================================================
 
 async function fetchShowroomMetadata(slug: string) {
-  try {
-    // Get host from headers for absolute URL
-    const headersList = await headers();
-    const host = headersList.get('host') || 'localhost:3000';
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    
-    const response = await fetch(`${protocol}://${host}/api/showroom/${encodeURIComponent(slug)}`, {
-      next: { revalidate: 600 }, // 10 min cache
-      cache: 'force-cache',
-    });
-    
-    if (!response.ok) {
-      return null; // Return null for 404s
-    }
-    
-    const data = await response.json();
-    return data.showroom;
-  } catch {
-    return null; // Return null on error
-  }
+  return getCachedPublicShowroom(slug);
 }
 
 /**
@@ -102,26 +85,7 @@ async function fetchShowroomMetadata(slug: string) {
  */
 async function fetchShowroomListings(partnerId: string, partnerName: string) {
   try {
-    const headersList = await headers();
-    const host = headersList.get('host') || 'localhost:3000';
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    
-    const params = new URLSearchParams({
-      partnerId: partnerId,
-      partnerName: partnerName,
-      limit: '24',
-    });
-    
-    const response = await fetch(`${protocol}://${host}/api/listings/search?${params}`, {
-      next: { revalidate: 300 }, // 5 min cache
-      cache: 'force-cache',
-    });
-    
-    if (!response.ok) {
-      return null;
-    }
-    
-    return await response.json();
+    return await getCachedPublicShowroomListings(partnerId, partnerName);
   } catch {
     return null;
   }
@@ -205,6 +169,8 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
   if (!showroom) {
     notFound();
   }
+
+  incrementPublicShowroomViews(showroom.id);
   
   // Fetch initial listings server-side to avoid client-side waterfall
   const initialListings = showroom.partner?.id 
@@ -222,7 +188,7 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
           rel="preload" 
           href={heroVideoUrl} 
           as="video" 
-          // @ts-ignore - fetchpriority is valid but not in types
+          // @ts-expect-error - fetchpriority is valid but not in React link types
           fetchpriority="high"
         />
       )}
@@ -232,7 +198,7 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
           rel="preload" 
           href={heroImageUrl} 
           as="image" 
-          // @ts-ignore
+          // @ts-expect-error - fetchpriority is valid but not in React link types
           fetchpriority="high"
         />
       )}

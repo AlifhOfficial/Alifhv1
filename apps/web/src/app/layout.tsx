@@ -8,7 +8,7 @@ import { AuthProvider } from '@/providers/auth-provider'
 import { GlobalChatProvider } from '@/components/shared/providers/global-chat-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { getSessionUser } from '@/lib/auth/session-context'
-import { getFavoriteStatusForListings, getSuperlikeQuotaForUser, getUserConversations } from '@alifh/database'
+import { getFavoritesWithListings, getSuperlikeQuotaForUser, getUserConversations } from '@alifh/database'
 import {
   BRAND_APPLE_TOUCH_ICON_URL,
   BRAND_FAVICON_ICO_URL,
@@ -96,15 +96,15 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const initialSession = await getSessionUser();
+  const initialFavoriteData = initialSession
+    ? await getFavoritesWithListings(initialSession.id, { limit: 3 })
+    : undefined;
   const initialFavoritesStatus = initialSession
     ? await (async () => {
-        const [{ favorites, superlikes }, quota] = await Promise.all([
-          getFavoriteStatusForListings(initialSession.id),
-          getSuperlikeQuotaForUser(initialSession.id),
-        ]);
+        const quota = await getSuperlikeQuotaForUser(initialSession.id);
         return {
-          favorites,
-          superlikes,
+          favorites: initialFavoriteData?.favorites ?? [],
+          superlikes: initialFavoriteData?.superlikes ?? [],
           quota: {
             currentMonthSuperlikesUsed: quota.currentMonthSuperlikesUsed,
             maxSuperlikesPerMonth: quota.maxSuperlikesPerMonth,
@@ -118,6 +118,14 @@ export default async function RootLayout({
         };
       })()
     : undefined;
+  const initialNavbarFavoriteListings = initialFavoriteData?.listings.map((listing) => ({
+    id: listing.id,
+    make: listing.make,
+    model: listing.model,
+    year: listing.year,
+    price: listing.price,
+    thumbnail: listing.thumbnail,
+  }));
   const initialPersonalConversations = initialSession
     ? await (async () => {
         const partnerIds = (initialSession.partnerMemberships ?? [])
@@ -169,6 +177,7 @@ export default async function RootLayout({
           <AuthProvider initialSession={initialSession}>
             <QueryProvider
               initialFavoritesStatus={initialFavoritesStatus}
+              initialNavbarFavoriteListings={initialNavbarFavoriteListings}
               initialPersonalConversations={initialPersonalConversations}
               initialUserId={initialSession?.id}
             >

@@ -1,7 +1,9 @@
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getUserDashboardStats, getTotalUnreadCount } from '@alifh/database';
 import { UserDashboardOverview } from '@/components/dashboards/user/user-dashboard-overview';
-import { getHealthCheckResponse } from '@/lib/health';
+import { getCachedHealthCheckResponse } from '@/lib/health';
+
+const DASHBOARD_HEALTH_CACHE_TTL_MS = 60 * 60 * 1000;
 
 export default async function UserDashboard() {
   const user = await getSessionUser();
@@ -10,7 +12,7 @@ export default async function UserDashboard() {
   const [stats, unreadCount, health] = await Promise.all([
     getUserDashboardStats(user.id),
     getTotalUnreadCount(user.id),
-    getHealthCheckResponse(),
+    getCachedHealthCheckResponse(DASHBOARD_HEALTH_CACHE_TTL_MS),
   ]);
 
   const memberSince = user.createdAt

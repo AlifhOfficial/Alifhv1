@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/query-client";
 import type { FavoritesStatusData } from "@/hooks/engagement/favorites/use-favorites-unified";
@@ -9,6 +8,14 @@ import type { ConversationsResponse } from "@/hooks/messaging/use-conversations"
 interface QueryProviderProps {
   children: React.ReactNode;
   initialFavoritesStatus?: FavoritesStatusData;
+  initialNavbarFavoriteListings?: Array<{
+    id: string;
+    make: string | null;
+    model: string | null;
+    year: number | null;
+    price: number | null;
+    thumbnail: string | null;
+  }>;
   initialPersonalConversations?: ConversationsResponse;
   initialUserId?: string;
 }
@@ -16,12 +23,11 @@ interface QueryProviderProps {
 export function QueryProvider({
   children,
   initialFavoritesStatus,
+  initialNavbarFavoriteListings,
   initialPersonalConversations,
   initialUserId,
 }: QueryProviderProps) {
   const queryClient = getQueryClient();
-  const hydratedFavoritesRef = useRef(false);
-  const hydratedPersonalConversationsRef = useRef(false);
 
   // Preserve server-seeded singleton queries before any observers mount.
   queryClient.setQueryDefaults(['favorites-status'], {
@@ -42,14 +48,16 @@ export function QueryProvider({
     });
   }
 
-  if (initialFavoritesStatus && !hydratedFavoritesRef.current) {
+  if (initialFavoritesStatus) {
     queryClient.setQueryData(['favorites-status'], initialFavoritesStatus);
-    hydratedFavoritesRef.current = true;
   }
 
-  if (initialPersonalConversations && initialUserId && !hydratedPersonalConversationsRef.current) {
+  if (initialNavbarFavoriteListings) {
+    queryClient.setQueryData(['navbar-favorites-listings'], initialNavbarFavoriteListings);
+  }
+
+  if (initialPersonalConversations && initialUserId) {
     queryClient.setQueryData(['conversations', initialUserId, 'personal'], initialPersonalConversations);
-    hydratedPersonalConversationsRef.current = true;
   }
 
   return (
