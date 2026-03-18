@@ -128,7 +128,7 @@ export default function FAQPage() {
               </nav>
 
               <div>
-                <p className="text-xs text-muted-foreground/60 mb-3">Can't find an answer?</p>
+                <p className="text-xs text-muted-foreground/60 mb-3">Can&apos;t find an answer?</p>
                 <Link 
                   href="/contact" 
                   className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
@@ -225,7 +225,7 @@ export default function FAQPage() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <p className="text-sm font-semibold text-foreground">
-                          Results for "{searchQuery}"
+                          Results for &quot;{searchQuery}&quot;
                         </p>
                         <span className="text-xs text-muted-foreground/60 tabular-nums">
                           {searchResults.length} found
@@ -262,7 +262,7 @@ export default function FAQPage() {
                   ) : (
                     <div className="rounded-xl border border-sidebar-border bg-sidebar p-8 text-center">
                       <p className="text-sm font-medium text-foreground mb-2">
-                        No results for "{searchQuery}"
+                        No results for &quot;{searchQuery}&quot;
                       </p>
                       <p className="text-xs text-muted-foreground/70 mb-4">
                         Try different keywords or browse categories
@@ -319,7 +319,7 @@ export default function FAQPage() {
 
               {/* Mobile Contact CTA */}
               <div className="lg:hidden mt-10 pt-6">
-                <p className="text-xs text-muted-foreground/60 mb-3">Can't find an answer?</p>
+                <p className="text-xs text-muted-foreground/60 mb-3">Can&apos;t find an answer?</p>
                 <Link 
                   href="/contact" 
                   className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"

@@ -4,9 +4,9 @@
  */
 
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getBookings } from '@alifh/database';
+import { getBookings, managePartnerSettings } from '@alifh/database';
 import { StaffBookingsView } from '@/components/features/bookings/staff';
-import type { BookingData } from '@/components/features/bookings/staff/types';
+import type { AvailabilityRule, BookingData, BookingSettings } from '@/components/features/bookings/staff/types';
 
 type SearchParams = Record<string, string | string[] | undefined>;
 type BookingStatusFilter =
@@ -53,16 +53,25 @@ export default async function StaffBookingsPage({
   const partnerId = user.partnerMemberships?.[0]?.partnerId;
   const ITEMS_PER_PAGE = 50;
 
-  const result = await getBookings({
-    partnerId,
-    staffUserId: user.id,
-    includeStats: true,
-    sort: sortParam,
-    status: getStatusFilter(statusParam),
-    q: qParam || undefined,
-    limit: ITEMS_PER_PAGE,
-    offset: (pageParam - 1) * ITEMS_PER_PAGE,
-  });
+  const [result, settingsResult] = await Promise.all([
+    getBookings({
+      partnerId,
+      staffUserId: user.id,
+      includeStats: true,
+      sort: sortParam,
+      status: getStatusFilter(statusParam),
+      q: qParam || undefined,
+      limit: ITEMS_PER_PAGE,
+      offset: (pageParam - 1) * ITEMS_PER_PAGE,
+    }),
+    partnerId
+      ? managePartnerSettings({
+          partnerId,
+          staffUserId: user.id,
+          action: 'get',
+        })
+      : Promise.resolve({ success: true, availability: [], settings: null }),
+  ]);
 
   const initialData = {
     total: result.total,
@@ -96,9 +105,15 @@ export default async function StaffBookingsPage({
     })),
   };
 
+  const initialSettingsData = {
+    availability: (settingsResult.availability || []) as AvailabilityRule[],
+    settings: (settingsResult.settings || null) as BookingSettings | null,
+  };
+
   return (
     <StaffBookingsView
       initialData={initialData}
+      initialSettingsData={initialSettingsData}
       filters={{
         status: statusParam,
         sort: sortParam,

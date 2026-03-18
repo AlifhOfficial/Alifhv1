@@ -45,15 +45,18 @@ import {
 
 interface PartnerShowroomFormProps {
   partnerId: string;
+  initialShowroom?: PartnerShowroom | null;
 }
 
 // ============================================================================
 // Main Form Component
 // ============================================================================
 
-export function PartnerShowroomForm({ partnerId }: PartnerShowroomFormProps) {
+export function PartnerShowroomForm({ partnerId, initialShowroom = null }: PartnerShowroomFormProps) {
   const { toast } = useToast();
-  const { showroom, isLoading, updateShowroom, isUpdating, publish, unpublish, isPublishing } = usePartnerShowroom(partnerId);
+  const { showroom, isLoading, updateShowroom, isUpdating, publish, unpublish, isPublishing } = usePartnerShowroom(partnerId, {
+    initialShowroom,
+  });
 
   const [activeSection, setActiveSection] = useState<SectionId>('hero');
   const [editingField, setEditingField] = useState<EditingField>(null);

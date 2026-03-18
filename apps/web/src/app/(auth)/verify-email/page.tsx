@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useCallback, useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, XCircle, Loader2, ShieldX } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
@@ -17,19 +17,12 @@ function VerifyEmailForm() {
   const token = searchParams.get("token");
   const error = searchParams.get("error");
   const callbackURL = searchParams.get("callbackURL") || "/";
+  const isInvalidToken = error === 'invalid_token' || !token;
 
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'invalid'>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (error === 'invalid_token' || !token) {
-      setStatus('invalid');
-      return;
-    }
-    verifyEmail();
-  }, [token, error]);
-
-  const verifyEmail = async () => {
+  const verifyEmail = useCallback(async () => {
     if (!token) return;
 
     try {
@@ -51,33 +44,43 @@ function VerifyEmailForm() {
         router.push(`${destination}${destination.includes('?') ? '&' : '?'}auth=signin`);
       }, 1500);
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       setStatus('error');
-      setErrorMessage(err.message || "Verification failed");
+      setErrorMessage(err instanceof Error ? err.message : "Verification failed");
     }
-  };
+  }, [callbackURL, router, token]);
+
+  useEffect(() => {
+    if (isInvalidToken) return;
+    const timer = window.setTimeout(() => {
+      void verifyEmail();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [isInvalidToken, verifyEmail]);
+
+  const displayStatus = isInvalidToken ? 'invalid' : status;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="max-w-xs w-full text-center space-y-4">
         {/* Icon */}
         <div className="flex justify-center">
-          {status === 'loading' && (
+          {displayStatus === 'loading' && (
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
               <Loader2 className="h-6 w-6 text-primary animate-spin" />
             </div>
           )}
-          {status === 'success' && (
+          {displayStatus === 'success' && (
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
               <CheckCircle2 className="h-6 w-6 text-primary" />
             </div>
           )}
-          {status === 'error' && (
+          {displayStatus === 'error' && (
             <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
               <XCircle className="h-6 w-6 text-destructive" />
             </div>
           )}
-          {status === 'invalid' && (
+          {displayStatus === 'invalid' && (
             <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
               <ShieldX className="h-6 w-6 text-destructive" />
             </div>
@@ -87,23 +90,23 @@ function VerifyEmailForm() {
         {/* Message */}
         <div className="space-y-1">
           <h1 className="text-base font-semibold text-foreground tracking-tight">
-            {status === 'loading' && 'Verifying email...'}
-            {status === 'success' && 'Email verified'}
-            {status === 'error' && 'Verification failed'}
-            {status === 'invalid' && 'Invalid link'}
+            {displayStatus === 'loading' && 'Verifying email...'}
+            {displayStatus === 'success' && 'Email verified'}
+            {displayStatus === 'error' && 'Verification failed'}
+            {displayStatus === 'invalid' && 'Invalid link'}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {status === 'loading' && 'Please wait'}
-            {status === 'success' && 'Redirecting...'}
-            {status === 'error' && (errorMessage || 'Please try again')}
-            {status === 'invalid' && 'This link is invalid or expired'}
+            {displayStatus === 'loading' && 'Please wait'}
+            {displayStatus === 'success' && 'Redirecting...'}
+            {displayStatus === 'error' && (errorMessage || 'Please try again')}
+            {displayStatus === 'invalid' && 'This link is invalid or expired'}
           </p>
         </div>
 
         {/* Actions */}
-        {status !== 'loading' && status !== 'success' && (
+        {displayStatus !== 'loading' && displayStatus !== 'success' && (
           <div className="flex flex-col gap-2 pt-2">
-            {status === 'error' && (
+            {displayStatus === 'error' && (
               <button
                 onClick={verifyEmail}
                 className={cn(

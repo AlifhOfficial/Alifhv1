@@ -149,13 +149,13 @@ export async function GET(request: Request) {
   const origin = request.headers.get("origin");
   // Override baseURL header so Better Auth uses the correct origin for OAuth callbacks
   const baseURL = getBaseURLFromRequest(request);
-  const modifiedRequest = new Request(request.url, {
+  const requestInit: RequestInit & { duplex?: "half" } = {
     method: request.method,
     headers: new Headers([...request.headers.entries(), ["x-forwarded-host", new URL(baseURL).host]]),
     body: request.body,
-    // @ts-ignore - duplex is needed for streaming bodies
     duplex: "half",
-  });
+  };
+  const modifiedRequest = new Request(request.url, requestInit);
   const response = await auth.handler(modifiedRequest);
   return addCorsHeaders(applySessionCacheHeaders(response, request), origin);
 }
@@ -169,13 +169,13 @@ export async function POST(request: Request) {
   const contentLength = request.headers.get("content-length");
   const hasBody = contentLength && parseInt(contentLength) > 0;
   
-  const modifiedRequest = new Request(request.url, {
+  const requestInit: RequestInit & { duplex?: "half" } = {
     method: request.method,
     headers: new Headers([...request.headers.entries(), ["x-forwarded-host", new URL(baseURL).host]]),
     body: hasBody ? request.body : null,
-    // @ts-ignore - duplex is needed for streaming bodies
     ...(hasBody ? { duplex: "half" } : {}),
-  });
+  };
+  const modifiedRequest = new Request(request.url, requestInit);
   const response = await auth.handler(modifiedRequest);
   return addCorsHeaders(response, origin);
 }

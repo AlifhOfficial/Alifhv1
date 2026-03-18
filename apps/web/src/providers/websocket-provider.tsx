@@ -6,7 +6,7 @@
 
 'use client';
 
-import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
 // ============================================================================
 // Types
@@ -197,13 +197,7 @@ interface Props {
 
 export function WebSocketProvider({ children, userId, autoConnect = true }: Props) {
   const [isConnected, setIsConnected] = useState(false);
-  const managerRef = useRef<WebSocketManager | null>(null);
-
-  // Get singleton manager
-  if (!managerRef.current) {
-    managerRef.current = WebSocketManager.getInstance();
-  }
-  const manager = managerRef.current;
+  const [manager] = useState(() => WebSocketManager.getInstance());
 
   // Connect/disconnect based on userId
   useEffect(() => {

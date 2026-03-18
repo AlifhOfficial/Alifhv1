@@ -1,11 +1,17 @@
 import type { StorageProvider, UploadResult, SignedUrlOptions } from "./types";
 import { normalizeKey } from "@/utils/storage";
 
+type BunGlobal = typeof globalThis & {
+  Bun?: {
+    randomUUIDv7?: () => string;
+  };
+};
+
 // UUIDv7 when available (Bun runtime), fallback to v4 (Next.js build/Node)
 function generateUUID(): string {
-  // @ts-ignore - Bun global may not exist during Next.js build
-  return typeof globalThis.Bun !== 'undefined' && globalThis.Bun.randomUUIDv7
-    ? globalThis.Bun.randomUUIDv7()
+  const bunGlobal = globalThis as BunGlobal;
+  return bunGlobal.Bun?.randomUUIDv7
+    ? bunGlobal.Bun.randomUUIDv7()
     : crypto.randomUUID();
 }
 

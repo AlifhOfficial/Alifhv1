@@ -4,6 +4,7 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import { StaffOverview } from '@/components/partner/staff-overview';
 
 const INVITE_EXPIRY_DAYS = 7;
+const INVITE_EXPIRY_MS = INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
 
 export default async function PartnerStaffPage() {
   const user = await getSessionUser();
@@ -26,9 +27,9 @@ export default async function PartnerStaffPage() {
   for (const member of staff) {
     if (member.status === 'invited') {
       pendingInvites++;
-      const expiresAt = member.invitedAt
-        ? new Date(new Date(member.invitedAt).getTime() + INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000).toISOString()
-        : new Date(Date.now() + INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000).toISOString();
+      const expiresAt = new Date(
+        new Date(member.invitedAt ?? member.joinedAt ?? member.leftAt ?? '1970-01-01').getTime() + INVITE_EXPIRY_MS
+      ).toISOString();
       invites.push({
         id: member.id,
         email: member.userEmail || '',

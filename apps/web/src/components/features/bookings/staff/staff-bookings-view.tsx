@@ -55,6 +55,10 @@ interface StaffBookingsInitialData {
 
 interface StaffBookingsViewProps {
   initialData: StaffBookingsInitialData;
+  initialSettingsData?: {
+    availability: AvailabilityRule[];
+    settings: BookingSettings | null;
+  };
   filters: {
     status: string;
     sort: BookingSort;
@@ -90,7 +94,7 @@ function getColorClasses(color?: string) {
   }
 }
 
-export function StaffBookingsView({ initialData, filters }: StaffBookingsViewProps) {
+export function StaffBookingsView({ initialData, initialSettingsData, filters }: StaffBookingsViewProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -108,8 +112,8 @@ export function StaffBookingsView({ initialData, filters }: StaffBookingsViewPro
   const isLoading = isPending;
   
   // Availability state
-  const [availability, setAvailability] = useState<AvailabilityRule[]>([]);
-  const [settings, setSettings] = useState<BookingSettings | null>(null);
+  const [availability, setAvailability] = useState<AvailabilityRule[]>(() => initialSettingsData?.availability || []);
+  const [settings, setSettings] = useState<BookingSettings | null>(() => initialSettingsData?.settings || null);
   const [availabilityLoading, setAvailabilityLoading] = useState(false);
   const [savingDay, setSavingDay] = useState<number | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
@@ -138,6 +142,12 @@ export function StaffBookingsView({ initialData, filters }: StaffBookingsViewPro
   useEffect(() => {
     setSearchQuery(filters.q);
   }, [filters.q]);
+
+  useEffect(() => {
+    if (!initialSettingsData) return;
+    setAvailability(initialSettingsData.availability);
+    setSettings(initialSettingsData.settings);
+  }, [initialSettingsData]);
 
   const updateRoute = useCallback((updates: Partial<StaffBookingsViewProps['filters']>) => {
     const params = new URLSearchParams(searchParams?.toString() ?? '');
@@ -189,9 +199,10 @@ export function StaffBookingsView({ initialData, filters }: StaffBookingsViewPro
   // Fetch availability only when tab switches to settings
   useEffect(() => {
     if (activeTab === 'settings') {
+      if (initialSettingsData) return;
       fetchAvailability();
     }
-  }, [activeTab, fetchAvailability]);
+  }, [activeTab, fetchAvailability, initialSettingsData]);
 
   // Lookup booking by code
   async function handleLookupByCode() {

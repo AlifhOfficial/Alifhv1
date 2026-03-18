@@ -9,8 +9,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/providers/auth-provider';
-import { queryKeys } from '@/lib/query-keys';
-import { invalidateUserData } from '@/lib/query-helpers';
 import type { ExtendedUser } from '@/types/auth';
 
 // ============================================================================
@@ -131,9 +129,8 @@ export function useUserProfile(initialData?: UserProfileResponse | null) {
     refetchOnReconnect: false, // No auto refetch on reconnect
     retry: false, // Don't retry on 401
     enabled: isAuthenticated, // Only fetch when user is logged in
-    staleTime: initialData ? 60_000 : 0,
+    staleTime: initialData ? Infinity : 0,
     initialData: initialData ?? undefined,
-    initialDataUpdatedAt: initialData ? Date.now() : undefined,
   });
 
   // Update profile mutation
@@ -199,10 +196,5 @@ export function useUserProfile(initialData?: UserProfileResponse | null) {
  * Use this when profile is updated outside of the hook
  */
 export function invalidateUserProfileCache() {
-  // This can be imported and used anywhere to invalidate the cache
-  // Useful for forms or components that update profile data
-  if (typeof window !== 'undefined') {
-    const queryClient = require('@tanstack/react-query').useQueryClient();
-    queryClient?.invalidateQueries({ queryKey: ['user-profile'] });
-  }
+  return;
 }

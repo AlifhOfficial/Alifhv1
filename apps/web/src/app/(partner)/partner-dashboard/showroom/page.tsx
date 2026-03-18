@@ -7,6 +7,18 @@
 import { redirect } from 'next/navigation';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { PartnerShowroomForm } from '@/components/partner/car-dealer/partner-showroom-form';
+import { createShowroom, getShowroomByPartnerId } from '@alifh/database';
+import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
+
+function serializeShowroomDates(showroom: Awaited<ReturnType<typeof getShowroomByPartnerId>> extends infer T ? Exclude<T, null> : never): PartnerShowroom {
+  return {
+    ...showroom,
+    publishedAt: showroom.publishedAt?.toISOString() ?? null,
+    lastEditedAt: showroom.lastEditedAt?.toISOString() ?? null,
+    createdAt: showroom.createdAt.toISOString(),
+    updatedAt: showroom.updatedAt.toISOString(),
+  };
+}
 
 export default async function PartnerShowroomPage() {
   const user = await getSessionUser();
@@ -22,5 +34,14 @@ export default async function PartnerShowroomPage() {
     redirect('/partner-dashboard');
   }
 
-  return <PartnerShowroomForm partnerId={membership.partnerId} />;
+  const initialShowroom =
+    (await getShowroomByPartnerId(membership.partnerId)) ??
+    (await createShowroom({ partnerId: membership.partnerId }));
+
+  return (
+    <PartnerShowroomForm
+      partnerId={membership.partnerId}
+      initialShowroom={serializeShowroomDates(initialShowroom)}
+    />
+  );
 }

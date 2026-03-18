@@ -376,7 +376,7 @@ export default function PartnerBillingPage() {
                     <span>Subscription ends {formatDate(subData.cancelAt || subData.currentPeriodEnd)}</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    You'll lose access after this date
+                    You&apos;ll lose access after this date
                   </p>
                 </div>
               )}

@@ -87,8 +87,10 @@ export function usePublicShowroom(
     retry: 1,
     // If we have server-side data, use it immediately
     initialData: initialShowroom ? { showroom: initialShowroom as ShowroomApiResponse['showroom'] } : undefined,
-    initialDataUpdatedAt: initialShowroom ? Date.now() : undefined,
-    staleTime: initialShowroom ? 30_000 : 0, // Don't refetch for 30s if we have data
+    staleTime: initialShowroom ? Infinity : 0,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
   
   return {

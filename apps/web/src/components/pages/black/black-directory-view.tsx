@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Search, X, Package } from 'lucide-react';
 import { queryKeys } from '@/lib/query-keys';
@@ -69,12 +69,14 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
       showrooms: initialShowrooms,
       pagination: { page: 1, limit: 50, total: initialShowrooms.length, totalPages: 1, hasMore: false }
     } : undefined,
-    initialDataUpdatedAt: initialShowrooms ? Date.now() : undefined,
-    staleTime: initialShowrooms ? 30_000 : 0,
+    staleTime: initialShowrooms ? Infinity : 0,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   // Filter showrooms by search query (dealer name)
-  const filteredShowrooms = useMemo(() => {
+  const filteredShowrooms = (() => {
     if (!data?.showrooms) return [];
     if (!searchQuery.trim()) return data.showrooms;
     
@@ -82,7 +84,7 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
     return data.showrooms.filter(showroom => 
       showroom.partner.brandName.toLowerCase().includes(query)
     );
-  }, [data?.showrooms, searchQuery]);
+  })();
 
   const showNoResults = !isLoading && !error && searchQuery && filteredShowrooms.length === 0;
 
@@ -176,7 +178,7 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
                     No matches found
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
-                    No results for "{searchQuery}". Try a different search term.
+                    No results for &quot;{searchQuery}&quot;. Try a different search term.
                   </p>
                 </div>
               </div>

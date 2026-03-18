@@ -130,8 +130,7 @@ export function usePartnerRequest(initialData?: PartnerRequest | null) {
     queryFn: fetchPartnerRequest,
     refetchOnWindowFocus: true,
     initialData: initialData ?? undefined,
-    initialDataUpdatedAt: initialData !== undefined ? Date.now() : undefined,
-    staleTime: initialData !== undefined ? 60_000 : 0,
+    staleTime: initialData !== undefined ? Infinity : 0,
   });
 }
 
@@ -244,4 +243,3 @@ export function usePartnerRequestDismiss() {
     reset: mutation.reset,
   };
 }
-

@@ -9,6 +9,7 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import { PartnerStaffManagement } from '@/components/partner/staff-management';
 
 const INVITE_EXPIRY_DAYS = 7;
+const INVITE_EXPIRY_MS = INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
 
 export default async function PartnerStaffManagePage() {
   const user = await getSessionUser();
@@ -28,9 +29,9 @@ export default async function PartnerStaffManagePage() {
       id: member.id,
       email: member.userEmail || '',
       role: member.role,
-      expiresAt: member.invitedAt
-        ? new Date(new Date(member.invitedAt).getTime() + INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000).toISOString()
-        : new Date(Date.now() + INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000).toISOString(),
+      expiresAt: new Date(
+        new Date(member.invitedAt ?? member.joinedAt ?? member.leftAt ?? '1970-01-01').getTime() + INVITE_EXPIRY_MS
+      ).toISOString(),
     }));
 
   return <PartnerStaffManagement initialTeamData={{ data: staff, invites }} />;

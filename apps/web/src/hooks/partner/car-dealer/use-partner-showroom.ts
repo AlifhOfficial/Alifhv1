@@ -217,13 +217,23 @@ async function unpublishShowroomAPI(partnerId: string): Promise<{ success: boole
 // Main Hook
 // ============================================================================
 
-export function usePartnerShowroom(partnerId: string | null | undefined) {
+export function usePartnerShowroom(
+  partnerId: string | null | undefined,
+  options?: {
+    initialShowroom?: PartnerShowroom | null;
+  }
+) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
     queryKey: ['partner-showroom', partnerId],
     queryFn: () => fetchShowroom(partnerId!),
     enabled: !!partnerId,
+    initialData: options?.initialShowroom ?? undefined,
+    staleTime: options?.initialShowroom ? Infinity : 0,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   const updateMutation = useMutation({

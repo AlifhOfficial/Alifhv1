@@ -140,8 +140,6 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
 
   const cursorHistoryKey = useMemo(() => getCursorHistoryKey(params), [getCursorHistoryKey, params]);
 
-  const [resolvedCursor, setResolvedCursor] = useState<string | undefined>(params.cursor ?? params.pageToken);
-
   // Sync default sort to URL on initial load (better UX - URL reflects actual state)
   // Use native history API to avoid interfering with browser scroll restoration
   const hasInitializedSort = useRef(false);
@@ -181,30 +179,23 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     router.replace(newUrl, { scroll: false });
   }, [router, pathname, disableUrlSync, serverDriven]);
 
-  useEffect(() => {
+  const resolvedCursor = useMemo(() => {
     if (params.cursor || params.pageToken) {
-      setResolvedCursor(params.cursor ?? params.pageToken);
-      return;
+      return params.cursor ?? params.pageToken;
     }
 
     if ((params.page || 1) <= 1) {
-      setResolvedCursor(undefined);
-      return;
+      return undefined;
     }
 
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
 
     const raw = window.sessionStorage.getItem(cursorHistoryKey);
     const history = raw ? JSON.parse(raw) as Record<string, string | null> : {};
-    setResolvedCursor(history[String(params.page || 1)] ?? undefined);
+    return history[String(params.page || 1)] ?? undefined;
   }, [params.cursor, params.pageToken, params.page, cursorHistoryKey]);
-
-  useEffect(() => {
-    if (disableUrlSync || params.cursor || params.pageToken || (params.page || 1) <= 1) return;
-    if (resolvedCursor !== undefined) return;
-
-    updateUrl({ ...params, page: undefined });
-  }, [disableUrlSync, params, resolvedCursor, updateUrl]);
 
   const requestParams = useMemo<SearchParams>(() => {
     if ((params.page || 1) <= 1) {
@@ -239,16 +230,13 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
 
   // Track the initial query key to know when we've moved away from it
   // initialData should only be used for the exact initial query
-  const initialQueryKeyRef = useRef<string | null>(null);
   const currentQueryKeyString = JSON.stringify(queryKey);
-  
-  // Set initial query key on first render only
-  if (initialQueryKeyRef.current === null && initialData) {
-    initialQueryKeyRef.current = currentQueryKeyString;
-  }
-  
+  const [initialQueryKey] = useState<string | null>(() => (
+    initialData ? currentQueryKeyString : null
+  ));
+
   // Only use initialData if we're still on the initial query
-  const isInitialQuery = initialQueryKeyRef.current === currentQueryKeyString;
+  const isInitialQuery = initialQueryKey === currentQueryKeyString;
   const effectiveInitialData = isInitialQuery ? initialData : undefined;
 
   // Fetch search results
@@ -257,10 +245,9 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     queryFn: () => fetchSearch(requestParams),
     // Server-side data for instant display - only for the initial query
     initialData: effectiveInitialData ?? undefined,
-    initialDataUpdatedAt: effectiveInitialData ? Date.now() : undefined,
     // Cache settings for smooth back navigation
-    // Use 30s stale time when we have initial data (server already fetched fresh data)
-    staleTime: effectiveInitialData ? 30_000 : 5 * 60 * 1000,
+    // Server-seeded initial data should be the source of truth until params change.
+    staleTime: effectiveInitialData ? Infinity : 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache for back navigation
     refetchOnWindowFocus: false,
     refetchOnMount: false, // Don't refetch on mount if we have cached data
@@ -321,7 +308,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   }, [params, updateUrl]);
 
   // Load more (pagination)
-  const loadMore = useCallback(() => {
+  const loadMore = () => {
     if (!data?.meta.nextCursor) return;
 
     const nextPage = (params.page || data.meta.currentPage || 1) + 1;
@@ -334,11 +321,11 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
 
     const newParams = { ...params, cursor: undefined, pageToken: data.meta.nextCursor, page: nextPage };
     updateUrl(newParams);
-  }, [params, data?.meta.nextCursor, data?.meta.currentPage, updateUrl, cursorHistoryKey]);
+  };
 
   const goToNextPage = loadMore;
 
-  const goToPreviousPage = useCallback(() => {
+  const goToPreviousPage = () => {
     const currentPage = params.page || data?.meta.currentPage || 1;
     if (currentPage <= 1) return;
 
@@ -359,7 +346,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     };
 
     updateUrl(newParams);
-  }, [params, data?.meta.currentPage, cursorHistoryKey, updateUrl]);
+  };
 
   const currentPage = useMemo(() => params.page || data?.meta.currentPage || 1, [params.page, data?.meta.currentPage]);
   const canGoBack = currentPage > 1;

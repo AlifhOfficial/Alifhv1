@@ -61,14 +61,18 @@ async function fetchDashboardStats(): Promise<DashboardStats> {
 // Main Hook
 // ============================================================================
 
-export function useDashboardStats() {
+export function useDashboardStats(initialData?: DashboardStats | null) {
   const { isAuthenticated } = useAuth();
   
   const query = useQuery({
     queryKey: ['user-dashboard-stats'],
     queryFn: fetchDashboardStats,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
     enabled: isAuthenticated,
+    staleTime: initialData ? Infinity : 0,
+    initialData: initialData ?? undefined,
   });
 
   return {

@@ -53,7 +53,7 @@ export default function ContactPage() {
         {/* Introduction */}
         <div className="mb-10 py-5 border-y border-border/40">
           <p className="text-sm text-foreground leading-relaxed">
-            Have a question, need support, or interested in a partnership? We're here to help.
+            Have a question, need support, or interested in a partnership? We&apos;re here to help.
           </p>
           <div className="flex flex-wrap items-center gap-2 mt-4">
             <span className="text-xs text-muted-foreground/70">Quick links:</span>

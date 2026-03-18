@@ -48,13 +48,18 @@ async function fetchUserStats(): Promise<UserStats> {
 // Main Hook
 // ============================================================================
 
-export function useUserStats() {
+export function useUserStats(initialData?: UserStats | null) {
   const { isAuthenticated } = useAuth();
   
   const query = useQuery({
     queryKey: queryKeys.user.stats(),
     queryFn: fetchUserStats,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     enabled: isAuthenticated,
+    staleTime: initialData ? Infinity : 0,
+    initialData: initialData ?? undefined,
   });
 
   return {

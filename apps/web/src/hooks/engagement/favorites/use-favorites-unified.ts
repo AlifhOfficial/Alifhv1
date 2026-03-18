@@ -21,8 +21,6 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query-keys';
-import { optimisticUpdate, invalidateQueries } from '@/lib/query-helpers';
 import { useState } from 'react';
 
 // ============================================================================
@@ -119,7 +117,6 @@ export function useFavoritesStatus(options?: {
     staleTime: Infinity,
     gcTime: Infinity,
     initialData: options?.initialData,
-    initialDataUpdatedAt: options?.initialData ? Date.now() : undefined,
   });
 }
 
@@ -341,9 +338,9 @@ export function useFavoritesListings(options?: {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     enabled: favoriteIds.length > 0,
-    staleTime: 60_000,
+    staleTime: options?.initialListings ? Infinity : 60_000,
+    refetchOnMount: false,
     initialData: options?.initialListings,
-    initialDataUpdatedAt: options?.initialListings ? Date.now() : undefined,
   });
 
   return {
@@ -373,9 +370,9 @@ export function useSuperlikesListings(options?: {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     enabled: superlikeIds.length > 0,
-    staleTime: 60_000,
+    staleTime: options?.initialListings ? Infinity : 60_000,
+    refetchOnMount: false,
     initialData: options?.initialListings,
-    initialDataUpdatedAt: options?.initialListings ? Date.now() : undefined,
   });
 
   return {
