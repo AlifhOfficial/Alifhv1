@@ -90,12 +90,6 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
             <span className="text-sm font-semibold uppercase tracking-wider text-primary">
               System Status
             </span>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
-              Revvup Status
-            </h1>
-            <p className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-              On-demand status of all Revvup services and infrastructure.
-            </p>
           </div>
 
           <div className={`rounded-xl border p-6 ${overallConfig.bgClass}`}>
