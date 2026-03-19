@@ -148,7 +148,7 @@ export function ProfileMenu({
             e.stopPropagation();
             onToggleMenu(e);
           }}
-          className="relative"
+          className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"
           aria-label="Profile menu"
           data-menu-trigger
         >
@@ -320,7 +320,7 @@ export function ProfileMenu({
           e.stopPropagation();
           onToggleMenu(e);
         }}
-        className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
+        className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"
         aria-label="Profile menu"
         data-menu-trigger
       >
