@@ -1,6 +1,6 @@
 /**
  * Chat Container - Revvup Design System
- * Conversation list + chat window layout
+ * Conversation list + chat window layoutsxs
  */
 
 'use client';
