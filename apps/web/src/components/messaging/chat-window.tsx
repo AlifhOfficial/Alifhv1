@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, MessageCircle, X } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
@@ -69,7 +69,7 @@ export function ChatWindow({
   });
 
   const { sendMessage, isSending } = useSendMessage();
-  const { sendLocationMessage, isSending: isSendingLocation } = useSendLocationMessage();
+  const { sendLocationMessage } = useSendLocationMessage();
   const { markAsRead } = useMarkAsRead();
 
   // Location picker dialog state
@@ -78,39 +78,85 @@ export function ChatWindow({
   const containerRef = useRef<HTMLDivElement>(null);
   const lastMessageIdRef = useRef<string | null>(null);
   const isNearBottomRef = useRef(true);
+  const paginationSnapshotRef = useRef<{ scrollHeight: number; scrollTop: number } | null>(null);
+  const lastNewestMessageIdRef = useRef<string | null>(null);
+  const hasAutoScrolledInitiallyRef = useRef(false);
+  const [isDocumentActive, setIsDocumentActive] = useState(true);
 
-  // Messages are newest-first from API, flex-col-reverse displays them correctly
+  const orderedMessages = useMemo(() => [...messages].reverse(), [messages]);
+
+  const updateScrollState = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const distanceFromBottom = container.scrollHeight - container.clientHeight - container.scrollTop;
+    isNearBottomRef.current = distanceFromBottom < 100;
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === 'undefined' || typeof window === 'undefined') return;
+
+    const updateActivity = () => {
+      setIsDocumentActive(document.visibilityState === 'visible' && document.hasFocus());
+    };
+
+    updateActivity();
+    document.addEventListener('visibilitychange', updateActivity);
+    window.addEventListener('focus', updateActivity);
+    window.addEventListener('blur', updateActivity);
+
+    return () => {
+      document.removeEventListener('visibilitychange', updateActivity);
+      window.removeEventListener('focus', updateActivity);
+      window.removeEventListener('blur', updateActivity);
+    };
+  }, []);
 
   // Track if user is near bottom (for auto-scroll on new messages)
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const handleScroll = () => {
-      const { scrollTop } = container;
-      // In flex-col-reverse, scrollTop of 0 is at the bottom
-      // Negative scrollTop means scrolling up into older messages
-      const distanceFromBottom = Math.abs(scrollTop);
-      isNearBottomRef.current = distanceFromBottom < 100;
-    };
+    const handleScrollState = () => updateScrollState();
+    handleScrollState();
+    container.addEventListener('scroll', handleScrollState);
+    return () => container.removeEventListener('scroll', handleScrollState);
+  }, [updateScrollState]);
 
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Smooth scroll to bottom when sending message or receiving new message while at bottom
   useEffect(() => {
-    if (messages.length === 0 || isLoading) return;
-    
+    const container = containerRef.current;
+    const snapshot = paginationSnapshotRef.current;
+    if (!container || !snapshot) return;
+
+    const heightDelta = container.scrollHeight - snapshot.scrollHeight;
+    container.scrollTop = snapshot.scrollTop + heightDelta;
+    paginationSnapshotRef.current = null;
+  }, [orderedMessages]);
+
+  useEffect(() => {
+    if (orderedMessages.length === 0 || isLoading) return;
+
     const container = containerRef.current;
     if (!container) return;
 
-    // Auto-scroll if user is near bottom
-    if (isNearBottomRef.current) {
-      // Use smooth scroll for better UX
-      container.scrollTo({ top: 0, behavior: 'smooth' });
+    const newestMessageId = messages[0]?.id ?? null;
+
+    if (!hasAutoScrolledInitiallyRef.current) {
+      container.scrollTop = container.scrollHeight;
+      hasAutoScrolledInitiallyRef.current = true;
+      lastNewestMessageIdRef.current = newestMessageId;
+      updateScrollState();
+      return;
     }
-  }, [messages, isLoading]);
+
+    const hasNewNewestMessage = newestMessageId !== lastNewestMessageIdRef.current;
+    lastNewestMessageIdRef.current = newestMessageId;
+
+    if (hasNewNewestMessage && isNearBottomRef.current) {
+      container.scrollTop = container.scrollHeight;
+      updateScrollState();
+    }
+  }, [messages, orderedMessages.length, isLoading, updateScrollState]);
 
   // Find the NEWEST message that was read by other user (for "seen" indicator)
   const lastReadMsgId = useMemo(() => {
@@ -123,8 +169,6 @@ export function ChatWindow({
     }
     return null;
   }, [messages, otherLastReadAt, userId]);
-
-  // No auto-scroll needed - flex-col-reverse naturally shows newest at bottom
 
   // Track last message we've marked as read to prevent duplicate API calls
   const lastMarkedMsgIdRef = useRef<string | null>(null);
@@ -140,11 +184,14 @@ export function ChatWindow({
   useEffect(() => {
     lastMessageIdRef.current = null;
     lastMarkedMsgIdRef.current = null;
+    paginationSnapshotRef.current = null;
+    lastNewestMessageIdRef.current = null;
+    hasAutoScrolledInitiallyRef.current = false;
   }, [conversationId]);
 
   // Smart mark-as-read: only call API when necessary
   useEffect(() => {
-    if (isLoading || messages.length === 0) return;
+    if (isLoading || messages.length === 0 || !isDocumentActive) return;
     
     const newestMessage = messages[0];
     if (!newestMessage) return;
@@ -168,14 +215,25 @@ export function ChatWindow({
       lastMarkedMsgIdRef.current = newestMessage.id;
       markAsRead(conversationId);
     }
-  }, [conversationId, isLoading, messages, userId, markAsRead, myLastReadAtDate]);
+  }, [conversationId, isLoading, messages, userId, markAsRead, myLastReadAtDate, isDocumentActive]);
 
   // Infinite scroll
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     const el = containerRef.current;
-    if (!el || isFetchingMore || !hasMore) return;
-    if (el.scrollTop <= 40) fetchMore();
-  };
+    if (!el) return;
+
+    updateScrollState();
+
+    if (isFetchingMore || !hasMore) return;
+    if (el.scrollTop > 80) return;
+
+    paginationSnapshotRef.current = {
+      scrollHeight: el.scrollHeight,
+      scrollTop: el.scrollTop,
+    };
+
+    void fetchMore();
+  }, [fetchMore, hasMore, isFetchingMore, updateScrollState]);
 
   const handleSend = async (text: string) => {
     await sendMessage({ conversationId, senderId: userId, text });
@@ -272,10 +330,12 @@ export function ChatWindow({
         )}
       </div>
 
-      <div ref={containerRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain p-3 sm:p-4 flex flex-col-reverse gap-1.5 sm:gap-2">
+      <div ref={containerRef} onScroll={handleScroll} className="relative flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain p-3 sm:p-4 flex flex-col gap-1.5 sm:gap-2">
         {isFetchingMore && (
-          <div className="flex justify-center py-3">
-            <Skeleton className="h-6 w-6 rounded-full" />
+          <div className="sticky top-0 z-10 -mt-1 flex justify-center py-2 pointer-events-none">
+            <div className="rounded-full bg-background/90 px-3 py-1 backdrop-blur-sm">
+              <Skeleton className="h-5 w-5 rounded-full" />
+            </div>
           </div>
         )}
 
@@ -306,16 +366,14 @@ export function ChatWindow({
               </div>
             )}
 
-            {messages.map((message, index, arr) => {
+            {orderedMessages.map((message, index, arr) => {
               const messageDate = new Date(message.createdAt);
-              // With flex-col-reverse, next in array is prev visually (older, above)
-              const nextMessage = arr[index + 1];
-              const nextDate = nextMessage ? new Date(nextMessage.createdAt) : null;
-              const showDateSeparator = !nextDate || !isSameDay(nextDate, messageDate);
+              const previousMessage = arr[index - 1];
+              const previousDate = previousMessage ? new Date(previousMessage.createdAt) : null;
+              const showDateSeparator = !previousDate || !isSameDay(previousDate, messageDate);
 
-              // Show avatar at bottom of consecutive group (check newer message below)
-              const prevMessage = arr[index - 1];
-              const showAvatar = !prevMessage || prevMessage.senderId !== message.senderId;
+              const nextMessage = arr[index + 1];
+              const showAvatar = !nextMessage || nextMessage.senderId !== message.senderId;
               const isOwn = message.senderId === userId;
               const isReadByOther = isOwn && otherLastReadAt ? messageDate <= otherLastReadAt : false;
               const showSeen = isOwn && message.id === lastReadMsgId;

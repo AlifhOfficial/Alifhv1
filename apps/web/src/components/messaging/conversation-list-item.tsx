@@ -46,7 +46,6 @@ export function ConversationListItem({
   } = conversation;
 
   const isOnline = otherParticipant?.isOnline ?? false;
-
   // For nested items (under partner group), show listing title as primary
   // For flat items, show partner name or user name as primary
   const displayName = isNested
@@ -84,6 +83,9 @@ export function ConversationListItem({
               size="sm"
               className="w-11 h-11"
             />
+            {isOnline && (
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+            )}
           </div>
         ) : (
           <div className="relative flex-shrink-0">
@@ -104,7 +106,7 @@ export function ConversationListItem({
           <div className="flex items-center justify-between mb-0.5 overflow-hidden">
             <h3
               className={cn(
-                'text-sm font-bold truncate',
+                'text-sm font-bold truncate flex-1',
                 unreadCount > 0 ? 'text-foreground' : 'text-foreground/90'
               )}
             >

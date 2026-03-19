@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, Minus, Maximize2 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
@@ -78,7 +78,7 @@ export function FloatingChatWindow({
   });
 
   const { sendMessage, isSending } = useSendMessage();
-  const { sendLocationMessage, isSending: isSendingLocation } = useSendLocationMessage();
+  const { sendLocationMessage } = useSendLocationMessage();
   const { markAsRead } = useMarkAsRead();
 
   // Location picker dialog state
@@ -86,6 +86,12 @@ export function FloatingChatWindow({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const lastMessageIdRef = useRef<string | null>(null);
+  const isNearBottomRef = useRef(true);
+  const paginationSnapshotRef = useRef<{ scrollHeight: number; scrollTop: number } | null>(null);
+  const lastNewestMessageIdRef = useRef<string | null>(null);
+  const hasAutoScrolledInitiallyRef = useRef(false);
+  const [isDocumentActive, setIsDocumentActive] = useState(true);
+  const orderedMessages = useMemo(() => [...messages].reverse(), [messages]);
 
   // Display info
   const displayName = partner?.name || otherParticipant?.name || 'User';
@@ -107,6 +113,33 @@ export function FloatingChatWindow({
     return null;
   }, [messages, otherLastReadAt, userId]);
 
+  const updateScrollState = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const distanceFromBottom = container.scrollHeight - container.clientHeight - container.scrollTop;
+    isNearBottomRef.current = distanceFromBottom < 100;
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === 'undefined' || typeof window === 'undefined') return;
+
+    const updateActivity = () => {
+      setIsDocumentActive(document.visibilityState === 'visible' && document.hasFocus());
+    };
+
+    updateActivity();
+    document.addEventListener('visibilitychange', updateActivity);
+    window.addEventListener('focus', updateActivity);
+    window.addEventListener('blur', updateActivity);
+
+    return () => {
+      document.removeEventListener('visibilitychange', updateActivity);
+      window.removeEventListener('focus', updateActivity);
+      window.removeEventListener('blur', updateActivity);
+    };
+  }, []);
+
   // Track last message we've marked as read to prevent duplicate API calls
   const lastMarkedMsgIdRef = useRef<string | null>(null);
   
@@ -122,11 +155,59 @@ export function FloatingChatWindow({
   useEffect(() => {
     lastMessageIdRef.current = null;
     lastMarkedMsgIdRef.current = null;
+    paginationSnapshotRef.current = null;
+    lastNewestMessageIdRef.current = null;
+    hasAutoScrolledInitiallyRef.current = false;
   }, [conversation.id]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || isMinimized) return;
+
+    const handleScrollState = () => updateScrollState();
+    handleScrollState();
+    container.addEventListener('scroll', handleScrollState);
+    return () => container.removeEventListener('scroll', handleScrollState);
+  }, [isMinimized, updateScrollState]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const snapshot = paginationSnapshotRef.current;
+    if (!container || !snapshot || isMinimized) return;
+
+    const heightDelta = container.scrollHeight - snapshot.scrollHeight;
+    container.scrollTop = snapshot.scrollTop + heightDelta;
+    paginationSnapshotRef.current = null;
+  }, [isMinimized, orderedMessages]);
+
+  useEffect(() => {
+    if (orderedMessages.length === 0 || isLoading || isMinimized) return;
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    const newestMessageId = messages[0]?.id ?? null;
+
+    if (!hasAutoScrolledInitiallyRef.current) {
+      container.scrollTop = container.scrollHeight;
+      hasAutoScrolledInitiallyRef.current = true;
+      lastNewestMessageIdRef.current = newestMessageId;
+      updateScrollState();
+      return;
+    }
+
+    const hasNewNewestMessage = newestMessageId !== lastNewestMessageIdRef.current;
+    lastNewestMessageIdRef.current = newestMessageId;
+
+    if (hasNewNewestMessage && isNearBottomRef.current) {
+      container.scrollTop = container.scrollHeight;
+      updateScrollState();
+    }
+  }, [messages, orderedMessages.length, isLoading, isMinimized, updateScrollState]);
 
   // Smart mark-as-read: only call API when necessary
   useEffect(() => {
-    if (isLoading || messages.length === 0 || isMinimized) return;
+    if (isLoading || messages.length === 0 || isMinimized || !isDocumentActive) return;
     
     const newestMessage = messages[0];
     if (!newestMessage) return;
@@ -149,14 +230,25 @@ export function FloatingChatWindow({
       lastMarkedMsgIdRef.current = newestMessage.id;
       markAsRead(conversation.id);
     }
-  }, [conversation.id, isLoading, messages, userId, markAsRead, isMinimized, myLastReadAtDate]);
+  }, [conversation.id, isLoading, messages, userId, markAsRead, isMinimized, myLastReadAtDate, isDocumentActive]);
 
   // Infinite scroll
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     const el = containerRef.current;
-    if (!el || isFetchingMore || !hasMore) return;
-    if (el.scrollTop <= 40) fetchMore();
-  };
+    if (!el) return;
+
+    updateScrollState();
+
+    if (isFetchingMore || !hasMore) return;
+    if (el.scrollTop > 80) return;
+
+    paginationSnapshotRef.current = {
+      scrollHeight: el.scrollHeight,
+      scrollTop: el.scrollTop,
+    };
+
+    void fetchMore();
+  }, [fetchMore, hasMore, isFetchingMore, updateScrollState]);
 
   const handleSend = async (text: string) => {
     await sendMessage({ conversationId: conversation.id, senderId: userId, text });
@@ -283,11 +375,13 @@ export function FloatingChatWindow({
             <div
               ref={containerRef}
               onScroll={handleScroll}
-              className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain p-3 bg-background flex flex-col-reverse gap-1.5"
+              className="relative flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain p-3 bg-background flex flex-col gap-1.5"
             >
               {isFetchingMore && (
-                <div className="flex justify-center py-2">
-                  <Skeleton className="h-5 w-5 rounded-full" />
+                <div className="sticky top-0 z-10 -mt-1 flex justify-center py-2 pointer-events-none">
+                  <div className="rounded-full bg-background/90 px-2.5 py-1 backdrop-blur-sm">
+                    <Skeleton className="h-4 w-4 rounded-full" />
+                  </div>
                 </div>
               )}
 
@@ -311,12 +405,13 @@ export function FloatingChatWindow({
                     </div>
                   )}
 
-                  {messages.map((message, index, arr) => {
+                  {orderedMessages.map((message, index, arr) => {
                     const messageDate = new Date(message.createdAt);
-                    const nextMessage = arr[index + 1];
-                    const nextDate = nextMessage ? new Date(nextMessage.createdAt) : null;
-                    const showDateSeparator = !nextDate || !isSameDay(nextDate, messageDate);
+                    const previousMessage = arr[index - 1];
+                    const previousDate = previousMessage ? new Date(previousMessage.createdAt) : null;
+                    const showDateSeparator = !previousDate || !isSameDay(previousDate, messageDate);
 
+                    const nextMessage = arr[index + 1];
                     const showAvatar = !nextMessage || nextMessage.senderId !== message.senderId;
                     const isOwn = message.senderId === userId;
                     const isReadByOther = isOwn && otherLastReadAt ? messageDate <= otherLastReadAt : false;

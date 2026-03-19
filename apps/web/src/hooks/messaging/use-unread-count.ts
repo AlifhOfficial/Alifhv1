@@ -7,6 +7,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useEffect } from 'react';
+import { queryKeys } from '@/lib/query-keys';
 
 async function fetchUnreadCount(): Promise<{ unreadCount: number }> {
   const res = await fetch('/api/conversations/unread-count', { credentials: 'include' });
@@ -29,9 +30,8 @@ export function useUnreadCount(
   const { activeConversationId, enableFetch = true } = options;
 
   const query = useQuery({
-    queryKey: ['unread-count'],
+    queryKey: queryKeys.messaging.unreadCount(),
     queryFn: fetchUnreadCount,
-    refetchInterval: 2 * 60 * 1000,
     enabled: !!userId && enableFetch,
     ...(initialCount !== undefined && { initialData: { unreadCount: initialCount } }),
   });
@@ -47,12 +47,10 @@ export function useUnreadCount(
         
         // Don't increment unread count for your own messages
         if (senderId === userId) {
-          console.log(`🔔 [useUnreadCount] Own message in background conversation, skipping count increment`);
           return;
         }
-        
-        console.log(`🔔 [useUnreadCount] New message in background conversation, incrementing count`);
-        queryClient.setQueryData(['unread-count'], (old: { unreadCount: number } | undefined) => ({
+
+        queryClient.setQueryData(queryKeys.messaging.unreadCount(), (old: { unreadCount: number } | undefined) => ({
           unreadCount: (old?.unreadCount ?? 0) + 1,
         }));
       }

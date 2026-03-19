@@ -21,11 +21,14 @@ interface NavbarMessagingProps {
 
 export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
-  
-  // Always fetch conversations (not just when open) for real-time updates
-  const { conversations, isLoading, totalUnread } = useConversations({ userId, scope: 'personal', limit: 50 });
-  // Use totalUnread from conversations hook (includes real-time updates)
-  const unreadCount = totalUnread;
+  const MAX_DROPDOWN_CONVERSATIONS = 5;
+  const { unreadCount } = useUnreadCount(userId, undefined, { enableFetch: false });
+  const { conversations, isLoading } = useConversations({
+    userId,
+    scope: 'personal',
+    limit: MAX_DROPDOWN_CONVERSATIONS,
+    enabled: isOpen,
+  });
 
   // Close on outside click
   useEffect(() => {
@@ -59,8 +62,12 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
     onOpenChat(conversation);
   }, [onOpenChat]);
 
-  // Group conversations by user/partner
-  const groupedConversations = conversations.reduce((groups, conversation) => {
+  // Keep the dropdown aligned with the lightweight fetch: max 5 real conversations, no empty threads
+  const visibleConversations = conversations
+    .filter((conversation) => conversation.messageCount > 0)
+    .slice(0, MAX_DROPDOWN_CONVERSATIONS);
+
+  const groupedConversations = visibleConversations.reduce((groups, conversation) => {
     const key = conversation.partner?.id || conversation.otherParticipant?.id || 'unknown';
     if (!groups[key]) {
       groups[key] = {
@@ -73,7 +80,6 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
     return groups;
   }, {} as Record<string, { user: any; isPartner: boolean; conversations: Conversation[] }>);
 
-  // Get top 3 groups for preview, but keep all for scrolling
   const allGroups = Object.values(groupedConversations);
 
   return (
@@ -180,6 +186,7 @@ function ConversationGroup({ group, onSelectConversation }: ConversationGroupPro
   const displayName = user?.name || 'User';
   const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
   const hasUnread = totalUnread > 0;
+  const isOnline = conversations.some((conversation) => conversation.otherParticipant?.isOnline);
 
   // If only one conversation, show it directly without grouping
   if (conversations.length === 1) {
@@ -201,21 +208,26 @@ function ConversationGroup({ group, onSelectConversation }: ConversationGroupPro
           'flex items-center gap-3'
         )}
       >
-        {isPartner ? (
-          <BrandAvatar
-            logoUrl={user?.logo}
-            brandName={displayName}
-            size="sm"
-            className="w-10 h-10 flex-shrink-0"
-          />
-        ) : (
-          <UserAvatar
-            src={user?.avatarUrl}
-            name={displayName}
-            size="md"
-            className="w-10 h-10 flex-shrink-0"
-          />
-        )}
+        <div className="relative flex-shrink-0">
+          {isPartner ? (
+            <BrandAvatar
+              logoUrl={user?.logo}
+              brandName={displayName}
+              size="sm"
+              className="w-10 h-10"
+            />
+          ) : (
+            <UserAvatar
+              src={user?.avatarUrl}
+              name={displayName}
+              size="md"
+              className="w-10 h-10"
+            />
+          )}
+          {isOnline && (
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-sidebar" />
+          )}
+        </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h4 className={cn(
@@ -293,6 +305,7 @@ function ConversationPreviewItem({ conversation, onClick, isGrouped = false }: C
   const displayName = partner?.name || otherParticipant?.name || 'User';
   const isPartnerBrand = !!partner;
   const hasUnread = unreadCount > 0;
+  const isOnline = otherParticipant?.isOnline ?? false;
 
   const safeDate = (value: unknown): Date | null => {
     if (!value) return null;
@@ -371,6 +384,9 @@ function ConversationPreviewItem({ conversation, onClick, isGrouped = false }: C
               size="md"
               className="w-10 h-10"
             />
+          )}
+          {isOnline && (
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-sidebar" />
           )}
           
           {/* Unread indicator dot */}

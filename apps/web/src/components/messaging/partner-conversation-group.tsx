@@ -37,6 +37,7 @@ export function PartnerConversationGroup({
   
   // Calculate total unread for the group
   const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
+  const isOnline = conversations.some(c => c.otherParticipant?.isOnline);
   
   // Get most recent message time
   const mostRecentAt = conversations.reduce((latest, c) => {
@@ -55,12 +56,17 @@ export function PartnerConversationGroup({
         )}
       >
         {/* Partner Avatar */}
-        <BrandAvatar
-          logoUrl={partner.logo}
-          brandName={partner.name}
-          size="sm"
-          className="w-9 h-9 flex-shrink-0"
-        />
+        <div className="relative flex-shrink-0">
+          <BrandAvatar
+            logoUrl={partner.logo}
+            brandName={partner.name}
+            size="sm"
+            className="w-9 h-9"
+          />
+          {isOnline && (
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full" />
+          )}
+        </div>
         
         {/* Partner Info */}
         <div className="flex-1 min-w-0">

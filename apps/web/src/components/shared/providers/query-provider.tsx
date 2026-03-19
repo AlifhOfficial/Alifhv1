@@ -2,6 +2,7 @@
 
 import { QueryClientProvider } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/query-client";
+import { queryKeys } from "@/lib/query-keys";
 import type { FavoritesStatusData } from "@/hooks/engagement/favorites/use-favorites-unified";
 import type { ConversationsResponse } from "@/hooks/messaging/use-conversations";
 
@@ -58,6 +59,10 @@ export function QueryProvider({
 
   if (initialPersonalConversations && initialUserId) {
     queryClient.setQueryData(['conversations', initialUserId, 'personal'], initialPersonalConversations);
+    queryClient.setQueryData(
+      queryKeys.messaging.unreadCount(),
+      { unreadCount: initialPersonalConversations.totalUnread ?? 0 }
+    );
   }
 
   return (

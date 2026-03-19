@@ -8,6 +8,7 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { queryKeys } from '@/lib/query-keys';
 
 // ============================================================================
 // Types
@@ -160,9 +161,9 @@ export function useMessages(conversationId: string, userId?: string, options: Us
 
   // Query
   const query = useInfiniteQuery({
-    queryKey: ['messages', conversationId],
+    queryKey: queryKeys.messaging.messages(conversationId),
     queryFn: ({ pageParam }) => fetchMessages(conversationId, pageParam),
-    getNextPageParam: (page) => page.nextCursor,
+    getNextPageParam: (page) => (page.hasMore ? page.nextCursor ?? undefined : undefined),
     initialPageParam: undefined as string | undefined,
     enabled: !!conversationId && !!userId,
   });
@@ -207,21 +208,13 @@ export function useMessages(conversationId: string, userId?: string, options: Us
         // Skip own messages delivered via WebSocket - onSuccess handler already adds them
         // This prevents duplicates caused by race between API response and WebSocket
         if (newMsg.senderId === userId) {
-          console.log(`⏭️ [useMessages] Skipping own message from WebSocket (handled by onSuccess):`, newMsg.id);
           return;
         }
-        
-        console.log(`💬 [useMessages] New message received:`, {
-          convId: conversationId,
-          msgId: newMsg.id,
-          from: newMsg.senderId,
-          isMe: newMsg.senderId === userId
-        });
-        queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
+
+        queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
           if (!old) return old;
           const first = old.pages[0];
           if (first.messages.some(m => m.id === newMsg.id)) {
-            console.log(`⏭️ [useMessages] Message already in cache, skipping`);
             return old;
           }
           return {
@@ -233,7 +226,6 @@ export function useMessages(conversationId: string, userId?: string, options: Us
 
       // Typing indicator
       if (msg.type === 'typing' && msg.conversationId === conversationId && msg.userId !== userId) {
-        console.log(`⌨️ [useMessages] Typing indicator:`, msg.userId, msg.isTyping ? 'started' : 'stopped');
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         setIsOtherTyping(!!msg.isTyping);
         if (msg.isTyping) {
@@ -243,7 +235,6 @@ export function useMessages(conversationId: string, userId?: string, options: Us
 
       // Read receipt
       if (msg.type === 'read_receipt' && msg.conversationId === conversationId && msg.userId !== userId) {
-        console.log(`✓✓ [useMessages] Read receipt from:`, msg.userId, msg.lastReadAt);
         const d = msg.lastReadAt ? new Date(msg.lastReadAt) : null;
         if (d && !isNaN(d.getTime())) setOtherLastReadAt(d);
       }
@@ -301,8 +292,8 @@ export function useSendMessage() {
       postMessage(conversationId, text),
 
     onMutate: async ({ conversationId, senderId, text }) => {
-      await queryClient.cancelQueries({ queryKey: ['messages', conversationId] });
-      const previous = queryClient.getQueryData(['messages', conversationId]);
+      await queryClient.cancelQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+      const previous = queryClient.getQueryData(queryKeys.messaging.messages(conversationId));
 
       // Optimistic message
       const tempMsg: Message = {
@@ -325,7 +316,7 @@ export function useSendMessage() {
         sender: { id: senderId, name: null, avatarUrl: null },
       };
 
-      queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
+      queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
         if (!old) return old;
         return {
           ...old,
@@ -358,7 +349,7 @@ export function useSendMessage() {
 
     onSuccess: (data, { conversationId }) => {
       // Replace temp with real
-      queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
+      queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
         if (!old) return old;
         const filtered = old.pages[0].messages.filter(m => !m.id.startsWith('temp-') && m.id !== data.message.id);
         return {
@@ -387,12 +378,10 @@ export function useSendMessage() {
         };
       });
 
-      // Always refetch to ensure new conversations appear in the list
-      queryClient.refetchQueries({ queryKey: ['conversations'] });
     },
 
     onError: (_err, { conversationId }, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(['messages', conversationId], ctx.previous);
+      if (ctx?.previous) queryClient.setQueryData(queryKeys.messaging.messages(conversationId), ctx.previous);
     },
   });
 
@@ -415,8 +404,8 @@ export function useSendLocationMessage() {
       postLocationMessage(conversationId, location),
 
     onMutate: async ({ conversationId, senderId, location }) => {
-      await queryClient.cancelQueries({ queryKey: ['messages', conversationId] });
-      const previous = queryClient.getQueryData(['messages', conversationId]);
+      await queryClient.cancelQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+      const previous = queryClient.getQueryData(queryKeys.messaging.messages(conversationId));
 
       // Optimistic message
       const tempMsg: Message = {
@@ -444,7 +433,7 @@ export function useSendLocationMessage() {
         sender: { id: senderId, name: null, avatarUrl: null },
       };
 
-      queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
+      queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
         if (!old) return old;
         return {
           ...old,
@@ -460,7 +449,7 @@ export function useSendLocationMessage() {
 
     onSuccess: (data, { conversationId }) => {
       // Replace temp with real
-      queryClient.setQueryData(['messages', conversationId], (old: { pages: MessagesPage[] } | undefined) => {
+      queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
         if (!old) return old;
         const filtered = old.pages[0].messages.filter(m => !m.id.startsWith('temp-') && m.id !== data.message.id);
         return {
@@ -492,13 +481,10 @@ export function useSendLocationMessage() {
         };
       });
 
-      // Always refetch to ensure new conversations appear in the list
-      // Force immediate refetch of all conversation queries
-      queryClient.refetchQueries({ queryKey: ['conversations'] });
     },
 
     onError: (_err, { conversationId }, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(['messages', conversationId], ctx.previous);
+      if (ctx?.previous) queryClient.setQueryData(queryKeys.messaging.messages(conversationId), ctx.previous);
     },
   });
 
