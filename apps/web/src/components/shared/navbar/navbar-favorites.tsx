@@ -12,6 +12,7 @@ import { useFavoritesStatus } from '@/hooks/engagement';
 import { useUser } from '@/hooks/auth/use-auth';
 import Link from 'next/link';
 import { getAppThumbUrl } from '@/utils/storage';
+import { getNavbarFavoriteListings } from '@/actions/favorites';
 
 interface NavbarFavoritesProps {
   userId?: string;
@@ -31,35 +32,23 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
   
   const { isSignedIn } = useUser();
   
-  // Only fetch when dropdown is open AND signed in (lazy load)
-  const { data: favoritesData, isLoading: isLoadingFavorites } = useFavoritesStatus({ enabled: isSignedIn && isOpen });
+  // Reads from server-seeded cache; refetches after invalidation (e.g. toggle favorite)
+  const { data: favoritesData, isLoading: isLoadingFavorites } = useFavoritesStatus({ enabled: isSignedIn });
   const favoriteIds = useMemo(() => favoritesData?.favorites ?? [], [favoritesData?.favorites]);
   const count = favoriteIds.length;
 
-  const { data: listings = [], isLoading: isLoadingListings } = useQuery<ListingPayload[]>({
-    queryKey: ['navbar-favorites-listings'],
-    queryFn: async () => [],
+  // Top 3 IDs to show in the dropdown preview
+  const top3Ids = useMemo(() => favoriteIds.slice(0, 3), [favoriteIds]);
+
+  const { data: orderedListings = [], isLoading: isLoadingListings } = useQuery<ListingPayload[]>({
+    queryKey: ['navbar-favorites-listings', ...top3Ids],
+    queryFn: () => getNavbarFavoriteListings(top3Ids),
+    staleTime: Infinity,
+    gcTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    enabled: false,
+    enabled: isSignedIn && top3Ids.length > 0,
   });
-
-  // Create a map for quick lookup, then order by favoriteIds (preserves order)
-  const listingsById = useMemo(() => {
-    const map = new Map<string, ListingPayload>();
-    listings.forEach((l) => {
-      if (l?.id) map.set(l.id, l);
-    });
-    return map;
-  }, [listings]);
-
-  // Get top 3 favorites in correct order
-  const orderedListings = useMemo(() => {
-    return favoriteIds
-      .slice(0, 3)
-      .map(id => listingsById.get(id))
-      .filter((l): l is ListingPayload => l !== undefined);
-  }, [favoriteIds, listingsById]);
 
   const handleToggle = useCallback(() => {
     setIsOpen(prev => !prev);

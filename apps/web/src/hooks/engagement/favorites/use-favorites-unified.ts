@@ -22,6 +22,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { getFavoritesStatusAction } from '@/actions/favorites';
 
 // ============================================================================
 // Types
@@ -52,9 +53,7 @@ const DEFAULT_AUTH_STATE: AuthState = { show: false, message: '' };
 // ============================================================================
 
 async function fetchFavoritesStatus(): Promise<FavoritesStatusData> {
-  const res = await fetch('/api/engagement/favorites-status', { credentials: 'include' });
-  if (!res.ok) throw new Error('Failed to fetch favorites status');
-  return res.json();
+  return getFavoritesStatusAction();
 }
 
 async function toggleFavoriteAPI(listingId: string): Promise<{ status: { isFavorite: boolean; isSuperliked: boolean } }> {
@@ -178,7 +177,6 @@ export function useFavorite(listingId: string) {
       // Invalidate all favorites-related caches
       queryClient.invalidateQueries({ queryKey: ['favorites-status'] });
       queryClient.invalidateQueries({ queryKey: ['favorites-listings'] });
-      queryClient.invalidateQueries({ queryKey: ['navbar-favorites-listings'] });
     },
   });
 
@@ -311,12 +309,8 @@ export interface ListingCardData {
 
 async function fetchListingCards(ids: string[]): Promise<ListingCardData[]> {
   if (!ids.length) return [];
-  const res = await fetch(`/api/listings/car-card?ids=${encodeURIComponent(ids.join(','))}`, {
-    credentials: 'include',
-  });
-  if (!res.ok) throw new Error('Failed to fetch listing cards');
-  const data = await res.json();
-  return data.data || [];
+  const { getListingCardsByIdsAction } = await import('@/actions/favorites');
+  return getListingCardsByIdsAction(ids);
 }
 
 /**

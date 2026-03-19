@@ -47,7 +47,6 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
   const { user, isSignedIn: isAuthenticated, setSessionUser } = useUser();
   const { openChat } = useFloatingChatSafe();
-
   // Mark as mounted after hydration
   useEffect(() => {
     setMounted(true);

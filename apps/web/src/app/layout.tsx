@@ -118,14 +118,17 @@ export default async function RootLayout({
         };
       })()
     : undefined;
-  const initialNavbarFavoriteListings = initialFavoriteData?.listings.map((listing) => ({
-    id: listing.id,
-    make: listing.make,
-    model: listing.model,
-    year: listing.year,
-    price: listing.price,
-    thumbnail: listing.thumbnail,
-  }));
+  const initialNavbarFavoriteIds = (initialFavoriteData?.favorites ?? []).slice(0, 3);
+  const initialNavbarFavoriteListings = initialFavoriteData?.listings
+    .filter((listing) => initialNavbarFavoriteIds.includes(listing.id))
+    .map((listing) => ({
+      id: listing.id,
+      make: listing.make,
+      model: listing.model,
+      year: listing.year,
+      price: listing.price,
+      thumbnail: listing.thumbnail,
+    }));
   const initialPersonalConversations = initialSession
     ? await (async () => {
         const partnerIds = (initialSession.partnerMemberships ?? [])
@@ -156,7 +159,6 @@ export default async function RootLayout({
         };
       })()
     : undefined;
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -178,6 +180,7 @@ export default async function RootLayout({
             <QueryProvider
               initialFavoritesStatus={initialFavoritesStatus}
               initialNavbarFavoriteListings={initialNavbarFavoriteListings}
+              initialNavbarFavoriteIds={initialNavbarFavoriteIds}
               initialPersonalConversations={initialPersonalConversations}
               initialUserId={initialSession?.id}
             >
