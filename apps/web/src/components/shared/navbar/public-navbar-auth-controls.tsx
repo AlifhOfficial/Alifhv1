@@ -121,33 +121,37 @@ export function PublicNavbarAuthControls({ navItems }: PublicNavbarAuthControlsP
 
   return (
     <>
-      {isAuthenticated && user?.id ? <NavbarMessaging userId={user.id} /> : null}
-      {isAuthenticated && user?.id ? <NavbarFavorites userId={user.id} /> : null}
+      <div className="flex h-10 items-center gap-1.5 rounded-full border border-border/50 bg-muted/25 px-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+        <NavbarMessaging userId={isAuthenticated ? user?.id : undefined} />
+        <NavbarFavorites userId={isAuthenticated ? user?.id : undefined} />
 
-      <ProfileMenu
-        user={user}
-        showMenu={showProfileMenu}
-        onToggleMenu={(event) => {
-          event?.stopPropagation();
-          setShowProfileMenu((current) => !current);
-        }}
-        onSignIn={() => {
-          setShowProfileMenu(false);
-          setCurrentAuthModal('signin');
-        }}
-        onSignUp={() => {
-          setShowProfileMenu(false);
-          setCurrentAuthModal('signup');
-        }}
-        onSignOut={onSignOut}
-        onProfile={() => {
-          setShowProfileMenu(false);
-          router.push('/profile');
-        }}
-        navItems={navItems}
-        pathname={pathname}
-        onNavigate={() => setShowProfileMenu(false)}
-      />
+        <div className="pl-0.5">
+          <ProfileMenu
+            user={user}
+            showMenu={showProfileMenu}
+            onToggleMenu={(event) => {
+              event?.stopPropagation();
+              setShowProfileMenu((current) => !current);
+            }}
+            onSignIn={() => {
+              setShowProfileMenu(false);
+              setCurrentAuthModal('signin');
+            }}
+            onSignUp={() => {
+              setShowProfileMenu(false);
+              setCurrentAuthModal('signup');
+            }}
+            onSignOut={onSignOut}
+            onProfile={() => {
+              setShowProfileMenu(false);
+              router.push('/profile');
+            }}
+            navItems={navItems}
+            pathname={pathname}
+            onNavigate={() => setShowProfileMenu(false)}
+          />
+        </div>
+      </div>
 
       <AuthManager
         currentModal={currentAuthModal}

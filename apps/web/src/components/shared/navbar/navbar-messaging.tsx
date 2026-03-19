@@ -93,15 +93,19 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
 
   const allGroups = Object.values(groupedConversations);
 
+  if (!userId) {
+    return null;
+  }
+
   return (
-    <div className="relative" data-messaging-dropdown>
+    <div className="relative hidden sm:block" data-messaging-dropdown>
       {/* Trigger Button */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
-        className="relative p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
+        className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"
         aria-label="Messages"
       >
         <MessageCircle className="size-4" />
@@ -122,7 +126,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-14 sm:top-full sm:mt-2 sm:w-96 bg-sidebar border border-sidebar-border rounded-xl shadow-xl z-[70] overflow-hidden">
+        <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-14 sm:top-full sm:mt-3 sm:w-96 bg-sidebar border border-sidebar-border rounded-2xl shadow-xl z-[70] overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3.5 border-b border-sidebar-border">
             <h3 className="text-[15px] font-semibold tracking-tight text-sidebar-foreground">

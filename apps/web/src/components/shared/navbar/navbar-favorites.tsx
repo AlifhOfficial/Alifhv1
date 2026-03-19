@@ -27,7 +27,7 @@ type ListingPayload = {
   thumbnail: string | null;
 };
 
-export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
+export function NavbarFavorites({ userId }: NavbarFavoritesProps) {
   const [isOpen, setIsOpen] = useState(false);
   
   const { isSignedIn } = useUser();
@@ -88,15 +88,19 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
 
   const isLoading = isLoadingFavorites || isLoadingListings;
 
+  if (!isSignedIn || !userId) {
+    return null;
+  }
+
   return (
-    <div className="relative" data-favorites-dropdown>
+    <div className="relative hidden sm:block" data-favorites-dropdown>
       {/* Trigger Button */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           handleToggle();
         }}
-        className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
+        className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"
         aria-label="Favorites"
       >
         <Heart className="size-4" />
@@ -104,7 +108,7 @@ export function NavbarFavorites({ userId: _userId }: NavbarFavoritesProps) {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-14 sm:top-full sm:mt-2 sm:w-96 bg-sidebar border border-sidebar-border rounded-xl shadow-xl z-[70] overflow-hidden">
+        <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-14 sm:top-full sm:mt-3 sm:w-96 bg-sidebar border border-sidebar-border rounded-2xl shadow-xl z-[70] overflow-hidden">
           {/* Header */}
           <div className="px-4 py-3.5 border-b border-sidebar-border">
             <h3 className="text-[15px] font-semibold tracking-tight text-sidebar-foreground">

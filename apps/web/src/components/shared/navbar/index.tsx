@@ -33,7 +33,7 @@ export function Navbar() {
           <PublicNavbarMenu navItems={navItems} />
         </div>
 
-        <div className="ml-auto flex flex-shrink-0 items-center gap-2">
+        <div className="ml-auto flex flex-shrink-0 items-center">
           <PublicThemeToggle />
           <PublicNavbarAuthControls navItems={navItems} />
         </div>

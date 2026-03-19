@@ -43,13 +43,13 @@ export function PublicThemeToggle() {
   }, []);
 
   return (
-    <div className="relative" data-theme-menu-container>
+    <div className="relative mr-2 hidden sm:block" data-theme-menu-container>
       <button
         onClick={(event) => {
           event.stopPropagation();
           setShowThemeMenu((current) => !current);
         }}
-        className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-md"
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-muted/25 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
         aria-label="Theme menu"
         suppressHydrationWarning
       >
@@ -58,7 +58,7 @@ export function PublicThemeToggle() {
 
       {showThemeMenu && (
         <div
-          className="absolute right-0 top-full mt-2 w-32 bg-sidebar border border-sidebar-border rounded-lg shadow-lg z-50 overflow-hidden"
+          className="absolute right-0 top-full mt-2 w-32 bg-sidebar border border-sidebar-border rounded-2xl shadow-lg z-50 overflow-hidden"
           onClick={(event) => event.stopPropagation()}
         >
           <div className="p-1.5 flex flex-col gap-0.5">
