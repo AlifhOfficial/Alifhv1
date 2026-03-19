@@ -1,8 +1,3 @@
-/**
- * Problem Section - Why Revvup Exists
- * Explains the issues with current UAE car platforms
- */
-
 'use client';
 
 import { MarketingImage as Image } from '@/components/pages/marketing-image';

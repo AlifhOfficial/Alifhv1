@@ -1,46 +1,6 @@
-/**
- * Footer Component - Revvup
- * Clean, minimal, modern
- */
-
-'use client';
-
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuthRequired } from '@/hooks/use-auth-required';
-import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import { footerSections, footerBottomLinks } from '@/lib/navigation';
-
-function SellLink({ className }: { className?: string }) {
-  const router = useRouter();
-  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
-    feature: "create listings",
-    redirectTo: "/user-dashboard/listings/new",
-  });
-
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (isAuthenticated) {
-      router.push('/user-dashboard/listings/new');
-    } else {
-      openModal();
-    }
-  };
-
-  return (
-    <>
-      <a href="/user-dashboard/listings/new" onClick={handleClick} className={className}>
-        Sell
-      </a>
-      <AuthRequiredModal
-        open={showModal}
-        onClose={closeModal}
-        feature="create listings"
-        redirectTo="/user-dashboard/listings/new"
-      />
-    </>
-  );
-}
+import { FooterSellLink } from './sell-link';
 
 export function Footer() {
   return (
@@ -74,7 +34,7 @@ export function Footer() {
                     {section.links.map((item) => (
                       <li key={item.label}>
                         {item.href === "/user-dashboard/listings/new" ? (
-                          <SellLink className="text-sm text-foreground/70 hover:text-foreground transition-colors" />
+                          <FooterSellLink className="text-sm text-foreground/70 hover:text-foreground transition-colors" />
                         ) : (
                           <Link 
                             href={item.href} 

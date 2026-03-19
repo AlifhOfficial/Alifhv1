@@ -5,10 +5,8 @@ import './globals.css'
 import { ThemeProvider } from '@/components/shared/providers/theme-provider'
 import { QueryProvider } from '@/components/shared/providers/query-provider'
 import { AuthProvider } from '@/providers/auth-provider'
-import { GlobalChatProvider } from '@/components/shared/providers/global-chat-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { getSessionUser } from '@/lib/auth/session-context'
-import { getFavoritesWithListings, getSuperlikeQuotaForUser, getUserConversations } from '@alifh/database'
 import {
   BRAND_APPLE_TOUCH_ICON_URL,
   BRAND_FAVICON_ICO_URL,
@@ -96,69 +94,6 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const initialSession = await getSessionUser();
-  const initialFavoriteData = initialSession
-    ? await getFavoritesWithListings(initialSession.id, { limit: 3 })
-    : undefined;
-  const initialFavoritesStatus = initialSession
-    ? await (async () => {
-        const quota = await getSuperlikeQuotaForUser(initialSession.id);
-        return {
-          favorites: initialFavoriteData?.favorites ?? [],
-          superlikes: initialFavoriteData?.superlikes ?? [],
-          quota: {
-            currentMonthSuperlikesUsed: quota.currentMonthSuperlikesUsed,
-            maxSuperlikesPerMonth: quota.maxSuperlikesPerMonth,
-            premiumSuperlikesBonus: quota.premiumSuperlikesBonus || 0,
-            remaining:
-              (quota.maxSuperlikesPerMonth + (quota.premiumSuperlikesBonus || 0)) -
-              quota.currentMonthSuperlikesUsed,
-            periodEndDate: quota.periodEndDate,
-            periodStartDate: quota.periodStartDate,
-          },
-        };
-      })()
-    : undefined;
-  const initialNavbarFavoriteIds = (initialFavoriteData?.favorites ?? []).slice(0, 3);
-  const initialNavbarFavoriteListings = initialFavoriteData?.listings
-    .filter((listing) => initialNavbarFavoriteIds.includes(listing.id))
-    .map((listing) => ({
-      id: listing.id,
-      make: listing.make,
-      model: listing.model,
-      year: listing.year,
-      price: listing.price,
-      thumbnail: listing.thumbnail,
-    }));
-  const initialPersonalConversations = initialSession
-    ? await (async () => {
-        const partnerIds = (initialSession.partnerMemberships ?? [])
-          .map((m) => m.partnerId)
-          .filter(Boolean);
-        const conversations = await getUserConversations(initialSession.id, {
-          limit: 50,
-          offset: 0,
-          includeArchived: false,
-          partnerIds,
-          partnerScope: partnerIds.length > 0 ? 'exclude' : undefined,
-        });
-        return {
-          conversations: conversations.map((conversation) => ({
-            ...conversation,
-            lastMessageAt: conversation.lastMessageAt.toISOString(),
-            myLastReadAt: conversation.myLastReadAt?.toISOString() ?? null,
-            otherParticipant: conversation.otherParticipant
-              ? {
-                  ...conversation.otherParticipant,
-                  lastReadAt: conversation.otherParticipant.lastReadAt?.toISOString() ?? null,
-                  lastSeenAt: conversation.otherParticipant.lastSeenAt?.toISOString() ?? null,
-                }
-              : null,
-          })),
-          totalUnread: conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0),
-          hasMore: conversations.length === 50,
-        };
-      })()
-    : undefined;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -177,16 +112,8 @@ export default async function RootLayout({
       <body className={`${inter.variable} ${geomFont.variable}`} suppressHydrationWarning>
         <ThemeProvider>
           <AuthProvider initialSession={initialSession}>
-            <QueryProvider
-              initialFavoritesStatus={initialFavoritesStatus}
-              initialNavbarFavoriteListings={initialNavbarFavoriteListings}
-              initialNavbarFavoriteIds={initialNavbarFavoriteIds}
-              initialPersonalConversations={initialPersonalConversations}
-              initialUserId={initialSession?.id}
-            >
-              <GlobalChatProvider>
-                {children}
-              </GlobalChatProvider>
+            <QueryProvider>
+              {children}
               <Toaster />
             </QueryProvider>
           </AuthProvider>

@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session-context";
+import { getAuthenticatedShellData } from "@/lib/authenticated-shell-data";
+import { AuthenticatedAppProviders } from "@/components/shared/providers/authenticated-app-providers";
 import { StaffDashboardShell } from "./shell";
 
 const navSections = [
@@ -38,9 +40,13 @@ export default async function StaffDashboardLayout({ children }: { children: Rea
     companyName: staffMembership.partnerName,
   };
 
+  const shellData = await getAuthenticatedShellData(user as { id: string; partnerMemberships?: Array<{ partnerId?: string | null }> });
+
   return (
-    <StaffDashboardShell user={user} sections={navSections} staffOverride={staffOverride}>
-      {children}
-    </StaffDashboardShell>
+    <AuthenticatedAppProviders {...shellData}>
+      <StaffDashboardShell user={user} sections={navSections} staffOverride={staffOverride}>
+        {children}
+      </StaffDashboardShell>
+    </AuthenticatedAppProviders>
   );
 }

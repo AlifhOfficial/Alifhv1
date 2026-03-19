@@ -1,8 +1,3 @@
-/**
- * Comparison Section - Side by Side
- * Direct comparison between typical platforms and Revvup
- */
-
 'use client';
 
 import { MarketingImage as Image } from '@/components/pages/marketing-image';

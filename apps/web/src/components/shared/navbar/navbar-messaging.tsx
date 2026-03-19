@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { MessageCircle, ChevronRight, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { useConversations, type Conversation } from '@/hooks/messaging';
@@ -16,11 +17,12 @@ import Link from 'next/link';
 
 interface NavbarMessagingProps {
   userId?: string;
-  onOpenChat: (conversation: Conversation) => void;
+  onOpenChat?: (conversation: Conversation) => void;
 }
 
 export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
   const MAX_DROPDOWN_CONVERSATIONS = 5;
   // Use limit=50 to share cache with full messaging page (server-seeded)
   // Filter to 5 for display in dropdown
@@ -63,8 +65,13 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
 
   const handleOpenChat = useCallback((conversation: Conversation) => {
     setIsOpen(false);
-    onOpenChat(conversation);
-  }, [onOpenChat]);
+    if (onOpenChat) {
+      onOpenChat(conversation);
+      return;
+    }
+
+    router.push(`/user-dashboard/messaging?conversationId=${conversation.id}`);
+  }, [onOpenChat, router]);
 
   // Keep the dropdown aligned with the lightweight fetch: max 5 real conversations, no empty threads
   const visibleConversations = conversations

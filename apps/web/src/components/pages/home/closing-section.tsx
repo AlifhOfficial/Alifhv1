@@ -1,50 +1,8 @@
-/**
- * Closing Section - Revvup Home Page
- * Consistent with Hero Section design patterns
- */
-
-'use client';
-
 import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuthRequired } from '@/hooks/use-auth-required';
-import { AuthRequiredModal } from '@/components/auth/auth-required-modal';
 import { MacOSWindow } from '@/components/ui/macos-window';
 import { revx9 } from '@/components/pages/marketing-image-assets';
-
-function SellButton() {
-  const router = useRouter();
-  const { isAuthenticated, showModal, openModal, closeModal } = useAuthRequired({
-    feature: "create listings",
-    redirectTo: "/user-dashboard/listings/new",
-  });
-
-  const handleClick = () => {
-    if (isAuthenticated) {
-      router.push('/user-dashboard/listings/new');
-    } else {
-      openModal();
-    }
-  };
-
-  return (
-    <>
-      <button
-        onClick={handleClick}
-        className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
-      >
-        Sell Your Car
-      </button>
-      <AuthRequiredModal
-        open={showModal}
-        onClose={closeModal}
-        feature="create listings"
-        redirectTo="/user-dashboard/listings/new"
-      />
-    </>
-  );
-}
+import { PublicSellButton } from '@/components/shared/public-sell-button';
 
 export function ClosingSection() {
   return (
@@ -82,7 +40,9 @@ export function ClosingSection() {
             >
               Browse Cars
             </Link>
-            <SellButton />
+            <PublicSellButton className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center">
+              Sell Your Car
+            </PublicSellButton>
           </div>
         </div>
       </div>

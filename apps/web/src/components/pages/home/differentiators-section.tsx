@@ -1,8 +1,3 @@
-/**
- * Differentiators Section - What Makes Us Different
- * Human First approach with feature cards
- */
-
 'use client';
 
 import { MarketingImage as Image } from '@/components/pages/marketing-image';

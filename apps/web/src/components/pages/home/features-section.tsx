@@ -1,10 +1,3 @@
-/**
- * Features Section - Built in Dubai
- * Platform features and capabilities
- */
-
-'use client';
-
 import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { Clock, PenLine, Zap, Timer } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
