@@ -28,7 +28,6 @@ export default async function SuperlikesPage() {
         emirate: listing.emirate,
         specs: listing.specs,
         thumbnail: listing.thumbnail,
-        qiScore: null,
         partnerName: listing.partnerName,
         partnerLogo: listing.partnerLogo,
         partnerVerified: listing.partnerVerified,

@@ -98,7 +98,6 @@ export function FavoritesPageClient({ initialStatus, initialListings }: Favorite
                     emirate={listing.emirate ?? ''}
                     specs={listing.specs}
                     thumbnail={listing.thumbnail}
-                    qiScore={listing.qiScore}
                     isBlkListing={listing.isBlkListing ?? undefined}
                     partnerName={listing.partnerName ?? undefined}
                     partnerLogo={listing.partnerLogo}

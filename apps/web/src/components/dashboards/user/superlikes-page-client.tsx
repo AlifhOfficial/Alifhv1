@@ -105,7 +105,6 @@ export function SuperlikesPageClient({ initialStatus, initialListings }: Superli
                     emirate={listing.emirate ?? ''}
                     specs={listing.specs}
                     thumbnail={listing.thumbnail}
-                    qiScore={listing.qiScore}
                     isBlkListing={listing.isBlkListing ?? undefined}
                     partnerName={listing.partnerName ?? undefined}
                     partnerLogo={listing.partnerLogo}

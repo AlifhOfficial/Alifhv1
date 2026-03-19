@@ -297,7 +297,6 @@ export interface ListingCardData {
   emirate: string | null;
   specs: string | null;
   thumbnail: string | null;
-  qiScore: number | null;
   partnerName: string | null;
   partnerLogo?: string | null;
   partnerVerified: boolean | null;
