@@ -207,7 +207,7 @@ export function ListingsHeader({
     <>
       {/* ===== MOBILE HEADER ===== */}
       <div className="sm:hidden z-30 bg-background border-b border-border/20">
-        <div className="pt-2 pb-3 px-2 space-y-2">
+        <div className="pt-0 pb-2 px-2 space-y-2">
           {/* Row 1: Search bar + controls */}
           <div className="flex items-center gap-2">
             {/* Filters trigger - pill style */}
@@ -554,7 +554,7 @@ export function ListingsHeader({
             )}>
               <SearchBar
                 size="sm"
-                placeholder="Search..."
+                placeholder="Search"
                 redirectOnSearch={false}
                 onSearch={setFilters}
                 onFocus={() => setMobileSearchExpanded(true)}

@@ -205,8 +205,8 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-background">
-        <div className="flex h-14 items-center max-w-[1600px] mx-auto px-4 sm:h-16 sm:px-6 lg:px-8">
+      <nav className="fixed top-0 left-0 right-0 z-40 h-14 sm:h-16 bg-background will-change-transform [transform:translateZ(0)] [backface-visibility:hidden]">
+        <div className="flex h-full items-center max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 flex-1 items-baseline">
               <Link
                 href="/"
@@ -254,7 +254,7 @@ export function Navbar() {
             {/* Right Actions */}
             <div className="ml-auto flex flex-shrink-0 items-center gap-2">
               {/* Theme Toggle */}
-              <div className="relative hidden sm:block" data-theme-menu-container>
+              <div className="relative" data-theme-menu-container>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();

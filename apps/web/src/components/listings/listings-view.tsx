@@ -53,6 +53,8 @@ export function ListingsView({
 }: ListingsViewProps) {
   const pathname = usePathname();
   const shouldPersistPublicSidebar = pathname === '/listings' && !embedded;
+  const mobileHeaderRef = useRef<HTMLDivElement | null>(null);
+  const [mobileHeaderHeight, setMobileHeaderHeight] = useState(0);
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(VIEW_MODE_KEY);
@@ -133,6 +135,32 @@ export function ListingsView({
     window.sessionStorage.setItem(LAST_PUBLIC_LISTINGS_URL_KEY, currentUrl);
   }, [pathname, params]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const header = mobileHeaderRef.current;
+    if (!header) return;
+
+    const updateHeight = () => {
+      setMobileHeaderHeight(header.getBoundingClientRect().height);
+    };
+
+    updateHeight();
+
+    const observer =
+      typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(() => updateHeight())
+        : null;
+
+    observer?.observe(header);
+    window.addEventListener('resize', updateHeight);
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, []);
+
   // Scroll to top when user changes pagination (not on initial mount/back navigation)
   // Skip initial mount to let browser restore scroll position naturally
   const prevPageRef = useRef(currentPage);
@@ -158,36 +186,47 @@ export function ListingsView({
         {/* Main Layout Container - respects max-width */}
         <div className={cn(
           "mx-auto px-4 sm:px-6 lg:px-8",
-          !embedded && "max-w-[1600px] pt-4 sm:pt-6"
+          !embedded && "max-w-[1600px] lg:pt-6"
         )}>
           {/* Mobile Layout (no resizable) */}
           <div className="lg:hidden">
-            {/* TOP: Sticky Search Header */}
-            <div className={cn(
-              "sticky z-30 bg-background pb-1 -mx-4 px-4 sm:-mx-6 sm:px-6",
-              embedded ? "top-0" : "top-14 sm:top-16"
-            )}>
-              <ListingsHeader
-                params={params}
-                facets={facets}
-                meta={meta}
-                activeFilterCount={activeFilterCount}
-                isLoading={isLoading}
-                listings={listings}
-                sidebarOpen={false}
-                onSidebarToggle={updateSidebarOpen}
-                mobileFiltersOpen={mobileFiltersOpen}
-                onMobileFiltersToggle={setMobileFiltersOpen}
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-                setFilters={setFilters}
-                clearFilters={clearFilters}
-                setSort={setSort}
-              />
+            {/* TOP: Fixed mobile header to avoid sticky scroll seam under navbar */}
+            <div
+              className={cn(
+                "fixed inset-x-0 z-30 bg-background will-change-transform [transform:translateZ(0)] [backface-visibility:hidden]",
+                embedded ? "top-0" : "top-14 sm:top-16"
+              )}
+            >
+              <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
+                <div ref={mobileHeaderRef}>
+                  <ListingsHeader
+                    params={params}
+                    facets={facets}
+                    meta={meta}
+                    activeFilterCount={activeFilterCount}
+                    isLoading={isLoading}
+                    listings={listings}
+                    sidebarOpen={false}
+                    onSidebarToggle={updateSidebarOpen}
+                    mobileFiltersOpen={mobileFiltersOpen}
+                    onMobileFiltersToggle={setMobileFiltersOpen}
+                    viewMode={viewMode}
+                    onViewModeChange={setViewMode}
+                    setFilters={setFilters}
+                    clearFilters={clearFilters}
+                    setSort={setSort}
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Content */}
-            <main className="pt-1 pb-3 sm:pt-2 sm:pb-6">
+            <main
+              className="pb-3 sm:pb-6"
+              style={{
+                paddingTop: mobileHeaderHeight > 0 ? mobileHeaderHeight + 4 : undefined,
+              }}
+            >
               <ListingsContent
                 listings={listings}
                 meta={meta}
@@ -249,7 +288,7 @@ export function ListingsView({
             <div className={cn("min-w-0", sidebarOpen && "col-start-2")}>
               <div
                 className={cn(
-                  "sticky z-30 bg-background pb-1",
+                  "sticky z-30 bg-background",
                   embedded ? "top-0" : "top-16"
                 )}
               >
