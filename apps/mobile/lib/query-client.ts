@@ -73,7 +73,6 @@ export const queryKeys = {
   conversations: (scope?: string) => ['conversations', scope ?? 'personal'] as const,
   conversation: (id: string) => ['conversation', id] as const,
   messages: (conversationId: string) => ['messages', conversationId] as const,
-  unreadCount: () => ['unreadCount'] as const,
   
   // User data
   profile: () => ['profile'] as const,

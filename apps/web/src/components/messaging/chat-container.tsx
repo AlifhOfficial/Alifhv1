@@ -13,7 +13,7 @@ import { ChatWindow } from './chat-window';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useConversations } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
-import type { Conversation } from '@/hooks/messaging';
+import type { Conversation, InitialMessagesData } from '@/hooks/messaging';
 
 interface ChatContainerProps {
   userId: string;
@@ -24,9 +24,13 @@ interface ChatContainerProps {
     totalUnread: number;
     hasMore: boolean;
   };
+  initialMessages?: {
+    conversationId: string;
+    data: InitialMessagesData;
+  };
 }
 
-function ChatContainerInner({ userId, inbox = 'personal', className, initialData }: ChatContainerProps) {
+function ChatContainerInner({ userId, inbox = 'personal', className, initialData, initialMessages }: ChatContainerProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -45,7 +49,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
   const showMobile = showMobileOverride ?? !!selectedId;
 
   // useConversations includes real-time WebSocket updates for messages, unread counts, and sorting
-  const { conversations, isLoading, totalUnread, refetch } = useConversations({
+  const { conversations, isLoading, totalUnread, refetch, hasMore, isFetchingMore, fetchMore } = useConversations({
     userId,
     scope: inbox,
     limit: 50,
@@ -101,6 +105,9 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
               router.replace(`${pathname}?conversationId=${id}`, { scroll: false });
             }
           }}
+          hasMore={hasMore}
+          isFetchingMore={isFetchingMore}
+          fetchMore={fetchMore}
         />
       </div>
 
@@ -133,6 +140,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
               myLastReadAt={selected.myLastReadAt}
               inbox={inbox}
               onBack={handleClose}
+              initialMessages={initialMessages?.conversationId === selected.id ? initialMessages.data : undefined}
             />
           ) : selectedId && isLoading ? (
             // Loading state when conversation ID is selected but not yet in list

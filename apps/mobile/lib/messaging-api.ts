@@ -253,22 +253,6 @@ export async function createConversation(data: {
   return response.json();
 }
 
-/**
- * Get total unread count
- */
-export async function getUnreadCount(): Promise<number> {
-  const endpoint = '/api/conversations/unread-count';
-  const response = await messagingFetch(endpoint);
-  
-  if (!response.ok) {
-    console.error('[Messaging API] Failed to fetch unread count');
-    return 0;
-  }
-
-  const data = await response.json();
-  return data.totalUnread || 0;
-}
-
 // ============================================================================
 // LOCATION MESSAGES
 // ============================================================================

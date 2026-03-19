@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { MessageCircle, ChevronRight, Loader2 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
-import { useConversations, useUnreadCount, type Conversation } from '@/hooks/messaging';
+import { useConversations, type Conversation } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
@@ -22,13 +22,17 @@ interface NavbarMessagingProps {
 export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
   const MAX_DROPDOWN_CONVERSATIONS = 5;
-  const { unreadCount } = useUnreadCount(userId, undefined, { enableFetch: false });
-  const { conversations, isLoading } = useConversations({
+  // Use limit=50 to share cache with full messaging page (server-seeded)
+  // Filter to 5 for display in dropdown
+  const { conversations: allConversations, isLoading } = useConversations({
     userId,
     scope: 'personal',
-    limit: MAX_DROPDOWN_CONVERSATIONS,
-    enabled: isOpen,
+    limit: 50,
+    // Always fetch to have unread state available for badge
+    enabled: !!userId,
   });
+  const conversations = allConversations.slice(0, MAX_DROPDOWN_CONVERSATIONS);
+  const hasUnread = allConversations.some((conversation) => conversation.unreadCount > 0);
 
   // Close on outside click
   useEffect(() => {
@@ -95,9 +99,9 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
       >
         <MessageCircle className="size-4" />
         
-        {/* Unread Badge */}
-        {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-rose-500 rounded-full" />
+        {/* Unread Badge - dot indicator */}
+        {hasUnread && (
+          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full" />
         )}
       </button>
 
@@ -117,7 +121,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
             <h3 className="text-[15px] font-semibold tracking-tight text-sidebar-foreground">
               Messages
             </h3>
-            {unreadCount > 0 && (
+            {hasUnread && (
               <span className="w-2 h-2 bg-rose-500 rounded-full" />
             )}
           </div>
@@ -389,9 +393,9 @@ function ConversationPreviewItem({ conversation, onClick, isGrouped = false }: C
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-sidebar" />
           )}
           
-          {/* Unread indicator dot */}
-          {hasUnread && (
-            <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-rose-500 rounded-full border-2 border-sidebar" />
+          {/* Unread indicator dot - bottom right, behind online if both */}
+          {hasUnread && !isOnline && (
+            <span className="absolute bottom-0 right-0 w-2 h-2 bg-rose-500 rounded-full border border-sidebar" />
           )}
         </div>
 

@@ -26,6 +26,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { getAppThumbUrl } from '@/utils/storage';
 import { FunnelMatchesView } from '@/components/staff/consignment/funnel-matches-view';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { getFunnelMatchesAction } from '@/actions/funnels';
 
 // ============================================================================
 // Constants
@@ -477,7 +478,7 @@ interface FunnelRowProps {
 function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) {
   const filterTags = getFilterTags(funnel.filters);
   
-  // Preview state
+  // Preview state - fetched via server action when expanded
   const [previewData, setPreviewData] = useState<FunnelPreview[]>([]);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewFetched, setPreviewFetched] = useState(false);
@@ -486,8 +487,7 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
   useEffect(() => {
     if (isExpanded && !previewFetched) {
       setPreviewLoading(true);
-      fetch(`/api/partner/consignment/funnels/${funnel.id}/matches?limit=6`)
-        .then(res => res.ok ? res.json() : Promise.reject())
+      getFunnelMatchesAction(funnel.id, { limit: 6 })
         .then(data => {
           setPreviewData(data.listings || []);
           setPreviewFetched(true);

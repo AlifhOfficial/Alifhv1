@@ -55,7 +55,6 @@ export default function MessagesScreen() {
 
   const {
     conversations,
-    totalUnread,
     isLoading,
     isRefreshing,
     error,

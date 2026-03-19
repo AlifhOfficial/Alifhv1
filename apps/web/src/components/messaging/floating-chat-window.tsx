@@ -15,6 +15,7 @@ import { MessageBubble } from '@/components/messaging/message-bubble';
 import { MessageInput } from '@/components/messaging/message-input';
 import { LocationPickerDialog } from '@/components/messaging/location-picker-dialog';
 import { useMessages, useSendMessage, useSendLocationMessage, useMarkAsRead, type Conversation } from '@/hooks/messaging';
+import { markConversationActive, markConversationInactive } from '@/hooks/messaging/active-conversations';
 import { cn } from '@/utils/cn';
 import { format, isSameDay } from 'date-fns';
 import type { LocationResult } from '@/hooks/use-location';
@@ -140,24 +141,23 @@ export function FloatingChatWindow({
     };
   }, []);
 
-  // Track last message we've marked as read to prevent duplicate API calls
-  const lastMarkedMsgIdRef = useRef<string | null>(null);
-  
-  // Parse myLastReadAt once
-  const myLastReadAtDate = useMemo(() => {
-    const v = conversation.myLastReadAt;
-    if (!v) return null;
-    const d = v instanceof Date ? v : new Date(v);
-    return isNaN(d.getTime()) ? null : d;
-  }, [conversation.myLastReadAt]);
-  
   // Reset tracking on conversation switch
   useEffect(() => {
     lastMessageIdRef.current = null;
-    lastMarkedMsgIdRef.current = null;
     paginationSnapshotRef.current = null;
     lastNewestMessageIdRef.current = null;
     hasAutoScrolledInitiallyRef.current = false;
+  }, [conversation.id]);
+
+  useEffect(() => {
+    if (isMinimized) return;
+    markConversationActive(conversation.id);
+    return () => markConversationInactive(conversation.id);
+  }, [conversation.id, isMinimized]);
+
+  const hasMarkedOnEntryRef = useRef(false);
+  useEffect(() => {
+    hasMarkedOnEntryRef.current = false;
   }, [conversation.id]);
 
   useEffect(() => {
@@ -205,32 +205,14 @@ export function FloatingChatWindow({
     }
   }, [messages, orderedMessages.length, isLoading, isMinimized, updateScrollState]);
 
-  // Smart mark-as-read: only call API when necessary
+  // Mark as read once when opening this floating chat
   useEffect(() => {
-    if (isLoading || messages.length === 0 || isMinimized || !isDocumentActive) return;
-    
-    const newestMessage = messages[0];
-    if (!newestMessage) return;
-    
-    // Skip if we've already marked this exact message in this session
-    if (newestMessage.id === lastMarkedMsgIdRef.current) return;
-    
-    const newestMessageTime = new Date(newestMessage.createdAt);
-    const newestIsFromOther = newestMessage.senderId !== userId;
-    
-    // Skip if we've already read past this message (persisted in DB)
-    const alreadyRead = myLastReadAtDate && newestMessageTime <= myLastReadAtDate;
-    
-    // Update tracking
-    lastMessageIdRef.current = newestMessage.id;
-    
-    // Only call API if:
-    // - Newest message is from other user AND we haven't read it yet
-    if (newestIsFromOther && !alreadyRead) {
-      lastMarkedMsgIdRef.current = newestMessage.id;
-      markAsRead(conversation.id);
+    if (hasMarkedOnEntryRef.current || isLoading || isMinimized || !isDocumentActive || conversation.unreadCount <= 0) {
+      return;
     }
-  }, [conversation.id, isLoading, messages, userId, markAsRead, isMinimized, myLastReadAtDate, isDocumentActive]);
+    hasMarkedOnEntryRef.current = true;
+    markAsRead(conversation.id);
+  }, [conversation.id, conversation.unreadCount, isLoading, isMinimized, isDocumentActive, markAsRead]);
 
   // Infinite scroll
   const handleScroll = useCallback(() => {

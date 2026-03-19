@@ -17,6 +17,7 @@ import {
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getAppThumbUrl } from '@/utils/storage';
+import { getFunnelMatchesAction } from '@/actions/funnels';
 
 interface ConsignmentFunnel {
   id: string;
@@ -44,21 +45,12 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
   const limit = 20;
 
   const { data, isLoading, error } = useQuery<{
-    funnel: { id: string; name: string };
     listings: MatchingListing[];
     total: number;
     hasMore: boolean;
   }>({
     queryKey: ['funnel-matches', funnel.id, offset],
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        limit: limit.toString(),
-        offset: offset.toString(),
-      });
-      const res = await fetch(`/api/partner/consignment/funnels/${funnel.id}/matches?${params}`);
-      if (!res.ok) throw new Error('Failed to fetch matches');
-      return res.json();
-    },
+    queryFn: () => getFunnelMatchesAction(funnel.id, { limit, offset }),
   });
 
   const currentPage = Math.floor(offset / limit) + 1;

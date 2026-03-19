@@ -26,7 +26,6 @@ import {
 import { UserBanNotice } from '@/components/dashboards/user';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import type { DashboardStats } from '@/hooks/profile';
-import { useUnreadCount } from '@/hooks/messaging';
 import { 
   Tooltip,
   TooltipContent,
@@ -177,8 +176,8 @@ interface UserDashboardOverviewProps {
 }
 
 export function UserDashboardOverview({ user, initialStats: stats, initialUnreadCount, initialHealth }: UserDashboardOverviewProps) {
-  // Real-time unread count via WebSocket, seeded with server-fetched value
-  const { unreadCount } = useUnreadCount(user.id, initialUnreadCount, { enableFetch: false });
+  // Use server-fetched unread count (no WebSocket real-time updates)
+  const hasUnread = initialUnreadCount > 0;
 
   const firstName = (user as any)?.firstName || user?.name?.split(' ')[0] || 'there';
   const lastName = (user as any)?.lastName || '';
@@ -312,8 +311,14 @@ export function UserDashboardOverview({ user, initialStats: stats, initialUnread
                 <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
               </div>
               <div>
-                <span className="text-xl sm:text-2xl font-semibold text-indigo-500">{unreadCount}</span>
-                <span className="text-xs sm:text-sm text-muted-foreground ml-1.5">unread</span>
+                {hasUnread ? (
+                  <span className="inline-flex items-center gap-1.5 text-sm sm:text-base font-semibold text-indigo-500">
+                    <span className="w-2 h-2 bg-indigo-500 rounded-full" />
+                    New
+                  </span>
+                ) : (
+                  <span className="text-sm sm:text-base text-muted-foreground">All read</span>
+                )}
               </div>
             </Link>
           </div>

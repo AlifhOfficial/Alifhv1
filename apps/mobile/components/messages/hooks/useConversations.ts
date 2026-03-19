@@ -5,7 +5,7 @@
  * Real-time updates via WebSocket.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   fetchConversations,
   markConversationAsRead,
@@ -40,7 +40,6 @@ export function useConversations({
   scope,
 }: UseConversationsOptions): UseConversationsReturn {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [totalUnread, setTotalUnread] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,10 +91,6 @@ export function useConversations({
             .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
         });
 
-        // Update totalUnread only if not own message
-        if (!isOwnMessage) {
-          setTotalUnread(prev => prev + 1);
-        }
       }
 
       // Handle read receipts - only update otherParticipant's lastReadAt (not self)
@@ -240,7 +235,6 @@ export function useConversations({
           return conv;
         });
       });
-      setTotalUnread(data.totalUnread);
     } catch (err) {
       // Don't set error for aborted requests
       if (controller.signal.aborted) return;
@@ -306,12 +300,6 @@ export function useConversations({
         )
       );
       
-      // Update total unread — read from setter callback to avoid stale closure
-      setTotalUnread(prev => {
-        // We don't know exact unread from this closure, but marking as read
-        // means at least 1 unread was cleared. Use conversations state via setter.
-        return Math.max(0, prev - 1);
-      });
     } catch (err) {
       console.error('[useConversations] Mark as read error:', err);
     } finally {
@@ -319,6 +307,11 @@ export function useConversations({
       setTimeout(() => markedConversationsRef.current.delete(conversationId), 5000);
     }
   }, []);
+
+  const totalUnread = useMemo(
+    () => conversations.reduce((sum, conversation) => sum + (conversation.unreadCount || 0), 0),
+    [conversations]
+  );
 
   return {
     conversations,

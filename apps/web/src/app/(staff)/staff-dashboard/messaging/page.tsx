@@ -7,15 +7,21 @@
 import { redirect } from 'next/navigation';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { ChatContainer } from '@/components/messaging';
-import { getUserConversations } from '@alifh/database';
-import type { Conversation } from '@/hooks/messaging';
+import { getUserConversations, getMessages, getConversationParticipants } from '@alifh/database';
+import type { Conversation, InitialMessagesData } from '@/hooks/messaging';
 
-export default async function MessagingPage() {
+interface PageProps {
+  searchParams: Promise<{ conversationId?: string }>;
+}
+
+export default async function MessagingPage({ searchParams }: PageProps) {
   const user = await getSessionUser();
 
   if (!user) {
     redirect('/?auth=signin');
   }
+
+  const { conversationId: urlConversationId } = await searchParams;
 
   const partnerIds = (user.partnerMemberships ?? []).map((m) => m.partnerId).filter(Boolean);
   const conversations = await getUserConversations(user.id, {
@@ -25,6 +31,37 @@ export default async function MessagingPage() {
     partnerIds,
     partnerScope: partnerIds.length > 0 ? 'only' : undefined,
   });
+
+  // Determine which conversation to prefetch messages for
+  const targetConversationId = urlConversationId 
+    || conversations.find(c => c.messageCount > 0)?.id;
+  
+  // Prefetch messages for the target conversation
+  let initialMessages: { conversationId: string; data: InitialMessagesData } | undefined;
+  if (targetConversationId) {
+    try {
+      const [messages, participants] = await Promise.all([
+        getMessages(targetConversationId, { limit: 50, userId: user.id }),
+        getConversationParticipants(targetConversationId),
+      ]);
+      const otherParticipant = participants.find(p => p.userId !== user.id);
+      initialMessages = {
+        conversationId: targetConversationId,
+        data: {
+          messages: messages.map(m => ({
+            ...m,
+            createdAt: m.createdAt,
+            sender: m.sender,
+          })),
+          hasMore: messages.length === 50,
+          nextCursor: messages.length === 50 ? messages[messages.length - 1].createdAt.toISOString() : null,
+          otherParticipantLastReadAt: otherParticipant?.lastReadAt?.toISOString() ?? null,
+        },
+      };
+    } catch {
+      // Silently fail - client will fetch
+    }
+  }
 
   const initialData = {
     conversations: conversations.map((conversation): Conversation => ({
@@ -50,6 +87,7 @@ export default async function MessagingPage() {
         inbox="staff"
         className="flex-1 min-h-0"
         initialData={initialData}
+        initialMessages={initialMessages}
       />
     </div>
   );

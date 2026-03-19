@@ -3,7 +3,6 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/query-client";
 import type { FavoritesStatusData } from "@/hooks/engagement/favorites/use-favorites-unified";
-import { queryKeys } from "@/lib/query-keys";
 import type { ConversationsResponse } from "@/hooks/messaging/use-conversations";
 
 interface QueryProviderProps {
@@ -53,22 +52,24 @@ export function QueryProvider({
     );
   }
 
-  if (initialUserId) {
-    queryClient.setQueryDefaults(['conversations', initialUserId, 'personal'], {
+  // Set defaults and seed conversations data for NavbarMessaging and messaging pages
+  if (initialUserId && initialPersonalConversations) {
+    const conversationsKey = ['conversations', initialUserId, 'personal', 50] as const;
+    
+    // Set defaults BEFORE setting data to prevent GC
+    queryClient.setQueryDefaults(conversationsKey, {
       staleTime: Infinity,
       gcTime: Infinity,
       refetchOnMount: false,
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
     });
-  }
 
-  if (initialPersonalConversations && initialUserId) {
-    queryClient.setQueryData(['conversations', initialUserId, 'personal'], initialPersonalConversations);
-    queryClient.setQueryData(
-      queryKeys.messaging.unreadCount(),
-      { unreadCount: initialPersonalConversations.totalUnread ?? 0 }
-    );
+    // Seed the cache with server-fetched data in infinite query format
+    queryClient.setQueryData(conversationsKey, {
+      pages: [initialPersonalConversations],
+      pageParams: [0],
+    });
   }
 
   return (

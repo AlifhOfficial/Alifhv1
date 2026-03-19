@@ -13,8 +13,8 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Search, MessageCircle, PanelLeft } from 'lucide-react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { Search, MessageCircle, PanelLeft, Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ConversationListItem } from './conversation-list-item';
 import { PartnerConversationGroup } from './partner-conversation-group';
@@ -36,6 +36,10 @@ interface ConversationListProps {
   onListToggle: (open: boolean) => void;
   onSelectConversation: (conversationId: string) => void;
   className?: string;
+  // Pagination
+  hasMore?: boolean;
+  isFetchingMore?: boolean;
+  fetchMore?: () => void;
 }
 
 export function ConversationList({
@@ -48,8 +52,25 @@ export function ConversationList({
   onListToggle,
   onSelectConversation,
   className,
+  hasMore = false,
+  isFetchingMore = false,
+  fetchMore,
 }: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  // Infinite scroll trigger
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    if (!hasMore || isFetchingMore || !fetchMore) return;
+    
+    const target = e.currentTarget;
+    const scrollBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
+    
+    // Trigger when within 200px of bottom
+    if (scrollBottom < 200) {
+      fetchMore();
+    }
+  }, [hasMore, isFetchingMore, fetchMore]);
 
   // Filter conversations by search query AND only show conversations with messages
   const filteredConversations = conversations.filter((conv) => {
@@ -229,9 +250,7 @@ export function ConversationList({
           <h1 className="text-base sm:text-lg font-semibold text-foreground">Messages</h1>
           <div className="flex items-center gap-2 sm:gap-3">
             {totalUnread > 0 && (
-              <span className="text-[10px] sm:text-xs font-semibold text-red-500">
-                {totalUnread} unread
-              </span>
+              <span className="w-2 h-2 bg-red-500 rounded-full" />
             )}
             <button
               onClick={() => onListToggle(false)}
@@ -265,7 +284,7 @@ export function ConversationList({
 
       {/* Conversations List - only show when expanded */}
       {listOpen && (
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain" onScroll={handleScroll}>
         {isLoading ? (
           <div className="px-2 py-2 space-y-1">
             {[...Array(5)].map((_, i) => (
@@ -328,6 +347,18 @@ export function ConversationList({
               );
             })}
           </div>
+        )}
+        
+        {/* Load more indicator */}
+        {isFetchingMore && (
+          <div className="flex items-center justify-center py-4">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          </div>
+        )}
+        
+        {/* Scroll trigger sentinel */}
+        {hasMore && !isFetchingMore && (
+          <div ref={loadMoreRef} className="h-1" />
         )}
       </div>
       )}

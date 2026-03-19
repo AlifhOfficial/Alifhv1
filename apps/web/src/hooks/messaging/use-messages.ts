@@ -9,6 +9,7 @@ import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-q
 import { useWebSocket } from './use-websocket';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { queryKeys } from '@/lib/query-keys';
+import { getMessagesPageAction } from '@/actions/messaging';
 
 // ============================================================================
 // Types
@@ -25,12 +26,12 @@ export interface Message {
   mediaMetadata: Record<string, unknown> | null;
   isSystemMessage: boolean;
   systemMessageType: string | null;
-  deliveredAt: Date | null;
-  readAt: Date | null;
+  deliveredAt: Date | string | null;
+  readAt: Date | string | null;
   isEdited: boolean;
-  editedAt: Date | null;
+  editedAt: Date | string | null;
   isDeleted: boolean;
-  createdAt: Date;
+  createdAt: Date | string;
   sender: { id: string; name: string | null; avatarUrl: string | null };
 }
 
@@ -46,14 +47,7 @@ interface MessagesPage {
 // ============================================================================
 
 async function fetchMessages(conversationId: string, cursor?: string): Promise<MessagesPage> {
-  const params = new URLSearchParams({ limit: '50' });
-  if (cursor) params.set('cursor', cursor);
-
-  const res = await fetch(`/api/conversations/${conversationId}/messages?${params}`, {
-    credentials: 'include',
-  });
-  if (!res.ok) throw new Error('Failed to fetch messages');
-  return res.json();
+  return getMessagesPageAction(conversationId, cursor, 50);
 }
 
 async function postMessage(conversationId: string, text: string): Promise<{ message: Message }> {
@@ -98,10 +92,18 @@ async function postLocationMessage(conversationId: string, location: LocationDat
 // useMessages - Main Hook
 // ============================================================================
 
+export interface InitialMessagesData {
+  messages: Message[];
+  hasMore: boolean;
+  nextCursor: string | null;
+  otherParticipantLastReadAt?: string | null;
+}
+
 interface UseMessagesOptions {
   otherUserId?: string | null;
   initialLastReadAt?: Date | string | null;
   initialLastSeenAt?: Date | string | null;
+  initialData?: InitialMessagesData;
 }
 
 export function useMessages(conversationId: string, userId?: string, options: UseMessagesOptions = {}) {
@@ -159,13 +161,28 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     }
   }, [options.initialLastReadAt]);
 
+  // Check for existing query state (set by page prefetch or previous render)
+  type MessagesInfiniteData = { pages: MessagesPage[]; pageParams: (string | undefined)[] };
+  const messagesQueryKey = queryKeys.messaging.messages(conversationId);
+  const existingQueryState = queryClient.getQueryState<MessagesInfiniteData>(messagesQueryKey);
+  const hasExistingData = existingQueryState?.data !== undefined;
+  
+  // Build effective initial data from props or cache
+  const effectiveInitialData = options.initialData 
+    ? { pages: [options.initialData], pageParams: [undefined] }
+    : existingQueryState?.data;
+
   // Query
   const query = useInfiniteQuery({
-    queryKey: queryKeys.messaging.messages(conversationId),
+    queryKey: messagesQueryKey,
     queryFn: ({ pageParam }) => fetchMessages(conversationId, pageParam),
     getNextPageParam: (page) => (page.hasMore ? page.nextCursor ?? undefined : undefined),
     initialPageParam: undefined as string | undefined,
-    enabled: !!conversationId && !!userId,
+    // Skip fetch if we have cached data (from page prefetch or previous fetch)
+    enabled: !!conversationId && !!userId && !hasExistingData && !options.initialData,
+    // Server-side prefetched data for instant display
+    initialData: effectiveInitialData as MessagesInfiniteData | undefined,
+    initialDataUpdatedAt: effectiveInitialData ? Date.now() : undefined,
   });
 
   // Update otherLastReadAt from API response (first page includes this for persistence)
@@ -328,19 +345,27 @@ export function useSendMessage() {
       });
 
       // Optimistically clear unread count for this conversation
+      let unreadToRemove = 0;
       queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-        const data = old as { conversations?: Array<{ id: string; unreadCount?: number }>; totalUnread?: number } | undefined;
-        if (!data?.conversations) return old;
-        
-        const conv = data.conversations.find(c => c.id === conversationId);
-        const unreadToRemove = conv?.unreadCount || 0;
-        
+        const data = old as { pages?: Array<{ conversations: Array<{ id: string; unreadCount?: number }>; totalUnread?: number }> } | undefined;
+        if (!data?.pages) return old;
+
         return {
           ...data,
-          conversations: data.conversations.map(c =>
-            c.id === conversationId ? { ...c, unreadCount: 0 } : c
-          ),
-          totalUnread: Math.max(0, (data.totalUnread || 0) - unreadToRemove),
+          pages: data.pages.map((page, idx) => {
+            const conv = page.conversations.find(c => c.id === conversationId);
+            unreadToRemove = Math.max(unreadToRemove, conv?.unreadCount || 0);
+
+            return {
+              ...page,
+              conversations: page.conversations.map(c =>
+                c.id === conversationId ? { ...c, unreadCount: 0 } : c
+              ),
+              totalUnread: idx === 0
+                ? Math.max(0, (page.totalUnread || 0) - unreadToRemove)
+                : page.totalUnread,
+            };
+          }),
         };
       });
 

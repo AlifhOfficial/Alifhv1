@@ -13,7 +13,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { LocationPickerDialog } from './location-picker-dialog';
-import { useMessages, useSendMessage, useSendLocationMessage, useMarkAsRead } from '@/hooks/messaging';
+import { useMessages, useSendMessage, useSendLocationMessage, useMarkAsRead, type InitialMessagesData } from '@/hooks/messaging';
+import { markConversationActive, markConversationInactive } from '@/hooks/messaging/active-conversations';
 import { cn } from '@/utils/cn';
 import { format, formatDistanceToNow, isSameDay } from 'date-fns';
 import type { LocationResult } from '@/hooks/use-location';
@@ -37,6 +38,7 @@ interface ChatWindowProps {
   myLastReadAt?: Date | string | null;
   onBack?: () => void;
   className?: string;
+  initialMessages?: InitialMessagesData;
 }
 
 export function ChatWindow({
@@ -50,6 +52,7 @@ export function ChatWindow({
   myLastReadAt,
   onBack,
   className,
+  initialMessages,
 }: ChatWindowProps) {
   const {
     messages,
@@ -66,6 +69,7 @@ export function ChatWindow({
     initialLastReadAt: otherParticipant?.lastReadAt ?? null,
     initialLastSeenAt: otherParticipant?.lastSeenAt ?? null,
     otherUserId: otherParticipant?.id ?? null,
+    initialData: initialMessages,
   });
 
   const { sendMessage, isSending } = useSendMessage();
@@ -170,52 +174,30 @@ export function ChatWindow({
     return null;
   }, [messages, otherLastReadAt, userId]);
 
-  // Track last message we've marked as read to prevent duplicate API calls
-  const lastMarkedMsgIdRef = useRef<string | null>(null);
-  
-  // Parse myLastReadAt once
-  const myLastReadAtDate = useMemo(() => {
-    if (!myLastReadAt) return null;
-    const d = myLastReadAt instanceof Date ? myLastReadAt : new Date(myLastReadAt);
-    return isNaN(d.getTime()) ? null : d;
-  }, [myLastReadAt]);
-  
   // Reset tracking on conversation switch
   useEffect(() => {
     lastMessageIdRef.current = null;
-    lastMarkedMsgIdRef.current = null;
     paginationSnapshotRef.current = null;
     lastNewestMessageIdRef.current = null;
     hasAutoScrolledInitiallyRef.current = false;
   }, [conversationId]);
 
-  // Smart mark-as-read: only call API when necessary
   useEffect(() => {
-    if (isLoading || messages.length === 0 || !isDocumentActive) return;
-    
-    const newestMessage = messages[0];
-    if (!newestMessage) return;
-    
-    // Skip if we've already marked this exact message in this session
-    if (newestMessage.id === lastMarkedMsgIdRef.current) return;
-    
-    const newestMessageTime = new Date(newestMessage.createdAt);
-    const newestIsFromOther = newestMessage.senderId !== userId;
-    
-    // Skip if we've already read past this message (persisted in DB)
-    const alreadyRead = myLastReadAtDate && newestMessageTime <= myLastReadAtDate;
-    
-    // Update tracking
-    lastMessageIdRef.current = newestMessage.id;
-    
-    // Only call API if:
-    // - Newest message is from other user AND we haven't read it yet
-    // (If we already read it, our lastReadAt is already >= message time, so "Seen" works)
-    if (newestIsFromOther && !alreadyRead) {
-      lastMarkedMsgIdRef.current = newestMessage.id;
-      markAsRead(conversationId);
-    }
-  }, [conversationId, isLoading, messages, userId, markAsRead, myLastReadAtDate, isDocumentActive]);
+    markConversationActive(conversationId);
+    return () => markConversationInactive(conversationId);
+  }, [conversationId]);
+
+  const hasMarkedOnEntryRef = useRef(false);
+  useEffect(() => {
+    hasMarkedOnEntryRef.current = false;
+  }, [conversationId]);
+
+  // Mark as read once when entering this chat
+  useEffect(() => {
+    if (hasMarkedOnEntryRef.current || isLoading || !isDocumentActive || unreadCount <= 0) return;
+    hasMarkedOnEntryRef.current = true;
+    markAsRead(conversationId);
+  }, [conversationId, isLoading, isDocumentActive, unreadCount, markAsRead]);
 
   // Infinite scroll
   const handleScroll = useCallback(() => {

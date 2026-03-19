@@ -2,7 +2,7 @@
  * TabsPill - Main 3-tab navigation pill (home, messages, browse)
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { MotiPressable } from 'moti/interactions';
 import { useRouter, usePathname } from 'expo-router';
@@ -14,7 +14,7 @@ import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { useAuth } from '@/context/auth-context';
 import { Colors, Sizes, Shadows, Spacing } from '@/constants/theme';
-import { getUnreadCount } from '@/lib/messaging-api';
+import { fetchConversations } from '@/lib/messaging-api';
 import { queryKeys } from '@/lib/query-client';
 
 type TabRoute = {
@@ -39,14 +39,19 @@ export function TabsPill() {
   
   const lastBrowseTapRef = React.useRef<number>(0);
 
-  // Fetch unread count with React Query (deduped + cached)
-  const { data: messagesUnread = 0 } = useQuery({
-    queryKey: queryKeys.unreadCount(),
-    queryFn: getUnreadCount,
+  // Derive hasUnread from conversations (no separate API call)
+  const { data: conversationsData } = useQuery({
+    queryKey: queryKeys.conversations('personal'),
+    queryFn: () => fetchConversations({ scope: 'personal', limit: 50 }),
     enabled: isAuthenticated,
     staleTime: 30 * 1000, // 30 seconds
     gcTime: 5 * 60 * 1000, // 5 minutes
   });
+  
+  const hasUnread = useMemo(
+    () => conversationsData?.conversations?.some(c => c.unreadCount > 0) ?? false,
+    [conversationsData]
+  );
 
   const getIsActive = (tab: TabRoute) => {
     if (tab.name === 'index') {
@@ -114,7 +119,7 @@ export function TabsPill() {
                 fill={isActive ? iconColor : 'none'}
                 strokeWidth={2}
               />
-              {tab.name === 'messages' && messagesUnread > 0 && (
+              {tab.name === 'messages' && hasUnread && (
                 <View style={[styles.unreadDot, { backgroundColor: '#3B82F6' }]} />
               )}
             </MotiPressable>

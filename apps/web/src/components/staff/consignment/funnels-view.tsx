@@ -27,6 +27,7 @@ import { getAppThumbUrl } from '@/utils/storage';
 import Link from 'next/link';
 import { FunnelFormDrawer } from './funnel-form-drawer';
 import { FunnelMatchesView } from './funnel-matches-view';
+import { getFunnelMatchesAction } from '@/actions/funnels';
 
 interface ConsignmentFunnel {
   id: string;
@@ -353,13 +354,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
     total: number;
   }>({
     queryKey: ['funnel-preview', funnel.id],
-    queryFn: async () => {
-      const res = await fetch(`/api/partner/consignment/funnels/${funnel.id}/matches?limit=4`, {
-        cache: 'no-store',
-      });
-      if (!res.ok) throw new Error('Failed to fetch preview');
-      return res.json();
-    },
+    queryFn: () => getFunnelMatchesAction(funnel.id, { limit: 4 }),
     enabled: isExpanded, // Only fetch when row is expanded
 
   });

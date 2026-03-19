@@ -15,4 +15,3 @@ export { ChatWindow } from './chat-window';
 // Hooks
 export { useConversations } from './hooks/useConversations';
 export { useMessages } from './hooks/useMessages';
-export { useUnreadCount } from './hooks/useUnreadCount';

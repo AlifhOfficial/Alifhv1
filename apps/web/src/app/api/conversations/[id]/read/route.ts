@@ -33,29 +33,35 @@ export async function PATCH(
     const lastReadAt = new Date().toISOString();
     await markConversationAsRead(id, user.id);
 
-    // Broadcast read receipt to each participant's user channel
-    try {
-      const wsBroadcastUrl = process.env.WS_BROADCAST_URL || 'http://localhost:3001/broadcast';
-      const participants = await getConversationParticipants(id);
-      
-      for (const participant of participants) {
-        fetch(wsBroadcastUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            channel: `user:${participant.userId}`,
-            message: {
-              type: 'read_receipt',
-              conversationId: id,
-              userId: user.id,
-              lastReadAt,
-            },
-          }),
-        }).catch(() => {});
-      }
-    } catch {}
+    const response = NextResponse.json({ success: true, lastReadAt });
 
-    return NextResponse.json({ success: true, lastReadAt });
+    // Broadcast read receipt to each participant's user channel
+    queueMicrotask(() => {
+      void (async () => {
+        try {
+          const wsBroadcastUrl = process.env.WS_BROADCAST_URL || 'http://localhost:3001/broadcast';
+          const participants = await getConversationParticipants(id);
+          
+          for (const participant of participants) {
+            fetch(wsBroadcastUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                channel: `user:${participant.userId}`,
+                message: {
+                  type: 'read_receipt',
+                  conversationId: id,
+                  userId: user.id,
+                  lastReadAt,
+                },
+              }),
+            }).catch(() => {});
+          }
+        } catch {}
+      })();
+    });
+
+    return response;
   } catch (error) {
     const details =
       process.env.NODE_ENV !== 'production'

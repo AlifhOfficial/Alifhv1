@@ -133,12 +133,15 @@ export async function POST(
       // Get participants with profiles to get avatar URLs
       const participants = await getConversationParticipantsWithProfiles(conversationId);
       
-      // Broadcast to ALL participants in PARALLEL (non-blocking)
-      Promise.all(
+      // Wait briefly for WS fanout so the DB write does not outrun delivery.
+      // Without awaiting this, the route can return before broadcasts flush.
+      await Promise.allSettled(
         participants.map((participant) =>
           fetch(wsBroadcastUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            cache: 'no-store',
+            signal: AbortSignal.timeout(2000),
             body: JSON.stringify({
               channel: `user:${participant.userId}`,
               message: {
@@ -148,9 +151,9 @@ export async function POST(
                 message,
               },
             }),
-          }).catch(() => {})
+          })
         )
-      ).catch(() => {}); // Fire and forget, don't block response
+      );
 
       // Send push notifications to other participants (fire and forget)
       const otherParticipants = participants.filter(p => p.userId !== user.id);

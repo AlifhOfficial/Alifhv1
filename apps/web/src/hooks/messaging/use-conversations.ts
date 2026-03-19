@@ -5,10 +5,11 @@
 
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useEffect, useMemo, useRef } from 'react';
-import { queryKeys } from '@/lib/query-keys';
+import { getConversationsAction } from '@/actions/messaging';
+import { isConversationActive } from './active-conversations';
 
 // ============================================================================
 // Types
@@ -47,20 +48,19 @@ export interface ConversationsResponse {
   hasMore: boolean;
 }
 
+const recentReadMarks = new Map<string, number>();
+const READ_MARK_DEDUPE_MS = 60_000;
+
 // ============================================================================
 // API
 // ============================================================================
 
-async function fetchConversations(
+async function fetchConversationsPage(
   scope?: 'personal' | 'staff',
-  limit = 50
+  limit = 50,
+  offset = 0
 ): Promise<ConversationsResponse> {
-  const params = new URLSearchParams({ limit: String(limit) });
-  if (scope) params.set('scope', scope);
-  
-  const res = await fetch(`/api/conversations?${params}`, { credentials: 'include' });
-  if (!res.ok) throw new Error('Failed to fetch conversations');
-  return res.json();
+  return getConversationsAction(scope, limit, offset);
 }
 
 async function markAsReadAPI(conversationId: string): Promise<void> {
@@ -90,6 +90,12 @@ async function createConversationAPI(params: {
 // useConversations
 // ============================================================================
 
+// Type for infinite query data structure
+type ConversationsInfiniteData = { 
+  pages: ConversationsResponse[]; 
+  pageParams: number[];
+};
+
 interface UseConversationsOptions {
   userId?: string;
   scope?: 'personal' | 'staff';
@@ -111,46 +117,71 @@ export function useConversations(options: UseConversationsOptions = {}) {
   // Include limit so lightweight navbar data doesn't share cache with full inbox data
   const queryKey = ['conversations', options.userId, options.scope, limit] as const;
 
-  const query = useQuery({
+  // Check for existing query state (set by QueryProvider or previous render)
+  const existingQueryState = queryClient.getQueryState<ConversationsInfiniteData>(queryKey);
+  const hasExistingData = existingQueryState?.data !== undefined;
+  
+  // Build effective initial data for infinite query structure
+  const effectiveInitialData: ConversationsInfiniteData | undefined = options.initialData 
+    ? { pages: [options.initialData], pageParams: [0] }
+    : existingQueryState?.data;
+
+  const query = useInfiniteQuery({
     queryKey,
-    queryFn: () => fetchConversations(options.scope, limit),
-    enabled: !!options.userId && enabled,
+    queryFn: ({ pageParam = 0 }) => fetchConversationsPage(options.scope, limit, pageParam),
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage.hasMore) return undefined;
+      // Calculate next offset based on total conversations loaded
+      const totalLoaded = allPages.reduce((sum, page) => sum + page.conversations.length, 0);
+      return totalLoaded;
+    },
+    initialPageParam: 0,
+    // Skip fetch if we have cached data (from QueryProvider seed or previous fetch)
+    enabled: !!options.userId && enabled && !hasExistingData && !options.initialData,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    refetchOnReconnect: enabled,
+    refetchOnReconnect: false,
     staleTime: Infinity,
     gcTime: Infinity,
-    initialData: options.initialData,
-    initialDataUpdatedAt: options.initialData ? Date.now() : undefined,
+    initialData: effectiveInitialData,
+    initialDataUpdatedAt: effectiveInitialData ? Date.now() : undefined,
   });
 
-  useEffect(() => {
-    if (!options.userId || query.data?.totalUnread === undefined) return;
-    queryClient.setQueryData(queryKeys.messaging.unreadCount(), {
-      unreadCount: query.data.totalUnread ?? 0,
-    });
-  }, [options.userId, query.data?.totalUnread, queryClient]);
+  // Flatten all pages to get conversations and aggregate totalUnread
+  const flatData = useMemo(() => {
+    if (!query.data?.pages) return { conversations: [], totalUnread: 0 };
+    
+    const allConversations: Conversation[] = [];
+    let totalUnread = 0;
+    
+    for (const page of query.data.pages) {
+      allConversations.push(...page.conversations);
+      // Only use totalUnread from first page (represents total count)
+      if (page === query.data.pages[0]) {
+        totalUnread = page.totalUnread;
+      }
+    }
+    
+    return { conversations: allConversations, totalUnread };
+  }, [query.data?.pages]);
 
+  // Track WebSocket connection state for presence watching
+  // NOTE: We do NOT refetch on reconnect - server-seeded data is authoritative
+  // Real-time updates come via WebSocket subscriptions below
   useEffect(() => {
     if (!options.userId || !enabled) {
       wasConnectedRef.current = false;
       return;
     }
-
-    const reconnected = isConnected && !wasConnectedRef.current;
     wasConnectedRef.current = isConnected;
-
-    if (reconnected) {
-      query.refetch();
-    }
-  }, [options.userId, isConnected, enabled, query.refetch]);
+  }, [options.userId, isConnected, enabled]);
 
   // Match mobile behavior: actively watch presence for all users shown in the conversation list
   useEffect(() => {
     if (!options.userId || !enabled || !isConnected) return;
 
     const currentOtherIds = new Set<string>();
-    for (const conversation of query.data?.conversations ?? []) {
+    for (const conversation of flatData.conversations) {
       if (conversation.otherParticipant?.id) {
         currentOtherIds.add(conversation.otherParticipant.id);
       }
@@ -169,7 +200,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
         watchedUsersRef.current.delete(userId);
       }
     }
-  }, [options.userId, enabled, isConnected, query.data?.conversations, send]);
+  }, [options.userId, enabled, isConnected, flatData.conversations, send]);
 
   useEffect(() => {
     return () => {
@@ -191,34 +222,55 @@ export function useConversations(options: UseConversationsOptions = {}) {
         // Use msg.userId (from broadcast wrapper) for sender check
         const senderId = msg.userId || newMsg?.senderId;
         const isOwnMessage = senderId === options.userId;
+        const isActiveOpenConversation = isConversationActive(msg.conversationId);
 
         let foundConversation = false;
 
         queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-          const data = old as ConversationsResponse | undefined;
-          if (!data?.conversations) return old;
+          const data = old as ConversationsInfiniteData | undefined;
+          if (!data?.pages) return old;
 
-          const exists = data.conversations.some(c => c.id === msg.conversationId);
+          // Check if conversation exists in any page
+          const exists = data.pages.some(page => 
+            page.conversations.some(c => c.id === msg.conversationId)
+          );
           if (!exists) return old;
           foundConversation = true;
 
-          const currentConversation = data.conversations.find(c => c.id === msg.conversationId);
+          // Find the conversation to get current preview
+          let currentConversation: Conversation | undefined;
+          for (const page of data.pages) {
+            currentConversation = page.conversations.find(c => c.id === msg.conversationId);
+            if (currentConversation) break;
+          }
+
           const preview =
             newMsg?.text?.substring(0, 100) ||
             (currentConversation?.lastMessagePreview ?? 'New message');
 
           return {
             ...data,
-            conversations: data.conversations
-              .map(c => c.id !== msg.conversationId ? c : {
-                ...c,
-                lastMessageAt: new Date(newMsg?.createdAt || Date.now()),
-                lastMessagePreview: preview,
-                messageCount: Math.max((c.messageCount || 0) + (isOwnMessage ? 0 : 1), c.messageCount || 0),
-                unreadCount: isOwnMessage ? c.unreadCount : (c.unreadCount || 0) + 1,
-              })
-              .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()),
-            totalUnread: isOwnMessage ? data.totalUnread : (data.totalUnread || 0) + 1,
+            pages: data.pages.map((page, idx) => ({
+              ...page,
+              conversations: page.conversations
+                .map(c => c.id !== msg.conversationId ? c : {
+                  ...c,
+                  lastMessageAt: new Date(newMsg?.createdAt || Date.now()),
+                  lastMessagePreview: preview,
+                  messageCount: Math.max((c.messageCount || 0) + (isOwnMessage ? 0 : 1), c.messageCount || 0),
+                  unreadCount: isOwnMessage || isActiveOpenConversation ? 0 : (c.unreadCount || 0) + 1,
+                  myLastReadAt:
+                    !isOwnMessage && isActiveOpenConversation
+                      ? new Date(newMsg?.createdAt || Date.now())
+                      : c.myLastReadAt,
+                })
+                .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()),
+              // Update totalUnread only on first page
+              totalUnread:
+                idx === 0 && !isOwnMessage && !isActiveOpenConversation
+                  ? (page.totalUnread || 0) + 1
+                  : page.totalUnread,
+            })),
           };
         });
 
@@ -235,21 +287,24 @@ export function useConversations(options: UseConversationsOptions = {}) {
         });
 
         queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-          const data = old as ConversationsResponse | undefined;
-          if (!data?.conversations) return old;
+          const data = old as ConversationsInfiniteData | undefined;
+          if (!data?.pages) return old;
           
           return {
             ...data,
-            conversations: data.conversations.map(c => 
-              c.otherParticipant?.id !== msg.userId ? c : {
-                ...c,
-                otherParticipant: {
-                  ...c.otherParticipant,
-                  isOnline: !!msg.isOnline,
-                  lastSeenAt: msg.lastSeenAt ? new Date(msg.lastSeenAt) : c.otherParticipant.lastSeenAt,
-                },
-              }
-            ),
+            pages: data.pages.map(page => ({
+              ...page,
+              conversations: page.conversations.map(c => 
+                c.otherParticipant?.id !== msg.userId ? c : {
+                  ...c,
+                  otherParticipant: {
+                    ...c.otherParticipant,
+                    isOnline: !!msg.isOnline,
+                    lastSeenAt: msg.lastSeenAt ? new Date(msg.lastSeenAt) : c.otherParticipant.lastSeenAt,
+                  },
+                }
+              ),
+            })),
           };
         });
       }
@@ -257,20 +312,23 @@ export function useConversations(options: UseConversationsOptions = {}) {
       // Handle read receipts - update other participant's lastReadAt
       if (msg.type === 'read_receipt' && msg.conversationId && msg.userId !== options.userId) {
         queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-          const data = old as ConversationsResponse | undefined;
-          if (!data?.conversations) return old;
+          const data = old as ConversationsInfiniteData | undefined;
+          if (!data?.pages) return old;
           
           return {
             ...data,
-            conversations: data.conversations.map(c => 
-              c.id !== msg.conversationId ? c : {
-                ...c,
-                otherParticipant: c.otherParticipant ? {
-                  ...c.otherParticipant,
-                  lastReadAt: msg.lastReadAt ? new Date(msg.lastReadAt) : c.otherParticipant.lastReadAt,
-                } : c.otherParticipant,
-              }
-            ),
+            pages: data.pages.map(page => ({
+              ...page,
+              conversations: page.conversations.map(c => 
+                c.id !== msg.conversationId ? c : {
+                  ...c,
+                  otherParticipant: c.otherParticipant ? {
+                    ...c.otherParticipant,
+                    lastReadAt: msg.lastReadAt ? new Date(msg.lastReadAt) : c.otherParticipant.lastReadAt,
+                  } : c.otherParticipant,
+                }
+              ),
+            })),
           };
         });
       }
@@ -279,8 +337,9 @@ export function useConversations(options: UseConversationsOptions = {}) {
     return unsub;
   }, [subscribe, queryClient, options.userId]);
 
+  // Apply live presence updates to flattened conversations
   const conversations = useMemo(() => {
-    return (query.data?.conversations ?? []).map((conversation) => {
+    return flatData.conversations.map((conversation) => {
       const otherId = conversation.otherParticipant?.id;
       if (!otherId || !conversation.otherParticipant) return conversation;
 
@@ -296,14 +355,19 @@ export function useConversations(options: UseConversationsOptions = {}) {
         },
       };
     });
-  }, [query.data?.conversations]);
+  }, [flatData.conversations]);
+
+  // Check if more pages can be loaded
+  const hasMore = query.hasNextPage ?? false;
 
   return {
     conversations,
-    totalUnread: query.data?.totalUnread ?? 0,
-    hasMore: query.data?.hasMore ?? false,
+    totalUnread: flatData.totalUnread,
+    hasMore,
     isLoading: query.isLoading,
+    isFetchingMore: query.isFetchingNextPage,
     error: query.error?.message,
+    fetchMore: query.fetchNextPage,
     refetch: query.refetch,
   };
 }
@@ -317,45 +381,74 @@ export function useMarkAsRead() {
   const markedRef = useRef(new Set<string>()); // Prevent duplicate calls within 5 seconds
 
   const mutation = useMutation({
-    mutationFn: markAsReadAPI,
+    mutationFn: async ({ conversationId, messageId }: { conversationId: string; messageId?: string }) => {
+      const dedupeKey = messageId ? `${conversationId}:${messageId}` : conversationId;
+      const lastMarkedAt = recentReadMarks.get(dedupeKey);
+      if (lastMarkedAt && Date.now() - lastMarkedAt < READ_MARK_DEDUPE_MS) {
+        return;
+      }
+      recentReadMarks.set(dedupeKey, Date.now());
+      await markAsReadAPI(conversationId);
+    },
 
-    onMutate: async (conversationId) => {
+    onMutate: async ({ conversationId, messageId }) => {
+      const dedupeKey = messageId ? `${conversationId}:${messageId}` : conversationId;
+      const lastMarkedAt = recentReadMarks.get(dedupeKey);
+      if (lastMarkedAt && Date.now() - lastMarkedAt < READ_MARK_DEDUPE_MS) {
+        return { skipped: true };
+      }
+
       // Skip optimistic update if already marked recently, but still allow API call
       if (markedRef.current.has(conversationId)) return;
       markedRef.current.add(conversationId);
 
       await queryClient.cancelQueries({ queryKey: ['conversations'] });
+      let unreadToRemove = 0;
 
       queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-        const data = old as ConversationsResponse | undefined;
-        if (!data?.conversations) return old;
-        
-        const conv = data.conversations.find(c => c.id === conversationId);
-        const unreadToRemove = conv?.unreadCount || 0;
+        const data = old as ConversationsInfiniteData | undefined;
+        if (!data?.pages) return old;
 
         return {
           ...data,
-          conversations: data.conversations.map(c =>
-            c.id === conversationId ? { ...c, unreadCount: 0 } : c
-          ),
-          totalUnread: Math.max(0, (data.totalUnread || 0) - unreadToRemove),
+          pages: data.pages.map((page, idx) => {
+            const conv = page.conversations.find(c => c.id === conversationId);
+            unreadToRemove = Math.max(unreadToRemove, conv?.unreadCount || 0);
+
+            return {
+              ...page,
+              conversations: page.conversations.map(c =>
+                c.id === conversationId ? { ...c, unreadCount: 0 } : c
+              ),
+              totalUnread: idx === 0
+                ? Math.max(0, (page.totalUnread || 0) - unreadToRemove)
+                : page.totalUnread,
+            };
+          }),
         };
       });
 
-      queryClient.setQueryData(queryKeys.messaging.unreadCount(), (old: number | undefined) => Math.max(0, (old || 0) - 1));
     },
 
-    onError: () => {
+    onError: (_error, variables) => {
+      if (variables?.messageId) {
+        recentReadMarks.delete(`${variables.conversationId}:${variables.messageId}`);
+      }
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
 
-    onSettled: (_, __, conversationId) => {
+    onSettled: (_, __, variables) => {
+      const conversationId = variables.conversationId;
       // Allow re-marking after 5 seconds
       setTimeout(() => markedRef.current.delete(conversationId), 5000);
     },
   });
 
-  return { markAsRead: mutation.mutate, isMarking: mutation.isPending };
+  return {
+    markAsRead: (conversationId: string, messageId?: string) =>
+      mutation.mutate({ conversationId, messageId }),
+    isMarking: mutation.isPending,
+  };
 }
 
 // ============================================================================
