@@ -194,7 +194,7 @@ function WaveChart({ className = 'text-blue-500', data }: { className?: string; 
   const isGhost = !data;
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width={40} height={24} minWidth={0}>
       <AreaChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -222,7 +222,7 @@ function WaveChart({ className = 'text-blue-500', data }: { className?: string; 
 
 const GHOST_BAR_DATA = [35, 55, 40, 70, 45, 60, 50, 75, 42, 65, 48, 58];
 
-function MiniBarChart({ className = 'text-blue-500', data }: { className?: string; data?: number[] }) {
+function MiniBarChart({ className = 'text-blue-500', data, width = 40, height = 24 }: { className?: string; data?: number[]; width?: number; height?: number }) {
   const chartData = data 
     ? data.map((y, i) => ({ x: i, y }))
     : GHOST_BAR_DATA.map((y, i) => ({ x: i, y }));
@@ -230,7 +230,7 @@ function MiniBarChart({ className = 'text-blue-500', data }: { className?: strin
   const isGhost = !data;
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width={width} height={height} minWidth={0}>
       <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
         <Bar
           dataKey="y"

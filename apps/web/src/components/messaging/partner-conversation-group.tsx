@@ -6,7 +6,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { ConversationListItem } from './conversation-list-item';
 import { cn } from '@/utils/cn';
@@ -64,68 +64,44 @@ export function PartnerConversationGroup({
             className="w-9 h-9"
           />
           {isOnline && (
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-background rounded-full" />
+            <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border-2 border-sidebar rounded-full" />
           )}
         </div>
-        
-        {/* Partner Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <Link
-              href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.name)}&sort=relevance`}
-              onClick={(e) => e.stopPropagation()}
-              className="text-sm font-bold text-foreground truncate hover:text-primary hover:underline transition-colors"
-            >
-              {partner.name}
-            </Link>
-            {conversations.length > 1 && (
-              <span className="text-xs font-medium text-muted-foreground/50">
-                {conversations.length}
-              </span>
-            )}
-            {totalUnread > 0 && (
-              <span className="w-2 h-2 flex-shrink-0 bg-red-500 rounded-full ml-auto" />
-            )}
-          </div>
-        </div>
-        
-        {/* Expand/Collapse Icon */}
-        <div className="flex-shrink-0 text-muted-foreground/60">
-          {isExpanded ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
+
+        {/* Partner Name */}
+        <Link
+          href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.name)}&sort=relevance`}
+          onClick={(e) => e.stopPropagation()}
+          className={cn(
+            'flex-1 text-sm truncate hover:text-primary hover:underline transition-colors',
+            totalUnread > 0 ? 'font-semibold text-foreground' : 'font-medium text-foreground/90'
           )}
+        >
+          {partner.name}
+        </Link>
+
+        {/* Right side: unread dot + chevron */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {totalUnread > 0 && <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />}
+          <ChevronRight className={cn(
+            'w-4 h-4 text-muted-foreground/40 transition-transform',
+            isExpanded && 'rotate-90'
+          )} />
         </div>
       </button>
       
       {/* Nested Conversations */}
       {isExpanded && (
-        <div className="ml-7 mt-1 mb-3 space-y-1">
+        <div className="ml-[22px] mt-0.5 mb-2 pl-4 border-l border-border/50 flex flex-col gap-1">
           {conversations.map((conversation) => (
-            <div key={conversation.id} className="relative pl-6">
-              {/* Smooth curved connector */}
-              <svg 
-                className="absolute left-0 top-0 w-5 h-7 text-muted-foreground/40"
-                viewBox="0 0 20 28"
-                fill="none"
-              >
-                <path 
-                  d="M2 0 L2 14 Q2 22 10 22 L20 22" 
-                  stroke="currentColor" 
-                  strokeWidth="1" 
-                  strokeLinecap="round"
-                  fill="none"
-                />
-              </svg>
-              <ConversationListItem
-                conversation={conversation}
-                inbox="personal"
-                isActive={conversation.id === activeConversationId}
-                onClick={() => onSelectConversation(conversation.id)}
-                isNested
-              />
-            </div>
+            <ConversationListItem
+              key={conversation.id}
+              conversation={conversation}
+              inbox="personal"
+              isActive={conversation.id === activeConversationId}
+              onClick={() => onSelectConversation(conversation.id)}
+              isNested
+            />
           ))}
         </div>
       )}

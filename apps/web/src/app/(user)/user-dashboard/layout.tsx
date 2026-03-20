@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session-context";
-import { getAuthenticatedShellData } from "@/lib/authenticated-shell-data";
 import { AuthenticatedAppProviders } from "@/components/shared/providers/authenticated-app-providers";
+import { GlobalChatProvider } from "@/components/shared/providers/global-chat-provider";
 import { UserDashboardShell } from "./shell";
 
 const navSections = [
@@ -44,13 +44,13 @@ export default async function UserDashboardLayout({ children }: { children: Reac
     redirect('/user-dashboard/banned');
   }
 
-  const shellData = await getAuthenticatedShellData(user as { id: string; partnerMemberships?: Array<{ partnerId?: string | null }> });
-
   return (
-    <AuthenticatedAppProviders {...shellData}>
-      <UserDashboardShell user={user} sections={navSections}>
-        {children}
-      </UserDashboardShell>
-    </AuthenticatedAppProviders>
+    <GlobalChatProvider>
+      <AuthenticatedAppProviders>
+        <UserDashboardShell user={user} sections={navSections}>
+          {children}
+        </UserDashboardShell>
+      </AuthenticatedAppProviders>
+    </GlobalChatProvider>
   );
 }

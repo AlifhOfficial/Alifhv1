@@ -139,8 +139,8 @@ export function ConversationListItem({
             >
               {lastMessagePreview || 'No messages yet'}
             </p>
-            {unreadCount > 0 && (
-              <span className="w-2 h-2 flex-shrink-0 bg-red-500 rounded-full" />
+            {unreadCount > 0 && !isNested && (
+              <span className="w-1.5 h-1.5 flex-shrink-0 bg-rose-500 rounded-full" />
             )}
           </div>
         </div>

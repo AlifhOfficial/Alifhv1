@@ -23,156 +23,101 @@ interface NavbarMessagingProps {
 export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const MAX_DROPDOWN_CONVERSATIONS = 5;
-  // Use limit=50 to share cache with full messaging page (server-seeded)
-  // Filter to 5 for display in dropdown
+
   const { conversations: allConversations, isLoading } = useConversations({
     userId,
     scope: 'personal',
     limit: 50,
-    // Always fetch to have unread state available for badge
     enabled: !!userId,
   });
-  const conversations = allConversations.slice(0, MAX_DROPDOWN_CONVERSATIONS);
-  const hasUnread = allConversations.some((conversation) => conversation.unreadCount > 0);
 
-  // Close on outside click
+  const hasUnread = allConversations.some((c) => c.unreadCount > 0);
+  const conversations = allConversations
+    .filter((c) => c.messageCount > 0)
+    .sort((a, b) => (b.unreadCount > 0 ? 1 : 0) - (a.unreadCount > 0 ? 1 : 0))
+    .slice(0, 5);
+
   useEffect(() => {
     if (!isOpen) return;
-    
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest('[data-messaging-dropdown]')) {
-        setIsOpen(false);
-      }
+    const handle = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest('[data-messaging-dropdown]')) setIsOpen(false);
     };
-    
-    setTimeout(() => document.addEventListener('click', handleClick), 0);
-    return () => document.removeEventListener('click', handleClick);
+    setTimeout(() => document.addEventListener('click', handle), 0);
+    return () => document.removeEventListener('click', handle);
   }, [isOpen]);
 
-  // Close on escape
   useEffect(() => {
     if (!isOpen) return;
-    
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsOpen(false);
-    };
-    
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    const handle = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false); };
+    document.addEventListener('keydown', handle);
+    return () => document.removeEventListener('keydown', handle);
   }, [isOpen]);
 
   const handleOpenChat = useCallback((conversation: Conversation) => {
     setIsOpen(false);
-    if (onOpenChat) {
-      onOpenChat(conversation);
-      return;
-    }
-
+    if (onOpenChat) { onOpenChat(conversation); return; }
     router.push(`/user-dashboard/messaging?conversationId=${conversation.id}`);
   }, [onOpenChat, router]);
 
-  // Keep the dropdown aligned with the lightweight fetch: max 5 real conversations, no empty threads
-  const visibleConversations = conversations
-    .filter((conversation) => conversation.messageCount > 0)
-    .slice(0, MAX_DROPDOWN_CONVERSATIONS);
+  const groups = Object.values(
+    conversations.reduce((acc, conv) => {
+      const key = conv.partner?.id || conv.otherParticipant?.id || 'unknown';
+      if (!acc[key]) {
+        acc[key] = { user: conv.partner || conv.otherParticipant, isPartner: !!conv.partner, conversations: [] };
+      }
+      acc[key].conversations.push(conv);
+      return acc;
+    }, {} as Record<string, { user: any; isPartner: boolean; conversations: Conversation[] }>)
+  );
 
-  const groupedConversations = visibleConversations.reduce((groups, conversation) => {
-    const key = conversation.partner?.id || conversation.otherParticipant?.id || 'unknown';
-    if (!groups[key]) {
-      groups[key] = {
-        user: conversation.partner || conversation.otherParticipant,
-        isPartner: !!conversation.partner,
-        conversations: [],
-      };
-    }
-    groups[key].conversations.push(conversation);
-    return groups;
-  }, {} as Record<string, { user: any; isPartner: boolean; conversations: Conversation[] }>);
-
-  const allGroups = Object.values(groupedConversations);
-
-  if (!userId) {
-    return null;
-  }
+  if (!userId) return null;
 
   return (
     <div className="relative hidden sm:block" data-messaging-dropdown>
-      {/* Trigger Button */}
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-        }}
+        onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
         className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"
         aria-label="Messages"
       >
         <MessageCircle className="size-4" />
-        
-        {/* Unread Badge - dot indicator */}
-        {hasUnread && (
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full" />
-        )}
+        {hasUnread && <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-rose-500 rounded-full" />}
       </button>
 
-      {/* Backdrop */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 z-[60]"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 z-[60]" onClick={() => setIsOpen(false)} />}
 
-      {/* Dropdown */}
       {isOpen && (
-        <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-14 sm:top-full sm:mt-3 sm:w-96 bg-sidebar border border-sidebar-border rounded-2xl shadow-xl z-[70] overflow-hidden">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3.5 border-b border-sidebar-border">
-            <h3 className="text-[15px] font-semibold tracking-tight text-sidebar-foreground">
-              Messages
-            </h3>
-            {hasUnread && (
-              <span className="w-2 h-2 bg-rose-500 rounded-full" />
-            )}
+        <div className="absolute right-0 top-full mt-3 w-96 bg-sidebar border border-sidebar-border rounded-2xl shadow-2xl z-[70] overflow-hidden">
+          <div className="px-4 py-3.5 border-b border-sidebar-border">
+            <h3 className="text-[15px] font-semibold text-sidebar-foreground">Messages</h3>
           </div>
 
-          {/* Content */}
-          <div className="max-h-[360px] overflow-y-auto">
+          <div className="max-h-[400px] overflow-y-auto">
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <div className="flex items-center justify-center py-14">
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
               </div>
-            ) : allGroups.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <MessageCircle className="w-12 h-12 text-muted-foreground/40 mb-3" />
-                <p className="text-[15px] font-semibold text-foreground/80">No messages yet</p>
-                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
-                  Start a conversation from any listing
-                </p>
+            ) : groups.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-14 px-6 text-center gap-3">
+                <MessageCircle className="w-10 h-10 text-muted-foreground/30" />
+                <p className="text-sm font-medium text-foreground/60">No messages yet</p>
               </div>
             ) : (
-              <div className="py-1.5">
-                {allGroups.map((group) => (
-                  <ConversationGroup
-                    key={group.user?.id || 'unknown'}
-                    group={group}
-                    onSelectConversation={handleOpenChat}
-                  />
+              <div className="py-2 px-2">
+                {groups.map((group) => (
+                  <GroupRow key={group.user?.id || 'unknown'} group={group} onSelect={handleOpenChat} />
                 ))}
               </div>
             )}
           </div>
 
-          {/* Footer */}
           <div className="border-t border-sidebar-border">
             <Link
               href="/user-dashboard/messaging"
               onClick={() => setIsOpen(false)}
-              className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-semibold text-primary hover:bg-sidebar-accent transition-colors"
+              className="flex items-center justify-center gap-1.5 px-4 py-3.5 text-sm font-semibold text-primary hover:bg-sidebar-accent transition-colors"
             >
               View all messages
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
@@ -181,115 +126,58 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   );
 }
 
-// ============================================================================
-// Conversation Group (for same user/partner)
-// ============================================================================
+// ─── Group Row ────────────────────────────────────────────────────────────────
 
-interface ConversationGroupProps {
-  group: {
-    user: any;
-    isPartner: boolean;
-    conversations: Conversation[];
-  };
-  onSelectConversation: (conversation: Conversation) => void;
+interface GroupRowProps {
+  group: { user: any; isPartner: boolean; conversations: Conversation[] };
+  onSelect: (conversation: Conversation) => void;
 }
 
-function ConversationGroup({ group, onSelectConversation }: ConversationGroupProps) {
+function GroupRow({ group, onSelect }: GroupRowProps) {
   const { user, isPartner, conversations } = group;
-  const [isExpanded, setIsExpanded] = useState(conversations.length === 1);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const displayName = user?.name || 'User';
-  const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
-  const hasUnread = totalUnread > 0;
-  const isOnline = conversations.some((conversation) => conversation.otherParticipant?.isOnline);
-
-  // If only one conversation, show it directly without grouping
-  if (conversations.length === 1) {
-    return (
-      <ConversationPreviewItem
-        conversation={conversations[0]}
-        onClick={() => onSelectConversation(conversations[0])}
-      />
-    );
-  }
+  const hasUnread = conversations.some((c) => c.unreadCount > 0);
+  const isOnline = conversations.some((c) => c.otherParticipant?.isOnline);
 
   return (
-    <div>
-      {/* Group Header */}
+    <div className="mb-1">
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className={cn(
-          'w-full text-left px-4 py-3 hover:bg-sidebar-accent/50 transition-colors rounded-lg',
-          'flex items-center gap-3'
-        )}
+        onClick={() => setIsExpanded((v) => !v)}
+        className="w-full flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-sidebar-accent/50 transition-colors text-left"
       >
         <div className="relative flex-shrink-0">
           {isPartner ? (
-            <BrandAvatar
-              logoUrl={user?.logo}
-              brandName={displayName}
-              size="sm"
-              className="w-10 h-10"
-            />
+            <BrandAvatar logoUrl={user?.logo} brandName={displayName} size="sm" className="w-9 h-9" />
           ) : (
-            <UserAvatar
-              src={user?.avatarUrl}
-              name={displayName}
-              size="md"
-              className="w-10 h-10"
-            />
+            <UserAvatar src={user?.avatarUrl} name={displayName} size="md" className="w-9 h-9" />
           )}
           {isOnline && (
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-sidebar" />
+            <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border-2 border-sidebar" />
           )}
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h4 className={cn(
-              'text-sm truncate',
-              hasUnread ? 'font-semibold text-sidebar-foreground' : 'font-medium text-sidebar-foreground'
-            )}>
-              {displayName}
-            </h4>
-            <span className="text-xs text-muted-foreground">
-              ({conversations.length})
-            </span>
-            {hasUnread && (
-              <span className="ml-auto flex-shrink-0 w-2 h-2 bg-rose-500 rounded-full" />
-            )}
-          </div>
+
+        <span className={cn(
+          'flex-1 text-sm truncate',
+          hasUnread ? 'font-semibold text-sidebar-foreground' : 'font-medium text-sidebar-foreground/90'
+        )}>
+          {displayName}
+        </span>
+
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {hasUnread && <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />}
+          <ChevronRight className={cn(
+            'w-4 h-4 text-muted-foreground/40 transition-transform',
+            isExpanded && 'rotate-90'
+          )} />
         </div>
-        <ChevronRight className={cn(
-          'w-4 h-4 text-muted-foreground/60 transition-transform',
-          isExpanded && 'rotate-90'
-        )} />
       </button>
 
-      {/* Expanded Conversations with connector lines */}
       {isExpanded && (
-        <div className="ml-7 mt-1 mb-2 space-y-0.5">
-          {conversations.map((conversation) => (
-            <div key={conversation.id} className="relative pl-6">
-              {/* Smooth curved connector */}
-              <svg 
-                className="absolute left-0 top-0 w-5 h-6 text-muted-foreground/40"
-                viewBox="0 0 20 24"
-                fill="none"
-              >
-                <path 
-                  d="M2 0 L2 12 Q2 18 10 18 L20 18" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round"
-                  fill="none"
-                />
-              </svg>
-              <ConversationPreviewItem
-                conversation={conversation}
-                onClick={() => onSelectConversation(conversation)}
-                isGrouped
-              />
-            </div>
+        <div className="ml-[22px] mb-2 pl-3.5 border-l border-sidebar-border/50 flex flex-col gap-1.5">
+          {conversations.map((conv) => (
+            <NestedItem key={conv.id} conversation={conv} onClick={() => onSelect(conv)} />
           ))}
         </div>
       )}
@@ -297,155 +185,42 @@ function ConversationGroup({ group, onSelectConversation }: ConversationGroupPro
   );
 }
 
-// ============================================================================
-// Conversation Preview Item
-// ============================================================================
+// ─── Nested Item ──────────────────────────────────────────────────────────────
 
-interface ConversationPreviewItemProps {
-  conversation: Conversation;
-  onClick: () => void;
-  isGrouped?: boolean;
-}
-
-function ConversationPreviewItem({ conversation, onClick, isGrouped = false }: ConversationPreviewItemProps) {
-  const {
-    otherParticipant,
-    lastMessagePreview,
-    lastMessageAt,
-    unreadCount,
-    partner,
-    listing,
-  } = conversation;
-
-  const displayName = partner?.name || otherParticipant?.name || 'User';
-  const isPartnerBrand = !!partner;
+function NestedItem({ conversation, onClick }: { conversation: Conversation; onClick: () => void }) {
+  const { lastMessagePreview, lastMessageAt, unreadCount, listing } = conversation;
   const hasUnread = unreadCount > 0;
-  const isOnline = otherParticipant?.isOnline ?? false;
 
-  const safeDate = (value: unknown): Date | null => {
-    if (!value) return null;
-    const date = value instanceof Date ? value : new Date(String(value));
-    return Number.isNaN(date.getTime()) ? null : date;
-  };
+  const lastMessageDate = (() => {
+    if (!lastMessageAt) return null;
+    const d = lastMessageAt instanceof Date ? lastMessageAt : new Date(String(lastMessageAt));
+    return isNaN(d.getTime()) ? null : d;
+  })();
 
-  const lastMessageDate = safeDate(lastMessageAt);
-
-  // Grouped/nested conversation style (shown under parent group)
-  if (isGrouped) {
-    return (
-      <button
-        onClick={onClick}
-        className={cn(
-          'w-full text-left py-2 px-3 hover:bg-sidebar-accent/60 transition-colors rounded-md',
-          hasUnread && 'bg-sidebar-accent/40'
-        )}
-      >
-        <div className="flex items-center justify-between gap-2">
-          {/* Listing title or conversation context */}
-          <span className={cn(
-            'text-[13px] truncate flex-1',
-            hasUnread ? 'font-semibold text-sidebar-foreground' : 'text-sidebar-foreground/90'
-          )}>
-            {listing?.title || 'General'}
-          </span>
-          
-          {/* Time and unread badge */}
-          <div className="flex items-center gap-2.5 flex-shrink-0">
-            {lastMessageDate && (
-              <span className="text-xs text-muted-foreground">
-                {formatDistanceToNow(lastMessageDate, { addSuffix: false })}
-              </span>
-            )}
-            {hasUnread && (
-              <span className="w-2 h-2 bg-rose-500 rounded-full" />
-            )}
-          </div>
-        </div>
-        
-        {/* Message preview */}
-        <p className={cn(
-          'text-xs truncate mt-1',
-          hasUnread ? 'text-muted-foreground' : 'text-muted-foreground/70'
-        )}>
-          {lastMessagePreview || 'No messages'}
-        </p>
-      </button>
-    );
-  }
-
-  // Non-grouped conversation style (standalone)
   return (
     <button
       onClick={onClick}
       className={cn(
-        'w-full text-left px-4 py-3 hover:bg-sidebar-accent/50 transition-colors rounded-lg',
-        hasUnread && 'bg-sidebar-accent/30'
+        'w-full text-left px-3 py-2.5 rounded-lg hover:bg-sidebar-accent/50 transition-colors',
+        hasUnread && 'bg-sidebar-accent/25'
       )}
     >
-      <div className="flex items-start gap-3">
-        {/* Avatar */}
-        <div className="relative flex-shrink-0">
-          {isPartnerBrand ? (
-            <BrandAvatar
-              logoUrl={partner?.logo}
-              brandName={partner?.name || 'Partner'}
-              size="sm"
-              className="w-10 h-10"
-            />
-          ) : (
-            <UserAvatar
-              src={otherParticipant?.avatarUrl}
-              name={displayName}
-              size="md"
-              className="w-10 h-10"
-            />
-          )}
-          {isOnline && (
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-sidebar" />
-          )}
-          
-          {/* Unread indicator dot - bottom right, behind online if both */}
-          {hasUnread && !isOnline && (
-            <span className="absolute bottom-0 right-0 w-2 h-2 bg-rose-500 rounded-full border border-sidebar" />
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 mb-1">
-            <h4
-              className={cn(
-                'text-sm truncate',
-                hasUnread ? 'font-semibold text-sidebar-foreground' : 'font-medium text-sidebar-foreground'
-              )}
-            >
-              {displayName}
-            </h4>
-            {lastMessageDate && (
-              <span className="text-xs text-muted-foreground flex-shrink-0">
-                {formatDistanceToNow(lastMessageDate, { addSuffix: false })}
-              </span>
-            )}
-          </div>
-          
-          {/* Listing context */}
-          {listing && (
-            <p className="text-xs text-muted-foreground truncate mb-1">
-              Re: {listing.title}
-            </p>
-          )}
-          
-          {/* Message preview */}
-          <p
-            className={cn(
-              'text-[13px] truncate leading-normal',
-              hasUnread ? 'text-sidebar-foreground/90' : 'text-muted-foreground/80'
-            )}
-          >
-            {lastMessagePreview || 'No messages'}
-          </p>
-        </div>
+      <div className="flex items-center justify-between gap-2 mb-0.5">
+        <span className={cn(
+          'text-[13px] truncate',
+          hasUnread ? 'font-semibold text-sidebar-foreground' : 'font-medium text-sidebar-foreground/80'
+        )}>
+          {listing?.title || 'General'}
+        </span>
+        {lastMessageDate && (
+          <span className="text-[11px] text-muted-foreground flex-shrink-0">
+            {formatDistanceToNow(lastMessageDate, { addSuffix: false })}
+          </span>
+        )}
       </div>
+      <p className="text-xs truncate text-muted-foreground/60">
+        {lastMessagePreview || 'No messages'}
+      </p>
     </button>
   );
 }

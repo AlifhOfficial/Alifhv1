@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session-context";
-import { getAuthenticatedShellData } from "@/lib/authenticated-shell-data";
 import { AuthenticatedAppProviders } from "@/components/shared/providers/authenticated-app-providers";
 import { StaffDashboardShell } from "./shell";
 
@@ -40,10 +39,8 @@ export default async function StaffDashboardLayout({ children }: { children: Rea
     companyName: staffMembership.partnerName,
   };
 
-  const shellData = await getAuthenticatedShellData(user as { id: string; partnerMemberships?: Array<{ partnerId?: string | null }> });
-
   return (
-    <AuthenticatedAppProviders {...shellData}>
+    <AuthenticatedAppProviders>
       <StaffDashboardShell user={user} sections={navSections} staffOverride={staffOverride}>
         {children}
       </StaffDashboardShell>

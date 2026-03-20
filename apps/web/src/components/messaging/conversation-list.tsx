@@ -116,18 +116,24 @@ export function ConversationList({
         }
       }
 
-      // Sort user groups by most recent message
+      // Sort user groups: unread first, then by most recent message
       const groups = Array.from(userMap.values()).sort((a, b) => {
+        const aUnread = a.conversations.some(c => c.unreadCount > 0) ? 1 : 0;
+        const bUnread = b.conversations.some(c => c.unreadCount > 0) ? 1 : 0;
+        if (bUnread !== aUnread) return bUnread - aUnread;
         const aLatest = Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
         const bLatest = Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
         return bLatest - aLatest;
       });
 
-      // Sort conversations within each group by most recent
+      // Sort conversations within each group: unread first, then by most recent
       groups.forEach(group => {
-        group.conversations.sort((a, b) => 
-          new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
-        );
+        group.conversations.sort((a, b) => {
+          const aUnread = a.unreadCount > 0 ? 1 : 0;
+          const bUnread = b.unreadCount > 0 ? 1 : 0;
+          if (bUnread !== aUnread) return bUnread - aUnread;
+          return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+        });
       });
 
       return { directConversations: [], partnerGroups: [], userGroups: groups };
@@ -164,31 +170,43 @@ export function ConversationList({
       }
     }
 
-    // Sort partner groups by most recent message
+    // Sort partner groups: unread first, then by most recent message
     const partnerGroups = Array.from(partnerMap.values()).sort((a, b) => {
+      const aUnread = a.conversations.some(c => c.unreadCount > 0) ? 1 : 0;
+      const bUnread = b.conversations.some(c => c.unreadCount > 0) ? 1 : 0;
+      if (bUnread !== aUnread) return bUnread - aUnread;
       const aLatest = Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
       const bLatest = Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
       return bLatest - aLatest;
     });
 
-    // Sort user groups by most recent message
+    // Sort user groups: unread first, then by most recent message
     const userGroups = Array.from(userMap.values()).sort((a, b) => {
+      const aUnread = a.conversations.some(c => c.unreadCount > 0) ? 1 : 0;
+      const bUnread = b.conversations.some(c => c.unreadCount > 0) ? 1 : 0;
+      if (bUnread !== aUnread) return bUnread - aUnread;
       const aLatest = Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
       const bLatest = Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
       return bLatest - aLatest;
     });
 
-    // Sort conversations within each group by most recent
+    // Sort conversations within each group: unread first, then by most recent
     partnerGroups.forEach(group => {
-      group.conversations.sort((a, b) => 
-        new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
-      );
+      group.conversations.sort((a, b) => {
+        const aUnread = a.unreadCount > 0 ? 1 : 0;
+        const bUnread = b.unreadCount > 0 ? 1 : 0;
+        if (bUnread !== aUnread) return bUnread - aUnread;
+        return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+      });
     });
 
     userGroups.forEach(group => {
-      group.conversations.sort((a, b) => 
-        new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
-      );
+      group.conversations.sort((a, b) => {
+        const aUnread = a.unreadCount > 0 ? 1 : 0;
+        const bUnread = b.unreadCount > 0 ? 1 : 0;
+        if (bUnread !== aUnread) return bUnread - aUnread;
+        return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+      });
     });
 
     return { directConversations: [], partnerGroups, userGroups };
@@ -228,8 +246,11 @@ export function ConversationList({
       items.push({ type: 'partner-group', ...group });
     }
 
-    // Sort by most recent activity
+    // Sort by unread first, then most recent activity
     items.sort((a, b) => {
+      const aUnread = a.conversations.some(c => c.unreadCount > 0) ? 1 : 0;
+      const bUnread = b.conversations.some(c => c.unreadCount > 0) ? 1 : 0;
+      if (bUnread !== aUnread) return bUnread - aUnread;
       const aTime = Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
       const bTime = Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
       return bTime - aTime;

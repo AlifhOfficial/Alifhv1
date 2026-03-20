@@ -1,7 +1,6 @@
 'use client';
 
-import { useQueryClient } from '@tanstack/react-query';
-import { GlobalChatProvider } from '@/components/shared/providers/global-chat-provider';
+import { getQueryClient } from '@/lib/query-client';
 import type { FavoritesStatusData } from '@/hooks/engagement/favorites/use-favorites-unified';
 
 interface AuthenticatedAppProvidersProps {
@@ -32,7 +31,7 @@ export function AuthenticatedAppProviders({
   initialPersonalConversations,
   initialUserId,
 }: AuthenticatedAppProvidersProps) {
-  const queryClient = useQueryClient();
+  const queryClient = getQueryClient();
 
   queryClient.setQueryDefaults(['favorites-status'], {
     staleTime: Infinity,
@@ -70,5 +69,5 @@ export function AuthenticatedAppProviders({
     });
   }
 
-  return <GlobalChatProvider>{children}</GlobalChatProvider>;
+  return <>{children}</>;  
 }

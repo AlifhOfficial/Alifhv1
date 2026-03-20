@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session-context";
-import { getAuthenticatedShellData } from "@/lib/authenticated-shell-data";
 import { AuthenticatedAppProviders } from "@/components/shared/providers/authenticated-app-providers";
 import { PartnerDashboardShell } from "./shell";
 
@@ -51,10 +50,8 @@ export default async function PartnerDashboardLayout({ children }: { children: R
     companyName: partnerMembership.partnerName || 'Partner',
   };
 
-  const shellData = await getAuthenticatedShellData(user as { id: string; partnerMemberships?: Array<{ partnerId?: string | null }> });
-
   return (
-    <AuthenticatedAppProviders {...shellData}>
+    <AuthenticatedAppProviders>
       <PartnerDashboardShell user={user} sections={navSections} staffOverride={staffOverride}>
         {children}
       </PartnerDashboardShell>

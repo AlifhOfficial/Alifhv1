@@ -146,6 +146,14 @@ export async function fetchConversations(options?: {
 }
 
 /**
+ * Get total unread message count across all conversations
+ */
+export async function getUnreadCount(): Promise<number> {
+  const data = await fetchConversations({ limit: 1 });
+  return data.totalUnread ?? 0;
+}
+
+/**
  * Fetch a single conversation by ID (for newly created convos not yet in list)
  */
 export async function fetchConversation(conversationId: string): Promise<Conversation> {
