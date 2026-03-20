@@ -5,21 +5,14 @@
 
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, Minus, Maximize2 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
-import { Skeleton } from '@/components/ui/skeleton';
-import { MessageBubble } from '@/components/messaging/message-bubble';
-import { MessageInput } from '@/components/messaging/message-input';
-import { LocationPickerDialog } from '@/components/messaging/location-picker-dialog';
-import { useMessages, useSendMessage, useSendLocationMessage, useMarkAsRead, type Conversation } from '@/hooks/messaging';
-import { markConversationActive, markConversationInactive } from '@/hooks/messaging/active-conversations';
+import type { Conversation } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
-import { format, isSameDay } from 'date-fns';
-import type { LocationResult } from '@/hooks/use-location';
 import Link from 'next/link';
+import { ChatThread, useChatThreadController } from './chat-thread';
 
 // Simple time ago formatter (1m, 5m, 1h, 12h, 1d, etc)
 function formatTimeAgo(date: Date | string | null): string | null {
@@ -60,181 +53,24 @@ export function FloatingChatWindow({
 }: FloatingChatWindowProps) {
   const router = useRouter();
   const { otherParticipant, partner, listing } = conversation;
-  
-  const {
-    messages,
-    isLoading,
-    isFetchingMore,
-    hasMore,
-    fetchMore,
-    isOtherTyping,
-    otherLastReadAt,
-    isOtherOnline,
-    otherLastSeenAt,
-    sendTyping,
-  } = useMessages(conversation.id, userId, {
-    initialLastReadAt: otherParticipant?.lastReadAt ?? null,
-    initialLastSeenAt: otherParticipant?.lastSeenAt ?? null,
-    otherUserId: otherParticipant?.id ?? null,
+  const controller = useChatThreadController({
+    conversationId: conversation.id,
+    userId,
+    otherParticipant: otherParticipant || undefined,
+    listing: listing || undefined,
+    myLastReadAt: conversation.myLastReadAt,
+    active: !isMinimized,
   });
-
-  const { sendMessage, isSending } = useSendMessage();
-  const { sendLocationMessage } = useSendLocationMessage();
-  const { markAsRead } = useMarkAsRead();
-
-  // Location picker dialog state
-  const [isLocationDialogOpen, setIsLocationDialogOpen] = useState(false);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const lastMessageIdRef = useRef<string | null>(null);
-  const isNearBottomRef = useRef(true);
-  const paginationSnapshotRef = useRef<{ scrollHeight: number; scrollTop: number } | null>(null);
-  const lastNewestMessageIdRef = useRef<string | null>(null);
-  const hasAutoScrolledInitiallyRef = useRef(false);
-  const [isDocumentActive, setIsDocumentActive] = useState(true);
-  const orderedMessages = useMemo(() => [...messages].reverse(), [messages]);
 
   // Display info
   const displayName = partner?.name || otherParticipant?.name || 'User';
   const isPartnerBrand = !!partner;
   
-  // Sync with chat-window: Use lastSeenAt first, fallback to lastReadAt, then to initial values
-  const lastActiveAt = otherLastSeenAt ?? otherLastReadAt ?? 
+  const lastActiveAt =
+    controller.otherLastSeenAt ??
+    controller.otherLastReadAt ??
     (otherParticipant?.lastSeenAt ? new Date(String(otherParticipant.lastSeenAt)) : null) ?? 
     (otherParticipant?.lastReadAt ? new Date(String(otherParticipant.lastReadAt)) : null);
-
-  // Find last read message for "seen" indicator
-  const lastReadMsgId = useMemo(() => {
-    if (!otherLastReadAt) return null;
-    for (const m of messages) {
-      if (m.senderId === userId && new Date(m.createdAt) <= otherLastReadAt) {
-        return m.id;
-      }
-    }
-    return null;
-  }, [messages, otherLastReadAt, userId]);
-
-  const updateScrollState = useCallback(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const distanceFromBottom = container.scrollHeight - container.clientHeight - container.scrollTop;
-    isNearBottomRef.current = distanceFromBottom < 100;
-  }, []);
-
-  useEffect(() => {
-    if (typeof document === 'undefined' || typeof window === 'undefined') return;
-
-    const updateActivity = () => {
-      setIsDocumentActive(document.visibilityState === 'visible' && document.hasFocus());
-    };
-
-    updateActivity();
-    document.addEventListener('visibilitychange', updateActivity);
-    window.addEventListener('focus', updateActivity);
-    window.addEventListener('blur', updateActivity);
-
-    return () => {
-      document.removeEventListener('visibilitychange', updateActivity);
-      window.removeEventListener('focus', updateActivity);
-      window.removeEventListener('blur', updateActivity);
-    };
-  }, []);
-
-  // Reset tracking on conversation switch
-  useEffect(() => {
-    lastMessageIdRef.current = null;
-    paginationSnapshotRef.current = null;
-    lastNewestMessageIdRef.current = null;
-    hasAutoScrolledInitiallyRef.current = false;
-  }, [conversation.id]);
-
-  useEffect(() => {
-    if (isMinimized) return;
-    markConversationActive(conversation.id);
-    return () => markConversationInactive(conversation.id);
-  }, [conversation.id, isMinimized]);
-
-  const hasMarkedOnEntryRef = useRef(false);
-  useEffect(() => {
-    hasMarkedOnEntryRef.current = false;
-  }, [conversation.id]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || isMinimized) return;
-
-    const handleScrollState = () => updateScrollState();
-    handleScrollState();
-    container.addEventListener('scroll', handleScrollState);
-    return () => container.removeEventListener('scroll', handleScrollState);
-  }, [isMinimized, updateScrollState]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    const snapshot = paginationSnapshotRef.current;
-    if (!container || !snapshot || isMinimized) return;
-
-    const heightDelta = container.scrollHeight - snapshot.scrollHeight;
-    container.scrollTop = snapshot.scrollTop + heightDelta;
-    paginationSnapshotRef.current = null;
-  }, [isMinimized, orderedMessages]);
-
-  useEffect(() => {
-    if (orderedMessages.length === 0 || isLoading || isMinimized) return;
-
-    const container = containerRef.current;
-    if (!container) return;
-
-    const newestMessageId = messages[0]?.id ?? null;
-
-    if (!hasAutoScrolledInitiallyRef.current) {
-      container.scrollTop = container.scrollHeight;
-      hasAutoScrolledInitiallyRef.current = true;
-      lastNewestMessageIdRef.current = newestMessageId;
-      updateScrollState();
-      return;
-    }
-
-    const hasNewNewestMessage = newestMessageId !== lastNewestMessageIdRef.current;
-    lastNewestMessageIdRef.current = newestMessageId;
-
-    if (hasNewNewestMessage && isNearBottomRef.current) {
-      container.scrollTop = container.scrollHeight;
-      updateScrollState();
-    }
-  }, [messages, orderedMessages.length, isLoading, isMinimized, updateScrollState]);
-
-  // Mark as read once when opening this floating chat
-  useEffect(() => {
-    if (hasMarkedOnEntryRef.current || isLoading || isMinimized || !isDocumentActive || conversation.unreadCount <= 0) {
-      return;
-    }
-    hasMarkedOnEntryRef.current = true;
-    markAsRead(conversation.id);
-  }, [conversation.id, conversation.unreadCount, isLoading, isMinimized, isDocumentActive, markAsRead]);
-
-  // Infinite scroll
-  const handleScroll = useCallback(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    updateScrollState();
-
-    if (isFetchingMore || !hasMore) return;
-    if (el.scrollTop > 80) return;
-
-    paginationSnapshotRef.current = {
-      scrollHeight: el.scrollHeight,
-      scrollTop: el.scrollTop,
-    };
-
-    void fetchMore();
-  }, [fetchMore, hasMore, isFetchingMore, updateScrollState]);
-
-  const handleSend = async (text: string) => {
-    await sendMessage({ conversationId: conversation.id, senderId: userId, text });
-  };
 
   // Calculate position from right edge
   const rightOffset = 24 + position * 340; // 340px per window + 24px initial margin
@@ -293,7 +129,7 @@ export function FloatingChatWindow({
                 {displayName}
               </h4>
               {/* Activity indicator */}
-              {isOtherOnline ? (
+              {controller.isOtherOnline ? (
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                   <span className="text-xs font-semibold text-green-500">now</span>
@@ -353,96 +189,9 @@ export function FloatingChatWindow({
         {/* Chat Content - Hidden when minimized */}
         {!isMinimized && (
           <>
-            {/* Messages */}
-            <div
-              ref={containerRef}
-              onScroll={handleScroll}
-              className="relative flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain p-3 bg-background flex flex-col gap-1.5"
-            >
-              {isFetchingMore && (
-                <div className="sticky top-0 z-10 -mt-1 flex justify-center py-2 pointer-events-none">
-                  <div className="rounded-full bg-background/90 px-2.5 py-1 backdrop-blur-sm">
-                    <Skeleton className="h-4 w-4 rounded-full" />
-                  </div>
-                </div>
-              )}
-
-              {isLoading ? (
-                <div className="flex flex-col gap-2 py-2">
-                  <Skeleton className="h-7 w-28 rounded-xl rounded-br-sm self-end" />
-                  <Skeleton className="h-9 w-36 rounded-xl rounded-bl-sm self-start" />
-                  <Skeleton className="h-6 w-24 rounded-xl rounded-br-sm self-end" />
-                </div>
-              ) : messages.length === 0 ? (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-[13px] font-medium text-muted-foreground/70">No messages yet</p>
-                </div>
-              ) : (
-                <div className="contents">
-                  {isOtherTyping && (
-                    <div key="typing" className="flex items-start gap-2 mb-1 px-1">
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-sidebar border border-border/30 rounded-lg rounded-bl-sm">
-                        <span className="text-xs font-medium text-muted-foreground/70">typing...</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {orderedMessages.map((message, index, arr) => {
-                    const messageDate = new Date(message.createdAt);
-                    const previousMessage = arr[index - 1];
-                    const previousDate = previousMessage ? new Date(previousMessage.createdAt) : null;
-                    const showDateSeparator = !previousDate || !isSameDay(previousDate, messageDate);
-
-                    const nextMessage = arr[index + 1];
-                    const showAvatar = !nextMessage || nextMessage.senderId !== message.senderId;
-                    const isOwn = message.senderId === userId;
-                    const isReadByOther = isOwn && otherLastReadAt ? messageDate <= otherLastReadAt : false;
-                    const showSeen = isOwn && message.id === lastReadMsgId;
-
-                    return (
-                      <div key={message.id}>
-                        {showDateSeparator && (
-                          <div className="flex justify-center py-2">
-                            <span className="text-[11px] text-muted-foreground/70 bg-muted/60 px-2.5 py-0.5 rounded-full font-semibold">
-                              {format(messageDate, 'MMM d')}
-                            </span>
-                          </div>
-                        )}
-                        <MessageBubble
-                          message={message}
-                          isOwn={isOwn}
-                          showAvatar={showAvatar}
-                          isReadByOther={isReadByOther}
-                          showSeen={showSeen}
-                          seenAt={otherLastReadAt}
-                          otherUserAvatar={otherParticipant?.avatarUrl ?? null}
-                          otherUserName={otherParticipant?.name ?? null}
-                          compact
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Input */}
-            <MessageInput
-              onSend={handleSend}
-              onTyping={(isTyping) => otherParticipant?.id && sendTyping(otherParticipant.id, isTyping)}
-              onRequestLocation={() => setIsLocationDialogOpen(true)}
-              disabled={isSending}
-              resetKey={conversation.id}
+            <ChatThread
+              controller={controller}
               compact
-            />
-
-            {/* Location Picker Dialog */}
-            <LocationPickerDialog
-              isOpen={isLocationDialogOpen}
-              onClose={() => setIsLocationDialogOpen(false)}
-              onConfirm={async (location: LocationResult) => {
-                await sendLocationMessage({ conversationId: conversation.id, senderId: userId, location });
-              }}
             />
           </>
         )}
