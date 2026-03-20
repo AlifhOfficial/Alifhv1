@@ -133,7 +133,9 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
     },
     initialData: { data: initialInvites },
     initialDataUpdatedAt: Date.now(),
-    staleTime: 60_000,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
   
   const inviteCount = invitesData?.data?.length || 0;

@@ -24,7 +24,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
-  getPartnerProfileByUserId,
+  getPartnerProfileComprehensive,
   updatePartnerProfile,
   type PartnerProfileUpdate,
 } from '@alifh/database';
@@ -118,9 +118,16 @@ export async function GET() {
     if (!sessionUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    // Get partner profile by user ID
-    const profile = await getPartnerProfileByUserId(sessionUser.id);
+
+    const partnerId = sessionUser.partnerMemberships?.[0]?.partnerId;
+    if (!partnerId) {
+      return NextResponse.json(
+        { error: 'Partner profile not found. You may not be associated with a partner.' },
+        { status: 404 }
+      );
+    }
+
+    const profile = await getPartnerProfileComprehensive(partnerId);
     
     if (!profile) {
       return NextResponse.json(
@@ -153,11 +160,8 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    
-    // Get current profile to verify access and get partnerId
-    const currentProfile = await getPartnerProfileByUserId(sessionUser.id);
-    
-    if (!currentProfile) {
+    const partnerId = sessionUser.partnerMemberships?.[0]?.partnerId;
+    if (!partnerId) {
       return NextResponse.json(
         { error: 'Partner profile not found. You may not be associated with a partner.' },
         { status: 404 }
@@ -181,7 +185,7 @@ export async function PATCH(req: NextRequest) {
     const updates: PartnerProfileUpdate = validationResult.data;
     
     // Update the profile
-    const updatedProfile = await updatePartnerProfile(currentProfile.id, updates);
+    const updatedProfile = await updatePartnerProfile(partnerId, updates);
     
     if (!updatedProfile) {
       return NextResponse.json(

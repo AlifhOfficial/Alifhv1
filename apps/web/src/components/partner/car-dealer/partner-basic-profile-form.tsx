@@ -299,7 +299,6 @@ export function PartnerBasicProfileForm({
           const syncRes = await fetch('/api/partner/google-reviews/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ partnerId }),
             credentials: 'include',
           });
           if (syncRes.ok) {
@@ -493,7 +492,6 @@ export function PartnerBasicProfileForm({
       const res = await fetch('/api/partner/google-reviews/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ partnerId }),
         credentials: 'include',
       });
       const data = await res.json();

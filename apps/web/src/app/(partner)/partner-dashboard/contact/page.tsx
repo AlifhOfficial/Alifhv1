@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { PartnerContactSettings } from '@/components/partner/partner-contact-settings';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getPartnerContactProfileByUserId } from '@alifh/database';
+import { getPartnerContactProfile } from '@alifh/database';
 
 export default async function ContactSettingsPage() {
   const user = await getSessionUser();
@@ -9,6 +9,11 @@ export default async function ContactSettingsPage() {
     redirect('/?auth=signin&redirect=/partner-dashboard/contact');
   }
 
-  const profile = await getPartnerContactProfileByUserId(user.id);
+  const partnerId = (user as any).partnerMemberships?.[0]?.partnerId;
+  if (!partnerId) {
+    redirect('/access-denied?reason=not-partner-manager');
+  }
+
+  const profile = await getPartnerContactProfile(partnerId);
   return <PartnerContactSettings initialProfile={profile as any} />;
 }

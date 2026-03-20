@@ -140,6 +140,50 @@ export async function getStaffProfileWithPartner(
 }
 
 /**
+ * Get staff profile with partner details by staff membership ID.
+ * Prefer this for authenticated staff flows where session already includes staffId.
+ */
+export async function getStaffProfileWithPartnerById(
+  staffId: string
+): Promise<StaffProfileWithPartner | null> {
+  const [record] = await db
+    .select({
+      id: partnerStaff.id,
+      userId: partnerStaff.userId,
+      partnerId: partnerStaff.partnerId,
+      role: partnerStaff.role,
+      isOwner: partnerStaff.isOwner,
+      isPrimaryContact: partnerStaff.isPrimaryContact,
+      status: partnerStaff.status,
+      displayName: partnerStaff.displayName,
+      workPhone: partnerStaff.workPhone,
+      usePersonalPhone: partnerStaff.usePersonalPhone,
+      workPhoneVerified: partnerStaff.workPhoneVerified,
+      joinedAt: partnerStaff.joinedAt,
+      partner: {
+        id: partner.id,
+        brandName: partner.brandName,
+        companyNameLegal: partner.companyNameLegal,
+        logo: partner.logo,
+        emirate: partner.emirate,
+        city: partner.city,
+      },
+    })
+    .from(partnerStaff)
+    .innerJoin(partner, eq(partnerStaff.partnerId, partner.id))
+    .where(
+      and(
+        eq(partnerStaff.id, staffId),
+        eq(partnerStaff.isOwner, false),
+        eq(partnerStaff.status, 'active')
+      )
+    )
+    .limit(1);
+
+  return record ?? null;
+}
+
+/**
  * Update staff profile
  */
 export async function updateStaffProfile(

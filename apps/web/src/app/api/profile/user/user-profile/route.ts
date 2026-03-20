@@ -23,8 +23,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
-import { getUserProfileByUserId, updateUserProfileByUserId, ensureUserProfile, calculateUserStats, db, passkey, eq } from "@alifh/database";
+import { getCurrentUserProfileByUserId, updateUserProfileByUserId } from "@alifh/database";
 import { getSessionUser } from "@/lib/auth/session-context";
+import { getCurrentUserProfileBundle } from "@/lib/current-user-profile";
 import { deleteFile } from "@/lib/storage";
 import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
@@ -84,33 +85,7 @@ export async function GET(req: NextRequest) {
       return response;
     }
 
-    let profile = await getUserProfileByUserId(user.id);
-    
-    if (!profile) {
-      profile = await ensureUserProfile(user.id);
-    }
-
-    const profileWithAvatar = await attachAvatarUrl(profile);
-
-    // Fetch stats and passkeys in parallel
-    const [stats, passkeys] = await Promise.all([
-      calculateUserStats(user.id),
-      db.select({
-        id: passkey.id,
-        name: passkey.name,
-        createdAt: passkey.createdAt,
-      })
-      .from(passkey)
-      .where(eq(passkey.userId, user.id))
-      .orderBy(passkey.createdAt),
-    ]);
-
-    const responseData = {
-      profile: profileWithAvatar,
-      stats,
-      passkeys,
-    };
-
+    const responseData = await getCurrentUserProfileBundle(user);
     const response = NextResponse.json(responseData);
     Object.entries(NO_CACHE_HEADERS).forEach(([k, v]) => response.headers.set(k, v));
     return response;
@@ -146,7 +121,7 @@ export async function PATCH(req: NextRequest) {
     // Get current profile to check for old avatar to delete (only needed when removing)
     let oldAvatarKey: string | null = null;
     if ('avatar' in result.data && result.data.avatar === null) {
-      const currentProfile = await getUserProfileByUserId(user.id);
+      const currentProfile = await getCurrentUserProfileByUserId(user.id);
       oldAvatarKey = currentProfile?.avatar ?? null;
     }
     

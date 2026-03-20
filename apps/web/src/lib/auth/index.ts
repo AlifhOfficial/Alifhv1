@@ -192,6 +192,7 @@ export const auth = betterAuth({
       const result = await db.execute<{
         role: string;
         banned: boolean;
+        phone_number_verified: boolean | null;
         avatar: string | null;
         first_name: string | null;
         last_name: string | null;
@@ -207,7 +208,7 @@ export const auth = betterAuth({
         billing_active: boolean | null;
       }>(sql`
         SELECT 
-          u.role, u.banned,
+          u.role, u.banned, u.phone_number_verified,
           p.avatar, p.first_name, p.last_name, p.preferences, p.updated_at,
           ps.id as staff_id, ps.role as staff_role,
           pt.id as partner_id, pt.brand_name, pt.status as partner_status, 
@@ -226,7 +227,11 @@ export const auth = betterAuth({
       
       // First row has user + profile data
       const firstRow = rows[0];
-      const userRecord = { role: firstRow.role, banned: firstRow.banned };
+      const userRecord = {
+        role: firstRow.role,
+        banned: firstRow.banned,
+        phoneNumberVerified: firstRow.phone_number_verified ?? false,
+      };
       const profileRecord = firstRow.avatar !== undefined ? {
         avatar: firstRow.avatar,
         firstName: firstRow.first_name,
@@ -293,6 +298,7 @@ export const auth = betterAuth({
       const sessionData = {
         role: userRecord.role,
         banned: userRecord.banned,
+        phoneNumberVerified: userRecord.phoneNumberVerified,
         hasPartnerAccess,
         isAlifhAdmin,
         partnerMemberships,

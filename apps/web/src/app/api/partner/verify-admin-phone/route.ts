@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getPartnerProfileByUserId, updatePartnerProfile } from '@alifh/database';
+import { getPartnerContactProfile, updatePartnerProfile } from '@alifh/database';
 import twilio from 'twilio';
 
 export const runtime = 'nodejs';
@@ -37,8 +37,12 @@ export async function POST(request: NextRequest) {
 
     const { phoneNumber, code } = parsed.data;
 
-    // Get partner profile to verify ownership
-    const profile = await getPartnerProfileByUserId(sessionUser.id);
+    const partnerId = sessionUser.partnerMemberships?.[0]?.partnerId;
+    if (!partnerId) {
+      return NextResponse.json({ error: 'Partner not found' }, { status: 404 });
+    }
+
+    const profile = await getPartnerContactProfile(partnerId);
     if (!profile) {
       return NextResponse.json({ error: 'Partner not found' }, { status: 404 });
     }
@@ -83,7 +87,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update partner's adminPhoneVerified
-    await updatePartnerProfile(profile.id, { adminPhoneVerified: true });
+    await updatePartnerProfile(partnerId, { adminPhoneVerified: true });
 
     return NextResponse.json({ success: true });
   } catch (error) {

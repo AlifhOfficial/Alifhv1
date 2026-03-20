@@ -5,6 +5,7 @@
 
 import { Suspense } from 'react';
 import { Navbar, Footer } from '@/components/shared';
+import { GlobalChatProvider } from '@/components/shared/providers/global-chat-provider';
 
 export default function PublicLayout({
   children,
@@ -12,13 +13,13 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <GlobalChatProvider>
       <Suspense fallback={<NavbarSkeleton />}>
         <Navbar />
       </Suspense>
       {children}
       <Footer />
-    </>
+    </GlobalChatProvider>
   );
 }
 

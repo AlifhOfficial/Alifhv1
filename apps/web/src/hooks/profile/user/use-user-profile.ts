@@ -31,6 +31,7 @@ export interface UserPasskey {
 export interface UserProfile {
   id: string;
   userId: string;
+  updatedAt?: Date | string;
   firstName?: string | null;
   lastName?: string | null;
   phone?: string | null;

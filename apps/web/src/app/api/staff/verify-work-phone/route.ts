@@ -12,7 +12,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getStaffIdForUser, updateStaffProfileById } from '@alifh/database';
+import { updateStaffProfileById } from '@alifh/database';
 import twilio from 'twilio';
 
 const twilioClient = twilio(
@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid UAE phone number' }, { status: 400 });
     }
 
-    // Verify user is staff
-    const staffId = await getStaffIdForUser(user.id);
+    const membership = user.partnerMemberships?.[0];
+    const staffId = membership?.staffId;
 
     if (!staffId) {
       return NextResponse.json({ error: 'Not a staff member' }, { status: 403 });

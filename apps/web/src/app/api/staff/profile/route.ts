@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getStaffProfileWithPartner, getStaffIdForUser, updateStaffProfileById } from '@alifh/database';
+import { getStaffProfileWithPartnerById, updateStaffProfileById } from '@alifh/database';
 
 
 export const runtime = 'nodejs';
@@ -15,9 +15,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const membership = user.partnerMemberships?.[0];
+  const staffId = membership?.staffId;
 
-  // Find staff membership where user is NOT the owner
-  const staffRecord = await getStaffProfileWithPartner(user.id);
+  if (!staffId) {
+    return NextResponse.json({ error: 'No staff profile found' }, { status: 404 });
+  }
+
+  const staffRecord = await getStaffProfileWithPartnerById(staffId);
 
   if (!staffRecord) {
     return NextResponse.json({ error: 'No staff profile found' }, { status: 404 });
@@ -35,13 +40,10 @@ export async function PATCH(request: NextRequest) {
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
-
   const body = await request.json();
   const { displayName, workPhone, usePersonalPhone, workPhoneVerified } = body;
-
-  // Find staff ID where user is NOT the owner
-  const staffId = await getStaffIdForUser(user.id);
+  const membership = user.partnerMemberships?.[0];
+  const staffId = membership?.staffId;
 
   if (!staffId) {
     return NextResponse.json({ error: 'No staff profile found' }, { status: 404 });

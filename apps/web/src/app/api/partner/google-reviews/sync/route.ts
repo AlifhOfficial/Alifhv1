@@ -18,17 +18,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    // Get partner ID from session or body
-    const body = await req.json().catch(() => ({}));
-    const partnerId = body.partnerId;
-    
+    const partnerId = user.partnerMemberships?.[0]?.partnerId;
     if (!partnerId) {
       return NextResponse.json({ error: 'Partner ID required' }, { status: 400 });
     }
-    
-    // TODO: Verify user has permission for this partner
-    // (owner, admin, or staff member)
-    
+
     const result = await googleReviews.syncPartnerReviews(partnerId);
     
     if (!result.success) {

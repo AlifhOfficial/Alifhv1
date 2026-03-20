@@ -67,6 +67,15 @@ export type ExtendedUserProfile = {
 };
 
 /**
+ * Current-user profile shape backed only by user_profile.
+ * Session already provides the current user's identity/verification fields.
+ */
+export type CurrentUserProfile = Omit<
+  ExtendedUserProfile,
+  'emailVerified' | 'phoneNumberVerified' | 'userName'
+>;
+
+/**
  * Get profile by user ID with email verification status and basic user info
  * Uses single JOIN query with minimal field selection for optimal performance
  * Only fetches fields used in ProfileView UI
@@ -130,6 +139,59 @@ export const getUserProfileByUserId = async (userId: string): Promise<ExtendedUs
   };
 
   return profile;
+};
+
+/**
+ * Get the current user's profile without joining the user table.
+ * Use this for authenticated "my profile" surfaces where session already
+ * carries identity and verification fields.
+ */
+export const getCurrentUserProfileByUserId = async (userId: string): Promise<CurrentUserProfile | null> => {
+  const [result] = await db
+    .select({
+      id: userProfile.id,
+      userId: userProfile.userId,
+      firstName: userProfile.firstName,
+      lastName: userProfile.lastName,
+      phone: userProfile.phone,
+      description: userProfile.description,
+      tags: userProfile.tags,
+      consignmentMode: userProfile.consignmentMode,
+      privacySettings: userProfile.privacySettings,
+      preferences: userProfile.preferences,
+      avatar: userProfile.avatar,
+      kycVerified: userProfile.kycVerified,
+      kycVerifiedAt: userProfile.kycVerifiedAt,
+      kycExpiryDate: userProfile.kycExpiryDate,
+      kycStatus: userProfile.kycStatus,
+      badges: userProfile.badges,
+      platformRating: userProfile.platformRating,
+      memberSince: userProfile.memberSince,
+      updatedAt: userProfile.updatedAt,
+    })
+    .from(userProfile)
+    .where(eq(userProfile.userId, userId))
+    .limit(1);
+
+  if (!result) {
+    return null;
+  }
+
+  let kycRejectionReason: string | null = null;
+  if (result.kycStatus === 'rejected') {
+    const [latestKyc] = await db
+      .select({ rejectionReason: kycRecord.rejectionReason })
+      .from(kycRecord)
+      .where(eq(kycRecord.userId, userId))
+      .orderBy(desc(kycRecord.createdAt))
+      .limit(1);
+    kycRejectionReason = latestKyc?.rejectionReason ?? null;
+  }
+
+  return {
+    ...result,
+    kycRejectionReason,
+  };
 };
 
 /**
@@ -215,4 +277,16 @@ export const ensureUserProfile = async (userId: string): Promise<ExtendedUserPro
   }
   
   return profile;
+};
+
+/**
+ * Ensure current-user profile exists and return the lighter current-user shape.
+ */
+export const ensureCurrentUserProfile = async (userId: string): Promise<CurrentUserProfile> => {
+  const existing = await getCurrentUserProfileByUserId(userId);
+  if (existing) return existing;
+
+  const created = await ensureUserProfile(userId);
+  const { emailVerified: _emailVerified, phoneNumberVerified: _phoneNumberVerified, userName: _userName, ...current } = created;
+  return current;
 };

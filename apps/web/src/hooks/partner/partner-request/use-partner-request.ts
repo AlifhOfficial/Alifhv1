@@ -128,8 +128,10 @@ export function usePartnerRequest(initialData?: PartnerRequest | null) {
   return useQuery<PartnerRequest | null>({
     queryKey: ['partner-request'],
     queryFn: fetchPartnerRequest,
-    refetchOnWindowFocus: true,
-    initialData: initialData ?? undefined,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    initialData: initialData !== undefined ? initialData : undefined,
+    initialDataUpdatedAt: initialData !== undefined ? Date.now() : undefined,
     staleTime: initialData !== undefined ? Infinity : 0,
   });
 }
