@@ -1,6 +1,5 @@
 // Home screen components
 export { HomeHeader } from './home-header';
-export { HomeTabBar } from './home-tab-bar';
 export { HomeDoodle } from './home-doodle';
 export { BackgroundDoodle } from './background-doodle';
 export { GreetingNote } from './greeting-note';

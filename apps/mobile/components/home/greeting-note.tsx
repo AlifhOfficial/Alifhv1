@@ -1,7 +1,7 @@
 /**
  * GreetingNote Component
  * 
- * A playful, personalized greeting with warmth and character.
+ * A warm, personalized greeting for UAE market.
  * Adapts based on time of day and authentication state.
  * Uses theme tokens for all styling.
  */
@@ -11,12 +11,12 @@ import { StyleSheet, View } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { Spacing, Layout } from '@/constants/theme';
-import { Display, Body, Supporting } from '@/components/ui';
+import { Heading, Supporting } from '@/components/ui';
 
 /**
  * Time periods for contextual greetings
  */
-type TimePeriod = 'earlyMorning' | 'morning' | 'afternoon' | 'evening' | 'lateEvening' | 'night';
+type TimePeriod = 'earlyMorning' | 'morning' | 'afternoon' | 'evening' | 'night';
 
 function getTimePeriod(): TimePeriod {
   const hour = new Date().getHours();
@@ -25,77 +25,70 @@ function getTimePeriod(): TimePeriod {
   if (hour >= 9 && hour < 12) return 'morning';
   if (hour >= 12 && hour < 17) return 'afternoon';
   if (hour >= 17 && hour < 21) return 'evening';
-  if (hour >= 21 && hour < 23) return 'lateEvening';
-  return 'night'; // 11pm - 5am
+  return 'night'; // 9pm - 5am
 }
 
 /**
- * Authenticated user greetings - personal
+ * Authenticated user greetings - warm and personal with UAE flavor
+ * Mix of Arabic greetings that everyone in UAE recognizes
  */
-const AUTH_GREETINGS: Record<TimePeriod, { top: string; bottom: string }[]> = {
+const AUTH_GREETINGS: Record<TimePeriod, { greeting: string; subtitle: string }[]> = {
   earlyMorning: [
-    { top: 'Up before the sun?', bottom: 'you legend' },
-    { top: 'Early bird mode', bottom: 'let\'s find gold' },
-    { top: 'Coffee ready?', bottom: 'let\'s roll' },
+    { greeting: 'Sabah al-khair', subtitle: 'Early riser! Fresh listings await' },
+    { greeting: 'Good morning', subtitle: 'Starting the day right' },
+    { greeting: 'Morning', subtitle: 'The best cars go early' },
   ],
   morning: [
-    { top: 'Good morning', bottom: 'sunshine' },
-    { top: 'Hey hey', bottom: 'let\'s go' },
-    { top: 'Morning vibes', bottom: 'ready to browse?' },
-    { top: 'Rise & grind', bottom: 'car hunting time' },
+    { greeting: 'Marhaba', subtitle: 'Good to see you back' },
+    { greeting: 'Sabah al-noor', subtitle: 'What are we finding today?' },
+    { greeting: 'Good morning', subtitle: 'New arrivals just dropped' },
+    { greeting: 'Ahlan', subtitle: 'Ready to explore?' },
   ],
   afternoon: [
-    { top: 'Yo', bottom: 'what\'s good?' },
-    { top: 'Afternoon hustle', bottom: 'let\'s find your ride' },
-    { top: 'Hey', bottom: 'taking a break?' },
-    { top: 'Back at it', bottom: 'nice to see you' },
+    { greeting: 'Marhaba', subtitle: 'Taking a break? Good timing' },
+    { greeting: 'Ahlan wa sahlan', subtitle: 'Welcome back' },
+    { greeting: 'Good afternoon', subtitle: 'Perfect browsing weather' },
+    { greeting: 'Hey', subtitle: 'Something caught your eye?' },
   ],
   evening: [
-    { top: 'Evening', bottom: 'how was your day?' },
-    { top: 'Winding down?', bottom: 'perfect browse time' },
-    { top: 'Hey', bottom: 'let\'s see what\'s new' },
-    { top: 'After hours', bottom: 'chill browsing?' },
-  ],
-  lateEvening: [
-    { top: 'Still going?', bottom: 'respect the hustle' },
-    { top: 'Late session', bottom: 'best deals drop now' },
-    { top: 'Getting late', bottom: 'one more scroll?' },
+    { greeting: 'Masa al-khair', subtitle: 'Unwinding? Let\'s browse' },
+    { greeting: 'Good evening', subtitle: 'Golden hour for car shopping' },
+    { greeting: 'Ahlan', subtitle: 'The evening rush is real' },
+    { greeting: 'Marhaba', subtitle: 'End the day on a good note' },
   ],
   night: [
-    { top: 'Night owl', bottom: 'let\'s hunt' },
-    { top: 'Can\'t sleep?', bottom: 'same, let\'s browse' },
-    { top: 'Midnight mode', bottom: 'the quiet hours hit different' },
-    { top: 'Up late?', bottom: 'best time for steals' },
+    { greeting: 'Masa al-noor', subtitle: 'Night owl mode activated' },
+    { greeting: 'Hey', subtitle: 'Best deals come to those who wait' },
+    { greeting: 'Marhaba', subtitle: 'Late night browsing hits different' },
   ],
 };
 
 /**
- * Unauthenticated greetings - simple and welcoming
+ * Unauthenticated greetings - welcoming with local touch
  */
-const UNAUTH_GREETINGS: Record<TimePeriod, { top: string; bottom: string }[]> = {
+const UNAUTH_GREETINGS: Record<TimePeriod, { greeting: string; subtitle: string }[]> = {
   earlyMorning: [
-    { top: 'Up early?', bottom: 'let\'s browse' },
-    { top: 'Early start', bottom: 'good timing' },
+    { greeting: 'Sabah al-khair', subtitle: 'Welcome to Revvup' },
+    { greeting: 'Good morning', subtitle: 'Find your perfect ride' },
   ],
   morning: [
-    { top: 'Good morning', bottom: 'welcome' },
-    { top: 'Hey there', bottom: 'take a look around' },
+    { greeting: 'Marhaba', subtitle: 'Welcome to Revvup' },
+    { greeting: 'Good morning', subtitle: 'Your car search starts here' },
+    { greeting: 'Ahlan', subtitle: 'Thousands of cars await' },
   ],
   afternoon: [
-    { top: 'Hey', bottom: 'welcome' },
-    { top: 'Afternoon', bottom: 'browse away' },
+    { greeting: 'Ahlan wa sahlan', subtitle: 'Welcome' },
+    { greeting: 'Marhaba', subtitle: 'Browse our collection' },
+    { greeting: 'Good afternoon', subtitle: 'Find something great' },
   ],
   evening: [
-    { top: 'Evening', bottom: 'welcome' },
-    { top: 'Hey there', bottom: 'take your time' },
-  ],
-  lateEvening: [
-    { top: 'Still up?', bottom: 'us too' },
-    { top: 'Late browse', bottom: 'welcome' },
+    { greeting: 'Masa al-khair', subtitle: 'Welcome' },
+    { greeting: 'Good evening', subtitle: 'Your next car is here' },
+    { greeting: 'Ahlan', subtitle: 'Let\'s find your ride' },
   ],
   night: [
-    { top: 'Night owl?', bottom: 'welcome' },
-    { top: 'Can\'t sleep?', bottom: 'browse away' },
+    { greeting: 'Marhaba', subtitle: 'Welcome to Revvup' },
+    { greeting: 'Hey', subtitle: 'Late night browsing? We got you' },
   ],
 };
 
@@ -136,36 +129,37 @@ export function GreetingNote() {
       const greetings = AUTH_GREETINGS[timePeriod];
       const selected = greetings[getDailyIndex(greetings)];
       return { 
-        top: selected.top, 
+        greeting: selected.greeting,
         name: firstName, 
-        bottom: selected.bottom,
+        subtitle: selected.subtitle,
       };
     }
     
     const greetings = UNAUTH_GREETINGS[timePeriod];
     const selected = greetings[getDailyIndex(greetings)];
     return { 
-      top: selected.top, 
-      name: 'Guest', 
-      bottom: selected.bottom,
+      greeting: selected.greeting,
+      name: null, 
+      subtitle: selected.subtitle,
     };
   }, [isAuthenticated, firstName, timePeriod]);
 
   return (
     <View style={styles.container}>
-      <Supporting size="medium" style={{ color: colors.textTertiary }}>
-        {content.top}
-      </Supporting>
-      <View style={styles.nameRow}>
-        <Display size="medium" style={{ color: colors.primary }}>
-          {content.name}
-        </Display>
-        {content.bottom && (
-          <Body size="medium" style={{ color: colors.textSecondary }}>
-            {content.bottom}
-          </Body>
+      <View style={styles.greetingRow}>
+        <Heading size="large" style={{ color: colors.text }}>
+          {content.greeting}
+          {content.name ? `, ` : ''}
+        </Heading>
+        {content.name && (
+          <Heading size="large" style={{ color: colors.primary }}>
+            {content.name}
+          </Heading>
         )}
       </View>
+      <Supporting size="medium" style={{ color: colors.textTertiary }}>
+        {content.subtitle}
+      </Supporting>
     </View>
   );
 }
@@ -175,7 +169,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Layout.screenPadding,
     gap: Spacing.xs,
   },
-  nameRow: {
-    gap: Spacing.xs,
+  greetingRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 });

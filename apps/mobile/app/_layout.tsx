@@ -8,8 +8,15 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold } from '@expo-google-fonts/inter';
+import { useFonts } from 'expo-font';
 import { DancingScript_400Regular, DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_800ExtraBold,
+} from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -41,7 +48,7 @@ import { BootScreen } from '@/components/layout/boot-screen';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { AlertProvider } from '@/components/ui/themed-alert';
-import { TabBarRouter } from '@/components/layout/tab-bar-router';
+import { GlobalTabBar } from '@/components/layout/global-tab-bar';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { AuthFlow } from '@/components/auth';
 import { AuthSheet } from '@/components/sheets';
@@ -254,7 +261,6 @@ function RootLayoutNav() {
           <Stack.Screen name="profile" />
           <Stack.Screen name="settings" />
           <Stack.Screen name="chat/[conversationId]" />
-          <Stack.Screen name="create-listing" />
           <Stack.Screen name="inventory" />
           <Stack.Screen name="blk" />
           <Stack.Screen name="partners" />
@@ -264,8 +270,8 @@ function RootLayoutNav() {
       {/* Global Safe Area Gradients - hidden when chrome is hidden */}
       {isTabBarVisible && <BottomSafeAreaGradient />}
       
-      {/* Tab Bar Router - routes to correct tab bar based on pathname */}
-      <TabBarRouter />
+      {/* Global Tab Bar - unified navigation */}
+      <GlobalTabBar />
       
       {/* Auth Sheet - renders above tab bar */}
       <AuthSheetRenderer />

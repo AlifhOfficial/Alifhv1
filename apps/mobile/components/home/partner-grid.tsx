@@ -12,8 +12,8 @@ import { useRouter } from 'expo-router';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { getAppThumbUrl } from '@/lib/config';
-import { HapticPressable, Heading, Data, Supporting, Skeleton, Label, FavoriteButton } from '@/components/ui';
+import { getAppListingImageUrls, getAppThumbUrl } from '@/lib/config';
+import { HapticPressable, Heading, Data, Supporting, Skeleton, Label, FavoriteButton, Price } from '@/components/ui';
 import { type PartnerListItem } from '@/lib/partner-api';
 import { type ListingCard } from '@/lib/search-api';
 
@@ -34,6 +34,9 @@ export interface PartnerDisplayData {
 
 export interface PartnerListingItem {
   id: string;
+  make: string;
+  model: string;
+  year?: number | null;
   price: number;
   thumbnail?: string | null;
 }
@@ -43,13 +46,10 @@ export interface PartnerListingItem {
 // ============================================================================
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const PRODUCT_WIDTH = 180;
-const PRODUCT_ASPECT = 5 / 4;
+const PRODUCT_WIDTH = Sizes.cardThumbnailWidth + Sizes.bubble + Spacing['3xl'] + Spacing.md;
+const PRODUCT_MIN_HEIGHT = Sizes.cardThumbnailHeight + Sizes.bubble + Spacing.lg;
+const PRODUCT_IMAGE_HEIGHT = Sizes.cardThumbnailHeight;
 const BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
-
-// Dark glass for product overlays
-const GLASS_BG = '#0D0D0D';
-const GLASS_BORDER = 'rgba(255,255,255,0.14)';
 
 // ============================================================================
 // UTILITIES
@@ -76,30 +76,60 @@ interface ProductCardProps {
 }
 
 const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavorite, isBlkPartner }: ProductCardProps) {
-  const imageUri = getAppThumbUrl(listing.thumbnail) || listing.thumbnail;
+  const { thumb, full } = getAppListingImageUrls(listing.thumbnail);
+  const metaBorder = isBlkPartner ? colors.blkBorder : colors.border;
+  const actionBackground = isBlkPartner ? colors.blkBadgeBackground : colors.fillSecondary;
+  const actionBorder = isBlkPartner ? colors.blkBadgeBorder : colors.border;
+  const actionColor = isBlkPartner ? colors.blkBadgeText : colors.icon;
+  const metaColor = isBlkPartner ? colors.blkTextSecondary : colors.textSecondary;
+  const title = `${listing.make} ${listing.model}`.trim();
 
   return (
-    <HapticPressable onPress={() => onPress(listing.id)} style={[styles.product, { backgroundColor: colors.oledWhite }]}>
-      <Image
-        source={imageUri ? { uri: imageUri } : undefined}
-        style={styles.productImage}
-        contentFit="cover"
-        placeholder={{ blurhash: BLURHASH }}
-        transition={150}
-      />
-      <View style={[styles.priceBadge, { backgroundColor: GLASS_BG, borderColor: GLASS_BORDER }]}>
-        <Data size="mini" style={{ color: colors.oledWhite }}>
-          AED {formatPrice(listing.price)}
-        </Data>
-      </View>
-      <View style={[styles.favBtn, { backgroundColor: GLASS_BG, borderColor: GLASS_BORDER }]}>
-        <FavoriteButton
-          listingId={listing.id}
-          size={Sizes.iconSm}
-          onPress={onFavorite}
-          isBlkListing={isBlkPartner}
-          inactiveColor={colors.oledWhite}
+    <HapticPressable
+      onPress={() => onPress(listing.id)}
+      style={[styles.product, { backgroundColor: colors.surface, borderColor: metaBorder }]}
+    >
+      <View style={[styles.productImageShell, { backgroundColor: colors.surfaceSecondary, borderColor: metaBorder }]}>
+        <Image
+          source={thumb ? [{ uri: thumb }, ...(full && full !== thumb ? [{ uri: full }] : [])] : full ? { uri: full } : undefined}
+          style={styles.productImage}
+          contentFit="cover"
+          placeholder={{ blurhash: BLURHASH }}
+          transition={150}
         />
+        {isBlkPartner && (
+          <View style={[styles.priceBadge, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder }]}>
+            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
+          </View>
+        )}
+      </View>
+
+      <View style={styles.productContent}>
+        <View style={styles.productText}>
+          <Heading size="mini" style={{ color: colors.text }} numberOfLines={2}>
+            {title}
+          </Heading>
+          {listing.year ? (
+            <Supporting size="mini" style={{ color: metaColor }} numberOfLines={1}>
+              {listing.year}
+            </Supporting>
+          ) : null}
+        </View>
+
+        <View style={styles.productFooter}>
+          <Price size="mini">
+            AED {formatPrice(listing.price)}
+          </Price>
+          <View style={[styles.favBtn, { backgroundColor: actionBackground, borderColor: actionBorder }]}>
+            <FavoriteButton
+              listingId={listing.id}
+              size={Sizes.iconSm}
+              onPress={onFavorite}
+              isBlkListing={isBlkPartner}
+              inactiveColor={actionColor}
+            />
+          </View>
+        </View>
       </View>
     </HapticPressable>
   );
@@ -146,16 +176,18 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
     router.push('/browse' as any);
   }, [onPress, partner.id, partner.name, applySearch, clearSearch, clearFilterParams, resetSort, router]);
 
-  const cardBg = partner.isBlk ? colors.oledBlack : colors.surfaceSecondary;
-  const textColor = partner.isBlk ? colors.oledWhite : colors.text;
-  const textSecondary = partner.isBlk ? 'rgba(255,255,255,0.6)' : colors.textTertiary;
+  const cardBg = colors.blkBackground;
+  const textColor = colors.blkText;
+  const textSecondary = colors.blkTextSecondary;
+  const avatarBg = colors.surface;
+  const avatarTextColor = textColor;
 
   return (
     <View style={[styles.card, { backgroundColor: cardBg }]}>
       {/* Header */}
       <View style={styles.header}>
         {partner.logo ? (
-          <View style={[styles.avatar, { backgroundColor: colors.surface }]}>
+          <View style={[styles.avatar, { backgroundColor: avatarBg }]}>
             <Image
               source={{ uri: getAppThumbUrl(partner.logo) || partner.logo }}
               style={styles.avatarImage}
@@ -164,8 +196,8 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
             />
           </View>
         ) : (
-          <View style={[styles.avatar, { backgroundColor: colors.surface }]}>
-            <Heading size="mini" style={{ color: textColor }}>
+          <View style={[styles.avatar, { backgroundColor: avatarBg }]}>
+            <Heading size="mini" style={{ color: avatarTextColor }}>
               {partner.name.charAt(0).toUpperCase()}
             </Heading>
           </View>
@@ -206,18 +238,28 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
         </ScrollView>
       ) : (
         <View style={styles.emptyProducts}>
-          <Supporting size="small" style={{ color: colors.textMuted }}>No listings</Supporting>
+          <Supporting size="small" style={{ color: textSecondary }}>No listings</Supporting>
         </View>
       )}
 
       {/* Footer */}
       <HapticPressable onPress={handlePress} style={styles.footer}>
         <Heading size="mini" style={{ color: textColor }}>Browse all</Heading>
-        <View style={[styles.arrowBtn, { 
-          backgroundColor: partner.isBlk ? GLASS_BG : colors.fill,
-          ...(partner.isBlk && { borderColor: GLASS_BORDER, borderWidth: 1 })
-        }]}>
-          <ChevronRight size={Sizes.iconSm} color={partner.isBlk ? colors.oledWhite : colors.icon} strokeWidth={2} />
+        <View
+          style={[
+            styles.arrowBtn,
+            {
+              backgroundColor: colors.blkBadgeBackground,
+              borderColor: colors.blkBadgeBorder,
+              borderWidth: 1,
+            },
+          ]}
+        >
+          <ChevronRight
+            size={Sizes.iconSm}
+            color={colors.blkBadgeText}
+            strokeWidth={2}
+          />
         </View>
       </HapticPressable>
     </View>
@@ -283,7 +325,14 @@ export function partnerToDisplayData(partner: PartnerListItem, listings: Listing
     reviewCount: partner.googleReviewCount || partner.platformReviewCount,
     isVerified: partner.isVerified,
     isBlk: partner.badges?.includes('blk') || partner.tier === 'black',
-    listings: listings.map(l => ({ id: l.id, price: l.price, thumbnail: l.thumbnail })),
+    listings: listings.map(l => ({
+      id: l.id,
+      make: l.make,
+      model: l.model,
+      year: l.year,
+      price: l.price,
+      thumbnail: l.thumbnail,
+    })),
   };
 }
 
@@ -343,20 +392,46 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   emptyProducts: {
-    height: PRODUCT_WIDTH * PRODUCT_ASPECT,
+    minHeight: PRODUCT_MIN_HEIGHT,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: Spacing.lg,
   },
   product: {
     width: PRODUCT_WIDTH,
-    aspectRatio: PRODUCT_ASPECT,
+    minHeight: PRODUCT_MIN_HEIGHT,
     borderRadius: Radius.xl,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  productImageShell: {
+    height: PRODUCT_IMAGE_HEIGHT,
+    borderTopLeftRadius: Radius.xl,
+    borderTopRightRadius: Radius.xl,
+    borderBottomLeftRadius: Radius.lg,
+    borderBottomRightRadius: Radius.lg,
+    borderBottomWidth: 1,
     overflow: 'hidden',
   },
   productImage: {
     width: '100%',
     height: '100%',
+  },
+  productContent: {
+    flex: 1,
+    justifyContent: 'space-between',
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.sm,
+  },
+  productText: {
+    gap: 2,
+  },
+  productFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   priceBadge: {
     position: 'absolute',
@@ -368,9 +443,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   favBtn: {
-    position: 'absolute',
-    bottom: Spacing.sm,
-    right: Spacing.sm,
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,

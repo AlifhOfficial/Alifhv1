@@ -259,7 +259,7 @@ export function createBlkGridConfig(): GridConfig {
     brandText: 'BLK',
     searchParams: {
       isBlkListing: true,
-      sortBy: 'newest',
+      sortBy: 'relevance',
       limit: 8,
     },
   };

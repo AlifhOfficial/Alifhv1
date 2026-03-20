@@ -203,7 +203,7 @@ export function LocationFilterSheet({
                     size="medium"
                     style={{ 
                       color: isSelected ? colors.text : colors.textSecondary,
-                      fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
+                      fontFamily: isSelected ? 'Inter_700Bold' : 'Inter_500Medium',
                     }}
                   >
                     {option.label}

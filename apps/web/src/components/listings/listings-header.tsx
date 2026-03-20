@@ -101,8 +101,7 @@ export function ListingsHeader({
   // Mobile search sheet state
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   
-  // Mobile search bar expanded state
-  const [mobileSearchExpanded, setMobileSearchExpanded] = useState(false);
+
 
   // Number of items to show before "View all" - kept small for fixed-height dynamic island
   const VISIBLE_COUNT = 4;
@@ -207,7 +206,7 @@ export function ListingsHeader({
     <>
       {/* ===== MOBILE HEADER ===== */}
       <div className="sm:hidden z-30 bg-background border-b border-border/20">
-        <div className="pt-0 pb-2 px-2 space-y-2">
+        <div className="py-2.5 px-2.5 space-y-2">
           {/* Row 1: Search bar + controls */}
           <div className="flex items-center gap-2">
             {/* Filters trigger - pill style */}
@@ -548,27 +547,19 @@ export function ListingsHeader({
             </Sheet>
 
             {/* Search Bar */}
-            <div className={cn(
-              "flex-1 min-w-0 transition-all duration-200",
-              mobileSearchExpanded && "flex-[2]"
-            )}>
+            <div className="flex-1 min-w-0">
               <SearchBar
                 size="sm"
                 placeholder="Search"
                 redirectOnSearch={false}
                 onSearch={setFilters}
-                onFocus={() => setMobileSearchExpanded(true)}
-                onBlur={() => setMobileSearchExpanded(false)}
               />
             </div>
 
-            {/* Sort Dropdown - hidden when search expanded */}
+            {/* Sort Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className={cn(
-                  "relative flex items-center justify-center h-10 w-10 bg-sidebar border border-sidebar-border rounded-full text-muted-foreground active:text-foreground shadow-sm transition-colors touch-manipulation shrink-0",
-                  mobileSearchExpanded && "hidden"
-                )}>
+                <button className="relative flex items-center justify-center h-10 w-10 bg-sidebar border border-sidebar-border rounded-full text-muted-foreground active:text-foreground shadow-sm transition-colors touch-manipulation shrink-0">
                   <ArrowUpDown className="h-4 w-4" />
                   {(params.sortBy || 'relevance') !== 'relevance' && (
                     <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-primary" />
@@ -592,35 +583,6 @@ export function ListingsHeader({
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-
-            {/* View Toggle */}
-            <div className="flex items-center h-10 px-0.5 bg-sidebar border border-sidebar-border rounded-full shadow-sm shrink-0">
-              <button
-                onClick={() => onViewModeChange('grid')}
-                className={cn(
-                  "flex items-center justify-center w-9 h-9 rounded-full transition-colors touch-manipulation",
-                  viewMode === 'grid' ? "text-foreground bg-muted/50" : "text-muted-foreground"
-                )}
-                title="Grid view"
-              >
-                <LayoutGrid className="size-4" />
-              </button>
-              <button
-                onClick={() => onViewModeChange('minimal')}
-                className={cn(
-                  "flex items-center justify-center w-9 h-9 rounded-full transition-colors touch-manipulation",
-                  viewMode === 'minimal' ? "text-foreground bg-muted/50" : "text-muted-foreground"
-                )}
-                title="Minimal view"
-              >
-                <svg className="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="1" y="1" width="6" height="6" rx="1" />
-                  <rect x="9" y="1" width="6" height="6" rx="1" />
-                  <rect x="1" y="9" width="6" height="6" rx="1" />
-                  <rect x="9" y="9" width="6" height="6" rx="1" />
-                </svg>
-              </button>
-            </div>
           </div>
 
           {/* Row 2: Results + Breadcrumb + Active chips */}
@@ -1470,14 +1432,13 @@ function ListingsHeaderSkeletonComponent() {
   return (
     <>
       {/* ===== MOBILE SKELETON ===== */}
-      <div className="sm:hidden z-30 bg-background">
-        <div className="py-2 px-2 space-y-2">
+      <div className="sm:hidden z-30 bg-background border-b border-border/20">
+        <div className="py-2.5 px-2.5 space-y-2">
           {/* Row 1: Search bar + controls */}
           <div className="flex items-center gap-2">
             <Skeleton className="h-10 w-10 rounded-full shrink-0" />
             <Skeleton className="flex-1 h-10 rounded-full" />
             <Skeleton className="h-10 w-10 rounded-full shrink-0" />
-            <Skeleton className="h-10 w-[78px] rounded-full shrink-0" />
           </div>
           {/* Row 2: Filter context */}
           <div className="space-y-1.5">

@@ -20,7 +20,7 @@ import {
 import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { HapticPressable, Heading, Supporting, Skeleton, SkeletonCircle } from '@/components/ui';
@@ -32,7 +32,8 @@ import type { SearchParams as GridSearchParams } from '@/lib/search-api';
 // ============================================================================
 
 const CategoryCardSkeleton = memo(function CategoryCardSkeleton() {
-  const { colors } = useTheme();
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
   
   return (
     <ScrollView
@@ -42,7 +43,7 @@ const CategoryCardSkeleton = memo(function CategoryCardSkeleton() {
     >
       {[1, 2].map((i) => (
         <View key={i} style={styles.cardWrapper}>
-          <View style={[styles.skeletonCard, { backgroundColor: colors.surfaceSecondary }]}>
+          <View style={[styles.skeletonCard, { backgroundColor: colors.surface }]}>
             <Skeleton width={120} height={90} borderRadius={Radius.lg} />
             <View style={styles.skeletonCardContent}>
               <Skeleton width="80%" height={14} />
@@ -123,7 +124,8 @@ export const CategoryCard = memo(function CategoryCard({
   onCategoryPress,
   onCarPress,
 }: CategoryCardProps) {
-  const { colors } = useTheme();
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
   const router = useRouter();
   const { applySearch, clearSearch, clearFilterParams, updateFilterParams, resetSort, applySort } = useSearch();
 
@@ -211,13 +213,17 @@ export const CategoryCard = memo(function CategoryCard({
     return null;
   }
 
+  const cardBg = colors.blkBackground;
+  const textColor = colors.blkText;
+  const textSecondary = colors.blkTextSecondary;
+
   return (
-    <View style={[styles.categoryCard, { backgroundColor: colors.surfaceSecondary }]}>
+    <View style={[styles.categoryCard, { backgroundColor: cardBg }]}>
       {/* Header - Category Name & Subtitle */}
       <View style={styles.header}>
-        <Heading size="mini" style={[styles.categoryTitle, { color: colors.text }]}>{name}</Heading>
+        <Heading size="mini" style={[styles.categoryTitle, { color: textColor }]}>{name}</Heading>
         {subtitle && (
-          <Supporting size="small" style={[styles.categorySubtitle, { color: colors.textTertiary }]}>{subtitle}</Supporting>
+          <Supporting size="small" style={[styles.categorySubtitle, { color: textSecondary }]}>{subtitle}</Supporting>
         )}
       </View>
 
@@ -255,9 +261,18 @@ export const CategoryCard = memo(function CategoryCard({
 
       {/* CTA Footer */}
       <HapticPressable onPress={handleCategoryPress} style={styles.footer}>
-        <Heading size="mini" style={[styles.browseText, { color: colors.text }]}>Browse all</Heading>
-        <View style={[styles.arrowCircle, { backgroundColor: colors.fill }]}>
-          <ChevronRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
+        <Heading size="mini" style={[styles.browseText, { color: textColor }]}>Browse all</Heading>
+        <View
+          style={[
+            styles.arrowCircle,
+            {
+              backgroundColor: colors.blkBadgeBackground,
+              borderColor: colors.blkBadgeBorder,
+              borderWidth: 1,
+            },
+          ]}
+        >
+          <ChevronRight size={Sizes.iconSm} color={colors.blkBadgeText} strokeWidth={2} />
         </View>
       </HapticPressable>
     </View>
@@ -283,7 +298,8 @@ export const CategoryGrid = memo(function CategoryGrid({
   onCategoryPress,
   onCarPress,
 }: CategoryGridProps) {
-  const { colors } = useTheme();
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
   
   // Sort categories to ensure "recently listed" appears first
   const sortedCategories = React.useMemo(() => {
@@ -300,7 +316,7 @@ export const CategoryGrid = memo(function CategoryGrid({
   if (isLoading && sortedCategories.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={[styles.categoryCard]}>
+        <View style={[styles.categoryCard, { backgroundColor: colors.blkBackground }]}>
           <View style={styles.header}>
             <Skeleton width="50%" height={20} />
             <Skeleton width="70%" height={14} style={{ marginTop: Spacing.xs }} />

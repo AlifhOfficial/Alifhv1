@@ -13,7 +13,7 @@ import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { HapticPressable, Heading, Supporting, Skeleton, Data, FavoriteButton } from '@/components/ui';
+import { HapticPressable, Heading, Supporting, Skeleton, FavoriteButton } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -32,13 +32,11 @@ export interface BlkListingItem {
 // CONSTANTS
 // ============================================================================
 
-const PRODUCT_WIDTH = 220;
-const IMAGE_ASPECT = 5 / 4;
+const PRODUCT_WIDTH = 280;
+const PRODUCT_HEIGHT = 320;
+const IMAGE_WIDTH = 220;
+const IMAGE_HEIGHT = 160;
 const BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
-
-// Dark glass constants (forced dark mode for visibility on white backgrounds)
-const BLK_GLASS_BACKGROUND = '#0D0D0D';
-const BLK_GLASS_BORDER = 'rgba(255,255,255,0.14)';
 
 const formatPrice = (n: number) => {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
@@ -61,29 +59,36 @@ const ProductItem = memo(function ProductItem({ listing, colors, onPress, onFavo
   const imageUri = getAppThumbUrl(listing.thumbnail) || listing.thumbnail;
 
   return (
-    <HapticPressable onPress={() => onPress(listing.id)} style={[styles.product, { backgroundColor: colors.oledWhite }]}>
-      <Image
-        source={imageUri ? { uri: imageUri } : undefined}
-        style={styles.image}
-        contentFit="cover"
-        placeholder={{ blurhash: BLURHASH }}
-        transition={150}
-      />
-      {/* Price Badge - Top Left */}
-      <View style={[styles.priceBadge, { backgroundColor: BLK_GLASS_BACKGROUND, borderColor: BLK_GLASS_BORDER }]}>
-        <Data size="mini" style={{ color: colors.oledWhite }}>
+    <HapticPressable onPress={() => onPress(listing.id)} style={[styles.product, { backgroundColor: colors.surface }]}>
+      {/* Car Name & Price - Top Left */}
+      <View style={styles.textContainer}>
+        <Heading size="card" style={{ color: colors.text }}>
+          {listing.make} {listing.model}
+        </Heading>
+        <Heading size="large" style={{ color: colors.primary }}>
           AED {formatPrice(listing.price)}
-        </Data>
+        </Heading>
       </View>
-      {/* Favorite Button - Bottom Right (connected to API) */}
-      <View style={[styles.favBtn, { backgroundColor: BLK_GLASS_BACKGROUND, borderColor: BLK_GLASS_BORDER }]}>
-        <FavoriteButton
-          listingId={listing.id}
-          size={Sizes.iconSm}
-          onPress={onFavorite}
-          isBlkListing={true}
-          inactiveColor={colors.oledWhite}
+      
+      {/* Car Image */}
+      <View style={styles.imageContainer}>
+        <Image
+          source={imageUri ? { uri: imageUri } : undefined}
+          style={styles.image}
+          contentFit="cover"
+          placeholder={{ blurhash: BLURHASH }}
+          transition={150}
         />
+        {/* Heart - Overlapping thumbnail */}
+        <View style={[styles.favBtn, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+          <FavoriteButton
+            listingId={listing.id}
+            size={Sizes.iconSm}
+            onPress={onFavorite}
+            isBlkListing={true}
+            inactiveColor={colors.icon}
+          />
+        </View>
       </View>
     </HapticPressable>
   );
@@ -100,7 +105,7 @@ const LoadingSkeleton = memo(function LoadingSkeleton({ colors }: { colors: type
         <Skeleton 
           key={i} 
           width={PRODUCT_WIDTH} 
-          height={PRODUCT_WIDTH / IMAGE_ASPECT} 
+          height={PRODUCT_HEIGHT} 
           borderRadius={Radius.xl} 
         />
       ))}
@@ -130,7 +135,7 @@ export const BlkGridCard = memo(function BlkGridCard({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const router = useRouter();
-  const { clearSearch, clearFilterParams, updateFilterParams, resetSort } = useSearch();
+  const { clearSearch, clearFilterParams, updateFilterParams, applySort } = useSearch();
 
   const handleCarPress = useCallback(
     (id: string) => {
@@ -144,24 +149,24 @@ export const BlkGridCard = memo(function BlkGridCard({
     onShopAllPress?.();
     clearSearch();
     clearFilterParams();
-    resetSort();
+    applySort('relevance');
     updateFilterParams({ isBlkListing: true });
     router.push('/browse' as any);
-  }, [onShopAllPress, clearSearch, clearFilterParams, updateFilterParams, resetSort, router]);
+  }, [onShopAllPress, clearSearch, clearFilterParams, updateFilterParams, applySort, router]);
 
   if (!isLoading && !listings.length) return null;
 
-  // BLK collection always uses dark theme
-  const cardBg = colors.oledBlack;
-  const textColor = colors.oledWhite;
-  const textSecondary = 'rgba(255,255,255,0.6)';
+  // BLK collection uses theme-aware colors
+  const cardBg = colors.blkBackground;
+  const textColor = colors.blkText;
+  const textSecondary = colors.blkTextSecondary;
 
   return (
     <View style={[styles.container, { backgroundColor: cardBg }]}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={[styles.avatar, { backgroundColor: BLK_GLASS_BACKGROUND, borderColor: BLK_GLASS_BORDER, borderWidth: 1 }]}>
-          <Heading size="mini" style={{ color: colors.oledWhite }}>BLK</Heading>
+        <View style={[styles.avatar, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder, borderWidth: 1 }]}>
+          <Heading size="mini" style={{ color: colors.blkBadgeText }}>BLK</Heading>
         </View>
         <View style={styles.headerText}>
           <Heading size="mini" style={{ color: textColor }}>BLK Collection</Heading>
@@ -188,9 +193,9 @@ export const BlkGridCard = memo(function BlkGridCard({
 
       {/* Footer */}
       <HapticPressable onPress={handleShopAll} style={styles.footer}>
-        <Heading size="mini" style={{ color: textColor }}>Shop all</Heading>
-        <View style={[styles.arrowBtn, { backgroundColor: BLK_GLASS_BACKGROUND, borderColor: BLK_GLASS_BORDER, borderWidth: 1 }]}>
-          <ChevronRight size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2} />
+        <Heading size="mini" style={{ color: textColor }}>View collection</Heading>
+        <View style={[styles.arrowBtn, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder, borderWidth: 1 }]}>
+          <ChevronRight size={Sizes.iconSm} color={colors.blkBadgeText} strokeWidth={2} />
         </View>
       </HapticPressable>
     </View>
@@ -231,27 +236,32 @@ const styles = StyleSheet.create({
   },
   product: {
     width: PRODUCT_WIDTH,
-    aspectRatio: IMAGE_ASPECT,
+    height: PRODUCT_HEIGHT,
     borderRadius: Radius.xl,
     overflow: 'hidden',
+    padding: Spacing.lg,
+    gap: Spacing.md,
+  },
+  textContainer: {
+    alignItems: 'flex-start',
+    gap: Spacing.xs,
+  },
+  imageContainer: {
+    flex: 1,
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: Spacing.xl,
   },
   image: {
-    width: '100%',
-    height: '100%',
-  },
-  priceBadge: {
-    position: 'absolute',
-    top: Spacing.sm,
-    left: Spacing.sm,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs / 2,
-    borderRadius: Radius.md,
-    borderWidth: 1,
+    width: IMAGE_WIDTH,
+    height: IMAGE_HEIGHT,
+    borderRadius: Radius.lg,
   },
   favBtn: {
     position: 'absolute',
-    bottom: Spacing.sm,
-    right: Spacing.sm,
+    top: Spacing.xl + Spacing.sm,
+    right: Spacing.lg,
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,

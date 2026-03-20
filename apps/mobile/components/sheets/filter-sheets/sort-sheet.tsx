@@ -127,7 +127,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
                   size="medium"
                   style={{ 
                     color: selected ? colors.text : colors.textSecondary,
-                    fontFamily: selected ? 'Inter_600SemiBold' : 'Inter_400Regular',
+                    fontFamily: selected ? 'Inter_700Bold' : 'Inter_500Medium',
                   }}
                 >
                   {option.label}

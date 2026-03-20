@@ -158,7 +158,7 @@ export function MakeFilterSheet({
             size="medium"
             style={{ 
               color: isSelected ? colors.text : colors.textSecondary,
-              fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
+              fontFamily: isSelected ? 'Inter_700Bold' : 'Inter_500Medium',
             }}
           >
             {make}
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 15,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'Inter_500Medium',
     paddingVertical: 0,
   },
   listContainer: {

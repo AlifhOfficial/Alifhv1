@@ -73,7 +73,6 @@ const GAP = Spacing.sm;
  * This is a hard blocklist checked synchronously — no useEffect race.
  */
 const HIDE_TAB_BAR_PATHS = [
-  '/create-listing',
   '/inventory',
 ];
 

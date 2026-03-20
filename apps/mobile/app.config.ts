@@ -66,12 +66,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     plugins: [
       'expo-router',
       [
-        'expo-font',
-        {
-          fonts: ['./assets/fonts/Geom/static/Geom-Black.ttf'],
-        },
-      ],
-      [
         'expo-splash-screen',
         {
           backgroundColor: '#FAFAFA',

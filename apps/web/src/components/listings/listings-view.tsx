@@ -190,10 +190,11 @@ export function ListingsView({
         )}>
           {/* Mobile Layout (no resizable) */}
           <div className="lg:hidden">
-            {/* TOP: Fixed mobile header to avoid sticky scroll seam under navbar */}
+            {/* TOP: Fixed mobile header */}
             <div
               className={cn(
                 "fixed inset-x-0 z-30 bg-background will-change-transform [transform:translateZ(0)] [backface-visibility:hidden]",
+                "before:absolute before:inset-x-0 before:bottom-full before:h-1 before:bg-background",
                 embedded ? "top-0" : "top-14 sm:top-16"
               )}
             >

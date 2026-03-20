@@ -272,7 +272,7 @@ export function MoreFiltersSheet({
               size="medium" 
               style={{ 
                 color: colors.text,
-                fontFamily: 'Inter_500Medium',
+                fontFamily: 'Inter_600SemiBold',
               }}
             >
               {title}
@@ -353,7 +353,7 @@ export function MoreFiltersSheet({
         size="medium" 
         style={{ 
           color: value ? colors.text : colors.textSecondary,
-          fontFamily: value ? 'Inter_600SemiBold' : 'Inter_400Regular',
+          fontFamily: value ? 'Inter_700Bold' : 'Inter_500Medium',
         }}
       >
         {label}

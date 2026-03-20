@@ -1,7 +1,7 @@
 /**
  * Revvup First Grid - Founding Partners Showcase
- * Premium horizontal scroll of partner avatars with dark luxury aesthetic
- * Follows blk-grid-card and partner-grid patterns
+ * Premium horizontal scroll of partner avatars
+ * Follows blk-grid-card patterns
  */
 
 import React, { memo, useCallback } from 'react';
@@ -11,13 +11,14 @@ import {
   ScrollView,
   ImageSourcePropType,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { HapticPressable, Heading, Supporting, Skeleton, SkeletonCircle, BrandAvatar } from '@/components/ui';
+import { HapticPressable, Heading, Skeleton, BrandAvatar, Supporting } from '@/components/ui';
 import { RevvupLogo } from '@/components/ui/loaders';
 import { type PartnerListItem } from '@/lib/partner-api';
 
@@ -29,6 +30,7 @@ export interface FoundingPartnerItem {
   id: string;
   name: string;
   logo?: ImageSourcePropType | string | null;
+  heroImage?: string | null;
 }
 
 export function partnerToFoundingItem(partner: PartnerListItem): FoundingPartnerItem {
@@ -36,8 +38,16 @@ export function partnerToFoundingItem(partner: PartnerListItem): FoundingPartner
     id: partner.id,
     name: partner.brandName,
     logo: partner.logoUrl || partner.logo,
+    heroImage: partner.heroImageUrl || partner.heroImage,
   };
 }
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const PARTNER_CARD_WIDTH = 160;
+const PARTNER_CARD_HEIGHT = 180;
 
 // ============================================================================
 // SKELETON
@@ -50,11 +60,13 @@ const FoundingPartnersSkeleton = memo(function FoundingPartnersSkeleton() {
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.scrollContent}
     >
-      {[1, 2, 3, 4, 5].map((i) => (
-        <View key={i} style={styles.partnerItem}>
-          <SkeletonCircle size={Sizes.avatarLg} />
-          <Skeleton width={50} height={12} style={styles.nameSkeleton} />
-        </View>
+      {[1, 2, 3].map((i) => (
+        <Skeleton 
+          key={i} 
+          width={PARTNER_CARD_WIDTH} 
+          height={PARTNER_CARD_HEIGHT} 
+          borderRadius={Radius.xl} 
+        />
       ))}
     </ScrollView>
   );
@@ -66,32 +78,54 @@ const FoundingPartnersSkeleton = memo(function FoundingPartnersSkeleton() {
 
 interface PartnerItemProps {
   partner: FoundingPartnerItem;
+  colors: typeof Colors.light;
   onPress?: (partnerId: string, partnerName: string) => void;
 }
 
 const PartnerItem = memo(function PartnerItem({
   partner,
+  colors,
   onPress,
 }: PartnerItemProps) {
-  const { colors } = useTheme();
   const handlePress = useCallback(() => {
     onPress?.(partner.id, partner.name);
   }, [partner.id, partner.name, onPress]);
 
   const logoUrl = typeof partner.logo === 'string' ? partner.logo : null;
+  const heroUrl = partner.heroImage || logoUrl;
 
   return (
-    <HapticPressable onPress={handlePress} style={styles.partnerItem}>
-      <BrandAvatar
-        src={logoUrl}
-        name={partner.name}
-        size="lg"
-        shape="round"
-        backgroundColor={colors.surface}
-      />
-      <Supporting size="small" style={[styles.partnerName, { color: colors.textTertiary }]} numberOfLines={1}>
-        {partner.name}
-      </Supporting>
+    <HapticPressable onPress={handlePress} style={[styles.partnerCard, { backgroundColor: colors.surface }]}>
+      {/* Blurred Banner Background */}
+      {heroUrl && (
+        <Image
+          source={{ uri: heroUrl }}
+          style={styles.blurredBackground}
+          blurRadius={20}
+          contentFit="cover"
+        />
+      )}
+      
+      {/* Content overlay */}
+      <View style={styles.cardContent}>
+        {/* Logo - Top centered */}
+        <View style={styles.logoContainer}>
+          <BrandAvatar
+            src={logoUrl}
+            name={partner.name}
+            size="xl"
+            shape="round"
+            backgroundColor={colors.background}
+          />
+        </View>
+        
+        {/* Partner Name - Bottom, wraps to multiple lines */}
+        <View style={styles.partnerTextContainer}>
+          <Heading size="mini" style={{ color: colors.text, textAlign: 'center' }}>
+            {partner.name}
+          </Heading>
+        </View>
+      </View>
     </HapticPressable>
   );
 });
@@ -113,7 +147,8 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
   onBrowseAllPress,
   onPartnerPress,
 }: RevvupFirstGridProps) {
-  const { colors } = useTheme();
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
   const router = useRouter();
   const { applySearch, clearSearch, clearFilterParams, resetSort } = useSearch();
 
@@ -135,16 +170,29 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
     return null;
   }
 
+  const cardBg = colors.blkBackground;
+  const textColor = colors.blkText;
+  const textSecondary = colors.blkTextSecondary;
+
   return (
-    <View style={[styles.container, { backgroundColor: colors.surfaceSecondary }]}>
-      {/* Header with Revvup Logo */}
+    <View style={[styles.container, { backgroundColor: cardBg }]}>
+      {/* Header */}
       <View style={styles.header}>
-        <View style={[styles.avatar, { backgroundColor: colors.oledBlack }]}>
-          <RevvupLogo size={20} color={colors.oledWhite} />
+        <View
+          style={[
+            styles.avatar,
+            {
+              backgroundColor: colors.blkBadgeBackground,
+              borderColor: colors.blkBadgeBorder,
+              borderWidth: 1,
+            },
+          ]}
+        >
+          <RevvupLogo size={20} color={colors.blkBadgeText} />
         </View>
-        <View style={styles.headerInfo}>
-          <Heading size="mini" style={{ color: colors.text }}>Founding Partners</Heading>
-          <Supporting size="small" style={{ color: colors.textTertiary }}>Our Trusted Dealers</Supporting>
+        <View style={styles.headerText}>
+          <Heading size="mini" style={{ color: textColor }}>Founding Partners</Heading>
+          <Supporting size="small" style={{ color: textSecondary }}>Our Trusted Dealers</Supporting>
         </View>
       </View>
 
@@ -156,12 +204,12 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
-          style={styles.partnersScroll}
         >
           {partners.map((partner) => (
             <PartnerItem
               key={partner.id}
               partner={partner}
+              colors={colors}
               onPress={handlePartnerPress}
             />
           ))}
@@ -170,9 +218,18 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
 
       {/* Footer */}
       <HapticPressable onPress={handleBrowseAllPress} style={styles.footer}>
-        <Heading size="mini" style={[styles.footerText, { color: colors.text }]}>Browse all</Heading>
-        <View style={[styles.arrowCircle, { backgroundColor: colors.fill }]}>
-          <ChevronRight size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
+        <Heading size="mini" style={{ color: textColor }}>See all partners</Heading>
+        <View
+          style={[
+            styles.arrowBtn,
+            {
+              backgroundColor: colors.blkBadgeBackground,
+              borderColor: colors.blkBadgeBorder,
+              borderWidth: 1,
+            },
+          ]}
+        >
+          <ChevronRight size={Sizes.iconSm} color={colors.blkBadgeText} strokeWidth={2} />
         </View>
       </HapticPressable>
     </View>
@@ -201,44 +258,53 @@ const styles = StyleSheet.create({
     borderRadius: Sizes.avatarMd / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
-  headerInfo: {
+  headerText: {
     flex: 1,
-  },
-  partnersScroll: {
   },
   scrollContent: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.lg,
-    gap: Spacing.xl,
+    gap: Spacing.lg,
   },
-  partnerItem: {
+  partnerCard: {
+    width: PARTNER_CARD_WIDTH,
+    height: PARTNER_CARD_HEIGHT,
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
+  },
+  blurredBackground: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.4,
+  },
+  cardContent: {
+    flex: 1,
+    padding: Spacing.lg,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: Spacing.sm,
-    minWidth: Sizes.avatarLg,
   },
-  partnerName: {
-    textAlign: 'center',
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  nameSkeleton: {
-    marginTop: Spacing.sm,
+  partnerTextContainer: {
+    alignItems: 'center',
+    paddingTop: Spacing.sm,
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
     padding: Spacing.lg,
     paddingTop: Spacing.md,
   },
-  footerText: {
-  },
-  arrowCircle: {
+  arrowBtn: {
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
 });
