@@ -188,8 +188,7 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
           rel="preload" 
           href={heroVideoUrl} 
           as="video" 
-          // @ts-expect-error - fetchpriority is valid but not in React link types
-          fetchpriority="high"
+          fetchPriority="high"
         />
       )}
       {/* Preload hero image as fallback/poster */}
@@ -198,8 +197,7 @@ export default async function ShowroomPage({ params }: ShowroomPageProps) {
           rel="preload" 
           href={heroImageUrl} 
           as="image" 
-          // @ts-expect-error - fetchpriority is valid but not in React link types
-          fetchpriority="high"
+          fetchPriority="high"
         />
       )}
       {/* Pass showroom data to client - renders instantly, no client fetch needed */}
