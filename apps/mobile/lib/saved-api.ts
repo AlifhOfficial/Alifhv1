@@ -5,7 +5,7 @@
  */
 
 import { getStoredSession } from './auth-api';
-import { API_BASE, getAppImageUrl } from './config';
+import { API_BASE, getAppImageUrl, markDataReady, parseJsonWithPerf } from './config';
 
 // ============================================================================
 // RATE LIMIT HANDLING
@@ -129,6 +129,7 @@ export const savedApi = {
     
     const url = `${API_BASE}/api/engagement/favorites-status`;
     
+    const requestStartedAt = performance.now();
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
@@ -145,7 +146,9 @@ export const savedApi = {
       throw new Error(`Failed to fetch favorites status: ${response.status}`);
     }
     
-    return response.json();
+    const { data } = await parseJsonWithPerf<FavoritesStatusData>('saved.status', url, response, requestStartedAt);
+    markDataReady('saved:status');
+    return data;
   },
 
   /**
@@ -167,13 +170,17 @@ export const savedApi = {
       (headers as Record<string, string>)['Authorization'] = `Bearer ${session.token}`;
     }
     
+    const requestStartedAt = performance.now();
     const response = await fetch(url, { headers });
     
     if (!response.ok) {
       throw new Error(`Failed to fetch listing cards: ${response.status}`);
     }
     
-    const data = await response.json();
+    const { data } = await parseJsonWithPerf<{ data?: SavedListingCard[] }>('saved.cards', url, response, requestStartedAt, {
+      meta: { idsCount: ids.length },
+    });
+    markDataReady('saved:listings');
     return (data.data || []).map(transformListing);
   },
 
@@ -188,6 +195,7 @@ export const savedApi = {
     
     const url = `${API_BASE}/api/engagement/favorites`;
     
+    const requestStartedAt = performance.now();
     const response = await fetchWithRetry(url, {
       method: 'POST',
       headers: {
@@ -206,7 +214,9 @@ export const savedApi = {
       throw new Error(`Failed to toggle favorite: ${response.status}`);
     }
     
-    const data = await response.json();
+    const { data } = await parseJsonWithPerf<{ status?: { isFavorite?: boolean } }>('saved.toggle-favorite', url, response, requestStartedAt, {
+      meta: { listingId },
+    });
     return { isFavorite: data.status?.isFavorite ?? false };
   },
 
@@ -224,6 +234,7 @@ export const savedApi = {
     
     const url = `${API_BASE}/api/engagement/superlikes`;
     
+    const requestStartedAt = performance.now();
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -246,7 +257,13 @@ export const savedApi = {
       throw new Error(`Failed to toggle superlike: ${response.status}`);
     }
     
-    const data = await response.json();
+    const { data } = await parseJsonWithPerf<{ status?: { isSuperliked?: boolean }; quota: FavoritesStatusData['quota'] }>(
+      'saved.toggle-superlike',
+      url,
+      response,
+      requestStartedAt,
+      { meta: { listingId } }
+    );
     return { 
       isSuperliked: data.status?.isSuperliked ?? false,
       quota: data.quota,

@@ -14,6 +14,7 @@ import {
 } from '@/lib/messaging-api';
 import { getAvatarUrl } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
+import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 
 interface UseConversationsOptions {
   isAuthenticated: boolean;
@@ -234,6 +235,11 @@ export function useConversations({
           }
           return conv;
         });
+      });
+      const readyAt = consumeDataReady(`messaging:conversations:${scope ?? 'personal'}`) ?? performance.now();
+      scheduleRenderPerf('messaging.conversations-list', readyAt, {
+        scope: scope ?? 'personal',
+        count: filteredConversations.length,
       });
     } catch (err) {
       // Don't set error for aborted requests

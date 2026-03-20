@@ -37,6 +37,7 @@ import {
   type AvailableDate,
   type BookingSettings,
 } from '@/lib/booking-api';
+import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 
 // ============================================================================
 // TYPES
@@ -203,13 +204,16 @@ export const BookingSheet = memo(function BookingSheet({
     setIsLoading(true);
     setError(null);
     try {
-      const data = await getAvailableDates(listingId);
+      const interactionStartAt = performance.now();
+      const data = await getAvailableDates(listingId, { interactionStartAt });
       if (!data.available) {
         setError(data.reason || 'Bookings are not available for this listing');
         return;
       }
       setAvailableDates(data.dates || []);
       setSettings(data.settings || null);
+      const readyAt = consumeDataReady(`booking:dates:${listingId}`) ?? performance.now();
+      scheduleRenderPerf('booking.dates-sheet', readyAt, { listingId, dates: data.dates?.length ?? 0 });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load availability');
     } finally {
@@ -222,9 +226,16 @@ export const BookingSheet = memo(function BookingSheet({
     setError(null);
     try {
       const dateStr = toUtcDateKey(date);
-      const data = await getTimeSlots(listingId, dateStr);
+      const interactionStartAt = performance.now();
+      const data = await getTimeSlots(listingId, dateStr, { interactionStartAt });
       setTimeSlots(data.slots || []);
       setStep('time');
+      const readyAt = consumeDataReady(`booking:slots:${listingId}:${dateStr}`) ?? performance.now();
+      scheduleRenderPerf('booking.time-slots-sheet', readyAt, {
+        listingId,
+        date: dateStr,
+        slots: data.slots?.length ?? 0,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load time slots');
     } finally {

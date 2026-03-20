@@ -96,7 +96,6 @@ interface CardTheme {
   price: string;
   stats: string;
   meta: string;
-  separator: string;
   sellerText: string;
   actionIcon: string;
   imageBg: string;
@@ -154,12 +153,11 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlac
         price: colors.blkText,
         stats: colors.blkTextSecondary,
         meta: colors.blkTextSecondary,
-        separator: colors.blkBorder,
         sellerText: colors.blkTextSecondary,
         actionIcon: colors.blkTextSecondary,
         imageBg: colors.blkBackground,
         avatarBg: colors.blkBackground,
-        avatarBorder: isBlackTierPartner ? colors.blkBackground : colors.blkBorder,
+        avatarBorder: colors.blkBorder,
       };
     }
     // Surface aesthetic - standard card styling for normal listings
@@ -170,7 +168,6 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlac
       price: colors.primary,
       stats: colors.textSecondary,
       meta: colors.textSecondary,
-      separator: colors.textTertiary,
       sellerText: colors.text,
       actionIcon: colors.icon,
       imageBg: colors.surfaceSecondary,
@@ -271,12 +268,37 @@ export const CarCardM = memo(function CarCardM({
       {isBlkListing && <View style={[styles.blkAccent, { backgroundColor: theme.border }]} />}
 
       {/* === IMAGE SECTION === */}
-      <CardImage 
-        uri={displayImage} 
-        backgroundColor={theme.imageBg}
-        placeholderColor={colors.textTertiary}
-        skeletonColor={colors.skeleton}
-      />
+      <View style={{ position: 'relative' }}>
+        <CardImage 
+          uri={displayImage} 
+          backgroundColor={theme.imageBg}
+          placeholderColor={colors.textTertiary}
+          skeletonColor={colors.skeleton}
+        />
+        {/* Avatar overlay (partner card pattern) */}
+        <View style={styles.avatarOverlay}>
+          {isBlackTierPartner && (
+            <View style={[styles.avatarRing, { borderColor: colors.blkBorder }]} />
+          )}
+          <View style={[
+            styles.avatar,
+            { backgroundColor: theme.avatarBg, borderColor: theme.avatarBorder },
+          ]}>
+            {sellerAvatar ? (
+              <Image 
+                source={{ uri: sellerAvatar }} 
+                style={styles.avatarImage} 
+                contentFit="cover" 
+                transition={150} 
+              />
+            ) : (
+              <Text variant="avatarSmall" style={{ color: theme.meta }}>
+                {displaySellerName.charAt(0).toUpperCase()}
+              </Text>
+            )}
+          </View>
+        </View>
+      </View>
 
       {/* === CONTENT SECTION === */}
       <View style={styles.content}>
@@ -300,14 +322,12 @@ export const CarCardM = memo(function CarCardM({
           specs={displaySpecs}
           emirate={displayEmirate}
           statsColor={theme.stats}
-          separatorColor={theme.separator}
         />
 
         {/* Footer: Seller + Actions */}
         <View style={styles.footer}>
           <SellerInfo
             name={displaySellerName}
-            avatarUri={sellerAvatar}
             isVerified={isVerified}
             isBlackTierPartner={isBlackTierPartner}
             theme={theme}
@@ -386,56 +406,31 @@ interface CardStatsProps {
   specs: string;
   emirate: string;
   statsColor: string;
-  separatorColor: string;
 }
 
-const CardStats = memo(function CardStats({ mileage, specs, emirate, statsColor, separatorColor }: CardStatsProps) {
-  const StatSeparator = <Data size="medium" style={[styles.separator, { color: separatorColor }]}>·</Data>;
-  
+const CardStats = memo(function CardStats({ mileage, specs, emirate, statsColor }: CardStatsProps) {
   return (
     <View style={styles.statsRow}>
-      <Data size="medium" style={{ color: statsColor }}>{formatMileage(mileage)} km</Data>
-      {StatSeparator}
+      <Data size="small" style={{ color: statsColor }}>{formatMileage(mileage)} km</Data>
+      <Data size="small" style={{ color: statsColor, opacity: 0.4 }}>·</Data>
       <Data size="small" style={{ color: statsColor }}>{specs}</Data>
-      {StatSeparator}
-      <Data size="medium" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Data>
+      <Data size="small" style={{ color: statsColor, opacity: 0.4 }}>·</Data>
+      <Data size="small" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Data>
     </View>
   );
 });
 
 interface SellerInfoProps {
   name: string;
-  avatarUri?: string | null;
   isVerified: boolean;
   isBlackTierPartner: boolean;
   theme: CardTheme;
   colors: typeof Colors.light;
 }
 
-const SellerInfo = memo(function SellerInfo({ name, avatarUri, isVerified, isBlackTierPartner, theme, colors }: SellerInfoProps) {
+const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartner, theme, colors }: SellerInfoProps) {
   return (
     <View style={styles.sellerInfo}>
-      {/* Avatar */}
-      <View style={[
-        styles.avatar,
-        { backgroundColor: theme.avatarBg, borderColor: theme.avatarBorder },
-        isBlackTierPartner && styles.avatarBlackTier,
-      ]}>
-        {avatarUri ? (
-          <Image 
-            source={{ uri: avatarUri }} 
-            style={styles.avatarImage} 
-            contentFit="cover" 
-            transition={150} 
-          />
-        ) : (
-          <Text variant="avatarSmall" style={{ color: theme.meta }}>
-            {name.charAt(0).toUpperCase()}
-          </Text>
-        )}
-      </View>
-      
-      {/* Name + Badges */}
       <View style={styles.sellerMeta}>
         <Data size="small" style={[styles.sellerName, { color: theme.sellerText }]} numberOfLines={1}>
           {name}
@@ -522,8 +517,13 @@ export function CarCardMSkeleton() {
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {/* Image */}
-      <View style={styles.imageContainer}>
-        <Skeleton width="100%" height={Spacing['5xl'] * 4} borderRadius={0} />
+      <View style={{ position: 'relative' }}>
+        <View style={styles.imageContainer}>
+          <Skeleton width="100%" height={Spacing['5xl'] * 4} borderRadius={0} />
+        </View>
+        <View style={styles.avatarOverlay}>
+          <SkeletonCircle size={Sizes.bubble} />
+        </View>
       </View>
 
       {/* Content */}
@@ -540,7 +540,6 @@ export function CarCardMSkeleton() {
         </View>
         <View style={styles.footer}>
           <View style={styles.sellerInfo}>
-            <SkeletonCircle size={Sizes.bubbleXs} />
             <Skeleton width="40%" height={Spacing.lg} />
           </View>
           <View style={styles.actions}>
@@ -565,7 +564,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius['2xl'],
     borderWidth: 1,
     overflow: 'hidden',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   blkAccent: {
     position: 'absolute',
@@ -577,15 +576,14 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: Spacing.lg,
-    gap: Spacing.sm,
+    paddingTop: Sizes.bubble / 2 + Spacing.md,
+    gap: Spacing.xs,
   },
 
   // Image Section
   imageContainer: {
     width: '100%',
     aspectRatio: IMAGE_ASPECT_RATIO,
-    borderBottomLeftRadius: Radius.md,
-    borderBottomRightRadius: Radius.md,
     overflow: 'hidden',
   },
   image: {
@@ -603,20 +601,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'baseline',
     justifyContent: 'space-between',
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
   title: {
     flex: 1,
+  },
+
+  // Avatar Overlay (partner card pattern)
+  avatarOverlay: {
+    position: 'absolute',
+    bottom: -Sizes.bubble / 2,
+    left: Spacing.lg,
   },
 
   // Stats Section
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  separator: {
-    opacity: 0.4,
+    gap: Spacing.sm,
   },
 
   // Footer Section
@@ -643,8 +645,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  avatarBlackTier: {
+  avatarRing: {
+    position: 'absolute',
+    width: Sizes.bubble + 6,
+    height: Sizes.bubble + 6,
+    borderRadius: (Sizes.bubble + 6) / 2,
     borderWidth: 2,
+    top: -3,
+    left: -3,
   },
   avatarImage: {
     width: Sizes.bubble,

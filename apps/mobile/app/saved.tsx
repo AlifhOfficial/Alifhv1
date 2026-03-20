@@ -3,7 +3,7 @@
  * Native-feeling, modular saved screen connected to API
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -21,6 +21,7 @@ import {
   SavedList,
 } from '@/components/saved';
 import { useSaved } from '@/hooks/use-saved';
+import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 
 // ============================================================================
 // MAIN COMPONENT
@@ -49,6 +50,15 @@ export default function SavedScreen() {
 
   // Get current listings based on active tab
   const currentListings = activeTab === 'favorites' ? favorites : superlikes;
+
+  useEffect(() => {
+    if (!isAuthenticated || isLoading || currentListings.length === 0) return;
+    const readyAt = consumeDataReady('saved:listings') ?? consumeDataReady('saved:status') ?? performance.now();
+    scheduleRenderPerf('saved.screen', readyAt, {
+      activeTab,
+      count: currentListings.length,
+    });
+  }, [isAuthenticated, isLoading, currentListings.length, activeTab]);
 
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {

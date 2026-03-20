@@ -222,7 +222,7 @@ export function CarListItem({
 
       {/* Image Section */}
       <div className="p-3 w-full lg:w-72 flex-shrink-0">
-        <Link href={`/listings/${id}`} className={cn(
+        <Link href={`/listings/${id}`} prefetch={false} className={cn(
           "relative aspect-[4/3] w-full overflow-hidden rounded-lg block",
           isBlkListing ? "bg-zinc-900" : "bg-muted/20"
         )}>
@@ -244,7 +244,7 @@ export function CarListItem({
       <div className="flex flex-1 flex-col px-3 lg:px-4 py-3 lg:py-4 min-w-0 min-h-0">
         {/* Top Section - Title and Price */}
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-1.5 lg:gap-4 mb-2">
-          <Link href={`/listings/${id}`} className="group/title flex-1 min-w-0">
+          <Link href={`/listings/${id}`} prefetch={false} className="group/title flex-1 min-w-0">
             <div className="flex items-baseline gap-2">
               <h3 className={cn(
                 "text-lg lg:text-[15px] font-bold tracking-tight transition-colors line-clamp-1",

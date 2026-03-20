@@ -13,6 +13,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { queryKeys } from '@/lib/query-client';
 import { listingApi, type ListingDetailed } from '@/lib/listing-api';
 import { getSellerListings, type SellerListingCard } from '@/lib/seller-api';
+import { consumeInteractionStart } from '@/lib/config';
 
 // ============================================================================
 // LISTING DETAIL HOOK
@@ -75,7 +76,9 @@ export function useListingDetail(options: UseListingDetailOptions): UseListingDe
     queryKey,
     queryFn: async () => {
       if (!listingId) throw new Error('No listing ID');
-      return listingApi.getDetailed(listingId);
+      return listingApi.getDetailed(listingId, {
+        interactionStartAt: consumeInteractionStart(`listing:${listingId}`) ?? undefined,
+      });
     },
     enabled: enabled && !!listingId,
     // Listing detail is relatively stable - cache for 5 minutes

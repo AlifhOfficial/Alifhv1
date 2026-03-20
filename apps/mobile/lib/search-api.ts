@@ -9,7 +9,7 @@
  * @module apps/mobile/lib/search-api
  */
 
-import { API_BASE, getAppImageUrl } from './config';
+import { API_BASE, getAppImageUrl, markDataReady, parseJsonWithPerf } from './config';
 
 // ============================================================================
 // SEARCH TYPES (Local definitions to avoid @alifh/database Node.js deps)
@@ -330,13 +330,21 @@ export const searchApi = {
     
     console.log('[SearchAPI] Fetching:', url);
     
+    const requestStartedAt = performance.now();
     const response = await fetchWithRetry(url, { signal });
     if (!response.ok) {
       throw new Error(`Search failed: ${response.status}`);
     }
     
-    const webResponse: DBSearchResponse = await response.json();
-    return {
+    const { data: webResponse } = await parseJsonWithPerf<DBSearchResponse>('search.listings', url, response, requestStartedAt, {
+      meta: {
+        q: params.q ?? null,
+        limit: params.limit ?? null,
+        cursor: params.cursor ?? null,
+      },
+    });
+
+    const result = {
       listings: webResponse.data.map(transformItem),
       facets: webResponse.facets,
       meta: {
@@ -345,6 +353,9 @@ export const searchApi = {
         nextCursor: webResponse.meta.nextCursor,
       },
     };
+
+    markDataReady('browse:results');
+    return result;
   },
 
   /**
@@ -357,12 +368,13 @@ export const searchApi = {
     
     console.log('[SearchAPI] Fetching facets:', url);
     
+    const requestStartedAt = performance.now();
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Facets failed: ${response.status}`);
     }
     
-    const webResponse: DBSearchResponse = await response.json();
+    const { data: webResponse } = await parseJsonWithPerf<DBSearchResponse>('search.facets', url, response, requestStartedAt);
     return webResponse.facets || null;
   },
 
@@ -380,10 +392,11 @@ export const searchApi = {
     });
     const url = `${API_BASE}/api/listings/search?${urlParams}`;
     
+    const requestStartedAt = performance.now();
     const response = await fetch(url);
     if (!response.ok) return [];
     
-    const webResponse: DBSearchResponse = await response.json();
+    const { data: webResponse } = await parseJsonWithPerf<DBSearchResponse>('search.models', url, response, requestStartedAt);
     return webResponse.facets?.model || [];
   },
 
@@ -402,10 +415,11 @@ export const searchApi = {
     });
     const url = `${API_BASE}/api/listings/search?${urlParams}`;
     
+    const requestStartedAt = performance.now();
     const response = await fetch(url);
     if (!response.ok) return [];
     
-    const webResponse: DBSearchResponse = await response.json();
+    const { data: webResponse } = await parseJsonWithPerf<DBSearchResponse>('search.trims', url, response, requestStartedAt);
     return webResponse.facets?.trim || [];
   },
 
@@ -428,11 +442,12 @@ export const searchApi = {
     }
     
     const url = `${API_BASE}/api/listings/search/suggest?${params}`;
+    const requestStartedAt = performance.now();
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Suggest failed: ${response.status}`);
     }
-    return response.json();
+    return (await parseJsonWithPerf<{ suggestions: Suggestion[] }>('search.suggest', url, response, requestStartedAt)).data;
   },
 
   /**
@@ -445,11 +460,12 @@ export const searchApi = {
     });
     
     const url = `${API_BASE}/api/listings/search/suggest?${params}`;
+    const requestStartedAt = performance.now();
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Popular makes failed: ${response.status}`);
     }
-    return response.json();
+    return (await parseJsonWithPerf<{ suggestions: Suggestion[] }>('search.popular-makes', url, response, requestStartedAt)).data;
   },
 
   /**
@@ -490,6 +506,7 @@ export const searchApi = {
     processingTimeMs: number;
   }> {
     const url = `${API_BASE}/api/listings/search/ai`;
+    const requestStartedAt = performance.now();
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -498,7 +515,9 @@ export const searchApi = {
     if (!response.ok) {
       throw new Error(`AI search failed: ${response.status}`);
     }
-    return response.json();
+    return (await parseJsonWithPerf<any>('search.ai', url, response, requestStartedAt, {
+      meta: { queryLength: query.length },
+    })).data;
   },
 };
 

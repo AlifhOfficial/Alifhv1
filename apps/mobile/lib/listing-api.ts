@@ -5,7 +5,7 @@
  * Single source of truth for listing detail types and API calls.
  */
 
-import { API_BASE, getAppImageUrl } from './config';
+import { API_BASE, getAppImageUrl, markDataReady, parseJsonWithPerf, type PerfRequestOptions } from './config';
 
 // ============================================================================
 // TECHNICAL FEATURES
@@ -195,28 +195,12 @@ function toAbsoluteUrl(path: string | null): string | null {
  * Get detailed listing data
  * Calls: GET /api/listings/[id]/detailed
  */
-export async function getListingDetailed(id: string): Promise<ListingDetailed> {
+export async function getListingDetailed(id: string, perfOptions?: PerfRequestOptions): Promise<ListingDetailed> {
   const url = `${API_BASE}/api/listings/${id}/detailed`;
-  const start = performance.now();
   console.log('[ListingAPI] Fetching detailed listing:', id);
 
+  const requestStartedAt = performance.now();
   const response = await fetch(url);
-  const fetchMs = Math.round(performance.now() - start);
-  const cfCacheStatus = response.headers.get('cf-cache-status');
-  const age = response.headers.get('age');
-  const serverTiming = response.headers.get('server-timing');
-
-  console.log(
-    '[ListingAPI] Detailed listing response:',
-    JSON.stringify({
-      id,
-      status: response.status,
-      fetchMs,
-      cfCacheStatus,
-      age,
-      serverTiming,
-    })
-  );
 
   if (!response.ok) {
     if (response.status === 404) {
@@ -225,24 +209,16 @@ export async function getListingDetailed(id: string): Promise<ListingDetailed> {
     throw new Error(`Failed to fetch listing: ${response.status}`);
   }
   
-  const parseStart = performance.now();
-  const data = await response.json();
-  const parseMs = Math.round(performance.now() - parseStart);
-
-  console.log(
-    '[ListingAPI] Detailed listing parsed:',
-    JSON.stringify({
-      id,
-      totalMs: Math.round(performance.now() - start),
-      parseMs,
-    })
-  );
+  const { data } = await parseJsonWithPerf<ListingDetailed>(`listing.detailed:${id}`, url, response, requestStartedAt, {
+    interactionStartAt: perfOptions?.interactionStartAt,
+    meta: { id },
+  });
   
   // Transform image URLs to absolute
   if (data.listing?.images) {
     data.listing.images = data.listing.images
       .map((img: string) => toAbsoluteUrl(img))
-      .filter(Boolean);
+      .filter((img): img is string => Boolean(img));
   }
   if (data.listing?.thumbnail) {
     data.listing.thumbnail = toAbsoluteUrl(data.listing.thumbnail);
@@ -253,7 +229,7 @@ export async function getListingDetailed(id: string): Promise<ListingDetailed> {
   
   // Transform user profile from API format to mobile format
   if (data.sellerData?.type === 'user' && data.sellerData.userProfile) {
-    const p = data.sellerData.userProfile;
+    const p = data.sellerData.userProfile as any;
     data.sellerData.userProfile = {
       displayName: p.userName ?? ([p.firstName, p.lastName].filter(Boolean).join(' ') || null),
       firstName: p.firstName ?? null,
@@ -273,6 +249,8 @@ export async function getListingDetailed(id: string): Promise<ListingDetailed> {
       phoneVerified: p.phoneNumberVerified ?? false,
     };
   }
+
+  markDataReady(`listing:${id}`);
   
   return data;
 }

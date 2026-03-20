@@ -28,6 +28,7 @@ import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import { FloatingListingActions } from '@/components/listings';
 import { useListingDetail } from '@/hooks/use-listing-query';
 import { shareListing } from '@/lib/listing-share';
+import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 
 export default function ListingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -73,6 +74,12 @@ export default function ListingDetailScreen() {
       interaction.cancel();
     };
   }, [listing]);
+
+  useEffect(() => {
+    if (!listing || !id) return;
+    const readyAt = consumeDataReady(`listing:${id}`) ?? performance.now();
+    scheduleRenderPerf('listing.detail-screen', readyAt, { listingId: id });
+  }, [listing, id]);
 
   const handleRefresh = useCallback(() => {
     refresh();

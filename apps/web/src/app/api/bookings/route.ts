@@ -10,6 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
+import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import {
   getBookings,
   manageBooking,
@@ -20,6 +21,14 @@ import {
 } from '@alifh/database';
 
 export const runtime = 'nodejs';
+
+function noStoreJson(data: unknown, init?: { status?: number }) {
+  const response = NextResponse.json(data, { status: init?.status });
+  Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+  return response;
+}
 
 /**
  * GET /api/bookings
@@ -38,7 +47,7 @@ export async function GET(req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return noStoreJson({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -85,10 +94,10 @@ export async function GET(req: NextRequest) {
       offset,
     });
 
-    return NextResponse.json(result);
+    return noStoreJson(result);
   } catch (error) {
     console.error('[Bookings API] GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch bookings' }, { status: 500 });
+    return noStoreJson({ error: 'Failed to fetch bookings' }, { status: 500 });
   }
 }
 
@@ -102,7 +111,7 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return noStoreJson({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await req.json();
@@ -116,10 +125,10 @@ export async function POST(req: NextRequest) {
     // Authorization checks
     if (isStaffAction) {
       if (!membership) {
-        return NextResponse.json({ error: 'Not a partner staff member' }, { status: 403 });
+        return noStoreJson({ error: 'Not a partner staff member' }, { status: 403 });
       }
       if (membership.staffRole === 'viewer') {
-        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+        return noStoreJson({ error: 'Insufficient permissions' }, { status: 403 });
       }
     }
 
@@ -127,7 +136,7 @@ export async function POST(req: NextRequest) {
     if (action === 'create') {
       const restrictions = await checkBookingRestrictions(user.id);
       if (!restrictions.canBook) {
-        return NextResponse.json({ error: restrictions.reason, restrictions }, { status: 429 });
+        return noStoreJson({ error: restrictions.reason, restrictions }, { status: 429 });
       }
     }
 
@@ -165,12 +174,12 @@ export async function POST(req: NextRequest) {
     });
 
     if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
+      return noStoreJson({ error: result.error }, { status: 400 });
     }
 
-    return NextResponse.json(result);
+    return noStoreJson(result);
   } catch (error) {
     console.error('[Bookings API] POST error:', error);
-    return NextResponse.json({ error: 'Failed to process booking action' }, { status: 500 });
+    return noStoreJson({ error: 'Failed to process booking action' }, { status: 500 });
   }
 }

@@ -341,3 +341,193 @@ export const MESSAGING_ENDPOINTS = {
   MARK_READ: (conversationId: string) => `/api/conversations/${conversationId}/read`,
   UNREAD_COUNT: '/api/conversations/unread-count',
 } as const;
+
+type ServerTimingMetric = {
+  name: string;
+  dur?: number;
+  desc?: string;
+};
+
+export interface ApiPerfBreakdown {
+  label: string;
+  url: string;
+  status: number;
+  ok: boolean;
+  appMs?: number;
+  ttfbMs: number;
+  payloadMs: number;
+  parseMs: number;
+  totalMs: number;
+  payloadBytes: number;
+  cfCacheStatus?: string | null;
+  age?: string | null;
+  contentLength?: string | null;
+  serverTiming?: string | null;
+  serverMs?: number;
+  networkMs?: number;
+  metrics: ServerTimingMetric[];
+}
+
+export interface PerfRequestOptions {
+  interactionStartAt?: number;
+  meta?: Record<string, unknown>;
+}
+
+const dataReadyMarks = new Map<string, number>();
+const interactionMarks = new Map<string, number>();
+const encoder = new TextEncoder();
+
+function roundPerf(value: number): number {
+  return Math.round(value);
+}
+
+function parseServerTiming(header: string | null): ServerTimingMetric[] {
+  if (!header) return [];
+
+  return header
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [namePart, ...paramParts] = entry.split(';').map((part) => part.trim());
+      const metric: ServerTimingMetric = { name: namePart };
+
+      for (const part of paramParts) {
+        const [key, rawValue] = part.split('=');
+        if (!key || rawValue == null) continue;
+        const value = rawValue.replace(/^"|"$/g, '');
+        if (key === 'dur') {
+          const dur = Number(value);
+          if (Number.isFinite(dur)) metric.dur = dur;
+        } else if (key === 'desc') {
+          metric.desc = value;
+        }
+      }
+
+      return metric;
+    });
+}
+
+function buildPerf(
+  label: string,
+  url: string,
+  response: Response,
+  requestStartedAt: number,
+  responseStartedAt: number,
+  parseStartedAt: number,
+  parseEndedAt: number,
+  payloadBytes: number,
+  interactionStartAt?: number,
+): ApiPerfBreakdown {
+  const ttfbMs = responseStartedAt - requestStartedAt;
+  const payloadMs = parseStartedAt - responseStartedAt;
+  const parseMs = parseEndedAt - parseStartedAt;
+  const totalMs = parseEndedAt - requestStartedAt;
+  const serverTiming = response.headers.get('server-timing');
+  const metrics = parseServerTiming(serverTiming);
+  const serverMs = metrics.find((metric) => metric.name === 'total')?.dur
+    ?? metrics.find((metric) => metric.name === 'db')?.dur;
+
+  return {
+    label,
+    url,
+    status: response.status,
+    ok: response.ok,
+    appMs: interactionStartAt != null ? roundPerf(requestStartedAt - interactionStartAt) : undefined,
+    ttfbMs: roundPerf(ttfbMs),
+    payloadMs: roundPerf(payloadMs),
+    parseMs: roundPerf(parseMs),
+    totalMs: roundPerf(totalMs),
+    payloadBytes,
+    cfCacheStatus: response.headers.get('cf-cache-status'),
+    age: response.headers.get('age'),
+    contentLength: response.headers.get('content-length'),
+    serverTiming,
+    serverMs: serverMs != null ? roundPerf(serverMs) : undefined,
+    networkMs: serverMs != null ? Math.max(0, roundPerf(ttfbMs - serverMs)) : undefined,
+    metrics,
+  };
+}
+
+export async function parseJsonWithPerf<T>(
+  label: string,
+  url: string,
+  response: Response,
+  requestStartedAt: number,
+  options: PerfRequestOptions = {},
+): Promise<{ data: T; perf: ApiPerfBreakdown }> {
+  const responseStartedAt = performance.now();
+  const raw = await response.text();
+  const parseStartedAt = performance.now();
+  const data = raw ? JSON.parse(raw) as T : (null as T);
+  const parseEndedAt = performance.now();
+  const perf = buildPerf(
+    label,
+    url,
+    response,
+    requestStartedAt,
+    responseStartedAt,
+    parseStartedAt,
+    parseEndedAt,
+    encoder.encode(raw).length,
+    options.interactionStartAt,
+  );
+
+  console.log(
+    `[Perf][API] ${label}`,
+    JSON.stringify({
+      ...perf,
+      ...options.meta,
+    })
+  );
+
+  return { data, perf };
+}
+
+export function markDataReady(key: string): number {
+  const now = performance.now();
+  dataReadyMarks.set(key, now);
+  return now;
+}
+
+export function consumeDataReady(key: string): number | null {
+  const value = dataReadyMarks.get(key) ?? null;
+  if (value != null) {
+    dataReadyMarks.delete(key);
+  }
+  return value;
+}
+
+export function markInteractionStart(key: string): number {
+  const now = performance.now();
+  interactionMarks.set(key, now);
+  return now;
+}
+
+export function consumeInteractionStart(key: string, maxAgeMs = 15000): number | null {
+  const now = performance.now();
+  const value = interactionMarks.get(key) ?? null;
+  if (value == null) return null;
+  interactionMarks.delete(key);
+  return now - value <= maxAgeMs ? value : null;
+}
+
+export function scheduleRenderPerf(
+  label: string,
+  dataReadyAt: number,
+  meta?: Record<string, unknown>,
+): void {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const renderMs = roundPerf(performance.now() - dataReadyAt);
+      console.log(
+        `[Perf][Render] ${label}`,
+        JSON.stringify({
+          label,
+          renderMs,
+          ...meta,
+        })
+      );
+    });
+  });
+}

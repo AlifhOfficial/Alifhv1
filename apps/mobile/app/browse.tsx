@@ -30,6 +30,7 @@ import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/
 import { Body, Supporting } from '@/components/ui';
 import { searchApi, type ListingCard, type SearchParams } from '@/lib/search-api';
 import { queryKeys } from '@/lib/query-client';
+import { consumeDataReady, markInteractionStart, scheduleRenderPerf } from '@/lib/config';
 import { Colors, Spacing, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type FilterParams } from '@/context/search-context';
@@ -160,7 +161,7 @@ export default function BrowseScreen() {
     },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.meta.hasMore ? lastPage.meta.nextCursor ?? undefined : undefined,
-    placeholderData: (previousData) => previousData,
+
   });
 
   const listings = useMemo(() => {
@@ -203,11 +204,9 @@ export default function BrowseScreen() {
   const [infoSheetListingId, setInfoSheetListingId] = useState<string | null>(null);
   const [infoSheetMeta, setInfoSheetMeta] = useState<{ make?: string; model?: string; year?: number; price?: number; sellerName?: string }>({});
 
-  // Scroll to top when query context changes
+  // Reset scroll instantly when search/filters change (no animation)
   useEffect(() => {
-    setTimeout(() => {
-      scrollRef.current?.scrollToOffset({ offset: 0, animated: true });
-    }, 100);
+    scrollRef.current?.scrollToOffset({ offset: 0, animated: false });
   }, [searchQueryKey]);
 
   // Subscribe to scroll to top from tab bar double-tap
@@ -234,8 +233,18 @@ export default function BrowseScreen() {
   }, [fetchNextPage, hasMore, isFetchingNextPage]);
 
   const handleCardPress = useCallback((id: string) => {
+    markInteractionStart(`listing:${id}`);
     router.push(`/listing/${id}`);
   }, [router]);
+
+  useEffect(() => {
+    if (isLoading || listings.length === 0) return;
+    const readyAt = consumeDataReady('browse:results') ?? performance.now();
+    scheduleRenderPerf('browse.results', readyAt, {
+      count: listings.length,
+      hasMore,
+    });
+  }, [isLoading, listings.length, hasMore]);
 
   // Handle long-press on card — show AI info sheet
   const handleCardLongPress = useCallback((id: string) => {

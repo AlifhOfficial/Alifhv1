@@ -266,7 +266,7 @@ export function CarCard({
       )}
 
       {/* Image Section */}
-      <Link href={`/listings/${id}`} className={cn(
+      <Link href={`/listings/${id}`} prefetch={false} className={cn(
         "relative aspect-[16/9] w-full overflow-hidden rounded-lg block",
         isBlkListing ? "bg-zinc-900" : "bg-muted/20"
       )}>
@@ -288,7 +288,7 @@ export function CarCard({
       {/* Content Section */}
       <div className="flex flex-1 flex-col p-3 sm:p-4 gap-2 sm:gap-1.5">
         {/* Title with Year */}
-        <Link href={`/listings/${id}`} className="group/title">
+        <Link href={`/listings/${id}`} prefetch={false} className="group/title">
           <div className="flex items-baseline justify-between gap-2">
             <h3 className={cn(
               "text-lg sm:text-[15px] font-bold tracking-tight line-clamp-1 transition-colors flex-1 min-w-0 leading-tight",

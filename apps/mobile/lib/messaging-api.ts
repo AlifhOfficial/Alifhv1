@@ -6,7 +6,7 @@
  */
 
 import { getStoredSession } from './auth-api';
-import { API_BASE } from './config';
+import { API_BASE, markDataReady, parseJsonWithPerf } from './config';
 
 // ============================================================================
 // TYPES
@@ -135,6 +135,8 @@ export async function fetchConversations(options?: {
   if (options?.includeArchived) params.set('includeArchived', 'true');
 
   const endpoint = `/api/conversations${params.toString() ? `?${params}` : ''}`;
+  const url = `${API_BASE}${endpoint}`;
+  const requestStartedAt = performance.now();
   const response = await messagingFetch(endpoint);
   
   if (!response.ok) {
@@ -142,7 +144,11 @@ export async function fetchConversations(options?: {
     throw new Error(error.error || 'Failed to fetch conversations');
   }
 
-  return response.json();
+  const { data } = await parseJsonWithPerf<ConversationsResponse>('messaging.conversations', url, response, requestStartedAt, {
+    meta: { scope: options?.scope ?? 'personal' },
+  });
+  markDataReady(`messaging:conversations:${options?.scope ?? 'personal'}`);
+  return data;
 }
 
 /**
@@ -158,6 +164,8 @@ export async function getUnreadCount(): Promise<number> {
  */
 export async function fetchConversation(conversationId: string): Promise<Conversation> {
   const endpoint = `/api/conversations/${conversationId}`;
+  const url = `${API_BASE}${endpoint}`;
+  const requestStartedAt = performance.now();
   const response = await messagingFetch(endpoint);
   
   if (!response.ok) {
@@ -166,7 +174,9 @@ export async function fetchConversation(conversationId: string): Promise<Convers
   }
 
   // API returns { conversation } - extract the conversation object
-  const data = await response.json();
+  const { data } = await parseJsonWithPerf<{ conversation: Conversation }>('messaging.conversation', url, response, requestStartedAt, {
+    meta: { conversationId },
+  });
   return data.conversation;
 }
 
@@ -185,6 +195,8 @@ export async function fetchMessages(
   if (options?.cursor) params.set('cursor', options.cursor);
 
   const endpoint = `/api/conversations/${conversationId}/messages${params.toString() ? `?${params}` : ''}`;
+  const url = `${API_BASE}${endpoint}`;
+  const requestStartedAt = performance.now();
   const response = await messagingFetch(endpoint);
   
   if (!response.ok) {
@@ -192,7 +204,11 @@ export async function fetchMessages(
     throw new Error(error.error || 'Failed to fetch messages');
   }
 
-  return response.json();
+  const { data } = await parseJsonWithPerf<MessagesResponse>('messaging.messages', url, response, requestStartedAt, {
+    meta: { conversationId, cursor: options?.cursor ?? null },
+  });
+  markDataReady(`messaging:messages:${conversationId}`);
+  return data;
 }
 
 /**
@@ -209,6 +225,8 @@ export async function sendMessage(
   }
 ): Promise<SendMessageResponse> {
   const endpoint = `/api/conversations/${conversationId}/messages`;
+  const url = `${API_BASE}${endpoint}`;
+  const requestStartedAt = performance.now();
   const response = await messagingFetch(endpoint, {
     method: 'POST',
     body: data,
@@ -219,7 +237,9 @@ export async function sendMessage(
     throw new Error(error.error || 'Failed to send message');
   }
 
-  return response.json();
+  return (await parseJsonWithPerf<SendMessageResponse>('messaging.send', url, response, requestStartedAt, {
+    meta: { conversationId, hasMedia: Boolean(data.mediaUrl) },
+  })).data;
 }
 
 /**
@@ -227,6 +247,8 @@ export async function sendMessage(
  */
 export async function markConversationAsRead(conversationId: string): Promise<void> {
   const endpoint = `/api/conversations/${conversationId}/read`;
+  const url = `${API_BASE}${endpoint}`;
+  const requestStartedAt = performance.now();
   const response = await messagingFetch(endpoint, {
     method: 'PATCH',
   });
@@ -235,6 +257,9 @@ export async function markConversationAsRead(conversationId: string): Promise<vo
     const error = await response.json().catch(() => ({ error: 'Failed to mark as read' }));
     throw new Error(error.error || 'Failed to mark as read');
   }
+  await parseJsonWithPerf<unknown>('messaging.mark-read', url, response, requestStartedAt, {
+    meta: { conversationId },
+  }).catch(() => ({ data: null }));
 }
 
 /**
@@ -248,6 +273,8 @@ export async function createConversation(data: {
   subject?: string;
 }): Promise<CreateConversationResponse> {
   const endpoint = '/api/conversations';
+  const url = `${API_BASE}${endpoint}`;
+  const requestStartedAt = performance.now();
   const response = await messagingFetch(endpoint, {
     method: 'POST',
     body: data,
@@ -258,7 +285,7 @@ export async function createConversation(data: {
     throw new Error(error.error || 'Failed to create conversation');
   }
 
-  return response.json();
+  return (await parseJsonWithPerf<CreateConversationResponse>('messaging.create-conversation', url, response, requestStartedAt)).data;
 }
 
 // ============================================================================

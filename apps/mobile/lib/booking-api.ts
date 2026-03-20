@@ -5,7 +5,7 @@
  * Mirrors the web API at /api/bookings/slots and /api/bookings.
  */
 
-import { API_BASE, getAppImageUrl } from './config';
+import { API_BASE, getAppImageUrl, markDataReady, parseJsonWithPerf, type PerfRequestOptions } from './config';
 import { getStoredSession } from './auth-api';
 
 /** Convert relative CDN path → absolute URL for native <Image/> */
@@ -88,42 +88,59 @@ export interface BookingResult {
 /**
  * Fetch available dates for a listing (next 30 days)
  */
-export async function getAvailableDates(listingId: string): Promise<AvailableDatesResponse> {
-  const url = `${API_BASE}/api/bookings/slots?listingId=${listingId}&mode=dates&t=${Date.now()}`;
+export async function getAvailableDates(
+  listingId: string,
+  perfOptions?: PerfRequestOptions,
+): Promise<AvailableDatesResponse> {
+  const url = `${API_BASE}/api/bookings/slots?listingId=${listingId}&mode=dates`;
 
   console.log('[Booking API] GET available dates', url);
 
+  const requestStartedAt = performance.now();
   const res = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
   });
 
-  const data = await res.json();
+  const { data } = await parseJsonWithPerf<AvailableDatesResponse & { error?: string }>('booking.available-dates', url, res, requestStartedAt, {
+    interactionStartAt: perfOptions?.interactionStartAt,
+    meta: { listingId },
+  });
 
   if (!res.ok) {
     throw new Error(data.error || 'Failed to load availability');
   }
 
+  markDataReady(`booking:dates:${listingId}`);
   return data;
 }
 
 /**
  * Fetch time slots for a specific date
  */
-export async function getTimeSlots(listingId: string, dateStr: string): Promise<TimeSlotsResponse> {
-  const url = `${API_BASE}/api/bookings/slots?listingId=${listingId}&date=${dateStr}&t=${Date.now()}`;
+export async function getTimeSlots(
+  listingId: string,
+  dateStr: string,
+  perfOptions?: PerfRequestOptions,
+): Promise<TimeSlotsResponse> {
+  const url = `${API_BASE}/api/bookings/slots?listingId=${listingId}&date=${dateStr}`;
 
   console.log('[Booking API] GET time slots', url);
 
+  const requestStartedAt = performance.now();
   const res = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
   });
 
-  const data = await res.json();
+  const { data } = await parseJsonWithPerf<TimeSlotsResponse & { error?: string }>('booking.time-slots', url, res, requestStartedAt, {
+    interactionStartAt: perfOptions?.interactionStartAt,
+    meta: { listingId, date: dateStr },
+  });
 
   if (!res.ok) {
     throw new Error(data.error || 'Failed to load time slots');
   }
 
+  markDataReady(`booking:slots:${listingId}:${dateStr}`);
   return data;
 }
 
@@ -139,6 +156,7 @@ export async function createBooking(params: CreateBookingParams): Promise<Bookin
 
   console.log('[Booking API] POST create booking');
 
+  const requestStartedAt = performance.now();
   const res = await fetch(`${API_BASE}/api/bookings`, {
     method: 'POST',
     headers: {
@@ -148,7 +166,10 @@ export async function createBooking(params: CreateBookingParams): Promise<Bookin
     body: JSON.stringify(params),
   });
 
-  const data = await res.json();
+  const url = `${API_BASE}/api/bookings`;
+  const { data } = await parseJsonWithPerf<BookingResult & { error?: string }>('booking.create', url, res, requestStartedAt, {
+    meta: { listingId: params.listingId },
+  });
 
   if (!res.ok) {
     if (res.status === 401) {
@@ -318,9 +339,11 @@ export async function getUserBookings(
   if (params.limit) searchParams.set('limit', String(params.limit));
   if (params.offset) searchParams.set('offset', String(params.offset));
 
-  const url = `${API_BASE}/api/bookings?${searchParams.toString()}&t=${Date.now()}`;
+  const qs = searchParams.toString();
+  const url = `${API_BASE}/api/bookings${qs ? `?${qs}` : ''}`;
   console.log('[Booking API] GET user bookings', url);
 
+  const requestStartedAt = performance.now();
   const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -328,7 +351,13 @@ export async function getUserBookings(
     },
   });
 
-  const data = await res.json();
+  const { data } = await parseJsonWithPerf<UserBookingsResponse & { error?: string }>('booking.user-bookings', url, res, requestStartedAt, {
+    meta: {
+      status: params.status ?? null,
+      limit: params.limit ?? null,
+      offset: params.offset ?? null,
+    },
+  });
 
   if (!res.ok) {
     if (res.status === 401) {
@@ -364,7 +393,9 @@ export async function cancelBooking(
 
   console.log('[Booking API] PATCH cancel booking', bookingId);
 
-  const res = await fetch(`${API_BASE}/api/bookings/${bookingId}`, {
+  const url = `${API_BASE}/api/bookings/${bookingId}`;
+  const requestStartedAt = performance.now();
+  const res = await fetch(url, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -377,7 +408,9 @@ export async function cancelBooking(
     }),
   });
 
-  const data = await res.json();
+  const { data } = await parseJsonWithPerf<CancelBookingResult & { error?: string }>('booking.cancel', url, res, requestStartedAt, {
+    meta: { bookingId },
+  });
 
   if (!res.ok) {
     if (res.status === 401) {

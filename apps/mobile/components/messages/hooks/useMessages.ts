@@ -13,6 +13,7 @@ import {
 } from '@/lib/messaging-api';
 import { getAvatarUrl } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
+import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 
 interface UseMessagesOptions {
   conversationId: string;
@@ -301,6 +302,14 @@ export function useMessages({
           if (data.otherParticipantLastReadAt) {
             setOtherLastReadAt(data.otherParticipantLastReadAt);
           }
+        }
+
+        if (!cursor) {
+          const readyAt = consumeDataReady(`messaging:messages:${conversationId}`) ?? performance.now();
+          scheduleRenderPerf('messaging.messages-thread', readyAt, {
+            conversationId,
+            count: messagesWithUrls.length,
+          });
         }
         
         setHasMore(data.hasMore);
