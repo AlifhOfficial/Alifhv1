@@ -140,6 +140,16 @@ export interface PartnerProfileComprehensive {
   activatedAt: Date | null;
 }
 
+export interface PartnerContactProfile {
+  id: string;
+  brandName: string;
+  phone: string;
+  adminName: string | null;
+  adminPhone: string | null;
+  adminPhoneVerified: boolean;
+  tollNumber: string | null;
+}
+
 /**
  * Editable fields for partner profile update
  * Excludes read-only fields like status, tier, analytics, etc.
@@ -330,6 +340,26 @@ export async function getPartnerProfileComprehensive(
   }
 }
 
+export async function getPartnerContactProfile(
+  partnerId: string
+): Promise<PartnerContactProfile | null> {
+  const [result] = await db
+    .select({
+      id: partner.id,
+      brandName: partner.brandName,
+      phone: partner.phone,
+      adminName: partner.adminName,
+      adminPhone: partner.adminPhone,
+      adminPhoneVerified: partner.adminPhoneVerified,
+      tollNumber: partner.tollNumber,
+    })
+    .from(partner)
+    .where(eq(partner.id, partnerId))
+    .limit(1);
+
+  return result ?? null;
+}
+
 /**
  * Update partner profile
  * Only updates allowed editable fields
@@ -409,6 +439,30 @@ export async function getPartnerProfileByUserId(
   console.log(`[getPartnerProfileByUserId] Staff lookup for ${userId.slice(0, 8)}... → ${partnerId.slice(0, 8)}... (${queryTime.toFixed(2)}ms)`);
   
   return getPartnerProfileComprehensive(partnerId);
+}
+
+export async function getPartnerContactProfileByUserId(
+  userId: string
+): Promise<PartnerContactProfile | null> {
+  const queryStart = performance.now();
+
+  const [staffResult] = await db
+    .select({ partnerId: partnerStaff.partnerId })
+    .from(partnerStaff)
+    .where(eq(partnerStaff.userId, userId))
+    .limit(1);
+
+  const queryTime = performance.now() - queryStart;
+
+  if (!staffResult) {
+    console.log(`[getPartnerContactProfileByUserId] No partner found for user ${userId.slice(0, 8)}... (${queryTime.toFixed(2)}ms)`);
+    return null;
+  }
+
+  const partnerId = staffResult.partnerId;
+  console.log(`[getPartnerContactProfileByUserId] Staff lookup for ${userId.slice(0, 8)}... → ${partnerId.slice(0, 8)}... (${queryTime.toFixed(2)}ms)`);
+
+  return getPartnerContactProfile(partnerId);
 }
 
 /**

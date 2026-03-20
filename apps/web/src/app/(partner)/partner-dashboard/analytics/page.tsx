@@ -5,9 +5,9 @@
  */
 
 import { redirect } from 'next/navigation';
-import { getPartnerDescriptiveStats } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { AdvancedStatsView } from '@/components/partner/insights/advanced-stats-view';
+import { getCachedPartnerDescriptiveStats } from '@/lib/partner-stats-cache';
 
 export default async function PartnerAnalyticsPage() {
   const user = await getSessionUser();
@@ -22,6 +22,6 @@ export default async function PartnerAnalyticsPage() {
     redirect('/access-denied?reason=not-partner-manager');
   }
 
-  const stats = await getPartnerDescriptiveStats(membership.partnerId);
+  const stats = await getCachedPartnerDescriptiveStats(membership.partnerId);
   return <AdvancedStatsView initialStats={stats as any} />;
 }

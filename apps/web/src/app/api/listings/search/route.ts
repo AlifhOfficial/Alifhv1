@@ -19,13 +19,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { 
-  searchListings,
   urlToSearchParams,
   type SearchParams,
   type SearchResponse,
   type SearchFacets,
 } from "@alifh/database";
-import { getCachedSearchFacets } from '@/lib/search-cache';
+import { getCachedSearchFacets, getCachedSearchResults } from '@/lib/search-cache';
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -56,13 +55,11 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const includeTotal = urlParams.get('includeTotal') === 'true';
-
     // Execute queries in parallel
-    // skipFacets: true — facets cached separately (1hr TTL) to reduce DB load
+    // Public search always uses cached fast results + separately cached facets.
     const queryStart = Date.now();
     const [searchResult, facets] = await Promise.all([
-      searchListings(params, includeTotal ? { skipFacets: true, skipTotalCount: false } : { fast: true }),
+      getCachedSearchResults(params),
       getCachedSearchFacets(params),
     ]);
     const queryMs = Date.now() - queryStart;

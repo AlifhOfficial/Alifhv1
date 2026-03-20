@@ -10,10 +10,9 @@ import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { ListingsView } from '@/components/listings/listings-view';
 import { 
-  searchListings, 
   urlToSearchParams,
 } from '@alifh/database';
-import { getCachedSearchFacets } from '@/lib/search-cache';
+import { getCachedSearchFacets, getCachedSearchResults } from '@/lib/search-cache';
 import type { SearchResponse } from '@/lib/search-utils';
 
 interface PageProps {
@@ -141,7 +140,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
   try {
     if (canUseServerData) {
       const [searchResult, facets] = await Promise.all([
-        searchListings({ ...searchParamsObj, limit }, { fast: true }),
+        getCachedSearchResults({ ...searchParamsObj, limit }),
         getCachedSearchFacets(searchParamsObj),
       ]);
       

@@ -5,7 +5,7 @@
  */
 
 import { getStoredSession } from './auth-api';
-import { API_BASE, CDN_BASE } from './config';
+import { API_BASE, getAppImageUrl } from './config';
 
 // ============================================================================
 // RATE LIMIT HANDLING
@@ -99,10 +99,7 @@ export interface SavedListingCard {
 
 /** Convert relative path to absolute URL */
 function toAbsoluteUrl(path: string | null): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  if (path.startsWith('/')) return `${API_BASE}${path}`;
-  return `${CDN_BASE}/${path}`;
+  return getAppImageUrl(path);
 }
 
 /** Transform listing with absolute URLs */

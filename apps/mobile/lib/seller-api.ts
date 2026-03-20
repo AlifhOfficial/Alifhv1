@@ -5,7 +5,7 @@
  * Separated for clean concerns and reusability.
  */
 
-import { API_BASE, CDN_BASE } from './config';
+import { API_BASE, getAppImageUrl } from './config';
 import { getStoredSession } from './auth-api';
 
 // ============================================================================
@@ -128,10 +128,7 @@ export interface SellerListingCard {
 
 /** Convert relative path to absolute URL */
 function toAbsoluteUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  if (path.startsWith('/')) return `${API_BASE}${path}`;
-  return `${CDN_BASE}/${path}`;
+  return getAppImageUrl(path);
 }
 
 /**
@@ -333,7 +330,7 @@ export async function getSellerListings(
       isBlkListing: item.isBlkListing || false,
     })),
     meta: {
-      total: data.meta?.total || 0,
+      total: data.meta?.total ?? (data.data?.length || 0),
       limit,
       page,
       hasMore: data.meta?.hasMore || false,

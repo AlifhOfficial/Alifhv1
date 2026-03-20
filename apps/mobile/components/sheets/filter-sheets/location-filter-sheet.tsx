@@ -14,7 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
-import { searchApi, type FacetBucket, type SearchParams } from '@/lib/search-api';
+import type { SearchParams } from '@/lib/search-api';
+import { UAE_EMIRATES } from '@/lib/filter-constants';
 
 interface LocationFilterSheetProps {
   visible: boolean;
@@ -29,7 +30,7 @@ export function LocationFilterSheet({
   visible, 
   onClose, 
   selected,
-  filterContext = {},
+  filterContext: _filterContext = {},
   onApply,
 }: LocationFilterSheetProps) {
   const { colorScheme } = useTheme();
@@ -39,10 +40,6 @@ export function LocationFilterSheet({
 
   // Local state for selection
   const [localSelected, setLocalSelected] = useState<string[]>(selected);
-  
-  // Dynamic facets
-  const [options, setOptions] = useState<FacetBucket[]>([]);
-  const [isLoadingFacets, setIsLoadingFacets] = useState(false);
 
   // Sync with props when sheet opens
   useEffect(() => {
@@ -51,25 +48,18 @@ export function LocationFilterSheet({
     }
   }, [visible, selected]);
 
-  // Fetch emirate facets dynamically when sheet opens or filter context changes
-  useEffect(() => {
-    if (visible) {
-      setIsLoadingFacets(true);
-      searchApi
-        .getFacets(filterContext)
-        .then((result) => setOptions(result?.emirate ?? []))
-        .catch(console.error)
-        .finally(() => setIsLoadingFacets(false));
-    }
-  }, [visible, filterContext]);
-
   // Sort options: selected first, then by count
   const sortedOptions = useMemo(() => {
+    const options = UAE_EMIRATES.map((emirate) => ({
+      value: emirate.value,
+      label: emirate.label,
+      count: 0,
+    }));
     const selectedSet = new Set(localSelected);
     const selectedOpts = options.filter(o => selectedSet.has(o.value));
     const rest = options.filter(o => !selectedSet.has(o.value));
     return [...selectedOpts, ...rest];
-  }, [options, localSelected]);
+  }, [localSelected]);
 
   const snapPoints = useMemo(() => ['60%', '94%'], []);
 

@@ -5,7 +5,7 @@
  * Single source of truth for listing detail types and API calls.
  */
 
-import { API_BASE, CDN_BASE } from './config';
+import { API_BASE, getAppImageUrl } from './config';
 
 // ============================================================================
 // TECHNICAL FEATURES
@@ -184,10 +184,7 @@ export interface ListingDetailed {
 
 /** Convert relative path to absolute URL */
 function toAbsoluteUrl(path: string | null): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  if (path.startsWith('/')) return `${API_BASE}${path}`;
-  return `${CDN_BASE}/${path}`;
+  return getAppImageUrl(path);
 }
 
 // ============================================================================
@@ -200,9 +197,27 @@ function toAbsoluteUrl(path: string | null): string | null {
  */
 export async function getListingDetailed(id: string): Promise<ListingDetailed> {
   const url = `${API_BASE}/api/listings/${id}/detailed`;
+  const start = performance.now();
   console.log('[ListingAPI] Fetching detailed listing:', id);
-  
+
   const response = await fetch(url);
+  const fetchMs = Math.round(performance.now() - start);
+  const cfCacheStatus = response.headers.get('cf-cache-status');
+  const age = response.headers.get('age');
+  const serverTiming = response.headers.get('server-timing');
+
+  console.log(
+    '[ListingAPI] Detailed listing response:',
+    JSON.stringify({
+      id,
+      status: response.status,
+      fetchMs,
+      cfCacheStatus,
+      age,
+      serverTiming,
+    })
+  );
+
   if (!response.ok) {
     if (response.status === 404) {
       throw new Error('Listing not found');
@@ -210,7 +225,18 @@ export async function getListingDetailed(id: string): Promise<ListingDetailed> {
     throw new Error(`Failed to fetch listing: ${response.status}`);
   }
   
+  const parseStart = performance.now();
   const data = await response.json();
+  const parseMs = Math.round(performance.now() - parseStart);
+
+  console.log(
+    '[ListingAPI] Detailed listing parsed:',
+    JSON.stringify({
+      id,
+      totalMs: Math.round(performance.now() - start),
+      parseMs,
+    })
+  );
   
   // Transform image URLs to absolute
   if (data.listing?.images) {

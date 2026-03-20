@@ -70,7 +70,7 @@ export interface CarCardData {
  * Build the common select fields for car card queries
  * Extracted to avoid duplication between query paths
  */
-function buildCardSelectFields(now: Date) {
+export function buildCardSelectFields(now: Date) {
   return {
     id: carListing.id,
     slug: carListing.slug,

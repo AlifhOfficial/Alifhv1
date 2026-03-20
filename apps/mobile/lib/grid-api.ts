@@ -542,7 +542,7 @@ export async function fetchGridData(config: AnyGridConfig): Promise<GridData> {
           });
           console.log('[fetchGridData] Partner listings fetched:', response.listings.length);
           result.listings = response.listings;
-          result.total = response.meta.total;
+          result.total = response.meta.total ?? response.listings.length;
           result.hasMore = response.meta.hasMore;
         } catch (err) {
           console.error('[fetchGridData] Failed to fetch partner listings:', err);
@@ -575,7 +575,7 @@ export async function fetchGridData(config: AnyGridConfig): Promise<GridData> {
       try {
         const response = await searchApi.search(config.searchParams);
         result.listings = response.listings;
-        result.total = response.meta.total;
+        result.total = response.meta.total ?? response.listings.length;
         result.hasMore = response.meta.hasMore;
       } catch (err) {
         console.error(`[fetchGridData] Failed to fetch listings for ${config.type}:`, err);

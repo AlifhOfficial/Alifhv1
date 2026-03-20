@@ -35,7 +35,6 @@ export default function BlkScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasMore, setHasMore] = useState(false);
-  const [total, setTotal] = useState(0);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const requestIdRef = useRef(0);
   const isLoadingMore = useRef(false);
@@ -76,7 +75,6 @@ export default function BlkScreen() {
         setListings(response.listings);
       }
       
-      setTotal(response.meta.total ?? 0);
       setHasMore(response.meta.hasMore);
       setNextCursor(response.meta.nextCursor ?? null);
     } catch (error) {
@@ -196,7 +194,7 @@ export default function BlkScreen() {
       <BlkTextDoodle />
 
       {/* BLK Header - Absolute positioned (outside ScrollView) */}
-      <BlkHeader total={total} />
+      <BlkHeader />
 
       <FlatList
         ref={scrollRef}

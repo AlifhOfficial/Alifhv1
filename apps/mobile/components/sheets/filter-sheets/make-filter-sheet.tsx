@@ -22,7 +22,7 @@ interface MakeFilterSheetProps {
   visible: boolean;
   onClose: () => void;
   selected: string[];
-  /** Current filter context - facets will be fetched dynamically based on this */
+  /** Reserved for compatibility; make counts are global and ignore extra filters */
   filterContext?: Omit<SearchParams, 'make' | 'limit' | 'page'>;
   onApply: (selected: string[]) => void;
 }
@@ -31,7 +31,7 @@ export function MakeFilterSheet({
   visible,
   onClose,
   selected,
-  filterContext = {},
+  filterContext: _filterContext = {},
   onApply,
 }: MakeFilterSheetProps) {
   const { colorScheme } = useTheme();
@@ -56,19 +56,19 @@ export function MakeFilterSheet({
     }
   }, [visible, selected]);
 
-  // Fetch facets dynamically when sheet opens or filter context changes
+  // Fetch global make counts when the sheet opens
   useEffect(() => {
     if (visible) {
       setIsLoadingFacets(true);
       searchApi
-        .getFacets(filterContext)
+        .getFacets()
         .then((result) => {
           setFacets(result?.make ?? []);
         })
         .catch(console.error)
         .finally(() => setIsLoadingFacets(false));
     }
-  }, [visible, filterContext]);
+  }, [visible]);
 
   const snapPoints = useMemo(() => ['60%', '94%'], []);
 

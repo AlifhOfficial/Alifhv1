@@ -86,7 +86,7 @@ export function useTrackView() {
  * Optimizations:
  * - Deduplicates across the session (won't re-track same listing even after remount)
  * - Debounces API calls (waits 1s of inactivity)
- * - Server buffers and batch-writes to DB every 30s
+ * - Sends one batched request for impressions after scrolling settles
  */
 export function useTrackImpressions() {
   // Store ref to know if this instance has registered cleanup

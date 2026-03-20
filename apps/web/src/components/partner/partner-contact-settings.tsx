@@ -7,7 +7,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { authClient } from '@/lib/auth/client';
 import { Loader2, CheckCircle2, Info, Phone, Building2 } from 'lucide-react';
@@ -28,22 +28,8 @@ type EditingField = null | 'adminName' | 'adminPhone' | 'tollNumber';
 
 export function PartnerContactSettings({ initialProfile = null }: { initialProfile?: PartnerProfile | null }) {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  const { data, isLoading } = useQuery<{ profile: PartnerProfile }>({
-    queryKey: ['partner-profile'],
-    queryFn: async () => {
-      const res = await fetch('/api/partner/profile');
-      if (!res.ok) throw new Error('Failed to fetch profile');
-      return res.json();
-    },
-    initialData: initialProfile ? { profile: initialProfile } : undefined,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-  });
-
-  const profile = data?.profile;
+  const [profile, setProfile] = useState<PartnerProfile | null>(initialProfile);
+  const isLoading = !profile;
 
   const [editingField, setEditingField] = useState<EditingField>(null);
   const [saving, setSaving] = useState(false);
@@ -105,6 +91,11 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
       });
       if (!res.ok) throw new Error('Failed to update profile');
       return res.json();
+    },
+    onSuccess: (result) => {
+      if (result?.profile) {
+        setProfile(result.profile);
+      }
     },
   });
 
@@ -240,8 +231,11 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
         return;
       }
 
-      // Invalidate to refresh the verified status
-      queryClient.invalidateQueries({ queryKey: ['partner-profile'] });
+      setProfile((current) => current ? {
+        ...current,
+        adminPhone: fullPhone,
+        adminPhoneVerified: true,
+      } : current);
       
       toast({ title: 'Admin phone verified!' });
       setPhoneJustVerified(true);

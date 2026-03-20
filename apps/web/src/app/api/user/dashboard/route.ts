@@ -7,14 +7,12 @@
  * - Listing stats (active, total, views, saves)
  * - Sales metrics
  * - User activity (saves, superlikes)
- * - 7-day view trend for sparkline
+ * - Lightweight engagement totals without time-series view history
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getUserDashboardStats } from '@alifh/database';
-
-
+import { getCachedUserDashboardStats } from '@/lib/user-dashboard-cache';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -28,8 +26,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-
-    const stats = await getUserDashboardStats(user.id);
+    const stats = await getCachedUserDashboardStats(user.id);
     
     // Add member since from user record
     const memberSince = user.createdAt 

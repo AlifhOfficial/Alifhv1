@@ -991,19 +991,24 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           <div>
             <h1 className="text-base sm:text-lg font-semibold text-foreground">Analytics</h1>
             <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Detailed performance metrics and insights</p>
+            <div className="mt-2 flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground/55">
+              <Clock className="h-3.5 w-3.5" />
+              <span>
+                Last updated {new Date(stats.generatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · Use alongside your own records
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Key Stats with Charts - 12 Column Grid */}
         <div className="grid grid-cols-12 gap-4">
           
-          {/* Views Trend - Large Card */}
+          {/* Views Summary - Large Card */}
           <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-sm font-semibold text-muted-foreground/70">Views This Month</h3>
+                <h3 className="text-sm font-semibold text-muted-foreground/70">Total Views</h3>
               </div>
-              <TrendBadge value={trends.viewsDelta} />
             </div>
             <div className="flex items-baseline gap-3">
               <span className="text-4xl font-bold text-blue-500 tabular-nums">
@@ -1013,8 +1018,8 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             </div>
             <div className="mt-6 pt-4 border-t border-border/40 grid grid-cols-3 gap-4">
               <div>
-                <p className="text-xs text-muted-foreground/60">Last Month</p>
-                <p className="text-lg font-bold tabular-nums">{formatNumber(trends.viewsLastMonth)}</p>
+                <p className="text-xs text-muted-foreground/60">Favorites</p>
+                <p className="text-lg font-bold tabular-nums">{formatNumber(engagement.totalFavorites)}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground/60">Impressions</p>
@@ -1188,10 +1193,9 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground/60">Views</span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold">{formatNumber(trends.viewsThisMonth)}</span>
-                    <TrendBadge value={trends.viewsDelta} />
+                    <span className="text-2xl font-bold">{formatNumber(engagement.totalViewsThisMonth)}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground/50">vs {formatNumber(trends.viewsLastMonth)} last month</span>
+                  <span className="text-xs text-muted-foreground/50">{formatNumber(engagement.totalImpressions)} impressions tracked</span>
                 </div>
               </div>
             </div>
@@ -1417,14 +1421,6 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             </div>
           </section>
         )}
-
-        {/* Footer */}
-        <footer className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-6 border-t border-border/20">
-          <p className="text-[11px] text-muted-foreground/50">
-            Updated {new Date(stats.generatedAt).toLocaleString()} · For guidance only — verify with your own records
-          </p>
-        </footer>
-
     </div>
   );
 }

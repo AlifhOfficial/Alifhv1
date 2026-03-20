@@ -1,355 +1,37 @@
 /**
- * View & Impression Buffer - Batched Analytics Tracking
- * 
- * Instead of DB writes per view/impression, we buffer in memory
- * and flush periodically. This reduces DB writes by ~98%.
- * 
- * Flow:
- * 1. User views listing → Add to buffer (instant, no DB)
- * 2. Search results shown → Buffer impressions (instant, no DB)
- * 3. Every 5 minutes → Flush buffer to DB (single batch operation)
- * 
- * Trade-off: May lose up to 5 minutes of data if server crashes (acceptable for analytics)
- * 
+ * Legacy analytics compatibility layer.
+ *
+ * Raw buffered analytics storage has been removed in favor of direct counter
+ * increments on `car_listing` only. These exports remain so older imports do
+ * not break while routing all writes through the cheaper counter-only path.
+ *
  * @module queries/listings/car-listings/view-buffer
  */
 
-import { createId } from '@paralleldrive/cuid2';
-import { eq, sql, inArray } from 'drizzle-orm';
-import { db } from '../../../dbclient';
-import { carListing, listingView } from '../../../schema/listing';
+import { incrementImpressions, recordListingView, type RecordViewInput } from './analytics';
 
-const VIEW_ID_PREFIX = 'view_';
-
-/**
- * Buffered view data
- */
-interface BufferedView {
-  id: string;
-  listingId: string;
-  userId: string | null;
-  sessionId: string | null;
-  ipAddress: string | null;
-  userAgent: string | null;
-  referrer: string | null;
-  deviceType: 'desktop' | 'mobile' | 'tablet' | null;
-  createdAt: Date;
+export async function recordListingViewBuffered(input: RecordViewInput): Promise<string | null> {
+  return recordListingView(input);
 }
 
-/**
- * Analytics buffer - stores views and impressions until flush
- */
-class AnalyticsBuffer {
-  private views: BufferedView[] = [];
-  private viewCounts: Map<string, number> = new Map();
-  private impressionCounts: Map<string, number> = new Map();
-  private flushTimer: NodeJS.Timeout | null = null;
-  private flushIntervalMs = 300000; // 5 minutes
-  private maxBufferSize = 1000; // Force flush if buffer gets too large
-  private consecutiveFailures = 0;
-  private maxConsecutiveFailures = 3; // Stop auto-flush after 3 consecutive failures
-  
-  constructor() {
-    this.startAutoFlush();
-  }
-
-  private startAutoFlush() {
-    this.flushTimer = setInterval(() => {
-      // Skip auto-flush if we've had too many consecutive failures (network down)
-      if (this.consecutiveFailures >= this.maxConsecutiveFailures) {
-        console.warn(`[analytics-buffer] Skipping auto-flush: ${this.consecutiveFailures} consecutive failures (network may be down)`);
-        return;
-      }
-      
-      this.flush().catch(err => {
-        // Only log connection errors once, not repeatedly
-        if (err?.cause?.code === 'UND_ERR_CONNECT_TIMEOUT' || err?.message?.includes('fetch failed')) {
-          console.warn('[analytics-buffer] Auto-flush skipped: Database unreachable');
-        } else {
-          console.error('[analytics-buffer] Auto-flush error:', err);
-        }
-      });
-    }, this.flushIntervalMs);
-
-    // Don't prevent process exit
-    if (this.flushTimer.unref) {
-      this.flushTimer.unref();
-    }
-  }
-
-  /**
-   * Reset failure counter (call when connection is restored)
-   */
-  resetFailures() {
-    this.consecutiveFailures = 0;
-  }
-
-  /**
-   * Add a view to the buffer (instant, no DB)
-   */
-  addView(input: {
-    listingId: string;
-    userId?: string | null;
-    sessionId?: string | null;
-    ipAddress?: string | null;
-    userAgent?: string | null;
-    referrer?: string | null;
-    deviceType?: 'desktop' | 'mobile' | 'tablet' | null;
-  }): string {
-    const viewId = `${VIEW_ID_PREFIX}${createId()}`;
-    
-    // Add to detailed views buffer
-    this.views.push({
-      id: viewId,
-      listingId: input.listingId,
-      userId: input.userId ?? null,
-      sessionId: input.sessionId ?? null,
-      ipAddress: input.ipAddress ?? null,
-      userAgent: input.userAgent ?? null,
-      referrer: input.referrer ?? null,
-      deviceType: input.deviceType ?? null,
-      createdAt: new Date(),
-    });
-
-    // Increment view counter
-    this.viewCounts.set(
-      input.listingId, 
-      (this.viewCounts.get(input.listingId) || 0) + 1
-    );
-
-    // Force flush if buffer is too large
-    if (this.views.length >= this.maxBufferSize) {
-      this.flush().catch(err => {
-        console.error('[analytics-buffer] Max-size flush error:', err);
-      });
-    }
-
-    return viewId;
-  }
-
-  /**
-   * Add impressions to the buffer (instant, no DB)
-   * Called when listings appear in search results
-   */
-  addImpressions(listingIds: string[]): number {
-    if (!listingIds.length) return 0;
-    
-    // Deduplicate
-    const uniqueIds = [...new Set(listingIds)];
-    
-    for (const id of uniqueIds) {
-      this.impressionCounts.set(
-        id,
-        (this.impressionCounts.get(id) || 0) + 1
-      );
-    }
-
-    return uniqueIds.length;
-  }
-
-  /**
-   * Flush buffer to database (atomic transaction)
-   * - Batch insert all view records
-   * - Batch update all view counts using UNNEST for efficiency
-   * - Batch update all impression counts using UNNEST for efficiency
-   */
-  async flush(): Promise<{ views: number; viewListings: number; impressionListings: number }> {
-    // Swap buffers to avoid race conditions
-    const viewsToFlush = this.views;
-    const viewCountsToFlush = new Map(this.viewCounts);
-    const impressionCountsToFlush = new Map(this.impressionCounts);
-    
-    this.views = [];
-    this.viewCounts.clear();
-    this.impressionCounts.clear();
-
-    const hasViews = viewsToFlush.length > 0;
-    const hasViewUpdates = viewCountsToFlush.size > 0;
-    const hasImpressions = impressionCountsToFlush.size > 0;
-
-    // Skip DB operations entirely when buffer is empty (no logging, no DB calls)
-    if (!hasViews && !hasViewUpdates && !hasImpressions) {
-      return { views: 0, viewListings: 0, impressionListings: 0 };
-    }
-
-    const startTime = Date.now();
-
-    try {
-      // Execute operations individually (neon-http doesn't support transactions)
-      // Best-effort atomic: if one fails, we log but continue with others
-      
-      // 1. Batch insert view records
-      if (viewsToFlush.length > 0) {
-        await db.insert(listingView).values(
-          viewsToFlush.map(v => ({
-            id: v.id,
-            listingId: v.listingId,
-            userId: v.userId,
-            sessionId: v.sessionId,
-            ipAddress: v.ipAddress,
-            userAgent: v.userAgent,
-            referrer: v.referrer,
-            deviceType: v.deviceType,
-            createdAt: v.createdAt,
-          }))
-        );
-      }
-
-      // 2. Batch update view counts using single UPDATE with CASE
-      if (viewCountsToFlush.size > 0) {
-        const viewIds = [...viewCountsToFlush.keys()];
-        const viewCases = viewIds.map(id => 
-          sql`WHEN id = ${id} THEN view_count + ${viewCountsToFlush.get(id)!}`
-        );
-        
-        await db.execute(sql`
-          UPDATE car_listing SET view_count = CASE ${sql.join(viewCases, sql` `)} ELSE view_count END
-          WHERE id IN (${sql.join(viewIds.map(id => sql`${id}`), sql`, `)})
-        `);
-      }
-
-      // 3. Batch update impression counts using single UPDATE with CASE
-      if (impressionCountsToFlush.size > 0) {
-        const impIds = [...impressionCountsToFlush.keys()];
-        const impCases = impIds.map(id => 
-          sql`WHEN id = ${id} THEN impression_count + ${impressionCountsToFlush.get(id)!}`
-        );
-        
-        await db.execute(sql`
-          UPDATE car_listing SET impression_count = CASE ${sql.join(impCases, sql` `)} ELSE impression_count END
-          WHERE id IN (${sql.join(impIds.map(id => sql`${id}`), sql`, `)})
-        `);
-      }
-
-      const elapsed = Date.now() - startTime;
-      console.log(
-        `[analytics-buffer] Flushed: ${viewsToFlush.length} views, ` +
-        `${viewCountsToFlush.size} view updates, ` +
-        `${impressionCountsToFlush.size} impression updates, ` +
-        `${elapsed}ms`
-      );
-
-      // Reset failure counter on success
-      this.consecutiveFailures = 0;
-
-      return { 
-        views: viewsToFlush.length, 
-        viewListings: viewCountsToFlush.size,
-        impressionListings: impressionCountsToFlush.size,
-      };
-    } catch (error) {
-      // Track consecutive failures
-      this.consecutiveFailures++;
-      
-      // On error, try to restore the buffer (best effort)
-      // Check if it's a connection error - don't spam logs for network issues
-      const isConnectionError = 
-        (error as any)?.cause?.code === 'UND_ERR_CONNECT_TIMEOUT' ||
-        (error as any)?.message?.includes('fetch failed');
-      
-      if (isConnectionError) {
-        console.warn(`[analytics-buffer] Flush failed: Database unreachable (attempt ${this.consecutiveFailures}/${this.maxConsecutiveFailures})`);
-      } else {
-        console.error('[analytics-buffer] Flush error, attempting recovery:', error);
-      }
-      
-      this.views.push(...viewsToFlush);
-      viewCountsToFlush.forEach((count, listingId) => {
-        this.viewCounts.set(listingId, (this.viewCounts.get(listingId) || 0) + count);
-      });
-      impressionCountsToFlush.forEach((count, listingId) => {
-        this.impressionCounts.set(listingId, (this.impressionCounts.get(listingId) || 0) + count);
-      });
-      throw error;
-    }
-  }
-
-  /**
-   * Get buffer stats
-   */
-  stats() {
-    return {
-      pendingViews: this.views.length,
-      pendingViewListings: this.viewCounts.size,
-      pendingImpressionListings: this.impressionCounts.size,
-      totalPendingImpressions: Array.from(this.impressionCounts.values()).reduce((a, b) => a + b, 0),
-      flushIntervalMs: this.flushIntervalMs,
-    };
-  }
-
-  /**
-   * Cleanup - call on server shutdown
-   */
-  async destroy() {
-    if (this.flushTimer) {
-      clearInterval(this.flushTimer);
-      this.flushTimer = null;
-    }
-    // Final flush
-    await this.flush();
-  }
+export async function recordImpressionsBuffered(listingIds: string[]): Promise<number> {
+  return incrementImpressions(listingIds);
 }
 
-// Singleton - use globalThis to survive hot reloads
-const globalKey = '__alifh_analytics_buffer__';
-const globalObj = globalThis as unknown as { [key: string]: AnalyticsBuffer };
-
-if (!globalObj[globalKey]) {
-  globalObj[globalKey] = new AnalyticsBuffer();
-}
-
-export const analyticsBuffer = globalObj[globalKey];
-
-// Keep backward compatibility alias
-export const viewBuffer = analyticsBuffer;
-
-/**
- * Record a listing view (buffered - instant response)
- * 
- * @returns The generated view ID
- */
-export function recordListingViewBuffered(input: {
-  listingId: string;
-  userId?: string | null;
-  sessionId?: string | null;
-  ipAddress?: string | null;
-  userAgent?: string | null;
-  referrer?: string | null;
-  deviceType?: 'desktop' | 'mobile' | 'tablet' | null;
-}): string {
-  return analyticsBuffer.addView(input);
-}
-
-/**
- * Record impressions for multiple listings (buffered - instant response)
- * Called when listings appear in search results
- * 
- * @returns Number of unique listings tracked
- */
-export function recordImpressionsBuffered(listingIds: string[]): number {
-  return analyticsBuffer.addImpressions(listingIds);
-}
-
-/**
- * Force flush the analytics buffer (call from cron/cleanup)
- */
 export async function flushViewBuffer() {
-  return analyticsBuffer.flush();
+  return { views: 0, viewListings: 0, impressionListings: 0 };
 }
 
-/**
- * Alias for flushViewBuffer
- */
 export const flushAnalyticsBuffer = flushViewBuffer;
 
-/**
- * Get buffer statistics
- */
 export function getViewBufferStats() {
-  return analyticsBuffer.stats();
+  return {
+    pendingViews: 0,
+    pendingViewListings: 0,
+    pendingImpressionListings: 0,
+    totalPendingImpressions: 0,
+    flushIntervalMs: 0,
+  };
 }
 
-/**
- * Alias for getViewBufferStats
- */
 export const getAnalyticsBufferStats = getViewBufferStats;

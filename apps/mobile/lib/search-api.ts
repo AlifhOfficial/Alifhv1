@@ -9,7 +9,7 @@
  * @module apps/mobile/lib/search-api
  */
 
-import { API_BASE, CDN_BASE } from './config';
+import { API_BASE, getAppImageUrl } from './config';
 
 // ============================================================================
 // SEARCH TYPES (Local definitions to avoid @alifh/database Node.js deps)
@@ -197,10 +197,7 @@ export interface Suggestion {
 
 /** Convert relative path to absolute URL */
 function toAbsoluteUrl(path: string | null): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  if (path.startsWith('/')) return `${API_BASE}${path}`;
-  return `${CDN_BASE}/${path}`;
+  return getAppImageUrl(path);
 }
 
 /** 
@@ -343,7 +340,6 @@ export const searchApi = {
       listings: webResponse.data.map(transformItem),
       facets: webResponse.facets,
       meta: {
-        total: webResponse.meta.total,
         limit: webResponse.meta.limit,
         hasMore: webResponse.meta.hasMore,
         nextCursor: webResponse.meta.nextCursor,
@@ -454,21 +450,6 @@ export const searchApi = {
       throw new Error(`Popular makes failed: ${response.status}`);
     }
     return response.json();
-  },
-
-  /**
-   * Get result count for current filters (without fetching listings)
-   */
-  async getResultCount(params: SearchParams): Promise<number> {
-    const urlParams = paramsToUrl({ ...params, limit: 0 });
-    urlParams.set('includeTotal', 'true');
-    const url = `${API_BASE}/api/listings/search?${urlParams}`;
-    
-    const response = await fetch(url);
-    if (!response.ok) return 0;
-    
-    const webResponse: DBSearchResponse = await response.json();
-    return webResponse.meta.total || 0;
   },
 
   /**

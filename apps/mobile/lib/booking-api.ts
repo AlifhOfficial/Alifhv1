@@ -5,15 +5,12 @@
  * Mirrors the web API at /api/bookings/slots and /api/bookings.
  */
 
-import { API_BASE, CDN_BASE } from './config';
+import { API_BASE, getAppImageUrl } from './config';
 import { getStoredSession } from './auth-api';
 
 /** Convert relative CDN path → absolute URL for native <Image/> */
 function toAbsoluteUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  if (path.startsWith('/')) return `${API_BASE}${path}`;
-  return `${CDN_BASE}/${path}`;
+  return getAppImageUrl(path);
 }
 
 // ============================================================================

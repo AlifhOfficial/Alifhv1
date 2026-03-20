@@ -32,13 +32,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { 
-  ResponsiveContainer, 
-  AreaChart, 
-  Area, 
-  BarChart,
-  Bar,
-} from 'recharts';
 import { HealthStatus } from '@/components/shared/health-status';
 import type { ExtendedUser } from '@/types/auth';
 import type { HealthCheckResponse } from '@/lib/health';
@@ -73,66 +66,6 @@ function formatNumber(num: number): string {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
   if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
   return num.toLocaleString();
-}
-
-// ============================================================================
-// Mini Wave Chart
-// ============================================================================
-
-let waveChartCounter = 0;
-
-function WaveChart({ className = 'text-blue-500' }: { className?: string }) {
-  const [gradientId] = React.useState(() => `waveGradient-${++waveChartCounter}`);
-  const data = Array.from({ length: 20 }, (_, i) => ({
-    x: i,
-    y: Math.sin(i * 0.5) * 30 + 50 + Math.sin(i * 0.3) * 15,
-  }));
-
-  return (
-    <ResponsiveContainer width="100%" height="100%">
-      <AreaChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-        <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="currentColor" stopOpacity={0.3} />
-            <stop offset="100%" stopColor="currentColor" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <Area
-          type="monotone"
-          dataKey="y"
-          stroke="currentColor"
-          strokeWidth={2}
-          fill={`url(#${gradientId})`}
-          className={className}
-        />
-      </AreaChart>
-    </ResponsiveContainer>
-  );
-}
-
-// ============================================================================
-// Mini Bar Chart
-// ============================================================================
-
-function MiniBarChart({ className = 'text-blue-500' }: { className?: string }) {
-  const data = Array.from({ length: 12 }, (_, i) => ({
-    x: i,
-    y: Math.random() * 60 + 20,
-  }));
-
-  return (
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-        <Bar
-          dataKey="y"
-          radius={[2, 2, 0, 0]}
-          fill="currentColor"
-          fillOpacity={0.5}
-          className={className}
-        />
-      </BarChart>
-    </ResponsiveContainer>
-  );
 }
 
 // ============================================================================
@@ -190,7 +123,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialUnread
     ? Math.floor((Date.now() - memberSince.getTime()) / (24 * 60 * 60 * 1000))
     : 0;
   
-  const growthRate = stats?.saveRate ?? 36;
+  const saveRate = stats?.saveRate ?? 0;
 
   // Time-aware greeting
   const hour = new Date().getHours();
@@ -258,9 +191,9 @@ export function UserDashboardOverview({ user, initialStats: stats, initialUnread
           </div>
         </div>
 
-        {/* Main Grid - Row 1: Views Trend + Membership/Messages */}
+        {/* Main Grid - Row 1: Engagement + Membership/Messages */}
         <div className="grid grid-cols-12 gap-4">
-          {/* Views Trend Card */}
+          {/* Engagement Card */}
           <div className="col-span-12 lg:col-span-8 rounded-lg border border-border/20 bg-muted/5 p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 mb-4">
               <div>
@@ -270,16 +203,26 @@ export function UserDashboardOverview({ user, initialStats: stats, initialUnread
                 </span>
               </div>
               <div className="sm:text-right">
-                <p className="text-xs text-muted-foreground/60 mb-1">Last 7 days</p>
-                <div className="h-12 sm:h-16 w-full sm:w-32 text-purple-500/20">
-                  <WaveChart className="text-purple-500/20" />
-                </div>
+                <p className="text-xs text-muted-foreground/60 mb-1">Average per listing</p>
+                <p className="text-lg sm:text-2xl font-semibold tabular-nums text-foreground/90">
+                  {stats.avgViewsPerListing ?? 0}
+                </p>
               </div>
             </div>
-            
-            {/* Trend Chart */}
-            <div className="h-20 sm:h-24 w-full text-purple-500/30 -mb-2">
-              <WaveChart className="text-purple-500/30" />
+
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/20">
+              <div>
+                <p className="text-xs text-muted-foreground/60 mb-1">Total saves</p>
+                <p className="text-lg sm:text-xl font-semibold text-amber-500">
+                  {formatNumber(stats.totalSaves ?? 0)}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground/60 mb-1">Save rate</p>
+                <p className="text-lg sm:text-xl font-semibold text-foreground/90">
+                  {saveRate}%
+                </p>
+              </div>
             </div>
           </div>
 
@@ -336,7 +279,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialUnread
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm text-muted-foreground">Save rate</span>
-                <span className="text-xs sm:text-sm font-semibold text-amber-500">{growthRate}%</span>
+                <span className="text-xs sm:text-sm font-semibold text-amber-500">{saveRate}%</span>
               </div>
             </div>
           </div>

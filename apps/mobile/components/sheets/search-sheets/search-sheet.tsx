@@ -198,39 +198,26 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
   // DATA FETCHING
   // ============================================================================
 
-  // Build current filter context for facet queries
-  // This ensures facets narrow down based on ALL active selections
-  const filterContext = useMemo(() => {
-    const ctx: Record<string, any> = {};
-    if (selectedTags.length > 0) ctx.tags = selectedTags;
-    if (selectedExtras.length > 0) ctx.extras = selectedExtras;
-    if (selectedPartner) ctx.partnerId = selectedPartner.id;
-    if (selectedBodyTypes.length > 0) ctx.bodyType = selectedBodyTypes;
-    if (selectedFuelTypes.length > 0) ctx.fuelType = selectedFuelTypes;
-    if (selectedTransmission.length > 0) ctx.transmission = selectedTransmission;
-    if (selectedSpecs.length > 0) ctx.specs = selectedSpecs;
-    if (selectedCondition) ctx.condition = selectedCondition;
-    if (selectedSellerType) ctx.sellerType = selectedSellerType;
-    return ctx;
-  }, [selectedTags, selectedExtras, selectedPartner, selectedBodyTypes, selectedFuelTypes, selectedTransmission, selectedSpecs, selectedCondition, selectedSellerType]);
-
-  // Fetch makes (re-fetch when filter context changes)
+  // Facet counts are now hierarchical only:
+  // - make: global
+  // - model: scoped by selected make
+  // - trim: scoped by selected make + model
   useEffect(() => {
     if (visible) {
       setIsLoadingFacets(true);
       searchApi
-        .getFacets(filterContext)
+        .getFacets()
         .then((f) => setFacets(f))
         .catch(console.error)
         .finally(() => setIsLoadingFacets(false));
     }
-  }, [visible, filterContext]);
+  }, [visible]);
 
-  // Fetch models when makes change (pass filter context)
+  // Fetch model counts for the selected makes only
   useEffect(() => {
     if (selectedMakes.length > 0) {
       searchApi
-        .getModelsForMakes(selectedMakes, filterContext)
+        .getModelsForMakes(selectedMakes)
         .then((models) => setModelFacets(models))
         .catch(console.error);
     } else {
@@ -240,11 +227,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
     }
   }, [selectedMakes]);
 
-  // Fetch trims when models change (pass filter context)
+  // Fetch trim counts for the selected make + model combination
   useEffect(() => {
     if (selectedMakes.length > 0 && selectedModels.length > 0) {
       searchApi
-        .getTrimsForModels(selectedMakes, selectedModels, filterContext)
+        .getTrimsForModels(selectedMakes, selectedModels)
         .then((trims) => setTrimFacets(trims))
         .catch(console.error);
     } else {

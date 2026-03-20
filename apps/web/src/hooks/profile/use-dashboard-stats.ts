@@ -37,7 +37,7 @@ export interface DashboardStats {
   // Member info
   memberSince: string | null;
   
-  // Trend data
+  // Compatibility placeholder; time-series view history is currently disabled
   viewsTrend: { date: string; views: number }[];
 }
 

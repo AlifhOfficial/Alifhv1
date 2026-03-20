@@ -1,22 +1,18 @@
 /**
  * API: Track Listing View
  * POST /api/listings/[id]/view
- * 
+ *
  * Purpose: Record when a user views a listing detail page
  * Authentication: None required (public endpoint)
- * 
+ *
  * Records:
- * - Detailed view record in listing_view table (buffered)
- * - Increments viewCount counter on listing (buffered)
- * 
- * Performance: Views are buffered in memory and flushed every 30s
- * This reduces DB writes by ~98% at scale.
- * 
- * Rate Limited: 60 views per minute per IP (prevents abuse)
+ * - Increments `viewCount` on the listing
+ *
+ * Rate Limited: handled in the database helper with a short per-session cooldown
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { recordListingViewBuffered, getViewBufferStats } from '@alifh/database';
+import { recordListingView } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
@@ -67,8 +63,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       ?? req.cookies.get('__session')?.value
       ?? undefined;
 
-    // Record the view (buffered - instant response, no DB wait)
-    const viewId = recordListingViewBuffered({
+    const recorded = await recordListingView({
       listingId,
       userId: userIdFromCookie,
       sessionId,
@@ -78,14 +73,9 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       deviceType,
     });
 
-    // Get buffer stats for debugging (optional)
-    const bufferStats = getViewBufferStats();
-
-    return NextResponse.json({ 
-      success: true, 
-      viewId,
-      buffered: true,
-      pending: bufferStats.pendingViews,
+    return NextResponse.json({
+      success: true,
+      recorded: recorded !== null,
     });
   } catch (error) {
     console.error('[API] Error recording view:', error);

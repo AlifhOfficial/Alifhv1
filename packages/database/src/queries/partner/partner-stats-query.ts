@@ -9,7 +9,7 @@
 
 import { eq, and, sql, gte, lt, count, sum, avg, desc, asc, isNull, isNotNull, or } from 'drizzle-orm';
 import { db } from '../../dbclient';
-import { carListing, listingView } from '../../schema/listing';
+import { carListing } from '../../schema/listing';
 import { booking } from '../../schema/booking';
 
 // ============================================================================
@@ -460,7 +460,8 @@ export async function getPartnerInsightsBookingStats(partnerId: string): Promise
 
 /**
  * Get trend statistics comparing this month vs last month
- * Optimized: 2 parallel queries (one for listings, one for views) with conditional aggregation
+ * Optimized: single listings query. View deltas are zeroed until a bucketed
+ * aggregate replaces raw event storage.
  */
 export async function getPartnerTrendStats(partnerId: string): Promise<PartnerTrendStats> {
   const now = new Date();
@@ -469,38 +470,22 @@ export async function getPartnerTrendStats(partnerId: string): Promise<PartnerTr
   const thisWeekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const lastWeekStart = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
 
-  // Run both queries in parallel
-  const [listingStats, viewStats] = await Promise.all([
-    // Listing trends: single query with conditional aggregation
-    db
-      .select({
-        listingsThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.createdAt} >= ${thisMonthStart})`,
-        listingsLastMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.createdAt} >= ${lastMonthStart} AND ${carListing.createdAt} < ${thisMonthStart})`,
-        salesThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${thisMonthStart})`,
-        salesLastMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${lastMonthStart} AND ${carListing.soldAt} < ${thisMonthStart})`,
-        soldThisWeek: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${thisWeekStart})`,
-        soldLastWeek: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${lastWeekStart} AND ${carListing.soldAt} < ${thisWeekStart})`,
-      })
-      .from(carListing)
-      .where(eq(carListing.partnerId, partnerId)),
-    // View trends: single query with conditional aggregation
-    db
-      .select({
-        viewsThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${listingView.createdAt} >= ${thisMonthStart})`,
-        viewsLastMonth: sql<number>`COUNT(*) FILTER (WHERE ${listingView.createdAt} >= ${lastMonthStart} AND ${listingView.createdAt} < ${thisMonthStart})`,
-      })
-      .from(listingView)
-      .innerJoin(carListing, eq(listingView.listingId, carListing.id))
-      .where(eq(carListing.partnerId, partnerId)),
-  ]);
-
-  const stats = listingStats[0];
-  const views = viewStats[0];
+  const [stats] = await db
+    .select({
+      listingsThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.createdAt} >= ${thisMonthStart})`,
+      listingsLastMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.createdAt} >= ${lastMonthStart} AND ${carListing.createdAt} < ${thisMonthStart})`,
+      salesThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${thisMonthStart})`,
+      salesLastMonth: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${lastMonthStart} AND ${carListing.soldAt} < ${thisMonthStart})`,
+      soldThisWeek: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${thisWeekStart})`,
+      soldLastWeek: sql<number>`COUNT(*) FILTER (WHERE ${carListing.soldAt} IS NOT NULL AND ${carListing.soldAt} >= ${lastWeekStart} AND ${carListing.soldAt} < ${thisWeekStart})`,
+    })
+    .from(carListing)
+    .where(eq(carListing.partnerId, partnerId));
 
   const listingsThisMonth = Number(stats?.listingsThisMonth ?? 0);
   const listingsLastMonth = Number(stats?.listingsLastMonth ?? 0);
-  const viewsThisMonth = Number(views?.viewsThisMonth ?? 0);
-  const viewsLastMonth = Number(views?.viewsLastMonth ?? 0);
+  const viewsThisMonth = 0;
+  const viewsLastMonth = 0;
   const salesThisMonth = Number(stats?.salesThisMonth ?? 0);
   const salesLastMonth = Number(stats?.salesLastMonth ?? 0);
   const soldThisWeek = Number(stats?.soldThisWeek ?? 0);

@@ -12,10 +12,13 @@ export { getPartnersList, type PartnerListItem } from './get-partners-list';
 // Partner Profile (for dashboard & showroom page)
 export {
   getPartnerProfileComprehensive,
+  getPartnerContactProfile,
   updatePartnerProfile,
   getPartnerProfileByUserId,
+  getPartnerContactProfileByUserId,
   getShowroomPageData,
   type PartnerProfileComprehensive,
+  type PartnerContactProfile,
   type PartnerProfileUpdate,
   // Types kept for schema reference but not used in forms:
   type PartnerFeatures,

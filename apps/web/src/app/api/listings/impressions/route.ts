@@ -1,20 +1,17 @@
 /**
  * API: Track Listing Impressions (Batch)
  * POST /api/listings/impressions
- * 
+ *
  * Purpose: Record when listings appear in search results
  * Authentication: None required (public endpoint)
- * 
+ *
  * Body: { listingIds: string[] }
- * 
- * Buffers impressions in memory and flushes every 30s.
- * This reduces DB writes by ~98% compared to immediate writes.
- * 
+ *
  * Rate Limited: 30 batch calls per minute per IP (covers heavy browsing)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { recordImpressionsBuffered, getViewBufferStats } from '@alifh/database';
+import { incrementImpressions } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
@@ -51,16 +48,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, updated: 0 });
     }
 
-    // Buffer impressions (instant, no DB wait)
-    const bufferedCount = recordImpressionsBuffered(validIds);
-    
-    // Get buffer stats for debugging
-    const bufferStats = getViewBufferStats();
+    const updated = await incrementImpressions(validIds);
 
-    return NextResponse.json({ 
-      success: true, 
-      buffered: bufferedCount,
-      pending: bufferStats.totalPendingImpressions,
+    return NextResponse.json({
+      success: true,
+      updated,
     });
   } catch (error) {
     console.error('[API] Error recording impressions:', error);

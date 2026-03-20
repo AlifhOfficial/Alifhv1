@@ -37,8 +37,9 @@ function getApiBaseUrl(): string {
     return 'http://localhost:3000';
   }
   
-  // Use production URL - use www to avoid 307 redirect
-  return process.env.EXPO_PUBLIC_API_URL || 'https://www.revvup.ae';
+  // Use production apex domain by default.
+  // This keeps mobile aligned with the web app, EAS env defaults, and CDN cache rules.
+  return process.env.EXPO_PUBLIC_API_URL || 'https://revvup.ae';
 }
 
 function getWsUrl(): string {
@@ -60,7 +61,7 @@ function getWsUrl(): string {
 export const API_BASE = getApiBaseUrl();
 
 export const PUBLIC_SITE_URL =
-  (process.env.EXPO_PUBLIC_SITE_URL || process.env.EXPO_PUBLIC_API_URL || 'https://www.revvup.ae').replace(/\/$/, '');
+  (process.env.EXPO_PUBLIC_SITE_URL || process.env.EXPO_PUBLIC_API_URL || 'https://revvup.ae').replace(/\/$/, '');
 
 // WebSocket URL - auto-detected in dev, from env in production
 export const WS_URL = getWsUrl();
@@ -168,7 +169,9 @@ export function getAppImageUrl(key: string | null | undefined, cacheBuster?: num
   if (!key) return null;
 
   if (key.startsWith('/')) {
-    return null;
+    const normalizedKey = key.slice(1);
+    const baseUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${normalizedKey}`;
+    return cacheBuster ? `${baseUrl}?v=${cacheBuster}` : baseUrl;
   }
 
   if (key.startsWith('http://') || key.startsWith('https://')) {

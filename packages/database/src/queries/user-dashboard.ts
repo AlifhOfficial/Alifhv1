@@ -9,7 +9,7 @@
  * - Engagement: total views, total saves, avg per listing
  * - Sales: sold count
  * - Activity: saves made, superlikes used/remaining
- * - Trend: last 7 days view data for sparkline
+ * - Trend: placeholder last 7 days data until daily aggregates are introduced
  */
 
 import { db } from '../index';
@@ -17,7 +17,6 @@ import {
   carListing, 
   userFavorite, 
   userSuperlikeQuota,
-  listingView,
 } from '../schema';
 import { eq, and, sql, isNull, gte, lte } from 'drizzle-orm';
 
@@ -59,16 +58,12 @@ export interface UserDashboardStats {
 export async function getUserDashboardStats(userId: string): Promise<UserDashboardStats> {
   const now = new Date();
   const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-  // Run all queries in parallel
   const [
     listingStats,
     soldResult,
     expiringResult,
     mySavesResult,
     superlikeQuotaResult,
-    viewsTrendResult,
   ] = await Promise.all([
     // 1. Aggregate listing stats (active listings, views, saves)
     db
@@ -131,24 +126,6 @@ export async function getUserDashboardStats(userId: string): Promise<UserDashboa
       .from(userSuperlikeQuota)
       .where(eq(userSuperlikeQuota.userId, userId)),
 
-    // 6. Views trend (last 7 days) - aggregate from listing_view
-    db
-      .select({
-        date: sql<string>`date_trunc('day', ${listingView.createdAt})::date::text`,
-        views: sql<number>`count(*)::int`,
-      })
-      .from(listingView)
-      .innerJoin(carListing, eq(listingView.listingId, carListing.id))
-      .where(
-        and(
-          eq(carListing.userId, userId),
-          eq(carListing.postedByRole, 'user'),
-          isNull(carListing.partnerId),
-          gte(listingView.createdAt, sevenDaysAgo)
-        )
-      )
-      .groupBy(sql`date_trunc('day', ${listingView.createdAt})`)
-      .orderBy(sql`date_trunc('day', ${listingView.createdAt})`),
   ]);
 
   // Process results
@@ -174,10 +151,9 @@ export async function getUserDashboardStats(userId: string): Promise<UserDashboa
   for (let i = 6; i >= 0; i--) {
     const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
     const dateStr = date.toISOString().split('T')[0];
-    const found = viewsTrendResult.find(r => r.date === dateStr);
     viewsTrend.push({
       date: dateStr,
-      views: found?.views ?? 0,
+      views: 0,
     });
   }
 

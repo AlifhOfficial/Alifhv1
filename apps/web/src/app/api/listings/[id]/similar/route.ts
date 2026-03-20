@@ -15,11 +15,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { applyCdnHeaders } from '@/lib/cdn-cache';
-import {
-  getSimilarListings,
-  getListingDetailed,
-  type SimilarListingCard,
-} from '@alifh/database';
+import { getCachedSimilarListingsForListing } from '@/lib/similar-listings-cache';
 
 export const runtime = 'nodejs';
 
@@ -43,22 +39,7 @@ export async function GET(
   }
 
   try {
-    // Fetch the source listing to get matching criteria
-    const listing = await getListingDetailed(id);
-    
-    if (!listing) {
-      return NextResponse.json(
-        { error: 'Listing not found' },
-        { status: 404 }
-      );
-    }
-
-    // Get similar listings - price-focused discovery
-    const similar = await getSimilarListings({
-      excludeId: id,
-      price: listing.price,
-      bodyType: listing.bodyType,
-    });
+    const similar = await getCachedSimilarListingsForListing(id);
 
     const response = NextResponse.json({ listings: similar });
     applyCdnHeaders(response, 'similar');

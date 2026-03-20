@@ -9,74 +9,15 @@
  */
 
 import { Metadata } from 'next';
-import { 
-  getListingDetailed, 
-  getDealerBaseProfile, 
-  getUserProfileByUserId,
-  getStaffEffectivePhone,
-  calculatePartnerStats,
-  calculateUserStats,
-  getSimilarListings,
-  hasPublishedShowroom,
-} from '@alifh/database';
+import { getListingDetailed } from '@alifh/database';
 import { ListingDetailView } from '@/components/listings/listing-detail';
 import { ImagePreloader } from '@/components/ui/image-preloader';
-import type { SellerData } from '@/hooks/listings';
-import type { SimilarListingCard } from '@/hooks/listings/use-similar-listings';
-import { getPublicBookingAvailability, type PublicBookingAvailabilityResponse } from '@/lib/bookings/public-availability';
+import { getCachedPublicListingDetailBundle } from '@/lib/listing-detail-cache';
 import { buildListingBrandedImageUrl } from '@/lib/listing-share';
 import { getCdnPublicUrl } from '@/utils/storage';
 
 interface PageProps {
   params: Promise<{ id: string }>;
-}
-
-// Fetch seller data based on listing type (same logic as API route)
-type ListingResult = NonNullable<Awaited<ReturnType<typeof getListingDetailed>>>;
-
-async function fetchSellerData(listing: ListingResult): Promise<SellerData | null> {
-  try {
-    if (listing.partnerId) {
-      // Partner listing - fetch dealer profile and staff phone
-      const [partnerProfile, staffContact, partnerStats, hasShowroom] = await Promise.all([
-        getDealerBaseProfile(listing.partnerId),
-        listing.postedByRole === 'staff' && listing.userId
-          ? getStaffEffectivePhone(listing.userId, listing.partnerId)
-          : Promise.resolve(null),
-        calculatePartnerStats(listing.partnerId),
-        hasPublishedShowroom(listing.partnerId),
-      ]);
-      
-      // Cast through unknown - DB type is compatible but TypeScript can't verify
-      return { 
-        type: 'partner' as const, 
-        partnerId: listing.partnerId,
-        partner: partnerProfile, 
-        partnerStats: partnerStats ? { ...partnerStats, hasShowroom } : null,
-        staffContact: staffContact ? {
-          phone: staffContact.phone,
-          displayName: staffContact.displayName,
-        } : null,
-      } as unknown as SellerData;
-    } else {
-      // User listing - fetch profile
-      const [userProfile, userStats] = await Promise.all([
-        getUserProfileByUserId(listing.userId),
-        calculateUserStats(listing.userId),
-      ]);
-      
-      // Cast through unknown - DB type is compatible but TypeScript can't verify
-      return { 
-        type: 'user' as const, 
-        userId: listing.userId,
-        userProfile,
-        userStats,
-      } as unknown as SellerData;
-    }
-  } catch (error) {
-    console.error('[fetchSellerData] Failed:', error);
-    return null;
-  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -156,35 +97,16 @@ export default async function ListingDetailPage({ params }: PageProps) {
   // Fetch listing AND seller data server-side for instant display
   // No client-side fetch waterfall - everything renders immediately
   let initialListing = null;
-  let initialSellerData: SellerData | null = null;
-  let initialSimilarListings: SimilarListingCard[] = [];
-  let initialBookingAvailability: PublicBookingAvailabilityResponse | null = null;
+  let initialSellerData = null;
+  let initialSimilarListings = [];
   
   try {
-    const listing = await getListingDetailed(id);
+    const { listing, sellerData, similarListings } = await getCachedPublicListingDetailBundle(id);
     // Only pass public, approved listings as initial data
     if (listing?.moderationStatus === 'approved' && listing?.lifecycleStatus === 'active') {
       initialListing = listing;
-      const [sellerData, similarListings] = await Promise.all([
-        fetchSellerData(listing),
-        getSimilarListings({
-          excludeId: listing.id,
-          price: listing.price,
-          bodyType: listing.bodyType,
-          make: listing.make,
-          model: listing.model,
-          mileage: listing.mileage,
-          fuelType: listing.fuelType,
-        }),
-      ]);
       initialSellerData = sellerData;
       initialSimilarListings = similarListings;
-      if (listing.partnerId) {
-        initialBookingAvailability = await getPublicBookingAvailability(listing.id, {
-          mode: 'dates',
-          prefetchSlots: true,
-        });
-      }
     }
   } catch (error) {
     // Silently fail - client will fetch and show error state
@@ -211,7 +133,6 @@ export default async function ListingDetailPage({ params }: PageProps) {
         initialListing={initialListing} 
         initialSellerData={initialSellerData}
         initialSimilarListings={initialSimilarListings}
-        initialBookingAvailability={initialBookingAvailability}
       />
     </>
   );

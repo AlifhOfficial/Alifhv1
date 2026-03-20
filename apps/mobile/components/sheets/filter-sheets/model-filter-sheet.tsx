@@ -25,7 +25,7 @@ interface ModelFilterSheetProps {
   /** Currently selected makes — models are sourced from these */
   selectedMakes: string[];
   selected: string[];
-  /** Current filter context - facets will be fetched dynamically based on this */
+  /** Reserved for compatibility; model counts only depend on selected makes */
   filterContext?: Omit<SearchParams, 'make' | 'model' | 'limit' | 'page'>;
   onApply: (selected: string[]) => void;
 }
@@ -40,7 +40,7 @@ export function ModelFilterSheet({
   onClose,
   selectedMakes,
   selected,
-  filterContext = {},
+  filterContext: _filterContext = {},
   onApply,
 }: ModelFilterSheetProps) {
   const { colorScheme } = useTheme();
@@ -64,25 +64,21 @@ export function ModelFilterSheet({
     }
   }, [visible, selected]);
 
-  // Fetch model facets dynamically when sheet opens or context changes
+  // Fetch model counts for the selected makes only
   useEffect(() => {
     if (visible && selectedMakes.length > 0) {
       setIsLoadingFacets(true);
       searchApi
-        .getModelsForMakes(selectedMakes, filterContext)
+        .getModelsForMakes(selectedMakes)
         .then((models) => setFacets(models))
         .catch(console.error)
         .finally(() => setIsLoadingFacets(false));
     } else if (visible) {
-      // If no makes selected, fetch all models from facets
-      setIsLoadingFacets(true);
-      searchApi
-        .getFacets(filterContext)
-        .then((result) => setFacets([]))
-        .catch(console.error)
-        .finally(() => setIsLoadingFacets(false));
+      // When no make is selected we still show the full model taxonomy from constants.
+      setFacets([]);
+      setIsLoadingFacets(false);
     }
-  }, [visible, selectedMakes, filterContext]);
+  }, [visible, selectedMakes]);
 
   const snapPoints = useMemo(() => ['60%', '94%'], []);
 

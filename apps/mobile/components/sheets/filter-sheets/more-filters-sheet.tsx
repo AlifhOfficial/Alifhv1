@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
-import { searchApi, type FacetBucket, type SearchParams, type SearchFacets } from '@/lib/search-api';
+import type { SearchParams } from '@/lib/search-api';
 import { 
   BODY_TYPES, 
   FUEL_TYPES, 
@@ -23,7 +23,8 @@ import {
   EXTERIOR_COLORS,
   INTERIOR_COLORS,
   ENGINE_SIZES,
-  SELLER_TYPE_OPTIONS 
+  SELLER_TYPE_OPTIONS,
+  SPECS_TYPES,
 } from '@/lib/filter-constants';
 
 export type ViewMode = 'grid' | 'list';
@@ -52,7 +53,7 @@ interface MoreFiltersSheetProps {
   visible: boolean;
   onClose: () => void;
   filters: MoreFiltersState;
-  /** Current filter context - facets will be fetched dynamically based on this */
+  /** Reserved for compatibility; this sheet uses constants instead of server facets */
   filterContext?: Omit<SearchParams, 'specs' | 'bodyType' | 'fuelType' | 'transmission' | 'exteriorColor' | 'interiorColor' | 'engineSize' | 'sellerType' | 'condition' | 'limit' | 'page'>;
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
@@ -63,7 +64,7 @@ export function MoreFiltersSheet({
   visible, 
   onClose, 
   filters,
-  filterContext = {},
+  filterContext: _filterContext = {},
   viewMode,
   onViewModeChange,
   onApply,
@@ -76,10 +77,6 @@ export function MoreFiltersSheet({
   // Local state
   const [localFilters, setLocalFilters] = useState<MoreFiltersState>(filters);
   
-  // Dynamic facets
-  const [facets, setFacets] = useState<SearchFacets | null>(null);
-  const [isLoadingFacets, setIsLoadingFacets] = useState(false);
-  
   // Collapsible sections
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['popular']));
 
@@ -89,36 +86,6 @@ export function MoreFiltersSheet({
       setLocalFilters(filters);
     }
   }, [visible, filters]);
-
-  // Build dynamic filter context from parent context + local selections
-  const dynamicFilterContext = useMemo(() => {
-    const ctx: Record<string, any> = { ...filterContext };
-    if (localFilters.condition) ctx.condition = localFilters.condition;
-    if (localFilters.isBlkListing) ctx.isBlkListing = localFilters.isBlkListing;
-    if (localFilters.isBlackTierPartner) ctx.isBlackTierPartner = localFilters.isBlackTierPartner;
-    if (localFilters.isNegotiable) ctx.isNegotiable = localFilters.isNegotiable;
-    if (localFilters.specs?.length) ctx.specs = localFilters.specs;
-    if (localFilters.bodyType?.length) ctx.bodyType = localFilters.bodyType;
-    if (localFilters.fuelType?.length) ctx.fuelType = localFilters.fuelType;
-    if (localFilters.transmission?.length) ctx.transmission = localFilters.transmission;
-    if (localFilters.exteriorColor?.length) ctx.exteriorColor = localFilters.exteriorColor;
-    if (localFilters.interiorColor?.length) ctx.interiorColor = localFilters.interiorColor;
-    if (localFilters.engineSize?.length) ctx.engineSize = localFilters.engineSize;
-    if (localFilters.sellerType) ctx.sellerType = localFilters.sellerType;
-    return ctx;
-  }, [filterContext, localFilters]);
-
-  // Fetch facets dynamically when sheet opens or selections change
-  useEffect(() => {
-    if (visible) {
-      setIsLoadingFacets(true);
-      searchApi
-        .getFacets(dynamicFilterContext)
-        .then((result) => setFacets(result))
-        .catch(console.error)
-        .finally(() => setIsLoadingFacets(false));
-    }
-  }, [visible, dynamicFilterContext]);
 
   const snapPoints = useMemo(() => ['60%', '94%'], []);
 
@@ -299,13 +266,10 @@ export function MoreFiltersSheet({
     options: readonly { readonly value: string; readonly label: string }[],
     selected: string[] | undefined,
     onToggle: (value: string) => void,
-    facetData?: FacetBucket[]
   ) => (
     <View style={styles.chipsRow}>
       {options.map(option => {
         const isSelected = selected?.includes(option.value);
-        const facet = facetData?.find(f => f.value === option.value);
-        const count = facet?.count ?? 0;
 
         return (
           <HapticPressable
@@ -325,14 +289,6 @@ export function MoreFiltersSheet({
             >
               {option.label}
             </Supporting>
-            {count > 0 && (
-              <Supporting
-                size="mini"
-                style={{ color: isSelected ? colors.background : colors.textTertiary }}
-              >
-                {count}
-              </Supporting>
-            )}
           </HapticPressable>
         );
       })}
@@ -458,17 +414,9 @@ export function MoreFiltersSheet({
           'Regional Specs',
           'specs',
           renderChipOptions(
-            facets?.specs?.map(s => ({ value: s.value, label: s.label || s.value })) || [
-              { value: 'gcc', label: 'GCC Specs' },
-              { value: 'american', label: 'American Specs' },
-              { value: 'european', label: 'European Specs' },
-              { value: 'japanese', label: 'Japanese Specs' },
-              { value: 'canadian', label: 'Canadian Specs' },
-              { value: 'other', label: 'Other' },
-            ],
+            SPECS_TYPES,
             localFilters.specs,
             (value) => handleToggleArray('specs', value),
-            facets?.specs
           ),
           localFilters.specs?.length ?? 0
         )}
@@ -481,7 +429,6 @@ export function MoreFiltersSheet({
             BODY_TYPES,
             localFilters.bodyType,
             (value) => handleToggleArray('bodyType', value),
-            facets?.bodyType
           ),
           localFilters.bodyType?.length ?? 0
         )}
@@ -494,7 +441,6 @@ export function MoreFiltersSheet({
             FUEL_TYPES,
             localFilters.fuelType,
             (value) => handleToggleArray('fuelType', value),
-            facets?.fuelType
           ),
           localFilters.fuelType?.length ?? 0
         )}
@@ -507,7 +453,6 @@ export function MoreFiltersSheet({
             TRANSMISSION_TYPES,
             localFilters.transmission,
             (value) => handleToggleArray('transmission', value),
-            facets?.transmission
           ),
           localFilters.transmission?.length ?? 0
         )}
@@ -520,7 +465,6 @@ export function MoreFiltersSheet({
             EXTERIOR_COLORS,
             localFilters.exteriorColor,
             (value) => handleToggleArray('exteriorColor', value),
-            undefined
           ),
           localFilters.exteriorColor?.length ?? 0
         )}
@@ -533,7 +477,6 @@ export function MoreFiltersSheet({
             INTERIOR_COLORS,
             localFilters.interiorColor,
             (value) => handleToggleArray('interiorColor', value),
-            undefined
           ),
           localFilters.interiorColor?.length ?? 0
         )}
@@ -546,7 +489,6 @@ export function MoreFiltersSheet({
             ENGINE_SIZES,
             localFilters.engineSize,
             (value) => handleToggleArray('engineSize', value),
-            undefined
           ),
           localFilters.engineSize?.length ?? 0
         )}
@@ -558,8 +500,6 @@ export function MoreFiltersSheet({
           <View style={styles.chipsRow}>
             {SELLER_TYPE_OPTIONS.map(option => {
               const isSelected = localFilters.sellerType === option.value;
-              const facet = facets?.sellerType?.find((f: FacetBucket) => f.value === option.value);
-              const count = facet?.count ?? 0;
               return (
                 <HapticPressable
                   key={option.value}
@@ -578,14 +518,6 @@ export function MoreFiltersSheet({
                   >
                     {option.label}
                   </Supporting>
-                  {count > 0 && (
-                    <Supporting
-                      size="mini"
-                      style={{ color: isSelected ? colors.background : colors.textTertiary }}
-                    >
-                      {count}
-                    </Supporting>
-                  )}
                 </HapticPressable>
               );
             })}

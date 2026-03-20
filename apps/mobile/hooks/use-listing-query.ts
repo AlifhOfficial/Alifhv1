@@ -165,7 +165,7 @@ export function useSellerListings(options: UseSellerListingsOptions): UseSellerL
   
   return {
     listings,
-    total: data?.meta.total ?? 0,
+    total: data?.meta.total ?? listings.length,
     // Only show loading when truly no data
     isLoading: isLoading && listings.length === 0,
     error: error as Error | null,

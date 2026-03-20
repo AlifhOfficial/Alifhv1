@@ -16,12 +16,9 @@ import { Data, HapticPressable } from '@/components/ui';
 // Header content height for padding calculation
 export const BLK_HEADER_HEIGHT = 56;
 
-interface BlkHeaderProps {
-  /** Total count of BLK listings (not displayed) */
-  total?: number;
-}
+interface BlkHeaderProps {}
 
-export function BlkHeader({ total = 0 }: BlkHeaderProps) {
+export function BlkHeader({}: BlkHeaderProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { colorScheme } = useTheme();

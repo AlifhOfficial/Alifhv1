@@ -4,7 +4,7 @@
  * Includes View All button and lightbox/grid modal integration
  */
 
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -64,6 +64,31 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
   );
   
   const allImages = thumbImages.length > 0 ? thumbImages : [];
+
+  useEffect(() => {
+    const firstThumb = thumbImages[0] ?? null;
+    const firstFull = fullImages[0] ?? null;
+
+    const getHost = (url: string | null) => {
+      if (!url) return null;
+      try {
+        return new URL(url).hostname;
+      } catch {
+        return 'invalid-url';
+      }
+    };
+
+    console.log(
+      '[ImageGallery] Resolved listing images:',
+      JSON.stringify({
+        thumb: firstThumb,
+        thumbHost: getHost(firstThumb),
+        full: firstFull,
+        fullHost: getHost(firstFull),
+        count: validImages.length,
+      })
+    );
+  }, [thumbImages, fullImages, validImages.length]);
 
   const onMomentumScrollEnd = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = e.nativeEvent.contentOffset.x;

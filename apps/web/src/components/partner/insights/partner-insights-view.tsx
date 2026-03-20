@@ -21,6 +21,7 @@ import {
   AlertCircle, 
   Calendar,
   CheckCircle2, 
+  Clock,
   Database,
   Heart,
   Info, 
@@ -29,13 +30,6 @@ import {
   TrendingUp,
   Zap,
 } from 'lucide-react';
-import { 
-  ResponsiveContainer, 
-  AreaChart, 
-  Area, 
-  BarChart,
-  Bar,
-} from 'recharts';
 import type { ExtendedUser } from '@/types/auth';
 import type { HealthCheckResponse } from '@/lib/health';
 
@@ -67,6 +61,7 @@ interface PartnerStats {
   engagement: {
     totalViewsThisMonth: number;
     avgViewsPerListing: number;
+    totalImpressions: number;
     totalFavorites: number;
     topViewedListings: Array<{
       id: string;
@@ -114,81 +109,6 @@ function getGreeting(hour: number): string {
   if (hour < 12) return 'Good morning';
   if (hour < 17) return 'Good afternoon';
   return 'Good evening';
-}
-
-// ============================================================================
-// Mini Wave Chart
-// ============================================================================
-
-let waveChartCounter = 0;
-
-// Ghost data pattern - smooth wave for placeholder state
-const GHOST_WAVE_DATA = Array.from({ length: 20 }, (_, i) => ({
-  x: i,
-  y: Math.sin(i * 0.4) * 20 + 50 + Math.cos(i * 0.25) * 10,
-}));
-
-function WaveChart({ className = 'text-blue-500', data }: { className?: string; data?: number[] }) {
-  const [gradientId] = React.useState(() => `partnerWaveGradient-${++waveChartCounter}`);
-  
-  // Use provided data or show ghost floating pattern
-  const chartData = data 
-    ? data.map((y, i) => ({ x: i, y }))
-    : GHOST_WAVE_DATA;
-  
-  const isGhost = !data;
-
-  return (
-    <ResponsiveContainer width="100%" height="100%">
-      <AreaChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-        <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="currentColor" stopOpacity={isGhost ? 0.15 : 0.3} />
-            <stop offset="100%" stopColor="currentColor" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <Area
-          type="monotone"
-          dataKey="y"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeOpacity={isGhost ? 0.3 : 1}
-          fill={`url(#${gradientId})`}
-          className={className}
-        />
-      </AreaChart>
-    </ResponsiveContainer>
-  );
-}
-
-// ============================================================================
-// Mini Bar Chart
-// ============================================================================
-
-// Ghost data pattern - varied bars for placeholder state
-const GHOST_BAR_DATA = [35, 55, 40, 70, 45, 60, 50, 75, 42, 65, 48, 58];
-
-function MiniBarChart({ className = 'text-blue-500', data }: { className?: string; data?: number[] }) {
-  // Use provided data or show ghost floating pattern
-  const chartData = data 
-    ? data.map((y, i) => ({ x: i, y }))
-    : GHOST_BAR_DATA.map((y, i) => ({ x: i, y }));
-  
-  const isGhost = !data;
-
-  return (
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-        <Bar
-          dataKey="y"
-          radius={[2, 2, 0, 0]}
-          fill="currentColor"
-          fillOpacity={isGhost ? 0.2 : 0.5}
-          className={className}
-        />
-      </BarChart>
-    </ResponsiveContainer>
-  );
 }
 
 // ============================================================================
@@ -438,9 +358,17 @@ export function PartnerInsightsView({
                 <h1 className="text-2xl font-semibold tracking-tight text-foreground/90">
                   {getGreeting(currentHour)}, {firstName}
                 </h1>
-                <p className="text-sm text-muted-foreground">
-                  {partnerName ? `${partnerName} overview` : 'Business overview'} · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </p>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">
+                    {partnerName ? `${partnerName} overview` : 'Business overview'} · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground/55">
+                    <Clock className="h-3.5 w-3.5" />
+                    <span>
+                      Last updated {new Date(stats.generatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · Use alongside your own records
+                    </span>
+                  </div>
+                </div>
               </div>
               
               <div className="flex-shrink-0">
@@ -463,7 +391,7 @@ export function PartnerInsightsView({
             <div className="p-5 sm:p-6 flex flex-col gap-2">
               <StatLabel 
                 label="Views" 
-                tooltip="Total listing views this month across all your inventory" 
+                tooltip="Total listing views across all your active inventory" 
               />
               <span className="text-2xl font-semibold text-purple-500">
                 {formatNumber(engagement.totalViewsThisMonth)}
@@ -489,35 +417,29 @@ export function PartnerInsightsView({
             </div>
           </div>
 
-          {/* Main Grid - Row 1: Views Trend + Revenue/Bookings */}
+          {/* Main Grid - Row 1: Views Summary + Revenue/Bookings */}
           <div className="grid grid-cols-12 gap-4">
             {/* Views Card */}
             <div className="col-span-12 lg:col-span-8 rounded-lg border border-border/20 bg-muted/5 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-2">Views This Month</p>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-2">Total Views</p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-3xl font-semibold text-purple-500 tabular-nums">
                       {formatNumber(engagement.totalViewsThisMonth)}
                     </span>
-                    <TrendBadge value={trends.viewsDelta} />
                   </div>
                 </div>
                 <div className="text-right space-y-2">
                   <div>
-                    <p className="text-xs text-muted-foreground/60">Last Month</p>
-                    <p className="text-sm font-semibold text-foreground/90 tabular-nums">{formatNumber(trends.viewsLastMonth)}</p>
+                    <p className="text-xs text-muted-foreground/60">Impressions</p>
+                    <p className="text-sm font-semibold text-foreground/90 tabular-nums">{formatNumber(engagement.totalImpressions ?? 0)}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground/60">Avg / Listing</p>
                     <p className="text-sm font-semibold text-foreground/90 tabular-nums">{Math.round(engagement.avgViewsPerListing)}</p>
                   </div>
                 </div>
-              </div>
-              
-              {/* Trend Chart */}
-              <div className="h-24 w-full text-purple-500/30 -mb-2">
-                <WaveChart className="text-purple-500/30" />
               </div>
             </div>
 
@@ -612,10 +534,10 @@ export function PartnerInsightsView({
             </div>
           </div>
 
-          {/* Month Comparison - Full Width */}
+          {/* Business Snapshot - Full Width */}
           <div className="rounded-xl border border-border/40 bg-sidebar p-5">
             <div className="mb-5">
-              <span className="text-sm font-semibold text-muted-foreground/70">This Month vs Last Month</span>
+              <span className="text-sm font-semibold text-muted-foreground/70">Business Snapshot</span>
             </div>
             
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
@@ -629,11 +551,10 @@ export function PartnerInsightsView({
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xl font-bold tracking-tight text-foreground">{formatNumber(trends.viewsThisMonth)}</span>
-                  <TrendBadge value={trends.viewsDelta} />
+                  <span className="text-xl font-bold tracking-tight text-foreground">{formatNumber(engagement.totalViewsThisMonth)}</span>
                 </div>
-                <p className="text-sm font-medium text-muted-foreground/70">Views</p>
-                <p className="text-xs text-muted-foreground/50">vs {formatNumber(trends.viewsLastMonth)} last month</p>
+                <p className="text-sm font-medium text-muted-foreground/70">Total views</p>
+                <p className="text-xs text-muted-foreground/50">{formatNumber(engagement.totalImpressions ?? 0)} impressions tracked</p>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
@@ -652,14 +573,6 @@ export function PartnerInsightsView({
               </div>
             </div>
           </div>
-
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-2">
-            <span className="text-xs text-muted-foreground/50">
-              Last updated {new Date(stats.generatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · Use alongside your own records
-            </span>
-          </div>
-
         </div>
     </>
   );

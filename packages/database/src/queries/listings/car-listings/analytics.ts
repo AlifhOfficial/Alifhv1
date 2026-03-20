@@ -1,24 +1,16 @@
 /**
- * Listing Analytics - Views & Impressions
- * 
- * Track listing engagement metrics:
- * - Views: User clicks into detail page
- * - Impressions: Listing appears in search results
- * 
+ * Listing Analytics - Counter-only views & impressions
+ *
+ * The write path only updates `car_listing.view_count` and
+ * `car_listing.impression_count`. Raw event storage has been intentionally
+ * removed to minimize Neon write, WAL, and PITR costs.
+ *
  * @module queries/listings/car-listings/analytics
  */
 
-import { createId } from '@paralleldrive/cuid2';
 import { eq, inArray, sql } from 'drizzle-orm';
 import { db } from '../../../dbclient';
-import { carListing, listingView } from '../../../schema/listing';
-
-const VIEW_ID_PREFIX = 'view_';
-
-/**
- * Generate a unique ID for view records
- */
-export const makeViewId = () => `${VIEW_ID_PREFIX}${createId()}`;
+import { carListing } from '../../../schema/listing';
 
 /**
  * Input for recording a listing view
@@ -70,45 +62,25 @@ function isViewRateLimited(input: RecordViewInput): boolean {
 /**
  * Record a listing view
  * - Rate limited: 30s cooldown per user/session per listing
- * - Inserts detailed view record for analytics
- * - Increments viewCount on the listing (fire-and-forget, only if insert succeeds)
- * 
- * @returns The created view record ID, or null if rate limited
+ * - Increments `viewCount` on the listing
+ *
+ * @returns A synthetic success token, or null if rate limited
  */
 export async function recordListingView(input: RecordViewInput): Promise<string | null> {
-  // Check rate limit first
   if (isViewRateLimited(input)) {
-    return null; // Silently skip rate-limited views
+    return null;
   }
-  
-  const viewId = makeViewId();
-  
+
   try {
-    // Insert view record first (must succeed before incrementing counter)
-    await db.insert(listingView).values({
-      id: viewId,
-      listingId: input.listingId,
-      userId: input.userId ?? null,
-      sessionId: input.sessionId ?? null,
-      ipAddress: input.ipAddress ?? null,
-      userAgent: input.userAgent ?? null,
-      referrer: input.referrer ?? null,
-      deviceType: input.deviceType ?? null,
-    });
-    
-    // Fire-and-forget: Increment viewCount (don't block response)
-    db.update(carListing)
+    await db.update(carListing)
       .set({
         viewCount: sql`${carListing.viewCount} + 1`,
       })
-      .where(eq(carListing.id, input.listingId))
-      .catch((err) => {
-        console.error(`[analytics] Failed to increment viewCount for ${input.listingId}:`, err.message);
-      });
-    
-    return viewId;
+      .where(eq(carListing.id, input.listingId));
+
+    return input.listingId;
   } catch (err) {
-    console.error(`[analytics] Failed to record view for ${input.listingId}:`, err);
+    console.error(`[analytics] Failed to increment viewCount for ${input.listingId}:`, err);
     return null;
   }
 }
@@ -124,11 +96,9 @@ export async function recordListingView(input: RecordViewInput): Promise<string 
  */
 export async function incrementImpressions(listingIds: string[]): Promise<number> {
   if (!listingIds.length) return 0;
-  
-  // Deduplicate IDs
+
   const uniqueIds = [...new Set(listingIds)];
-  
-  // Single bulk update - very efficient
+
   const result = await db.update(carListing)
     .set({
       impressionCount: sql`${carListing.impressionCount} + 1`,
@@ -139,21 +109,26 @@ export async function incrementImpressions(listingIds: string[]): Promise<number
 }
 
 /**
- * Get view statistics for a listing
- * Useful for seller analytics dashboard
+ * Deprecated compatibility helper.
+ *
+ * Raw listing-view events are no longer stored, so only the total view counter
+ * remains available here.
  */
 export async function getListingViewStats(listingId: string) {
   const [stats] = await db
     .select({
-      totalViews: sql<number>`COUNT(*)`,
-      uniqueUsers: sql<number>`COUNT(DISTINCT ${listingView.userId}) FILTER (WHERE ${listingView.userId} IS NOT NULL)`,
-      uniqueSessions: sql<number>`COUNT(DISTINCT ${listingView.sessionId}) FILTER (WHERE ${listingView.sessionId} IS NOT NULL)`,
-      viewsToday: sql<number>`COUNT(*) FILTER (WHERE ${listingView.createdAt} >= CURRENT_DATE)`,
-      viewsThisWeek: sql<number>`COUNT(*) FILTER (WHERE ${listingView.createdAt} >= CURRENT_DATE - INTERVAL '7 days')`,
-      viewsThisMonth: sql<number>`COUNT(*) FILTER (WHERE ${listingView.createdAt} >= CURRENT_DATE - INTERVAL '30 days')`,
+      totalViews: carListing.viewCount,
     })
-    .from(listingView)
-    .where(eq(listingView.listingId, listingId));
-  
-  return stats;
+    .from(carListing)
+    .where(eq(carListing.id, listingId))
+    .limit(1);
+
+  return {
+    totalViews: stats?.totalViews ?? 0,
+    uniqueUsers: 0,
+    uniqueSessions: 0,
+    viewsToday: 0,
+    viewsThisWeek: 0,
+    viewsThisMonth: 0,
+  };
 }

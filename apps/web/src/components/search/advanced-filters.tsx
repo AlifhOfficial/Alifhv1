@@ -115,16 +115,7 @@ export function AdvancedFilters({
     }
   }, [desktopOpen]);
 
-  // Check if any filters have available options
-  const hasAnyOptions = 
-    BODY_TYPES.some(b => (facets?.bodyType.find(f => f.value === b.value)?.count ?? 0) > 0) ||
-    FUEL_TYPES.some(f => (facets?.fuelType.find(x => x.value === f.value)?.count ?? 0) > 0) ||
-    TRANSMISSION_TYPES.some(t => (facets?.transmission.find(x => x.value === t.value)?.count ?? 0) > 0) ||
-    ENGINE_SIZES.some(e => (facets?.engineSize.find(x => x.value === e.value)?.count ?? 0) > 0) ||
-    EXTERIOR_COLORS.some(c => (facets?.exteriorColor.find(x => x.value === c.value)?.count ?? 0) > 0) ||
-    INTERIOR_COLORS.some(c => (facets?.interiorColor.find(x => x.value === c.value)?.count ?? 0) > 0) ||
-    (facets?.sellerType.find(x => x.value === 'dealer')?.count ?? 0) > 0 ||
-    (facets?.sellerType.find(x => x.value === 'private')?.count ?? 0) > 0;
+  const hasAnyOptions = true;
 
   // Content as JSX variable (not a component) to prevent remounting on state change
   const filterContent = !hasAnyOptions ? (
@@ -141,7 +132,6 @@ export function AdvancedFilters({
               options={BODY_TYPES.map(b => ({
                 value: b.value,
                 label: b.label,
-                count: facets?.bodyType.find(f => f.value === b.value)?.count ?? 0,
               }))}
               selected={params.bodyType ?? []}
               onChange={(bodyType) => handleFilterChange({ bodyType: bodyType as any })}
@@ -155,7 +145,6 @@ export function AdvancedFilters({
               options={FUEL_TYPES.map(f => ({
                 value: f.value,
                 label: f.label,
-                count: facets?.fuelType.find(x => x.value === f.value)?.count ?? 0,
               }))}
               selected={params.fuelType ?? []}
               onChange={(fuelType) => handleFilterChange({ fuelType: fuelType as any })}
@@ -169,7 +158,6 @@ export function AdvancedFilters({
               options={TRANSMISSION_TYPES.map(t => ({
                 value: t.value,
                 label: t.label,
-                count: facets?.transmission.find(x => x.value === t.value)?.count ?? 0,
               }))}
               selected={params.transmission ?? []}
               onChange={(transmission) => handleFilterChange({ transmission: transmission as any })}
@@ -183,7 +171,6 @@ export function AdvancedFilters({
               options={ENGINE_SIZES.map(e => ({
                 value: e.value,
                 label: e.label,
-                count: facets?.engineSize.find(x => x.value === e.value)?.count ?? 0,
               }))}
               selected={params.engineSize ?? []}
               onChange={(engineSize) => handleFilterChange({ engineSize: engineSize as any })}
@@ -197,7 +184,6 @@ export function AdvancedFilters({
               options={EXTERIOR_COLORS.map(c => ({
                 value: c.value,
                 label: c.label,
-                count: facets?.exteriorColor.find(x => x.value === c.value)?.count ?? 0,
                 hex: c.hex,
               }))}
               selected={params.exteriorColor ?? []}
@@ -213,7 +199,6 @@ export function AdvancedFilters({
               options={INTERIOR_COLORS.map(c => ({
                 value: c.value,
                 label: c.label,
-                count: facets?.interiorColor.find(x => x.value === c.value)?.count ?? 0,
                 hex: c.hex,
               }))}
               selected={params.interiorColor ?? []}
@@ -427,7 +412,7 @@ export function AdvancedFilters({
 interface FilterOption {
   value: string;
   label: string;
-  count: number;
+  count?: number;
   hex?: string;
 }
 
@@ -455,8 +440,7 @@ function FilterGroup({
   // Use controlled state to prevent closing on parent re-render
   const [isOpen, setIsOpen] = useState(defaultOpen);
   
-  // Show all options - no more "show more"
-  const availableOptions = options.filter(o => o.count > 0 || selected.includes(o.value));
+  const availableOptions = options;
 
   const toggleOption = (value: string) => {
     if (singleSelect) {

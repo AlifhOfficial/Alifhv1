@@ -82,7 +82,12 @@ async function fetchSellerData(listing: ListingResult) {
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
   const startTime = performance.now();
-  const logTiming = (label: string) => console.log(`[listing-detailed] ${label}: ${(performance.now() - startTime).toFixed(0)}ms`);
+  const timingMarks = new Map<string, number>();
+  const logTiming = (label: string) => {
+    const duration = Math.round(performance.now() - startTime);
+    timingMarks.set(label, duration);
+    console.log(`[listing-detailed] ${label}: ${duration}ms`);
+  };
 
   try {
     logTiming('rate-limit');
@@ -157,6 +162,15 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     logTiming('total');
 
     const response = NextResponse.json(responseData);
+    const serverTiming = [
+      timingMarks.get('listing-query') != null ? `listing-query;dur=${timingMarks.get('listing-query')}` : null,
+      timingMarks.get('session-check') != null ? `session-check;dur=${timingMarks.get('session-check')}` : null,
+      timingMarks.get('seller-query') != null ? `seller-query;dur=${timingMarks.get('seller-query')}` : null,
+      timingMarks.get('total') != null ? `total;dur=${timingMarks.get('total')}` : null,
+    ].filter(Boolean).join(', ');
+    if (serverTiming) {
+      response.headers.set('Server-Timing', serverTiming);
+    }
     // Don't cache admin previews
     if (!isAdminPreview) {
       applyCdnHeaders(response, 'listing');

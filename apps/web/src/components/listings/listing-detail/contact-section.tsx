@@ -8,7 +8,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Phone, MessageCircle, Copy, Check, Loader2, Calendar } from 'lucide-react';
 import { cn } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -47,7 +46,6 @@ export function ContactSection({
   partnerName,
   className,
 }: ContactSectionProps) {
-  const router = useRouter();
   const [showPhone, setShowPhone] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -214,7 +212,7 @@ export function ContactSection({
       )}
 
       {/* Show/Hide phone toggle */}
-      {phoneNumber && (
+      {phoneNumber && !isBlocked && (
         <button
           onClick={() => setShowPhone(!showPhone)}
           className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"

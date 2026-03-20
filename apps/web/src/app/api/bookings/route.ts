@@ -29,6 +29,7 @@ export const runtime = 'nodejs';
  * - ?status=pending,confirmed - Filter by status
  * - ?upcoming=true - Only future bookings
  * - ?includeStats=true - Include booking counts
+ * - ?includeSettings=true - Include partner booking settings
  * - ?limit=20&offset=0 - Pagination
  * - ?staffView=true - Staff view (partner bookings)
  * - ?myListings=true - Only bookings for staff's own listings
@@ -51,7 +52,7 @@ export async function GET(req: NextRequest) {
     const sort = (searchParams.get('sort') || 'newest') as 'newest' | 'oldest' | 'soonest';
     const upcoming = searchParams.get('upcoming') === 'true';
     const includeStats = searchParams.get('includeStats') === 'true';
-    const includePartnerSettings = searchParams.get('includeSettings') !== 'false';
+    const includePartnerSettings = searchParams.get('includeSettings') === 'true';
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 

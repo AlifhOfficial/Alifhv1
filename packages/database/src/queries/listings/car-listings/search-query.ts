@@ -15,7 +15,9 @@ import { db } from '../../../dbclient';
 import { carListing } from '../../../schema/listing';
 import { partner } from '../../../schema/partner';
 import { isBlkListingSql } from './sql-fragments';
-import { getListingCardsByIds, type CarCardData } from './car-card-query';
+import { user } from '../../../schema/auth';
+import { userProfile } from '../../../schema/profile';
+import { buildCardSelectFields, type CarCardData } from './car-card-query';
 import type { 
   SearchParams, 
   SearchResponse, 
@@ -457,6 +459,29 @@ type SortPlan = {
   orderBy: SQL[];
 };
 
+function buildPageJoinOrderBy(sortBy: NonNullable<SearchParams['sortBy']>, pageRows: {
+  primary: unknown;
+  createdAt: unknown;
+  id: unknown;
+}): SQL[] {
+  switch (sortBy) {
+    case 'oldest':
+      return [sql`${pageRows.primary} ASC`, sql`${pageRows.createdAt} ASC`, sql`${pageRows.id} ASC`];
+    case 'price_low':
+    case 'mileage_low':
+    case 'year_old':
+      return [sql`${pageRows.primary} ASC`, sql`${pageRows.createdAt} DESC`, sql`${pageRows.id} DESC`];
+    case 'newest':
+    case 'price_high':
+    case 'mileage_high':
+    case 'year_new':
+    case 'popular':
+    case 'relevance':
+    default:
+      return [sql`${pageRows.primary} DESC`, sql`${pageRows.createdAt} DESC`, sql`${pageRows.id} DESC`];
+  }
+}
+
 function encodeSearchCursor(payload: SearchCursorPayload): string {
   const primaryValue = typeof payload.primary === 'number'
     ? String(payload.primary)
@@ -728,11 +753,8 @@ async function getRangeFacets(
  * Get make facets with counts
  */
 async function getMakeFacets(params: SearchParams, now: Date): Promise<FacetBucket[]> {
-  const paramsWithoutMake = { ...params };
-  delete paramsWithoutMake.make;
-  delete paramsWithoutMake.model; // Reset model when getting make facets
-  
-  const conditions = buildSearchConditions(paramsWithoutMake, now);
+  void params;
+  void now;
 
   const results = await db
     .select({
@@ -740,7 +762,7 @@ async function getMakeFacets(params: SearchParams, now: Date): Promise<FacetBuck
       count: count(),
     })
     .from(carListing)
-    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .where(isNotNull(carListing.make))
     .groupBy(carListing.make);
 
   return results
@@ -757,10 +779,12 @@ async function getMakeFacets(params: SearchParams, now: Date): Promise<FacetBuck
  * Get model facets (filtered by selected makes)
  */
 async function getModelFacets(params: SearchParams, now: Date): Promise<FacetBucket[]> {
-  const paramsWithoutModel = { ...params };
-  delete paramsWithoutModel.model;
-  
-  const conditions = buildSearchConditions(paramsWithoutModel, now);
+  void now;
+  const conditions = [];
+
+  if (params.make?.length) {
+    conditions.push(inArray(carListing.make, params.make));
+  }
 
   const results = await db
     .select({
@@ -768,7 +792,7 @@ async function getModelFacets(params: SearchParams, now: Date): Promise<FacetBuc
       count: count(),
     })
     .from(carListing)
-    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .where(and(isNotNull(carListing.model), ...(conditions.length > 0 ? conditions : [])))
     .groupBy(carListing.model);
 
   return results
@@ -785,10 +809,15 @@ async function getModelFacets(params: SearchParams, now: Date): Promise<FacetBuc
  * Get trim facets (filtered by selected makes and models)
  */
 async function getTrimFacets(params: SearchParams, now: Date): Promise<FacetBucket[]> {
-  const paramsWithoutTrim = { ...params };
-  delete paramsWithoutTrim.trim;
-  
-  const conditions = buildSearchConditions(paramsWithoutTrim, now);
+  void now;
+  const conditions = [];
+
+  if (params.make?.length) {
+    conditions.push(inArray(carListing.make, params.make));
+  }
+  if (params.model?.length) {
+    conditions.push(inArray(carListing.model, params.model));
+  }
 
   const results = await db
     .select({
@@ -796,7 +825,7 @@ async function getTrimFacets(params: SearchParams, now: Date): Promise<FacetBuck
       count: count(),
     })
     .from(carListing)
-    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .where(and(isNotNull(carListing.trim), ...(conditions.length > 0 ? conditions : [])))
     .groupBy(carListing.trim);
 
   return results
@@ -926,14 +955,10 @@ async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFace
     make,
     model,
     trim,
-    ranges,
-    enumFacets,
   ] = await Promise.all([
     getMakeFacets(params, now),
     getModelFacets(params, now),
     getTrimFacets(params, now),
-    getRangeFacets(params, now),
-    getAllEnumFacets(params, now),
   ]);
   const facetMs = Date.now() - facetStart;
   if (facetMs > 500) {
@@ -944,18 +969,18 @@ async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFace
     make,
     model,
     trim,
-    yearRange: ranges.yearRange,
-    priceRange: ranges.priceRange,
-    mileageRange: ranges.mileageRange,
-    emirate: enumFacets.emirate,
-    specs: enumFacets.specs,
-    bodyType: enumFacets.bodyType,
-    fuelType: enumFacets.fuelType,
-    transmission: enumFacets.transmission,
-    engineSize: enumFacets.engineSize,
-    exteriorColor: enumFacets.exteriorColor,
-    interiorColor: enumFacets.interiorColor,
-    sellerType: enumFacets.sellerType,
+    yearRange: { min: 1900, max: new Date().getFullYear() + 1 },
+    priceRange: { min: 0, max: 10000000 },
+    mileageRange: { min: 0, max: 500000 },
+    emirate: [],
+    specs: [],
+    bodyType: [],
+    fuelType: [],
+    transmission: [],
+    engineSize: [],
+    exteriorColor: [],
+    interiorColor: [],
+    sellerType: [],
   };
 }
 
@@ -1003,10 +1028,10 @@ export async function searchListings(
 
   // Build parallel query array dynamically
   const queries: Promise<any>[] = [
-    // STEP 1: Get IDs with pagination
+    // Use a limited subquery so we keep the fast paging plan but only pay one DB round trip.
     (async () => {
-      const idStart = Date.now();
-      const listingRows = await db
+      const pageStart = Date.now();
+      const pageRows = db
         .select({
           id: carListing.id,
           primary: sortPlan.primaryExpr.as('primary'),
@@ -1015,41 +1040,49 @@ export async function searchListings(
         .from(carListing)
         .where(allConditions.length > 0 ? and(...allConditions) : undefined)
         .orderBy(...sortPlan.orderBy)
-        .limit(limit + 1);
-      const idMs = Date.now() - idStart;
+        .limit(limit + 1)
+        .as('search_page_rows');
 
-      if (listingRows.length === 0) {
-        return { listings: [], hasMoreFromFetch: false, nextCursor: null, timing: { ids: idMs, cards: 0 } };
+      const joinedRows = await db
+        .select({
+          ...buildCardSelectFields(now),
+          primary: pageRows.primary,
+          cursorCreatedAt: pageRows.createdAt,
+        })
+        .from(pageRows)
+        .innerJoin(carListing, eq(carListing.id, pageRows.id))
+        .leftJoin(user, eq(user.id, carListing.userId))
+        .leftJoin(userProfile, eq(userProfile.userId, user.id))
+        .leftJoin(partner, eq(partner.id, carListing.partnerId))
+        .orderBy(...buildPageJoinOrderBy(sortPlan.sortBy, pageRows));
+      const pageMs = Date.now() - pageStart;
+
+      if (joinedRows.length === 0) {
+        return { listings: [], hasMoreFromFetch: false, nextCursor: null, timing: { ids: pageMs, cards: 0 } };
       }
 
-      const hasMoreFromFetch = listingRows.length > limit;
-      const pageRows = listingRows.slice(0, limit);
-      const idsToFetch = pageRows.map(l => l.id);
-      const lastRow = pageRows[pageRows.length - 1];
+      const hasMoreFromFetch = joinedRows.length > limit;
+      const pageData = joinedRows.slice(0, limit);
+      const lastRow = pageData[pageData.length - 1];
       const nextCursor = hasMoreFromFetch && lastRow
         ? encodeSearchCursor({
             v: 1,
             primary: sortPlan.field === 'sortDate'
               ? new Date(String(lastRow.primary)).toISOString()
               : Number(lastRow.primary),
-            createdAt: new Date(lastRow.createdAt as Date).toISOString(),
+            createdAt: new Date(lastRow.cursorCreatedAt as Date).toISOString(),
             id: lastRow.id,
           })
         : null;
-
-      // STEP 2: Use shared card query for batch fetch (avoids duplicate JOIN logic)
-      const cardStart = Date.now();
-      const cardData = await getListingCardsByIds(idsToFetch);
-      const cardMs = Date.now() - cardStart;
       
-      // Map CarCardData to SearchResultItem (same fields, just type alignment)
-      const listings = cardData as unknown as SearchResultItem[];
+      const listings = pageData
+        .map(({ primary: _primary, cursorCreatedAt: _cursorCreatedAt, ...listing }) => listing) as unknown as SearchResultItem[];
 
       return {
         listings,
         hasMoreFromFetch,
         nextCursor,
-        timing: { ids: idMs, cards: cardMs },
+        timing: { ids: pageMs, cards: 0 },
       };
     })(),
   ];
@@ -1174,20 +1207,59 @@ export async function quickSearch(
   const searchTerm = query?.trim().toLowerCase() || '';
   const now = new Date();
   const conditions = buildPublicBaseConditions(now);
+  const prefixSearchTerm = `${searchTerm}%`;
+
+  const findMatchingMakes = (term: string): string[] => {
+    if (!term) return [];
+    return CAR_MAKES.filter(make => {
+      const lower = make.toLowerCase();
+      return lower.startsWith(term) || lower.split(/[\s-]+/).some(part => part.startsWith(term));
+    });
+  };
+
+  const findMatchingModels = (term: string, makeFilter?: string): { make: string; model: string }[] => {
+    if (!term) return [];
+
+    const matches: { make: string; model: string }[] = [];
+    for (const [make, models] of Object.entries(CAR_MODELS)) {
+      if (makeFilter && make !== makeFilter) continue;
+
+      for (const model of models) {
+        const lower = model.toLowerCase();
+        if (lower.startsWith(term) || lower.split(/[\s-]+/).some(part => part.startsWith(term))) {
+          matches.push({ make, model });
+        }
+      }
+    }
+
+    return matches;
+  };
 
   // Helper to build multi-keyword match condition
-  // Each keyword must match in make OR model OR trim (for make_model searches)
+  // Each keyword must match at the start of make/model values to stay index-friendly.
   const buildKeywordConditions = (keywords: string[]) => {
     if (keywords.length === 0) return undefined;
     
-    // Each keyword must match somewhere
+    // Each keyword must match somewhere.
     return and(
-      ...keywords.map(keyword => 
-        or(
-          ilike(carListing.make, `%${keyword}%`),
-          ilike(carListing.model, `%${keyword}%`),
-        )!
-      )
+      ...keywords.map(keyword => {
+        const matchedMakes = findMatchingMakes(keyword);
+        const matchedModels = findMatchingModels(keyword).map(match => match.model);
+
+        const clauses: SQL[] = [
+          ilike(carListing.make, `${keyword}%`),
+          ilike(carListing.model, `${keyword}%`),
+        ];
+
+        if (matchedMakes.length > 0) {
+          clauses.push(inArray(carListing.make, matchedMakes));
+        }
+        if (matchedModels.length > 0) {
+          clauses.push(inArray(carListing.model, [...new Set(matchedModels)]));
+        }
+
+        return or(...clauses)!;
+      })
     );
   };
 
@@ -1205,7 +1277,7 @@ export async function quickSearch(
     
     // Add search filter only if query provided
     if (searchTerm) {
-      trimConditions.push(ilike(carListing.trim, `%${searchTerm}%`));
+      trimConditions.push(ilike(carListing.trim, prefixSearchTerm));
     }
     
     makeModelQuery = db
@@ -1230,7 +1302,15 @@ export async function quickSearch(
     
     // Add search filter only if query provided
     if (searchTerm) {
-      modelConditions.push(ilike(carListing.model, `%${searchTerm}%`));
+      const matchedModels = findMatchingModels(searchTerm, context.make).map(match => match.model);
+      modelConditions.push(
+        matchedModels.length > 0
+          ? or(
+              ilike(carListing.model, prefixSearchTerm),
+              inArray(carListing.model, [...new Set(matchedModels)]),
+            )!
+          : ilike(carListing.model, prefixSearchTerm)
+      );
     }
     
     makeModelQuery = db
@@ -1255,6 +1335,8 @@ export async function quickSearch(
     
     // Build keyword-based conditions for multi-word queries like "audi rs5"
     const keywordCondition = buildKeywordConditions(keywords);
+    const matchedMakes = findMatchingMakes(searchTerm);
+    const matchedModels = findMatchingModels(searchTerm).map(match => match.model);
     
     // Query for make+model combinations (for make_model suggestions)
     makeModelQuery = db
@@ -1269,10 +1351,10 @@ export async function quickSearch(
         and(
           ...conditions,
           keywordCondition || or(
-            ilike(carListing.make, `${searchTerm}%`), // Prefix match is faster (can use index)
-            ilike(carListing.model, `${searchTerm}%`),
-            ilike(carListing.make, `%${searchTerm}%`), // Fallback to contains
-            ilike(carListing.model, `%${searchTerm}%`)
+            ilike(carListing.make, prefixSearchTerm),
+            ilike(carListing.model, prefixSearchTerm),
+            ...(matchedMakes.length > 0 ? [inArray(carListing.make, matchedMakes)] : []),
+            ...(matchedModels.length > 0 ? [inArray(carListing.model, [...new Set(matchedModels)])] : []),
           )
         )
       )
@@ -1292,7 +1374,7 @@ export async function quickSearch(
         .where(
           and(
             ...conditions,
-            ilike(carListing.make, `%${searchTerm}%`)
+            ilike(carListing.make, prefixSearchTerm)
           )
         )
         .groupBy(carListing.make)
@@ -1317,8 +1399,8 @@ export async function quickSearch(
               ...conditions,
               isNotNull(carListing.partnerId),
               or(
-                ilike(carListing.partnerBrandName, `%${searchTerm}%`),
-                ilike(partner.brandName, `%${searchTerm}%`)
+                ilike(carListing.partnerBrandName, prefixSearchTerm),
+                ilike(partner.brandName, prefixSearchTerm)
               )
             )
           )

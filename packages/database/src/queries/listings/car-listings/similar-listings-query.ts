@@ -8,7 +8,7 @@
  * 
  * Matching criteria (relaxed for more results):
  * - Price within ±15% (hard requirement)
- * - Same body type (soft preference - try first, fallback without)
+ * - Same body type (soft preference via ranking)
  * - Exclude current listing
  * - Sorted by qiScore for quality
  * 
@@ -82,7 +82,8 @@ const PRICE_TOLERANCE = 0.15; // ±15% (relaxed from 10%)
  * Get similar listings based on price range.
  * Returns empty array if fewer than MIN_RESULTS_TO_SHOW matches.
  * 
- * Query is optimized for indexed columns: price, bodyType, isPublic
+ * Query is optimized for indexed columns: price, bodyType, isPublic.
+ * Uses one ranked query instead of a two-pass fallback flow.
  */
 export async function getSimilarListings(
   params: SimilarListingsParams
@@ -132,42 +133,29 @@ export async function getSimilarListings(
     sellerUseGeneratedAvatar: sql<boolean | null>`(${userProfile.preferences}->>'useGeneratedAvatar')::boolean`,
   } as const;
 
-  let results: typeof selectFields extends infer T ? Array<{ [K in keyof T]: any }> : never = [];
+  const bodyTypeRankExpr = bodyType
+    ? sql<number>`CASE WHEN ${carListing.bodyType} = ${bodyType} THEN 1 ELSE 0 END`
+    : sql<number>`0`;
+  const priceDeltaExpr = sql<number>`ABS(${carListing.price} - ${price})`;
 
-  // Try with body type first (same category = better match)
-  if (bodyType) {
-    results = await db
-      .select(selectFields)
-      .from(carListing)
-      .leftJoin(partner, eq(partner.id, carListing.partnerId))
-      .leftJoin(user, eq(user.id, carListing.userId))
-      .leftJoin(userProfile, eq(userProfile.userId, user.id))
-      .where(and(...baseConditions, eq(carListing.bodyType, bodyType)))
-      .orderBy(desc(carListing.qiScore), desc(carListing.originalPublishedAt))
-      .limit(MAX_RESULTS);
-  }
-
-  // If not enough with body type, try without (any body type in price range)
-  if (results.length < MAX_RESULTS) {
-    const alreadyIds = results.map(r => r.id);
-    const remaining = MAX_RESULTS - results.length;
-    
-    const moreResults = await db
-      .select(selectFields)
-      .from(carListing)
-      .leftJoin(partner, eq(partner.id, carListing.partnerId))
-      .leftJoin(user, eq(user.id, carListing.userId))
-      .leftJoin(userProfile, eq(userProfile.userId, user.id))
-      .where(and(
-        ...baseConditions,
-        // Exclude already fetched
-        ...(alreadyIds.length > 0 ? [sql`${carListing.id} NOT IN (${sql.join(alreadyIds.map(id => sql`${id}`), sql`, `)})`] : [])
-      ))
-      .orderBy(desc(carListing.qiScore), desc(carListing.originalPublishedAt))
-      .limit(remaining);
-    
-    results = [...results, ...moreResults];
-  }
+  const results = await db
+    .select({
+      ...selectFields,
+      bodyTypeRank: bodyTypeRankExpr.as('body_type_rank'),
+      priceDelta: priceDeltaExpr.as('price_delta'),
+    })
+    .from(carListing)
+    .leftJoin(partner, eq(partner.id, carListing.partnerId))
+    .leftJoin(user, eq(user.id, carListing.userId))
+    .leftJoin(userProfile, eq(userProfile.userId, user.id))
+    .where(and(...baseConditions))
+    .orderBy(
+      sql`body_type_rank DESC`,
+      sql`price_delta ASC`,
+      desc(carListing.qiScore),
+      desc(carListing.originalPublishedAt)
+    )
+    .limit(MAX_RESULTS);
 
   // Show even 1 result - users need discovery options
   if (results.length < MIN_RESULTS_TO_SHOW) {

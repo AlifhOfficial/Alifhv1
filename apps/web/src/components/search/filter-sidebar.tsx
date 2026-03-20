@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import type { SearchParams, SearchFacets, FacetBucket } from '@/lib/search-utils';
+import { SPECS_TYPES, UAE_EMIRATES } from '@/lib/filter-constants';
 
 interface FilterSidebarProps {
   params: SearchParams;
@@ -135,7 +136,7 @@ export function FilterSidebar({
         <RangeFilter
           minValue={params.priceMin}
           maxValue={params.priceMax}
-          rangeMin={facets?.priceRange.min ?? 0}
+          rangeMin={0}
           rangeMax={facets?.priceRange.max ?? 5000000}
           onChange={(priceMin, priceMax) => onFilterChange({ priceMin, priceMax })}
           formatLabel={formatPrice}
@@ -154,7 +155,7 @@ export function FilterSidebar({
         <RangeFilter
           minValue={params.yearMin}
           maxValue={params.yearMax}
-          rangeMin={facets?.yearRange.min ?? 1900}
+          rangeMin={1900}
           rangeMax={facets?.yearRange.max ?? new Date().getFullYear() + 1}
           onChange={(yearMin, yearMax) => onFilterChange({ yearMin, yearMax })}
           formatLabel={(val) => String(val)}
@@ -188,11 +189,14 @@ export function FilterSidebar({
         onOpenChange={(open) => handleSectionOpenChange('Location', open)}
       >
         <MultiSelectFilter
-          options={facets?.emirate ?? []}
+          options={UAE_EMIRATES.map((emirate) => ({
+            value: emirate.value,
+            label: emirate.label,
+            count: 0,
+          }))}
           selected={params.emirate ?? []}
           onChange={(emirate) => onFilterChange({ emirate })}
           placeholder="Any location"
-          isLoading={isLoading}
         />
       </FilterSection>
 
@@ -226,11 +230,14 @@ export function FilterSidebar({
         onOpenChange={(open) => handleSectionOpenChange('Regional Specs', open)}
       >
         <MultiSelectFilter
-          options={facets?.specs ?? []}
+          options={SPECS_TYPES.map((spec) => ({
+            value: spec.value,
+            label: spec.label,
+            count: 0,
+          }))}
           selected={params.specs ?? []}
           onChange={(specs) => onFilterChange({ specs: specs as SearchParams['specs'] })}
           placeholder="Any specs"
-          isLoading={isLoading}
         />
       </FilterSection>
     </div>
@@ -347,12 +354,14 @@ function MultiSelectFilter({
             )}
           >
             <span>{option.label}</span>
-            <span className={cn(
-              "text-sm tabular-nums",
-              isSelected ? "text-foreground/60" : "text-muted-foreground/60"
-            )}>
-              {option.count}
-            </span>
+            {option.count > 0 && (
+              <span className={cn(
+                "text-sm tabular-nums",
+                isSelected ? "text-foreground/60" : "text-muted-foreground/60"
+              )}>
+                {option.count}
+              </span>
+            )}
           </button>
         );
       })}
