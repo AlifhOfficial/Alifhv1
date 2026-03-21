@@ -33,5 +33,5 @@ export function MarketingImage(props: MarketingImageProps) {
     );
   }
 
-  return <Image {...props} unoptimized={props.unoptimized ?? true} />;
+  return <Image {...props} unoptimized={props.unoptimized ?? false} />;
 }

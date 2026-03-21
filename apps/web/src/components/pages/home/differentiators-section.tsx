@@ -126,8 +126,8 @@ function HumanFirstInfographic() {
           70%, 100% { opacity: 1; transform: scale(1); }
         }
         @keyframes card-elevate {
-          0%, 70% { transform: translateY(0); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
-          85%, 100% { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
+          0%, 70% { transform: translateY(0); filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3)); }
+          85%, 100% { transform: translateY(-8px); filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4)); }
         }
       `}</style>
 
@@ -175,7 +175,7 @@ function HumanFirstInfographic() {
             className="relative w-40 sm:w-56 lg:w-80 xl:w-[480px] aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10 flex-shrink-0"
             style={{ animation: 'card-elevate 6s ease-out infinite' }}
           >
-            <Image src={m12} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 160px, (max-width: 1280px) 320px, 480px" />
+            <Image src={m12} alt="" fill className="object-cover" sizes="(max-width: 640px) 160px, (max-width: 1280px) 320px, 480px" />
           </div>
         </div>
       </MacOSWindow>

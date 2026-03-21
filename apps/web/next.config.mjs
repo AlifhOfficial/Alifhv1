@@ -44,8 +44,8 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value: process.env.NODE_ENV === 'development'
-              ? "script-src 'self' 'unsafe-eval' 'unsafe-inline';" // Development: allow HMR
-              : "script-src 'self' 'unsafe-inline';", // Production: no eval
+              ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'none';" // Development: allow HMR
+              : "script-src 'self' 'unsafe-inline'; object-src 'none';", // Production: no eval, no plugins
           },
           {
             key: 'X-Content-Type-Options',
@@ -58,6 +58,14 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload',
           },
         ],
       },
@@ -84,15 +92,6 @@ const nextConfig = {
           {
             key: 'Content-Type',
             value: 'application/json',
-          },
-        ],
-      },
-      {
-        source: '/marketing/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

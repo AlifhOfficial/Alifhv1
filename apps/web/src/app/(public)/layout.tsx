@@ -17,7 +17,9 @@ export default function PublicLayout({
       <Suspense fallback={<NavbarSkeleton />}>
         <Navbar />
       </Suspense>
-      {children}
+      <main>
+        {children}
+      </main>
       <Footer />
     </GlobalChatProvider>
   );

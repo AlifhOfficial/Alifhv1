@@ -106,8 +106,8 @@ function MarketplaceGameInfographic() {
           15%, 45%, 75% { opacity: 0.5; transform: scale(1.2); }
         }
         @keyframes glow-zero {
-          0%, 100% { text-shadow: 0 0 40px rgba(0, 102, 255, 0.3); }
-          50% { text-shadow: 0 0 60px rgba(0, 102, 255, 0.5); }
+          0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 102, 255, 0.3)); }
+          50% { filter: drop-shadow(0 0 30px rgba(0, 102, 255, 0.5)); }
         }
       `}</style>
 

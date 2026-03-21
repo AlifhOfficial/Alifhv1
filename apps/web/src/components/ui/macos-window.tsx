@@ -203,11 +203,14 @@ export function MacOSWindow({
         <div className="flex items-center flex-shrink-0">
           <button
             onClick={handleLogoClick}
+            aria-label="Revvup"
             className="flex items-center justify-center bg-transparent p-0 hover:opacity-80 active:scale-95 transition-all duration-200 cursor-pointer"
           >
             <img
               src={BRAND_LOGO_SVG}
               alt="Revvup"
+              width={56}
+              height={14}
               className="h-[14px] w-auto opacity-65"
               draggable={false}
             />
@@ -241,6 +244,7 @@ export function MacOSWindow({
             {/* Share bubble */}
             <button
               onClick={handleShare}
+              aria-label="Share"
               className="p-1.5 rounded-full bg-transparent border border-white/[0.08] text-white/50 hover:text-white/70 hover:bg-white/[0.1] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -250,6 +254,7 @@ export function MacOSWindow({
             {/* Copy bubble */}
             <button
               onClick={handleCopy}
+              aria-label="Copy link"
               className="p-1.5 rounded-full bg-transparent border border-white/[0.08] text-white/50 hover:text-white/70 hover:bg-white/[0.1] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -259,6 +264,7 @@ export function MacOSWindow({
             {/* Tabs bubble */}
             <button
               onClick={handleNewTab}
+              aria-label="Open in new tab"
               className="p-1.5 rounded-full bg-transparent border border-white/[0.08] text-white/50 hover:text-white/70 hover:bg-white/[0.1] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

@@ -24,6 +24,8 @@ export function Logo({ className, width = 100, height = 30, priority = false }: 
       <img
         src={BRAND_LOGO_SVG}
         alt="Revvup"
+        width={width}
+        height={height}
         className="block h-full w-full object-contain invert dark:invert-0"
       />
     </span>

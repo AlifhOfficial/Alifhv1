@@ -57,8 +57,8 @@ function ProblemInfographic() {
           15%, 45%, 75% { opacity: 0.5; transform: scale(1.2); }
         }
         @keyframes glow-zero {
-          0%, 100% { text-shadow: 0 0 40px rgba(0, 102, 255, 0.3); }
-          50% { text-shadow: 0 0 60px rgba(0, 102, 255, 0.5); }
+          0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 102, 255, 0.3)); }
+          50% { filter: drop-shadow(0 0 30px rgba(0, 102, 255, 0.5)); }
         }
       `}</style>
 
@@ -69,18 +69,18 @@ function ProblemInfographic() {
           
           <div className="relative flex items-center justify-center gap-1 sm:gap-2 lg:gap-4 w-full max-w-full py-4 px-6 sm:px-4">
             {/* Left car image - hidden on mobile */}
-            <div className="hidden sm:block w-24 lg:w-44 xl:w-56 aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10 -rotate-3 opacity-60 flex-shrink-0">
-              <Image src={m3} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 0px, (max-width: 1280px) 176px, 224px" />
+            <div className="relative hidden sm:block w-24 lg:w-44 xl:w-56 aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10 -rotate-3 opacity-60 flex-shrink-0">
+              <Image src={m3} alt="" fill className="object-cover" sizes="(max-width: 1280px) 176px, 224px" />
             </div>
             
             {/* Main car image - center */}
             <div className="relative w-40 sm:w-48 lg:w-72 xl:w-[380px] aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10 z-10 flex-shrink-0">
-              <Image src={m5} alt="" className="w-full h-full object-cover opacity-70" sizes="(max-width: 640px) 160px, (max-width: 1280px) 288px, 380px" />
+              <Image src={m5} alt="" fill className="object-cover opacity-70" sizes="(max-width: 640px) 160px, (max-width: 1280px) 288px, 380px" />
             </div>
             
             {/* Right car image - hidden on mobile */}
-            <div className="hidden sm:block w-24 lg:w-44 xl:w-56 aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10 rotate-3 opacity-60 flex-shrink-0">
-              <Image src={m7} alt="" className="w-full h-full object-cover" sizes="(max-width: 640px) 0px, (max-width: 1280px) 176px, 224px" />
+            <div className="relative hidden sm:block w-24 lg:w-44 xl:w-56 aspect-[4/3] rounded-lg lg:rounded-xl overflow-hidden border border-white/10 rotate-3 opacity-60 flex-shrink-0">
+              <Image src={m7} alt="" fill className="object-cover" sizes="(max-width: 1280px) 176px, 224px" />
             </div>
             
             {/* Fee badges */}

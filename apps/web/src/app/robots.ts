@@ -1,9 +1,9 @@
 import type { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  // Block all crawlers until the site goes live.
-  // Remove this file (or flip to allow) when ready to launch.
-  if (process.env.SITE_PASSWORD) {
+  // Block all crawlers on production (revvup.ae).
+  // Localhost / dev environments are freely crawlable for testing.
+  if (process.env.NODE_ENV === 'production') {
     return {
       rules: { userAgent: '*', disallow: '/' },
     }
