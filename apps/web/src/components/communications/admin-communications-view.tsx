@@ -8,6 +8,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Mail, 
@@ -566,9 +567,19 @@ function CommunicationListItem({ communication, onClick }: ListItemProps) {
 export function AdminCommunicationsView() {
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [filterType, setFilterType] = useState<string>('');
+  const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCommunication, setSelectedCommunication] = useState<Communication | null>(null);
   
+  const debouncedSetSearchQuery = useDebouncedCallback((value: string) => {
+    setSearchQuery(value);
+  }, 300);
+
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
+    debouncedSetSearchQuery(value);
+  };
+
   const queryClient = useQueryClient();
   
   const { data, isPending: isLoading, error, refetch } = useCommunications({
@@ -605,8 +616,8 @@ export function AdminCommunicationsView() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
               <input
                 type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchInput}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Search by name, email, or subject..."
                 className="w-full pl-10 pr-4 h-10 bg-muted/20 rounded-lg text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
               />

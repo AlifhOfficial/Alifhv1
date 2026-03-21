@@ -8,6 +8,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import { useQuery } from '@tanstack/react-query';
 import { Search, X, Package } from 'lucide-react';
 import { queryKeys } from '@/lib/query-keys';
@@ -59,7 +60,21 @@ interface BlackDirectoryViewProps {
 }
 
 export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps = {}) {
+  const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const debouncedSetSearchQuery = useDebouncedCallback((v: string) => setSearchQuery(v), 300);
+
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
+    debouncedSetSearchQuery(value);
+  };
+
+  const handleSearchClear = () => {
+    debouncedSetSearchQuery.cancel();
+    setSearchInput('');
+    setSearchQuery('');
+  };
   
   const { data, isLoading, error } = useQuery({
     queryKey: queryKeys.showroom.list(1, 50),
@@ -114,8 +129,8 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
             <input
               type="text"
               placeholder="Search members..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchInput}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className={cn(
                 'w-full h-12 pl-11 pr-11',
                 'bg-sidebar border border-border/40 rounded-xl',
@@ -124,9 +139,9 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
                 'transition-all'
               )}
             />
-            {searchQuery && (
+            {searchInput && (
               <button
-                onClick={() => setSearchQuery('')}
+                onClick={handleSearchClear}
                 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors"
               >
                 <X className="w-3 h-3 text-muted-foreground" />

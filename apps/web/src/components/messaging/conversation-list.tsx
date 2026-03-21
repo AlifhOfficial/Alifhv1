@@ -14,6 +14,7 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import { Search, MessageCircle, PanelLeft, Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ConversationListItem } from './conversation-list-item';
@@ -56,7 +57,16 @@ export function ConversationList({
   isFetchingMore = false,
   fetchMore,
 }: ConversationListProps) {
+  const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const debouncedSetSearchQuery = useDebouncedCallback((v: string) => setSearchQuery(v), 300);
+
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
+    debouncedSetSearchQuery(value);
+  };
+
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Infinite scroll trigger
@@ -295,8 +305,8 @@ export function ConversationList({
             <input
               type="text"
               placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchInput}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium bg-muted/50 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:bg-muted rounded-lg transition-colors"
             />
           </div>

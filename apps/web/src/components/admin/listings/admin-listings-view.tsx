@@ -6,6 +6,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import { Search, Archive } from 'lucide-react';
 import {
   Dialog,
@@ -122,7 +123,10 @@ export function AdminListingsView() {
   const [deepInventoryFilter, setDeepInventoryFilter] = useState<DeepInventoryFilter>('all');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
+  const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+
+  const debouncedSetSearchTerm = useDebouncedCallback((v: string) => setSearchTerm(v), 300);
   
   // Modal states
   const [approveModal, setApproveModal] = useState<{ open: boolean; listing: Listing | null }>({ open: false, listing: null });
@@ -445,8 +449,8 @@ export function AdminListingsView() {
           <input
             type="text"
             placeholder="Search by make, model, user, email, ID..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchInput}
+            onChange={(e) => { setSearchInput(e.target.value); debouncedSetSearchTerm(e.target.value); }}
             className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors pl-6 pr-0 text-sm"
           />
         </div>
@@ -489,7 +493,7 @@ export function AdminListingsView() {
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <p>
           Showing {filteredListings.length} of {stats.all} listings
-          {searchTerm && ` • Search: "${searchTerm}"`}
+          {searchInput && ` • Search: "${searchInput}"`}
         </p>
       </div>
 
