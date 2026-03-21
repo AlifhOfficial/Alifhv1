@@ -213,6 +213,19 @@ export function WebSocketProvider({ children, userId, autoConnect = true }: Prop
     };
   }, [userId, autoConnect, manager]);
 
+  // Page Visibility API: notify server when tab is hidden/shown
+  // This prevents users who have the tab open but aren't on the site from showing as online
+  useEffect(() => {
+    if (typeof document === 'undefined' || !userId) return;
+
+    const handleVisibilityChange = () => {
+      manager.send({ type: 'visibility', visible: !document.hidden });
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [userId, manager]);
+
   // Memoized callbacks
   const send = useCallback((data: Record<string, unknown>) => {
     manager.send(data);

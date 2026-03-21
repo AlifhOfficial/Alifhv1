@@ -16,6 +16,7 @@ interface WSData {
   userId: string;
   connectedAt: number;
   watchedUsers: Set<string>;
+  isActive: boolean; // false when tab is hidden (Page Visibility API)
 }
 
 interface PresenceState {
@@ -131,7 +132,7 @@ const server = Bun.serve<WSData>({
       if (!userId) return new Response("Unauthorized", { status: 401 });
 
       const ok = server.upgrade(req, {
-        data: { userId, connectedAt: Date.now(), watchedUsers: new Set() },
+        data: { userId, connectedAt: Date.now(), watchedUsers: new Set(), isActive: true },
       });
       return ok ? new Response(undefined, { status: 101 }) : new Response("Upgrade failed", { status: 400 });
     }
@@ -279,16 +280,32 @@ const server = Bun.serve<WSData>({
               ws.data.watchedUsers.delete(data.targetUserId);
             }
             break;
+
+          case "visibility": {
+            // Page Visibility API: tab hidden/visible without closing the connection
+            if (typeof data.visible === "boolean") {
+              const wasActive = ws.data.isActive;
+              ws.data.isActive = data.visible;
+              if (!data.visible && wasActive) {
+                setOffline(server, userId);
+              } else if (data.visible && !wasActive) {
+                setOnline(server, userId);
+              }
+            }
+            break;
+          }
         }
       } catch { /* ignore */ }
     },
 
     close(ws) {
-      const { userId, watchedUsers } = ws.data;
+      const { userId, watchedUsers, isActive } = ws.data;
       ws.unsubscribe(`user:${userId}`);
       ws.unsubscribe(`presence:${userId}`);
       for (const id of watchedUsers) ws.unsubscribe(`presence:${id}`);
-      setOffline(server, userId);
+      // Only decrement presence if this connection was actively counted as online.
+      // If the tab was hidden, setOffline was already called via the visibility message.
+      if (isActive) setOffline(server, userId);
     },
   },
 });
