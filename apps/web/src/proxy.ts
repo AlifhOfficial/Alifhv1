@@ -14,6 +14,9 @@ const BYPASS_SITE_PASSWORD = [
   '/favicon.ico',
   '/robots.txt',
   '/sitemap.xml',
+  '/manifest.webmanifest', // PWA manifest (must be publicly accessible)
+  '/sw.js',              // Service worker
+  '/.well-known/',       // Well-known URIs
 ];
 
 /**
