@@ -38,7 +38,7 @@ export function PartnerProfileCard({ sellerData }: PartnerProfileCardProps) {
   const hasPublishedShowroom = stats && 'hasShowroom' in stats ? stats.hasShowroom === true : false;
 
   return (
-    <div className="space-y-5">
+    <div className="flex flex-col gap-5">
       {/* Hero Image */}
       <PartnerHeroSection heroImage={partner.heroImage} brandName={partner.brandName} />
 
@@ -89,12 +89,11 @@ function PartnerHeroSection({ heroImage, brandName }: { heroImage?: string | nul
   if (!heroImage) return null;
   
   return (
-    <div className="relative -mx-4 -mt-4 mb-3 rounded-t-2xl overflow-hidden">
+    <div className="relative w-full mb-2 rounded-2xl overflow-hidden">
       <BrandHero 
         heroImageUrl={heroImage} 
         brandName={brandName}
-        height="sm"
-        className="h-28"
+        height="md"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
     </div>
@@ -146,7 +145,7 @@ function PartnerHeader({ partner, isBlackTier, location }: PartnerHeaderProps) {
         logoUrl={partner.logo}
         brandName={partner.brandName}
         size="md"
-        className="rounded-none w-16 h-16 flex-shrink-0"
+        className="rounded-full w-16 h-16 flex-shrink-0"
       />
     </div>
   );

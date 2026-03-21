@@ -39,15 +39,8 @@ interface SellerProfileCardProps {
 }
 
 function SellerProfileCardComponent({ sellerData, className }: SellerProfileCardProps) {
-  return (
-    <div className={cn("overflow-hidden", className)}>
-      {sellerData.type === 'partner' ? (
-        <PartnerProfileCard sellerData={sellerData} />
-      ) : (
-        <UserProfileCard sellerData={sellerData} />
-      )}
-    </div>
-  );
+  if (sellerData.type === 'partner') return <PartnerProfileCard sellerData={sellerData} />;
+  return <UserProfileCard sellerData={sellerData} />;
 }
 
 // Attach skeleton as static property

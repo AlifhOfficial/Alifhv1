@@ -165,17 +165,44 @@ export function ListingsView({
   // Skip initial mount to let browser restore scroll position naturally
   const prevPageRef = useRef(currentPage);
   const isInitialMount = useRef(true);
+  // Stable key for non-pagination params (filters, query, sort)
+  // Excludes page/cursor so pagination doesn't double-scroll
+  const filterKey = JSON.stringify({
+    q: params.q,
+    make: params.make,
+    model: params.model,
+    emirate: params.emirate,
+    priceMin: params.priceMin,
+    priceMax: params.priceMax,
+    yearMin: params.yearMin,
+    yearMax: params.yearMax,
+    mileageMin: params.mileageMin,
+    mileageMax: params.mileageMax,
+    specs: params.specs,
+    bodyType: params.bodyType,
+    transmission: params.transmission,
+    fuelType: params.fuelType,
+    exteriorColor: params.exteriorColor,
+    sortBy: params.sortBy,
+    partnerId: params.partnerId,
+    limit: params.limit,
+  });
+  const prevFilterKeyRef = useRef(filterKey);
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       prevPageRef.current = currentPage;
+      prevFilterKeyRef.current = filterKey;
       return;
     }
-    if (prevPageRef.current !== currentPage && !isFetching) {
+    const pageChanged = prevPageRef.current !== currentPage;
+    const filtersChanged = prevFilterKeyRef.current !== filterKey;
+    if ((pageChanged || filtersChanged) && !isFetching) {
       window.scrollTo({ top: 0, behavior: 'instant' });
       prevPageRef.current = currentPage;
+      prevFilterKeyRef.current = filterKey;
     }
-  }, [currentPage, isFetching]);
+  }, [currentPage, filterKey, isFetching]);
 
   return (
     <TooltipProvider>
@@ -238,6 +265,7 @@ export function ListingsView({
                 viewMode={viewMode}
                 clearFilters={clearFilters}
                 loadMore={loadMore}
+                currentPage={currentPage}
               />
             </main>
 
@@ -323,6 +351,7 @@ export function ListingsView({
                   viewMode={viewMode}
                   clearFilters={clearFilters}
                   loadMore={loadMore}
+                  currentPage={currentPage}
                 />
               </main>
             </div>

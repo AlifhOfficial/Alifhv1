@@ -210,7 +210,7 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
               key={showroom.id}
               showroom={showroom}
               index={index}
-              priority={index < 2}
+              priority={index < 3}
             />
           ))}
         </div>

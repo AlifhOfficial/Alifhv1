@@ -7,6 +7,7 @@
 'use client';
 
 import { useState } from 'react';
+import { cn } from '@/utils';
 import { getAppImageUrl } from '@/utils';
 
 interface BrandHeroProps {
@@ -39,13 +40,14 @@ export function BrandHero({
     : null;
 
   return (
-    <div className={`relative w-full overflow-hidden ${heightClasses[height]} ${className}`}>
+    <div className={cn('relative w-full overflow-hidden', heightClasses[height], className)}>
       {resolvedUrl && !hasError ? (
         <img
           src={resolvedUrl}
           alt={brandName}
           className="w-full h-full object-cover"
           onError={() => setHasError(true)}
+          decoding="auto"
         />
       ) : (
         <div className="w-full h-full bg-gradient-to-br from-muted via-muted/50 to-muted" />

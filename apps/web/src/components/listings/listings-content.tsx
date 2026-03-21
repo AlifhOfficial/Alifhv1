@@ -57,6 +57,8 @@ interface ListingsContentProps {
   clearFilters: () => void;
   /** Load more callback */
   loadMore: () => void;
+  /** Current page — used to disable eager image loading on page 2+ */
+  currentPage: number;
 }
 
 export function ListingsContent({
@@ -69,6 +71,7 @@ export function ListingsContent({
   viewMode,
   clearFilters,
   loadMore,
+  currentPage,
 }: ListingsContentProps) {
   const router = useRouter();
   const { trackImpressions } = useTrackImpressions();
@@ -197,7 +200,7 @@ export function ListingsContent({
                 sellerName={listing.sellerName || undefined}
                 sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
                 kycVerified={listing.sellerKycVerified || undefined}
-                priority={index < 4}
+                priority={currentPage === 1 && index < 4}
               />
             ))}
           </div>
@@ -226,7 +229,7 @@ export function ListingsContent({
                 sellerName={listing.sellerName || undefined}
                 sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
                 kycVerified={listing.sellerKycVerified || undefined}
-                priority={index < 4}
+                priority={currentPage === 1 && index < 4}
               />
             ))}
           </div>
@@ -279,7 +282,7 @@ export function ListingsContent({
                 sellerName={listing.sellerName || undefined}
                 sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
                 kycVerified={listing.sellerKycVerified || undefined}
-                priority={index < 4}
+                priority={currentPage === 1 && index < 4}
               />
             ))}
           </div>
@@ -300,7 +303,7 @@ export function ListingsContent({
                 sellerName={listing.sellerName || undefined}
                 sellerAvatarUrl={listing.sellerAvatarUrl || undefined}
                 kycVerified={listing.sellerKycVerified || undefined}
-                priority={index < 8}
+                priority={currentPage === 1 && index < 4}
               />
             ))}
           </div>

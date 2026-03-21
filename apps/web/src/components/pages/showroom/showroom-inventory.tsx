@@ -203,6 +203,7 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
                       viewMode={viewMode}
                       clearFilters={clearFilters}
                       loadMore={loadMore}
+                      currentPage={currentPage}
                     />
                   </main>
                   {/* Pagination - outside content panel */}
@@ -264,6 +265,7 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
                         viewMode={viewMode}
                         clearFilters={clearFilters}
                         loadMore={loadMore}
+                        currentPage={currentPage}
                       />
                     </main>
                     {/* Pagination - outside content panel */}
@@ -366,7 +368,6 @@ function InventoryCarousel({
           <ShowroomCarCard 
             key={listing.id}
             listing={listing}
-            priority={idx < 3}
             index={idx}
             theme={theme}
           />

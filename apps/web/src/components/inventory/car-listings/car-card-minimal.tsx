@@ -58,6 +58,7 @@ export function CarCardMinimal({
   return (
     <Link
       href={`/listings/${id}`}
+      prefetch={false}
       className={cn(
         'group flex flex-col overflow-hidden rounded-lg transition-all',
         isBlkListing 
@@ -77,7 +78,7 @@ export function CarCardMinimal({
             className="absolute inset-0 h-full w-full object-cover"
             loading={priority ? 'eager' : 'lazy'}
             fetchPriority={priority ? 'high' : 'auto'}
-            decoding="async"
+            decoding="auto"
           />
         ) : (
           <div className="absolute inset-0 bg-muted/30" />

@@ -277,7 +277,7 @@ export function CarCard({
             className="absolute inset-0 h-full w-full object-cover"
             loading={priority ? 'eager' : 'lazy'}
             fetchPriority={priority ? 'high' : 'auto'}
-            decoding="async"
+            decoding="auto"
           />
         ) : (
           <div className="absolute inset-0 bg-muted/30" />

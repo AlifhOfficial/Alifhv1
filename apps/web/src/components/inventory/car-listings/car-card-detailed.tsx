@@ -161,9 +161,9 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
               src={currentImage}
               alt={title}
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
+              loading="lazy"
+              fetchPriority="low"
+              decoding="auto"
             />
           )}
 
@@ -221,7 +221,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
                     alt={`View ${idx + 1}`} 
                     className="absolute inset-0 h-full w-full object-cover"
                     loading="lazy"
-                    decoding="async"
+                    decoding="auto"
                   />
                 </button>
               )

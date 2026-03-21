@@ -13,9 +13,8 @@
 
 'use client';
 
-import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Volume2, VolumeX, Play, Pause } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { cn } from '@/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -59,17 +58,12 @@ interface BlackShowroomCardProps {
 
 export function BlackShowroomCard({ showroom, priority = false, index }: BlackShowroomCardProps) {
   const { partner } = showroom;
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(true);
   
   // Build showroom link
   const showroomHref = showroom.slug 
     ? `/showroom/${showroom.slug}` 
     : `/showroom/${showroom.partnerId}`;
   
-  // Media priority
-  const hasVideoFile = !!showroom.heroVideoFileUrl;
   const displayImage = showroom.heroImageUrl || partner.heroImageUrl;
 
   // Stats
@@ -77,28 +71,6 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
   const hasRating = partner.googleRating && partner.googleRating > 0;
   const hasYears = showroom.yearsInBusiness && showroom.yearsInBusiness > 0;
   const hasSold = showroom.totalCarsSold && showroom.totalCarsSold > 0;
-
-  const handleMuteToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
-  };
-
-  const handlePlayToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
   
   return (
     <Link
@@ -118,47 +90,8 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
         {/* ================================================================ */}
         <div className="relative w-full lg:w-[75%] aspect-[16/9] lg:aspect-auto bg-muted/20 overflow-hidden">
           
-          {/* Video */}
-          {hasVideoFile && (
-            <>
-              <video
-                ref={videoRef}
-                src={showroom.heroVideoFileUrl!}
-                className="absolute inset-0 w-full h-full object-cover"
-                autoPlay
-                muted={isMuted}
-                loop
-                playsInline
-                poster={displayImage || undefined}
-              />
-              {/* Video Controls */}
-              <div className="absolute bottom-3 right-3 z-20 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={handlePlayToggle}
-                  className="w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors"
-                >
-                  {isPlaying ? (
-                    <Pause className="w-3.5 h-3.5 text-foreground" />
-                  ) : (
-                    <Play className="w-3.5 h-3.5 text-foreground ml-0.5" />
-                  )}
-                </button>
-                <button
-                  onClick={handleMuteToggle}
-                  className="w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors"
-                >
-                  {isMuted ? (
-                    <VolumeX className="w-3.5 h-3.5 text-foreground" />
-                  ) : (
-                    <Volume2 className="w-3.5 h-3.5 text-foreground" />
-                  )}
-                </button>
-              </div>
-            </>
-          )}
-          
-          {/* Image fallback */}
-          {!hasVideoFile && displayImage && (
+          {/* Banner Image */}
+          {displayImage && (
             <img
               src={displayImage}
               alt={partner.brandName}
@@ -170,7 +103,7 @@ export function BlackShowroomCard({ showroom, priority = false, index }: BlackSh
           )}
           
           {/* Gradient fallback */}
-          {!hasVideoFile && !displayImage && (
+          {!displayImage && (
             <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-muted/5" />
           )}
         </div>

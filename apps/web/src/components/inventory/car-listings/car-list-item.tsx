@@ -232,7 +232,7 @@ export function CarListItem({
               alt={`${year} ${make} ${model}`}
               className="absolute inset-0 h-full w-full object-cover"
               loading="lazy"
-              decoding="async"
+              decoding="auto"
             />
           ) : (
             <div className="absolute inset-0 bg-muted/30" />
