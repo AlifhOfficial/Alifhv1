@@ -20,13 +20,26 @@ import { cn } from "@/lib/utils";
 import { navItems, type NavItem } from "@/lib/navigation";
 import { MegaDropdown } from "./mega-dropdown";
 import { ProfileMenu } from "./user-dropdown";
-import { NavbarMessaging } from "./navbar-messaging";
-import { NavbarFavorites } from "./navbar-favorites";
-import { AuthManager, AuthModalType } from "@/components/auth";
+import dynamic from "next/dynamic";
 import { useFloatingChatSafe } from "@/components/messaging/floating-chat-manager";
 import { useUser } from "@/hooks/auth/use-auth";
 import { handleSignOut } from "@/lib/auth/sign-out";
-import type { AuthUser } from "@/components/auth";
+import type { AuthModalType, AuthUser } from "@/components/auth";
+
+// Code-split auth-heavy components — unauthenticated users never download NavbarMessaging/NavbarFavorites;
+// AuthManager is split out of the main bundle and loads async after hydration.
+const NavbarMessaging = dynamic(
+  () => import("./navbar-messaging").then((m) => ({ default: m.NavbarMessaging })),
+  { ssr: false }
+);
+const NavbarFavorites = dynamic(
+  () => import("./navbar-favorites").then((m) => ({ default: m.NavbarFavorites })),
+  { ssr: false }
+);
+const AuthManager = dynamic(
+  () => import("@/components/auth").then((m) => ({ default: m.AuthManager })),
+  { ssr: false }
+);
 
 export type { NavItem };
 
