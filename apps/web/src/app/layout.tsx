@@ -17,7 +17,7 @@ import {
 
 const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: ['400', '600', '700'],
   display: 'swap',
   variable: '--font-inter',
 })
@@ -27,6 +27,7 @@ const geomFont = localFont({
   weight: '900',
   style: 'normal',
   display: 'swap',
+  preload: false, // wordmark-only font — preloading globally causes unused-preload warnings
   variable: '--font-geom',
 })
 
@@ -66,7 +67,6 @@ export const metadata: Metadata = {
     description: 'UAE\'s first flat-subscription car marketplace. Dealers pay one price, rank on quality — not payment. Free for buyers. Forever.',
     images: ['/twitter-image'],
   },
-  manifest: '/manifest.json',
   icons: {
     icon: [
       { url: BRAND_FAVICON_SVG_URL, type: 'image/svg+xml' },

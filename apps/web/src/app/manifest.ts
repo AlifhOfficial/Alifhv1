@@ -1,0 +1,43 @@
+import type { MetadataRoute } from 'next'
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'Revvup - Vehicle Marketplace',
+    short_name: 'Revvup',
+    description: 'Buy and sell cars in the UAE. Free for private sellers. No fees, no commission, no paid boosts.',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#000000',
+    theme_color: '#000000',
+    orientation: 'portrait-primary',
+    scope: '/',
+    icons: [
+      {
+        src: 'https://cdn.revvup.ae/marketing/brand/icon-192x192.png?v=20260315-brand-kit',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: 'https://cdn.revvup.ae/marketing/brand/icon-192x192.png?v=20260315-brand-kit',
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+      {
+        src: 'https://cdn.revvup.ae/marketing/brand/icon-512x512.png?v=20260315-brand-kit',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: 'https://cdn.revvup.ae/marketing/brand/icon-512x512.png?v=20260315-brand-kit',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+    ],
+    categories: ['shopping', 'automotive', 'business'],
+    prefer_related_applications: false,
+  }
+}

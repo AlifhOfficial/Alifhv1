@@ -950,7 +950,6 @@ async function getAllEnumFacets(
  * - All enum facets: 1 consolidated UNION query
  */
 async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFacets> {
-  const facetStart = Date.now();
   const [
     make,
     model,
@@ -960,10 +959,6 @@ async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFace
     getModelFacets(params, now),
     getTrimFacets(params, now),
   ]);
-  const facetMs = Date.now() - facetStart;
-  if (facetMs > 500) {
-    console.warn(`[search] getAllFacets: ${facetMs}ms`);
-  }
 
   return {
     make,

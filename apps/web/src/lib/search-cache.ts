@@ -67,20 +67,10 @@ function getFacetCacheKey(params: SearchParams): string {
  */
 export async function getCachedSearchFacets(params: SearchParams): Promise<SearchFacets> {
   const cacheKey = getFacetCacheKey(params);
-  console.log(`[facets-cache] REQUEST key=${cacheKey}`);
   
   const cachedFn = unstable_cache(
     async () => {
-      const startTime = Date.now();
-      console.log(`[facets-cache] MISS key=${cacheKey}`);
-      const result = await getSearchFacetsUncached(params);
-      const took = Date.now() - startTime;
-      
-      if (took > 200) {
-        console.log(`[facets-cache] MISS_DONE ${took}ms key=${cacheKey.substring(0, 50)}`);
-      }
-      
-      return result;
+      return getSearchFacetsUncached(params);
     },
     ['search-facets', cacheKey],
     {
