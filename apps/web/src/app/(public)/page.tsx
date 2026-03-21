@@ -45,7 +45,7 @@ export const metadata: Metadata = {
 };
 
 // ISR: Cache homepage for 1 day - content is static, rarely changes
-export const revalidate = 86400;
+export const revalidate = false;
 
 export default function HomePage() {
   return (
