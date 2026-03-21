@@ -39,17 +39,26 @@ function getSearchResultCacheKey(params: SearchParams): string {
 }
 
 /**
- * Generate a stable cache key from search params
- * Only include params that affect the remaining hierarchical facets.
- * We intentionally ignore the rest of the search filters so cache hit rate stays high.
+ * Generate a stable cache key from search params.
+ * Uses a hierarchical make → model structure for trim facet correctness:
+ *   - No filters       → 'all'
+ *   - make only        → 'make:Toyota'
+ *   - make + model     → 'make:Toyota|model:Camry'
+ *
+ * Include an hourly bucket so expired listings naturally fall out of cached
+ * facets as the cache rolls over (facets are live-listing scoped in the DB query).
  */
 function getFacetCacheKey(params: SearchParams): string {
   const keyParts: string[] = [];
   
   if (params.make?.length) keyParts.push(`make:${[...params.make].sort().join(',')}`);
   if (params.model?.length) keyParts.push(`model:${[...params.model].sort().join(',')}`);
+
+  // Hourly bucket ensures cached facets don't serve expired listings indefinitely
+  const hourBucket = Math.floor(Date.now() / (1000 * 60 * 60));
+  keyParts.push(`h:${hourBucket}`);
   
-  return keyParts.length > 0 ? keyParts.join('|') : 'all';
+  return keyParts.join('|') || `all|h:${Math.floor(Date.now() / (1000 * 60 * 60))}`;
 }
 
 /**

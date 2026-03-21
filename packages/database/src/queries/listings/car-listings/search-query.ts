@@ -750,11 +750,11 @@ async function getRangeFacets(
 }
 
 /**
- * Get make facets with counts
+ * Get make facets with counts (live listings only)
  */
 async function getMakeFacets(params: SearchParams, now: Date): Promise<FacetBucket[]> {
   void params;
-  void now;
+  const baseConditions = buildPublicBaseConditions(now);
 
   const results = await db
     .select({
@@ -762,7 +762,7 @@ async function getMakeFacets(params: SearchParams, now: Date): Promise<FacetBuck
       count: count(),
     })
     .from(carListing)
-    .where(isNotNull(carListing.make))
+    .where(and(isNotNull(carListing.make), ...baseConditions))
     .groupBy(carListing.make);
 
   return results
@@ -776,11 +776,10 @@ async function getMakeFacets(params: SearchParams, now: Date): Promise<FacetBuck
 }
 
 /**
- * Get model facets (filtered by selected makes)
+ * Get model facets (filtered by selected makes, live listings only)
  */
 async function getModelFacets(params: SearchParams, now: Date): Promise<FacetBucket[]> {
-  void now;
-  const conditions = [];
+  const conditions: SQL[] = [...buildPublicBaseConditions(now)];
 
   if (params.make?.length) {
     conditions.push(inArray(carListing.make, params.make));
@@ -792,7 +791,7 @@ async function getModelFacets(params: SearchParams, now: Date): Promise<FacetBuc
       count: count(),
     })
     .from(carListing)
-    .where(and(isNotNull(carListing.model), ...(conditions.length > 0 ? conditions : [])))
+    .where(and(isNotNull(carListing.model), ...conditions))
     .groupBy(carListing.model);
 
   return results
@@ -806,18 +805,19 @@ async function getModelFacets(params: SearchParams, now: Date): Promise<FacetBuc
 }
 
 /**
- * Get trim facets (filtered by selected makes and models)
+ * Get trim facets (filtered by selected makes and models, live listings only)
  */
 async function getTrimFacets(params: SearchParams, now: Date): Promise<FacetBucket[]> {
-  void now;
-  const conditions = [];
+  // Only show trims when both make and model are selected
+  if (!params.make?.length || !params.model?.length) {
+    return [];
+  }
 
-  if (params.make?.length) {
-    conditions.push(inArray(carListing.make, params.make));
-  }
-  if (params.model?.length) {
-    conditions.push(inArray(carListing.model, params.model));
-  }
+  const conditions: SQL[] = [
+    ...buildPublicBaseConditions(now),
+    inArray(carListing.make, params.make),
+    inArray(carListing.model, params.model),
+  ];
 
   const results = await db
     .select({
@@ -825,7 +825,7 @@ async function getTrimFacets(params: SearchParams, now: Date): Promise<FacetBuck
       count: count(),
     })
     .from(carListing)
-    .where(and(isNotNull(carListing.trim), ...(conditions.length > 0 ? conditions : [])))
+    .where(and(isNotNull(carListing.trim), ...conditions))
     .groupBy(carListing.trim);
 
   return results

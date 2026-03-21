@@ -346,6 +346,17 @@ export function ListingCard({
             <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", status.bg, status.text)}>
               {status.label}
             </span>
+
+            {/* Expiry countdown for active listings */}
+            {listing.lifecycleStatus === 'active' && daysRemaining !== null && msRemaining !== null && msRemaining > 0 && (
+              <span className={cn(
+                "flex items-center gap-1 text-xs font-medium",
+                isExpiringSoon ? "text-amber-500" : "text-muted-foreground"
+              )}>
+                <Clock className="w-3 h-3" />
+                {daysRemaining}d left
+              </span>
+            )}
             
             {hotScore >= 40 && (
               <span className={cn("flex items-center gap-1 text-xs font-medium", hotLevel.color)}>

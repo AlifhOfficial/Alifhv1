@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ShoppingCart, RefreshCw, Crown, Search, ChevronLeft, ChevronRight, X, Box, ChevronDown } from "lucide-react";
+import { ShoppingCart, RefreshCw, Crown, Search, ChevronLeft, ChevronRight, X, Box, ChevronDown, Clock } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback, useTransition } from "react";
 import { cn } from "@/utils";
@@ -72,6 +72,7 @@ interface ListingData {
   };
   createdAt: string;
   updatedAt: string;
+  expiresAt?: string | null;
 }
 
 interface BlackQuotaData {
@@ -518,8 +519,26 @@ export function DealerInventory({
                         </div>
                       </div>
 
-                      {/* Actions Row */}
-                      <div className="flex items-center gap-2 mt-3 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                      {/* Expiry + Actions Row */}
+                      <div className="flex items-center justify-between mt-3">
+                      {/* Expiry countdown */}
+                      {(() => {
+                        const expiresAt = listing.expiresAt ? new Date(listing.expiresAt as any) : null;
+                        const msRemaining = expiresAt ? expiresAt.getTime() - Date.now() : null;
+                        const daysRemaining = msRemaining ? Math.ceil(msRemaining / (24 * 60 * 60 * 1000)) : null;
+                        const isExpiringSoon = listing.lifecycleStatus === 'active' && msRemaining !== null && msRemaining > 0 && msRemaining <= 2 * 24 * 60 * 60 * 1000;
+                        if (listing.lifecycleStatus !== 'active' || daysRemaining === null || msRemaining === null || msRemaining <= 0) return null;
+                        return (
+                          <span className={cn(
+                            "flex items-center gap-1 text-xs font-medium",
+                            isExpiringSoon ? "text-amber-500" : "text-muted-foreground"
+                          )}>
+                            <Clock className="w-3 h-3" />
+                            {daysRemaining}d left
+                          </span>
+                        );
+                      })()}
+                      <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         <Link href={`/listings/${listing.id}`}>
                           <button className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs font-medium transition-colors">
                             View
@@ -556,6 +575,7 @@ export function DealerInventory({
                             </DropdownMenuContent>
                           </DropdownMenu>
                         )}
+                      </div>
                       </div>
                     </div>
                   </div>
