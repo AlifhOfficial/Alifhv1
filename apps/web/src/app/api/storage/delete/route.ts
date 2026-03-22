@@ -34,6 +34,8 @@ const ALLOWED_DIRECTORIES = [
   'avatars/',
   'partners/',
   'gallery/',
+  'brands/',
+  'users/',
 ];
 
 const DeleteSchema = z.object({

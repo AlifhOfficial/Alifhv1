@@ -1,0 +1,47 @@
+# Fly.io configuration for image preprocessing service
+# Deploy: fly deploy --config fly.preprocessing.toml
+
+app = "revvup-preprocessing"
+primary_region = "bom"
+
+[build]
+  dockerfile = "Dockerfile.preprocessing"
+
+[env]
+  PREPROCESSING_PORT = "3002"
+  NODE_ENV = "production"
+
+# Secrets (set via: fly secrets set --config fly.preprocessing.toml KEY=value)
+# Required:
+#   PREPROCESSING_SECRET   — shared HMAC secret (must match Vercel env)
+#   R2_ACCESS_KEY_ID
+#   R2_SECRET_ACCESS_KEY
+#   R2_BUCKET_NAME
+#   R2_ACCOUNT_ID
+#   CDN_URL                — e.g. https://cdn.revvup.ae
+
+[http_service]
+  internal_port = 3002
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 200
+    soft_limit = 150
+
+  # Large uploads need enough time — 120s matches Fly's default max
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    path = "/health"
+    protocol = "http"
+    timeout = "5s"
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

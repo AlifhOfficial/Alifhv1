@@ -1,16 +1,12 @@
 /**
- * Image Upload Client
- * 
- * Fast client-side compression + direct R2 upload.
- * Bypasses Vercel's 4.5MB limit and eliminates server processing.
- * 
- * Architecture:
- * 1. Client compresses image (browser-image-compression)
- * 2. Get presigned URL from /api/storage/direct
- * 3. PUT directly to R2 (instant, no server bottleneck)
- * 4. CDN URL immediately available
- * 
- * All images served via cdn.revvup.ae with 1-year caching.
+ * Image Upload Client — Preprocessing Pipeline
+ *
+ * New flow (replaces browser-image-compression + presigned URL):
+ *   1. POST /api/storage/upload-token  → short-lived HMAC token + Fly service URL
+ *   2. POST token + raw files → Fly preprocessing service (no Vercel body limit)
+ *   3. Fly runs Sharp server-side → uploads WebP to R2 → returns CDN URLs
+ *
+ * Video uploads (showroom only) are unchanged — they bypass this pipeline.
  */
 
 // ============================================================================
@@ -24,39 +20,107 @@ export interface ListingUploadResult {
   fullUrl: string;
 }
 
+// Alias kept for backward compat with existing call sites
+export type DirectListingUploadResult = ListingUploadResult;
+
 export interface SingleUploadResult {
   key: string;
   url: string;
-  width?: number;
-  height?: number;
+}
+
+export type DirectSingleUploadResult = SingleUploadResult;
+
+// ============================================================================
+// Internal helpers
+// ============================================================================
+
+interface UploadTokenResponse {
+  token: string;
+  expiresAt: number;
+  uploadUrl: string;
+}
+
+async function getUploadToken(body: Record<string, string>): Promise<UploadTokenResponse> {
+  const res = await fetch('/api/storage/upload-token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as Record<string, string>;
+    throw new Error(e.error ?? 'Failed to get upload token');
+  }
+
+  return res.json();
+}
+
+/**
+ * Client-side preshrink via Canvas.
+ * Target: ≤1600px longest side, JPEG q82 → ~120-180KB regardless of source size.
+ * Sharp on Fly receives a clean JPEG and does final WebP output (no quality lost).
+ * Canvas drawImage is GPU-accelerated — ~20-40ms per image, non-blocking feel.
+ */
+async function preshrink(file: File, maxDim = 1600): Promise<File> {
+  // Skip non-images and files already under 200KB (already small enough)
+  if (!file.type.startsWith('image/') || file.size < 200_000) return file;
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const { naturalWidth: w, naturalHeight: h } = img;
+      const scale = Math.min(1, maxDim / Math.max(w, h));
+      const canvas = document.createElement('canvas');
+      canvas.width  = Math.round(w * scale);
+      canvas.height = Math.round(h * scale);
+      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        resolve(blob ? new File([blob], file.name, { type: 'image/jpeg' }) : file);
+      }, 'image/jpeg', 0.82);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+
+/** POST one batch of raw files to the preprocessing service. Returns raw results array. */
+async function postToPreprocessing(files: File[], token: string, uploadUrl: string): Promise<any[]> {
+  const fd = new FormData();
+  for (const f of files) fd.append('file', f);
+
+  const res = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: fd,
+  });
+
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as Record<string, string>;
+    throw new Error(e.error ?? 'Upload failed');
+  }
+
+  const data = await res.json();
+  return data.results ?? [];
 }
 
 // ============================================================================
-// Video Upload (Showroom only - no compression needed)
+// Video Upload (Showroom only — unchanged, XHR for progress)
 // ============================================================================
 
-/**
- * Upload a showroom video. Direct to CDN (no processing).
- * Uses XHR for progress tracking.
- */
 export async function uploadShowroomVideo(
   file: File,
   partnerId: string,
   assetType: string,
-  onProgress?: (percent: number) => void
+  onProgress?: (percent: number) => void,
 ): Promise<SingleUploadResult> {
-  // Step 1: Get presigned URL
   onProgress?.(5);
-  
+
   const presignedRes = await fetch('/api/storage/presigned', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      type: 'showroom',
-      contentType: file.type,
-      partnerId,
-      assetType,
-    }),
+    body: JSON.stringify({ type: 'showroom', contentType: file.type, partnerId, assetType }),
   });
 
   if (!presignedRes.ok) {
@@ -67,393 +131,129 @@ export async function uploadShowroomVideo(
   const { uploadUrl, rawKey, maxSize } = await presignedRes.json();
 
   if (file.size > maxSize) {
-    const maxMB = Math.round(maxSize / 1024 / 1024);
-    throw new Error(`Video too large. Maximum ${maxMB}MB allowed.`);
+    throw new Error(`Video too large. Maximum ${Math.round(maxSize / 1024 / 1024)}MB allowed.`);
   }
 
-  // Step 2: Upload directly to R2 with progress tracking
   await new Promise<void>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    
     xhr.upload.addEventListener('progress', (e) => {
-      if (e.lengthComputable) {
-        const percent = 5 + Math.round((e.loaded / e.total) * 95);
-        onProgress?.(percent);
-      }
+      if (e.lengthComputable) onProgress?.(5 + Math.round((e.loaded / e.total) * 95));
     });
-    
-    xhr.addEventListener('load', () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve();
-      } else {
-        reject(new Error('Upload failed'));
-      }
-    });
-    
+    xhr.addEventListener('load', () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error('Upload failed'))));
     xhr.addEventListener('error', () => reject(new Error('Upload failed')));
     xhr.open('PUT', uploadUrl);
     xhr.setRequestHeader('Content-Type', file.type);
     xhr.send(file);
   });
 
-  // Videos go direct to CDN - no processing needed
   const cdnUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || '';
-  return {
-    key: rawKey,
-    url: `${cdnUrl}/${rawKey}`,
-  };
+  return { key: rawKey, url: `${cdnUrl}/${rawKey}` };
 }
 
 // ============================================================================
-// Direct Upload Functions (Client-Side Compression, No Server Processing)
+// Listing Images
 // ============================================================================
 
-export interface DirectListingUploadResult {
-  thumbKey: string;
-  thumbUrl: string;
-  fullKey: string;
-  fullUrl: string;
-}
-
-export interface DirectSingleUploadResult {
-  key: string;
-  url: string;
-}
-
 /**
- * Get presigned URLs for direct listing image upload.
- * Client must pre-compress images before calling this.
- */
-async function getListingUploadUrls(vin: string): Promise<{
-  thumbUploadUrl: string;
-  thumbKey: string;
-  thumbUrl: string;
-  fullUploadUrl: string;
-  fullKey: string;
-  fullUrl: string;
-}> {
-  const res = await fetch('/api/storage/direct', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type: 'listing', vin }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error || 'Failed to get upload URLs');
-  }
-
-  return res.json();
-}
-
-/**
- * Upload a pre-compressed file to a presigned URL.
- */
-async function uploadToPresigned(uploadUrl: string, file: File | Blob): Promise<void> {
-  const res = await fetch(uploadUrl, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'image/webp',
-      'Cache-Control': 'public, max-age=31536000, immutable',
-    },
-    body: file,
-  });
-
-  if (!res.ok) {
-    throw new Error('Upload failed. Please try again.');
-  }
-}
-
-/**
- * Direct upload pre-compressed listing images (thumb + full).
- * 
- * Flow:
- * 1. Compress client-side using image-compress.ts
- * 2. Call this function with compressed files
- * 3. Get presigned URLs and upload both in parallel
- * 4. URLs are immediately CDN-ready
- * 
- * @param thumbFile - Pre-compressed thumbnail file (~20-25KB)
- * @param fullFile - Pre-compressed full-size file (~45-55KB)
- * @param vin - VIN string for folder organization
- * @returns CDN URLs for both images
- */
-export async function uploadListingImageDirect(
-  thumbFile: File | Blob,
-  fullFile: File | Blob,
-  vin: string,
-): Promise<DirectListingUploadResult> {
-  const urls = await getListingUploadUrls(vin);
-
-  // Upload both in parallel
-  await Promise.all([
-    uploadToPresigned(urls.thumbUploadUrl, thumbFile),
-    uploadToPresigned(urls.fullUploadUrl, fullFile),
-  ]);
-
-  return {
-    thumbKey: urls.thumbKey,
-    thumbUrl: urls.thumbUrl,
-    fullKey: urls.fullKey,
-    fullUrl: urls.fullUrl,
-  };
-}
-
-/**
- * Get presigned URL for direct avatar upload.
- */
-async function getAvatarUploadUrl(): Promise<{ uploadUrl: string; key: string; url: string }> {
-  const res = await fetch('/api/storage/direct', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type: 'avatar' }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error || 'Failed to get upload URL');
-  }
-
-  return res.json();
-}
-
-/**
- * Direct upload a pre-compressed avatar.
- * 
- * @param file - Pre-compressed avatar file (~15-20KB)
- * @returns CDN URL
- */
-export async function uploadAvatarDirect(file: File | Blob): Promise<DirectSingleUploadResult> {
-  const urls = await getAvatarUploadUrl();
-  await uploadToPresigned(urls.uploadUrl, file);
-
-  return {
-    key: urls.key,
-    url: urls.url,
-  };
-}
-
-/**
- * Get presigned URL for direct partner image upload.
- */
-async function getPartnerUploadUrl(
-  partnerId: string,
-  imageType: 'logo' | 'hero',
-): Promise<{ uploadUrl: string; key: string; url: string }> {
-  const res = await fetch('/api/storage/direct', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type: 'partner', partnerId, imageType }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error || 'Failed to get upload URL');
-  }
-
-  return res.json();
-}
-
-/**
- * Direct upload a pre-compressed partner image.
- * 
- * @param file - Pre-compressed partner image (logo or hero)
- * @param partnerId - Partner ID
- * @param imageType - 'logo' or 'hero'
- * @returns CDN URL
- */
-export async function uploadPartnerImageDirect(
-  file: File | Blob,
-  partnerId: string,
-  imageType: 'logo' | 'hero',
-): Promise<DirectSingleUploadResult> {
-  const urls = await getPartnerUploadUrl(partnerId, imageType);
-  await uploadToPresigned(urls.uploadUrl, file);
-
-  return {
-    key: urls.key,
-    url: urls.url,
-  };
-}
-
-/**
- * Get presigned URL for direct showroom image upload.
- */
-async function getShowroomUploadUrl(
-  partnerId: string,
-  assetType: string,
-): Promise<{ uploadUrl: string; key: string; url: string }> {
-  const res = await fetch('/api/storage/direct', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type: 'showroom', partnerId, assetType }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error || 'Failed to get upload URL');
-  }
-
-  return res.json();
-}
-
-/**
- * Direct upload a pre-compressed showroom image.
- * 
- * @param file - Pre-compressed showroom image
- * @param partnerId - Partner ID
- * @param assetType - Type of showroom asset
- * @returns CDN URL
- */
-export async function uploadShowroomImageDirect(
-  file: File | Blob,
-  partnerId: string,
-  assetType: string,
-): Promise<DirectSingleUploadResult> {
-  const urls = await getShowroomUploadUrl(partnerId, assetType);
-  await uploadToPresigned(urls.uploadUrl, file);
-
-  return {
-    key: urls.key,
-    url: urls.url,
-  };
-}
-
-// ============================================================================
-// High-Level Convenience Functions (Compress + Upload in one call)
-// ============================================================================
-
-import { 
-  compressListingImage, 
-  compressAvatar as compressAvatarImage, 
-  compressPartnerImage,
-  compressShowroomImage 
-} from './image-compress';
-
-/**
- * Compress and upload a listing image in one call.
- * Handles compression + parallel upload automatically.
- * 
- * @param file - Original image file from input
- * @param vin - VIN string
- * @param onProgress - Progress callback (0-100)
- * @returns CDN URLs for thumb + full
- * 
- * @example
- * const result = await compressAndUploadListingImage(file, vin, (p) => setProgress(p));
- * console.log(result.thumbUrl, result.fullUrl);
- */
-export async function compressAndUploadListingImage(
-  file: File,
-  vin: string,
-  onProgress?: (percent: number) => void,
-): Promise<DirectListingUploadResult> {
-  onProgress?.(5);
-  
-  // Compress (parallel thumb + full)
-  const { thumb, full } = await compressListingImage(file);
-  onProgress?.(40);
-  
-  // Upload (parallel)
-  const result = await uploadListingImageDirect(thumb.file, full.file, vin);
-  onProgress?.(100);
-  
-  return result;
-}
-
-/**
- * Compress and upload multiple listing images in parallel.
- * 
- * @param files - Array of image files
- * @param vin - VIN string
- * @param onProgress - Progress callback (completed, total)
- * @param concurrency - Max concurrent uploads (default: 5)
- * @returns Array of upload results
+ * Upload multiple listing images.
+ * Preshrinks all files in parallel (canvas, ~20ms each), then fires
+ * one request per file simultaneously — no batching needed when files are ~150KB.
  */
 export async function compressAndUploadListingImages(
   files: File[],
   vin: string,
   onProgress?: (completed: number, total: number) => void,
-  concurrency: number = 5,
-): Promise<DirectListingUploadResult[]> {
+): Promise<ListingUploadResult[]> {
+  const { token, uploadUrl } = await getUploadToken({ type: 'listing', vin });
+
+  // Canvas-preshrink all at once (GPU-accelerated, non-blocking)
+  const shrunk = await Promise.all(files.map(f => preshrink(f)));
+
+  // Fire every file individually and in parallel — each is ~150KB so no bandwidth pileup
   let completed = 0;
-
-  // Process a single file: compress + upload
-  const processFile = async (file: File): Promise<DirectListingUploadResult> => {
-    const { thumb, full } = await compressListingImage(file);
-    const result = await uploadListingImageDirect(thumb.file, full.file, vin);
-    completed++;
-    onProgress?.(completed, files.length);
-    return result;
-  };
-
-  // Process in batches for controlled concurrency
-  const results: DirectListingUploadResult[] = [];
-  
-  for (let i = 0; i < files.length; i += concurrency) {
-    const batch = files.slice(i, i + concurrency);
-    const batchResults = await Promise.all(batch.map(processFile));
-    results.push(...batchResults);
-  }
+  const results = await Promise.all(
+    shrunk.map(async (file) => {
+      const res = await postToPreprocessing([file], token, uploadUrl);
+      onProgress?.(++completed, shrunk.length);
+      const r = res[0];
+      if (r?.error) throw new Error(r.error);
+      return { thumbKey: r.thumbKey, thumbUrl: r.thumbUrl, fullKey: r.fullKey, fullUrl: r.fullUrl };
+    })
+  );
 
   return results;
 }
 
-/**
- * Compress and upload an avatar image.
- */
+// ============================================================================
+// Avatar
+// ============================================================================
+
 export async function compressAndUploadAvatar(
   file: File,
   onProgress?: (percent: number) => void,
-): Promise<DirectSingleUploadResult> {
+): Promise<SingleUploadResult> {
+  onProgress?.(5);
+  const small = await preshrink(file);
   onProgress?.(10);
-  
-  const compressed = await compressAvatarImage(file);
-  onProgress?.(50);
-  
-  const result = await uploadAvatarDirect(compressed.file);
+  const { token, uploadUrl } = await getUploadToken({ type: 'avatar' });
+  onProgress?.(30);
+
+  const results = await postToPreprocessing([small], token, uploadUrl);
   onProgress?.(100);
-  
-  return result;
+
+  const r = results[0];
+  if (r?.error) throw new Error(r.error);
+  return { key: r.key, url: r.url };
 }
 
-/**
- * Compress and upload a partner image (logo or hero).
- */
+// ============================================================================
+// Partner Images (logo, hero)
+// ============================================================================
+
 export async function compressAndUploadPartnerImage(
   file: File,
   partnerId: string,
   imageType: 'logo' | 'hero',
   onProgress?: (percent: number) => void,
-): Promise<DirectSingleUploadResult> {
+): Promise<SingleUploadResult> {
+  onProgress?.(5);
+  const small = await preshrink(file);
   onProgress?.(10);
-  
-  const compressed = await compressPartnerImage(file, imageType);
-  onProgress?.(50);
-  
-  const result = await uploadPartnerImageDirect(compressed.file, partnerId, imageType);
+  const { token, uploadUrl } = await getUploadToken({ type: 'partner', partnerId, imageType });
+  onProgress?.(30);
+
+  const results = await postToPreprocessing([small], token, uploadUrl);
   onProgress?.(100);
-  
-  return result;
+
+  const r = results[0];
+  if (r?.error) throw new Error(r.error);
+  return { key: r.key, url: r.url };
 }
 
-/**
- * Compress and upload a showroom image.
- */
+// ============================================================================
+// Showroom Images
+// ============================================================================
+
 export async function compressAndUploadShowroomImage(
   file: File,
   partnerId: string,
   assetType: 'hero-image' | 'founder-image' | 'gallery' | 'team-member' | 'seo-image',
   onProgress?: (percent: number) => void,
-): Promise<DirectSingleUploadResult> {
+): Promise<SingleUploadResult> {
+  onProgress?.(5);
+  const small = await preshrink(file);
   onProgress?.(10);
-  
-  const compressed = await compressShowroomImage(file, assetType);
-  onProgress?.(50);
-  
-  const result = await uploadShowroomImageDirect(compressed.file, partnerId, assetType);
+  const { token, uploadUrl } = await getUploadToken({ type: 'showroom', partnerId, assetType });
+  onProgress?.(30);
+
+  const results = await postToPreprocessing([small], token, uploadUrl);
   onProgress?.(100);
-  
-  return result;
+
+  const r = results[0];
+  if (r?.error) throw new Error(r.error);
+  return { key: r.key, url: r.url };
 }
 
+// ============================================================================
+// Types
+// ============================================================================

@@ -96,8 +96,8 @@ export function getStaticUrl(path: string): string {
 export function getPublicUrl(key: string | null | undefined, cacheBuster?: string | number): string | null {
   if (!key) return null;
   
-  // Already a full URL - return as-is (don't add cache buster to external URLs)
-  if (key.startsWith('http://') || key.startsWith('https://') || key.startsWith('/')) {
+  // Already a full URL (including blob:) - return as-is
+  if (key.startsWith('http://') || key.startsWith('https://') || key.startsWith('/') || key.startsWith('blob:')) {
     return key;
   }
   
@@ -166,16 +166,13 @@ export function getThumbUrl(url: string | null | undefined, cacheBuster?: string
   const fullUrl = getPublicUrl(url, cacheBuster);
   if (!fullUrl) return null;
   
-  // Convert _full.webp to _thumb.webp
-  if (fullUrl.includes('_full.webp')) {
-    return fullUrl.replace('_full.webp', '_thumb.webp');
+  // Convert _full.{ext} to _thumb.{ext}
+  for (const ext of ['webp', 'avif', 'jpg']) {
+    if (fullUrl.includes(`_full.${ext}`)) {
+      return fullUrl.replace(`_full.${ext}`, `_thumb.${ext}`);
+    }
   }
-  
-  // Convert _full.jpg to _thumb.jpg (direct upload format)
-  if (fullUrl.includes('_full.jpg')) {
-    return fullUrl.replace('_full.jpg', '_thumb.jpg');
-  }
-  
+
   // Legacy image - return as-is (no thumb version exists)
   return fullUrl;
 }
@@ -189,12 +186,10 @@ export function getCdnThumbUrl(url: string | null | undefined, cacheBuster?: str
   const fullUrl = getCdnPublicUrl(url, cacheBuster);
   if (!fullUrl) return null;
 
-  if (fullUrl.includes('_full.webp')) {
-    return fullUrl.replace('_full.webp', '_thumb.webp');
-  }
-
-  if (fullUrl.includes('_full.jpg')) {
-    return fullUrl.replace('_full.jpg', '_thumb.jpg');
+  for (const ext of ['webp', 'avif', 'jpg']) {
+    if (fullUrl.includes(`_full.${ext}`)) {
+      return fullUrl.replace(`_full.${ext}`, `_thumb.${ext}`);
+    }
   }
 
   return fullUrl;

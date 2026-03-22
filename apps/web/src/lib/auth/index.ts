@@ -64,9 +64,12 @@ export const auth = betterAuth({
   session: {
     expiresIn: AUTH_CONFIG.SESSION.EXPIRES_IN,
     updateAge: AUTH_CONFIG.SESSION.UPDATE_AGE,
-    // Cookie cache disabled — session caching handled by unstable_cache in getSessionUser()
+    // Cookie cache: stores verified session (incl. partnerMemberships) in a signed HttpOnly cookie.
+    // Eliminates DB round-trips on repeat API calls (upload-token, etc.) — ~1ms vs ~500ms.
+    // Trade-off: role/membership changes take up to 5min to propagate.
     cookieCache: {
-      enabled: false,
+      enabled: true,
+      maxAge: 300, // 5 minutes
     },
   },
 

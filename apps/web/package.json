@@ -59,6 +59,7 @@
     "cmdk": "1.1.1",
     "date-fns": "4.1.0",
     "heic-convert": "2.1.0",
+    "heic2any": "0.0.4",
     "html2pdf.js": "0.14.0",
     "hugeicons-react": "0.3.0",
     "jose": "6.1.3",

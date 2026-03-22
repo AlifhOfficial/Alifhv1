@@ -175,16 +175,25 @@ export function detectImageFormat(buffer: Buffer): 'heic' | 'jpeg' | 'png' | 'we
 // ============================================================================
 
 /**
- * Convert HEIC buffer to JPEG buffer using heic-convert
- * This is a pure JS implementation that works everywhere (no native deps)
+ * Convert HEIC buffer to JPEG using Sharp's native libheif decoder.
+ * ~10-50x faster than the pure-JS heic-convert path.
+ * Falls back to heic-convert if Sharp cannot decode the file.
  */
 export async function convertHeicToJpeg(inputBuffer: Buffer): Promise<Buffer> {
-  const outputBuffer = await convert({
-    buffer: inputBuffer as unknown as ArrayBuffer,
-    format: 'JPEG',
-    quality: 0.95, // High quality since we'll compress with WebP later
-  });
-  return Buffer.from(outputBuffer);
+  try {
+    // Sharp uses libheif (native C) — typically 50-150ms vs 1-4s for heic-convert
+    return await sharp(inputBuffer, { limitInputPixels: SHARP_LIMIT_INPUT_PIXELS })
+      .jpeg({ quality: 95 })
+      .toBuffer();
+  } catch {
+    // Fallback: heic-convert pure JS (slower but handles edge-case HEIC variants)
+    const outputBuffer = await convert({
+      buffer: inputBuffer as unknown as ArrayBuffer,
+      format: 'JPEG',
+      quality: 0.95,
+    });
+    return Buffer.from(outputBuffer);
+  }
 }
 
 /**
@@ -228,12 +237,12 @@ export interface ProcessImageOptions {
 
 /** Default options for full-size images */
 const DEFAULT_FULL_OPTIONS: Required<ProcessImageOptions> = {
-  maxWidth: 2000,
-  maxHeight: 2000,
+  maxWidth: 1400,
+  maxHeight: 1400,
   fit: 'inside',
   position: 'center',
-  quality: 78,
-  effort: 4,           // Balanced: fast + good compression (6 is ~30% slower)
+  quality: 74,
+  effort: 5,           // Slightly better compression than 4, ~20% slower (~130ms vs ~110ms)
   convertHeic: true,
   sharpenSigma: 0.6,   // Subtle sharpening for full images
   saturationBoost: 1.02, // Slight boost to counter compression flatness
@@ -356,6 +365,17 @@ export async function processImage(
 // Listing Image Processing - Dual Output (Thumb + Full)
 // ============================================================================
 
+export interface ListingImageTiming {
+  /** Wall time for HEIC → JPEG conversion (0 if not HEIC) */
+  heicConvertMs: number;
+  /** Sharp pipeline time for thumbnail variant */
+  thumbMs: number;
+  /** Sharp pipeline time for full variant */
+  fullMs: number;
+  /** Total time including validation, HEIC conversion, and parallel Sharp (wall clock) */
+  totalMs: number;
+}
+
 export interface ListingImageResult {
   thumb: {
     buffer: Buffer;
@@ -368,6 +388,8 @@ export interface ListingImageResult {
     height: number;
   };
   originalFormat: string;
+  /** Granular timing breakdown (only present when called with timing=true) */
+  timing?: ListingImageTiming;
 }
 
 /**
@@ -375,8 +397,8 @@ export interface ListingImageResult {
  * 
  * This is the main entry point for listing image uploads.
  * Validates the image, converts HEIC if needed, and outputs:
- * - thumb: 480w max, quality 72, ~15-20KB (for grid cards)
- * - full: 2000w max, quality 78, ~100-200KB (for detail page)
+ * - thumb: 480w max, quality 72, ~10-25KB (for grid cards)
+ * - full: 1400w max, quality 74, ~40-70KB (for detail page)
  * 
  * @param inputBuffer - Raw image buffer from upload
  * @returns Both processed versions ready for storage
@@ -386,14 +408,23 @@ export interface ListingImageResult {
  * const { thumb, full } = await processListingImages(buffer);
  * // Store as: photo_001_thumb.webp, photo_001_full.webp
  */
-export async function processListingImages(inputBuffer: Buffer): Promise<ListingImageResult> {
+export async function processListingImages(
+  inputBuffer: Buffer,
+  { withTiming = false }: { withTiming?: boolean } = {}
+): Promise<ListingImageResult> {
+  const t0 = Date.now();
+
   // Validate before processing
   const validation = await validateImage(inputBuffer);
-  
+
   // Normalize: convert HEIC to JPEG if needed (do this once, reuse for both)
+  const heicStart = Date.now();
   const normalizedBuffer = await ensureNonHeic(inputBuffer);
-  
-  // Process both variants in parallel
+  const heicConvertMs = Date.now() - heicStart;
+
+  // Process both variants in parallel, each timed individually
+  const thumbStart = Date.now();
+  const fullStart = Date.now();
   const [thumbResult, fullResult] = await Promise.all([
     processImage(normalizedBuffer, {
       ...DEFAULT_THUMB_OPTIONS,
@@ -404,7 +435,9 @@ export async function processListingImages(inputBuffer: Buffer): Promise<Listing
       convertHeic: false, // Already converted
     }),
   ]);
-  
+  const thumbMs = Date.now() - thumbStart;
+  const fullMs = Date.now() - fullStart;
+
   return {
     thumb: {
       buffer: thumbResult.buffer,
@@ -417,6 +450,14 @@ export async function processListingImages(inputBuffer: Buffer): Promise<Listing
       height: fullResult.height,
     },
     originalFormat: validation.format,
+    ...(withTiming && {
+      timing: {
+        heicConvertMs: validation.format === 'heic' ? heicConvertMs : 0,
+        thumbMs,
+        fullMs,
+        totalMs: Date.now() - t0,
+      },
+    }),
   };
 }
 

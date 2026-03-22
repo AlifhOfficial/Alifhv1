@@ -54,21 +54,21 @@ export interface ListingImagePair {
 // Compression Configs — Realistic targets for quality/size balance
 // ============================================================================
 
-/** Listing thumbs: 600px, max 70KB - crisp on retina */
+/** Listing thumbs: 480px, max 25KB */
 const LISTING_THUMB_CONFIG: CompressionConfig = {
-  maxWidth: 600,
-  maxHeight: 600,
-  maxSizeKB: 70,
-  initialQuality: 0.92,
-  minQuality: 0.75,
+  maxWidth: 480,
+  maxHeight: 480,
+  maxSizeKB: 25,
+  initialQuality: 0.95,
+  minQuality: 0.50,
 };
 
-/** Listing full: 1400px, max 120KB - sharp detail */
+/** Listing full: 1400px, max 55KB */
 const LISTING_FULL_CONFIG: CompressionConfig = {
   maxWidth: 1400,
   maxHeight: 1400,
-  maxSizeKB: 120,
-  initialQuality: 0.78,
+  maxSizeKB: 55,
+  initialQuality: 0.95,
   minQuality: 0.55,
 };
 

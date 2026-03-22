@@ -6,10 +6,11 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { getPublicUrl } from '@/utils';
 import { compressAndUploadShowroomImage } from '@/lib/storage';
-import { Plus, X, Loader2, GripVertical } from 'lucide-react';
+import { Plus, X, GripVertical } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import { EditableField, VideoUpload, VideoEmbedPreview } from '../components';
 import {
@@ -30,6 +31,24 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+
+// ============================================================================
+// Gallery upload narrative stages
+// ============================================================================
+
+const GALLERY_STAGES = [
+  { until: 12, label: 'Looking at your photos…' },
+  { until: 28, label: 'Arranging the shots…' },
+  { until: 48, label: 'Sharpening the details…' },
+  { until: 65, label: 'Correcting the colours…' },
+  { until: 82, label: 'Almost showroom-ready…' },
+  { until: 95, label: 'Finishing touches…' },
+  { until: 100, label: 'Saving to your profile…' },
+] as const;
+
+function getGalleryMessage(p: number) {
+  return GALLERY_STAGES.find(s => p < s.until)?.label ?? 'Saving to your profile…';
+}
 
 // ============================================================================
 // Sortable Gallery Image Component
@@ -154,6 +173,37 @@ export function GallerySection({
   removeVideo,
   toast,
 }: GallerySectionProps) {
+  // Local progress state for gallery uploads
+  const [galleryRealProgress, setGalleryRealProgress] = useState(0);
+  const [galleryDisplayProgress, setGalleryDisplayProgress] = useState(0);
+  const fakeAnimRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isGalleryUploading = imageUploading === 'showroomImages';
+
+  // Fake 0→40% animation when gallery upload starts
+  useEffect(() => {
+    if (isGalleryUploading) {
+      setGalleryDisplayProgress(0);
+      setGalleryRealProgress(0);
+      let current = 0;
+      fakeAnimRef.current = setInterval(() => {
+        current += 4;
+        if (current >= 40) { current = 40; clearInterval(fakeAnimRef.current!); }
+        setGalleryDisplayProgress(current);
+      }, 50);
+    } else {
+      if (fakeAnimRef.current) clearInterval(fakeAnimRef.current);
+      setGalleryDisplayProgress(0);
+    }
+    return () => { if (fakeAnimRef.current) clearInterval(fakeAnimRef.current); };
+  }, [isGalleryUploading]);
+
+  // Map real progress (0–100) into the 40–100 display range
+  useEffect(() => {
+    if (galleryRealProgress > 0) {
+      setGalleryDisplayProgress(prev => Math.max(prev, Math.round(40 + galleryRealProgress * 0.6)));
+    }
+  }, [galleryRealProgress]);
+
   // DnD sensors for pointer, touch and keyboard
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -257,20 +307,16 @@ export function GallerySection({
                     
                     setImageUploading('showroomImages');
                     try {
-                      // Upload via presigned pipeline in parallel batches of 3
-                      const batchSize = 3;
-                      const uploadedKeys: string[] = [];
-                      
-                      for (let i = 0; i < toUpload.length; i += batchSize) {
-                        const batch = toUpload.slice(i, i + batchSize);
-                        const results = await Promise.all(
-                          batch.map(async (file) => {
-                            const result = await compressAndUploadShowroomImage(file, partnerId, 'gallery');
-                            return result.key;
-                          })
-                        );
-                        uploadedKeys.push(...results);
-                      }
+                      // Upload all in parallel simultaneously
+                      let completed = 0;
+                      const uploadedKeys = await Promise.all(
+                        toUpload.map(async (file) => {
+                          const result = await compressAndUploadShowroomImage(file, partnerId, 'gallery');
+                          completed++;
+                          setGalleryRealProgress(Math.round((completed / toUpload.length) * 100));
+                          return result.key;
+                        })
+                      );
 
                       const updated = [...(form.showroomImages || []), ...uploadedKeys];
                       await updateShowroom({ showroomImages: updated });
@@ -283,7 +329,7 @@ export function GallerySection({
                   }}
                 />
                 {imageUploading === 'showroomImages' ? (
-                  <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+                  <span className="text-xs text-muted-foreground">Uploading…</span>
                 ) : (
                   <>
                     <Plus className="w-5 h-5 text-muted-foreground" />
@@ -295,6 +341,19 @@ export function GallerySection({
               </div>
             </SortableContext>
           </DndContext>
+
+          {/* Progress bar — shown while gallery images are uploading */}
+          {isGalleryUploading && (
+            <div className="mt-4 space-y-2">
+              <p className="text-sm font-medium text-foreground transition-all duration-500">
+                {getGalleryMessage(galleryDisplayProgress)}
+              </p>
+              <Progress value={galleryDisplayProgress} className="h-1.5" />
+              <p className="text-xs text-muted-foreground">
+                {galleryDisplayProgress < 40 ? 'Preparing…' : `${galleryDisplayProgress}% complete`}
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
