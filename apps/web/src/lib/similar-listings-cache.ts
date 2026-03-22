@@ -31,7 +31,6 @@ export async function getCachedSimilarListingsForListing(listingId: string): Pro
     ['similar-listings', listingId],
     {
       revalidate: SIMILAR_LISTINGS_CACHE_TTL,
-      tags: ['similar-listings'],
     }
   );
 

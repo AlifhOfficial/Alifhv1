@@ -57,7 +57,6 @@ function getCachedSession(sessionToken: string, headerEntries: [string, string][
     ["session-user", sessionToken],
     {
       revalidate: SESSION_CACHE_TTL,
-      tags: [`session:${sessionToken}`],
     }
   )();
 }

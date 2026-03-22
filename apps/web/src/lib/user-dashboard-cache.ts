@@ -9,7 +9,6 @@ export async function getCachedUserDashboardStats(userId: string): Promise<UserD
     ['user-dashboard-stats', userId],
     {
       revalidate: USER_DASHBOARD_STATS_CACHE_TTL,
-      tags: [`user-dashboard-stats:${userId}`],
     }
   );
 

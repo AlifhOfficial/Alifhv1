@@ -14,7 +14,6 @@
  * - Returns 500 for server errors
  */
 
-import { revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
@@ -481,9 +480,6 @@ export async function PUT(
         { status: 404 }
       );
     }
-
-    // Bust the Next.js listing-detail cache so the public page immediately shows fresh data
-    revalidateTag('listing-detail', {});
 
     // Delete R2 objects for image keys that were removed in this edit
     if (oldImageKeys.length > 0 && body.images !== undefined) {

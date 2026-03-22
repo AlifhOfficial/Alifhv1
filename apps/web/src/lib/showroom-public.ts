@@ -78,7 +78,6 @@ export async function getCachedPublicShowroom(slug: string) {
     ['public-showroom', slug],
     {
       revalidate: SHOWROOM_CACHE_TTL,
-      tags: ['public-showroom'],
     },
   );
 
@@ -118,7 +117,6 @@ export async function getCachedPublicShowroomListings(
     ['public-showroom-listings', cacheKey],
     {
       revalidate: SHOWROOM_LISTINGS_CACHE_TTL,
-      tags: ['public-showroom-listings'],
     },
   );
 

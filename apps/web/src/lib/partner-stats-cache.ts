@@ -9,7 +9,6 @@ export async function getCachedPartnerDescriptiveStats(partnerId: string): Promi
     ['partner-descriptive-stats', partnerId],
     {
       revalidate: PARTNER_STATS_CACHE_TTL,
-      tags: [`partner-descriptive-stats:${partnerId}`],
     }
   );
 

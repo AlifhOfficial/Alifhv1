@@ -75,7 +75,6 @@ export async function getCachedSearchFacets(params: SearchParams): Promise<Searc
     ['search-facets', cacheKey],
     {
       revalidate: FACET_CACHE_TTL,
-      tags: ['search-facets'],
     }
   );
   
@@ -90,7 +89,6 @@ export async function getCachedSearchResults(params: SearchParams): Promise<Sear
     ['search-results', cacheKey],
     {
       revalidate: SEARCH_RESULT_CACHE_TTL,
-      tags: ['search-results'],
     }
   );
 

@@ -92,7 +92,6 @@ export async function getCachedPublicListingDetailBundle(listingId: string): Pro
     ['listing-detail-bundle', listingId],
     {
       revalidate: LISTING_DETAIL_CACHE_TTL,
-      tags: ['listing-detail'],
     }
   );
 
