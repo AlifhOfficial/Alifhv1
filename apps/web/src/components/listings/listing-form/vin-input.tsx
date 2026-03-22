@@ -121,7 +121,7 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
             (status === 'taken' || status === 'invalid' || error) && "text-red-500",
             status === 'error' && "text-yellow-500",
             disabled && "opacity-50 cursor-not-allowed",
-            "placeholder:text-sidebar-foreground/30 placeholder:tracking-normal placeholder:font-sans placeholder:text-base"
+            "placeholder:text-sidebar-foreground/30 placeholder:tracking-normal placeholder:text-base"
           )}
         />
         

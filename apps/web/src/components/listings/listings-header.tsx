@@ -830,132 +830,104 @@ export function ListingsHeader({
               {/* Quick-Select Options */}
               <div className="flex-1 flex items-center gap-2 overflow-x-auto scrollbar-hide">
                 {/* Make Quick-Select */}
-                {(isLoading || (facets?.make ?? []).length > 0) && (
+                {(facets?.make ?? []).length > 0 && (
                   <>
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                       Makes
                     </span>
-                    {isLoading ? (
-                      <>
-                        <Skeleton className="h-7 w-16 rounded-full shrink-0" />
-                        <Skeleton className="h-7 w-20 rounded-full shrink-0" />
-                        <Skeleton className="h-7 w-14 rounded-full shrink-0" />
-                      </>
-                    ) : (
-                      <>
-                        {/* Selected makes as removable pills */}
-                        {(params.make ?? []).map((makeValue) => {
-                          const makeData = (facets?.make ?? []).find(m => m.value === makeValue);
-                          return (
-                            <button
-                              key={makeValue}
-                              onClick={() => toggleMake(makeValue)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
-                            >
-                              <span>{makeData?.label ?? makeValue}</span>
-                              <X className="size-3.5" />
-                            </button>
-                          );
-                        })}
-                        {/* Unselected makes as quick pills */}
-                        {!params.make?.length && (facets?.make ?? []).slice(0, VISIBLE_COUNT).map((make) => (
-                          <button
-                            key={make.value}
-                            onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
-                          >
-                            <span>{make.label}</span>
-                            <span className="text-xs text-muted-foreground tabular-nums">{make.count}</span>
-                          </button>
-                        ))}
-                      </>
-                    )}
+                    {/* Selected makes as removable pills */}
+                    {(params.make ?? []).map((makeValue) => {
+                      const makeData = (facets?.make ?? []).find(m => m.value === makeValue);
+                      return (
+                        <button
+                          key={makeValue}
+                          onClick={() => toggleMake(makeValue)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
+                        >
+                          <span>{makeData?.label ?? makeValue}</span>
+                          <X className="size-3.5" />
+                        </button>
+                      );
+                    })}
+                    {/* Unselected makes as quick pills */}
+                    {!params.make?.length && (facets?.make ?? []).slice(0, VISIBLE_COUNT).map((make) => (
+                      <button
+                        key={make.value}
+                        onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                      >
+                        <span>{make.label}</span>
+                        <span className="text-xs text-muted-foreground tabular-nums">{make.count}</span>
+                      </button>
+                    ))}
                   </>
                 )}
 
                 {/* Model Quick-Select - when make selected */}
-                {params.make?.length && (isLoading || (facets?.model ?? []).length > 0) && (
+                {params.make?.length && (facets?.model ?? []).length > 0 && (
                   <>
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                       Models
                     </span>
-                    {isLoading ? (
-                      <>
-                        <Skeleton className="h-7 w-16 rounded-full shrink-0" />
-                        <Skeleton className="h-7 w-20 rounded-full shrink-0" />
-                      </>
-                    ) : (
-                      <>
-                        {/* Selected models as removable pills */}
-                        {(params.model ?? []).map((modelValue) => {
-                          const modelData = (facets?.model ?? []).find(m => m.value === modelValue);
-                          return (
-                            <button
-                              key={modelValue}
-                              onClick={() => toggleModel(modelValue)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
-                            >
-                              <span>{modelData?.label ?? modelValue}</span>
-                              <X className="size-3.5" />
-                            </button>
-                          );
-                        })}
-                        {/* Unselected models as quick pills */}
-                        {!params.model?.length && (facets?.model ?? []).slice(0, VISIBLE_COUNT).map((model) => (
-                          <button
-                            key={model.value}
-                            onClick={() => setFilters({ model: [model.value], trim: undefined })}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
-                          >
-                            <span>{model.label}</span>
-                            <span className="text-xs text-muted-foreground tabular-nums">{model.count}</span>
-                          </button>
-                        ))}
-                      </>
-                    )}
+                    {/* Selected models as removable pills */}
+                    {(params.model ?? []).map((modelValue) => {
+                      const modelData = (facets?.model ?? []).find(m => m.value === modelValue);
+                      return (
+                        <button
+                          key={modelValue}
+                          onClick={() => toggleModel(modelValue)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
+                        >
+                          <span>{modelData?.label ?? modelValue}</span>
+                          <X className="size-3.5" />
+                        </button>
+                      );
+                    })}
+                    {/* Unselected models as quick pills */}
+                    {!params.model?.length && (facets?.model ?? []).slice(0, VISIBLE_COUNT).map((model) => (
+                      <button
+                        key={model.value}
+                        onClick={() => setFilters({ model: [model.value], trim: undefined })}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                      >
+                        <span>{model.label}</span>
+                        <span className="text-xs text-muted-foreground tabular-nums">{model.count}</span>
+                      </button>
+                    ))}
                   </>
                 )}
 
                 {/* Trim Quick-Select - when make & model selected */}
-                {params.make?.length && params.model?.length && (isLoading || (facets?.trim ?? []).length > 0) && (
+                {params.make?.length && params.model?.length && (facets?.trim ?? []).length > 0 && (
                   <>
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                       Trims
                     </span>
-                    {isLoading ? (
-                      <>
-                        <Skeleton className="h-7 w-14 rounded-full shrink-0" />
-                        <Skeleton className="h-7 w-16 rounded-full shrink-0" />
-                      </>
-                    ) : (
-                      <>
-                        {/* Selected trims as removable pills */}
-                        {(params.trim ?? []).map((trimValue) => {
-                          const trimData = (facets?.trim ?? []).find(t => t.value === trimValue);
-                          return (
-                            <button
-                              key={trimValue}
-                              onClick={() => toggleTrim(trimValue)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
-                            >
-                              <span>{trimData?.label ?? trimValue}</span>
-                              <X className="size-3.5" />
-                            </button>
-                          );
-                        })}
-                        {/* Unselected trims as quick pills */}
-                        {!params.trim?.length && (facets?.trim ?? []).slice(0, VISIBLE_COUNT).map((trim) => (
-                          <button
-                            key={trim.value}
-                            onClick={() => setFilters({ trim: [trim.value] })}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
-                          >
-                            <span>{trim.label}</span>
-                            <span className="text-xs text-muted-foreground tabular-nums">{trim.count}</span>
-                          </button>
-                        ))}
-                      </>
-                    )}
+                    {/* Selected trims as removable pills */}
+                    {(params.trim ?? []).map((trimValue) => {
+                      const trimData = (facets?.trim ?? []).find(t => t.value === trimValue);
+                      return (
+                        <button
+                          key={trimValue}
+                          onClick={() => toggleTrim(trimValue)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
+                        >
+                          <span>{trimData?.label ?? trimValue}</span>
+                          <X className="size-3.5" />
+                        </button>
+                      );
+                    })}
+                    {/* Unselected trims as quick pills */}
+                    {!params.trim?.length && (facets?.trim ?? []).slice(0, VISIBLE_COUNT).map((trim) => (
+                      <button
+                        key={trim.value}
+                        onClick={() => setFilters({ trim: [trim.value] })}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                      >
+                        <span>{trim.label}</span>
+                        <span className="text-xs text-muted-foreground tabular-nums">{trim.count}</span>
+                      </button>
+                    ))}
                   </>
                 )}
 
