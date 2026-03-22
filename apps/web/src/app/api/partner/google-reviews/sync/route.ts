@@ -23,7 +23,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Partner ID required' }, { status: 400 });
     }
 
-    const result = await googleReviews.syncPartnerReviews(partnerId);
+    const body = await req.json().catch(() => ({}));
+    const onlyFiveStar = body.onlyFiveStar === true;
+
+    const result = await googleReviews.syncPartnerReviews(partnerId, { onlyFiveStar });
     
     if (!result.success) {
       console.error('[GoogleReviews] Sync failed:', result.error);
@@ -36,6 +39,7 @@ export async function POST(req: NextRequest) {
       success: true,
       rating: result.rating,
       reviewCount: result.reviewCount,
+      reviews: result.reviews ?? [],
     });
   } catch (error) {
     console.error('[API] Google reviews sync failed:', error);

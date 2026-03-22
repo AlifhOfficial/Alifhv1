@@ -350,17 +350,21 @@ export interface ShowroomAchievement {
 
 /**
  * Testimonial Type
- * Featured customer testimonials (curated, not auto-pulled)
+ * Featured customer testimonials (curated or auto-synced from Google)
  */
 export interface ShowroomTestimonial {
   id: string;
   customerName: string;
   customerTitle: string | null;
-  customerImage: string | null;
+  customerImage: string | null;       // R2 storage key (manual reviews)
+  customerImageUrl?: string | null;   // Direct external URL (e.g. Google profile photo)
   content: string;
   rating: number;
   vehiclePurchased: string | null;
   videoUrl: string | null;
+  source?: 'manual' | 'google';       // Origin of the review
+  sourceUrl?: string | null;          // Google review permalink
+  reviewedAt?: string | null;         // ISO date string (from Google review time)
   order: number;
 }
 

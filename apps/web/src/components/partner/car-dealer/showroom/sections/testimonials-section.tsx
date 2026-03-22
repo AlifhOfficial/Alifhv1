@@ -5,8 +5,8 @@
 
 'use client';
 
-import React from 'react';
-import { Plus, MessageSquareQuote } from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, MessageSquareQuote, RefreshCw } from 'lucide-react';
 import { compressAndUploadShowroomImage } from '@/lib/storage';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import type { ShowroomTestimonial } from '@alifh/database';
@@ -44,6 +44,31 @@ export function TestimonialsSection({
   setImageUploading,
   toast,
 }: TestimonialsSectionProps) {
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [onlyFiveStar, setOnlyFiveStar] = useState(false);
+
+  const syncGoogleReviews = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch('/api/partner/google-reviews/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ onlyFiveStar }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast({ title: data.error || 'Sync failed', variant: 'destructive' });
+        return;
+      }
+      // Reload showroom to pick up newly synced testimonials
+      await updateShowroom({});
+      toast({ title: `Synced ${data.reviews?.length ?? 0} Google reviews${onlyFiveStar ? ' (5★ only)' : ''}` });
+    } catch {
+      toast({ title: 'Sync failed', variant: 'destructive' });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
   const addTestimonial = async () => {
     const newTestimonial: ShowroomTestimonial = {
       id: crypto.randomUUID(),
@@ -101,19 +126,38 @@ export function TestimonialsSection({
       <section>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[15px] font-bold tracking-tight text-foreground">Featured Testimonials</h3>
-          <button
-            onClick={addTestimonial}
-            disabled={(form.featuredTestimonials?.length || 0) >= 5}
-            className="inline-flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Add
-          </button>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-1.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={onlyFiveStar}
+                onChange={(e) => setOnlyFiveStar(e.target.checked)}
+                className="w-3.5 h-3.5 accent-yellow-500"
+              />
+              <span className="text-xs text-muted-foreground">5★ only</span>
+            </label>
+            <button
+              onClick={syncGoogleReviews}
+              disabled={isSyncing}
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-semibold disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+              {isSyncing ? 'Syncing…' : 'Sync Google'}
+            </button>
+            <button
+              onClick={addTestimonial}
+              disabled={(form.featuredTestimonials?.length || 0) >= 5}
+              className="inline-flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add
+            </button>
+          </div>
         </div>
         <div className="space-y-3">
-          {(form.featuredTestimonials || []).map((testimonial) => (
+          {(form.featuredTestimonials || []).map((testimonial, index) => (
             <TestimonialCard
-              key={testimonial.id}
+              key={`${testimonial.id}-${index}`}
               testimonial={testimonial}
               onUpdate={(updates) => updateTestimonial(testimonial.id, updates)}
               onRemove={() => removeTestimonial(testimonial.id)}

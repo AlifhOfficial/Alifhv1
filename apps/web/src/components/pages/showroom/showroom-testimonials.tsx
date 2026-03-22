@@ -82,7 +82,7 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
         >
           {testimonials.map((testimonial, index) => (
             <TestimonialCard 
-              key={testimonial.id} 
+              key={`${testimonial.id}-${index}`} 
               testimonial={testimonial} 
               index={index}
             />
@@ -104,7 +104,12 @@ function TestimonialCard({
   testimonial: ShowroomTestimonial; 
   index: number;
 }) {
-  const customerImageUrl = getAppThumbUrl(testimonial.customerImage);
+  // customerImageUrl holds external URLs (e.g. Google profile photos) — use directly.
+  // customerImage holds R2 storage keys — resolve via CDN util.
+  // If customerImage was populated with an absolute URL by the API mapping, pass it through too.
+  const customerImageUrl =
+    testimonial.customerImageUrl ||
+    (testimonial.customerImage?.startsWith('https://') ? testimonial.customerImage : getAppThumbUrl(testimonial.customerImage));
 
   return (
     <div className="flex-shrink-0 w-[320px] sm:w-[380px] min-h-[260px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col">
@@ -153,6 +158,9 @@ function TestimonialCard({
               <p className="text-sm text-muted-foreground mt-0.5">
                 {testimonial.vehiclePurchased}
               </p>
+            )}
+            {testimonial.source === 'google' && (
+              <p className="text-xs text-muted-foreground/60 mt-0.5">via Google Reviews</p>
             )}
           </div>
         </div>

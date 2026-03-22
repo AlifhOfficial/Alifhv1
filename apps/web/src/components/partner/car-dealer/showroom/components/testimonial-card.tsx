@@ -12,7 +12,10 @@ import { Camera, Loader2, Star, Trash2 } from 'lucide-react';
 import type { TestimonialCardProps } from '../types';
 
 export function TestimonialCard({ testimonial, onUpdate, onRemove, onImageUpload, isUploading }: TestimonialCardProps) {
-  const photoUrl = getAppThumbUrl(testimonial.customerImage);
+  const photoUrl =
+    testimonial.customerImageUrl ||
+    (testimonial.customerImage?.startsWith('https://') ? testimonial.customerImage : getAppThumbUrl(testimonial.customerImage));
+  const isGoogleReview = testimonial.source === 'google';
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState(testimonial);
 
@@ -113,7 +116,7 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove, onImageUpload
         </div>
       ) : (
         <div className="flex items-start justify-between gap-2">
-          <div onClick={() => setIsEditing(true)} className="cursor-pointer flex-1 flex items-start gap-3">
+          <div onClick={() => !isGoogleReview && setIsEditing(true)} className={cn("flex-1 flex items-start gap-3", !isGoogleReview && "cursor-pointer")}>
             {photoUrl ? (
               <img src={photoUrl} alt={testimonial.customerName} className="w-8 h-8 rounded-full object-cover flex-shrink-0 mt-0.5" />
             ) : (
@@ -135,6 +138,9 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove, onImageUpload
             )}
             {testimonial.vehiclePurchased && (
               <p className="text-xs text-muted-foreground/70 mt-1">Purchased: {testimonial.vehiclePurchased}</p>
+            )}
+            {isGoogleReview && (
+              <p className="text-xs text-muted-foreground/60 mt-1">via Google Reviews</p>
             )}
             </div>
           </div>

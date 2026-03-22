@@ -217,12 +217,14 @@ export function ListingsView({
         )}>
           {/* Mobile Layout (no resizable) */}
           <div className="lg:hidden">
-            {/* TOP: Fixed mobile header */}
+            {/* TOP: Fixed/sticky mobile header */}
             <div
               className={cn(
-                "fixed inset-x-0 z-30 bg-background will-change-transform [transform:translateZ(0)] [backface-visibility:hidden]",
+                "z-30 bg-background will-change-transform [transform:translateZ(0)] [backface-visibility:hidden]",
                 "before:absolute before:inset-x-0 before:bottom-full before:h-1 before:bg-background",
-                embedded ? "top-0" : "top-14 sm:top-16"
+                embedded
+                  ? "sticky top-0" // sticky when embedded — stays inside SidebarInset, never overlaps the dashboard sidebar
+                  : "fixed inset-x-0 top-14 sm:top-16"
               )}
             >
               <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
@@ -252,7 +254,8 @@ export function ListingsView({
             <main
               className="pb-3 sm:pb-6"
               style={{
-                paddingTop: mobileHeaderHeight > 0 ? mobileHeaderHeight + 4 : undefined,
+                // Only compensate for fixed header height when not embedded (sticky takes up flow space naturally)
+                paddingTop: !embedded && mobileHeaderHeight > 0 ? mobileHeaderHeight + 4 : undefined,
               }}
             >
               <ListingsContent

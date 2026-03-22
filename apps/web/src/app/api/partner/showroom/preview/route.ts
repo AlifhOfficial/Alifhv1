@@ -67,11 +67,14 @@ function attachPublicUrls(showroom: any) {
       imageUrl: toCdn(achievement.image),
     })),
     // Testimonials
-    featuredTestimonials: (showroom.featuredTestimonials || []).map((testimonial: any) => ({
-      ...testimonial,
-      customerImage: toCdn(testimonial.customerImage),
-      customerImageUrl: toCdn(testimonial.customerImage),
-    })),
+    featuredTestimonials: (showroom.featuredTestimonials || []).map((testimonial: any) => {
+      const cdnImage = toCdn(testimonial.customerImage);
+      return {
+        ...testimonial,
+        customerImage: cdnImage || testimonial.customerImageUrl || null,
+        customerImageUrl: testimonial.customerImageUrl || cdnImage || null,
+      };
+    }),
     // Press features
     pressFeatures: (showroom.pressFeatures || []).map((feature: any) => ({
       ...feature,

@@ -59,10 +59,14 @@ const TestimonialSchema = z.object({
   customerName: z.string().min(1),
   customerTitle: z.string().nullable().optional(),
   customerImage: z.string().nullable().optional(),
+  customerImageUrl: z.string().nullable().optional(),
   content: z.string().min(1),
   rating: z.number().min(1).max(5),
   vehiclePurchased: z.string().nullable().optional(),
   videoUrl: z.string().url().nullable().optional(),
+  source: z.enum(['manual', 'google']).optional(),
+  sourceUrl: z.string().nullable().optional(),
+  reviewedAt: z.string().nullable().optional(),
   order: z.number(),
 });
 
@@ -246,11 +250,14 @@ function attachImageUrls(showroom: any, updatedAt: Date) {
       imageUrl: toCdn(achievement.image),
     })),
     // Testimonials
-    featuredTestimonials: (showroom.featuredTestimonials || []).map((testimonial: any) => ({
-      ...testimonial,
-      customerImage: toCdn(testimonial.customerImage),
-      customerImageUrl: toCdn(testimonial.customerImage),
-    })),
+    featuredTestimonials: (showroom.featuredTestimonials || []).map((testimonial: any) => {
+      const cdnImage = toCdn(testimonial.customerImage);
+      return {
+        ...testimonial,
+        customerImage: cdnImage || testimonial.customerImageUrl || null,
+        customerImageUrl: testimonial.customerImageUrl || cdnImage || null,
+      };
+    }),
     // Press features
     pressFeatures: (showroom.pressFeatures || []).map((feature: any) => ({
       ...feature,

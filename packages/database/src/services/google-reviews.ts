@@ -5,17 +5,29 @@
  */
 
 import { db } from '../index';
-import { partner } from '../schema/partner';
+import { partner, partnerShowroom } from '../schema/partner';
+import type { ShowroomTestimonial } from '../schema/partner';
 import { eq, isNotNull, or, lt, sql } from 'drizzle-orm';
 
 // ============================================================================
 // Types
 // ============================================================================
 
+interface GoogleReviewItem {
+  author_name: string;
+  author_url: string;
+  profile_photo_url?: string;
+  rating: number;
+  text: string;
+  time: number;
+  relative_time_description: string;
+}
+
 interface GooglePlacesResponse {
   result: {
     rating?: number;
     user_ratings_total?: number;
+    reviews?: GoogleReviewItem[];
   };
   status: string;
   error_message?: string;
@@ -25,6 +37,7 @@ interface SyncResult {
   success: boolean;
   rating?: number;
   reviewCount?: number;
+  reviews?: ShowroomTestimonial[];
   error?: string;
 }
 
@@ -189,7 +202,7 @@ export async function fetchGoogleReviews(placeId: string): Promise<SyncResult> {
   try {
     const url = new URL('https://maps.googleapis.com/maps/api/place/details/json');
     url.searchParams.set('place_id', placeId);
-    url.searchParams.set('fields', 'rating,user_ratings_total');
+    url.searchParams.set('fields', 'rating,user_ratings_total,reviews');
     url.searchParams.set('key', apiKey);
     
     const response = await fetch(url.toString());
@@ -210,10 +223,28 @@ export async function fetchGoogleReviews(placeId: string): Promise<SyncResult> {
       return { success: false, error: 'No review data found' };
     }
     
+    // Parse individual reviews (up to 5, Google's limit)
+    const reviews: ShowroomTestimonial[] = (data.result.reviews || []).map((r, i) => ({
+      id: `google-${r.time}-${Buffer.from(r.author_url || r.author_name).toString('base64').slice(0, 8)}`,
+      customerName: r.author_name,
+      customerTitle: null,
+      customerImage: null,
+      customerImageUrl: r.profile_photo_url || null,
+      content: r.text,
+      rating: r.rating,
+      vehiclePurchased: null,
+      videoUrl: null,
+      source: 'google' as const,
+      sourceUrl: r.author_url || null,
+      reviewedAt: new Date(r.time * 1000).toISOString(),
+      order: i,
+    }));
+    
     return {
       success: true,
       rating,
       reviewCount,
+      reviews,
     };
   } catch (error) {
     console.error('[GoogleReviews] Fetch failed:', error);
@@ -232,12 +263,13 @@ export async function fetchGoogleReviews(placeId: string): Promise<SyncResult> {
  * Sync reviews for a single partner
  * Always extracts place_id fresh from URL to ensure accuracy
  */
-export async function syncPartnerReviews(partnerId: string): Promise<SyncResult> {
+export async function syncPartnerReviews(partnerId: string, options?: { onlyFiveStar?: boolean }): Promise<SyncResult> {
   try {
     // Get partner
     const [partnerData] = await db
       .select({
         id: partner.id,
+        tier: partner.tier,
         googleReviewUrl: partner.googleReviewUrl,
         googlePlaceId: partner.googlePlaceId,
       })
@@ -284,7 +316,39 @@ export async function syncPartnerReviews(partnerId: string): Promise<SyncResult>
       })
       .where(eq(partner.id, partnerId));
     
-    return result;
+    // For Black tier partners: sync individual reviews into showroom featuredTestimonials
+    if (partnerData.tier === 'black' && result.reviews?.length) {
+      const candidates = options?.onlyFiveStar
+        ? result.reviews.filter(r => r.rating === 5)
+        : result.reviews;
+      const [showroomData] = await db
+        .select({ id: partnerShowroom.id, featuredTestimonials: partnerShowroom.featuredTestimonials })
+        .from(partnerShowroom)
+        .where(eq(partnerShowroom.partnerId, partnerId))
+        .limit(1);
+      
+      if (showroomData) {
+        const existing = (showroomData.featuredTestimonials || []) as ShowroomTestimonial[];
+        const manual = existing.filter(t => t.source !== 'google');
+        const googleSlots = Math.max(0, 5 - manual.length);
+        const merged = [
+          ...manual,
+          ...candidates.slice(0, googleSlots),
+        ].map((t, i) => ({ ...t, order: i }));
+        
+        await db
+          .update(partnerShowroom)
+          .set({ featuredTestimonials: merged })
+          .where(eq(partnerShowroom.id, showroomData.id));
+        
+        console.log(`[GoogleReviews] Synced ${candidates.slice(0, googleSlots).length} reviews to showroom for partner ${partnerId}${options?.onlyFiveStar ? ' (5★ only)' : ''}`);
+      }
+    }
+    
+    return {
+      ...result,
+      reviews: options?.onlyFiveStar ? result.reviews?.filter(r => r.rating === 5) : result.reviews,
+    };
   } catch (error) {
     console.error('[GoogleReviews] Sync failed for partner:', partnerId, error);
     return { 
