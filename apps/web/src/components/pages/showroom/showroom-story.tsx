@@ -3,8 +3,6 @@
  * The narrative. Content top, full width media bottom.
  */
 
-'use client';
-
 import { Play } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';

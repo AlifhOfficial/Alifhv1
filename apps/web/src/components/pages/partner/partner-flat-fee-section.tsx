@@ -3,8 +3,6 @@
  * Visual grid - what's included, no bloat
  */
 
-'use client';
-
 import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
@@ -114,28 +112,6 @@ function FeatureCard({ title, description }: FeatureCardProps) {
 function UnlimitedListingsInfographic() {
   return (
     <>
-      {/* Typing animation CSS */}
-      <style>{`
-        @keyframes typing {
-          from { max-width: 0 }
-          to { max-width: 500px }
-        }
-        @keyframes blink {
-          50% { border-color: transparent }
-        }
-        @keyframes glow-one {
-          0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 102, 255, 0.3)); }
-          50% { filter: drop-shadow(0 0 30px rgba(0, 102, 255, 0.5)); }
-        }
-        .typing-text {
-          display: inline-block;
-          overflow: hidden;
-          white-space: nowrap;
-          border-right: 2px solid hsl(var(--primary));
-          animation: typing 2.5s steps(28, end) forwards, blink 0.75s step-end infinite;
-        }
-      `}</style>
-
       <MacOSWindow url="revvup.ae/dashboard" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]">
           {/* Left - Your inventory with car cards */}
           <div className="flex-1 p-3 sm:p-6 lg:p-12 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5">

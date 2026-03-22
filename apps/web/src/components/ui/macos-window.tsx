@@ -222,7 +222,7 @@ export function MacOSWindow({
           <div className="flex items-center min-w-0 flex-1 sm:flex-none">
             <button
               onClick={handleUrlBarClick}
-              className="bg-transparent backdrop-blur-xl border border-white/[0.08] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.05),0_1px_2px_0_rgba(0,0,0,0.2)] rounded-full px-2 sm:px-2.5 py-1 sm:py-1.5 flex items-center gap-1 sm:gap-1.5 min-w-0 max-w-full sm:max-w-[220px] hover:bg-white/[0.1] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+              className="bg-transparent backdrop-blur-xl border border-white/[0.08] shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.05),0_1px_2px_0_rgba(0,0,0,0.2)] rounded-full px-2 sm:px-2.5 py-1 sm:py-1.5 flex items-center gap-1 sm:gap-1.5 min-w-0 max-w-full sm:max-w-[220px] hover:bg-white/[0.1] active:scale-[0.98] transition-[background-color,transform] will-change-transform duration-200 cursor-pointer"
             >
               {/* Lock icon */}
               <svg className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-white/40 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

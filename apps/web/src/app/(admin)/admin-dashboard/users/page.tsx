@@ -3,8 +3,6 @@
  * Manage user accounts and view user details
  */
 
-'use client';
-
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { AdminUsersList } from "@/components/admin/users/admin-users-list";
 

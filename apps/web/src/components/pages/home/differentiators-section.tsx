@@ -1,5 +1,3 @@
-'use client';
-
 import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import Link from 'next/link';
 import { CircleDollarSign, Ban, CalendarCheck, Layout, CheckCircle2 } from 'lucide-react';
@@ -107,30 +105,6 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
 function HumanFirstInfographic() {
   return (
     <>
-      {/* CSS Animations */}
-      <style jsx>{`
-        @keyframes fade-check-1 {
-          0%, 15% { opacity: 0; transform: scale(0.5); }
-          25%, 100% { opacity: 1; transform: scale(1); }
-        }
-        @keyframes fade-check-2 {
-          0%, 30% { opacity: 0; transform: scale(0.5); }
-          40%, 100% { opacity: 1; transform: scale(1); }
-        }
-        @keyframes fade-check-3 {
-          0%, 45% { opacity: 0; transform: scale(0.5); }
-          55%, 100% { opacity: 1; transform: scale(1); }
-        }
-        @keyframes fade-check-4 {
-          0%, 60% { opacity: 0; transform: scale(0.5); }
-          70%, 100% { opacity: 1; transform: scale(1); }
-        }
-        @keyframes card-elevate {
-          0%, 70% { transform: translateY(0); filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3)); }
-          85%, 100% { transform: translateY(-8px); filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4)); }
-        }
-      `}</style>
-
       <MacOSWindow url="revvup.ae/search" contentClassName="flex items-center justify-center p-4 sm:p-8 lg:p-16 aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-10 lg:gap-20 w-full max-w-5xl">
           {/* Quality Checklist - Left */}

@@ -279,7 +279,7 @@ export function ContactForm({
             className={cn(
               "w-full mt-6 h-12 rounded-xl text-sm font-semibold transition-all",
               "bg-primary text-primary-foreground",
-              "hover:bg-primary/90 active:scale-[0.99]",
+              "hover:bg-primary/90 active:scale-[0.99] will-change-transform",
               "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
           >

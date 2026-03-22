@@ -3,8 +3,6 @@
  * Shows recent incidents and their resolution timeline
  */
 
-'use client';
-
 import { AlertTriangle, CheckCircle2, Clock, XCircle } from 'lucide-react';
 
 interface IncidentUpdate {

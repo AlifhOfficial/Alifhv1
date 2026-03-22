@@ -4,8 +4,6 @@
  * Focus: SALES and LOYALTY - not features
  */
 
-'use client';
-
 import Link from 'next/link';
 import { CheckCircle2, Circle, ArrowRight, Shield, Users, TrendingUp, Handshake, MessageCircle, Zap } from 'lucide-react';
 

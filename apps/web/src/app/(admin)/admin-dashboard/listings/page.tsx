@@ -3,8 +3,6 @@
  * View and manage all listings on the platform
  */
 
-'use client';
-
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { AdminListingsView } from "@/components/admin/listings/admin-listings-view";
 

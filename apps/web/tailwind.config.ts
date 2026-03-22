@@ -7,6 +7,12 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  // Aggressive CSS purging for production
+  safelist: [
+    // Only safelist essential dynamic classes
+    'animate-spin',
+    'will-change-transform',
+  ],
   theme: {
   	screens: {
   		'xs': '480px',

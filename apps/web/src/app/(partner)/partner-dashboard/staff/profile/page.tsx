@@ -3,8 +3,6 @@
  * Edit work identity settings
  */
 
-'use client';
-
 import { StaffProfile } from '@/components/partner/staff-profile';
 
 export default function StaffProfilePage() {

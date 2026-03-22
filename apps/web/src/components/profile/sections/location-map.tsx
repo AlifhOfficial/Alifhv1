@@ -55,6 +55,16 @@ function LocationMapComponent({ latitude, longitude, onLocationSelect }: Locatio
   }, [latitude, longitude]);
 
   useEffect(() => {
+    // Load Leaflet CSS dynamically
+    if (!document.querySelector('link[href*="leaflet.css"]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/dist/leaflet.min.css';
+      link.integrity = 'sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w==';
+      link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+    }
+    
     // Load Leaflet only on client side
     import('leaflet').then((leaflet) => {
       // Fix for default marker icon

@@ -1,5 +1,3 @@
-'use client';
-
 import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { MousePointer2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
@@ -44,24 +42,6 @@ export function ProblemSection() {
 function ProblemInfographic() {
   return (
     <>
-      {/* CSS Animations */}
-      <style jsx>{`
-        @keyframes cursor-chaos {
-          0%, 100% { transform: translate(0, 0); }
-          25% { transform: translate(25px, -15px); }
-          50% { transform: translate(-15px, 20px); }
-          75% { transform: translate(20px, 10px); }
-        }
-        @keyframes click-ripple {
-          0%, 30%, 60%, 100% { opacity: 0; transform: scale(0.8); }
-          15%, 45%, 75% { opacity: 0.5; transform: scale(1.2); }
-        }
-        @keyframes glow-zero {
-          0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 102, 255, 0.3)); }
-          50% { filter: drop-shadow(0 0 30px rgba(0, 102, 255, 0.5)); }
-        }
-      `}</style>
-
       <MacOSWindow url="car-marketplace.ae" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1] overflow-visible">
         {/* Left - Others: Cluttered fees */}
         <div className="flex-1 p-4 sm:p-8 lg:p-16 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5 min-h-[200px] sm:min-h-0 overflow-visible">

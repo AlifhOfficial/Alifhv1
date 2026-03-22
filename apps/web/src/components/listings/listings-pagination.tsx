@@ -55,7 +55,7 @@ export function ListingsPagination({
         <button
           onClick={goToNextPage}
           disabled={!hasNextPage || isFetching}
-          className="inline-flex h-11 min-w-[120px] items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-background transition-all hover:opacity-95 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35 touch-manipulation"
+          className="inline-flex h-11 min-w-[120px] items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-background transition-[opacity,transform] will-change-transform hover:opacity-95 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35 touch-manipulation"
           aria-label="Next page"
         >
           <span>{hasNextPage ? 'Next page' : 'No more'}</span>

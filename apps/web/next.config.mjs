@@ -19,6 +19,13 @@ const nextConfig = {
   transpilePackages: ['@alifh/shared', '@alifh/database', '@alifh/ai'],
   serverExternalPackages: ['better-auth', '@node-rs/argon2', '@node-rs/bcrypt'],
   
+  // Optimization settings
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+  
   // Content Security Policy and PWA Service Worker headers
   async headers() {
     return [

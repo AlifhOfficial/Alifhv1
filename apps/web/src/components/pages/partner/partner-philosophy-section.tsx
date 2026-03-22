@@ -3,8 +3,6 @@
  * Core message - infrastructure, not competition
  */
 
-'use client';
-
 import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { CheckCircle2 } from 'lucide-react';
 import { m5, m6, m7 } from '@/components/pages/marketing-image-assets';

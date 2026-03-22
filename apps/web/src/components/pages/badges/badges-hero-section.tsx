@@ -3,8 +3,6 @@
  * Clean hero - simple and direct
  */
 
-'use client';
-
 import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { signin } from '@/components/pages/marketing-image-assets';
 

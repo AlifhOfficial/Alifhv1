@@ -24,11 +24,10 @@ import {
 } from '@/lib/brand-assets'
 
 const geomFont = localFont({
-  src: '../../public/assets/fonts/Geom-Black.ttf',
+  src: './fonts/Geom-Black.ttf',
   weight: '900',
   style: 'normal',
   display: 'swap',
-  preload: false, // wordmark-only font — preloading globally causes unused-preload warnings
   variable: '--font-geom',
 })
 

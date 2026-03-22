@@ -537,7 +537,7 @@ export function ListingsHeader({
                     )}
                     <button
                       onClick={() => setMobileSearchOpen(false)}
-                      className="flex-1 h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-all touch-manipulation shadow-lg"
+                      className="flex-1 h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-[background-color,transform] will-change-transform touch-manipulation shadow-lg"
                     >
                       Apply filters
                     </button>
@@ -726,7 +726,7 @@ export function ListingsHeader({
                 <div className="shrink-0 px-5 py-4 border-t border-border bg-background/95 backdrop-blur-sm pb-safe">
                   <button
                     onClick={() => onMobileFiltersToggle(false)}
-                    className="w-full h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-all touch-manipulation shadow-lg"
+                    className="w-full h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-[background-color,transform] will-change-transform touch-manipulation shadow-lg"
                   >
                     Apply filters
                   </button>

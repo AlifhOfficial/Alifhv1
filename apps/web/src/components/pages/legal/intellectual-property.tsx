@@ -3,8 +3,6 @@
  * Legal documentation component following Revvup design patterns
  */
 
-'use client';
-
 import Link from 'next/link';
 
 export function IntellectualProperty() {

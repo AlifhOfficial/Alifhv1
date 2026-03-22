@@ -30,7 +30,7 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
     <>
       {/* Glassmorphic overlay backdrop */}
       <div
-        className={`fixed inset-0 top-14 sm:top-16 z-30 bg-background/80 backdrop-blur-2xl transition-all duration-300 ${
+        className={`fixed inset-0 top-14 sm:top-16 z-30 bg-background/80 backdrop-blur-2xl transition-opacity duration-300 will-change-[opacity] ${
           activeDropdown ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
         }`}
         onClick={onClose}
@@ -38,7 +38,7 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
       
       {/* Dropdown content */}
       <div
-        className={`fixed left-0 right-0 top-14 sm:top-16 z-40 transition-all duration-300 ${
+        className={`fixed left-0 right-0 top-14 sm:top-16 z-40 transition-[opacity,transform] duration-300 will-change-[opacity,transform] ${
           activeDropdown ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"
         }`}
         onMouseEnter={onMouseEnter}
@@ -60,7 +60,7 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
                         onClick={onClose}
                         className="block group"
                       >
-                        <span className="text-[15px] font-medium text-muted-foreground group-hover:text-foreground transition-colors duration-150">
+                        <span className="text-[15px] font-medium text-muted-foreground group-hover:text-foreground transition-colors duration-150 will-change-[color]">
                           {item.label}
                         </span>
                       </Link>

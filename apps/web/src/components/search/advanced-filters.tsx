@@ -309,7 +309,7 @@ export function AdvancedFilters({
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="w-full h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-all touch-manipulation shadow-lg"
+                className="w-full h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-[background-color,transform] will-change-transform touch-manipulation shadow-lg"
               >
                 Apply Filters
               </button>

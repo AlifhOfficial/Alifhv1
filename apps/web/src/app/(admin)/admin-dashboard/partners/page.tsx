@@ -3,8 +3,6 @@
  * Manage active partners (suspend, tier, etc.)
  */
 
-'use client';
-
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { AdminPartnersList } from "@/components/admin/partners";
 

@@ -3,8 +3,6 @@
  * Converts visitors before redirecting to auth flow
  */
 
-'use client';
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Shield, Zap, Clock, Camera, MessageSquare } from 'lucide-react';

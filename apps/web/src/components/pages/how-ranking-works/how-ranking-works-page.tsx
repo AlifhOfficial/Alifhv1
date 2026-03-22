@@ -237,14 +237,6 @@ export function HowRankingWorksPage() {
 function WhyQualityInfographic() {
   return (
     <div className="relative w-full rounded-lg overflow-visible bg-sidebar border border-border/40">
-      {/* CSS Animations */}
-      <style jsx>{`
-        @keyframes glow-quality {
-          0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 102, 255, 0.3)); }
-          50% { filter: drop-shadow(0 0 30px rgba(0, 102, 255, 0.5)); }
-        }
-      `}</style>
-
       <div className="flex flex-col-reverse md:flex-row">
         {/* Left - Others: macOS window with paid rankings (80%) */}
         <div className="w-full md:w-[75%] lg:w-[80%] flex flex-col items-center justify-center md:border-r border-t md:border-t-0 border-border/20 p-2 sm:p-4 lg:p-8">

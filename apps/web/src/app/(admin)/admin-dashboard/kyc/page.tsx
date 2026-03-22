@@ -5,8 +5,6 @@
  * Approve or reject user identity verifications
  */
 
-'use client';
-
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { AdminKycList } from "@/components/admin/kyc/admin-kyc-list";
 

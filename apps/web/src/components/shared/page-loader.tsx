@@ -99,7 +99,7 @@ function Spinner({ className }: { className?: string }) {
   return (
     <div className={cn('relative size-4', className)}>
       <div className="absolute inset-0 rounded-full border-[1.5px] border-current/10" />
-      <div className="absolute inset-0 rounded-full border-[1.5px] border-transparent border-t-current/50 animate-spin" />
+      <div className="absolute inset-0 rounded-full border-[1.5px] border-transparent border-t-current/50 animate-spin will-change-transform" />
     </div>
   );
 }

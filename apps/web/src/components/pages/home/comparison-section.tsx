@@ -1,5 +1,3 @@
-'use client';
-
 import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import { CheckCircle2 } from 'lucide-react';
 import { MacOSWindow } from '@/components/ui/macos-window';
@@ -80,14 +78,6 @@ export function ComparisonSection() {
 function ComparisonInfographic() {
   return (
     <>
-      {/* CSS Animations */}
-      <style jsx>{`
-        @keyframes scroll-feed {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-12px); }
-        }
-      `}</style>
-
       <MacOSWindow url="car-listings.com" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]">
         {/* Left - Others: Cluttered feed with media */}
         <div className="w-full md:w-[40%] flex flex-col border-b md:border-b-0 md:border-r border-white/5 p-4 sm:p-6 lg:p-12">

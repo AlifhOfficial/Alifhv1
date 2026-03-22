@@ -3,8 +3,6 @@
  * Clean card layout - matching legal page patterns
  */
 
-'use client';
-
 export function BadgesListSection() {
   return (
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">

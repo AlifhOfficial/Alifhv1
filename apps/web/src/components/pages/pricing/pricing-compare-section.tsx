@@ -3,8 +3,6 @@
  * Revvup vs typical marketplaces - subtle, not loud
  */
 
-'use client';
-
 import { CheckCircle2 } from 'lucide-react';
 
 export function PricingCompareSection() {

@@ -3,8 +3,6 @@
  * Simple principles
  */
 
-'use client';
-
 export function BadgesClosingSection() {
   return (
     <section className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">

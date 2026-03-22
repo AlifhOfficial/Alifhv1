@@ -74,14 +74,6 @@ function BrandHero() {
 function LogoShowcaseInfographic({ isDark }: { isDark: boolean }) {
   return (
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
-      {/* CSS Animations */}
-      <style jsx>{`
-        @keyframes logo-pulse {
-          0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(0, 102, 255, 0)); }
-          50% { transform: scale(1.02); filter: drop-shadow(0 0 60px rgba(0, 102, 255, 0.3)); }
-        }
-      `}</style>
-
       <MacOSWindow url="revvup.ae/brand" contentClassName="flex items-center justify-center min-h-[280px] sm:min-h-[400px] lg:min-h-[500px] xl:min-h-[600px] p-4 sm:p-8 lg:p-16">
           <div 
             className="relative w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 xl:w-80 xl:h-80"
@@ -136,26 +128,6 @@ function ManifestoSection() {
 function ManifestoInfographic() {
   return (
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
-      {/* CSS Animations */}
-      <style jsx>{`
-        @keyframes fade-value-1 {
-          0%, 10% { opacity: 0; transform: translateY(10px); }
-          20%, 100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fade-value-2 {
-          0%, 25% { opacity: 0; transform: translateY(10px); }
-          35%, 100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fade-value-3 {
-          0%, 40% { opacity: 0; transform: translateY(10px); }
-          50%, 100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fade-value-4 {
-          0%, 55% { opacity: 0; transform: translateY(10px); }
-          65%, 100% { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-
       <MacOSWindow showUrlBar={false} contentClassName="flex items-center justify-center min-h-[280px] sm:min-h-[400px] lg:min-h-[500px] p-4 sm:p-8 lg:p-20">
           <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-12 max-w-4xl w-full px-2 sm:px-0">
             {[

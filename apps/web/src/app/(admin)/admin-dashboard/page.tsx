@@ -3,8 +3,6 @@
  * Main admin dashboard with statistics and overview
  */
 
-'use client';
-
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
 import { AdminDashboardStats } from "@/components/admin/admin-dashboard-stats";
 
