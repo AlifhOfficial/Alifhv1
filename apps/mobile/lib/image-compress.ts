@@ -363,3 +363,44 @@ export function estimateCompressedSize(width: number, height: number, quality: n
   const bytesPerPixel = 0.08 * quality; // Rough estimate
   return Math.round(pixels * bytesPerPixel);
 }
+
+// ============================================================================
+// Public API — Upload Preshrink (for preprocessing pipeline)
+// ============================================================================
+
+/**
+ * Lightly preshrink an image before sending to the preprocessing server.
+ * Mirrors the web "canvas preshrink → 1600px JPEG ~150KB" step.
+ * The server (pre.revvup.ae/process) handles final Sharp processing:
+ * resize, sharpen, saturation boost, WebP encoding.
+ *
+ * @param uri - Original image URI from picker
+ * @returns URI of preshrunk JPEG (~100–200KB), ready for multipart upload
+ */
+export async function preshrinkForUpload(uri: string): Promise<string> {
+  const original = await ImageManipulator.manipulateAsync(uri, []);
+  const { width: origW, height: origH } = original;
+
+  const MAX_DIM = 1600;
+  const longestSide = Math.max(origW, origH);
+
+  if (longestSide <= MAX_DIM) {
+    // Already within bounds — just encode as JPEG
+    const result = await ImageManipulator.manipulateAsync(
+      uri,
+      [],
+      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG },
+    );
+    return result.uri;
+  }
+
+  const scale = MAX_DIM / longestSide;
+  const targetWidth = Math.round(origW * scale);
+
+  const result = await ImageManipulator.manipulateAsync(
+    uri,
+    [{ resize: { width: targetWidth } }],
+    { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG },
+  );
+  return result.uri;
+}

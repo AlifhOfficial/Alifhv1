@@ -7,7 +7,7 @@
 
 import { getStoredSession } from './auth-api';
 import { API_BASE, AUTH_ENDPOINTS, PROFILE_ENDPOINTS } from './config';
-import { compressAvatar } from './image-compress';
+import { preshrinkForUpload } from './image-compress';
 import { uploadAvatarDirect } from './sell-car-user-api';
 
 // ============================================================================
@@ -391,12 +391,12 @@ export async function uploadAvatar(
   previousKey?: string | null
 ): Promise<AvatarUploadResult> {
   try {
-    // Step 1: Compress client-side (512px, ~30KB)
-    const compressed = await compressAvatar(uri);
-    console.log('[Profile API] Avatar compressed:', compressed.size, 'bytes');
-    
-    // Step 2: Direct upload to R2 (no server processing)
-    const result = await uploadAvatarDirect(compressed.uri);
+    // Step 1: Preshrink to ~1600px JPEG (~150KB) to cap upload payload
+    const preshrunkUri = await preshrinkForUpload(uri);
+    console.log('[Profile API] Avatar preshrunk');
+
+    // Step 2: Upload via preprocessing server (Sharp → 512px WebP → R2)
+    const result = await uploadAvatarDirect(preshrunkUri);
     console.log('[Profile API] Avatar uploaded:', result.key);
     
     return { success: true, key: result.key };

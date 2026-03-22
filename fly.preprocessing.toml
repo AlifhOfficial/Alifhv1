@@ -23,14 +23,14 @@ primary_region = "bom"
 [http_service]
   internal_port = 3002
   force_https = true
-  auto_stop_machines = false
+  auto_stop_machines = "suspend"   # suspend idle machines (cold start ~200ms vs full stop ~3s)
   auto_start_machines = true
-  min_machines_running = 1
+  min_machines_running = 1         # always 1 warm, 0 cold starts for incoming requests
 
   [http_service.concurrency]
     type = "requests"
-    hard_limit = 200
-    soft_limit = 150
+    hard_limit = 25   # Sharp is CPU-heavy; beyond 25 concurrent reqs quality degrades
+    soft_limit = 20   # Fly starts routing new reqs to a new machine at this threshold
 
   # Large uploads need enough time — 120s matches Fly's default max
   [[http_service.checks]]

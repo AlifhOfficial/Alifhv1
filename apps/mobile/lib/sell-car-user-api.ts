@@ -238,23 +238,6 @@ export interface DirectSingleUploadResult {
   url: string;
 }
 
-/** Presigned URLs for listing upload (thumb + full) */
-export interface ListingPresignedUrls {
-  thumbUploadUrl: string;
-  thumbKey: string;
-  thumbUrl: string;
-  fullUploadUrl: string;
-  fullKey: string;
-  fullUrl: string;
-}
-
-/** Presigned URL for single upload */
-export interface SinglePresignedUrl {
-  uploadUrl: string;
-  key: string;
-  url: string;
-}
-
 // ============================================================================
 // TYPES — API Responses (raw → transformed)
 // ============================================================================
@@ -437,14 +420,19 @@ export async function checkVin(
 }
 
 // ============================================================================
-// API — DIRECT IMAGE UPLOAD (Client-Side Compression)
+// API — IMAGE UPLOAD (via preprocessing server)
+//
+// Pipeline:
+//   1. preshrinkForUpload()           →  1600px JPEG, ~100-200KB  (client)
+//   2. POST /api/storage/upload-token →  HMAC token + uploadUrl   (Vercel edge)
+//   3. POST uploadUrl (multipart)     →  Sharp → R2, returns keys (Fly/pre.revvup.ae)
 // ============================================================================
 
 /**
  * Delete a listing image from R2.
  * DELETE /api/storage/delete
  *
- * @param key  R2 object key (e.g. "listings/2026/02/xxx_full.jpg")
+ * @param key  R2 object key (e.g. "listings/2026/02/xxx_full.webp")
  */
 export async function deleteListingImage(key: string): Promise<void> {
   const res = await authFetch('/api/storage/delete', {
@@ -456,161 +444,103 @@ export async function deleteListingImage(key: string): Promise<void> {
 }
 
 /**
- * Get presigned URLs for direct listing image upload.
- * Client must pre-compress images before calling this.
- * 
- * @param vin - VIN string (min 11 chars)
- * @returns Presigned URLs for thumb and full uploads
+ * Get a short-lived HMAC upload token from the Vercel edge.
+ * Returns the token AND the preprocessing server URL to POST to.
+ * Token TTL: 5 minutes — call once per upload session and reuse.
  */
-export async function getListingUploadUrls(vin: string): Promise<ListingPresignedUrls> {
-  const res = await authFetch('/api/storage/direct', {
+async function getUploadToken(body: Record<string, string>): Promise<{ token: string; uploadUrl: string }> {
+  const res = await authFetch('/api/storage/upload-token', {
     method: 'POST',
-    body: JSON.stringify({ type: 'listing', vin }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || 'Failed to get upload URLs');
+    throw new Error(err.error || 'Failed to get upload token');
   }
 
   return res.json();
 }
 
 /**
- * Upload a pre-compressed blob to a presigned URL.
- * Used internally by direct upload functions.
+ * POST a single preshrunk image to the preprocessing server as multipart.
+ * Server authenticates via HMAC Bearer token, runs Sharp, uploads to R2.
  */
-async function uploadToPresigned(uploadUrl: string, blob: Blob): Promise<void> {
+async function postToPreprocessing(
+  uploadUrl: string,
+  token: string,
+  uri: string,
+): Promise<any> {
+  const form = new FormData();
+  // React Native FormData accepts { uri, type, name } objects directly
+  form.append('file', { uri, type: 'image/jpeg', name: 'image.jpg' } as any);
+
   const res = await fetch(uploadUrl, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'image/webp',
-      'Cache-Control': 'public, max-age=31536000, immutable',
-    },
-    body: blob,
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
   });
 
   if (!res.ok) {
-    throw new Error('Upload failed. Please try again.');
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Upload failed. Please try again.');
   }
+
+  return res.json();
 }
 
 /**
- * Direct upload a pre-compressed listing image pair (thumb + full).
- * 
- * Flow:
- * 1. Get presigned URLs for thumb + full
- * 2. Upload both in parallel
- * 3. Return CDN URLs (immediately ready)
- * 
- * @param thumbUri - Local URI of compressed thumbnail
- * @param fullUri - Local URI of compressed full image
- * @param vin - VIN string
- * @returns CDN URLs for both images
+ * Get an upload token for a listing session.
+ * Call ONCE per listing upload session, then pass token + uploadUrl to
+ * uploadListingImageDirect() for each image.
+ *
+ * @param vin - VIN string (min 11 chars)
+ */
+export async function getListingUploadToken(vin: string): Promise<{ token: string; uploadUrl: string }> {
+  return getUploadToken({ type: 'listing', vin });
+}
+
+/**
+ * Upload a single listing image via the preprocessing server.
+ *
+ * The caller is responsible for preshrinking first via preshrinkForUpload().
+ * Server produces thumb (480px) + full (1400px) WebP with sharpening applied.
+ * All images in a batch share the same token — fire in parallel.
+ *
+ * @param uri       - Preshrunk image URI (from preshrinkForUpload)
+ * @param token     - Token from getListingUploadToken()
+ * @param uploadUrl - URL from getListingUploadToken()
  */
 export async function uploadListingImageDirect(
-  thumbUri: string,
-  fullUri: string,
-  vin: string,
+  uri: string,
+  token: string,
+  uploadUrl: string,
 ): Promise<DirectListingUploadResult> {
-  // Get presigned URLs
-  const urls = await getListingUploadUrls(vin);
-
-  // Convert URIs to blobs
-  const [thumbBlob, fullBlob] = await Promise.all([
-    fetch(thumbUri).then(r => r.blob()),
-    fetch(fullUri).then(r => r.blob()),
-  ]);
-
-  // Upload both in parallel
-  await Promise.all([
-    uploadToPresigned(urls.thumbUploadUrl, thumbBlob),
-    uploadToPresigned(urls.fullUploadUrl, fullBlob),
-  ]);
+  const data = await postToPreprocessing(uploadUrl, token, uri);
+  const result = data.results?.[0];
+  if (!result || result.error) throw new Error(result?.error || 'Processing failed');
 
   return {
-    thumbKey: urls.thumbKey,
-    thumbUrl: urls.thumbUrl,
-    fullKey: urls.fullKey,
-    fullUrl: urls.fullUrl,
+    thumbKey: result.thumbKey,
+    thumbUrl: result.thumbUrl,
+    fullKey: result.fullKey,
+    fullUrl: result.fullUrl,
   };
 }
 
 /**
- * Get presigned URL for direct avatar upload.
- */
-export async function getAvatarUploadUrl(): Promise<SinglePresignedUrl> {
-  const res = await authFetch('/api/storage/direct', {
-    method: 'POST',
-    body: JSON.stringify({ type: 'avatar' }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || 'Failed to get upload URL');
-  }
-
-  return res.json();
-}
-
-/**
- * Direct upload a pre-compressed avatar.
- * 
- * @param uri - Local URI of compressed avatar image
- * @returns CDN URL
+ * Upload an avatar via the preprocessing server.
+ * Server produces a 512px WebP output with sharpening applied.
+ *
+ * @param uri - Preshrunk image URI (from preshrinkForUpload)
  */
 export async function uploadAvatarDirect(uri: string): Promise<DirectSingleUploadResult> {
-  const urls = await getAvatarUploadUrl();
-  const blob = await fetch(uri).then(r => r.blob());
-  await uploadToPresigned(urls.uploadUrl, blob);
+  const { token, uploadUrl } = await getUploadToken({ type: 'avatar' });
+  const data = await postToPreprocessing(uploadUrl, token, uri);
+  const result = data.results?.[0];
+  if (!result || result.error) throw new Error(result?.error || 'Processing failed');
 
-  return {
-    key: urls.key,
-    url: urls.url,
-  };
-}
-
-/**
- * Get presigned URL for direct showroom image upload.
- */
-export async function getShowroomUploadUrl(
-  partnerId: string,
-  assetType: string,
-): Promise<SinglePresignedUrl> {
-  const res = await authFetch('/api/storage/direct', {
-    method: 'POST',
-    body: JSON.stringify({ type: 'showroom', partnerId, assetType }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || 'Failed to get upload URL');
-  }
-
-  return res.json();
-}
-
-/**
- * Direct upload a pre-compressed showroom image.
- * 
- * @param uri - Local URI of compressed image
- * @param partnerId - Partner ID
- * @param assetType - Type of showroom asset
- * @returns CDN URL
- */
-export async function uploadShowroomImageDirect(
-  uri: string,
-  partnerId: string,
-  assetType: string,
-): Promise<DirectSingleUploadResult> {
-  const urls = await getShowroomUploadUrl(partnerId, assetType);
-  const blob = await fetch(uri).then(r => r.blob());
-  await uploadToPresigned(urls.uploadUrl, blob);
-
-  return {
-    key: urls.key,
-    url: urls.url,
-  };
+  return { key: result.key, url: result.url };
 }
 
 // ============================================================================
@@ -860,7 +790,8 @@ export const sellCarUserApi = {
   // VIN
   checkVin,
 
-  // Images (direct upload with client-side compression)
+  // Images (via preprocessing server — token → pre.revvup.ae/process → R2)
+  getUploadToken: getListingUploadToken,
   uploadImage: uploadListingImageDirect,
   deleteImage: deleteListingImage,
 

@@ -1,15 +1,13 @@
 /**
  * Image Upload Utility — User Inventory Management
  *
- * WhatsApp-like speed using:
- * 1. Client-side native compression (react-native-compressor)
- * 2. Parallel uploads (5 concurrent)
- * 3. Direct R2 storage (no server processing)
+ * Pipeline (mirrors web architecture):
+ * 1. preshrinkForUpload()            → 1600px JPEG, ~100-200KB  (client)
+ * 2. POST /api/storage/upload-token  → HMAC token + uploadUrl   (Vercel edge)
+ * 3. POST uploadUrl per image        → Sharp → R2, CDN keys     (Fly/pre.revvup.ae)
  *
- * Targets:
- * - Thumb: 480px, ~20-25KB
- * - Full: 1400px, ~45-55KB
- * - Total time: ~3-5s for 10 images
+ * All images in a batch share one token (5 min TTL).
+ * Upload requests fire in parallel (concurrency 5).
  */
 
 import * as ImagePicker from 'expo-image-picker';
@@ -17,10 +15,11 @@ import * as Haptics from 'expo-haptics';
 import { Alert, Platform } from 'react-native';
 import {
   uploadListingImageDirect,
+  getListingUploadToken,
   deleteListingImage,
   type DirectListingUploadResult,
 } from '@/lib/sell-car-user-api';
-import { compressListingImage, type ListingImagePair } from '@/lib/image-compress';
+import { preshrinkForUpload } from '@/lib/image-compress';
 import { CDN_BASE, API_BASE } from '@/lib/config';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -40,6 +39,21 @@ export interface PickAndUploadOptions {
   onProgress?: (phase: 'compressing' | 'uploading', completed: number, total: number) => void;
   /** Concurrent upload limit. @default 5 */
   concurrency?: number;
+  /**
+   * Fired immediately after the picker closes, BEFORE any preshrink/upload.
+   * Use to add images to the grid optimistically (local file:// URIs).
+   */
+  onImagesPicked?: (localUris: string[]) => void;
+  /**
+   * Fired as each image finishes uploading successfully.
+   * Use to swap the optimistic local URI for the confirmed CDN key.
+   */
+  onImageUploaded?: (localUri: string, result: ImageUploadResult) => void;
+  /**
+   * Fired if an individual image fails preshrink or upload.
+   * Use to remove the optimistic placeholder from the grid.
+   */
+  onImageFailed?: (localUri: string, error: string) => void;
 }
 
 export interface ImageUploadResult {
@@ -140,7 +154,7 @@ export async function pickAndUploadListingImage(
     mediaTypes: ['images'],
     allowsMultipleSelection: allowMultiple,
     selectionLimit: maxImages,
-    quality: 1, // Full quality - we compress client-side
+    quality: 1, // Full quality — server handles final compression
     exif: false,
   });
 
@@ -152,44 +166,58 @@ export async function pickAndUploadListingImage(
   const uploaded: ImageUploadResult[] = [];
   const errors: string[] = [];
 
-  // 3. Compress images in batches to avoid memory overflow
-  let compressedCount = 0;
-  const compressed: Array<{ uri: string; pair: ListingImagePair } | { uri: string; error: string }> = [];
-  const compressionBatchSize = 3; // Process 3 at a time to avoid OOM
+  // Optimistic: notify caller with local URIs immediately so grid shows them now
+  options.onImagesPicked?.(assets.map((a) => a.uri));
+
+  let token: string;
+  let uploadUrl: string;
+  try {
+    ({ token, uploadUrl } = await getListingUploadToken(vin));
+  } catch (err: any) {
+    return { success: false, images: [], errors: [err.message || 'Failed to get upload token'] };
+  }
+
+  // 4. Preshrink images in batches to cap upload payload size (~150KB each)
+  let preshrunkCount = 0;
+  const preshrunk: Array<{ uri: string; preshrunkUri: string } | { uri: string; error: string }> = [];
+  const preshrinkBatchSize = 3;
 
   try {
-    for (let i = 0; i < assets.length; i += compressionBatchSize) {
-      const batch = assets.slice(i, i + compressionBatchSize);
+    for (let i = 0; i < assets.length; i += preshrinkBatchSize) {
+      const batch = assets.slice(i, i + preshrinkBatchSize);
       const batchResults = await Promise.all(
         batch.map(async (asset) => {
           try {
-            const pair = await compressListingImage(asset.uri);
-            compressedCount++;
-            onProgress?.('compressing', compressedCount, assets.length);
-            return { uri: asset.uri, pair };
+            const preshrunkUri = await preshrinkForUpload(asset.uri);
+            preshrunkCount++;
+            onProgress?.('compressing', preshrunkCount, assets.length);
+            return { uri: asset.uri, preshrunkUri };
           } catch (err: any) {
-            compressedCount++;
-            onProgress?.('compressing', compressedCount, assets.length);
-            return { uri: asset.uri, error: err.message || 'Compression failed' };
+            preshrunkCount++;
+            onProgress?.('compressing', preshrunkCount, assets.length);
+            return { uri: asset.uri, error: err.message || 'Preshrink failed' };
           }
         }),
       );
-      compressed.push(...batchResults);
+      preshrunk.push(...batchResults);
     }
   } catch (err: any) {
-    return { success: false, images: [], errors: ['Compression failed: ' + (err.message || 'Unknown error')] };
+    return { success: false, images: [], errors: ['Preshrink failed: ' + (err.message || 'Unknown error')] };
   }
 
-  // 4. Filter successful compressions
-  const toUpload = compressed.filter((c): c is { uri: string; pair: ListingImagePair } => 'pair' in c);
-  const compressionErrors = compressed.filter((c): c is { uri: string; error: string } => 'error' in c);
-  compressionErrors.forEach((c, i) => errors.push(`Image ${i + 1}: ${c.error}`));
+  // 5. Filter successful preshrinks
+  const toUpload = preshrunk.filter((c): c is { uri: string; preshrunkUri: string } => 'preshrunkUri' in c);
+  const preshrinkErrors = preshrunk.filter((c): c is { uri: string; error: string } => 'error' in c);
+  preshrinkErrors.forEach((c, i) => {
+    errors.push(`Image ${i + 1}: ${c.error}`);
+    options.onImageFailed?.(c.uri, c.error);
+  });
 
   if (toUpload.length === 0) {
     return { success: false, images: [], errors };
   }
 
-  // 5. Upload in parallel with concurrency limit
+  // 6. Upload to preprocessing server in parallel (all share the same token)
   let uploadedCount = 0;
 
   const uploadResults = await parallelLimit(
@@ -197,24 +225,27 @@ export async function pickAndUploadListingImage(
     concurrency,
     async (item, index) => {
       try {
-        const result = await uploadListingImageDirect(
-          item.pair.thumb.uri,
-          item.pair.full.uri,
-          vin,
-        );
+        const result = await uploadListingImageDirect(item.preshrunkUri, token, uploadUrl);
         uploadedCount++;
         onProgress?.('uploading', uploadedCount, toUpload.length);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        const imgResult: ImageUploadResult = {
+          url: result.fullKey,
+          absoluteUrl: result.fullUrl,
+          thumbUrl: result.thumbUrl,
+        };
+        options.onImageUploaded?.(item.uri, imgResult);
         return { success: true as const, result };
       } catch (err: any) {
         uploadedCount++;
         onProgress?.('uploading', uploadedCount, toUpload.length);
+        options.onImageFailed?.(item.uri, err.message || 'Upload failed');
         return { success: false as const, error: err.message || `Upload failed` };
       }
     },
   );
 
-  // 6. Collect results
+  // 7. Collect results
   uploadResults.forEach((res, i) => {
     if (res.success) {
       uploaded.push({

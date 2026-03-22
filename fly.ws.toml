@@ -20,8 +20,8 @@ primary_region = "sin"
 
   [http_service.concurrency]
     type = "connections"
-    hard_limit = 10000
-    soft_limit = 5000
+    hard_limit = 1000   # drop connections above this — protects the machine
+    soft_limit = 750    # start routing new connections to a 2nd machine at this point
 
 [[vm]]
   memory = "1gb"

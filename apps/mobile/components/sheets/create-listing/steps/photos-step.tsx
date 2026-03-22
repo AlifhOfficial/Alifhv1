@@ -7,7 +7,7 @@
  * @module components/sheets/create-listing/steps/photos-step
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator, Dimensions, Alert } from 'react-native';
 import DraggableFlatList, { 
   ScaleDecorator, 
@@ -40,6 +40,14 @@ function toAbsoluteUrl(url: string): string {
   return `${CDN_BASE}/${url.startsWith('/') ? url.slice(1) : url}`;
 }
 
+// ─── Grid item types ─────────────────────────────────────────────────────────
+
+/** Confirmed CDN image (draggable, deletable) */
+type CdnItem = { type: 'cdn'; url: string };
+/** Optimistic image shown instantly; spinner overlay while uploading */
+type UploadingItem = { type: 'uploading'; localUri: string };
+type GridItem = CdnItem | UploadingItem;
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
@@ -49,6 +57,14 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ done: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
+
+  // Optimistic: local file:// URIs shown in grid IMMEDIATELY after picker returns.
+  // Each entry is removed once its upload succeeds (→ CDN key added to data.images)
+  // or fails (→ removed with an error shown).
+  const [optimisticUris, setOptimisticUris] = useState<string[]>([]);
+
+  // Accumulates CDN keys during an in-progress upload batch to avoid stale closures.
+  const cdnKeysRef = useRef<string[]>([]);
 
   const handlePickImages = useCallback(async () => {
     setError(null);
@@ -66,25 +82,43 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
     }
 
     setUploading(true);
+    cdnKeysRef.current = [...data.images];
+
     try {
       const result = await pickAndUploadListingImage({
         vin: data.vin,
         allowMultiple: true,
         maxImages: MAX_IMAGES - data.images.length,
         onProgress: (phase, done, total) => setUploadProgress({ done, total }),
-      });
 
-      if (result.success && result.images.length > 0) {
-        const newUrls = result.images.map((img) => img.url);
-        onUpdate({ images: [...data.images, ...newUrls] });
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
+        // ── Perception loader: images appear in grid the moment picker closes
+        onImagesPicked: (localUris) => {
+          setOptimisticUris((prev) => [...prev, ...localUris]);
+        },
+
+        // Swap optimistic → CDN as each image finishes (one at a time)
+        onImageUploaded: (localUri, imgResult) => {
+          setOptimisticUris((prev) => prev.filter((u) => u !== localUri));
+          cdnKeysRef.current = [...cdnKeysRef.current, imgResult.url];
+          onUpdate({ images: [...cdnKeysRef.current] });
+        },
+
+        // Remove placeholder on failure
+        onImageFailed: (localUri) => {
+          setOptimisticUris((prev) => prev.filter((u) => u !== localUri));
+        },
+      });
 
       if (result.errors.length > 0) {
         setError(result.errors.join('\n'));
       }
+
+      if (result.success) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
     } catch (err: any) {
       setError(err.message ?? 'Something went wrong.');
+      setOptimisticUris([]);
     } finally {
       setUploading(false);
       setUploadProgress({ done: 0, total: 0 });
@@ -113,27 +147,39 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
     [data.images, onUpdate]
   );
 
-  // Handle drag end - reorder images
+  // Drag end — only CDN items participate in drag; reconstruct CDN-only order
   const handleDragEnd = useCallback(
-    ({ data: newData }: { data: string[] }) => {
-      onUpdate({ images: newData });
+    ({ data: newData }: { data: GridItem[] }) => {
+      const cdnUrls = newData
+        .filter((i): i is CdnItem => i.type === 'cdn')
+        .map((i) => i.url);
+      onUpdate({ images: cdnUrls });
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     },
     [onUpdate]
   );
-
-  // Render individual image item
+  // Render individual image item — handles both CDN (draggable) and uploading (spinner)
   const renderItem = useCallback(
-    ({ item: url, drag, isActive, getIndex }: RenderItemParams<string>) => {
+    ({ item, drag, isActive, getIndex }: RenderItemParams<GridItem>) => {
       const imageIndex = getIndex() ?? 0;
-      const isThumbnail = imageIndex === 0;
-      
+      // Only the first CDN item is the cover; uploading items are not yet confirmed
+      const isThumbnail = imageIndex === 0 && item.type === 'cdn';
+      const imageUri = item.type === 'cdn' ? toAbsoluteUrl(item.url) : item.localUri;
+      const isUploading = item.type === 'uploading';
+
       return (
         <ScaleDecorator>
           <View style={[styles.imageCard, isActive && styles.imageCardActive]}>
-            <Image source={{ uri: toAbsoluteUrl(url) }} style={styles.image} />
-            
-            {/* Thumbnail badge */}
+            <Image source={{ uri: imageUri }} style={styles.image} />
+
+            {/* Spinner overlay while uploading */}
+            {isUploading && (
+              <View style={styles.uploadingOverlay}>
+                <ActivityIndicator size="small" color="#fff" />
+              </View>
+            )}
+
+            {/* Thumbnail badge — only on confirmed CDN cover */}
             {isThumbnail && (
               <View style={[styles.thumbnailBadge, { backgroundColor: colors.primary }]}>
                 <Body size="small" style={{ color: colors.primaryForeground, fontSize: 8, fontWeight: '600' }}>
@@ -142,29 +188,41 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
               </View>
             )}
 
-            {/* Drag handle */}
-            <HapticPressable
-              onLongPress={drag}
-              delayLongPress={100}
-              disabled={isActive}
-              style={[styles.dragHandle, { backgroundColor: colors.text + '80' }]}
-            >
-              <GripVertical size={12} color={colors.background} />
-            </HapticPressable>
+            {/* Drag handle — only for confirmed images */}
+            {!isUploading && (
+              <HapticPressable
+                onLongPress={drag}
+                delayLongPress={100}
+                disabled={isActive}
+                style={[styles.dragHandle, { backgroundColor: colors.text + '80' }]}
+              >
+                <GripVertical size={12} color={colors.background} />
+              </HapticPressable>
+            )}
 
-            {/* Delete button */}
-            <HapticPressable
-              onPress={() => handleDeleteImage(url)}
-              style={[styles.deleteBtn, { backgroundColor: colors.text + 'CC' }]}
-            >
-              <X size={12} color={colors.background} strokeWidth={2.5} />
-            </HapticPressable>
+            {/* Delete button — only for confirmed images */}
+            {!isUploading && item.type === 'cdn' && (
+              <HapticPressable
+                onPress={() => handleDeleteImage(item.url)}
+                style={[styles.deleteBtn, { backgroundColor: colors.text + 'CC' }]}
+              >
+                <X size={12} color={colors.background} strokeWidth={2.5} />
+              </HapticPressable>
+            )}
           </View>
         </ScaleDecorator>
       );
     },
     [colors, handleDeleteImage]
   );
+
+  // Combine confirmed CDN images + in-progress optimistic images into one grid
+  const gridData: GridItem[] = [
+    ...data.images.map((url): CdnItem => ({ type: 'cdn', url })),
+    ...optimisticUris.map((localUri): UploadingItem => ({ type: 'uploading', localUri })),
+  ];
+
+  const totalCount = data.images.length + optimisticUris.length;
 
   return (
     <StepContainer>
@@ -177,20 +235,18 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
           { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
         ]}
       >
-        {uploading ? (
+        {uploading && uploadProgress.total > 0 ? (
           <View style={styles.uploadingContent}>
             <ActivityIndicator size="small" color={colors.text} />
             <Body size="medium" tone="secondary">
-              {uploadProgress.total > 0
-                ? `Uploading ${uploadProgress.done} of ${uploadProgress.total}...`
-                : 'Preparing...'}
+              {`Uploading ${uploadProgress.done} of ${uploadProgress.total}...`}
             </Body>
           </View>
         ) : (
           <View style={styles.uploadContent}>
             <ImagePlus size={Sizes.iconLg} color={colors.textMuted} strokeWidth={1.5} />
             <Body size="small" tone="muted">
-              Add Photos ({data.images.length}/{MAX_IMAGES})
+              Add Photos ({totalCount}/{MAX_IMAGES})
             </Body>
           </View>
         )}
@@ -203,12 +259,12 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
         </Supporting>
       )}
 
-      {/* Image Grid - Draggable */}
-      {data.images.length > 0 && (
+      {/* Image Grid — shows immediately after picker, spinners on in-progress */}
+      {gridData.length > 0 && (
         <View style={styles.gridWrapper}>
           <DraggableFlatList
-            data={data.images}
-            keyExtractor={(item) => item}
+            data={gridData}
+            keyExtractor={(item) => item.type === 'cdn' ? item.url : `opt-${item.localUri}`}
             renderItem={renderItem}
             onDragEnd={handleDragEnd}
             numColumns={GRID_COLUMNS}
@@ -261,6 +317,12 @@ const styles = StyleSheet.create({
   imageCardActive: {
     opacity: 0.9,
     transform: [{ scale: 1.05 }],
+  },
+  uploadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   image: {
     width: '100%',

@@ -76,7 +76,8 @@ async function readFiles(req: Request, maxFiles: number) {
 
   const files: { name: string; buffer: Buffer }[] = [];
 
-  for (const [, value] of formData.entries()) {
+  for (const [, rawValue] of formData.entries()) {
+    const value = rawValue as File | string;
     if (!(value instanceof File)) continue;
     if (files.length >= maxFiles) break;
 
