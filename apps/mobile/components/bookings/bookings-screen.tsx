@@ -181,7 +181,7 @@ export function BookingsScreen() {
           <View style={[styles.imageContainer, { backgroundColor: colors.backgroundSecondary }]}>
             {item.listingThumbnail ? (
               <Image
-                source={{ uri: getAppThumbUrl(item.listingThumbnail) || item.listingThumbnail }}
+                source={{ uri: getAppThumbUrl(item.listingThumbnail)! }}
                 style={styles.image}
                 contentFit="cover"
                 transition={150}

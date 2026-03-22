@@ -9,7 +9,7 @@
 
 import { getPublishedShowrooms } from '@alifh/database';
 import { BlackDirectoryView } from '@/components/pages/black';
-import { getPublicUrl } from '@/utils';
+import { getPublicUrl, getAppThumbUrl } from '@/utils';
 
 export const metadata = {
   title: 'Black | Premium Car Showrooms & Dealers in UAE | Revvup',
@@ -45,7 +45,7 @@ function attachCardUrls(showroom: any) {
     heroTagline: showroom.heroTagline,
     partner: {
       brandName: showroom.partner.brandName,
-      logoUrl: getPublicUrl(showroom.partner.logo, cacheBuster),
+      logoUrl: getAppThumbUrl(showroom.partner.logo, cacheBuster),
       heroImageUrl: getPublicUrl(showroom.partner.heroImage, cacheBuster),
       isVerified: showroom.partner.isVerified,
       tier: showroom.partner.tier,

@@ -247,7 +247,7 @@ export function BookingDetailsSheet({
         >
           {booking.listingThumbnail ? (
             <Image
-              source={{ uri: getAppThumbUrl(booking.listingThumbnail) || booking.listingThumbnail }}
+              source={{ uri: getAppThumbUrl(booking.listingThumbnail)! }}
               style={styles.heroImage}
               contentFit="cover"
               transition={150}
@@ -347,7 +347,7 @@ export function BookingDetailsSheet({
         <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
           <View style={styles.detailRow}>
             {booking.partnerLogo ? (
-              <Image source={{ uri: getAppThumbUrl(booking.partnerLogo) || booking.partnerLogo }} style={styles.partnerLogoLg} contentFit="contain" />
+              <Image source={{ uri: getAppThumbUrl(booking.partnerLogo)! }} style={styles.partnerLogoLg} contentFit="contain" />
             ) : (
               <View style={[styles.dealerIconCircle, { backgroundColor: colors.surfaceSecondary }]}>
                 <Ionicons name="storefront-outline" size={Sizes.iconXs} color={colors.textSecondary} />

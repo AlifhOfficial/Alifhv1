@@ -107,7 +107,7 @@ export const PartnerCard = memo(function PartnerCard({
   // Derived display values
   const logoUrl = partner.logoUrl || partner.logo;
   const rawHeroUrl = partner.heroImageUrl || partner.heroImage;
-  const heroUrl = getAppThumbUrl(rawHeroUrl) || rawHeroUrl;
+  const heroUrl = getAppThumbUrl(rawHeroUrl);
   const location = [partner.city, partner.emirate ? formatEmirate(partner.emirate) : null]
     .filter(Boolean)
     .join(', ');

@@ -7,7 +7,7 @@
 
 import { useRef } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPublicUrl } from '@/utils/storage';
+import { getAppThumbUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -59,10 +59,10 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
                   )}
                   
                   {/* Achievement Image */}
-                  {getPublicUrl(achievement.image) && (
+                  {getAppThumbUrl(achievement.image) && (
                     <div className="w-14 h-14 rounded-xl overflow-hidden bg-muted ring-1 ring-border/40">
                       <img
-                        src={getPublicUrl(achievement.image)!}
+                        src={getAppThumbUrl(achievement.image)!}
                         alt={achievement.title}
                         className="object-cover w-full h-full"
                         loading="lazy"

@@ -56,7 +56,7 @@ interface ProductItemProps {
 }
 
 const ProductItem = memo(function ProductItem({ listing, colors, onPress, onFavorite }: ProductItemProps) {
-  const imageUri = getAppThumbUrl(listing.thumbnail) || listing.thumbnail;
+  const imageUri = getAppThumbUrl(listing.thumbnail);
 
   return (
     <HapticPressable onPress={() => onPress(listing.id)} style={[styles.product, { backgroundColor: colors.surface }]}>

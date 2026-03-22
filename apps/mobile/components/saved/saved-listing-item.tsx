@@ -87,7 +87,7 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
       <View style={styles.imageContainer}>
         {listing.thumbnail ? (
           <Image
-            source={{ uri: getAppThumbUrl(listing.thumbnail) || listing.thumbnail }}
+            source={{ uri: getAppThumbUrl(listing.thumbnail)! }}
             style={styles.image}
             contentFit="cover"
             transition={200}

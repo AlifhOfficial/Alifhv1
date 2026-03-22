@@ -159,13 +159,13 @@ export const BlkCard = memo(function BlkCard({
 }: BlkCardProps) {
   // Derived display values
   const rawImage = thumbnail || images?.[0];
-  const displayImage = getAppThumbUrl(rawImage) || rawImage;
+  const displayImage = getAppThumbUrl(rawImage);
   const displaySpecs = formatSpecs(specs || 'GCC');
   const displayEmirate = formatEmirate(emirate);
   const displaySellerName = partnerName || sellerName || 'Private Seller';
   const isVerified = partnerVerified || kycVerified;
   const rawSellerAvatar = partnerLogo || sellerAvatarUrl;
-  const sellerAvatar = getAppThumbUrl(rawSellerAvatar) || rawSellerAvatar;
+  const sellerAvatar = getAppThumbUrl(rawSellerAvatar);
 
   // Handlers
   const handlePress = useCallback(() => {

@@ -101,7 +101,7 @@ export function MessageBubble({
           >
             {listing.thumbnail ? (
               <Image
-                source={{ uri: getAppThumbUrl(listing.thumbnail) || listing.thumbnail }}
+                source={{ uri: getAppThumbUrl(listing.thumbnail)! }}
                 style={styles.listingImage}
                 resizeMode="cover"
               />

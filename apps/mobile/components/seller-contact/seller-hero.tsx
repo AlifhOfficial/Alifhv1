@@ -23,8 +23,8 @@ const LOGO_SIZE = Sizes.avatarLg + Spacing.lg; // 64
 
 export const SellerHero = memo(function SellerHero({ seller, colors, topInset }: SellerHeroProps) {
   // Convert to CDN URLs
-  const heroImageUrl = seller.heroImage ? (getAppThumbUrl(seller.heroImage) || seller.heroImage) : null;
-  const avatarUrl = seller.avatar ? (getAppThumbUrl(seller.avatar) || seller.avatar) : null;
+  const heroImageUrl = getAppThumbUrl(seller.heroImage);
+  const avatarUrl = getAppThumbUrl(seller.avatar);
   const hasHeroImage = heroImageUrl && seller.isDealer;
   
   return (

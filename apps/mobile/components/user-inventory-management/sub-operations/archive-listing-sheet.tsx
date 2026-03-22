@@ -137,7 +137,7 @@ export function ArchiveListingSheet({
         {/* Listing preview */}
         <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
           {listingThumbnail ? (
-            <Image source={{ uri: getAppThumbUrl(listingThumbnail) || listingThumbnail }} style={styles.thumbnail} />
+            <Image source={{ uri: getAppThumbUrl(listingThumbnail)! }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
               <Ionicons name="image-outline" size={Sizes.iconLg} color={colors.textMuted} />

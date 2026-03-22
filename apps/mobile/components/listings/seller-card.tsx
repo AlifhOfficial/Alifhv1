@@ -49,7 +49,7 @@ export const SellerCard = memo(function SellerCard({
   const rawSellerLogo = isPartner
     ? partner?.logo
     : userProfile?.avatarUrl;
-  const sellerLogo = getAppThumbUrl(rawSellerLogo) || rawSellerLogo;
+  const sellerLogo = getAppThumbUrl(rawSellerLogo);
   
   const isVerified = isPartner
     ? partner?.isVerified

@@ -190,7 +190,7 @@ export const CarCardList = memo(function CarCardList({
   // Derived values - use thumb URL for optimized card display
   const rawImage = thumbnail || images?.[0];
   // Only apply thumb URL conversion for string URLs (not local require() assets)
-  const displayImage = typeof rawImage === 'string' ? (getAppThumbUrl(rawImage) || rawImage) : rawImage;
+  const displayImage = typeof rawImage === 'string' ? getAppThumbUrl(rawImage) : rawImage;
   const displayEmirate = emirate ? (EMIRATE_SHORT[emirate.toLowerCase()] || emirate) : '';
   const displaySpecs = specs ? (SPECS_SHORT[specs.toLowerCase()] || specs) : 'GCC';
 

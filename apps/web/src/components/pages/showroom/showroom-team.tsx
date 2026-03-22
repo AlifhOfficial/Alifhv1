@@ -6,7 +6,7 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPublicUrl } from '@/utils/storage';
+import { getPublicUrl, getAppThumbUrl } from '@/utils/storage';
 import {
   Dialog,
   DialogContent,
@@ -73,7 +73,9 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
             className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-4 sm:px-6 lg:px-8"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {members.map((member) => (
+            {members.map((member) => {
+              const memberAvatarUrl = getAppThumbUrl(member.image);
+              return (
               <Dialog key={member.id}>
                 <DialogTrigger asChild>
                   <button 
@@ -81,9 +83,9 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                   >
                     {/* Avatar */}
                     <div className="relative w-14 h-14 rounded-full overflow-hidden bg-muted mb-4 ring-2 ring-border/40 group-hover:ring-primary/30 transition-colors">
-                      {getPublicUrl(member.image) ? (
+                      {memberAvatarUrl ? (
                         <img
-                          src={getPublicUrl(member.image)!}
+                          src={memberAvatarUrl}
                           alt={member.name}
                           className="absolute inset-0 h-full w-full object-cover"
                           loading="lazy"
@@ -118,9 +120,9 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                   <DialogHeader>
                     <div className="flex items-center gap-4">
                       <div className="relative w-16 h-16 rounded-full overflow-hidden bg-muted ring-2 ring-border/40 flex-shrink-0">
-                        {getPublicUrl(member.image) ? (
+                        {memberAvatarUrl ? (
                           <img
-                            src={getPublicUrl(member.image)!}
+                            src={memberAvatarUrl}
                             alt={member.name}
                             className="absolute inset-0 h-full w-full object-cover"
                             loading="lazy"
@@ -147,7 +149,8 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                   )}
                 </DialogContent>
               </Dialog>
-            ))}
+              ); 
+            })}
           </div>
         </div>
       </div>

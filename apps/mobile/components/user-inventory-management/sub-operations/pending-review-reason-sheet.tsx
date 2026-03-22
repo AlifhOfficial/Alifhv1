@@ -114,7 +114,7 @@ export function PendingReviewReasonSheet({
         {/* Listing preview */}
         <View style={[styles.previewRow, { borderBottomColor: colors.border }]}>
           {listingThumbnail ? (
-            <Image source={{ uri: getAppThumbUrl(listingThumbnail) || listingThumbnail }} style={styles.thumbnail} />
+            <Image source={{ uri: getAppThumbUrl(listingThumbnail)! }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
               <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.textMuted} />

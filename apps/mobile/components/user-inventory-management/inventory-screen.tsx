@@ -322,7 +322,7 @@ export function InventoryScreen() {
           : null;
 
       const rawDisplayImage = item.thumbnail || item.images?.[0];
-      const displayImage = getAppThumbUrl(rawDisplayImage) || rawDisplayImage;
+      const displayImage = getAppThumbUrl(rawDisplayImage);
       const canViewPublicDetail = canOpenPublicListing(item.moderationStatus, item.lifecycleStatus);
 
       return (

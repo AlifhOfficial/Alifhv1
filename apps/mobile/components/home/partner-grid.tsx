@@ -189,7 +189,7 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
         {partner.logo ? (
           <View style={[styles.avatar, { backgroundColor: avatarBg }]}>
             <Image
-              source={{ uri: getAppThumbUrl(partner.logo) || partner.logo }}
+              source={{ uri: getAppThumbUrl(partner.logo)! }}
               style={styles.avatarImage}
               contentFit="cover"
               transition={150}
