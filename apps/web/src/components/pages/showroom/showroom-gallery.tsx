@@ -6,11 +6,11 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Expand, Images, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Expand, Images } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import { ImageLightbox } from '@/components/ui/image-lightbox';
-import { getPublicUrl } from '@/utils/storage';
+import { getCdnPublicUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -68,109 +68,14 @@ function GalleryImage({
   );
 }
 
-// Main Image Slider Component
-function ImageSlider({
-  images,
-  onImageClick,
-  currentIndex,
-  onIndexChange,
-}: {
-  images: string[];
-  onImageClick: (index: number) => void;
-  currentIndex: number;
-  onIndexChange: (index: number) => void;
-}) {
-  const goNext = () => {
-    onIndexChange((currentIndex + 1) % images.length);
-  };
 
-  const goPrev = () => {
-    onIndexChange((currentIndex - 1 + images.length) % images.length);
-  };
-
-  if (images.length === 0) return null;
-
-  return (
-    <div className="relative aspect-[16/9] lg:aspect-[21/9] rounded-xl overflow-hidden bg-sidebar border border-border/40 group">
-      {/* Main Image */}
-      <div 
-        className="absolute inset-0 cursor-pointer"
-        onClick={() => onImageClick(currentIndex)}
-      >
-        <img
-          src={images[currentIndex]}
-          alt={`Showroom ${currentIndex + 1}`}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-        />
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
-          <div className="opacity-0 group-hover:opacity-100 transition-all duration-300">
-            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <Expand className="h-7 w-7 text-white" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation Arrows */}
-      {images.length > 1 && (
-        <>
-          <button
-            onClick={(e) => { e.stopPropagation(); goPrev(); }}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-background hover:scale-105"
-            aria-label="Previous image"
-          >
-            <ChevronLeft className="h-6 w-6 text-foreground" />
-          </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); goNext(); }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-background hover:scale-105"
-            aria-label="Next image"
-          >
-            <ChevronRight className="h-6 w-6 text-foreground" />
-          </button>
-        </>
-      )}
-
-      {/* Dots Indicator */}
-      {images.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-          {images.slice(0, 6).map((_, idx) => (
-            <button
-              key={idx}
-              onClick={(e) => { e.stopPropagation(); onIndexChange(idx); }}
-              className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                idx === currentIndex 
-                  ? 'bg-white w-6' 
-                  : 'bg-white/50 hover:bg-white/70'
-              }`}
-              aria-label={`Go to image ${idx + 1}`}
-            />
-          ))}
-          {images.length > 6 && (
-            <span className="text-white/70 text-xs font-medium ml-1">+{images.length - 6}</span>
-          )}
-        </div>
-      )}
-
-      {/* Image Counter */}
-      <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full bg-background/80 backdrop-blur-sm text-xs text-foreground">
-        {currentIndex + 1} / {images.length}
-      </div>
-    </div>
-  );
-}
 
 export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
-  const interiorImages = (showroom.showroomImages || []).map((img) => getPublicUrl(img)).filter((img): img is string => Boolean(img));
-  const exteriorImages = (showroom.showroomExteriorImages || []).map((img) => getPublicUrl(img)).filter((img): img is string => Boolean(img));
+  const interiorImages = (showroom.showroomImages || []).filter((img): img is string => Boolean(img));
+  const exteriorImages = (showroom.showroomExteriorImages || []).filter((img): img is string => Boolean(img));
   const allImages = [...interiorImages, ...exteriorImages];
-  
-  // Slider state
-  const [sliderIndex, setSliderIndex] = useState(0);
+  const sectionImage = getCdnPublicUrl(showroom.gallerySectionImage);
+  const { embedUrl: sectionVideoEmbedUrl } = getVideoEmbedUrl(showroom.gallerySectionVideoUrl);
   
   // Lightbox state
   const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -188,19 +93,17 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
     setLightboxIndex(index);
   }, []);
   
-  if (allImages.length === 0 && !showroom.showroomVideoTourFile && !showroom.showroomVideoTourUrl) return null;
+  if (allImages.length === 0 && !sectionImage && !sectionVideoEmbedUrl && !showroom.showroomVideoTourUrl) return null;
 
   const theme = getAmbientTheme(showroom.ambientStyle);
   
-  // Check for uploaded video file first, then YouTube/Vimeo URL
-  const videoTourFileUrl = getPublicUrl(showroom.showroomVideoTourFile);
   const { embedUrl: videoTourEmbedUrl } = getVideoEmbedUrl(showroom.showroomVideoTourUrl);
-  const hasVideoTour = videoTourFileUrl || videoTourEmbedUrl;
+  const hasVideoTour = videoTourEmbedUrl;
 
-  // Show max 6 images in the grid (1 in slider + 5 thumbnails)
-  const maxThumbnails = 5;
-  const thumbnailImages = allImages.slice(1, maxThumbnails + 1);
-  const remainingCount = allImages.length - maxThumbnails - 1;
+  // Show up to 8 in the grid; last cell shows overflow count
+  const maxGrid = 8;
+  const gridImages = allImages.slice(0, maxGrid);
+  const remainingCount = allImages.length - maxGrid;
 
   return (
     <>
@@ -228,21 +131,35 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
             )}
           </div>
 
+          {(sectionVideoEmbedUrl || sectionImage) && (
+            <div className="mb-8">
+              <div className="relative aspect-[16/9] lg:aspect-[21/9] rounded-xl overflow-hidden bg-sidebar border border-border/40">
+                {sectionVideoEmbedUrl ? (
+                  <iframe
+                    src={`${sectionVideoEmbedUrl}?autoplay=1&mute=1&loop=1`}
+                    title="Showroom Section Media"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="absolute inset-0 w-full h-full"
+                  />
+                ) : sectionImage ? (
+                  <img
+                    src={sectionImage}
+                    alt="Our Showroom"
+                    className="absolute inset-0 h-full w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : null}
+              </div>
+            </div>
+          )}
+
           {/* Video Tour - Full Width */}
           {hasVideoTour && (
             <div className="mb-8">
               <div className="relative aspect-video rounded-xl overflow-hidden bg-sidebar border border-border/40">
-                {videoTourFileUrl ? (
-                  <video
-                    src={videoTourFileUrl}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    poster={allImages[0] || undefined}
-                  />
-                ) : videoTourEmbedUrl ? (
+                {videoTourEmbedUrl ? (
                   <iframe
                     src={`${videoTourEmbedUrl}?autoplay=1&mute=1&loop=1`}
                     title="Virtual Showroom Tour"
@@ -258,27 +175,17 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
             </div>
           )}
 
-          {/* Main Slider */}
-          {allImages.length > 0 && (
-            <ImageSlider
-              images={allImages}
-              onImageClick={handleImageClick}
-              currentIndex={sliderIndex}
-              onIndexChange={setSliderIndex}
-            />
-          )}
-
-          {/* Thumbnail Grid - Show max 5 thumbnails */}
-          {thumbnailImages.length > 0 && (
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mt-4">
-              {thumbnailImages.map((img, idx) => {
-                const isLast = idx === thumbnailImages.length - 1 && remainingCount > 0;
+          {/* Uniform Image Grid */}
+          {gridImages.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {gridImages.map((img, idx) => {
+                const isLast = idx === gridImages.length - 1 && remainingCount > 0;
                 return (
                   <GalleryImage
                     key={idx}
                     src={img}
-                    alt={`Showroom ${idx + 2}`}
-                    onClick={() => handleImageClick(idx + 1)}
+                    alt={`Showroom ${idx + 1}`}
+                    onClick={() => handleImageClick(idx)}
                     className="aspect-[4/3]"
                     showCount={isLast ? remainingCount : undefined}
                   />

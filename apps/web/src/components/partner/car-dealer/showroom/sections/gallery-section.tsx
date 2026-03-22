@@ -12,7 +12,7 @@ import { compressAndUploadShowroomImage } from '@/lib/storage';
 import { Plus, X, GripVertical } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
-import { EditableField, VideoUpload, VideoEmbedPreview } from '../components';
+import { EditableField, ImageUpload, VideoEmbedPreview } from '../components';
 import {
   DndContext,
   closestCenter,
@@ -138,8 +138,6 @@ interface GallerySectionProps {
   showroom: PartnerShowroom;
   isUpdating: boolean;
   imageUploading: string | null;
-  videoUploading: string | null;
-  uploadProgress: number;
   partnerId: string;
   getEditableFieldProps: (field: keyof PartnerShowroom) => {
     isEditing: boolean;
@@ -152,8 +150,8 @@ interface GallerySectionProps {
   updateShowroom: (data: Partial<PartnerShowroom>) => Promise<void>;
   setForm: React.Dispatch<React.SetStateAction<Partial<PartnerShowroom>>>;
   setImageUploading: React.Dispatch<React.SetStateAction<string | null>>;
-  uploadVideo: (file: File, type: string, field: keyof PartnerShowroom) => Promise<void>;
-  removeVideo: (field: keyof PartnerShowroom) => Promise<void>;
+  uploadImage: (file: File, type: string, field: keyof PartnerShowroom) => Promise<void>;
+  removeImage: (field: keyof PartnerShowroom) => Promise<void>;
   toast: (options: { title: string; variant?: 'default' | 'destructive' }) => void;
 }
 
@@ -162,15 +160,13 @@ export function GallerySection({
   showroom,
   isUpdating,
   imageUploading,
-  videoUploading,
-  uploadProgress,
   partnerId,
   getEditableFieldProps,
   updateShowroom,
   setForm,
   setImageUploading,
-  uploadVideo,
-  removeVideo,
+  uploadImage,
+  removeImage,
   toast,
 }: GallerySectionProps) {
   // Local progress state for gallery uploads
@@ -241,22 +237,41 @@ export function GallerySection({
 
   return (
     <div className="space-y-6">
+      <section>
+        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Section Media</h3>
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+          <ImageUpload
+            value={form.gallerySectionImage || null}
+            displayUrl={showroom.gallerySectionImageUrl}
+            onUpload={(file) => uploadImage(file, 'gallery-section-image', 'gallerySectionImage')}
+            onRemove={() => removeImage('gallerySectionImage')}
+            aspectRatio="aspect-[16/9]"
+            label="Gallery section image"
+            isUploading={imageUploading === 'gallerySectionImage'}
+          />
+          <EditableField
+            {...getEditableFieldProps('gallerySectionVideoUrl')}
+            label="YouTube / Vimeo URL"
+            value={form.gallerySectionVideoUrl || null}
+            placeholder="https://youtube.com/... or https://vimeo.com/..."
+            type="url"
+          />
+          {form.gallerySectionVideoUrl && (
+            <VideoEmbedPreview url={form.gallerySectionVideoUrl} aspectRatio="aspect-video" />
+          )}
+        </div>
+      </section>
+
       {/* Gallery Grid */}
       <section>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[15px] font-bold tracking-tight text-foreground">Showroom Gallery</h3>
-          <span className="text-sm text-muted-foreground">{form.showroomImages?.length || 0}/12</span>
+          <div className="text-right">
+            <span className="text-sm text-muted-foreground">{form.showroomImages?.length || 0}/12</span>
+            <p className="text-[11px] text-muted-foreground/70">Drag images to reorder</p>
+          </div>
         </div>
-        
-        {/* Guidance Note */}
-        <div className="mb-4 p-3 rounded-lg bg-muted/30 border border-border/20">
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            <span className="font-medium text-foreground/80">First 6 images</span> — Showcase your showroom, facilities, team, and brand infrastructure.{' '}
-            <span className="font-medium text-foreground/80">Remaining images</span> — Used as ambient visuals across your profile sections for brand presence.
-            <span className="block mt-1 text-muted-foreground/70">Drag images to reorder.</span>
-          </p>
-        </div>
-        
+
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <DndContext
             sensors={sensors}
@@ -361,53 +376,25 @@ export function GallerySection({
       <section>
         <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Virtual Tour</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
-          {/* Upload Video Tour */}
-          <div>
-            <p className="text-xs font-semibold text-muted-foreground/70 mb-2">Upload Video Tour</p>
-            <VideoUpload
-              value={form.showroomVideoTourFile || null}
-              displayUrl={showroom.showroomVideoTourFileUrl}
-              onUpload={(file) => uploadVideo(file, 'showroom-tour-video', 'showroomVideoTourFile')}
-              onRemove={() => removeVideo('showroomVideoTourFile')}
-              aspectRatio="aspect-video"
-              label="Tour video • Max 50MB (compress to 1080p)"
-              isUploading={videoUploading === 'showroomVideoTourFile'}
-              uploadProgress={uploadProgress}
-            />
-          </div>
-          
-          {/* Or embed from YouTube/Vimeo */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border/20" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-sidebar px-2 text-muted-foreground/50">or embed from</span>
-            </div>
-          </div>
-          
           <EditableField
             {...getEditableFieldProps('showroomVideoTourUrl')}
-            label="360° Tour / Video URL"
+            label="360° Tour / YouTube URL"
             value={form.showroomVideoTourUrl || null}
             placeholder="https://youtube.com/... or https://vimeo.com/..."
             type="url"
           />
-          
           {form.showroomVideoTourUrl && (
-            <button
-              onClick={async () => {
-                await updateShowroom({ showroomVideoTourUrl: null });
-              }}
-              className="text-xs text-destructive hover:text-destructive/80 transition-colors"
-            >
-              Remove embed URL
-            </button>
-          )}
-          
-          {/* Virtual Tour Preview */}
-          {form.showroomVideoTourUrl && (
-            <VideoEmbedPreview url={form.showroomVideoTourUrl} aspectRatio="aspect-video" />
+            <div className="space-y-2">
+              <VideoEmbedPreview url={form.showroomVideoTourUrl} aspectRatio="aspect-video" />
+              <button
+                onClick={async () => {
+                  await updateShowroom({ showroomVideoTourUrl: null });
+                }}
+                className="text-xs text-destructive hover:text-destructive/80 transition-colors"
+              >
+                Remove tour
+              </button>
+            </div>
           )}
         </div>
       </section>

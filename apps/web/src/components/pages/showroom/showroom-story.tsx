@@ -5,11 +5,10 @@
 
 'use client';
 
-import { useRef, useState } from 'react';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
-import { getPublicUrl } from '@/utils/storage';
+import { getCdnPublicUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -21,10 +20,7 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
   if (!showroom.brandStoryContent) return null;
 
   const partner = showroom.partner;
-  const firstImage = getPublicUrl(showroom.showroomImages?.[0]) || undefined;
-  
-  // Check for uploaded video file first, then YouTube/Vimeo URL
-  const storyVideoFileUrl = getPublicUrl(showroom.brandStoryVideoFile);
+  const storyImage = getCdnPublicUrl(showroom.brandStoryImage) || undefined;
   const { embedUrl } = getVideoEmbedUrl(showroom.brandStoryVideoUrl);
   const theme = getAmbientTheme(showroom.ambientStyle);
 
@@ -47,9 +43,8 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
         {/* Media */}
         <div className="px-4 sm:px-6 lg:px-8 mb-12">
           <StoryMedia 
-            storyVideoFileUrl={storyVideoFileUrl}
             embedUrl={embedUrl}
-            firstImage={firstImage}
+            imageUrl={embedUrl ? undefined : storyImage}
             title={showroom.brandStoryTitle || 'Brand Story'}
           />
         </div>
@@ -72,74 +67,12 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
 // ============================================================================
 
 interface StoryMediaProps {
-  storyVideoFileUrl: string | null;
   embedUrl: string | null;
-  firstImage: string | undefined;
+  imageUrl: string | undefined;
   title: string;
 }
 
-function StoryMedia({ storyVideoFileUrl, embedUrl, firstImage, title }: StoryMediaProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(true);
-
-  if (storyVideoFileUrl) {
-    return (
-      <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40 group">
-        <video
-          ref={videoRef}
-          src={storyVideoFileUrl}
-          className="absolute inset-0 w-full h-full object-cover"
-          autoPlay
-          muted={isMuted}
-          loop
-          playsInline
-          controls={false}
-          poster={firstImage || undefined}
-        />
-        
-        {/* Video Controls */}
-        <div className="absolute bottom-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button
-            onClick={() => {
-              if (videoRef.current) {
-                if (isPlaying) {
-                  videoRef.current.pause();
-                } else {
-                  videoRef.current.play();
-                }
-                setIsPlaying(!isPlaying);
-              }
-            }}
-            className="w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors"
-          >
-            {isPlaying ? (
-              <Pause className="w-4 h-4 text-foreground" />
-            ) : (
-              <Play className="w-4 h-4 text-foreground ml-0.5" />
-            )}
-          </button>
-          
-          <button
-            onClick={() => {
-              if (videoRef.current) {
-                videoRef.current.muted = !isMuted;
-                setIsMuted(!isMuted);
-              }
-            }}
-            className="w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors"
-          >
-            {isMuted ? (
-              <VolumeX className="w-4 h-4 text-foreground" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-foreground" />
-            )}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
+function StoryMedia({ embedUrl, imageUrl, title }: StoryMediaProps) {
   if (embedUrl) {
     return (
       <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
@@ -154,12 +87,12 @@ function StoryMedia({ storyVideoFileUrl, embedUrl, firstImage, title }: StoryMed
     );
   }
 
-  if (firstImage) {
+  if (imageUrl) {
     return (
       <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
         <img
-          src={firstImage}
-          alt="Showroom"
+          src={imageUrl}
+          alt={title}
           className="absolute inset-0 h-full w-full object-cover"
           loading="lazy"
           decoding="async"

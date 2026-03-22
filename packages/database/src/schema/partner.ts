@@ -373,6 +373,7 @@ export interface ShowroomService {
   icon: string; // Icon name from predefined set
   title: string;
   description: string | null;
+  image: string | null; // R2 key for service image
   order: number;
 }
 
@@ -418,6 +419,7 @@ export const partnerShowroom = pgTable('partner_showroom', {
   // ========================================
   brandStoryTitle: text('brand_story_title').default('Our Story'), // Section title
   brandStoryContent: text('brand_story_content'), // Rich narrative (2-3 paragraphs)
+  brandStoryImage: text('brand_story_image'), // Section hero/still image
   brandStoryVideoUrl: text('brand_story_video_url'), // Optional founder/story video
   brandStoryVideoFile: text('brand_story_video_file'), // Uploaded video file key (R2)
   brandPhilosophy: text('brand_philosophy'), // One-liner philosophy (max ~200 chars)
@@ -432,6 +434,8 @@ export const partnerShowroom = pgTable('partner_showroom', {
   // Visual Gallery (Showroom Experience)
   // ========================================
   showroomImages: jsonb('showroom_images').$type<string[]>().default([]), // High-res interior/exterior (max 12)
+  gallerySectionImage: text('gallery_section_image'), // Section-specific image
+  gallerySectionVideoUrl: text('gallery_section_video_url'), // Optional YouTube section video
   showroomVideoTourUrl: text('showroom_video_tour_url'), // 360° virtual tour link
   showroomVideoTourFile: text('showroom_video_tour_file'), // Uploaded tour video file (R2)
   ambientStyle: showroomAmbientStyleEnum('ambient_style').default('luxury'), // Design theme
@@ -448,6 +452,8 @@ export const partnerShowroom = pgTable('partner_showroom', {
   // ========================================
   teamMembers: jsonb('team_members').$type<ShowroomTeamMember[]>().default([]), // Up to 6 key team members
   teamSectionTitle: text('team_section_title').default('Meet the Team'),
+  teamSectionImage: text('team_section_image'), // Section-specific image
+  teamSectionVideoUrl: text('team_section_video_url'), // Optional YouTube section video
   
   // ========================================
   // Achievements & Trust (Social Proof)
@@ -457,12 +463,16 @@ export const partnerShowroom = pgTable('partner_showroom', {
   yearsInBusiness: integer('years_in_business'), // Can be calculated from foundedYear
   clientLogos: jsonb('client_logos').$type<string[]>().default([]), // Notable client logos
   achievementsSectionTitle: text('achievements_section_title').default('Our Achievements'),
+  achievementsSectionImage: text('achievements_section_image'), // Section-specific image
+  achievementsSectionVideoUrl: text('achievements_section_video_url'), // Optional YouTube section video
   
   // ========================================
   // Testimonials (Voice of Customers)
   // ========================================
   featuredTestimonials: jsonb('featured_testimonials').$type<ShowroomTestimonial[]>().default([]), // Curated reviews (max 5)
   testimonialsSectionTitle: text('testimonials_section_title').default('What Our Clients Say'),
+  testimonialsSectionImage: text('testimonials_section_image'), // Section-specific image
+  testimonialsSectionVideoUrl: text('testimonials_section_video_url'), // Optional YouTube section video
   
   // ========================================
   // Services & Experience
@@ -470,6 +480,8 @@ export const partnerShowroom = pgTable('partner_showroom', {
   signatureServices: jsonb('signature_services').$type<ShowroomService[]>().default([]), // Premium services (max 6)
   vipPerks: jsonb('vip_perks').$type<string[]>().default([]), // Bullet points of exclusive perks
   servicesSectionTitle: text('services_section_title').default('Our Services'),
+  servicesSectionImage: text('services_section_image'), // Section-specific image
+  servicesSectionVideoUrl: text('services_section_video_url'), // Optional YouTube section video
   
   // ========================================
   // Contact & Location (Premium)

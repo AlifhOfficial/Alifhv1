@@ -43,6 +43,12 @@ function attachPublicUrls(showroom: any) {
     heroVideoThumbnail: toCdn(showroom.heroVideoThumbnail),
     heroImage: toCdn(showroom.heroImage),
     founderImage: toCdn(showroom.founderImage),
+    brandStoryImage: toCdn(showroom.brandStoryImage),
+    gallerySectionImage: toCdn(showroom.gallerySectionImage),
+    teamSectionImage: toCdn(showroom.teamSectionImage),
+    achievementsSectionImage: toCdn(showroom.achievementsSectionImage),
+    testimonialsSectionImage: toCdn(showroom.testimonialsSectionImage),
+    servicesSectionImage: toCdn(showroom.servicesSectionImage),
     showroomImages: toCdnArray(showroom.showroomImages),
     showroomExteriorImages: toCdnArray(showroom.showroomExteriorImages),
     clientLogos: toCdnArray(showroom.clientLogos),
@@ -52,6 +58,14 @@ function attachPublicUrls(showroom: any) {
     heroImageUrl: toCdn(showroom.heroImage),
     // Founder
     founderImageUrl: toCdn(showroom.founderImage),
+    // Brand Story
+    brandStoryImageUrl: toCdn(showroom.brandStoryImage),
+    // Section media
+    gallerySectionImageUrl: toCdn(showroom.gallerySectionImage),
+    teamSectionImageUrl: toCdn(showroom.teamSectionImage),
+    achievementsSectionImageUrl: toCdn(showroom.achievementsSectionImage),
+    testimonialsSectionImageUrl: toCdn(showroom.testimonialsSectionImage),
+    servicesSectionImageUrl: toCdn(showroom.servicesSectionImage),
     // Gallery
     showroomImagesUrls: toCdnArray(showroom.showroomImages),
     // Exterior
@@ -85,6 +99,12 @@ function attachPublicUrls(showroom: any) {
       ...testimonial,
       customerImage: toCdn(testimonial.customerImage),
       customerImageUrl: toCdn(testimonial.customerImage),
+    })),
+    // Signature services
+    signatureServices: (showroom.signatureServices || []).map((service: any) => ({
+      ...service,
+      image: toCdn(service.image),
+      imageUrl: toCdn(service.image),
     })),
     // Press features
     pressFeatures: (showroom.pressFeatures || []).map((feature: any) => ({

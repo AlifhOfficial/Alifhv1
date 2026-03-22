@@ -5,8 +5,9 @@
 
 'use client';
 
+import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPublicUrl } from '@/utils/storage';
+import { getAppThumbUrl, getCdnPublicUrl } from '@/utils/storage';
 import {
   Dialog,
   DialogContent,
@@ -28,9 +29,8 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
 
   const vipPerks = showroom.vipPerks;
   const theme = getAmbientTheme(showroom.ambientStyle);
-  
-  // Single ambient image (index 6)
-  const ambientImage = getPublicUrl(showroom.showroomImages?.[6]);
+  const sectionImage = getCdnPublicUrl(showroom.servicesSectionImage);
+  const { embedUrl: servicesSectionVideoEmbedUrl } = getVideoEmbedUrl(showroom.servicesSectionVideoUrl);
 
   return (
     <section id="showroom-services" className={`${theme.sectionSpacing}`}>
@@ -46,17 +46,27 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
           </h2>
         </div>
 
-        {/* Full Width Image */}
-        {ambientImage && (
+        {/* Full Width Media */}
+        {(servicesSectionVideoEmbedUrl || sectionImage) && (
           <div className="px-4 sm:px-6 lg:px-8 mb-8">
             <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
-              <img
-                src={ambientImage}
-                alt="Showroom Services"
-                className="absolute inset-0 h-full w-full object-cover"
-                loading="lazy"
-                decoding="async"
-              />
+              {servicesSectionVideoEmbedUrl ? (
+                <iframe
+                  src={`${servicesSectionVideoEmbedUrl}?autoplay=1&mute=1&loop=1`}
+                  title="Showroom Services"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                />
+              ) : sectionImage ? (
+                <img
+                  src={sectionImage}
+                  alt="Showroom Services"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : null}
             </div>
           </div>
         )}
@@ -127,6 +137,17 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
                   <button 
                     className="flex-shrink-0 w-[280px] sm:w-[320px] h-[200px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col text-left cursor-pointer"
                   >
+                    {getAppThumbUrl(service.image) && (
+                      <div className="w-full h-24 rounded-lg overflow-hidden bg-muted mb-4">
+                        <img
+                          src={getAppThumbUrl(service.image)!}
+                          alt={service.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+                    )}
                     {/* Number */}
                     <span className="text-xl font-semibold text-muted-foreground/30 mb-3">
                       {String(index + 1).padStart(2, '0')}
@@ -152,6 +173,17 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
                       {service.title}
                     </DialogTitle>
                   </DialogHeader>
+                  {getCdnPublicUrl(service.image) && (
+                    <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                      <img
+                        src={getCdnPublicUrl(service.image)!}
+                        alt={service.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                  )}
                   {service.description && (
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       {service.description}

@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { Volume2, VolumeX, Pause, Play } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
-import { getPublicUrl } from '@/utils/storage';
+import { getCdnPublicUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -28,10 +28,10 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
 
-  const heroImageUrl = getPublicUrl(showroom.heroImage);
+  const heroImageUrl = getCdnPublicUrl(showroom.heroImage);
   
   // Check for uploaded video file first, then YouTube/Vimeo URL
-  const heroVideoFileUrl = getPublicUrl((showroom as any).heroVideoFile);
+  const heroVideoFileUrl = getCdnPublicUrl((showroom as any).heroVideoFile);
   const { embedUrl: heroVideoEmbedUrl } = getVideoEmbedUrl(showroom.heroVideoUrl);
   
   // Priority: Video first, then image, then gradient

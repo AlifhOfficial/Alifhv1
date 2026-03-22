@@ -7,10 +7,12 @@
 
 import React, { useState } from 'react';
 import { cn } from '@/utils';
-import { Star, Trash2 } from 'lucide-react';
+import { getAppThumbUrl } from '@/utils';
+import { Camera, Loader2, Star, Trash2 } from 'lucide-react';
 import type { TestimonialCardProps } from '../types';
 
-export function TestimonialCard({ testimonial, onUpdate, onRemove }: TestimonialCardProps) {
+export function TestimonialCard({ testimonial, onUpdate, onRemove, onImageUpload, isUploading }: TestimonialCardProps) {
+  const photoUrl = getAppThumbUrl(testimonial.customerImage);
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState(testimonial);
 
@@ -25,6 +27,36 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove }: Testimonial
     <div className="rounded-xl border border-border/40 bg-sidebar p-4">
       {isEditing ? (
         <div className="space-y-2">
+          {/* Customer photo */}
+          <div className="flex items-center gap-3 mb-1">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted/30 flex-shrink-0 group">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id={`testimonial-${testimonial.id}-photo`}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = '';
+                  if (file) await onImageUpload(file);
+                }}
+                disabled={isUploading}
+              />
+              {photoUrl ? (
+                <>
+                  <img src={photoUrl} alt={testimonial.customerName} className="absolute inset-0 h-full w-full object-cover" />
+                  <label htmlFor={`testimonial-${testimonial.id}-photo`} className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                    <Camera className="w-3 h-3 text-white" />
+                  </label>
+                </>
+              ) : (
+                <label htmlFor={`testimonial-${testimonial.id}-photo`} className="flex items-center justify-center w-full h-full cursor-pointer hover:bg-muted/50 transition-colors">
+                  {isUploading ? <Loader2 className="w-3 h-3 text-muted-foreground animate-spin" /> : <Camera className="w-3 h-3 text-muted-foreground" />}
+                </label>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">Customer photo (optional)</p>
+          </div>
           <input
             value={form.customerName}
             onChange={(e) => setForm(f => ({ ...f, customerName: e.target.value }))}
@@ -81,7 +113,13 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove }: Testimonial
         </div>
       ) : (
         <div className="flex items-start justify-between gap-2">
-          <div onClick={() => setIsEditing(true)} className="cursor-pointer flex-1">
+          <div onClick={() => setIsEditing(true)} className="cursor-pointer flex-1 flex items-start gap-3">
+            {photoUrl ? (
+              <img src={photoUrl} alt={testimonial.customerName} className="w-8 h-8 rounded-full object-cover flex-shrink-0 mt-0.5" />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-muted/30 flex-shrink-0" />
+            )}
+            <div>
             <div className="flex items-center gap-1 mb-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
@@ -98,6 +136,7 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove }: Testimonial
             {testimonial.vehiclePurchased && (
               <p className="text-xs text-muted-foreground/70 mt-1">Purchased: {testimonial.vehiclePurchased}</p>
             )}
+            </div>
           </div>
           <button onClick={onRemove} className="p-1.5 rounded-full hover:bg-destructive/10 transition-colors">
             <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />

@@ -33,6 +33,16 @@ interface HeroSectionProps {
   toast?: (options: { title: string; variant?: 'default' | 'destructive' }) => void;
 }
 
+type HeroTab = 'image' | 'video' | 'youtube';
+
+function deriveActiveTab(form: Partial<PartnerShowroom>): HeroTab {
+  if (form.heroBackgroundType === 'video') {
+    return form.heroVideoFile || form.heroVideoUrl ? 
+      (form.heroVideoFile ? 'video' : 'youtube') : 'video';
+  }
+  return 'image';
+}
+
 export function HeroSection({
   form,
   showroom,
@@ -48,20 +58,14 @@ export function HeroSection({
   updateShowroom,
   toast,
 }: HeroSectionProps) {
-  const [savingColor, setSavingColor] = React.useState<'primary' | 'accent' | null>(null);
-  const currentBgType = form.heroBackgroundType || 'image';
-  const hasVideo = !!form.heroVideoFile || showroom.heroVideoFileUrl;
-  const hasEmbedUrl = !!form.heroVideoUrl && !form.heroVideoUrl.startsWith('/');
-  const hasImage = !!form.heroImage || !!showroom.heroImageUrl;
+  const [activeTab, setActiveTab] = React.useState<HeroTab>(() => deriveActiveTab(form));
 
-  const saveColor = async (field: 'primaryColor' | 'accentColor') => {
-    const colorType = field === 'primaryColor' ? 'primary' : 'accent';
-    setSavingColor(colorType);
-    try {
-      await updateShowroom({ [field]: form[field] });
-      toast?.({ title: `${colorType === 'primary' ? 'Primary' : 'Accent'} color saved` });
-    } finally {
-      setTimeout(() => setSavingColor(null), 800);
+  const switchTab = async (tab: HeroTab) => {
+    setActiveTab(tab);
+    if (tab === 'image') {
+      await updateShowroom({ heroBackgroundType: 'image' });
+    } else {
+      await updateShowroom({ heroBackgroundType: 'video' });
     }
   };
 
@@ -117,135 +121,87 @@ export function HeroSection({
         </div>
       </section>
 
-      {/* Background Type + Brand Colors (grouped — colors affect gradient) */}
+      {/* Background — single choice, no fallbacks */}
       <section>
         <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Background</h3>
-        <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-5">
-          {/* Display Type */}
-          <div className="space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground/70">Display Type</p>
-            <div className="flex flex-wrap gap-2">
-              {[
-                { type: 'video', label: 'Video' },
-                { type: 'image', label: 'Image' },
-                { type: 'gradient', label: 'Gradient' }
-              ].map(({ type, label }) => (
-                <button
-                  key={type}
-                  onClick={async () => {
-                    await updateShowroom({ heroBackgroundType: type as 'video' | 'image' | 'gradient' });
-                  }}
-                  className={cn(
-                    "px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors",
-                    currentBgType === type
-                      ? 'bg-primary text-primary-foreground border-primary'
-                      : 'border-border/40 text-muted-foreground hover:text-foreground hover:bg-muted/30'
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            
-            {currentBgType === 'video' && !hasVideo && !hasEmbedUrl && (
-              <p className="text-xs text-amber-500">⚠ No video uploaded — add one below or switch to Image/Gradient</p>
+        <div className="rounded-xl border border-border/40 bg-sidebar overflow-hidden">
+          {/* Tab bar */}
+          <div className="flex border-b border-border/40">
+            {([
+              { id: 'image', label: 'Image' },
+              { id: 'video', label: 'Video File' },
+              { id: 'youtube', label: 'YouTube URL' },
+            ] as { id: HeroTab; label: string }[]).map(({ id, label }) => (
+              <button
+                key={id}
+                onClick={() => switchTab(id)}
+                className={cn(
+                  "flex-1 py-2.5 text-xs font-semibold transition-colors border-b-2 -mb-px",
+                  activeTab === id
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab content */}
+          <div className="p-5">
+            {activeTab === 'image' && (
+              <ImageUpload
+                value={form.heroImage || null}
+                displayUrl={showroom.heroImageUrl}
+                onUpload={(file) => uploadImage(file, 'hero-image', 'heroImage')}
+                onRemove={() => removeImage('heroImage')}
+                aspectRatio="aspect-[16/9]"
+                label="Upload hero image (1920×1080 recommended)"
+                isUploading={imageUploading === 'heroImage'}
+              />
             )}
-            {currentBgType === 'image' && !hasImage && (
-              <p className="text-xs text-amber-500">⚠ No image uploaded — add one below or switch to Gradient</p>
+
+            {activeTab === 'video' && (
+              <VideoUpload
+                value={form.heroVideoFile || null}
+                displayUrl={showroom.heroVideoFileUrl}
+                onUpload={(file) => uploadVideo(file, 'hero-video', 'heroVideoFile')}
+                onRemove={() => removeVideo('heroVideoFile')}
+                aspectRatio="aspect-video"
+                label="MP4, WebM, MOV • Max 50MB"
+                isUploading={videoUploading === 'heroVideoFile'}
+                uploadProgress={uploadProgress}
+              />
+            )}
+
+            {activeTab === 'youtube' && (
+              <div className="space-y-3">
+                <EditableField
+                  {...getEditableFieldProps('heroVideoUrl')}
+                  label="YouTube URL"
+                  value={form.heroVideoUrl || null}
+                  placeholder="https://youtube.com/watch?v=..."
+                  type="url"
+                />
+                {form.heroVideoUrl && (
+                  <div className="space-y-2">
+                    <VideoEmbedPreview url={form.heroVideoUrl} aspectRatio="aspect-video" />
+                    <div className="flex gap-3">
+                      <button
+                        onClick={async () => {
+                          await updateShowroom({ heroVideoUrl: null });
+                          updateField('heroVideoUrl', null);
+                        }}
+                        className="text-xs text-destructive hover:text-destructive/80 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
-        </div>
-      </section>
-
-      {/* Hero Image */}
-      <section>
-        <div className="flex items-center gap-2 mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Hero Image</h3>
-          {currentBgType === 'video' && (
-            <span className="text-[10px] text-muted-foreground/60">• Fallback if video fails</span>
-          )}
-        </div>
-        <div className={cn(
-          "rounded-xl border bg-sidebar p-5 space-y-4",
-          currentBgType === 'image' ? 'border-primary/30' : 'border-border/40'
-        )}>
-          <ImageUpload
-            value={form.heroImage || null}
-            displayUrl={showroom.heroImageUrl}
-            onUpload={(file) => uploadImage(file, 'hero-image', 'heroImage')}
-            onRemove={() => removeImage('heroImage')}
-            aspectRatio="aspect-[16/9]"
-            label="Upload hero image (1920×1080)"
-            isUploading={imageUploading === 'heroImage'}
-          />
-          {hasImage && currentBgType !== 'image' && (
-            <p className="text-[10px] text-emerald-600 dark:text-emerald-400">✓ Ready as fallback</p>
-          )}
-        </div>
-      </section>
-
-      {/* Hero Video */}
-      <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Hero Video</h3>
-        <div className={cn(
-          "rounded-xl border bg-sidebar p-5 space-y-4",
-          currentBgType === 'video' ? 'border-primary/30' : 'border-border/40'
-        )}>
-          {/* Upload Option */}
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-muted-foreground/70">Upload Video File</p>
-            <VideoUpload
-              value={form.heroVideoFile || null}
-              displayUrl={showroom.heroVideoFileUrl}
-              onUpload={(file) => uploadVideo(file, 'hero-video', 'heroVideoFile')}
-              onRemove={() => removeVideo('heroVideoFile')}
-              aspectRatio="aspect-video"
-              label="MP4, WebM, MOV • Max 50MB (compress to 1080p)"
-              isUploading={videoUploading === 'heroVideoFile'}
-              uploadProgress={uploadProgress}
-            />
-          </div>
-
-          {/* Divider */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border/20" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-sidebar px-2 text-muted-foreground/50">or embed from</span>
-            </div>
-          </div>
-
-          {/* Embed URL */}
-          <EditableField
-            {...getEditableFieldProps('heroVideoUrl')}
-            label="YouTube / Vimeo URL"
-            value={form.heroVideoUrl || null}
-            placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
-            type="url"
-          />
-          
-          {form.heroVideoUrl && (
-            <button
-              onClick={async () => {
-                await updateShowroom({ heroVideoUrl: null });
-              }}
-              className="text-xs text-destructive hover:text-destructive/80 transition-colors"
-            >
-              Remove embed URL
-            </button>
-          )}
-          
-          {hasEmbedUrl && (
-            <VideoEmbedPreview url={form.heroVideoUrl!} aspectRatio="aspect-video" />
-          )}
-
-          {/* Priority note */}
-          {hasVideo && hasEmbedUrl && (
-            <p className="text-[10px] text-muted-foreground/60 border-t border-border/20 pt-3">
-              Uploaded video takes priority over embed URL
-            </p>
-          )}
         </div>
       </section>
     </div>

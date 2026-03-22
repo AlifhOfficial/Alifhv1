@@ -101,18 +101,24 @@ export interface AchievementCardProps {
   achievement: ShowroomAchievement;
   onUpdate: (updates: Partial<ShowroomAchievement>) => void;
   onRemove: () => void;
+  onImageUpload: (file: File) => Promise<void>;
+  isUploading: boolean;
 }
 
 export interface TestimonialCardProps {
   testimonial: ShowroomTestimonial;
   onUpdate: (updates: Partial<ShowroomTestimonial>) => void;
   onRemove: () => void;
+  onImageUpload: (file: File) => Promise<void>;
+  isUploading: boolean;
 }
 
 export interface ServiceCardProps {
   service: ShowroomService;
   onUpdate: (updates: Partial<ShowroomService>) => void;
   onRemove: () => void;
+  onImageUpload: (file: File) => Promise<void>;
+  isUploading: boolean;
 }
 
 // ============================================================================

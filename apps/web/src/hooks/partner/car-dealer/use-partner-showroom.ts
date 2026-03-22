@@ -44,6 +44,8 @@ export interface PartnerShowroom {
   // Brand Story
   brandStoryTitle: string;
   brandStoryContent: string | null;
+  brandStoryImage: string | null;
+  brandStoryImageUrl?: string | null;
   brandStoryVideoUrl: string | null;
   brandStoryVideoFile: string | null;
   brandStoryVideoFileUrl?: string | null;
@@ -59,6 +61,9 @@ export interface PartnerShowroom {
   // Gallery
   showroomImages: string[];
   showroomImageUrls?: string[];
+  gallerySectionImage: string | null;
+  gallerySectionImageUrl?: string | null;
+  gallerySectionVideoUrl: string | null;
   showroomVideoTourUrl: string | null;
   showroomVideoTourFile: string | null;
   showroomVideoTourFileUrl?: string | null;
@@ -72,6 +77,9 @@ export interface PartnerShowroom {
   // Team
   teamMembers: ShowroomTeamMember[];
   teamSectionTitle: string;
+  teamSectionImage: string | null;
+  teamSectionImageUrl?: string | null;
+  teamSectionVideoUrl: string | null;
   
   // Achievements
   achievements: ShowroomAchievement[];
@@ -79,15 +87,24 @@ export interface PartnerShowroom {
   yearsInBusiness: number | null;
   clientLogos: string[];
   achievementsSectionTitle: string;
+  achievementsSectionImage: string | null;
+  achievementsSectionImageUrl?: string | null;
+  achievementsSectionVideoUrl: string | null;
   
   // Testimonials
   featuredTestimonials: ShowroomTestimonial[];
   testimonialsSectionTitle: string;
+  testimonialsSectionImage: string | null;
+  testimonialsSectionImageUrl?: string | null;
+  testimonialsSectionVideoUrl: string | null;
   
   // Services
   signatureServices: ShowroomService[];
   vipPerks: string[];
   servicesSectionTitle: string;
+  servicesSectionImage: string | null;
+  servicesSectionImageUrl?: string | null;
+  servicesSectionVideoUrl: string | null;
   
   // Contact & Location
   showroomAddress: string | null;
@@ -133,7 +150,9 @@ export interface PartnerShowroom {
 export type ShowroomUpdateData = Partial<Omit<
   PartnerShowroom,
   'id' | 'partnerId' | 'createdAt' | 'updatedAt' | 'viewCount' | 'uniqueVisitors' |
-  'heroVideoThumbnailUrl' | 'heroImageUrl' | 'founderImageUrl' | 'showroomImageUrls'
+  'heroVideoThumbnailUrl' | 'heroImageUrl' | 'brandStoryImageUrl' | 'founderImageUrl' |
+  'showroomImageUrls' | 'gallerySectionImageUrl' | 'teamSectionImageUrl' |
+  'achievementsSectionImageUrl' | 'testimonialsSectionImageUrl' | 'servicesSectionImageUrl'
 >>;
 
 // ============================================================================

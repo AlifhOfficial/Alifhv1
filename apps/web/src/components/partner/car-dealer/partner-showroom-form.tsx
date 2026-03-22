@@ -98,7 +98,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
     }
     
     // For URL fields, ensure they have https:// prefix if they have a value
-    const urlFields: (keyof ShowroomUpdateData)[] = ['instagramHandle', 'youtubeChannelUrl', 'tiktokHandle', 'linkedinUrl', 'heroCtaLink', 'heroCtaSecondaryLink', 'showroomMapEmbedUrl'];
+    const urlFields: (keyof ShowroomUpdateData)[] = ['instagramHandle', 'youtubeChannelUrl', 'tiktokHandle', 'linkedinUrl', 'heroCtaLink', 'heroCtaSecondaryLink', 'showroomMapEmbedUrl', 'heroVideoUrl', 'brandStoryVideoUrl', 'gallerySectionVideoUrl', 'showroomVideoTourUrl', 'teamSectionVideoUrl', 'achievementsSectionVideoUrl', 'testimonialsSectionVideoUrl', 'servicesSectionVideoUrl'];
     if (urlFields.includes(field) && value && typeof value === 'string') {
       // Add https:// if missing protocol
       if (!value.startsWith('http://') && !value.startsWith('https://')) {
@@ -106,8 +106,16 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
       }
     }
     
+    const updates: Partial<ShowroomUpdateData> = { [field]: value } as Partial<ShowroomUpdateData>;
+
+    if (field === 'heroVideoUrl') {
+      if (value) {
+        updates.heroBackgroundType = 'video';
+      }
+    }
+
     try {
-      await updateShowroom({ [field]: value });
+      await updateShowroom(updates);
       setEditingField(null);
       toast({ title: 'Saved' });
     } catch (err: any) {
@@ -125,7 +133,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
   };
 
   // Upload image via client-side compression + direct CDN upload
-  const uploadImage = async (file: File, type: 'hero-image' | 'founder-image' | 'gallery' | 'team-member' | 'seo-image', field: keyof PartnerShowroom) => {
+  const uploadImage = async (file: File, type: 'hero-image' | 'brand-story-image' | 'founder-image' | 'gallery' | 'gallery-section-image' | 'team-member' | 'team-section-image' | 'achievement-image' | 'achievements-section-image' | 'testimonial-image' | 'testimonials-section-image' | 'service-image' | 'services-section-image' | 'seo-image', field: keyof PartnerShowroom) => {
     // Basic check - allow common image types
     const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
     if (!validTypes.includes(file.type) && !file.type.startsWith('image/')) {
@@ -140,11 +148,26 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
       return;
     }
 
+    const oldKey = (form as any)[field] as string | null;
     setImageUploading(field);
     try {
       const result = await compressAndUploadShowroomImage(file, partnerId, type);
-      setForm(f => ({ ...f, [field]: result.key }));
-      await updateShowroom({ [field]: result.key } as any);
+      const updates: Partial<PartnerShowroom> = { [field]: result.key } as Partial<PartnerShowroom>;
+
+      if (field === 'heroImage') {
+        updates.heroBackgroundType = 'image';
+      }
+
+      setForm(f => ({ ...f, ...updates }));
+      await updateShowroom(updates as any);
+      // Delete replaced R2 object (fire-and-forget)
+      if (oldKey && !oldKey.startsWith('http')) {
+        fetch('/api/storage/delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: oldKey }),
+        }).catch(() => {});
+      }
       toast({ title: 'Image uploaded' });
     } catch (err: any) {
       toast({ title: err.message || 'Upload failed', variant: 'destructive' });
@@ -155,8 +178,22 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
 
   // Remove image
   const removeImage = async (field: keyof PartnerShowroom) => {
+    const oldKey = (form as any)[field] as string | null;
     try {
-      await updateShowroom({ [field]: null } as any);
+      const updates: Partial<PartnerShowroom> = { [field]: null } as Partial<PartnerShowroom>;
+      if (field === 'heroImage') {
+        updates.heroBackgroundType = 'image';
+      }
+      setForm(f => ({ ...f, [field]: null }));
+      await updateShowroom(updates as any);
+      // Delete removed R2 object (fire-and-forget)
+      if (oldKey && !oldKey.startsWith('http')) {
+        fetch('/api/storage/delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: oldKey }),
+        }).catch(() => {});
+      }
       toast({ title: 'Image removed' });
     } catch {
       toast({ title: 'Failed to remove image', variant: 'destructive' });
@@ -181,6 +218,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
       return;
     }
 
+    const oldVideoKey = (form as any)[field] as string | null;
     setVideoUploading(field);
     setUploadProgress(0);
     
@@ -189,8 +227,21 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
         setUploadProgress(progress);
       });
       
-      setForm(f => ({ ...f, [field]: result.key }));
-      await updateShowroom({ [field]: result.key } as any);
+      const updates: Partial<PartnerShowroom> = { [field]: result.key } as Partial<PartnerShowroom>;
+      if (field === 'heroVideoFile') {
+        updates.heroBackgroundType = 'video';
+      }
+
+      setForm(f => ({ ...f, ...updates }));
+      await updateShowroom(updates as any);
+      // Delete replaced R2 video object (fire-and-forget)
+      if (oldVideoKey && !oldVideoKey.startsWith('http')) {
+        fetch('/api/storage/delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: oldVideoKey }),
+        }).catch(() => {});
+      }
       toast({ title: 'Video uploaded' });
     } catch (err: any) {
       toast({ title: err.message || 'Video upload failed', variant: 'destructive' });
@@ -202,8 +253,22 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
 
   // Remove video
   const removeVideo = async (field: keyof PartnerShowroom) => {
+    const oldKey = (form as any)[field] as string | null;
     try {
-      await updateShowroom({ [field]: null } as any);
+      const updates: Partial<PartnerShowroom> = { [field]: null } as Partial<PartnerShowroom>;
+      if (field === 'heroVideoFile' && form.heroBackgroundType === 'video') {
+        updates.heroBackgroundType = 'image';
+      }
+      setForm(f => ({ ...f, [field]: null }));
+      await updateShowroom(updates as any);
+      // Delete removed R2 video object (only file keys, not embed URLs)
+      if (oldKey && !oldKey.startsWith('http')) {
+        fetch('/api/storage/delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: oldKey }),
+        }).catch(() => {});
+      }
       toast({ title: 'Video removed' });
     } catch {
       toast({ title: 'Failed to remove video', variant: 'destructive' });

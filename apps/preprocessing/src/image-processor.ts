@@ -39,14 +39,23 @@ const FULL: SharpOpts = {
 
 // Per-type settings for single-output uploads
 const SINGLE_SETTINGS: Record<string, SharpOpts> = {
-  avatar:                    { maxWidth: 200,  maxHeight: 200,  fit: 'cover',  quality: 72, sharpenSigma: 0.6, saturationBoost: 1.03 },
-  'partner:logo':            { maxWidth: 200,  maxHeight: 200,  fit: 'inside', quality: 72, sharpenSigma: 0.6, saturationBoost: 1.00 },
-  'partner:hero':            { maxWidth: 1600, maxHeight: 500,  fit: 'cover',  quality: 75, sharpenSigma: 0.4, saturationBoost: 1.01 },
-  'showroom:hero-image':     { maxWidth: 1920, maxHeight: 1080, fit: 'inside', quality: 75, sharpenSigma: 0.4, saturationBoost: 1.02 },
-  'showroom:founder-image':  { maxWidth: 800,  maxHeight: 1000, fit: 'inside', quality: 75, sharpenSigma: 0.5, saturationBoost: 1.02 },
-  'showroom:gallery':        { maxWidth: 1600, maxHeight: 1200, fit: 'inside', quality: 75, sharpenSigma: 0.4, saturationBoost: 1.02 },
-  'showroom:team-member':    { maxWidth: 600,  maxHeight: 600,  fit: 'inside', quality: 78, sharpenSigma: 0.6, saturationBoost: 1.03 },
-  'showroom:seo-image':      { maxWidth: 1200, maxHeight: 630,  fit: 'cover',  quality: 82, sharpenSigma: 0.4, saturationBoost: 1.00 },
+  avatar:                              { maxWidth: 200,  maxHeight: 200,  fit: 'cover',  quality: 70, sharpenSigma: 0.6, saturationBoost: 1.03 },
+  'partner:logo':                      { maxWidth: 200,  maxHeight: 200,  fit: 'inside', quality: 70, sharpenSigma: 0.6, saturationBoost: 1.00 },
+  'partner:hero':                      { maxWidth: 1600, maxHeight: 500,  fit: 'cover',  quality: 70, sharpenSigma: 0.4, saturationBoost: 1.01 },
+  'showroom:hero-image':               { maxWidth: 1440, maxHeight: 810,  fit: 'cover',  quality: 70, sharpenSigma: 0.4, saturationBoost: 1.02 },
+  'showroom:brand-story-image':        { maxWidth: 1200, maxHeight: 675,  fit: 'cover',  quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
+  'showroom:founder-image':            { maxWidth: 640,  maxHeight: 800,  fit: 'inside', quality: 70, sharpenSigma: 0.5, saturationBoost: 1.02 },
+  'showroom:gallery':                  { maxWidth: 1200, maxHeight: 900,  fit: 'inside', quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
+  'showroom:gallery-section-image':    { maxWidth: 1200, maxHeight: 675,  fit: 'cover',  quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
+  'showroom:team-member':              { maxWidth: 480,  maxHeight: 480,  fit: 'cover',  quality: 70, sharpenSigma: 0.6, saturationBoost: 1.03 },
+  'showroom:team-section-image':       { maxWidth: 1200, maxHeight: 675,  fit: 'cover',  quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
+  'showroom:achievement-image':        { maxWidth: 320,  maxHeight: 320,  fit: 'inside', quality: 70, sharpenSigma: 0.5, saturationBoost: 1.02 },
+  'showroom:achievements-section-image': { maxWidth: 1200, maxHeight: 675, fit: 'cover', quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
+  'showroom:testimonial-image':        { maxWidth: 160,  maxHeight: 160,  fit: 'cover',  quality: 70, sharpenSigma: 0.6, saturationBoost: 1.03 },
+  'showroom:testimonials-section-image': { maxWidth: 1200, maxHeight: 675, fit: 'cover', quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
+  'showroom:service-image':            { maxWidth: 640,  maxHeight: 480,  fit: 'cover',  quality: 68, sharpenSigma: 0.5, saturationBoost: 1.02 },
+  'showroom:services-section-image':   { maxWidth: 1200, maxHeight: 675,  fit: 'cover',  quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
+  'showroom:seo-image':                { maxWidth: 1200, maxHeight: 630,  fit: 'cover',  quality: 70, sharpenSigma: 0.4, saturationBoost: 1.00 },
 };
 
 function build(input: Buffer, opts: SharpOpts) {

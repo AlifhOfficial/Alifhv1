@@ -10,10 +10,11 @@ import { Plus, Users } from 'lucide-react';
 import { compressAndUploadShowroomImage } from '@/lib/storage';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import type { ShowroomTeamMember } from '@alifh/database';
-import { EditableField, TeamMemberCard } from '../components';
+import { EditableField, ImageUpload, TeamMemberCard, VideoEmbedPreview } from '../components';
 
 interface TeamSectionProps {
   form: Partial<PartnerShowroom>;
+  showroom: PartnerShowroom;
   imageUploading: string | null;
   partnerId: string;
   getEditableFieldProps: (field: keyof PartnerShowroom) => {
@@ -24,6 +25,8 @@ interface TeamSectionProps {
     onSave: () => void;
     onCancel: () => void;
   };
+  uploadImage: (file: File, type: string, field: keyof PartnerShowroom) => Promise<void>;
+  removeImage: (field: keyof PartnerShowroom) => Promise<void>;
   updateShowroom: (data: Partial<PartnerShowroom>) => Promise<void>;
   setImageUploading: React.Dispatch<React.SetStateAction<string | null>>;
   toast: (options: { title: string; variant?: 'default' | 'destructive' }) => void;
@@ -31,9 +34,12 @@ interface TeamSectionProps {
 
 export function TeamSection({
   form,
+  showroom,
   imageUploading,
   partnerId,
   getEditableFieldProps,
+  uploadImage,
+  removeImage,
   updateShowroom,
   setImageUploading,
   toast,
@@ -65,6 +71,31 @@ export function TeamSection({
 
   return (
     <div className="space-y-6">
+      <section>
+        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Section Media</h3>
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+          <ImageUpload
+            value={form.teamSectionImage || null}
+            displayUrl={showroom.teamSectionImageUrl}
+            onUpload={(file) => uploadImage(file, 'team-section-image', 'teamSectionImage')}
+            onRemove={() => removeImage('teamSectionImage')}
+            aspectRatio="aspect-[16/9]"
+            label="Team section image"
+            isUploading={imageUploading === 'teamSectionImage'}
+          />
+          <EditableField
+            {...getEditableFieldProps('teamSectionVideoUrl')}
+            label="YouTube / Vimeo URL"
+            value={form.teamSectionVideoUrl || null}
+            placeholder="https://youtube.com/... or https://vimeo.com/..."
+            type="url"
+          />
+          {form.teamSectionVideoUrl && (
+            <VideoEmbedPreview url={form.teamSectionVideoUrl} aspectRatio="aspect-video" />
+          )}
+        </div>
+      </section>
+
       {/* Team Members */}
       <section>
         <div className="flex items-center justify-between mb-3">

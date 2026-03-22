@@ -5,8 +5,9 @@
 
 'use client';
 
+import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPublicUrl, getAppThumbUrl } from '@/utils/storage';
+import { getCdnPublicUrl, getAppThumbUrl } from '@/utils/storage';
 import {
   Dialog,
   DialogContent,
@@ -27,9 +28,8 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
   if (!members || members.length === 0) return null;
 
   const theme = getAmbientTheme(showroom.ambientStyle);
-  
-  // Use ambient image (index 8 or fallback)
-  const ambientImage = getPublicUrl(showroom.showroomImages?.[8]) || getPublicUrl(showroom.showroomImages?.[2]);
+  const teamSectionImage = getCdnPublicUrl(showroom.teamSectionImage);
+  const { embedUrl: teamSectionVideoEmbedUrl } = getVideoEmbedUrl(showroom.teamSectionVideoUrl);
 
   return (
     <section id="showroom-team" className={`${theme.sectionSpacing}`}>
@@ -45,17 +45,27 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
           </h2>
         </div>
 
-        {/* Full Width Hero Image */}
-        {ambientImage && (
+        {/* Full Width Hero Media */}
+        {(teamSectionVideoEmbedUrl || teamSectionImage) && (
           <div className="px-4 sm:px-6 lg:px-8 mb-8">
             <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
-              <img
-                src={ambientImage}
-                alt="Our Team"
-                className="absolute inset-0 h-full w-full object-cover"
-                loading="lazy"
-                decoding="async"
-              />
+              {teamSectionVideoEmbedUrl ? (
+                <iframe
+                  src={`${teamSectionVideoEmbedUrl}?autoplay=1&mute=1&loop=1`}
+                  title="Our Team"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                />
+              ) : teamSectionImage ? (
+                <img
+                  src={teamSectionImage}
+                  alt="Our Team"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : null}
             </div>
           </div>
         )}

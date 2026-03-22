@@ -6,8 +6,9 @@
 'use client';
 
 import { useRef } from 'react';
+import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getAppThumbUrl } from '@/utils/storage';
+import { getAppThumbUrl, getCdnPublicUrl } from '@/utils/storage';
 import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 
@@ -22,6 +23,8 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
   if (!achievements || achievements.length === 0) return null;
 
   const theme = getAmbientTheme(showroom.ambientStyle);
+  const achievementsSectionImage = getCdnPublicUrl(showroom.achievementsSectionImage);
+  const { embedUrl: achievementsSectionVideoEmbedUrl } = getVideoEmbedUrl(showroom.achievementsSectionVideoUrl);
 
   return (
     <section id="showroom-achievements" className={`${theme.sectionSpacing}`}>
@@ -36,6 +39,30 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
             Awards & Milestones
           </h2>
         </div>
+
+        {(achievementsSectionVideoEmbedUrl || achievementsSectionImage) && (
+          <div className="mb-8 px-4 sm:px-6 lg:px-8">
+            <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full overflow-hidden rounded-xl bg-sidebar border border-border/40">
+              {achievementsSectionVideoEmbedUrl ? (
+                <iframe
+                  src={`${achievementsSectionVideoEmbedUrl}?autoplay=1&mute=1&loop=1`}
+                  title="Awards & Milestones"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                />
+              ) : achievementsSectionImage ? (
+                <img
+                  src={achievementsSectionImage}
+                  alt="Awards & Milestones"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : null}
+            </div>
+          </div>
+        )}
         
         {/* Carousel */}
         <div className="relative group/scroll">

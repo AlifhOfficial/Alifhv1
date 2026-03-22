@@ -133,6 +133,7 @@ export interface ShowroomData {
   // Brand Story
   brandStoryTitle: string;
   brandStoryContent: string | null;
+  brandStoryImage: string | null;
   brandStoryVideoUrl: string | null;
   brandStoryVideoFile: string | null;
   brandPhilosophy: string | null;
@@ -145,6 +146,8 @@ export interface ShowroomData {
   
   // Gallery
   showroomImages: string[];
+  gallerySectionImage: string | null;
+  gallerySectionVideoUrl: string | null;
   showroomVideoTourUrl: string | null;
   showroomVideoTourFile: string | null;
   
@@ -156,10 +159,14 @@ export interface ShowroomData {
   // Team
   teamMembers: ShowroomTeamMember[];
   teamSectionTitle: string;
+  teamSectionImage: string | null;
+  teamSectionVideoUrl: string | null;
   
   // Achievements & Stats
   achievements: ShowroomAchievement[];
   achievementsSectionTitle: string;
+  achievementsSectionImage: string | null;
+  achievementsSectionVideoUrl: string | null;
   totalCarsSold: number | null;
   yearsInBusiness: number | null;
   clientLogos: string[];
@@ -167,11 +174,15 @@ export interface ShowroomData {
   // Testimonials
   featuredTestimonials: ShowroomTestimonial[];
   testimonialsSectionTitle: string;
+  testimonialsSectionImage: string | null;
+  testimonialsSectionVideoUrl: string | null;
   
   // Services
   signatureServices: ShowroomService[];
   vipPerks: string[];
   servicesSectionTitle: string;
+  servicesSectionImage: string | null;
+  servicesSectionVideoUrl: string | null;
   
   // Contact & Location (from partner profile, not editable here)
   showroomAddress: string | null;

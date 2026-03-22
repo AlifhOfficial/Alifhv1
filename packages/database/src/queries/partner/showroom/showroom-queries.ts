@@ -49,6 +49,7 @@ export interface PartnerShowroomFull {
   // Brand Story
   brandStoryTitle: string;
   brandStoryContent: string | null;
+  brandStoryImage: string | null;
   brandStoryVideoUrl: string | null;
   brandStoryVideoFile: string | null;
   brandPhilosophy: string | null;
@@ -59,6 +60,8 @@ export interface PartnerShowroomFull {
   
   // Gallery
   showroomImages: string[];
+  gallerySectionImage: string | null;
+  gallerySectionVideoUrl: string | null;
   showroomVideoTourUrl: string | null;
   showroomVideoTourFile: string | null;
   ambientStyle: 'modern' | 'classic' | 'industrial' | 'luxury' | 'minimal';
@@ -71,6 +74,8 @@ export interface PartnerShowroomFull {
   // Team
   teamMembers: ShowroomTeamMember[];
   teamSectionTitle: string;
+  teamSectionImage: string | null;
+  teamSectionVideoUrl: string | null;
   
   // Achievements
   achievements: ShowroomAchievement[];
@@ -78,15 +83,21 @@ export interface PartnerShowroomFull {
   yearsInBusiness: number | null;
   clientLogos: string[];
   achievementsSectionTitle: string;
+  achievementsSectionImage: string | null;
+  achievementsSectionVideoUrl: string | null;
   
   // Testimonials
   featuredTestimonials: ShowroomTestimonial[];
   testimonialsSectionTitle: string;
+  testimonialsSectionImage: string | null;
+  testimonialsSectionVideoUrl: string | null;
   
   // Services
   signatureServices: ShowroomService[];
   vipPerks: string[];
   servicesSectionTitle: string;
+  servicesSectionImage: string | null;
+  servicesSectionVideoUrl: string | null;
   
   // Contact
   showroomAddress: string | null;
@@ -178,6 +189,7 @@ export interface PartnerShowroomPublic {
   
   brandStoryTitle: string;
   brandStoryContent: string | null;
+  brandStoryImage: string | null;
   brandStoryVideoUrl: string | null;
   brandStoryVideoFile: string | null;
   brandPhilosophy: string | null;
@@ -187,6 +199,8 @@ export interface PartnerShowroomPublic {
   founderQuote: string | null;
   
   showroomImages: string[];
+  gallerySectionImage: string | null;
+  gallerySectionVideoUrl: string | null;
   showroomVideoTourUrl: string | null;
   showroomVideoTourFile: string | null;
   ambientStyle: 'modern' | 'classic' | 'industrial' | 'luxury' | 'minimal';
@@ -197,19 +211,27 @@ export interface PartnerShowroomPublic {
   
   teamMembers: ShowroomTeamMember[];
   teamSectionTitle: string;
+  teamSectionImage: string | null;
+  teamSectionVideoUrl: string | null;
   
   achievements: ShowroomAchievement[];
   totalCarsSold: number | null;
   yearsInBusiness: number | null;
   clientLogos: string[];
   achievementsSectionTitle: string;
+  achievementsSectionImage: string | null;
+  achievementsSectionVideoUrl: string | null;
   
   featuredTestimonials: ShowroomTestimonial[];
   testimonialsSectionTitle: string;
+  testimonialsSectionImage: string | null;
+  testimonialsSectionVideoUrl: string | null;
   
   signatureServices: ShowroomService[];
   vipPerks: string[];
   servicesSectionTitle: string;
+  servicesSectionImage: string | null;
+  servicesSectionVideoUrl: string | null;
   
   showroomAddress: string | null;
   showroomMapEmbedUrl: string | null;
@@ -730,6 +752,7 @@ function mapToShowroomFull(row: typeof partnerShowroom.$inferSelect): PartnerSho
     
     brandStoryTitle: row.brandStoryTitle || 'Our Story',
     brandStoryContent: row.brandStoryContent,
+    brandStoryImage: row.brandStoryImage,
     brandStoryVideoUrl: row.brandStoryVideoUrl,
     brandStoryVideoFile: row.brandStoryVideoFile,
     brandPhilosophy: row.brandPhilosophy,
@@ -739,6 +762,8 @@ function mapToShowroomFull(row: typeof partnerShowroom.$inferSelect): PartnerSho
     founderQuote: row.founderQuote,
     
     showroomImages: row.showroomImages || [],
+    gallerySectionImage: row.gallerySectionImage,
+    gallerySectionVideoUrl: row.gallerySectionVideoUrl,
     showroomVideoTourUrl: row.showroomVideoTourUrl,
     showroomVideoTourFile: row.showroomVideoTourFile,
     ambientStyle: row.ambientStyle || 'luxury',
@@ -749,19 +774,27 @@ function mapToShowroomFull(row: typeof partnerShowroom.$inferSelect): PartnerSho
     
     teamMembers: row.teamMembers || [],
     teamSectionTitle: row.teamSectionTitle || 'Meet the Team',
+    teamSectionImage: row.teamSectionImage,
+    teamSectionVideoUrl: row.teamSectionVideoUrl,
     
     achievements: row.achievements || [],
     totalCarsSold: row.totalCarsSold,
     yearsInBusiness: row.yearsInBusiness,
     clientLogos: row.clientLogos || [],
     achievementsSectionTitle: row.achievementsSectionTitle || 'Our Achievements',
+    achievementsSectionImage: row.achievementsSectionImage,
+    achievementsSectionVideoUrl: row.achievementsSectionVideoUrl,
     
     featuredTestimonials: row.featuredTestimonials || [],
     testimonialsSectionTitle: row.testimonialsSectionTitle || 'What Our Clients Say',
+    testimonialsSectionImage: row.testimonialsSectionImage,
+    testimonialsSectionVideoUrl: row.testimonialsSectionVideoUrl,
     
     signatureServices: row.signatureServices || [],
     vipPerks: row.vipPerks || [],
     servicesSectionTitle: row.servicesSectionTitle || 'Our Services',
+    servicesSectionImage: row.servicesSectionImage,
+    servicesSectionVideoUrl: row.servicesSectionVideoUrl,
     
     showroomAddress: row.showroomAddress,
     showroomMapEmbedUrl: row.showroomMapEmbedUrl,
@@ -825,6 +858,7 @@ function mapToShowroomPublic(
     
     brandStoryTitle: row.brandStoryTitle || 'Our Story',
     brandStoryContent: row.brandStoryContent,
+    brandStoryImage: row.brandStoryImage,
     brandStoryVideoUrl: row.brandStoryVideoUrl,
     brandStoryVideoFile: row.brandStoryVideoFile,
     brandPhilosophy: row.brandPhilosophy,
@@ -834,6 +868,8 @@ function mapToShowroomPublic(
     founderQuote: row.founderQuote,
     
     showroomImages: row.showroomImages || [],
+    gallerySectionImage: row.gallerySectionImage,
+    gallerySectionVideoUrl: row.gallerySectionVideoUrl,
     showroomVideoTourUrl: row.showroomVideoTourUrl,
     showroomVideoTourFile: row.showroomVideoTourFile,
     ambientStyle: row.ambientStyle || 'luxury',
@@ -844,19 +880,27 @@ function mapToShowroomPublic(
     
     teamMembers: row.teamMembers || [],
     teamSectionTitle: row.teamSectionTitle || 'Meet the Team',
+    teamSectionImage: row.teamSectionImage,
+    teamSectionVideoUrl: row.teamSectionVideoUrl,
     
     achievements: row.achievements || [],
     totalCarsSold: row.totalCarsSold,
     yearsInBusiness: row.yearsInBusiness,
     clientLogos: row.clientLogos || [],
     achievementsSectionTitle: row.achievementsSectionTitle || 'Our Achievements',
+    achievementsSectionImage: row.achievementsSectionImage,
+    achievementsSectionVideoUrl: row.achievementsSectionVideoUrl,
     
     featuredTestimonials: row.featuredTestimonials || [],
     testimonialsSectionTitle: row.testimonialsSectionTitle || 'What Our Clients Say',
+    testimonialsSectionImage: row.testimonialsSectionImage,
+    testimonialsSectionVideoUrl: row.testimonialsSectionVideoUrl,
     
     signatureServices: row.signatureServices || [],
     vipPerks: row.vipPerks || [],
     servicesSectionTitle: row.servicesSectionTitle || 'Our Services',
+    servicesSectionImage: row.servicesSectionImage,
+    servicesSectionVideoUrl: row.servicesSectionVideoUrl,
     
     showroomAddress: row.showroomAddress,
     showroomMapEmbedUrl: row.showroomMapEmbedUrl,

@@ -6,10 +6,8 @@
 'use client';
 
 import React from 'react';
-import { Loader2, X, Upload } from 'lucide-react';
-import { getPublicUrl } from '@/utils';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
-import { EditableField } from '../components';
+import { EditableField, ImageUpload } from '../components';
 
 interface SeoSectionProps {
   form: Partial<PartnerShowroom>;
@@ -37,8 +35,6 @@ export function SeoSection({
   uploadImage,
   removeImage,
 }: SeoSectionProps) {
-  const seoImageUrl = getPublicUrl(form.seoImage);
-
   return (
     <div className="space-y-6">
       {/* URL & Slug - Hidden from UI, auto-generated */}
@@ -74,46 +70,16 @@ export function SeoSection({
               </ul>
               <p className="mt-1.5 text-muted-foreground/50">Best size: 1200×630px (landscape). Use your logo on a branded background.</p>
             </div>
-            <div className="relative aspect-[1200/630] max-w-[300px] rounded-lg overflow-hidden bg-muted/30 border border-border/40 group">
-              {seoImageUrl ? (
-                <>
-                  <img
-                    key={seoImageUrl}
-                    src={seoImageUrl}
-                    alt="SEO preview"
-                    className="absolute inset-0 h-full w-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <button
-                    onClick={() => removeImage('seoImage')}
-                    className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="w-3 h-3 text-white" />
-                  </button>
-                </>
-              ) : (
-                <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer hover:bg-muted/50 transition-colors">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      e.target.value = '';
-                      if (file) uploadImage(file, 'seo-image', 'seoImage');
-                    }}
-                  />
-                  {imageUploading === 'seoImage' ? (
-                    <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
-                  ) : (
-                    <>
-                      <Upload className="w-5 h-5 text-muted-foreground mb-1" />
-                      <span className="text-xs text-muted-foreground">Upload image</span>
-                    </>
-                  )}
-                </label>
-              )}
+            <div className="max-w-[320px]">
+              <ImageUpload
+                value={form.seoImage || null}
+                displayUrl={showroom.seoImage}
+                onUpload={(file) => uploadImage(file, 'seo-image', 'seoImage')}
+                onRemove={() => removeImage('seoImage')}
+                aspectRatio="aspect-[1200/630]"
+                label="Upload social share image"
+                isUploading={imageUploading === 'seoImage'}
+              />
             </div>
           </div>
         </div>

@@ -7,12 +7,16 @@
 
 import React from 'react';
 import { Plus, Zap } from 'lucide-react';
+import { compressAndUploadShowroomImage } from '@/lib/storage';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import type { ShowroomService } from '@alifh/database';
-import { EditableField, ServiceCard } from '../components';
+import { EditableField, ImageUpload, ServiceCard, VideoEmbedPreview } from '../components';
 
 interface ServicesSectionProps {
   form: Partial<PartnerShowroom>;
+  showroom: PartnerShowroom;
+  partnerId: string;
+  imageUploading: string | null;
   getEditableFieldProps: (field: keyof PartnerShowroom) => {
     isEditing: boolean;
     isUpdating: boolean;
@@ -22,22 +26,33 @@ interface ServicesSectionProps {
     onCancel: () => void;
   };
   updateField: <K extends keyof PartnerShowroom>(field: K, value: PartnerShowroom[K]) => void;
+  uploadImage: (file: File, type: string, field: keyof PartnerShowroom) => Promise<void>;
+  removeImage: (field: keyof PartnerShowroom) => Promise<void>;
   updateShowroom: (data: Partial<PartnerShowroom>) => Promise<void>;
+  setImageUploading: React.Dispatch<React.SetStateAction<string | null>>;
+  toast: (options: { title: string; variant?: 'default' | 'destructive' }) => void;
 }
 
 export function ServicesSection({
   form,
+  showroom,
+  partnerId,
+  imageUploading,
   getEditableFieldProps,
   updateField,
+  uploadImage,
+  removeImage,
   updateShowroom,
+  setImageUploading,
+  toast,
 }: ServicesSectionProps) {
-  // Service helpers
   const addService = async () => {
     const newService: ShowroomService = {
       id: crypto.randomUUID(),
       icon: 'star',
       title: 'New Service',
       description: null,
+      image: null,
       order: (form.signatureServices?.length || 0),
     };
     const updated = [...(form.signatureServices || []), newService];
@@ -56,6 +71,31 @@ export function ServicesSection({
 
   return (
     <div className="space-y-6">
+      <section>
+        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Section Media</h3>
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+          <ImageUpload
+            value={form.servicesSectionImage || null}
+            displayUrl={showroom.servicesSectionImageUrl}
+            onUpload={(file) => uploadImage(file, 'services-section-image', 'servicesSectionImage')}
+            onRemove={() => removeImage('servicesSectionImage')}
+            aspectRatio="aspect-[16/9]"
+            label="Services section image"
+            isUploading={imageUploading === 'servicesSectionImage'}
+          />
+          <EditableField
+            {...getEditableFieldProps('servicesSectionVideoUrl')}
+            label="YouTube / Vimeo URL"
+            value={form.servicesSectionVideoUrl || null}
+            placeholder="https://youtube.com/... or https://vimeo.com/..."
+            type="url"
+          />
+          {form.servicesSectionVideoUrl && (
+            <VideoEmbedPreview url={form.servicesSectionVideoUrl} aspectRatio="aspect-video" />
+          )}
+        </div>
+      </section>
+
       {/* Signature Services */}
       <section>
         <div className="flex items-center justify-between mb-3">
@@ -76,6 +116,22 @@ export function ServicesSection({
               service={service}
               onUpdate={(updates) => updateService(service.id, updates)}
               onRemove={() => removeService(service.id)}
+              onImageUpload={async (file) => {
+                if (file.size > 15 * 1024 * 1024) {
+                  toast({ title: 'Image too large. Max 15MB', variant: 'destructive' });
+                  return;
+                }
+                setImageUploading(`service-${service.id}`);
+                try {
+                  const result = await compressAndUploadShowroomImage(file, partnerId, 'service-image');
+                  await updateService(service.id, { image: result.key });
+                } catch {
+                  toast({ title: 'Upload failed', variant: 'destructive' });
+                } finally {
+                  setImageUploading(null);
+                }
+              }}
+              isUploading={imageUploading === `service-${service.id}`}
             />
           ))}
         </div>

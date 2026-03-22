@@ -71,6 +71,7 @@ const ServiceSchema = z.object({
   icon: z.string().min(1),
   title: z.string().min(1),
   description: z.string().nullable().optional(),
+  image: z.string().nullable().optional(),
   order: z.number(),
 });
 
@@ -100,6 +101,7 @@ const ShowroomUpdateSchema = z.object({
   // Brand Story
   brandStoryTitle: z.string().max(50).optional(),
   brandStoryContent: z.string().max(5000).nullable().optional(),
+  brandStoryImage: z.string().nullable().optional(),
   brandStoryVideoUrl: z.string().url().nullable().optional(),
   brandStoryVideoFile: z.string().nullable().optional(),
   brandPhilosophy: z.string().max(200).nullable().optional(),
@@ -110,6 +112,8 @@ const ShowroomUpdateSchema = z.object({
   
   // Gallery
   showroomImages: z.array(z.string()).max(12).optional(),
+  gallerySectionImage: z.string().nullable().optional(),
+  gallerySectionVideoUrl: z.string().url().nullable().optional(),
   showroomVideoTourUrl: z.string().url().nullable().optional(),
   showroomVideoTourFile: z.string().nullable().optional(),
   ambientStyle: z.enum(['modern', 'classic', 'industrial', 'luxury', 'minimal']).optional(),
@@ -122,6 +126,8 @@ const ShowroomUpdateSchema = z.object({
   // Team
   teamMembers: z.array(TeamMemberSchema).max(6).optional(),
   teamSectionTitle: z.string().max(50).optional(),
+  teamSectionImage: z.string().nullable().optional(),
+  teamSectionVideoUrl: z.string().url().nullable().optional(),
   
   // Achievements
   achievements: z.array(AchievementSchema).max(10).optional(),
@@ -129,15 +135,21 @@ const ShowroomUpdateSchema = z.object({
   yearsInBusiness: z.number().nullable().optional(),
   clientLogos: z.array(z.string()).max(10).optional(),
   achievementsSectionTitle: z.string().max(50).optional(),
+  achievementsSectionImage: z.string().nullable().optional(),
+  achievementsSectionVideoUrl: z.string().url().nullable().optional(),
   
   // Testimonials
   featuredTestimonials: z.array(TestimonialSchema).max(5).optional(),
   testimonialsSectionTitle: z.string().max(50).optional(),
+  testimonialsSectionImage: z.string().nullable().optional(),
+  testimonialsSectionVideoUrl: z.string().url().nullable().optional(),
   
   // Services
   signatureServices: z.array(ServiceSchema).max(6).optional(),
   vipPerks: z.array(z.string()).max(10).optional(),
   servicesSectionTitle: z.string().max(50).optional(),
+  servicesSectionImage: z.string().nullable().optional(),
+  servicesSectionVideoUrl: z.string().url().nullable().optional(),
   
   // Contact
   showroomAddress: z.string().max(500).nullable().optional(),
@@ -183,9 +195,15 @@ function attachImageUrls(showroom: any, updatedAt: Date) {
     heroVideoThumbnail: toCdn(showroom.heroVideoThumbnail),
     heroImage: toCdn(showroom.heroImage),
     heroVideoFile: toCdn(showroom.heroVideoFile),
+    brandStoryImage: toCdn(showroom.brandStoryImage),
     brandStoryVideoFile: toCdn(showroom.brandStoryVideoFile),
+    gallerySectionImage: toCdn(showroom.gallerySectionImage),
     showroomVideoTourFile: toCdn(showroom.showroomVideoTourFile),
     founderImage: toCdn(showroom.founderImage),
+    teamSectionImage: toCdn(showroom.teamSectionImage),
+    achievementsSectionImage: toCdn(showroom.achievementsSectionImage),
+    testimonialsSectionImage: toCdn(showroom.testimonialsSectionImage),
+    servicesSectionImage: toCdn(showroom.servicesSectionImage),
     showroomImages: toCdnArray(showroom.showroomImages),
     showroomExteriorImages: toCdnArray(showroom.showroomExteriorImages),
     clientLogos: toCdnArray(showroom.clientLogos),
@@ -195,7 +213,14 @@ function attachImageUrls(showroom: any, updatedAt: Date) {
     heroImageUrl: toCdn(showroom.heroImage),
     heroVideoFileUrl: toCdn(showroom.heroVideoFile),
     // Brand Story
+    brandStoryImageUrl: toCdn(showroom.brandStoryImage),
     brandStoryVideoFileUrl: toCdn(showroom.brandStoryVideoFile),
+    // Section media
+    gallerySectionImageUrl: toCdn(showroom.gallerySectionImage),
+    teamSectionImageUrl: toCdn(showroom.teamSectionImage),
+    achievementsSectionImageUrl: toCdn(showroom.achievementsSectionImage),
+    testimonialsSectionImageUrl: toCdn(showroom.testimonialsSectionImage),
+    servicesSectionImageUrl: toCdn(showroom.servicesSectionImage),
     // Video Tour
     showroomVideoTourFileUrl: toCdn(showroom.showroomVideoTourFile),
     // Founder

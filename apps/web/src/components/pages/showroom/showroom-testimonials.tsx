@@ -6,10 +6,11 @@
 'use client';
 
 import { useRef } from 'react';
+import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';
 import { Star } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPublicUrl } from '@/utils/storage';
-import type { ShowroomData, AmbientTheme } from './types';
+import { getAppThumbUrl, getCdnPublicUrl } from '@/utils/storage';
+import type { ShowroomData } from './types';
 import { getAmbientTheme } from './types';
 import type { ShowroomTestimonial } from '@alifh/database';
 
@@ -24,9 +25,8 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
   if (!testimonials || testimonials.length === 0) return null;
 
   const theme = getAmbientTheme(showroom.ambientStyle);
-  
-  // Get an image for the section header
-  const sectionImage = getPublicUrl(showroom.showroomImages?.[2]) || getPublicUrl(showroom.showroomImages?.[0]);
+  const sectionImage = getCdnPublicUrl(showroom.testimonialsSectionImage);
+  const { embedUrl: testimonialsSectionVideoEmbedUrl } = getVideoEmbedUrl(showroom.testimonialsSectionVideoUrl);
 
   return (
     <section id="showroom-testimonials" className={`${theme.sectionSpacing}`}>
@@ -42,17 +42,27 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
           </h2>
         </div>
 
-        {/* Section Image */}
-        {sectionImage && (
+        {/* Section Media */}
+        {(testimonialsSectionVideoEmbedUrl || sectionImage) && (
           <div className="px-4 sm:px-6 lg:px-8 mb-12">
             <div className="relative aspect-[16/9] lg:aspect-[21/9] w-full rounded-xl overflow-hidden bg-sidebar border border-border/40">
-              <img
-                src={sectionImage}
-                alt="Client experiences"
-                className="absolute inset-0 h-full w-full object-cover"
-                loading="lazy"
-                decoding="async"
-              />
+              {testimonialsSectionVideoEmbedUrl ? (
+                <iframe
+                  src={`${testimonialsSectionVideoEmbedUrl}?autoplay=1&mute=1&loop=1`}
+                  title="Client experiences"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                />
+              ) : sectionImage ? (
+                <img
+                  src={sectionImage}
+                  alt="Client experiences"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : null}
             </div>
           </div>
         )}
@@ -74,7 +84,6 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
             <TestimonialCard 
               key={testimonial.id} 
               testimonial={testimonial} 
-              theme={theme}
               index={index}
             />
           ))}
@@ -90,13 +99,13 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
 
 function TestimonialCard({ 
   testimonial, 
-  theme,
   index 
 }: { 
   testimonial: ShowroomTestimonial; 
-  theme: AmbientTheme;
   index: number;
 }) {
+  const customerImageUrl = getAppThumbUrl(testimonial.customerImage);
+
   return (
     <div className="flex-shrink-0 w-[320px] sm:w-[380px] min-h-[260px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col">
       {/* Rating */}
@@ -120,14 +129,33 @@ function TestimonialCard({
 
       {/* Author Info */}
       <div className="mt-4 pt-4 border-t border-border/40">
-        <p className="text-base font-semibold text-foreground">
-          {testimonial.customerName}
-        </p>
-        {testimonial.vehiclePurchased && (
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {testimonial.vehiclePurchased}
-          </p>
-        )}
+        <div className="flex items-center gap-3">
+          {customerImageUrl ? (
+            <img
+              src={customerImageUrl}
+              alt={testimonial.customerName}
+              className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-muted/30 flex items-center justify-center flex-shrink-0">
+              <span className="text-sm font-semibold text-muted-foreground">
+                {testimonial.customerName.charAt(0)}
+              </span>
+            </div>
+          )}
+          <div>
+            <p className="text-base font-semibold text-foreground">
+              {testimonial.customerName}
+            </p>
+            {testimonial.vehiclePurchased && (
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {testimonial.vehiclePurchased}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

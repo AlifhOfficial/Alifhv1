@@ -22,7 +22,22 @@ export const runtime = 'nodejs';
 
 type UploadType = 'listing' | 'avatar' | 'partner' | 'showroom';
 
-const SHOWROOM_ASSET_TYPES = ['hero-image', 'founder-image', 'gallery', 'team-member', 'seo-image'];
+const SHOWROOM_ASSET_TYPES = [
+  'hero-image',
+  'brand-story-image',
+  'founder-image',
+  'gallery',
+  'gallery-section-image',
+  'team-member',
+  'team-section-image',
+  'achievement-image',
+  'achievements-section-image',
+  'testimonial-image',
+  'testimonials-section-image',
+  'service-image',
+  'services-section-image',
+  'seo-image',
+];
 const PARTNER_IMAGE_TYPES  = ['logo', 'hero'];
 
 function makeToken(secret: string, ctx: Record<string, unknown>, userId: string): string {

@@ -237,7 +237,21 @@ export async function compressAndUploadPartnerImage(
 export async function compressAndUploadShowroomImage(
   file: File,
   partnerId: string,
-  assetType: 'hero-image' | 'founder-image' | 'gallery' | 'team-member' | 'seo-image',
+  assetType:
+    | 'hero-image'
+    | 'brand-story-image'
+    | 'founder-image'
+    | 'gallery'
+    | 'gallery-section-image'
+    | 'team-member'
+    | 'team-section-image'
+    | 'achievement-image'
+    | 'achievements-section-image'
+    | 'testimonial-image'
+    | 'testimonials-section-image'
+    | 'service-image'
+    | 'services-section-image'
+    | 'seo-image',
   onProgress?: (percent: number) => void,
 ): Promise<SingleUploadResult> {
   onProgress?.(5);

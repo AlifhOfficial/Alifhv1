@@ -7,12 +7,16 @@
 
 import React from 'react';
 import { Plus, MessageSquareQuote } from 'lucide-react';
+import { compressAndUploadShowroomImage } from '@/lib/storage';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import type { ShowroomTestimonial } from '@alifh/database';
-import { EditableField, TestimonialCard } from '../components';
+import { EditableField, ImageUpload, TestimonialCard, VideoEmbedPreview } from '../components';
 
 interface TestimonialsSectionProps {
   form: Partial<PartnerShowroom>;
+  showroom: PartnerShowroom;
+  partnerId: string;
+  imageUploading: string | null;
   getEditableFieldProps: (field: keyof PartnerShowroom) => {
     isEditing: boolean;
     isUpdating: boolean;
@@ -21,15 +25,25 @@ interface TestimonialsSectionProps {
     onSave: () => void;
     onCancel: () => void;
   };
+  uploadImage: (file: File, type: string, field: keyof PartnerShowroom) => Promise<void>;
+  removeImage: (field: keyof PartnerShowroom) => Promise<void>;
   updateShowroom: (data: Partial<PartnerShowroom>) => Promise<void>;
+  setImageUploading: React.Dispatch<React.SetStateAction<string | null>>;
+  toast: (options: { title: string; variant?: 'default' | 'destructive' }) => void;
 }
 
 export function TestimonialsSection({
   form,
+  showroom,
+  partnerId,
+  imageUploading,
   getEditableFieldProps,
+  uploadImage,
+  removeImage,
   updateShowroom,
+  setImageUploading,
+  toast,
 }: TestimonialsSectionProps) {
-  // Testimonial helpers
   const addTestimonial = async () => {
     const newTestimonial: ShowroomTestimonial = {
       id: crypto.randomUUID(),
@@ -58,6 +72,31 @@ export function TestimonialsSection({
 
   return (
     <div className="space-y-6">
+      <section>
+        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Section Media</h3>
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+          <ImageUpload
+            value={form.testimonialsSectionImage || null}
+            displayUrl={showroom.testimonialsSectionImageUrl}
+            onUpload={(file) => uploadImage(file, 'testimonials-section-image', 'testimonialsSectionImage')}
+            onRemove={() => removeImage('testimonialsSectionImage')}
+            aspectRatio="aspect-[16/9]"
+            label="Testimonials section image"
+            isUploading={imageUploading === 'testimonialsSectionImage'}
+          />
+          <EditableField
+            {...getEditableFieldProps('testimonialsSectionVideoUrl')}
+            label="YouTube / Vimeo URL"
+            value={form.testimonialsSectionVideoUrl || null}
+            placeholder="https://youtube.com/... or https://vimeo.com/..."
+            type="url"
+          />
+          {form.testimonialsSectionVideoUrl && (
+            <VideoEmbedPreview url={form.testimonialsSectionVideoUrl} aspectRatio="aspect-video" />
+          )}
+        </div>
+      </section>
+
       {/* Featured Testimonials */}
       <section>
         <div className="flex items-center justify-between mb-3">
@@ -78,6 +117,22 @@ export function TestimonialsSection({
               testimonial={testimonial}
               onUpdate={(updates) => updateTestimonial(testimonial.id, updates)}
               onRemove={() => removeTestimonial(testimonial.id)}
+              onImageUpload={async (file) => {
+                if (file.size > 15 * 1024 * 1024) {
+                  toast({ title: 'Image too large. Max 15MB', variant: 'destructive' });
+                  return;
+                }
+                setImageUploading(`testimonial-${testimonial.id}`);
+                try {
+                  const result = await compressAndUploadShowroomImage(file, partnerId, 'testimonial-image');
+                  await updateTestimonial(testimonial.id, { customerImage: result.key });
+                } catch {
+                  toast({ title: 'Upload failed', variant: 'destructive' });
+                } finally {
+                  setImageUploading(null);
+                }
+              }}
+              isUploading={imageUploading === `testimonial-${testimonial.id}`}
             />
           ))}
           {(form.featuredTestimonials?.length || 0) === 0 && (
@@ -104,3 +159,4 @@ export function TestimonialsSection({
     </div>
   );
 }
+

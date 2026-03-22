@@ -7,12 +7,16 @@
 
 import React from 'react';
 import { Plus, Award } from 'lucide-react';
+import { compressAndUploadShowroomImage } from '@/lib/storage';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
 import type { ShowroomAchievement } from '@alifh/database';
-import { EditableField, AchievementCard } from '../components';
+import { EditableField, AchievementCard, ImageUpload, VideoEmbedPreview } from '../components';
 
 interface AchievementsSectionProps {
   form: Partial<PartnerShowroom>;
+  showroom: PartnerShowroom;
+  partnerId: string;
+  imageUploading: string | null;
   getEditableFieldProps: (field: keyof PartnerShowroom) => {
     isEditing: boolean;
     isUpdating: boolean;
@@ -21,15 +25,25 @@ interface AchievementsSectionProps {
     onSave: () => void;
     onCancel: () => void;
   };
+  uploadImage: (file: File, type: string, field: keyof PartnerShowroom) => Promise<void>;
+  removeImage: (field: keyof PartnerShowroom) => Promise<void>;
   updateShowroom: (data: Partial<PartnerShowroom>) => Promise<void>;
+  setImageUploading: React.Dispatch<React.SetStateAction<string | null>>;
+  toast: (options: { title: string; variant?: 'default' | 'destructive' }) => void;
 }
 
 export function AchievementsSection({
   form,
+  showroom,
+  partnerId,
+  imageUploading,
   getEditableFieldProps,
+  uploadImage,
+  removeImage,
   updateShowroom,
+  setImageUploading,
+  toast,
 }: AchievementsSectionProps) {
-  // Achievement helpers
   const addAchievement = async () => {
     const newAchievement: ShowroomAchievement = {
       id: crypto.randomUUID(),
@@ -55,6 +69,31 @@ export function AchievementsSection({
 
   return (
     <div className="space-y-6">
+      <section>
+        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Section Media</h3>
+        <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
+          <ImageUpload
+            value={form.achievementsSectionImage || null}
+            displayUrl={showroom.achievementsSectionImageUrl}
+            onUpload={(file) => uploadImage(file, 'achievements-section-image', 'achievementsSectionImage')}
+            onRemove={() => removeImage('achievementsSectionImage')}
+            aspectRatio="aspect-[16/9]"
+            label="Achievements section image"
+            isUploading={imageUploading === 'achievementsSectionImage'}
+          />
+          <EditableField
+            {...getEditableFieldProps('achievementsSectionVideoUrl')}
+            label="YouTube / Vimeo URL"
+            value={form.achievementsSectionVideoUrl || null}
+            placeholder="https://youtube.com/... or https://vimeo.com/..."
+            type="url"
+          />
+          {form.achievementsSectionVideoUrl && (
+            <VideoEmbedPreview url={form.achievementsSectionVideoUrl} aspectRatio="aspect-video" />
+          )}
+        </div>
+      </section>
+
       {/* Key Metrics */}
       <section>
         <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Key Metrics</h3>
@@ -95,6 +134,22 @@ export function AchievementsSection({
               achievement={achievement}
               onUpdate={(updates) => updateAchievement(achievement.id, updates)}
               onRemove={() => removeAchievement(achievement.id)}
+              onImageUpload={async (file) => {
+                if (file.size > 15 * 1024 * 1024) {
+                  toast({ title: 'Image too large. Max 15MB', variant: 'destructive' });
+                  return;
+                }
+                setImageUploading(`achievement-${achievement.id}`);
+                try {
+                  const result = await compressAndUploadShowroomImage(file, partnerId, 'achievement-image');
+                  await updateAchievement(achievement.id, { image: result.key });
+                } catch {
+                  toast({ title: 'Upload failed', variant: 'destructive' });
+                } finally {
+                  setImageUploading(null);
+                }
+              }}
+              isUploading={imageUploading === `achievement-${achievement.id}`}
             />
           ))}
           {(form.achievements?.length || 0) === 0 && (
@@ -108,3 +163,4 @@ export function AchievementsSection({
     </div>
   );
 }
+
