@@ -11,7 +11,7 @@
 
 import { redirect } from 'next/navigation';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { PartnerBasicProfileForm } from "@/components/partner";
+import { PartnerBasicProfileForm } from "@/components/partner/car-dealer/partner-basic-profile-form";
 import { calculatePartnerStats, getDealerBaseProfile } from '@alifh/database';
 
 function attachImageUrls(profile: any) {

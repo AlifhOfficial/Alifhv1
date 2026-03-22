@@ -5,7 +5,7 @@
 
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getCurrentUserProfileBundle } from '@/lib/current-user-profile';
-import { ProfileView } from "@/components/profile";
+import { ProfileView } from "@/components/profile/profile-view";
 
 export default async function ProfilePage() {
   const user = await getSessionUser();

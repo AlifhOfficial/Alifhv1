@@ -5,10 +5,14 @@
  */
 
 import { redirect } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { PartnerShowroomForm } from '@/components/partner/car-dealer/partner-showroom-form';
 import { createShowroom, getShowroomByPartnerId } from '@alifh/database';
 import type { PartnerShowroom } from '@/hooks/partner/car-dealer/use-partner-showroom';
+
+const PartnerShowroomForm = dynamic(
+  () => import('@/components/partner/car-dealer/partner-showroom-form').then(mod => mod.PartnerShowroomForm)
+);
 
 function serializeShowroomDates(showroom: Awaited<ReturnType<typeof getShowroomByPartnerId>> extends infer T ? Exclude<T, null> : never): PartnerShowroom {
   return {

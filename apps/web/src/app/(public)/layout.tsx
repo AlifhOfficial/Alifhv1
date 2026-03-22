@@ -4,7 +4,8 @@
  */
 
 import { Suspense } from 'react';
-import { Navbar, Footer } from '@/components/shared';
+import { Navbar } from '@/components/shared/navbar';
+import { Footer } from '@/components/shared/footer';
 import { GlobalChatProvider } from '@/components/shared/providers/global-chat-provider';
 
 export default function PublicLayout({

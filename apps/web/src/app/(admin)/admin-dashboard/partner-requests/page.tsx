@@ -4,7 +4,7 @@
  */
 
 import { DashboardDisplayArea } from "@/components/shared/layout/display-area";
-import { PartnerRequestAdminList } from "@/components/partner";
+import { PartnerRequestAdminList } from "@/components/partner/partner-request/partner-request-admin-list";
 
 export default function PartnerRequestsPage() {
   return (

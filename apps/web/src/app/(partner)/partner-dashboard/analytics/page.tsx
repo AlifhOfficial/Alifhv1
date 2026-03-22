@@ -5,9 +5,13 @@
  */
 
 import { redirect } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { AdvancedStatsView } from '@/components/partner/insights/advanced-stats-view';
 import { getCachedPartnerDescriptiveStats } from '@/lib/partner-stats-cache';
+
+const AdvancedStatsView = dynamic(
+  () => import('@/components/partner/insights/advanced-stats-view').then(mod => mod.AdvancedStatsView)
+);
 
 export default async function PartnerAnalyticsPage() {
   const user = await getSessionUser();

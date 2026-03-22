@@ -11,8 +11,5 @@ export { DashboardLayout, DashboardContent, useRightPanel } from './dashboard-la
 export { AppSidebar } from './app-sidebar';
 export { DashboardDisplayArea } from './display-area';
 
-// Performance Charts
-export * from './performance-charts';
-
 // Theme Toggle
 export { ThemeToggle } from './theme-toggle';

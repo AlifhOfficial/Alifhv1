@@ -5,7 +5,7 @@
 
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getCurrentUserProfileBundle } from '@/lib/current-user-profile';
-import { SettingsView } from "@/components/profile";
+import { SettingsView } from "@/components/profile/settings-view";
 
 export default async function SettingsPage() {
   const user = await getSessionUser();
