@@ -216,11 +216,11 @@
 }
 
 .font-geom {
-  font-family: var(--font-geom), var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--font-geom), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
 }
 
 .wordmark-geom {
-  font-family: var(--font-geom), var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--font-geom), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
   letter-spacing: -0.05em;
   text-rendering: geometricPrecision;
   text-shadow:
@@ -246,7 +246,7 @@
   body {
     @apply bg-background text-foreground;
     /* Inter with proper Windows fallbacks - Segoe UI is Windows' native UI font */
-    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     font-optical-sizing: auto;
     /* Slightly heavier base weight for Windows clarity (450 instead of 400) */

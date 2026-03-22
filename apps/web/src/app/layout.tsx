@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
 import './globals.css'
 import { ThemeProvider } from '@/components/shared/providers/theme-provider'
@@ -14,12 +13,6 @@ import {
   BRAND_FAVICON_SVG_URL,
   BRAND_LOGO_SCHEMA_URL,
 } from '@/lib/brand-assets'
-
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-})
 
 const geomFont = localFont({
   src: '../../public/assets/fonts/Geom-Black.ttf',
@@ -96,6 +89,9 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link key="preconnect-cdn" rel="preconnect" href="https://cdn.revvup.ae" />
+        <link key="preconnect-gfonts" rel="preconnect" href="https://fonts.googleapis.com" />
+        <link key="preconnect-gstatic" rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link key="inter-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" />
         <link key="favicon-svg" rel="icon" type="image/svg+xml" href={BRAND_FAVICON_SVG_URL} />
         <link key="favicon-png" rel="icon" type="image/png" sizes="32x32" href={BRAND_FAVICON_PNG_URL} />
         <link key="favicon-ico" rel="shortcut icon" href={BRAND_FAVICON_ICO_URL} />
@@ -108,7 +104,7 @@ export default async function RootLayout({
         <meta key="color-scheme" name="color-scheme" content="dark" />
         <meta key="apple-status-bar" name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={`${inter.variable} ${geomFont.variable}`} suppressHydrationWarning>
+      <body className={`${geomFont.variable}`} suppressHydrationWarning>
         <ThemeProvider>
           <AuthProvider initialSession={initialSession}>
             <QueryProvider>
