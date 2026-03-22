@@ -79,9 +79,8 @@ function Lightbox({ item, onClose, onPrev, onNext, hasPrev, hasNext }: {
 const MAX_BATCH_BYTES = 8 * 1024 * 1024 // 8MB
 
 /**
- * Convert HEIC/HEIF to JPEG.
- * Fast path: browser native decode via canvas (Safari/macOS ~50ms).
- * Fallback: heic2any pure-JS codec (works everywhere, ~1-3s).
+ * Convert HEIC/HEIF to JPEG via native OS decoder (Safari, iOS Chrome).
+ * On browsers without native HEIC support, returns the file unchanged.
  */
 async function normalizeToJpeg(file: File): Promise<File> {
   const isHeic =
@@ -90,7 +89,6 @@ async function normalizeToJpeg(file: File): Promise<File> {
     /\.hei[cf]$/i.test(file.name)
   if (!isHeic) return file
 
-  // Fast path — native OS decoder (Safari, iOS Chrome)
   const url = URL.createObjectURL(file)
   try {
     const blob = await new Promise<Blob>((resolve, reject) => {
@@ -110,10 +108,8 @@ async function normalizeToJpeg(file: File): Promise<File> {
     })
     return new File([blob], file.name.replace(/\.hei[cf]$/i, '.jpg'), { type: 'image/jpeg' })
   } catch {
-    // Fallback — heic2any pure-JS (Chrome/Firefox, ~1-3s per file)
-    const heic2any = (await import('heic2any')).default
-    const blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 }) as Blob
-    return new File([blob], file.name.replace(/\.hei[cf]$/i, '.jpg'), { type: 'image/jpeg' })
+    // Browser doesn't support native HEIC decode — return original file
+    return file
   } finally {
     URL.revokeObjectURL(url)
   }
