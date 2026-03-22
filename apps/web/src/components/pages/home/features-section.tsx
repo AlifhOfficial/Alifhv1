@@ -94,31 +94,31 @@ function BuiltInDubaiInfographic() {
       url="revvup.ae"
       contentClassName="flex flex-col md:flex-row items-stretch p-6 sm:p-10 lg:p-16 gap-8 lg:gap-12 aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]"
     >
-      <div className="w-full md:w-[52%] max-w-3xl flex flex-col justify-center">
-        <span className="block text-[10px] sm:text-xs font-medium text-white/40 mb-5 sm:mb-7 lg:mb-8">
-          What you don't see
+      <div className="w-full md:w-[20%] flex-shrink-0 flex flex-col justify-center">
+        <span className="block text-[9px] sm:text-[10px] font-medium text-white/40 mb-4 sm:mb-5 uppercase tracking-wider">
+          Not here
         </span>
 
-        <div className="space-y-3 sm:space-y-4 lg:space-y-5">
-          <NoiseRow label="Banner ads" />
-          <NoiseRow label="Sponsored listings" />
-          <NoiseRow label="Pop-up promotions" />
-          <NoiseRow label="Dealer upsells" />
+        <div className="space-y-2 sm:space-y-3">
+          <NoiseRow label="Ads" />
+          <NoiseRow label="Sponsored" />
+          <NoiseRow label="Pop-ups" />
+          <NoiseRow label="Upsells" />
           <NoiseRow label="Pay-to-rank" />
         </div>
 
-        <p className="mt-6 sm:mt-8 lg:mt-10 text-sm sm:text-base lg:text-lg font-medium text-white/70">
-          No noise. Ever.
+        <p className="mt-5 sm:mt-6 text-xs sm:text-sm font-medium text-white/70">
+          No noise.
         </p>
       </div>
 
-      <div className="relative w-full md:w-[48%] aspect-[4/3] sm:aspect-[16/10] md:aspect-auto min-h-[220px] sm:min-h-[280px] md:min-h-0 max-w-[520px] md:max-w-none mx-auto">
+      <div className="relative w-full md:w-[80%] aspect-[4/3] sm:aspect-[16/10] md:aspect-auto min-h-[220px] sm:min-h-[280px] md:min-h-0">
         <Image
           src={revx0}
           alt="Revvup marketplace preview"
           fill
           className="object-contain object-center"
-          sizes="(max-width: 767px) 100vw, 48vw"
+          sizes="(max-width: 767px) 100vw, 80vw"
         />
       </div>
     </MacOSWindow>
@@ -127,9 +127,9 @@ function BuiltInDubaiInfographic() {
 
 function NoiseRow({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-3 sm:gap-4 text-white/55">
-      <span className="text-base sm:text-lg lg:text-xl leading-none">✕</span>
-      <span className="text-sm sm:text-base lg:text-lg">{label}</span>
+    <div className="flex items-center gap-2 sm:gap-3 text-white/55">
+      <span className="text-xs sm:text-sm leading-none">✕</span>
+      <span className="text-xs sm:text-sm">{label}</span>
     </div>
   );
 }
