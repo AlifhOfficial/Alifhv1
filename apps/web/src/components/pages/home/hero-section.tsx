@@ -1,4 +1,3 @@
-import { MarketingImage as Image } from '@/components/pages/marketing-image';
 import Link from 'next/link';
 import { revvupab2 } from '@/components/pages/marketing-image-assets';
 import { PublicSellButton } from '@/components/shared/public-sell-button';
@@ -36,15 +35,16 @@ export function HeroSection() {
           </PublicSellButton>
         </div>
 
-        {/* Hero Image */}
+        {/* Hero Image — native img for LCP: fetchpriority=high, direct CDN URL, no proxy chain */}
         <div className="relative w-full aspect-[16/9] sm:aspect-[2.4/1] overflow-hidden rounded-lg mb-8">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={revvupab2}
             alt="Revvup - UAE Car Marketplace"
-            fill
-            priority
-            className="object-cover"
-            sizes="(max-width: 1600px) 100vw, 1600px"
+            fetchPriority="high"
+            loading="eager"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         </div>
 

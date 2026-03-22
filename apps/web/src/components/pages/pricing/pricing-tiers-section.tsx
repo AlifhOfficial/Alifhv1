@@ -34,7 +34,7 @@ function BlackContactButton() {
   return (
     <Link
       href="/contact?type=dealer&plan=black"
-      className="w-full h-11 bg-muted border border-border text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+      className="w-full h-11 bg-foreground text-background text-sm font-semibold rounded-lg hover:bg-foreground/90 transition-colors flex items-center justify-center"
     >
       Contact Us
     </Link>
@@ -43,58 +43,63 @@ function BlackContactButton() {
 
 export function PricingTiersSection() {
   return (
-    <section id="tiers" className="pt-12 pb-16 px-4 sm:px-6 lg:px-8">
+    <section id="tiers" className="pt-16 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1600px] mx-auto">
 
-        {/* Founding Program Note */}
-        <p className="text-center text-sm text-muted-foreground mb-8 max-w-md mx-auto">
-          <span className="font-medium text-foreground">Founding Dealer Program</span> — Limited spots. Three months full access. Direct line to our team.
-        </p>
+        {/* Founding Program callout */}
+        <div className="text-center mb-12">
+          <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary" />
+            <span>
+              <span className="font-semibold text-foreground">Founding Dealer Program</span>
+              {' '}— Three months full access. No credit card. Direct line to our team.
+            </span>
+          </span>
+        </div>
 
         {/* Two Cards */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          
+        <div className="grid md:grid-cols-2 gap-px max-w-4xl mx-auto border border-border/40 rounded-xl overflow-hidden">
+
           {/* Flow Card */}
-          <div className="p-8 rounded-xl bg-sidebar border border-border/40 flex flex-col">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-6 block">Flow</span>
-            
-            <div className="flex items-baseline gap-1.5 mb-1">
-              <span className="text-3xl font-semibold tracking-tight">AED 7,000</span>
-              <span className="text-sm text-muted-foreground">/mo</span>
+          <div className="p-10 bg-sidebar flex flex-col gap-8">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary">Flow</span>
+              <span className="text-xs font-semibold text-primary">Recommended</span>
             </div>
-            <p className="text-sm text-muted-foreground mb-6">per showroom</p>
-            
-            <p className="text-base text-muted-foreground leading-relaxed mb-2 flex-1">
-              Unlimited listings, bookings, leads, messaging, and analytics.
-            </p>
-            <p className="text-xs text-primary mb-6">
-              Most dealers start here.
+
+            <div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-4xl font-semibold tracking-tight">AED 7,000</span>
+                <span className="text-sm text-muted-foreground">/mo</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1.5 uppercase tracking-wider font-medium">per showroom</p>
+            </div>
+
+            <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+              Unlimited listings, bookings, leads, messaging, and analytics. Every feature we offer — nothing locked behind a higher tier.
             </p>
 
             <FlowApplyButton />
           </div>
 
           {/* Black Card */}
-          <div className="p-8 rounded-xl bg-sidebar border border-border/40 flex flex-col">
-            <div className="flex items-center justify-between mb-6">
-              <span className="text-sm font-semibold uppercase tracking-wider">Black</span>
-              <span className="text-xs uppercase tracking-wider font-medium text-muted-foreground px-2 py-0.5 rounded-full border border-border/40">
-                Limited spots
-              </span>
+          <div className="p-10 bg-sidebar flex flex-col gap-8">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-widest">Black</span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Limited spots</span>
             </div>
-            
-            <div className="flex items-baseline gap-1.5 mb-1">
-              <span className="text-sm text-muted-foreground">from</span>
-              <span className="text-3xl font-semibold tracking-tight">AED 21,000</span>
-              <span className="text-sm text-muted-foreground">/mo</span>
+
+            <div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-xs text-muted-foreground">from</span>
+                <span className="text-4xl font-semibold tracking-tight">AED 21,000</span>
+                <span className="text-sm text-muted-foreground">/mo</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1.5 uppercase tracking-wider font-medium">per showroom</p>
             </div>
-            <p className="text-sm text-muted-foreground mb-6">per showroom</p>
-            
-            <p className="text-base text-muted-foreground leading-relaxed mb-2 flex-1">
-              Everything in Flow, plus premium branding and dedicated support.
-            </p>
-            <p className="text-xs text-muted-foreground mb-6">
-              For established showrooms.
+
+            <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+              Everything in Flow, plus premium brand presence, custom showroom page, and a dedicated support line.
             </p>
 
             <BlackContactButton />
@@ -102,21 +107,14 @@ export function PricingTiersSection() {
 
         </div>
 
-        {/* Note */}
+        {/* Footer notes */}
         <div className="text-center mt-10 max-w-lg mx-auto space-y-2">
-          <p className="text-sm text-foreground font-medium">
-            No credit card to get started. Full access from day one.
-          </p>
           <p className="text-xs text-muted-foreground">
             Pricing may change as we scale. Limited rate-lock spots available for early commitments.
           </p>
-        </div>
-        
-        {/* Link to Partner Page */}
-        <div className="text-center mt-6">
           <Link
             href="/partner"
-            className="text-sm text-primary hover:text-primary/80 transition-colors"
+            className="inline-block text-sm text-primary hover:text-primary/80 transition-colors mt-2"
           >
             See all platform features →
           </Link>

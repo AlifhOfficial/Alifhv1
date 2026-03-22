@@ -258,16 +258,16 @@ export function PricingFeaturesSection() {
   const totalBlackFeatures = blackExclusiveFeatures.reduce((acc, cat) => acc + cat.features.length, 0);
 
   return (
-    <section id="features" className="py-24 px-4 sm:px-6 lg:px-8">
+    <section id="features" className="pb-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
 
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-3">
+        <div className="mb-16 border-t border-border/20 pt-16">
+          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-2">
             Full feature breakdown
           </h2>
-          <p className="text-muted-foreground text-base max-w-xl mx-auto">
-            Compare what&apos;s included in each plan
+          <p className="text-muted-foreground text-sm">
+            Everything included in each plan
           </p>
         </div>
 
@@ -279,9 +279,8 @@ export function PricingFeaturesSection() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/40">
               <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <h3 className="text-lg font-semibold">Flow</h3>
-                <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+                <h3 className="text-lg font-semibold tracking-tight">Flow</h3>
+                <span className="text-xs text-muted-foreground tabular-nums">
                   {totalFlowFeatures} features
                 </span>
               </div>
@@ -313,9 +312,8 @@ export function PricingFeaturesSection() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/40">
               <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-5 h-5 text-foreground" />
-                <h3 className="text-lg font-semibold">Black adds</h3>
-                <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full">
+                <h3 className="text-lg font-semibold tracking-tight">Black adds</h3>
+                <span className="text-xs text-muted-foreground tabular-nums">
                   {totalBlackFeatures} extras
                 </span>
               </div>

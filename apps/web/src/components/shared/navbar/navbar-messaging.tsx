@@ -80,7 +80,9 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
         aria-label="Messages"
       >
         <MessageCircle className="size-4" />
-        {hasUnread && <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-rose-500 rounded-full" />}
+        {hasUnread && (
+          <span className="absolute top-1 right-1 size-2 rounded-full bg-rose-500" />
+        )}
       </button>
 
       {isOpen && <div className="fixed inset-0 z-[60]" onClick={() => setIsOpen(false)} />}

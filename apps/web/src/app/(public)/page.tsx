@@ -4,6 +4,7 @@
  */
 
 import { HeroSection } from '@/components/pages/home/hero-section';
+import { revvupab2 } from '@/components/pages/marketing-image-assets';
 import {
   ProblemSection,
   DifferentiatorsSection,
@@ -49,7 +50,10 @@ export const revalidate = false;
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {/* Preload LCP hero image — browser discovers it before parsing the body */}
+      <link rel="preload" as="image" href={revvupab2} fetchPriority="high" />
+      <div className="min-h-screen bg-background">
       {/* SEO: Organization Schema */}
       <JsonLd data={generateOrganizationSchema()} />
       
@@ -60,5 +64,6 @@ export default function HomePage() {
       <FeaturesSection />
       <ClosingSection />
     </div>
+    </>
   );
 }
