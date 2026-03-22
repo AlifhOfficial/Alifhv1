@@ -998,16 +998,9 @@ export function ListingsHeader({
                 <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                   Makes
                 </span>
-                {isLoading ? (
-                  <>
-                    <Skeleton className="h-8 w-20 rounded-full" />
-                    <Skeleton className="h-8 w-24 rounded-full" />
-                    <Skeleton className="h-8 w-16 rounded-full" />
-                  </>
-                ) : (
-                  <>
-                    {/* Selected makes */}
-                    {(params.make ?? []).map((makeValue) => {
+                <>
+                  {/* Selected makes */}
+                  {(params.make ?? []).map((makeValue) => {
                       const makeData = (facets?.make ?? []).find(m => m.value === makeValue);
                       return (
                         <button
@@ -1073,17 +1066,16 @@ export function ListingsHeader({
                         </PopoverContent>
                       </Popover>
                     )}
-                    {/* Clear makes */}
-                    {(params.make?.length ?? 0) > 0 && (
-                      <button
-                        onClick={() => setFilters({ make: undefined, model: undefined, trim: undefined })}
-                        className="text-xs font-medium text-muted-foreground hover:text-foreground px-2"
-                      >
-                        Clear
-                      </button>
-                    )}
-                  </>
-                )}
+                  {/* Clear makes */}
+                  {(params.make?.length ?? 0) > 0 && (
+                    <button
+                      onClick={() => setFilters({ make: undefined, model: undefined, trim: undefined })}
+                      className="text-xs font-medium text-muted-foreground hover:text-foreground px-2"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </>
               </div>
 
               {/* Models Row - Only show when makes selected */}
@@ -1092,12 +1084,7 @@ export function ListingsHeader({
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                     Models
                   </span>
-                  {isLoading ? (
-                    <>
-                      <Skeleton className="h-8 w-20 rounded-full" />
-                      <Skeleton className="h-8 w-24 rounded-full" />
-                    </>
-                  ) : (facets?.model ?? []).length > 0 ? (
+                  {(facets?.model ?? []).length > 0 ? (
                     <>
                       {/* Selected models */}
                       {(params.model ?? []).map((modelValue) => {
@@ -1188,12 +1175,7 @@ export function ListingsHeader({
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                     Trims
                   </span>
-                  {isLoading ? (
-                    <>
-                      <Skeleton className="h-8 w-16 rounded-full" />
-                      <Skeleton className="h-8 w-20 rounded-full" />
-                    </>
-                  ) : (facets?.trim ?? []).length > 0 ? (
+                  {(facets?.trim ?? []).length > 0 ? (
                     <>
                       {/* Selected trims */}
                       {(params.trim ?? []).map((trimValue) => {
