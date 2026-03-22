@@ -65,6 +65,7 @@ export interface SearchParams {
   tags?: string[];
   extras?: string[];
   sellerType?: 'dealer' | 'private';
+  exportStatus?: string[];
   partnerId?: string;
   partnerName?: string;
   partnerVerified?: boolean;
@@ -188,6 +189,7 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   
   if (params.condition) urlParams.set('condition', params.condition);
   if (params.sellerType) urlParams.set('seller', params.sellerType);
+  if (params.exportStatus?.length) urlParams.set('exportStatus', params.exportStatus.join(','));
   if (params.partnerId) urlParams.set('partnerId', params.partnerId);
   if (params.partnerName) urlParams.set('partnerName', params.partnerName);
   if (params.sellerId) urlParams.set('sellerId', params.sellerId);
@@ -237,6 +239,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     engineSize: parseArray('engineSize'),
     exteriorColor: parseArray('exteriorColor'),
     interiorColor: parseArray('interiorColor'),
+    exportStatus: parseArray('exportStatus'),
     tags: parseArray('tags'),
     extras: parseArray('extras'),
     
@@ -288,6 +291,7 @@ export function countActiveFilters(params: SearchParams): number {
   if (params.exteriorColor?.length) count++;
   if (params.interiorColor?.length) count++;
   if (params.sellerType) count++;
+  if (params.exportStatus?.length) count++;
   if (params.tags?.length) count++;
   if (params.extras?.length) count++;
   if (params.isNegotiable !== undefined) count++;

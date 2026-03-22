@@ -25,6 +25,7 @@ import {
   ENGINE_SIZES,
   SELLER_TYPE_OPTIONS,
   SPECS_TYPES,
+  EXPORT_STATUSES,
 } from '@/lib/filter-constants';
 
 export type ViewMode = 'grid' | 'list';
@@ -47,6 +48,7 @@ export interface MoreFiltersState {
   interiorColor?: string[];
   engineSize?: string[];
   sellerType?: 'dealer' | 'private';
+  exportStatus?: string[];
 }
 
 interface MoreFiltersSheetProps {
@@ -183,6 +185,7 @@ export function MoreFiltersSheet({
       interiorColor: undefined,
       engineSize: undefined,
       sellerType: undefined,
+      exportStatus: undefined,
     });
     bottomSheetRef.current?.dismiss();
   }, [onApply]);
@@ -215,6 +218,7 @@ export function MoreFiltersSheet({
     count += localFilters.interiorColor?.length ?? 0;
     count += localFilters.engineSize?.length ?? 0;
     if (localFilters.sellerType) count++;
+    count += localFilters.exportStatus?.length ?? 0;
     return count;
   }, [localFilters]);
 
@@ -523,6 +527,38 @@ export function MoreFiltersSheet({
             })}
           </View>,
           localFilters.sellerType ? 1 : 0
+        )}
+
+        {/* Export Status Section */}
+        {renderSection(
+          'Export Status',
+          'exportStatus',
+          <View style={styles.chipsRow}>
+            {EXPORT_STATUSES.map(option => {
+              const isSelected = localFilters.exportStatus?.includes(option.value);
+              return (
+                <HapticPressable
+                  key={option.value}
+                  onPress={() => handleToggleArray('exportStatus', option.value)}
+                  style={[
+                    styles.chip,
+                    { 
+                      backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
+                      borderColor: isSelected ? colors.text : colors.border,
+                    },
+                  ]}
+                >
+                  <Supporting
+                    size="small"
+                    style={{ color: isSelected ? colors.background : colors.text }}
+                  >
+                    {option.label}
+                  </Supporting>
+                </HapticPressable>
+              );
+            })}
+          </View>,
+          localFilters.exportStatus?.length ?? 0
         )}
 
         <View style={{ height: insets.bottom + Spacing['3xl'] }} />

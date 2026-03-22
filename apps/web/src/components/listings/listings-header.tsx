@@ -1383,6 +1383,9 @@ function getActiveFilterChips(
   if (params.sellerType) {
     chips.push({ key: 'sellerType', label: params.sellerType === 'dealer' ? 'Dealers' : 'Private' });
   }
+  if (params.exportStatus?.length) {
+    chips.push({ key: 'exportStatus', label: `Export: ${params.exportStatus.join(', ')}` });
+  }
   if (params.partnerId) {
     // Try to get partner name: 1) from URL params, 2) from listings data, 3) fallback
     const partnerNameFromListings = listings?.find(l => l.partnerName)?.partnerName;

@@ -78,7 +78,6 @@ export function AdvancedFilters({
       engineSize: undefined,
       exteriorColor: undefined,
       interiorColor: undefined,
-      sellerType: undefined,
     });
   };
 
@@ -207,30 +206,6 @@ export function AdvancedFilters({
               defaultOpen={false}
               selectedCount={params.interiorColor?.length ?? 0}
             />
-
-      {/* Seller Type */}
-      <FilterGroup
-        title="Seller Type"
-        options={[
-          { 
-            value: 'dealer', 
-            label: 'Dealer', 
-            count: facets?.sellerType.find(x => x.value === 'dealer')?.count ?? 0 
-          },
-          { 
-            value: 'private', 
-            label: 'Private', 
-            count: facets?.sellerType.find(x => x.value === 'private')?.count ?? 0 
-          },
-        ]}
-        selected={params.sellerType ? [params.sellerType] : []}
-        onChange={(sellerType) => handleFilterChange({ 
-          sellerType: sellerType[0] as 'dealer' | 'private' | undefined 
-        })}
-        singleSelect
-        defaultOpen={false}
-        selectedCount={params.sellerType ? 1 : 0}
-      />
     </div>
   );
 

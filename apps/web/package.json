@@ -95,5 +95,11 @@
     "png-to-ico": "3.0.1",
     "postcss": "8.5.6",
     "tailwindcss": "3.4.19"
-  }
+  },
+  "browserslist": [
+    "chrome >= 92",
+    "firefox >= 90",
+    "safari >= 15.4",
+    "edge >= 92"
+  ]
 }

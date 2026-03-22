@@ -379,6 +379,11 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
     conditions.push(eq(carListing.sellerType, params.sellerType));
   }
 
+  // Export status
+  if (params.exportStatus?.length) {
+    conditions.push(inArray(carListing.exportStatus, params.exportStatus));
+  }
+
   // Partner ID
   if (params.partnerId) {
     conditions.push(eq(carListing.partnerId, params.partnerId));
@@ -850,6 +855,7 @@ const exteriorColorLabelMap = Object.fromEntries(EXTERIOR_COLORS.map(c => [c.val
 const interiorColorLabelMap = Object.fromEntries(INTERIOR_COLORS.map(c => [c.value, c.label]));
 const emirateLabelMap = Object.fromEntries(UAE_EMIRATES.map(e => [e.value, e.label]));
 const sellerTypeLabelMap = { dealer: 'Dealer', private: 'Private Seller' };
+const exportStatusLabelMap = { local_only: 'Local Only', gcc: 'GCC', international: 'International', restricted: 'Restricted' };
 
 /**
  * Get all enum facets with FILTERED counts
@@ -875,6 +881,7 @@ async function getAllEnumFacets(
   exteriorColor: FacetBucket[];
   interiorColor: FacetBucket[];
   sellerType: FacetBucket[];
+  exportStatus: FacetBucket[];
 }> {
   // Helper to get facet counts for a field, excluding that field from filters
   const getFacetForField = async (
@@ -916,6 +923,7 @@ async function getAllEnumFacets(
     exteriorColor,
     interiorColor,
     sellerType,
+    exportStatus,
   ] = await Promise.all([
     getFacetForField('emirate', 'emirate', emirateLabelMap),
     getFacetForField('specs', 'specs', specsLabelMap),
@@ -926,6 +934,7 @@ async function getAllEnumFacets(
     getFacetForField('exteriorColor', 'exterior_color', exteriorColorLabelMap),
     getFacetForField('interiorColor', 'interior_color', interiorColorLabelMap),
     getFacetForField('sellerType', 'seller_type', sellerTypeLabelMap),
+    getFacetForField('exportStatus', 'export_status', exportStatusLabelMap),
   ]);
 
   return {
@@ -938,6 +947,7 @@ async function getAllEnumFacets(
     exteriorColor,
     interiorColor,
     sellerType,
+    exportStatus,
   };
 }
 
@@ -976,6 +986,7 @@ async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFace
     exteriorColor: [],
     interiorColor: [],
     sellerType: [],
+    exportStatus: [],
   };
 }
 
@@ -1358,27 +1369,8 @@ export async function quickSearch(
       .limit(limit * 2);
   }
 
-  // Build make totals query - only needed when no context (showing makes)
-  const makeTotalsQuery = (!context?.make && searchTerm) 
-    ? db
-        .select({
-          make: carListing.make,
-          count: count(),
-        })
-        .from(carListing)
-        .where(
-          and(
-            ...conditions,
-            ilike(carListing.make, prefixSearchTerm)
-          )
-        )
-        .groupBy(carListing.make)
-        .orderBy(desc(count()))
-        .limit(limit)
-    : Promise.resolve([]);
-
   // Run all queries in parallel
-  const [partnerResults, makeModelResults, makeTotalsResults] = await Promise.all([
+  const [partnerResults, makeModelResults] = await Promise.all([
     // Partner/Dealer search - only if query provided
     searchTerm 
       ? db
@@ -1405,7 +1397,6 @@ export async function quickSearch(
       : Promise.resolve([]),
     
     makeModelQuery,
-    makeTotalsQuery,
   ]);
 
   const suggestions: Array<{
@@ -1479,119 +1470,30 @@ export async function quickSearch(
       matchedSellerTypes.push({ text: 'Private Sellers', value: 'private' });
     }
 
-    // Check if we have any category matches at all
-    const hasCategories = matchingTags.length || matchingExtras.length || matchingBodyTypes.length || 
-      matchingFuelTypes.length || matchingTransmission.length || matchingSpecs.length || 
-      matchedConditions.length || matchedSellerTypes.length;
-    
-    if (hasCategories) {
-      // Build a single efficient count query using SUM(CASE WHEN ...) for all matched categories
-      const countFields: Record<string, ReturnType<typeof sql>> = {};
-      
-      // Tags: jsonb ?| array check
-      for (const tag of matchingTags) {
-        countFields[`tag_${tag.value}`] = sql<number>`SUM(CASE WHEN ${carListing.tags} ? ${tag.value} THEN 1 ELSE 0 END)`;
-      }
-      // Extras: jsonb ? check
-      for (const extra of matchingExtras) {
-        countFields[`extra_${extra.value}`] = sql<number>`SUM(CASE WHEN ${carListing.extras} ? ${extra.value} THEN 1 ELSE 0 END)`;
-      }
-      // Simple equality columns
-      for (const bt of matchingBodyTypes) {
-        countFields[`bt_${bt.value}`] = sql<number>`SUM(CASE WHEN ${carListing.bodyType} = ${bt.value} THEN 1 ELSE 0 END)`;
-      }
-      for (const ft of matchingFuelTypes) {
-        countFields[`ft_${ft.value}`] = sql<number>`SUM(CASE WHEN ${carListing.fuelType} = ${ft.value} THEN 1 ELSE 0 END)`;
-      }
-      for (const t of matchingTransmission) {
-        countFields[`tr_${t.value}`] = sql<number>`SUM(CASE WHEN ${carListing.transmission} = ${t.value} THEN 1 ELSE 0 END)`;
-      }
-      for (const s of matchingSpecs) {
-        countFields[`sp_${s.value}`] = sql<number>`SUM(CASE WHEN ${carListing.specs} = ${s.value} THEN 1 ELSE 0 END)`;
-      }
-      for (const c of matchedConditions) {
-        countFields[`cond_${c.value}`] = sql<number>`SUM(CASE WHEN ${carListing.condition} = ${c.value} THEN 1 ELSE 0 END)`;
-      }
-      for (const st of matchedSellerTypes) {
-        countFields[`st_${st.value}`] = sql<number>`SUM(CASE WHEN ${carListing.sellerType} = ${st.value} THEN 1 ELSE 0 END)`;
-      }
-
-      // Run a single query to get all counts
-      const selectObj: Record<string, any> = {};
-      for (const [key, sqlExpr] of Object.entries(countFields)) {
-        selectObj[key] = sqlExpr.as(key);
-      }
-
-      const [countRow] = await db
-        .select(selectObj)
-        .from(carListing)
-        .where(and(...conditions));
-      
-      // Now push suggestions with real counts
-      for (const tag of matchingTags) {
-        suggestions.push({
-          type: 'tag',
-          text: tag.label,
-          tag: tag.value,
-          count: Number(countRow?.[`tag_${tag.value}`] ?? 0),
-        });
-      }
-      for (const extra of matchingExtras) {
-        suggestions.push({
-          type: 'extra',
-          text: extra.label,
-          extra: extra.value,
-          count: Number(countRow?.[`extra_${extra.value}`] ?? 0),
-        });
-      }
-      for (const bt of matchingBodyTypes) {
-        suggestions.push({
-          type: 'bodyType',
-          text: bt.label,
-          bodyType: bt.value,
-          count: Number(countRow?.[`bt_${bt.value}`] ?? 0),
-        });
-      }
-      for (const ft of matchingFuelTypes) {
-        suggestions.push({
-          type: 'fuelType',
-          text: ft.label,
-          fuelType: ft.value,
-          count: Number(countRow?.[`ft_${ft.value}`] ?? 0),
-        });
-      }
-      for (const t of matchingTransmission) {
-        suggestions.push({
-          type: 'transmission',
-          text: t.label,
-          transmission: t.value,
-          count: Number(countRow?.[`tr_${t.value}`] ?? 0),
-        });
-      }
-      for (const s of matchingSpecs) {
-        suggestions.push({
-          type: 'specs',
-          text: s.label,
-          specs: s.value,
-          count: Number(countRow?.[`sp_${s.value}`] ?? 0),
-        });
-      }
-      for (const c of matchedConditions) {
-        suggestions.push({
-          type: 'condition',
-          text: c.text,
-          condition: c.value,
-          count: Number(countRow?.[`cond_${c.value}`] ?? 0),
-        });
-      }
-      for (const st of matchedSellerTypes) {
-        suggestions.push({
-          type: 'sellerType',
-          text: st.text,
-          sellerType: st.value,
-          count: Number(countRow?.[`st_${st.value}`] ?? 0),
-        });
-      }
+    // Push matched categories without counts (no DB query needed)
+    for (const tag of matchingTags) {
+      suggestions.push({ type: 'tag', text: tag.label, tag: tag.value, count: 0 });
+    }
+    for (const extra of matchingExtras) {
+      suggestions.push({ type: 'extra', text: extra.label, extra: extra.value, count: 0 });
+    }
+    for (const bt of matchingBodyTypes) {
+      suggestions.push({ type: 'bodyType', text: bt.label, bodyType: bt.value, count: 0 });
+    }
+    for (const ft of matchingFuelTypes) {
+      suggestions.push({ type: 'fuelType', text: ft.label, fuelType: ft.value, count: 0 });
+    }
+    for (const t of matchingTransmission) {
+      suggestions.push({ type: 'transmission', text: t.label, transmission: t.value, count: 0 });
+    }
+    for (const s of matchingSpecs) {
+      suggestions.push({ type: 'specs', text: s.label, specs: s.value, count: 0 });
+    }
+    for (const c of matchedConditions) {
+      suggestions.push({ type: 'condition', text: c.text, condition: c.value, count: 0 });
+    }
+    for (const st of matchedSellerTypes) {
+      suggestions.push({ type: 'sellerType', text: st.text, sellerType: st.value, count: 0 });
     }
   }
 
@@ -1644,28 +1546,28 @@ export async function quickSearch(
     }
   } else {
     // Showing makes and make+model combinations
-    // Build make totals map from the dedicated query (accurate totals)
+    // Derive make totals by summing make+model group counts
     const makeTotals = new Map<string, number>();
-    for (const r of makeTotalsResults) {
+    for (const r of makeModelResults) {
       if (r.make) {
-        makeTotals.set(r.make, Number(r.count));
+        makeTotals.set(r.make, (makeTotals.get(r.make) ?? 0) + Number(r.count));
       }
     }
-    
+
     const seenMakes = new Set<string>();
     const seenMakeModels = new Set<string>();
 
     for (const r of makeModelResults) {
       if (!r.make) continue;
 
-      // Add make suggestion if not seen (use accurate total from makeTotalsQuery)
+      // Add make suggestion if not seen
       if (!seenMakes.has(r.make) && r.make.toLowerCase().includes(searchTerm)) {
         seenMakes.add(r.make);
         suggestions.push({
           type: 'make',
           text: r.make,
           make: r.make,
-          count: makeTotals.get(r.make) || Number(r.count), // Use total, fallback to row count
+          count: makeTotals.get(r.make) ?? Number(r.count),
         });
       }
 
@@ -1694,6 +1596,10 @@ export async function quickSearch(
     .slice(0, limit);
 }
 
+// 1-hour in-memory cache for popular makes — stable data, no need to hit DB per request
+let _popularMakesCache: { data: Array<{ type: 'make'; text: string; make: string; count: number }>; expiresAt: number } | null = null;
+const POPULAR_MAKES_TTL_MS = 60 * 60 * 1000; // 1 hour
+
 /**
  * Get popular makes for auto-suggest dropdown
  * Returns top makes by listing count for the default suggestions
@@ -1704,8 +1610,13 @@ export async function getPopularMakes(limit = 4): Promise<Array<{
   make: string;
   count: number;
 }>> {
-  const now = new Date();
-  const conditions = buildPublicBaseConditions(now);
+  const now = Date.now();
+  if (_popularMakesCache && now < _popularMakesCache.expiresAt) {
+    return _popularMakesCache.data.slice(0, limit);
+  }
+
+  const dbNow = new Date(now);
+  const conditions = buildPublicBaseConditions(dbNow);
 
   const results = await db
     .select({
@@ -1716,12 +1627,15 @@ export async function getPopularMakes(limit = 4): Promise<Array<{
     .where(and(...conditions))
     .groupBy(carListing.make)
     .orderBy(desc(count()))
-    .limit(limit);
+    .limit(20); // Overfetch so any limit is served from cache
 
-  return results.map(r => ({
+  const mapped = results.map(r => ({
     type: 'make' as const,
     text: r.make,
     make: r.make,
     count: Number(r.count),
   }));
+
+  _popularMakesCache = { data: mapped, expiresAt: now + POPULAR_MAKES_TTL_MS };
+  return mapped.slice(0, limit);
 }

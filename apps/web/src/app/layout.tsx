@@ -97,7 +97,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link key="preconnect-cdn" rel="preconnect" href="https://cdn.revvup.ae" />
+        <link key="preconnect-cdn" rel="preconnect" href="https://cdn.revvup.ae" crossOrigin="anonymous" />
         <link key="favicon-svg" rel="icon" type="image/svg+xml" href={BRAND_FAVICON_SVG_URL} />
         <link key="favicon-png" rel="icon" type="image/png" sizes="32x32" href={BRAND_FAVICON_PNG_URL} />
         <link key="favicon-ico" rel="shortcut icon" href={BRAND_FAVICON_ICO_URL} />

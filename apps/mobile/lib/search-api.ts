@@ -73,6 +73,7 @@ interface DBSearchParams {
   extras?: string | string[];
   condition?: string;
   sellerType?: string;
+  exportStatus?: string | string[];
   isBlkListing?: boolean;
   isBlackTierPartner?: boolean;
   isNegotiable?: boolean;

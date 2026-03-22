@@ -447,7 +447,10 @@ export function useQuickSearch(
   enabled = true,
   context?: { make?: string; model?: string }
 ): QuickSearchResult {
-  // Fetch popular makes when no query (dropdown open with empty input)
+  const isTyping = query.length >= 2;
+
+  // Popular makes — shown when dropdown opens with no/short query.
+  // Server has a 1hr in-process cache so this is effectively free after first hit.
   const { data: popularData, isLoading: popularLoading } = useQuery({
     queryKey: ['listings', 'suggest', 'popular'],
     queryFn: async () => {
@@ -455,38 +458,29 @@ export function useQuickSearch(
       if (!response.ok) return { suggestions: FALLBACK_SUGGESTIONS };
       return response.json();
     },
-    enabled: enabled && query.length < 2, // Only fetch when showing defaults
+    enabled: enabled && !isTyping,
+    staleTime: 60 * 60 * 1000, // 1 hour — matches server cache
   });
 
-  // Fetch search suggestions when user types 2+ chars
-  const shouldFetchSearch = query.length >= 2;
-  
+  // Typed search — only fires at 2+ chars
   const { data: searchData, isLoading: searchLoading } = useQuery({
     queryKey: ['listings', 'suggest', query, context?.make, context?.model],
     queryFn: async () => {
-      // Build query params
       const params = new URLSearchParams();
       params.set('q', query);
-      
-      // Add context for hierarchical search
       if (context?.make) params.set('make', context.make);
       if (context?.model) params.set('model', context.model);
-      
-      const endpoint = `/api/listings/search/suggest?${params.toString()}`;
-      
-      const response = await fetch(endpoint);
+      const response = await fetch(`/api/listings/search/suggest?${params.toString()}`);
       if (!response.ok) return { suggestions: [] };
       return response.json();
     },
-    enabled: enabled && shouldFetchSearch,
+    enabled: enabled && isTyping,
   });
 
-  // Return search suggestions when typing, popular makes otherwise
-  // Only show data once loaded - no static fallback on initial render
   return {
-    suggestions: shouldFetchSearch 
+    suggestions: isTyping
       ? (searchData?.suggestions ?? [])
-      : (popularData?.suggestions ?? []), // Empty until loaded
-    isLoading: shouldFetchSearch ? searchLoading : popularLoading,
+      : (popularData?.suggestions ?? []),
+    isLoading: isTyping ? searchLoading : popularLoading,
   };
 }

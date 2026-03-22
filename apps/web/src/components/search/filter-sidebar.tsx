@@ -21,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input';
 import type { SearchParams, SearchFacets, FacetBucket } from '@/lib/search-utils';
 import { SPECS_TYPES, UAE_EMIRATES } from '@/lib/filter-constants';
+import { EXPORT_STATUSES } from '@/lib/filter-constants';
 
 interface FilterSidebarProps {
   params: SearchParams;
@@ -52,6 +53,8 @@ export function FilterSidebar({
   const locationCount = params.emirate?.length ?? 0;
   const negotiableCount = params.isNegotiable ? 1 : 0;
   const specsCount = params.specs?.length ?? 0;
+  const sellerTypeCount = params.sellerType ? 1 : 0;
+  const exportStatusCount = params.exportStatus?.length ?? 0;
   const [sectionOpenState, setSectionOpenState] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -240,6 +243,66 @@ export function FilterSidebar({
           onChange={(specs) => onFilterChange({ specs: specs as SearchParams['specs'] })}
           placeholder="Any specs"
         />
+      </FilterSection>
+
+      {/* Seller Type */}
+      <FilterSection
+        title="Seller Type"
+        selectedCount={sellerTypeCount}
+        open={sectionOpenState['Seller Type']}
+        onOpenChange={(open) => handleSectionOpenChange('Seller Type', open)}
+      >
+        <div className="flex flex-col gap-0.5">
+          {(['dealer', 'private'] as const).map((type) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => onFilterChange({ sellerType: params.sellerType === type ? undefined : type })}
+              className={cn(
+                'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
+                'text-base font-medium tracking-tight transition-colors duration-100',
+                params.sellerType === type
+                  ? 'bg-muted text-foreground font-semibold'
+                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+              )}
+            >
+              {type === 'dealer' ? 'Dealer' : 'Private Seller'}
+            </button>
+          ))}
+        </div>
+      </FilterSection>
+
+      {/* Export Status */}
+      <FilterSection
+        title="Export Status"
+        selectedCount={exportStatusCount}
+        open={sectionOpenState['Export Status']}
+        onOpenChange={(open) => handleSectionOpenChange('Export Status', open)}
+      >
+        <div className="flex flex-col gap-0.5">
+          {EXPORT_STATUSES.map((status) => (
+            <button
+              key={status.value}
+              type="button"
+              onClick={() => {
+                const current = params.exportStatus ?? [];
+                const updated = current.includes(status.value)
+                  ? current.filter(v => v !== status.value)
+                  : [...current, status.value];
+                onFilterChange({ exportStatus: updated.length ? updated : undefined });
+              }}
+              className={cn(
+                'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
+                'text-base font-medium tracking-tight transition-colors duration-100',
+                params.exportStatus?.includes(status.value)
+                  ? 'bg-muted text-foreground font-semibold'
+                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+              )}
+            >
+              {status.label}
+            </button>
+          ))}
+        </div>
       </FilterSection>
     </div>
   );

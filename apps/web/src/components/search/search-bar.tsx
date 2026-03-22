@@ -14,7 +14,7 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, X, Loader2, FileKey2, FileText } from 'lucide-react';
+import { Search, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { searchParamsToUrl, type SearchParams } from '@/lib/search-utils';
 import { useQuickSearch } from '@/hooks/use-search';
@@ -342,23 +342,6 @@ export function SearchBar({
     lg: 'h-5 w-5',
   };
 
-  // Category colors matching mobile scheme
-  const SUGGESTION_COLORS: Record<string, string> = {
-    make: '#3B82F6',
-    model: '#3B82F6',
-    make_model: '#3B82F6',
-    make_model_trim: '#3B82F6',
-    partner: '#EAB308',
-    tag: '#22C55E',
-    extra: '#A855F7',
-    bodyType: '#F97316',
-    fuelType: '#F97316',
-    transmission: '#F97316',
-    specs: '#F97316',
-    condition: '#F97316',
-    sellerType: '#F97316',
-  };
-
   const SUGGESTION_LABELS: Record<string, string> = {
     make: 'Make',
     model: 'Model',
@@ -373,26 +356,6 @@ export function SearchBar({
     specs: 'Specs',
     condition: 'Condition',
     sellerType: 'Seller',
-  };
-
-  // Get icon for suggestion type
-  const getSuggestionIcon = (type: string) => {
-    switch (type) {
-      case 'vin_listing':
-        return <FileText className="h-4 w-4 text-green-500" />;
-      case 'vin_decode':
-      case 'vin_partial':
-        return <FileKey2 className="h-4 w-4 text-blue-500" />;
-      default: {
-        const dotColor = SUGGESTION_COLORS[type] || '#9CA3AF';
-        return (
-          <span
-            className="inline-block h-2 w-2 rounded-full flex-shrink-0"
-            style={{ backgroundColor: dotColor }}
-          />
-        );
-      }
-    }
   };
 
   return (
@@ -486,8 +449,7 @@ export function SearchBar({
           className={cn(
             'absolute top-full z-50 mt-2',
             'left-0 right-0 w-full',
-            'min-w-[280px]',
-            'bg-sidebar-background border border-sidebar-border rounded-2xl shadow-xl',
+            'bg-sidebar border border-sidebar-border rounded-2xl shadow-xl',
             'overflow-hidden animate-in fade-in-0 slide-in-from-top-2 duration-150'
           )}
           role="listbox"
@@ -513,35 +475,16 @@ export function SearchBar({
                       : 'hover:bg-muted/50'
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    {getSuggestionIcon(suggestion.type)}
-                    <div className="flex flex-col gap-0.5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[15px] font-semibold text-foreground">
-                          {suggestion.text}
-                        </span>
-                        {suggestion.type === 'vin_listing' && (
-                          <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-green-600 bg-green-500/10 rounded">
-                            View Car
-                          </span>
-                        )}
-                        {(suggestion.type === 'vin_decode' || suggestion.type === 'vin_partial') && (
-                          <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-600 bg-blue-500/10 rounded">
-                            Decode VIN
-                          </span>
-                        )}
-                        {!['vin_listing', 'vin_decode', 'vin_partial'].includes(suggestion.type) && SUGGESTION_LABELS[suggestion.type] && (
-                          <span className="text-xs text-muted-foreground/60 font-medium">
-                            {SUGGESTION_LABELS[suggestion.type]}
-                          </span>
-                        )}
-                      </div>
-                      {suggestion.type === 'vin_listing' && suggestion.vin && (
-                        <span className="text-[11px] text-muted-foreground/60 font-mono">
-                          VIN: {suggestion.vin}
-                        </span>
-                      )}
-                    </div>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+                    <span className="text-[15px] font-semibold text-foreground truncate">
+                      {suggestion.text}
+                    </span>
+                    {SUGGESTION_LABELS[suggestion.type] && (
+                      <span className="shrink-0 text-xs text-muted-foreground/50 font-medium">
+                        {SUGGESTION_LABELS[suggestion.type]}
+                      </span>
+                    )}
                   </div>
                   {!['vin_listing', 'vin_decode', 'vin_partial'].includes(suggestion.type) && suggestion.count >= 0 && (
                     <span className="text-sm font-semibold text-muted-foreground/70 tabular-nums">

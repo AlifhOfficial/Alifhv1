@@ -47,9 +47,9 @@ const SINGLE_SETTINGS: Record<string, SharpOpts> = {
   'showroom:founder-image':            { maxWidth: 640,  maxHeight: 800,  fit: 'inside', quality: 70, sharpenSigma: 0.5, saturationBoost: 1.02 },
   'showroom:gallery':                  { maxWidth: 1200, maxHeight: 900,  fit: 'inside', quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
   'showroom:gallery-section-image':    { maxWidth: 1200, maxHeight: 675,  fit: 'cover',  quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
-  'showroom:team-member':              { maxWidth: 480,  maxHeight: 480,  fit: 'cover',  quality: 70, sharpenSigma: 0.6, saturationBoost: 1.03 },
+  'showroom:team-member':              { maxWidth: 200,  maxHeight: 200,  fit: 'cover',  quality: 72, sharpenSigma: 0.6, saturationBoost: 1.03 },
   'showroom:team-section-image':       { maxWidth: 1200, maxHeight: 675,  fit: 'cover',  quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
-  'showroom:achievement-image':        { maxWidth: 320,  maxHeight: 320,  fit: 'inside', quality: 70, sharpenSigma: 0.5, saturationBoost: 1.02 },
+  'showroom:achievement-image':        { maxWidth: 160,  maxHeight: 160,  fit: 'inside', quality: 72, sharpenSigma: 0.5, saturationBoost: 1.02 },
   'showroom:achievements-section-image': { maxWidth: 1200, maxHeight: 675, fit: 'cover', quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
   'showroom:testimonial-image':        { maxWidth: 160,  maxHeight: 160,  fit: 'cover',  quality: 70, sharpenSigma: 0.6, saturationBoost: 1.03 },
   'showroom:testimonials-section-image': { maxWidth: 1200, maxHeight: 675, fit: 'cover', quality: 68, sharpenSigma: 0.4, saturationBoost: 1.02 },
@@ -73,7 +73,7 @@ function build(input: Buffer, opts: SharpOpts) {
     })
     .sharpen({ sigma: opts.sharpenSigma, m1: 0, m2: 3, x1: 2, y2: 10, y3: 5 })
     .modulate({ saturation: opts.saturationBoost })
-    .webp({ quality: opts.quality, effort: 4 });
+    .webp({ quality: opts.quality, effort: 6 });
 }
 
 export interface ProcessedImage {

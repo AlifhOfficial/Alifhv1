@@ -20,6 +20,7 @@ import type {
   UAEEmirate,
   SeatingOption,
   DoorsOption,
+  ExportStatus,
 } from './listing-constants';
 
 // ============================================================================
@@ -80,6 +81,9 @@ export interface AdvancedFilterParams {
   
   // Seller type
   sellerType?: 'dealer' | 'private';
+
+  // Export status
+  exportStatus?: ExportStatus[];
   
   // Partner specific
   partnerId?: string;
@@ -172,6 +176,7 @@ export interface SearchFacets {
   exteriorColor: FacetBucket[];
   interiorColor: FacetBucket[];
   sellerType: FacetBucket[];
+  exportStatus: FacetBucket[];
 }
 
 /**
@@ -237,6 +242,7 @@ export interface SearchResultItem {
   lifecycleStatus?: 'active' | 'archived' | 'sold' | 'expired' | 'deleted' | null;
   isPublic?: boolean | null;
   sellerUseGeneratedAvatar?: boolean | null;
+  qiScore?: number | null;
 }
 
 // ============================================================================
@@ -332,6 +338,7 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   
   // Seller
   if (params.sellerType) urlParams.set('seller', params.sellerType);
+  if (params.exportStatus?.length) urlParams.set('exportStatus', params.exportStatus.join(','));
   if (params.partnerId) urlParams.set('partnerId', params.partnerId);
   if (params.sellerId) urlParams.set('sellerId', params.sellerId);
   
@@ -399,6 +406,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     isBlackTierPartner: parseBoolean('blackTier'),
     
     sellerType: urlParams.get('seller') as SearchParams['sellerType'],
+    exportStatus: parseArray('exportStatus') as SearchParams['exportStatus'],
     partnerId: urlParams.get('partnerId') || undefined,
     sellerId: urlParams.get('sellerId') || undefined,
     
@@ -433,6 +441,7 @@ export function countActiveFilters(params: SearchParams): number {
   if (params.exteriorColor?.length) count++;
   if (params.interiorColor?.length) count++;
   if (params.sellerType) count++;
+  if (params.exportStatus?.length) count++;
   if (params.tags?.length) count++;
   if (params.isNegotiable !== undefined) count++;
   if (params.underWarranty !== undefined) count++;

@@ -74,6 +74,7 @@ const filtersToParams = (f: FilterParams, searchParams: { make?: string[]; model
   engineSize: f.engineSize as SearchParams['engineSize'],
   condition: f.condition,
   sellerType: f.sellerType,
+  exportStatus: f.exportStatus as SearchParams['exportStatus'],
   isNegotiable: f.isNegotiable,
   isBlkListing: f.isBlkListing,
   isBlackTierPartner: f.isBlackTierPartner,
@@ -383,6 +384,7 @@ export default function BrowseScreen() {
     interiorColor: filterParams.interiorColor,
     engineSize: filterParams.engineSize,
     sellerType: filterParams.sellerType,
+    exportStatus: filterParams.exportStatus,
   }), [filterParams]);
 
   const moreFiltersCount = useMemo(() => {
@@ -399,6 +401,7 @@ export default function BrowseScreen() {
     count += filterParams.interiorColor?.length ?? 0;
     count += filterParams.engineSize?.length ?? 0;
     if (filterParams.sellerType) count++;
+    count += filterParams.exportStatus?.length ?? 0;
     return count;
   }, [filterParams]);
 

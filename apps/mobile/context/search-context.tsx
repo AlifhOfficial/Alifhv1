@@ -54,6 +54,7 @@ export type FilterParams = {
   isBlkListing?: boolean;
   isBlackTierPartner?: boolean;
   sellerType?: 'dealer' | 'private';
+  exportStatus?: string[];
 };
 
 // Chip type for active search display
@@ -296,6 +297,12 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     if (filterParams.sellerType) {
       chips.push({ key: 'sellerType', label: filterParams.sellerType === 'dealer' ? 'Dealer' : 'Private', value: filterParams.sellerType });
     }
+    if (filterParams.exportStatus?.length) {
+      filterParams.exportStatus.forEach((status, index) => {
+        const label = status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        chips.push({ key: 'exportStatus', label, value: status, index });
+      });
+    }
     if (filterParams.exteriorColor?.length) {
       filterParams.exteriorColor.forEach((color, index) => {
         chips.push({ key: 'exteriorColor', label: `Ext: ${color.charAt(0).toUpperCase() + color.slice(1)}`, value: color, index });
@@ -339,6 +346,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     if (filterParams.isBlkListing) count++;
     if (filterParams.isBlackTierPartner) count++;
     if (filterParams.sellerType) count++;
+    count += filterParams.exportStatus?.length ?? 0;
     count += filterParams.exteriorColor?.length ?? 0;
     count += filterParams.interiorColor?.length ?? 0;
     count += filterParams.engineSize?.length ?? 0;
