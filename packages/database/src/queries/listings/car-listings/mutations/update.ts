@@ -488,7 +488,9 @@ export async function updateCarListingByStaff(
 
   // User-posted listings: MAJOR edits while public trigger re-moderation (V1: hide on edit).
   // Minor edits (extras, tags, specs, colors, etc.) do NOT trigger re-moderation.
-  if (current.postedByRole === 'user' && isCurrentlyPublic && hasMajorContentEdits(input, current)) {
+  // Skip re-moderation if admin explicitly set moderationStatus to 'approved' (admin override).
+  const adminApproved = input.moderationStatus === 'approved';
+  if (current.postedByRole === 'user' && isCurrentlyPublic && hasMajorContentEdits(input, current) && !adminApproved) {
     updateData.moderationStatus = 'pending_review';
     // Don't update submittedAt - keep original submission date so listing doesn't appear as new
     updateData.lastModeratedAt = now;

@@ -624,12 +624,15 @@ export async function updateListing(
   if (!res.ok) await handleError(res, 'Failed to update listing');
 
   const data = await res.json();
+  // Server wraps response in { success, data: { ... } }
+  const d = data.data || data;
   return {
-    id: data.id,
-    slug: data.slug ?? null,
-    moderationStatus: data.moderationStatus,
-    lifecycleStatus: data.lifecycleStatus,
-    updatedAt: data.updatedAt,
+    id: d.id,
+    slug: d.slug ?? null,
+    moderationStatus: d.moderationStatus,
+    lifecycleStatus: d.lifecycleStatus,
+    updatedAt: d.updatedAt,
+    moderation: d.moderation ?? null,
   };
 }
 

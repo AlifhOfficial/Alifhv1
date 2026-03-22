@@ -57,10 +57,11 @@ export function ReviewStepContent({
       const payload = dataToPayload(data, 'published');
       
       if (editingListingId) {
-        // Update existing listing - API now returns moderation result for draft→publish
+        // Update existing listing
         const result = await updateListing(editingListingId, payload);
-        // Use moderation result if available (draft→publish), else assume pending review
-        const approved = result.moderation?.approved ?? false;
+        // For edits: use moderationStatus from response (AI moderation may run async).
+        // moderation.approved is only populated synchronously for draft→first-publish.
+        const approved = result.moderation?.approved ?? (result.moderationStatus === 'approved');
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         onSubmitSuccess?.(result.id, approved);
       } else {

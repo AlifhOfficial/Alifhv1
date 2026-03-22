@@ -65,26 +65,25 @@ export async function DELETE(req: NextRequest) {
 
     const { key } = validation.data;
 
-    // Security: Only allow deletion from whitelisted directories
-    const isAllowed = ALLOWED_DIRECTORIES.some(dir => key.startsWith(dir));
-    if (!isAllowed) {
-      console.warn(`[storage/delete] Blocked deletion attempt for key: ${key} by user: ${user.id}`);
-      return NextResponse.json(
-        { error: "Deletion not allowed for this path" },
-        { status: 403 }
-      );
-    }
-
-    // Extract key from full URL if needed
+    // Normalise key: extract path from full CDN/HTTPS URL first
     let storageKey = key;
     if (key.startsWith('http://') || key.startsWith('https://')) {
-      // Extract path from URL
       try {
         const url = new URL(key);
         storageKey = url.pathname.replace(/^\//, '');
       } catch {
         return NextResponse.json({ error: "Invalid URL format" }, { status: 400 });
       }
+    }
+
+    // Security: Only allow deletion from whitelisted directories (checked AFTER URL normalisation)
+    const isAllowed = ALLOWED_DIRECTORIES.some(dir => storageKey.startsWith(dir));
+    if (!isAllowed) {
+      console.warn(`[storage/delete] Blocked deletion attempt for key: ${storageKey} by user: ${user.id}`);
+      return NextResponse.json(
+        { error: "Deletion not allowed for this path" },
+        { status: 403 }
+      );
     }
 
     await deleteFile(storageKey);

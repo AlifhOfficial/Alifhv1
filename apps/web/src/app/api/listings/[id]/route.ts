@@ -357,13 +357,27 @@ export async function PUT(
           // Suspended listings can be edited and resubmitted for review, but not re-activated by non-admins.
           // Keep the moderation status transition within the owner-allowed set.
           updateData.moderationStatus = 'submitted';
-        } else {
-          updateData.moderationStatus = listing.postedByRole === 'staff' ? 'approved' : 'submitted';
-          // Resubmitting after rejection should re-activate the listing for review/publish.
+        } else if (listing.postedByRole === 'staff' || isAdmin) {
+          // Staff-posted or admin → auto-approve
+          updateData.moderationStatus = 'approved';
           if (listing.lifecycleStatus === 'archived') {
             updateData.lifecycleStatus = 'active';
           }
-          // Clear prior rejection reason on resubmit.
+          updateData.rejectionReason = null;
+        } else if (listing.moderationStatus === 'approved') {
+          // Already-approved user listing being re-saved → don't demote.
+          // The DB mutation's hasMajorContentEdits check will demote to
+          // pending_review only if price or description actually changed.
+          // No moderationStatus change needed here.
+          if (listing.lifecycleStatus === 'archived') {
+            updateData.lifecycleStatus = 'active';
+          }
+        } else {
+          // Draft/rejected/pending user listing being published → submit for moderation
+          updateData.moderationStatus = 'submitted';
+          if (listing.lifecycleStatus === 'archived') {
+            updateData.lifecycleStatus = 'active';
+          }
           updateData.rejectionReason = null;
         }
       } else if (legacyStatus === 'pending') {
@@ -611,6 +625,9 @@ export async function PUT(
       success: true,
       data: {
         id,
+        moderationStatus: updated?.moderationStatus ?? listing.moderationStatus,
+        lifecycleStatus: updated?.lifecycleStatus ?? listing.lifecycleStatus,
+        updatedAt: new Date().toISOString(),
         moderation: aiModeration,
       },
     });

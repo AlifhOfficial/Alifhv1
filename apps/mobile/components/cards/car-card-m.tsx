@@ -212,13 +212,13 @@ export const CarCardM = memo(function CarCardM({
 
   // Derived display values - use thumb URL for optimized card display
   const rawImage = thumbnail || images?.[0];
-  const displayImage = getAppThumbUrl(rawImage) || rawImage;
+  const displayImage = rawImage ? (getAppThumbUrl(rawImage) || rawImage) : null;
   const displaySpecs = formatSpecs(specs || 'GCC');
   const displayEmirate = formatEmirate(emirate);
   const displaySellerName = partnerName || sellerName || 'Private Seller';
   const isVerified = partnerVerified || kycVerified;
   const rawSellerAvatar = partnerLogo || sellerAvatarUrl;
-  const sellerAvatar = getAppThumbUrl(rawSellerAvatar) || rawSellerAvatar;
+  const sellerAvatar = rawSellerAvatar ? (getAppThumbUrl(rawSellerAvatar) || rawSellerAvatar) : null;
 
   // Handlers
   const handlePress = useCallback(() => {

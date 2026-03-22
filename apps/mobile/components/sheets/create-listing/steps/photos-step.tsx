@@ -21,7 +21,7 @@ import { useTheme } from '@/context/theme-context';
 import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
 import { pickAndUploadListingImage, deleteListingImageByUrl } from '@/components/user-inventory-management/utilities/image-upload';
-import { CDN_BASE } from '@/lib/config';
+import { CDN_BASE, getThumbUrl } from '@/lib/config';
 
 import { StepContainer } from '../step-container';
 import type { StepContentProps } from '../create-listing-flow';
@@ -164,7 +164,10 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
       const imageIndex = getIndex() ?? 0;
       // Only the first CDN item is the cover; uploading items are not yet confirmed
       const isThumbnail = imageIndex === 0 && item.type === 'cdn';
-      const imageUri = item.type === 'cdn' ? toAbsoluteUrl(item.url) : item.localUri;
+      // Show thumb in grid — full key is only written to DB, never fetched for display
+      const imageUri = item.type === 'cdn'
+        ? (getThumbUrl(item.url) ?? toAbsoluteUrl(item.url))
+        : item.localUri;
       const isUploading = item.type === 'uploading';
 
       return (
