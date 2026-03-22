@@ -14,6 +14,7 @@
  * - Returns 500 for server errors
  */
 
+import { revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import {
@@ -457,6 +458,12 @@ export async function PUT(
       }
     }
 
+    // Fetch old image keys before overwriting — needed for R2 cleanup after save
+    let oldImageKeys: string[] = [];
+    if (body.images !== undefined) {
+      oldImageKeys = await getListingImagesForCleanup(id);
+    }
+
     let success: boolean;
     
     if (isAdmin || (isPartnerListing && !isOwner)) {
@@ -473,6 +480,20 @@ export async function PUT(
         { error: 'Listing not found or unauthorized' },
         { status: 404 }
       );
+    }
+
+    // Bust the Next.js listing-detail cache so the public page immediately shows fresh data
+    revalidateTag('listing-detail');
+
+    // Delete R2 objects for image keys that were removed in this edit
+    if (oldImageKeys.length > 0 && body.images !== undefined) {
+      const newKeySet = new Set(body.images as string[]);
+      const removedKeys = oldImageKeys.filter((k) => !newKeySet.has(k));
+      if (removedKeys.length > 0) {
+        void deleteListingImages(removedKeys).catch((err) => {
+          console.error('[listing-put] Failed to clean up removed image keys from R2:', err);
+        });
+      }
     }
 
     const updated = await getListingModerationContext(id);
