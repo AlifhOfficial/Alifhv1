@@ -216,11 +216,11 @@
 }
 
 .font-geom {
-  font-family: var(--font-geom), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--font-geom), var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
 }
 
 .wordmark-geom {
-  font-family: var(--font-geom), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--font-geom), var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
   letter-spacing: -0.05em;
   text-rendering: geometricPrecision;
   text-shadow:
@@ -246,11 +246,10 @@
   body {
     @apply bg-background text-foreground;
     /* Inter with proper Windows fallbacks - Segoe UI is Windows' native UI font */
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     font-optical-sizing: auto;
-    /* Slightly heavier base weight for Windows clarity (450 instead of 400) */
-    font-weight: 450;
+    font-weight: 500;
     /* Improve Windows text rendering */
     font-synthesis: none;
   }
@@ -258,39 +257,38 @@
   /* Typography System - Revvup Design (Cross-platform optimized) */
   h1 {
     @apply text-4xl sm:text-5xl md:text-6xl tracking-tight;
-    font-weight: 600; /* semibold - explicit for Windows */
+    font-weight: 800;
     line-height: 1.1;
     letter-spacing: -0.02em;
   }
   
   h2 {
     @apply text-lg sm:text-xl tracking-tight;
-    font-weight: 500; /* medium - explicit for Windows */
+    font-weight: 700;
     line-height: 1.2;
     letter-spacing: -0.01em;
   }
   
   h3 {
     @apply text-sm sm:text-base;
-    font-weight: 500; /* medium - explicit for Windows */
+    font-weight: 600;
     line-height: 1.3;
   }
   
   p {
     @apply text-xs sm:text-sm;
-    font-weight: 450; /* Slightly heavier for Windows clarity */
+    font-weight: 500;
     line-height: 1.6;
   }
   
   small, .text-meta {
     @apply text-xs;
-    font-weight: 450;
-    opacity: 0.7;
+    font-weight: 500;
   }
   
-  /* Buttons and interactive text - heavier for clickability */
+  /* Buttons and interactive text */
   button, [role="button"], a {
-    font-weight: 475;
+    font-weight: 600;
   }
   
   /* Prevent theme transition flash */
