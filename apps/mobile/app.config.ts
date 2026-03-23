@@ -1,5 +1,9 @@
 import type { ExpoConfig, ConfigContext } from 'expo/config';
 
+type RevvupExpoConfig = ExpoConfig & {
+  newArchEnabled?: boolean;
+};
+
 /**
  * Expo App Configuration
  * 
@@ -8,7 +12,7 @@ import type { ExpoConfig, ConfigContext } from 'expo/config';
  * 
  * @see https://docs.expo.dev/workflow/configuration/
  */
-export default ({ config }: ConfigContext): ExpoConfig => {
+export default ({ config }: ConfigContext): RevvupExpoConfig => {
   // Production domain for associated domains
   const productionDomain = 'revvup.ae';
   
@@ -73,12 +77,15 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       [
         'expo-splash-screen',
         {
-          backgroundColor: '#FAFAFA',
-          image: './assets/images/splash-icon.png',
-          imageWidth: 200,
+          backgroundColor: '#000000',
+          image: './assets/images/Revvup-wordmark-white.png',
+          imageWidth: 250,
+          resizeMode: 'contain',
           dark: {
-            backgroundColor: '#0D0D0D',
-            image: './assets/images/splash-icon.png',
+            backgroundColor: '#000000',
+            image: './assets/images/Revvup-wordmark-white.png',
+            imageWidth: 250,
+            resizeMode: 'contain',
           },
         },
       ],

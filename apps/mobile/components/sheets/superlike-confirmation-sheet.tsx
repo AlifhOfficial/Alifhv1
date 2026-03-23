@@ -11,7 +11,8 @@ import { Zap } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Data, Supporting, HapticPressable } from '@/components/ui';
+import { Heading, Data, Supporting } from '@/components/ui/text';
+import { HapticPressable } from '@/components/ui/haptic-pressable';
 import type { FavoritesStatusData } from '@/lib/saved-api';
 
 // ============================================================================

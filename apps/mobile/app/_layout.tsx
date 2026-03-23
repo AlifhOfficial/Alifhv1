@@ -44,7 +44,6 @@ import { SearchProvider } from '@/context/search-context';
 import { WebSocketProvider } from '@/context/websocket-context';
 import { NotificationProvider } from '@/context/notification-context';
 import { NetworkProvider } from '@/context/network-context';
-import { BootScreen } from '@/components/layout/boot-screen';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { AlertProvider } from '@/components/ui/themed-alert';
@@ -235,10 +234,7 @@ function RootLayoutNav() {
     );
   }
 
-  // Show loading while checking onboarding status
-  if (hasCompletedOnboarding === null) {
-    return <BootScreen />;
-  }
+
 
   return (
     <NavigationThemeProvider value={navTheme}>
@@ -306,16 +302,6 @@ export default function RootLayout() {
     DancingScript_400Regular,
     DancingScript_700Bold,
   });
-
-  // Show branded boot screen until fonts are loaded
-  // No artificial delays - app proceeds as soon as fonts are ready
-  if (!fontsLoaded) {
-    return (
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
-        <BootScreen />
-      </GestureHandlerRootView>
-    );
-  }
 
   // Always render with full provider stack - onboarding is handled inside RootLayoutNav
   return (

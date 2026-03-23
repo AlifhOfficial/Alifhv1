@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 120" width="390" height="120">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Geom:wght@900&amp;display=swap');
+      .wm {
+        font-family: 'Geom', 'Arial Black', sans-serif;
+        font-weight: 900;
+        font-size: 96px;
+        fill: #FFFFFF;
+        letter-spacing: -3px;
+      }
+    </style>
+  </defs>
+  <text class="wm" x="8" y="100" dominant-baseline="auto" textLength="372" lengthAdjust="spacingAndGlyphs">Revvup</text>
+</svg>
