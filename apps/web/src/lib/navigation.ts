@@ -99,44 +99,6 @@ export const navItems: NavItem[] = [
     label: "Help",
     href: "/faq",
   },
-  {
-    label: "Tools",
-    href: "/tools",
-    hideSubmenu: true,
-    submenu: [
-      {
-        title: "Valuation",
-        items: [
-          { label: "Car Valuation", href: "/tools/car-valuation-uae", description: "Get accurate market value" },
-          { label: "Is It Overpriced?", href: "/tools/is-car-overpriced", description: "Check if a deal is fair" },
-        ],
-      },
-      {
-        title: "Financial",
-        items: [
-          { label: "Loan Calculator", href: "/tools/loan-calculator", description: "Calculate EMI payments" },
-          { label: "Depreciation Calculator", href: "/tools/depreciation-calculator", description: "5-year value projection" },
-          { label: "Ownership Cost", href: "/tools/ownership-cost-calculator", description: "True cost of ownership" },
-        ],
-      },
-      {
-        title: "Running Costs",
-        items: [
-          { label: "Fuel Cost Calculator", href: "/tools/fuel-cost-calculator", description: "Monthly fuel expenses" },
-          { label: "Insurance Estimator", href: "/tools/insurance-estimator", description: "Insurance quote estimates" },
-          { label: "Registration Fees", href: "/tools/registration-fee-calculator", description: "RTA fees by emirate" },
-        ],
-      },
-      {
-        title: "Guides & Fun",
-        items: [
-          { label: "Buying Checklist", href: "/tools/buying-checklist", description: "Pre-purchase inspection" },
-          { label: "Car Personality Quiz", href: "/tools/car-personality-quiz", description: "Find your perfect match" },
-          { label: "Dream Car Matcher", href: "/tools/dream-car-matcher", description: "AI-powered recommendations" },
-        ],
-      },
-    ],
-  },
 ];
 
 // ==========================================
@@ -154,7 +116,6 @@ export const footerSections: FooterSection[] = [
       { label: "Cars", href: "/listings" },
       { label: "Sell", href: "/user-dashboard/listings/new" },
       { label: "Black", href: "/black" },
-      { label: "Tools", href: "/tools" },
     ],
   },
   {
@@ -191,22 +152,9 @@ export const footerBottomLinks = [
 ];
 
 // ==========================================
-// TOOLS (for sitemap)
+// TOOLS (for sitemap) - Tools not launched yet
 // ==========================================
-export const toolPages = [
-  "car-valuation-uae",
-  "is-car-overpriced",
-  "loan-calculator",
-  "buying-checklist",
-  "depreciation-calculator",
-  "ownership-cost-calculator",
-  "fuel-cost-calculator",
-  "insurance-estimator",
-  "registration-fee-calculator",
-  "car-personality-quiz",
-  "what-your-car-says",
-  "dream-car-matcher",
-];
+export const toolPages: string[] = [];
 
 // ==========================================
 // STATIC PAGES (for sitemap)

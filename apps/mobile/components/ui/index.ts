@@ -37,18 +37,6 @@ export {
   type LoaderVariant,
 } from './loaders';
 
-// Premium Backgrounds (Skia GPU-accelerated)
-export {
-  PremiumBackground,
-  MeshBG,
-  RadialBG,
-  AuroraBG,
-  NoiseBG,
-  ACCENT_PALETTES,
-  type PremiumBackgroundProps,
-  type BackgroundVariant,
-  type AccentPalette,
-} from './premium-background';
 
 // Confetti burst effect
 export {

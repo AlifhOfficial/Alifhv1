@@ -27,6 +27,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     name: 'Revvup',
     slug: 'revvup',
     version: '1.0.0',
+    runtimeVersion: {
+      policy: 'appVersion',
+    },
+    updates: {
+      url: 'https://u.expo.dev/cd8cffff-33b0-46d9-b584-08eb6448e6dc',
+    },
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     scheme: 'revvup',
@@ -84,6 +90,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       'expo-audio',
       'expo-asset',
       'expo-apple-authentication',
+      'expo-font',
+      'expo-web-browser',
+      'expo-updates',
     ],
     experiments: {
       typedRoutes: true,

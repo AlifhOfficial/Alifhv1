@@ -12,10 +12,22 @@
       },
       "ios": {
         "simulator": true
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://revvup.ae",
+        "EXPO_PUBLIC_WS_URL": "wss://ws.revvup.ae",
+        "EXPO_PUBLIC_CDN_URL": "https://cdn.revvup.ae"
+      }
+    },
+    "development:device": {
+      "extends": "development",
+      "ios": {
+        "simulator": false
       }
     },
     "preview": {
       "distribution": "internal",
+      "channel": "preview",
       "android": {
         "buildType": "apk"
       },
@@ -29,6 +41,7 @@
       }
     },
     "production": {
+      "channel": "production",
       "android": {
         "buildType": "app-bundle"
       },

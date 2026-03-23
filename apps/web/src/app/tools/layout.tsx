@@ -1,5 +1,6 @@
 "use client"
 
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -24,6 +25,8 @@ export default function ToolsLayout({
 }: {
   children: React.ReactNode
 }) {
+  notFound()
+
   const pathname = usePathname()
   const isToolsIndex = pathname === '/tools'
   

@@ -1,6 +1,6 @@
 /**
  * Showrooms Showcase Grid
- * Single video/image background with brand name overlay
+ * Single image background with brand name overlay
  * Displays real showroom data from API
  * 
  * Follows Revvup Design System patterns:
@@ -15,7 +15,6 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Image } from 'expo-image';
-import { Video, ResizeMode } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -91,27 +90,12 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
     return null;
   }
 
-  // Determine media source - video first, then image fallback
-  const hasVideo = !!showroom.heroVideoFileUrl || !!showroom.heroVideoUrl;
-  const videoSource = showroom.heroVideoFileUrl || showroom.heroVideoUrl;
   const imageSource = showroom.heroImageUrl || showroom.partner.heroImageUrl;
-
-  // Use theme colors - text stays white for visibility over media
   const cardBg = colors.surface;
 
   return (
     <View style={[styles.container, { backgroundColor: cardBg }]}>
-      {/* Media Background - Video or Image */}
-      {hasVideo && videoSource ? (
-        <Video
-          source={{ uri: videoSource }}
-          style={styles.mediaBg}
-          resizeMode={ResizeMode.COVER}
-          shouldPlay
-          isLooping
-          isMuted
-        />
-      ) : imageSource ? (
+      {imageSource ? (
         <Image
           source={{ uri: imageSource }}
           style={styles.mediaBg}

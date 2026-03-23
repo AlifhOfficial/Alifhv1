@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { CAR_MAKES, UAE_EMIRATES } from '@/lib/filter-constants';
-import { staticPages, toolPages } from '@/lib/navigation';
+import { staticPages } from '@/lib/navigation';
 
 const BASE_URL = 'https://revvup.ae';
 
@@ -18,23 +18,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: page.changeFrequency,
       priority: page.priority,
-    });
-  });
-
-  // 2. Tools pages (SEO traffic magnets - from centralized config)
-  urls.push({
-    url: `${BASE_URL}/tools`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  });
-
-  toolPages.forEach((tool) => {
-    urls.push({
-      url: `${BASE_URL}/tools/${tool}`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
     });
   });
 
