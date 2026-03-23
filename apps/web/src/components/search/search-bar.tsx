@@ -448,7 +448,9 @@ export function SearchBar({
         <div 
           className={cn(
             'absolute top-full z-50 mt-2',
-            'left-0 right-0 w-full',
+            // On mobile: extend left/right to compensate for icon buttons (w-10=2.5rem) + gap (0.5rem) beside search bar
+            'max-sm:-left-12 max-sm:-right-12',
+            'sm:left-0 sm:right-0',
             'bg-sidebar border border-sidebar-border rounded-2xl shadow-xl',
             'overflow-hidden animate-in fade-in-0 slide-in-from-top-2 duration-150'
           )}
@@ -457,10 +459,10 @@ export function SearchBar({
           {isLoading && suggestions.length === 0 ? (
             <div className="flex items-center justify-center py-8 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin mr-3" />
-              <span className="text-sm font-semibold">Searching...</span>
+              <span className="text-base sm:text-sm font-semibold">Searching...</span>
             </div>
           ) : (
-            <ul className="py-2">
+            <ul className="py-1 sm:py-2">
               {suggestions.map((suggestion, index) => (
                 <li
                   key={`${suggestion.type}-${suggestion.text}`}
@@ -468,26 +470,26 @@ export function SearchBar({
                   aria-selected={clampedSelectedIndex === index}
                   onClick={() => handleSuggestionClick(suggestion)}
                   className={cn(
-                    'flex items-center justify-between px-4 py-3 cursor-pointer',
+                    'flex items-center justify-between px-4 py-3.5 sm:py-3 cursor-pointer touch-manipulation',
                     'transition-colors duration-100',
-                    clampedSelectedIndex === index 
-                      ? 'bg-primary/10' 
-                      : 'hover:bg-muted/50'
+                    clampedSelectedIndex === index
+                      ? 'bg-primary/10'
+                      : 'hover:bg-muted/50 active:bg-muted/70'
                   )}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
-                    <span className="text-[15px] font-semibold text-foreground truncate">
+                    <span className="text-base sm:text-[15px] font-semibold text-foreground truncate">
                       {suggestion.text}
                     </span>
                     {SUGGESTION_LABELS[suggestion.type] && (
-                      <span className="shrink-0 text-xs text-muted-foreground/50 font-medium">
+                      <span className="shrink-0 text-xs sm:text-xs text-muted-foreground/50 font-medium">
                         {SUGGESTION_LABELS[suggestion.type]}
                       </span>
                     )}
                   </div>
                   {!['vin_listing', 'vin_decode', 'vin_partial'].includes(suggestion.type) && suggestion.count >= 0 && (
-                    <span className="text-sm font-semibold text-muted-foreground/70 tabular-nums">
+                    <span className="text-sm font-semibold text-muted-foreground/70 tabular-nums shrink-0 ml-2">
                       {suggestion.count} {suggestion.count === 1 ? 'car' : 'cars'}
                     </span>
                   )}
@@ -502,9 +504,9 @@ export function SearchBar({
               onClick={() => handleSearch(query.trim())}
               className={cn(
                 'w-full flex items-center justify-center gap-2',
-                'px-4 py-3 border-t border-border/30',
-                'text-sm font-semibold text-muted-foreground/70 hover:text-primary hover:bg-primary/5',
-                'transition-colors'
+                'px-4 py-3.5 sm:py-3 border-t border-border/30',
+                'text-base sm:text-sm font-semibold text-muted-foreground/70 hover:text-primary hover:bg-primary/5 active:bg-primary/10',
+                'transition-colors touch-manipulation'
               )}
             >
               <Search className="h-4 w-4" />

@@ -148,7 +148,7 @@ export function ProfileMenu({
             e.stopPropagation();
             onToggleMenu(e);
           }}
-          className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"
+          className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full text-muted-foreground transition-colors hover:bg-background/80 hover:text-foreground"
           aria-label="Profile menu"
           data-menu-trigger
         >

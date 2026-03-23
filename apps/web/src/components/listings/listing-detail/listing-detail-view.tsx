@@ -255,7 +255,7 @@ export function ListingDetailView({
       )}
       
       <main className="pt-20">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
           {/* Admin Preview Banner */}
           {isAdminPreview && listing && (
             <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
@@ -280,7 +280,7 @@ export function ListingDetailView({
           
           {/* Breadcrumb */}
           {isLoading ? (
-            <div className="flex items-center gap-2 py-4 mb-2 sm:mb-3 h-14 overflow-hidden">
+            <div className="flex items-center gap-2 py-4 mb-2 sm:mb-3 h-14 overflow-x-auto scrollbar-hide">
               <Skeleton className="h-4 w-16" />
               <span className="text-muted-foreground/40">/</span>
               <Skeleton className="h-4 w-20" />
@@ -288,7 +288,7 @@ export function ListingDetailView({
               <Skeleton className="h-4 w-24" />
             </div>
           ) : listing ? (
-            <nav className="flex items-center py-4 mb-2 sm:mb-3 h-14 overflow-hidden">
+            <nav className="flex items-center py-4 mb-2 sm:mb-3 h-14 overflow-x-auto scrollbar-hide">
               <div className="flex items-center gap-2 text-sm font-bold tracking-tight overflow-x-auto scrollbar-hide whitespace-nowrap min-w-0 max-w-full">
                 {breadcrumbItems.map((item, index) => {
                   const isLast = index === breadcrumbItems.length - 1;

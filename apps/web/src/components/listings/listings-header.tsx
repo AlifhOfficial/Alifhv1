@@ -215,7 +215,7 @@ export function ListingsHeader({
                 <button className="relative flex items-center justify-center h-10 w-10 bg-sidebar border border-sidebar-border rounded-full text-muted-foreground active:text-foreground shadow-sm transition-colors touch-manipulation shrink-0">
                   <SlidersHorizontal className="h-4 w-4" />
                   {activeFilterCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 text-[9px] font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 text-[10px] font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                       {activeFilterCount}
                     </span>
                   )}
