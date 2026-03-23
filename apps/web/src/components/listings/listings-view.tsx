@@ -53,8 +53,6 @@ export function ListingsView({
 }: ListingsViewProps) {
   const pathname = usePathname();
   const shouldPersistPublicSidebar = pathname === '/listings' && !embedded;
-  const mobileHeaderRef = useRef<HTMLDivElement | null>(null);
-  const [mobileHeaderHeight, setMobileHeaderHeight] = useState(0);
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(VIEW_MODE_KEY);
@@ -135,32 +133,6 @@ export function ListingsView({
     window.sessionStorage.setItem(LAST_PUBLIC_LISTINGS_URL_KEY, currentUrl);
   }, [pathname, params]);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const header = mobileHeaderRef.current;
-    if (!header) return;
-
-    const updateHeight = () => {
-      setMobileHeaderHeight(header.getBoundingClientRect().height);
-    };
-
-    updateHeight();
-
-    const observer =
-      typeof ResizeObserver !== 'undefined'
-        ? new ResizeObserver(() => updateHeight())
-        : null;
-
-    observer?.observe(header);
-    window.addEventListener('resize', updateHeight);
-
-    return () => {
-      observer?.disconnect();
-      window.removeEventListener('resize', updateHeight);
-    };
-  }, []);
-
   // Scroll to top when user changes pagination (not on initial mount/back navigation)
   // Skip initial mount to let browser restore scroll position naturally
   const prevPageRef = useRef(currentPage);
@@ -217,47 +189,34 @@ export function ListingsView({
         )}>
           {/* Mobile Layout (no resizable) */}
           <div className="lg:hidden">
-            {/* TOP: Fixed/sticky mobile header */}
+            {/* TOP: Sticky mobile header */}
             <div
               className={cn(
-                "z-30 bg-background will-change-transform [transform:translateZ(0)] [backface-visibility:hidden]",
-                "before:absolute before:inset-x-0 before:bottom-full before:h-1 before:bg-background",
-                embedded
-                  ? "sticky top-0" // sticky when embedded — stays inside SidebarInset, never overlaps the dashboard sidebar
-                  : "fixed inset-x-0 top-14 sm:top-16"
+                "sticky z-30 bg-background",
+                embedded ? "top-0" : "top-[54px] sm:top-[62px]"
               )}
             >
-              <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
-                <div ref={mobileHeaderRef}>
-                  <ListingsHeader
-                    params={params}
-                    facets={facets}
-                    meta={meta}
-                    activeFilterCount={activeFilterCount}
-                    isLoading={isLoading}
-                    listings={listings}
-                    sidebarOpen={false}
-                    onSidebarToggle={updateSidebarOpen}
-                    mobileFiltersOpen={mobileFiltersOpen}
-                    onMobileFiltersToggle={setMobileFiltersOpen}
-                    viewMode={viewMode}
-                    onViewModeChange={setViewMode}
-                    setFilters={setFilters}
-                    clearFilters={clearFilters}
-                    setSort={setSort}
-                  />
-                </div>
-              </div>
+              <ListingsHeader
+                params={params}
+                facets={facets}
+                meta={meta}
+                activeFilterCount={activeFilterCount}
+                isLoading={isLoading}
+                listings={listings}
+                sidebarOpen={false}
+                onSidebarToggle={updateSidebarOpen}
+                mobileFiltersOpen={mobileFiltersOpen}
+                onMobileFiltersToggle={setMobileFiltersOpen}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                setFilters={setFilters}
+                clearFilters={clearFilters}
+                setSort={setSort}
+              />
             </div>
 
             {/* Content */}
-            <main
-              className="pb-3 sm:pb-6"
-              style={{
-                // Only compensate for fixed header height when not embedded (sticky takes up flow space naturally)
-                paddingTop: !embedded && mobileHeaderHeight > 0 ? mobileHeaderHeight + 4 : undefined,
-              }}
-            >
+            <main className="pb-3 sm:pb-6">
               <ListingsContent
                 listings={listings}
                 meta={meta}
