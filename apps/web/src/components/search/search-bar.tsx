@@ -448,9 +448,7 @@ export function SearchBar({
         <div 
           className={cn(
             'absolute top-full z-50 mt-2',
-            // On mobile: extend left/right to compensate for icon buttons (w-10=2.5rem) + gap (0.5rem) beside search bar
-            'max-sm:-left-12 max-sm:-right-12',
-            'sm:left-0 sm:right-0',
+            'left-0 right-0',
             'bg-sidebar border border-sidebar-border rounded-2xl shadow-xl',
             'overflow-hidden animate-in fade-in-0 slide-in-from-top-2 duration-150'
           )}
