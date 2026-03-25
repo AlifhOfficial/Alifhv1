@@ -9,6 +9,7 @@
  * - Page content: Client component hydrated from SSR data
  */
 
+import { cache } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ShowroomPageClient } from './client';
@@ -25,6 +26,9 @@ import {
 interface ShowroomPageProps {
   params: Promise<{ slug: string }>;
 }
+
+// Revalidate every 5 minutes (300 seconds)
+export const revalidate = 300;
 
 // ============================================================================
 // Static Generation
@@ -75,9 +79,11 @@ export async function generateStaticParams() {
 // Server-side API fetch for metadata
 // ============================================================================
 
-async function fetchShowroomMetadata(slug: string) {
+// Deduplicates the DB call between generateMetadata and the page component
+// within the same request render tree (React per-request memoization)
+const fetchShowroomMetadata = cache(async (slug: string) => {
   return getCachedPublicShowroom(slug);
-}
+});
 
 /**
  * Server-side fetch for showroom listings

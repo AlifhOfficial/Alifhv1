@@ -71,6 +71,8 @@ interface ListingsHeaderProps {
   clearFilters: () => void;
   /** Set sort callback */
   setSort: (sort: string) => void;
+  /** Server-fetched initial popular suggestions */
+  initialSuggestions?: Array<any>;
 }
 
 export function ListingsHeader({
@@ -89,6 +91,7 @@ export function ListingsHeader({
   setFilters,
   clearFilters,
   setSort,
+  initialSuggestions,
 }: ListingsHeaderProps) {
   // Popover open states
   const [makesOpen, setMakesOpen] = useState(false);
@@ -553,6 +556,7 @@ export function ListingsHeader({
                 placeholder="Search"
                 redirectOnSearch={false}
                 onSearch={setFilters}
+                initialSuggestions={initialSuggestions}
               />
             </div>
 

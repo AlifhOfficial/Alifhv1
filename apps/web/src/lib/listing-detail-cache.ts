@@ -1,99 +1,81 @@
+/**
+ * Listing Detail Cache - Server-only
+ * 
+ * Caches listing detail queries via Vercel Data Cache.
+ * - Listing detail: 5 min (price/status changes need quick updates)
+ * - Similar listings: 12 hours (changes infrequently, reduces DB load)
+ * - Profiles: 5 min (contact/business info may change)
+ * - Stats: 24 hours (counts update slowly, expensive queries)
+ * - Showroom check: 5 min (showroom activation is rare)
+ * 
+ * @module lib/listing-detail-cache
+ */
+
 import { unstable_cache } from 'next/cache';
 import {
   getListingDetailed,
+  getSimilarListings,
   getDealerBaseProfile,
   getUserProfileByUserId,
   getStaffEffectivePhone,
   calculatePartnerStats,
   calculateUserStats,
   hasPublishedShowroom,
+  type SimilarListingsParams,
 } from '@alifh/database';
-import type { SellerData } from '@/hooks/listings';
-import type { SimilarListingCard } from '@/hooks/listings/use-similar-listings';
-import { getCachedSimilarListingsForListing } from '@/lib/similar-listings-cache';
 
-const LISTING_DETAIL_CACHE_TTL = 300;
+// Cache listing detail for 5 minutes
+export const getCachedListingDetailed = unstable_cache(
+  async (listingId: string) => getListingDetailed(listingId),
+  ['listing-detail'],
+  { revalidate: 300, tags: ['listing-detail'] }
+);
 
-type ListingResult = NonNullable<Awaited<ReturnType<typeof getListingDetailed>>>;
+// Cache similar listings for 12 hours
+export const getCachedSimilarListings = unstable_cache(
+  async (params: SimilarListingsParams) => getSimilarListings(params),
+  ['similar-listings'],
+  { revalidate: 43200 }
+);
 
-export interface CachedListingDetailBundle {
-  listing: ListingResult | null;
-  sellerData: SellerData | null;
-  similarListings: SimilarListingCard[];
-}
+// Cache partner profile for 5 minutes
+export const getCachedDealerProfile = unstable_cache(
+  async (partnerId: string) => getDealerBaseProfile(partnerId),
+  ['dealer-profile'],
+  { revalidate: 300 }
+);
 
-async function fetchSellerData(listing: ListingResult): Promise<SellerData | null> {
-  try {
-    if (listing.partnerId) {
-      const [partnerProfile, staffContact, partnerStats, hasShowroom] = await Promise.all([
-        getDealerBaseProfile(listing.partnerId),
-        listing.postedByRole === 'staff' && listing.userId
-          ? getStaffEffectivePhone(listing.userId, listing.partnerId)
-          : Promise.resolve(null),
-        calculatePartnerStats(listing.partnerId),
-        hasPublishedShowroom(listing.partnerId),
-      ]);
+// Cache user profile for 5 minutes
+export const getCachedUserProfile = unstable_cache(
+  async (userId: string) => getUserProfileByUserId(userId),
+  ['user-profile'],
+  { revalidate: 300 }
+);
 
-      return {
-        type: 'partner' as const,
-        partnerId: listing.partnerId,
-        partner: partnerProfile,
-        partnerStats: partnerStats ? { ...partnerStats, hasShowroom } : null,
-        staffContact: staffContact ? {
-          phone: staffContact.phone,
-          displayName: staffContact.displayName,
-        } : null,
-      } as unknown as SellerData;
-    }
+// Cache staff contact for 5 minutes
+export const getCachedStaffContact = unstable_cache(
+  async (userId: string, partnerId: string) => getStaffEffectivePhone(userId, partnerId),
+  ['staff-contact'],
+  { revalidate: 300 }
+);
 
-    const [userProfile, userStats] = await Promise.all([
-      getUserProfileByUserId(listing.userId),
-      calculateUserStats(listing.userId),
-    ]);
+// Cache partner stats for 24 hours
+export const getCachedPartnerStats = unstable_cache(
+  async (partnerId: string) => calculatePartnerStats(partnerId),
+  ['partner-stats'],
+  { revalidate: 86400 }
+);
 
-    return {
-      type: 'user' as const,
-      userId: listing.userId,
-      userProfile,
-      userStats,
-    } as unknown as SellerData;
-  } catch (error) {
-    console.error('[listing-detail-cache] fetchSellerData failed:', error);
-    return null;
-  }
-}
+// Cache user stats for 24 hours
+export const getCachedUserStats = unstable_cache(
+  async (userId: string) => calculateUserStats(userId),
+  ['user-stats'],
+  { revalidate: 86400 }
+);
 
-async function fetchPublicListingDetailBundleUncached(listingId: string): Promise<CachedListingDetailBundle> {
-  const listing = await getListingDetailed(listingId);
-
-  if (!listing || listing.moderationStatus !== 'approved' || listing.lifecycleStatus !== 'active') {
-    return {
-      listing: null,
-      sellerData: null,
-      similarListings: [],
-    };
-  }
-
-  const [sellerData, similarListings] = await Promise.all([
-    fetchSellerData(listing),
-    getCachedSimilarListingsForListing(listing.id),
-  ]);
-
-  return {
-    listing,
-    sellerData,
-    similarListings,
-  };
-}
-
-export async function getCachedPublicListingDetailBundle(listingId: string): Promise<CachedListingDetailBundle> {
-  const cachedFn = unstable_cache(
-    async () => fetchPublicListingDetailBundleUncached(listingId),
-    ['listing-detail-bundle', listingId],
-    {
-      revalidate: LISTING_DETAIL_CACHE_TTL,
-    }
-  );
-
-  return cachedFn();
-}
+// Cache showroom check for 5 minutes
+export const getCachedHasShowroom = unstable_cache(
+  async (partnerId: string) => hasPublishedShowroom(partnerId),
+  ['has-showroom'],
+  { revalidate: 300 }
+);

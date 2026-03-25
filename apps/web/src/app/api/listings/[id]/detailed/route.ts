@@ -19,7 +19,6 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { 
   getListingDetailed, 
@@ -31,7 +30,6 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 
 interface RouteParams {
@@ -170,10 +168,6 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     ].filter(Boolean).join(', ');
     if (serverTiming) {
       response.headers.set('Server-Timing', serverTiming);
-    }
-    // Don't cache admin previews
-    if (!isAdminPreview) {
-      applyCdnHeaders(response, 'listing');
     }
     return response;
   } catch (error) {

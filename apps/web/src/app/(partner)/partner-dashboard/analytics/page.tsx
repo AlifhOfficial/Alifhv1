@@ -7,7 +7,7 @@
 import { redirect } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getCachedPartnerDescriptiveStats } from '@/lib/partner-stats-cache';
+import { getPartnerDescriptiveStats } from '@alifh/database';
 
 const AdvancedStatsView = dynamic(
   () => import('@/components/partner/insights/advanced-stats-view').then(mod => mod.AdvancedStatsView)
@@ -26,6 +26,6 @@ export default async function PartnerAnalyticsPage() {
     redirect('/access-denied?reason=not-partner-manager');
   }
 
-  const stats = await getCachedPartnerDescriptiveStats(membership.partnerId);
+  const stats = await getPartnerDescriptiveStats(membership.partnerId);
   return <AdvancedStatsView initialStats={stats as any} />;
 }

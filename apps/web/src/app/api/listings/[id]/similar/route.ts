@@ -14,8 +14,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { applyCdnHeaders } from '@/lib/cdn-cache';
-import { getCachedSimilarListingsForListing } from '@/lib/similar-listings-cache';
+import {
+  getListingDetailed,
+  getSimilarListings,
+  type SimilarListingCard,
+} from '@alifh/database';
 
 export const runtime = 'nodejs';
 
@@ -39,12 +42,23 @@ export async function GET(
   }
 
   try {
-    const similar = await getCachedSimilarListingsForListing(id);
+    const listing = await getListingDetailed(id);
 
-    const response = NextResponse.json({ listings: similar });
-    applyCdnHeaders(response, 'similar');
-    
-    return response;
+    if (!listing || listing.moderationStatus !== 'approved' || listing.lifecycleStatus !== 'active') {
+      return NextResponse.json({ listings: [] });
+    }
+
+    const similar = await getSimilarListings({
+      excludeId: listing.id,
+      price: listing.price,
+      bodyType: listing.bodyType,
+      make: listing.make,
+      model: listing.model,
+      mileage: listing.mileage,
+      fuelType: listing.fuelType,
+    });
+
+    return NextResponse.json({ listings: similar });
   } catch (error) {
     console.error('[similar] Error fetching similar listings:', error);
     return NextResponse.json(

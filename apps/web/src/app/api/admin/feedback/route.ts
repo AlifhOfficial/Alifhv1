@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminFeedback, reviewFeedback, markFeedbackRead, deleteFeedback, getUnreadFeedbackCount } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -32,11 +31,7 @@ export async function GET(request: NextRequest) {
 
     const feedback = await getAdminFeedback(status || undefined);
 
-    const response = NextResponse.json({ feedback });
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-    return response;
+    return NextResponse.json({ feedback });
   } catch (error) {
     console.error('Error fetching feedback:', error);
     return NextResponse.json(

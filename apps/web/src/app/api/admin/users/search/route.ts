@@ -23,7 +23,6 @@ import {
   searchAdminUsers,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -62,7 +61,6 @@ export async function GET(req: NextRequest) {
         searchType: 'autocomplete',
       }, { 
         status: 200,
-        headers: NO_CACHE_HEADERS,
       });
     }
 
@@ -84,7 +82,6 @@ export async function GET(req: NextRequest) {
         searchType: 'email',
       }, { 
         status: 200,
-        headers: NO_CACHE_HEADERS,
       });
     }
 
@@ -106,7 +103,6 @@ export async function GET(req: NextRequest) {
         searchType: 'phone',
       }, { 
         status: 200,
-        headers: NO_CACHE_HEADERS,
       });
     }
 

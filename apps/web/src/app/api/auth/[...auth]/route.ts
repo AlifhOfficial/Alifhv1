@@ -109,22 +109,6 @@ function addCorsHeaders(response: Response, origin: string | null): Response {
   return response;
 }
 
-function applySessionCacheHeaders(response: Response, request: Request): Response {
-  const pathname = new URL(request.url).pathname;
-
-  if (!pathname.endsWith('/get-session')) {
-    return response;
-  }
-
-  const headers = new Headers(response.headers);
-  headers.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=60');
-
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
-}
 
 export async function OPTIONS(request: Request) {
   const origin = request.headers.get("origin");
@@ -157,7 +141,37 @@ export async function GET(request: Request) {
   };
   const modifiedRequest = new Request(request.url, requestInit);
   const response = await auth.handler(modifiedRequest);
-  return addCorsHeaders(applySessionCacheHeaders(response, request), origin);
+  const corsResponse = addCorsHeaders(response, origin);
+
+  // Apply per-user HTTP cache headers for get-session only.
+  // Authenticated: private 5-min browser cache. Vary: Cookie ensures each user's
+  // cookie is a separate cache key — sign-in sets a new cookie → cache miss → fresh fetch.
+  // Unauthenticated (null): no-store so sign-in never gets a stale null from cache.
+  const requestUrl = new URL(request.url);
+  if (requestUrl.pathname.endsWith('/get-session')) {
+    const clone = corsResponse.clone();
+    const text = await clone.text();
+    let hasUser = false;
+    try {
+      hasUser = !!(JSON.parse(text)?.user);
+    } catch {
+      // not parseable — treat as unauthenticated
+    }
+    const headers = new Headers(corsResponse.headers);
+    if (hasUser) {
+      headers.set('Cache-Control', 'private, max-age=300, must-revalidate');
+      headers.set('Vary', 'Cookie');
+    } else {
+      headers.set('Cache-Control', 'no-store');
+    }
+    return new Response(text, {
+      status: corsResponse.status,
+      statusText: corsResponse.statusText,
+      headers,
+    });
+  }
+
+  return corsResponse;
 }
 
 export async function POST(request: Request) {

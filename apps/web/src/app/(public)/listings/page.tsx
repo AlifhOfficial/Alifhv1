@@ -12,7 +12,7 @@ import { ListingsView } from '@/components/listings/listings-view';
 import { 
   urlToSearchParams,
 } from '@alifh/database';
-import { getCachedSearchFacets, getCachedSearchResults } from '@/lib/search-cache';
+import { getCachedSearchFacets, getCachedSearchResults, getCachedPopularMakes } from '@/lib/search-cache';
 import type { SearchResponse } from '@/lib/search-utils';
 
 interface PageProps {
@@ -134,15 +134,18 @@ export default async function InventoryPage({ searchParams }: PageProps) {
 
   const canUseServerData = (searchParamsObj.page || 1) <= 1 || Boolean(searchParamsObj.cursor || searchParamsObj.pageToken);
   
-  // Fetch initial data server-side for instant display
+  // Fetch initial data AND popular suggestions server-side for instant display
   let initialData: SearchResponse | null = null;
+  let initialSuggestions = null;
   
   try {
     if (canUseServerData) {
-      const [searchResult, facets] = await Promise.all([
+      const [searchResult, facets, popularMakes] = await Promise.all([
         getCachedSearchResults({ ...searchParamsObj, limit }),
         getCachedSearchFacets(searchParamsObj),
+        getCachedPopularMakes(5), // Fetch popular makes for autocomplete
       ]);
+      initialSuggestions = popularMakes;
       
       // Cast to web's SearchResponse type (database type is compatible)
       initialData = {
@@ -157,7 +160,12 @@ export default async function InventoryPage({ searchParams }: PageProps) {
   
   return (
     <Suspense fallback={<PageSkeleton />}>
-      <ListingsView initialData={initialData} serverDriven={canUseServerData} hydrateFavoritesStatus={false} />
+      <ListingsView 
+        initialData={initialData} 
+        serverDriven={canUseServerData} 
+        hydrateFavoritesStatus={false}
+        initialSuggestions={initialSuggestions}
+      />
     </Suspense>
   );
 }

@@ -445,12 +445,13 @@ const FALLBACK_SUGGESTIONS = FALLBACK_MAKES.map(make => ({
 export function useQuickSearch(
   query: string, 
   enabled = true,
-  context?: { make?: string; model?: string }
+  context?: { make?: string; model?: string },
+  initialData?: Array<any> // Server-fetched popular suggestions
 ): QuickSearchResult {
   const isTyping = query.length >= 2;
 
   // Popular makes — shown when dropdown opens with no/short query.
-  // Server has a 1hr in-process cache so this is effectively free after first hit.
+  // Preloaded from server on initial render to avoid client fetch
   const { data: popularData, isLoading: popularLoading } = useQuery({
     queryKey: ['listings', 'suggest', 'popular'],
     queryFn: async () => {
@@ -459,6 +460,7 @@ export function useQuickSearch(
       return response.json();
     },
     enabled: enabled && !isTyping,
+    initialData: initialData ? { suggestions: initialData } : undefined,
     staleTime: 60 * 60 * 1000, // 1 hour — matches server cache
   });
 

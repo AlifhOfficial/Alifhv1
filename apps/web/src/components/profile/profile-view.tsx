@@ -62,7 +62,7 @@ interface ProfileViewProps {
 }
 
 export function ProfileView({ initialData }: ProfileViewProps) {
-  const { session: user } = useAuth();
+  const { session: user, refetch: refetchSession } = useAuth();
   const { profile, updateProfile, refresh, isLoading: profileLoading, stats } = useUserProfile(initialData);
   const { toast } = useToast();
 
@@ -208,7 +208,6 @@ export function ProfileView({ initialData }: ProfileViewProps) {
     try {
       // Client-side compression + direct R2 upload (fast!)
       const result = await compressAndUploadAvatar(file);
-      // updateProfile handles session refresh automatically via mutation onSuccess
       await updateProfile({ avatar: result.key });
       toast({ title: 'Photo updated' });
     } catch (err: any) {
@@ -224,11 +223,12 @@ export function ProfileView({ initialData }: ProfileViewProps) {
     
     setAvatarUploading(true);
     try {
-      // updateProfile handles session refresh automatically via mutation onSuccess
       await updateProfile({ avatar: null });
+      // Force session refresh to update all UI instantly
+      await refetchSession();
       toast({ title: 'Photo removed' });
-    } catch {
-      toast({ title: 'Failed to remove', variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: err.message || 'Failed to remove photo', variant: 'destructive' });
     } finally {
       setAvatarUploading(false);
     }

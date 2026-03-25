@@ -13,7 +13,7 @@ export async function getConversationsAction(
 ) {
   const user = await getSessionUser();
   if (!user?.id) {
-    throw new Error('Unauthorized');
+    return { conversations: [], totalUnread: 0, hasMore: false };
   }
 
   return getSerializedConversationsForUser(user, {

@@ -544,6 +544,12 @@ export async function refreshSession(): Promise<AuthResult> {
   try {
     const response = await authFetch(AUTH_ENDPOINTS.GET_SESSION, {
       method: 'GET',
+      // Bypass any HTTP cache (iOS NSURLSession respects Cache-Control: max-age).
+      // The server now sends Cache-Control: private, max-age=300 + Vary: Cookie on
+      // this endpoint. Since mobile sends no Cookie, all mobile requests share the
+      // same Vary bucket — without this header iOS could return another user's
+      // cached session data within the 5-min TTL.
+      headers: { 'Cache-Control': 'no-cache' },
     });
 
     const data = await response.json();

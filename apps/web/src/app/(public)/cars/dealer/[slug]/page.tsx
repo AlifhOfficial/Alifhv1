@@ -119,7 +119,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 // ISR: Cache for 1 day - partner metadata rarely changes
-export const revalidate = 86400;
 
 export default async function PartnerListingsPage({ params }: PageProps) {
   const { slug } = await params;

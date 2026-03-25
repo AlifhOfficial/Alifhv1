@@ -14,12 +14,10 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { applyCdnHeaders } from '@/lib/cdn-cache';
-import { quickSearch, getPopularMakes } from "@alifh/database";
+import { getCachedQuickSearch, getCachedPopularMakes } from "@/lib/search-cache";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 // Rate limiting removed — public read endpoint protected by CF DDoS/bot + CDN caching.
 // Upstash REST round-trip was adding ~100ms per request to typeahead.
@@ -41,24 +39,15 @@ export async function GET(req: NextRequest) {
     // Return popular makes/models/trims when requested (hierarchical)
     if (popular || query.length < 2) {
       const popularItems = context 
-        ? await quickSearch('', limit, context)
-        : await getPopularMakes(limit);
-      const result = { suggestions: popularItems };
-      
-      const response = NextResponse.json(result);
-      applyCdnHeaders(response, 'suggest');
-      return response;
+        ? await getCachedQuickSearch('', limit, context)
+        : await getCachedPopularMakes(limit);
+      return NextResponse.json({ suggestions: popularItems });
     }
 
     // Execute quick search with context
-    const suggestions = await quickSearch(query, limit, context);
+    const suggestions = await getCachedQuickSearch(query, limit, context);
 
-    const result = { suggestions };
-
-    const response = NextResponse.json(result);
-    applyCdnHeaders(response, 'suggest');
-
-    return response;
+    return NextResponse.json({ suggestions });
   } catch (error) {
     console.error('[suggest] Error:', error);
     return NextResponse.json(

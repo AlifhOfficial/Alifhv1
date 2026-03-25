@@ -52,11 +52,8 @@ import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { AuthFlow } from '@/components/auth';
 import { AuthSheet } from '@/components/sheets';
 
-// Prevent splash screen from auto-hiding
+// Prevent splash screen from auto-hiding until fonts load
 SplashScreen.preventAutoHideAsync().catch(() => {});
-
-// Hide native splash immediately - we show our own loader
-SplashScreen.hideAsync().catch(() => {});
 
 // Custom themes using our Colors and Fonts
 const LightTheme: NavTheme = {
@@ -155,6 +152,9 @@ function RootLayoutNav() {
     if (Platform.OS !== 'android') {
       return;
     }
+
+    // Set immediately on mount to avoid flash, then update when theme changes
+    SystemUI.setBackgroundColorAsync('#000000').catch(() => {});
 
     let interactionTask: ReturnType<typeof InteractionManager.runAfterInteractions> | null = null;
 
@@ -302,11 +302,31 @@ export default function RootLayout() {
     DancingScript_400Regular,
     DancingScript_700Bold,
   });
+  const [appReady, setAppReady] = useState(false);
+
+  // Hide splash screen when fonts are loaded and theme is applied
+  useEffect(() => {
+    if (fontsLoaded && !appReady) {
+      // Wait for next frame to ensure theme provider has mounted
+      requestAnimationFrame(() => {
+        setAppReady(true);
+        // Small delay to ensure colors are applied before hiding splash
+        setTimeout(() => {
+          SplashScreen.hideAsync().catch(() => {});
+        }, 50);
+      });
+    }
+  }, [fontsLoaded, appReady]);
+
+  // Don't render anything until fonts are loaded
+  if (!fontsLoaded) {
+    return null;
+  }
 
   // Always render with full provider stack - onboarding is handled inside RootLayoutNav
   return (
     <ErrorBoundary>
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
         <SafeAreaProvider>
           <QueryClientProvider client={queryClient}>
             <ThemeProvider>

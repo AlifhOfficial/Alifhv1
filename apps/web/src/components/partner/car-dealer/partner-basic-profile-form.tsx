@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/providers/auth-provider';
 import { usePartnerProfile } from '@/hooks/partner/car-dealer/use-partner-profile';
 import { usePartnerStats } from '@/hooks/partner/car-dealer/use-partner-stats';
 import { compressAndUploadPartnerImage } from '@/lib/storage';
@@ -164,6 +165,7 @@ export function PartnerBasicProfileForm({
   initialStats = null,
 }: PartnerBasicProfileFormProps) {
   const { toast } = useToast();
+  const { refetch: refetchSession } = useAuth();
   const { profile, isLoading, updateProfile, isUpdating, refetchFresh } = usePartnerProfile(partnerId, initialProfile);
   const { stats, isLoading: statsLoading } = usePartnerStats(partnerId, initialStats);
 
@@ -360,7 +362,7 @@ export function PartnerBasicProfileForm({
       updateField({ logo: result.key });
       toast({ title: 'Logo updated' });
     } catch (err: any) {
-      toast({ title: err.message || 'Upload failed', variant: 'destructive' });
+      toast({ title: err.message || 'Failed to upload logo', variant: 'destructive' });
     } finally {
       setLogoUploading(false);
     }
@@ -380,7 +382,7 @@ export function PartnerBasicProfileForm({
       updateField({ heroImage: result.key });
       toast({ title: 'Banner updated' });
     } catch (err: any) {
-      toast({ title: err.message || 'Upload failed', variant: 'destructive' });
+      toast({ title: err.message || 'Failed to upload banner', variant: 'destructive' });
     } finally {
       setBannerUploading(false);
     }
@@ -389,12 +391,15 @@ export function PartnerBasicProfileForm({
   const removeLogo = async () => {
     setLogoUploading(true);
     try {
-      await updateProfile({ logo: null });
+      // Clear preview first to ensure no stale UI
       setLogoPreviewUrl(null);
       updateField({ logo: null });
+      await updateProfile({ logo: null });
+      // Force session refresh to update all UI instantly
+      await refetchSession();
       toast({ title: 'Logo removed' });
-    } catch {
-      toast({ title: 'Failed to remove', variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: err.message || 'Failed to remove logo', variant: 'destructive' });
     } finally {
       setLogoUploading(false);
     }
@@ -403,12 +408,15 @@ export function PartnerBasicProfileForm({
   const removeHero = async () => {
     setBannerUploading(true);
     try {
-      await updateProfile({ heroImage: null });
+      // Clear preview first to ensure no stale UI
       setHeroPreviewUrl(null);
       updateField({ heroImage: null });
+      await updateProfile({ heroImage: null });
+      // Force session refresh to update all UI instantly
+      await refetchSession();
       toast({ title: 'Banner removed' });
-    } catch {
-      toast({ title: 'Failed to remove', variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: err.message || 'Failed to remove banner', variant: 'destructive' });
     } finally {
       setBannerUploading(false);
     }

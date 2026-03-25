@@ -1,5 +1,17 @@
 {
   "installCommand": "cd ../.. && bun install",
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "status.revvup.ae" }],
+      "destination": "/status"
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "status.revvup.ae" }],
+      "destination": "/status"
+    }
+  ],
   "crons": [
     {
       "path": "/api/cron/expire-listings",

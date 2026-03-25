@@ -32,12 +32,10 @@ import {
   getFavoritesWithListings,
   getSuperlikeQuotaForUser,
 } from '@alifh/database';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const revalidate = 0; // User-specific data must bypass CDN caching
 
 export async function GET(req: NextRequest) {
   try {
@@ -62,10 +60,6 @@ export async function GET(req: NextRequest) {
           periodEndDate: null,
         }
       });
-      Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-        response.headers.set(key, value)
-      );
-      return response;
     }
 
 
@@ -108,13 +102,7 @@ export async function GET(req: NextRequest) {
       },
     };
 
-    const response = NextResponse.json(responseData);
-    
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-    
-    return response;
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error('[favorites-status] GET failed', error);
     return NextResponse.json(

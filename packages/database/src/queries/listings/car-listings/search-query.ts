@@ -952,23 +952,85 @@ async function getAllEnumFacets(
 }
 
 /**
- * Get all facets with optimized query strategy
- * 
- * Reduced from 13 parallel queries to 5:
- * - Make, Model, Trim: 3 separate queries (need special filter exclusion)
- * - Ranges: 1 query (min/max aggregates)
- * - All enum facets: 1 consolidated UNION query
+ * Get make, model, and trim facets in a single UNION ALL query — 1 HTTP POST to Neon.
+ *
+ * Previously fired as 3 parallel db.select() calls (3 round trips).
+ * Now: one raw SQL UNION ALL, Postgres scans the table up to 3 times in a single
+ * execution plan but the entire result comes back in a single network call.
+ *
+ * WHERE clause differences:
+ *  - make:  base conditions only (ignore make filter so all makes are always visible)
+ *  - model: base + make filter (if any)
+ *  - trim:  base + make + model filter (only included when both are selected)
+ */
+async function getAllMakeModelTrimFacets(params: SearchParams, now: Date): Promise<{
+  make: FacetBucket[];
+  model: FacetBucket[];
+  trim: FacetBucket[];
+}> {
+  const baseConditions = buildPublicBaseConditions(now);
+  const baseWhere = and(...baseConditions)!;
+
+  const modelConditions = [...baseConditions];
+  if (params.make?.length) {
+    modelConditions.push(inArray(carListing.make, params.make));
+  }
+  const modelWhere = and(...modelConditions)!;
+
+  const hasTrim = (params.make?.length ?? 0) > 0 && (params.model?.length ?? 0) > 0;
+  const trimUnion = hasTrim
+    ? sql`
+        UNION ALL
+        SELECT 'trim'::text  AS facet_type, trim::text  AS value, count(*)::int AS count
+        FROM car_listing
+        WHERE ${and(...baseConditions, inArray(carListing.make, params.make!), inArray(carListing.model, params.model!))!}
+          AND trim IS NOT NULL
+        GROUP BY trim`
+    : sql``;
+
+  const results = await db.execute(sql`
+    SELECT 'make'::text  AS facet_type, make::text  AS value, count(*)::int AS count
+    FROM car_listing
+    WHERE ${baseWhere} AND make IS NOT NULL
+    GROUP BY make
+    UNION ALL
+    SELECT 'model'::text AS facet_type, model::text AS value, count(*)::int AS count
+    FROM car_listing
+    WHERE ${modelWhere} AND model IS NOT NULL
+    GROUP BY model
+    ${trimUnion}
+  `);
+
+  const rows = (results as any).rows ?? results;
+
+  const make: FacetBucket[] = [];
+  const model: FacetBucket[] = [];
+  const trim: FacetBucket[] = [];
+
+  for (const row of rows) {
+    const bucket: FacetBucket = {
+      value: String(row.value),
+      label: String(row.value),
+      count: Number(row.count),
+    };
+    if (row.facet_type === 'make') make.push(bucket);
+    else if (row.facet_type === 'model') model.push(bucket);
+    else if (row.facet_type === 'trim') trim.push(bucket);
+  }
+
+  make.sort((a, b) => b.count - a.count);
+  model.sort((a, b) => b.count - a.count);
+  trim.sort((a, b) => b.count - a.count);
+
+  return { make, model, trim };
+}
+
+/**
+ * Get all facets — make/model/trim combined into 1 UNION ALL (1 HTTP POST),
+ * enum facets and ranges left as empty stubs (not shown in UI currently).
  */
 async function getAllFacets(params: SearchParams, now: Date): Promise<SearchFacets> {
-  const [
-    make,
-    model,
-    trim,
-  ] = await Promise.all([
-    getMakeFacets(params, now),
-    getModelFacets(params, now),
-    getTrimFacets(params, now),
-  ]);
+  const { make, model, trim } = await getAllMakeModelTrimFacets(params, now);
 
   return {
     make,

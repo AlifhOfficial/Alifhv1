@@ -12,7 +12,6 @@ import {
   getFunnelById,
   getFunnelMatchingListings,
 } from '@alifh/database';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -79,7 +78,6 @@ export async function GET(
         hasMore: offset + listings.length < total,
       },
       {
-        headers: NO_CACHE_HEADERS,
       }
     );
   } catch (error) {

@@ -31,7 +31,6 @@ import {
   getActivePartnerStaffMembershipByUserId,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -135,10 +134,6 @@ export async function POST(req: NextRequest) {
       }
     }, { status: 201 });
 
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-
     return response;
   } catch (error) {
     console.error('[partners/request] POST failed', error);
@@ -164,15 +159,9 @@ export async function GET(req: NextRequest) {
 
     const request = await getPartnerRequestByUserId(user.id);
 
-    const response = NextResponse.json({ 
+    return NextResponse.json({ 
       request: request || null 
     });
-
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-
-    return response;
   } catch (error) {
     console.error('[partners/request] GET failed', error);
     return NextResponse.json({ 
@@ -221,18 +210,12 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    const response = NextResponse.json({ 
+    return NextResponse.json({ 
       success: true,
       message: existingRequest.status === 'rejected' 
         ? 'Partner request dismissed' 
         : 'Partner request cancelled'
     });
-
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-
-    return response;
   } catch (error) {
     console.error('[partners/request] DELETE failed', error);
     return NextResponse.json({ 

@@ -188,8 +188,6 @@ export const auth = betterAuth({
     }),
     customSession(async ({ user, session }) => {
       // Always fetch fresh session data from DB
-      // Cached cross-request by unstable_cache in getSessionUser() (5min TTL)
-
       // OPTIMIZED: Single SQL query with LEFT JOINs instead of 3 parallel queries
       // This reduces 3 HTTP round-trips to Neon down to 1
       const result = await db.execute<{
@@ -455,9 +453,9 @@ export const auth = betterAuth({
     },
   },
 
+  // Don't set pages.signIn - it overrides the callbackURL parameter in OAuth flows
+  // This caused the popup auth to load the entire app instead of the callback page
   pages: {
-    signIn: "/",
-    signUp: "/",
     error: "/auth/error",
   },
 
@@ -510,10 +508,10 @@ export const auth = betterAuth({
     // 'strict' can cause state_mismatch errors with OAuth flows
     defaultCookieAttributes: {
       sameSite: "lax",
-      // Only set Secure flag when actually using HTTPS
-      // Checking BETTER_AUTH_URL allows local network testing over HTTP
-      secure: process.env.NODE_ENV === "production" && 
-              (process.env.BETTER_AUTH_URL?.startsWith("https://") ?? true),
+      // Use BETTER_AUTH_URL to determine if we're actually serving over HTTPS.
+      // This correctly handles: dev (http), local prod build (http), and production (https).
+      // NODE_ENV alone is wrong — `bun start` is production mode but may run on http://localhost.
+      secure: process.env.BETTER_AUTH_URL?.startsWith("https://") ?? false,
     },
   },
 

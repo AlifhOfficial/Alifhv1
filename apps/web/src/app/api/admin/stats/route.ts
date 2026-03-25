@@ -20,7 +20,6 @@ import {
   getAdminPartnerCountByStatus,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 
 export const runtime = 'nodejs';
@@ -55,7 +54,6 @@ export async function GET(req: NextRequest) {
       },
     }, { 
       status: 200,
-      headers: NO_CACHE_HEADERS,
     });
 
   } catch {

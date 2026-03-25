@@ -9,22 +9,33 @@
  */
 
 import { Metadata } from 'next';
-import { getListingDetailed } from '@alifh/database';
 import { ListingDetailView } from '@/components/listings/listing-detail';
 import { ImagePreloader } from '@/components/ui/image-preloader';
-import { getCachedPublicListingDetailBundle } from '@/lib/listing-detail-cache';
 import { buildListingBrandedImageUrl } from '@/lib/listing-share';
 import { getCdnPublicUrl } from '@/utils/storage';
+import {
+  getCachedListingDetailed,
+  getCachedSimilarListings,
+  getCachedDealerProfile,
+  getCachedUserProfile,
+  getCachedStaffContact,
+  getCachedPartnerStats,
+  getCachedUserStats,
+  getCachedHasShowroom,
+} from '@/lib/listing-detail-cache';
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+// Revalidate every 5 minutes (300 seconds)
+export const revalidate = 300;
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   
   try {
-    const listing = await getListingDetailed(id);
+    const listing = await getCachedListingDetailed(id);
     
     if (!listing || listing.moderationStatus !== 'approved' || listing.lifecycleStatus !== 'active') {
       return {
@@ -101,10 +112,60 @@ export default async function ListingDetailPage({ params }: PageProps) {
   let initialSimilarListings = [];
   
   try {
-    const { listing, sellerData, similarListings } = await getCachedPublicListingDetailBundle(id);
-    // Only pass public, approved listings as initial data
+    const listing = await getCachedListingDetailed(id);
+    
+    // Only process public, approved listings
     if (listing?.moderationStatus === 'approved' && listing?.lifecycleStatus === 'active') {
       initialListing = listing;
+      
+      // Fetch seller data in parallel with similar listings
+      const [sellerData, similarListings] = await Promise.all([
+        (async () => {
+          if (listing.partnerId) {
+            const [partnerProfile, staffContact, partnerStats, hasShowroom] = await Promise.all([
+              getCachedDealerProfile(listing.partnerId),
+              listing.postedByRole === 'staff' && listing.userId
+                ? getCachedStaffContact(listing.userId, listing.partnerId)
+                : Promise.resolve(null),
+              getCachedPartnerStats(listing.partnerId),
+              getCachedHasShowroom(listing.partnerId),
+            ]);
+            
+            return {
+              type: 'partner' as const,
+              partnerId: listing.partnerId,
+              partner: partnerProfile,
+              partnerStats: partnerStats ? { ...partnerStats, hasShowroom } : null,
+              staffContact: staffContact ? {
+                phone: staffContact.phone,
+                displayName: staffContact.displayName,
+              } : null,
+            };
+          }
+          
+          const [userProfile, userStats] = await Promise.all([
+            getCachedUserProfile(listing.userId),
+            getCachedUserStats(listing.userId),
+          ]);
+          
+          return {
+            type: 'user' as const,
+            userId: listing.userId,
+            userProfile,
+            userStats,
+          };
+        })(),
+        getCachedSimilarListings({
+          excludeId: listing.id,
+          price: listing.price,
+          bodyType: listing.bodyType,
+          make: listing.make,
+          model: listing.model,
+          mileage: listing.mileage,
+          fuelType: listing.fuelType,
+        }),
+      ]);
+      
       initialSellerData = sellerData;
       initialSimilarListings = similarListings;
     }

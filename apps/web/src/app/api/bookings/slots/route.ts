@@ -6,18 +6,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import { getPublicBookingAvailability } from '@/lib/bookings/public-availability';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 function cachedJson(data: unknown, init?: { status?: number }) {
-  const response = NextResponse.json(data, { status: init?.status });
-  Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => {
-    response.headers.set(key, value);
-  });
-  return response;
+  return NextResponse.json(data, { status: init?.status });
 }
 
 /**

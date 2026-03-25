@@ -29,7 +29,6 @@ export const metadata: Metadata = {
 };
 
 // ISR: Static page, cached until redeploy
-export const revalidate = false;
 
 export default function AboutPage() {
   return (

@@ -32,7 +32,6 @@ import {
   adminDeletePartner,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

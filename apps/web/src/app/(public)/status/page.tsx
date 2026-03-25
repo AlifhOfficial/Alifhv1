@@ -25,7 +25,6 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 0;
 
 async function getStatusData() {
   try {

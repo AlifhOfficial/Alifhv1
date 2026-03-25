@@ -51,6 +51,16 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
       },
+      splash: {
+        backgroundColor: '#000000',
+        resizeMode: 'contain',
+        image: './assets/images/Revvup-wordmark-white.png',
+        dark: {
+          backgroundColor: '#000000',
+          resizeMode: 'contain',
+          image: './assets/images/Revvup-wordmark-white.png',
+        },
+      },
     },
     android: {
       userInterfaceStyle: 'automatic',
@@ -64,6 +74,16 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       predictiveBackGestureEnabled: false,
       backgroundColor: '#000000',
       package: 'ae.revvup.mobile',
+      splash: {
+        backgroundColor: '#000000',
+        resizeMode: 'contain',
+        image: './assets/images/Revvup-wordmark-white.png',
+        dark: {
+          backgroundColor: '#000000',
+          resizeMode: 'contain',
+          image: './assets/images/Revvup-wordmark-white.png',
+        },
+      },
     },
     androidNavigationBar: {
       enforceContrast: false,

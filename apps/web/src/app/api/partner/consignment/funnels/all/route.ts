@@ -17,7 +17,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getAllPartnerFunnels, getPartnerFunnelStats, getPartnerFunnelStaff } from '@alifh/database';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -98,7 +97,6 @@ export async function GET(req: NextRequest) {
         },
       },
       {
-        headers: NO_CACHE_HEADERS,
       }
     );
   } catch (error) {

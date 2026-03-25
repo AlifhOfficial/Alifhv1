@@ -18,12 +18,6 @@
  * - limit: Results per page (default: 20, max: 100)
  * - offset: Pagination offset (default: 0)
  * 
- * Cache Strategy:
- * - Browse/Partner pages: CDN cached (s-maxage=60, stale-while-revalidate=120)
- * - Batch requests (favorites): No CDN cache (personalized content)
- * - Memory cache: 1-3min depending on request type
- * - Cache invalidation: Handled by listing mutations
- * 
  * Standards:
  * - Returns 500 for server errors
  * - Max 100 IDs per request
@@ -32,12 +26,10 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { applyCdnHeaders, NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import { getListingCards } from "@alifh/database";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 // Rate limiting removed — public read endpoint protected by CF DDoS/bot + CDN caching.
 // Upstash REST round-trip was adding ~100ms per request.
@@ -117,17 +109,7 @@ export async function GET(req: NextRequest) {
       },
     };
     
-    const response = NextResponse.json(responseData);
-    
-    if (isPublicBrowse) {
-      applyCdnHeaders(response, 'carCard');
-    } else {
-      Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-        response.headers.set(key, value)
-      );
-    }
-    
-    return response;
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error('[car-card listings] GET failed', error);
     return NextResponse.json(

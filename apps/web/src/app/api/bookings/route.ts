@@ -10,7 +10,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import {
   getBookings,
   manageBooking,
@@ -23,11 +22,7 @@ import {
 export const runtime = 'nodejs';
 
 function noStoreJson(data: unknown, init?: { status?: number }) {
-  const response = NextResponse.json(data, { status: init?.status });
-  Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => {
-    response.headers.set(key, value);
-  });
-  return response;
+  return NextResponse.json(data, { status: init?.status });
 }
 
 /**

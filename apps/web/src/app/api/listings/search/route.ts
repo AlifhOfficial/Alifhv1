@@ -17,7 +17,6 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { 
   urlToSearchParams,
   type SearchParams,
@@ -27,7 +26,6 @@ import {
 import { getCachedSearchFacets, getCachedSearchResults } from '@/lib/search-cache';
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 // Rate limiting removed from search — adds ~100ms per request (Upstash REST round-trip).
 // Public search is protected by Cloudflare's built-in DDoS/bot protection + CDN caching.
@@ -82,7 +80,6 @@ export async function GET(req: NextRequest) {
         'Server-Timing': `db;dur=${queryMs}, total;dur=${totalMs}, search;dur=${searchResult.meta?.took ?? 0}`,
       },
     });
-    applyCdnHeaders(response, 'search');
 
     // Log slow requests (>1s) for monitoring
     if (totalMs > 1000) {

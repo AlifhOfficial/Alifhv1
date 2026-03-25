@@ -49,6 +49,9 @@ export function AuthProvider({ children, initialSession }: AuthProviderProps) {
       const res = await fetch(url, {
         method: 'GET',
         credentials: 'include',
+        // Honour the private, max-age=300 HTTP cache set by the server for authenticated sessions.
+        // Force-refresh (sign-in/sign-out refetch) always bypasses the browser cache.
+        cache: force ? 'no-store' : 'default',
       });
       
       if (!res.ok) {

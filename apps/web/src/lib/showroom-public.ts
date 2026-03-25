@@ -1,16 +1,15 @@
-import { unstable_cache } from 'next/cache';
 import {
-  getPublishedShowroomByPartnerId,
-  getPublishedShowroomBySlug,
   incrementShowroomViews,
-  searchListings,
   type SearchResponse,
 } from '@alifh/database';
-import { getCachedSearchFacets } from '@/lib/search-cache';
 import { getCdnPublicUrl } from '@/utils';
-
-const SHOWROOM_CACHE_TTL = 600;
-const SHOWROOM_LISTINGS_CACHE_TTL = 300;
+import {
+  getCachedShowroomBySlug,
+  getCachedShowroomByPartnerId,
+  getCachedShowroomListings,
+  getCachedShowroomFacets,
+  getCachedPublishedShowrooms as _getCachedPublishedShowrooms,
+} from '@/lib/showroom-cache';
 
 function attachPublicUrls(showroom: any) {
   const cacheBuster = new Date(showroom.updatedAt).getTime();
@@ -65,23 +64,13 @@ function attachPublicUrls(showroom: any) {
 }
 
 export async function getCachedPublicShowroom(slug: string) {
-  const cachedFn = unstable_cache(
-    async () => {
-      let showroom = await getPublishedShowroomBySlug(slug);
+  let showroom = await getCachedShowroomBySlug(slug);
 
-      if (!showroom) {
-        showroom = await getPublishedShowroomByPartnerId(slug);
-      }
+  if (!showroom) {
+    showroom = await getCachedShowroomByPartnerId(slug);
+  }
 
-      return showroom ? attachPublicUrls(showroom) : null;
-    },
-    ['public-showroom', slug],
-    {
-      revalidate: SHOWROOM_CACHE_TTL,
-    },
-  );
-
-  return cachedFn();
+  return showroom ? attachPublicUrls(showroom) : null;
 }
 
 export function incrementPublicShowroomViews(showroomId: string) {
@@ -94,31 +83,24 @@ export async function getCachedPublicShowroomListings(
   partnerId: string,
   partnerName: string,
 ): Promise<SearchResponse | null> {
-  const cacheKey = partnerId || partnerName;
+  const params = {
+    partnerId,
+    partnerName,
+    limit: 24,
+  };
 
-  const cachedFn = unstable_cache(
-    async () => {
-      const params = {
-        partnerId,
-        partnerName,
-        limit: 24,
-      };
+  const [searchResult, facets] = await Promise.all([
+    getCachedShowroomListings(params),
+    getCachedShowroomFacets(params),
+  ]);
 
-      const [searchResult, facets] = await Promise.all([
-        searchListings(params, { fast: true }),
-        getCachedSearchFacets(params),
-      ]);
+  return {
+    ...searchResult,
+    facets,
+  };
+}
 
-      return {
-        ...searchResult,
-        facets,
-      };
-    },
-    ['public-showroom-listings', cacheKey],
-    {
-      revalidate: SHOWROOM_LISTINGS_CACHE_TTL,
-    },
-  );
-
-  return cachedFn();
+// Re-export for public API
+export async function getCachedPublishedShowrooms(page: number, limit: number) {
+  return _getCachedPublishedShowrooms(page, limit);
 }

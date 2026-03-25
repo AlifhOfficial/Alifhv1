@@ -24,7 +24,6 @@ import {
   createAuditLogEntry,
   getListingModerationContext,
 } from '@alifh/database';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -180,10 +179,7 @@ export async function POST(
       message,
       operation: validated.data.operation,
     });
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-    return response;
+
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

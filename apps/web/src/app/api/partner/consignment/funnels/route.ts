@@ -15,7 +15,6 @@ import {
   getPartnerFunnelCounts,
   createFunnel,
 } from '@alifh/database';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -89,7 +88,6 @@ export async function GET(req: NextRequest) {
         })),
       },
       {
-        headers: NO_CACHE_HEADERS,
       }
     );
   } catch (error) {

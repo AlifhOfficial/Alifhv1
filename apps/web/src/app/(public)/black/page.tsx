@@ -7,7 +7,7 @@
  * Architecture: Server-side data fetch for instant display
  */
 
-import { getPublishedShowrooms } from '@alifh/database';
+import { getCachedPublishedShowrooms } from '@/lib/showroom-public';
 import { BlackDirectoryView } from '@/components/pages/black';
 import { getPublicUrl, getAppThumbUrl } from '@/utils';
 
@@ -65,7 +65,7 @@ export default async function BlackPage() {
   let initialShowrooms = null;
   
   try {
-    const { showrooms } = await getPublishedShowrooms(1, 50);
+    const { showrooms } = await getCachedPublishedShowrooms(1, 50);
     initialShowrooms = showrooms.map(attachCardUrls);
   } catch (error) {
     console.error('[BlackPage] Failed to fetch showrooms:', error);

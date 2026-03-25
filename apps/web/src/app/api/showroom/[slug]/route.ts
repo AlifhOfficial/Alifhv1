@@ -14,7 +14,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { applyCdnHeaders } from '@/lib/cdn-cache';
 import {
   getPublishedShowroomBySlug,
   getPublishedShowroomByPartnerId,
@@ -24,7 +23,6 @@ import { getCdnPublicUrl } from '@/utils';
 
 export const runtime = 'nodejs';
 // Enable edge caching for public pages
-export const revalidate = 600; // 10 minutes
 
 interface RouteParams {
   params: Promise<{ slug: string }>;
@@ -149,10 +147,7 @@ export async function GET(
     // Attach public URLs
     const showroomWithUrls = attachPublicUrls(showroom);
     
-    // Return with cache headers for CDN
-    const response = NextResponse.json({ showroom: showroomWithUrls });
-    applyCdnHeaders(response, 'showroomDetail');
-    return response;
+    return NextResponse.json({ showroom: showroomWithUrls });
     
   } catch (error) {
     console.error('[api/showroom/[slug]] GET failed:', error);

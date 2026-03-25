@@ -9,7 +9,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getAdminListings, getAdminListingStats } from '@alifh/database';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 
 export const runtime = 'nodejs';
@@ -60,10 +59,6 @@ export async function GET(req: NextRequest) {
         hasMore: listings.length === limit,
       },
     });
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-    return response;
   } catch {
     return NextResponse.json(
       { error: 'Failed to fetch listings' },

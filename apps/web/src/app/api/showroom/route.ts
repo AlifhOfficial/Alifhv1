@@ -13,7 +13,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { getPublishedShowrooms } from '@alifh/database';
 import { getCdnPublicUrl } from '@/utils';
 
@@ -78,7 +77,7 @@ export async function GET(req: NextRequest) {
     // Transform to card format with URLs
     const cards = showrooms.map(attachCardUrls);
     
-    const response = NextResponse.json(
+    return NextResponse.json(
       {
         showrooms: cards,
         pagination: {
@@ -90,8 +89,6 @@ export async function GET(req: NextRequest) {
         },
       }
     );
-    applyCdnHeaders(response, 'showroom');
-    return response;
     
   } catch (error) {
     console.error('[api/showroom] GET failed:', error);

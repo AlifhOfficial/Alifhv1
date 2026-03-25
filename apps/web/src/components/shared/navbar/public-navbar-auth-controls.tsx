@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { AuthManager, type AuthModalType, type AuthUser } from '@/components/auth';
+import { AuthManager, type AuthModalType } from '@/components/auth';
 import { NavbarFavorites } from './navbar-favorites';
 import { NavbarMessaging } from './navbar-messaging';
 import { ProfileMenu } from './user-dropdown';
@@ -23,7 +23,7 @@ export function PublicNavbarAuthControls({ navItems }: PublicNavbarAuthControlsP
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, isSignedIn: isAuthenticated, setSessionUser } = useUser();
+  const { user, isSignedIn: isAuthenticated } = useUser();
 
   useEffect(() => {
     if (!showProfileMenu) {
@@ -156,11 +156,8 @@ export function PublicNavbarAuthControls({ navItems }: PublicNavbarAuthControlsP
       <AuthManager
         currentModal={currentAuthModal}
         onModalChange={setCurrentAuthModal}
-        onSuccess={(authUser?: AuthUser) => {
-          if (authUser) {
-            setSessionUser(authUser as typeof user);
-          }
-          router.refresh();
+        onSuccess={() => {
+          window.location.replace("/");
         }}
       />
     </>

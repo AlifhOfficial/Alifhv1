@@ -15,7 +15,6 @@ export const metadata: Metadata = {
 };
 
 // ISR: Static redirect, cached until redeploy
-export const revalidate = false;
 
 export default function CarsPage() {
   redirect('/listings');

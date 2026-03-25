@@ -74,10 +74,6 @@ export class AuthFlowController {
       if (result.success) {
         this.actions.setSignInSuccess(true);
         this.actions.setLoading(false);
-
-        const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.SUCCESS_DISPLAY);
-        if (!stillActive) return;
-
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
       } else if ((result as any).needsVerification && result.error === "EMAIL_NOT_VERIFIED") {
@@ -134,10 +130,6 @@ export class AuthFlowController {
         this.actions.setSignInSuccess(true);
         this.actions.setLoading(false);
         this.actions.setCurrentModal("signin-feedback");
-
-        const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.SUCCESS_DISPLAY);
-        if (!stillActive) return;
-
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
       } else {
@@ -170,10 +162,6 @@ export class AuthFlowController {
       this.actions.setSignInSuccess(true);
       this.actions.setLoading(false);
       this.actions.setCurrentModal("signin-feedback");
-
-      const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.SUCCESS_DISPLAY);
-      if (!stillActive) return;
-
       this.callbacks.onSuccess?.();
       this.handleCloseAll();
     });
@@ -240,10 +228,6 @@ export class AuthFlowController {
         this.actions.setSignInSuccess(true);
         this.actions.setLoading(false);
         this.actions.setCurrentModal("signin-feedback");
-
-        const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.SUCCESS_DISPLAY);
-        if (!stillActive) return;
-
         this.callbacks.onSuccess?.(result.user);
         this.handleCloseAll();
       } else {
@@ -355,10 +339,6 @@ export class AuthFlowController {
             this.actions.setSignInSuccess(true);
             this.actions.setLoading(false);
             this.actions.setCurrentModal("signin-feedback");
-
-            const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.SUCCESS_DISPLAY);
-            if (!stillActive) return;
-
             this.actions.setOtpData(null);
             this.callbacks.onSuccess?.(signInResult.user);
             this.handleCloseAll();
@@ -373,10 +353,6 @@ export class AuthFlowController {
           this.actions.setSignInSuccess(true);
           this.actions.setLoading(false);
           this.actions.setCurrentModal("signin-feedback");
-
-          const stillActive = await this.wait(AUTH_CONFIG.FEEDBACK_DELAYS.SUCCESS_DISPLAY);
-          if (!stillActive) return;
-
           this.actions.setOtpData(null);
           this.callbacks.onSuccess?.();
           this.handleCloseAll();

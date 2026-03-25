@@ -27,7 +27,6 @@ import { getCurrentUserProfileByUserId, updateUserProfileByUserId } from "@alifh
 import { getSessionUser } from "@/lib/auth/session-context";
 import { getCurrentUserProfileBundle } from "@/lib/current-user-profile";
 import { deleteFile } from "@/lib/storage";
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = "nodejs";
 export const dynamic = 'force-dynamic';
@@ -78,16 +77,11 @@ export async function GET(req: NextRequest) {
     const user = await getSessionUser();
     
     if (!user) {
-      const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-        response.headers.set(key, value)
-      );
-      return response;
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const responseData = await getCurrentUserProfileBundle(user);
     const response = NextResponse.json(responseData);
-    Object.entries(NO_CACHE_HEADERS).forEach(([k, v]) => response.headers.set(k, v));
     return response;
   } catch (error) {
     console.error("[user-profile] GET failed", error);
@@ -100,7 +94,6 @@ export async function PATCH(req: NextRequest) {
     const user = await getSessionUser();
     if (!user) {
       const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      Object.entries(NO_CACHE_HEADERS).forEach(([k, v]) => response.headers.set(k, v));
       return response;
     }
 
@@ -143,7 +136,6 @@ export async function PATCH(req: NextRequest) {
     const profileWithUrl = await attachAvatarUrl(updated);
 
     const response = NextResponse.json({ profile: profileWithUrl });
-    Object.entries(NO_CACHE_HEADERS).forEach(([k, v]) => response.headers.set(k, v));
     return response;
   } catch (error) {
     console.error("[user-profile] PATCH failed", error);

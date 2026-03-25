@@ -12,7 +12,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getCachedUserDashboardStats } from '@/lib/user-dashboard-cache';
+import { getUserDashboardStats } from '@alifh/database';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const stats = await getCachedUserDashboardStats(user.id);
+    const stats = await getUserDashboardStats(user.id);
     
     // Add member since from user record
     const memberSince = user.createdAt 

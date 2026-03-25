@@ -1,95 +1,23 @@
 /**
- * Chime — lightweight sound effects for interactions
- *
- * Pre-loads WAV assets once, then plays them instantly on demand.
- * Silent-mode aware: respects device ringer/silent switch.
- *
- * Usage:
- *   import { playFavChime, playSuperlikeChime } from '@/lib/chime';
- *   playFavChime();
+ * Chime — sound effects stubs (sounds removed)
  */
-
-import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
-import { Platform } from 'react-native';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const FAV_SOUND = require('@/assets/sounds/chime-fav.wav');
-const SUPERLIKE_SOUND = require('@/assets/sounds/chime-superlike.wav');
-const ZAP_SOUND = require('@/assets/sounds/chime-zap.wav');
-
-let favPlayer: AudioPlayer | null = null;
-let superlikePlayer: AudioPlayer | null = null;
-let zapPlayer: AudioPlayer | null = null;
-let initialized = false;
-
-/** Configure audio session — call once at app boot or lazily */
-async function ensureInit() {
-  if (initialized) return;
-  initialized = true;
-  try {
-    await setAudioModeAsync({
-      playsInSilentMode: false, // respect silent switch
-    });
-  } catch {
-    // Audio config can fail in some environments
-  }
-}
 
 /** Play the favorite (heart) chime */
 export async function playFavChime() {
-  if (Platform.OS === 'web') return;
-  await ensureInit();
-  try {
-    if (!favPlayer) {
-      favPlayer = createAudioPlayer(FAV_SOUND);
-      favPlayer.volume = 0.5;
-    }
-    await favPlayer.seekTo(0);
-    favPlayer.play();
-  } catch {
-    // Ignore playback errors
-  }
+  // Sound removed
 }
 
 /** Play the superlike (sparkles) chime */
 export async function playSuperlikeChime() {
-  if (Platform.OS === 'web') return;
-  await ensureInit();
-  try {
-    if (!superlikePlayer) {
-      superlikePlayer = createAudioPlayer(SUPERLIKE_SOUND);
-      superlikePlayer.volume = 0.5;
-    }
-    await superlikePlayer.seekTo(0);
-    superlikePlayer.play();
-  } catch {
-    // Ignore playback errors
-  }
+  // Sound removed
 }
 
 /** Play the zap (Amna AI) chime */
 export async function playZapChime() {
-  if (Platform.OS === 'web') return;
-  await ensureInit();
-  try {
-    if (!zapPlayer) {
-      zapPlayer = createAudioPlayer(ZAP_SOUND);
-      zapPlayer.volume = 0.5;
-    }
-    await zapPlayer.seekTo(0);
-    zapPlayer.play();
-  } catch {
-    // Ignore playback errors
-  }
+  // Sound removed
 }
 
 /** Unload sounds — call on cleanup if needed */
 export async function unloadChimes() {
-  try { favPlayer?.remove(); } catch {}
-  try { superlikePlayer?.remove(); } catch {}
-  try { zapPlayer?.remove(); } catch {}
-  favPlayer = null;
-  superlikePlayer = null;
-  zapPlayer = null;
-  initialized = false;
+  // Sound removed
 }

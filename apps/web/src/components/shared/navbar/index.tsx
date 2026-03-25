@@ -24,7 +24,7 @@ import dynamic from "next/dynamic";
 import { useFloatingChatSafe } from "@/components/messaging/floating-chat-manager";
 import { useUser } from "@/hooks/auth/use-auth";
 import { handleSignOut } from "@/lib/auth/sign-out";
-import type { AuthModalType, AuthUser } from "@/components/auth";
+import type { AuthModalType } from "@/components/auth";
 
 // Code-split auth-heavy components — unauthenticated users never download NavbarMessaging/NavbarFavorites;
 // AuthManager is split out of the main bundle and loads async after hydration.
@@ -58,7 +58,7 @@ export function Navbar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { theme, setTheme } = useTheme();
-  const { user, isSignedIn: isAuthenticated, setSessionUser } = useUser();
+  const { user, isSignedIn: isAuthenticated } = useUser();
   const { openChat } = useFloatingChatSafe();
 
   // Mark as mounted after hydration
@@ -419,11 +419,8 @@ export function Navbar() {
       <AuthManager
         currentModal={currentAuthModal}
         onModalChange={setCurrentAuthModal}
-        onSuccess={(authUser?: AuthUser) => {
-          if (authUser) {
-            setSessionUser(authUser as typeof user);
-          }
-          router.refresh();
+        onSuccess={() => {
+          window.location.replace("/");
         }}
       />
     </>

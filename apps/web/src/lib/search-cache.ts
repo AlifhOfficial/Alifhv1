@@ -1,99 +1,88 @@
 /**
- * Search Cache - Server-only
- * 
- * Cached search functions using Next.js unstable_cache.
- * Facets change rarely, so we cache them for 1 hour to reduce DB load.
- * 
+ * Search Functions - Server-only
+ *
+ * Facets: cached 1 hour via Vercel Data Cache (unstable_cache).
+ *   - Facet counts (make/model counts) change infrequently — safe to cache long.
+ *   - Each unique filter combo gets its own cache entry.
+ *   - Shared between web SSR and mobile API hits.
+ *
+ * Search results: cached 2 minutes via Vercel Data Cache.
+ *   - Web SSR: ISR (revalidate=300) on the page already caches the HTML for 5 min,
+ *     so this only benefits the mobile API route (/api/listings/search).
+ *   - 2 min chosen so price changes and new listings appear quickly.
+ *   - Sold/expired listings may show stale for up to 2 min (acceptable — detail page
+ *     always shows true state, and the expire cron runs every 10 min anyway).
+ *
+ * Quick search (autocomplete): cached 10 minutes.
+ *   - Called frequently during typing but make/model/trim names don't change often.
+ *   - Reduces DB load from typeahead queries.
+ *
+ * Popular makes: cached 1 hour.
+ *   - Very stable data - top makes by count rarely change.
+ *   - Used for default autocomplete suggestions.
+ *
  * @module lib/search-cache
  */
 
 import { unstable_cache } from 'next/cache';
 import {
-  getSearchFacets as getSearchFacetsUncached,
-  searchListings as searchListingsUncached,
+  getSearchFacets,
+  searchListings,
+  quickSearch,
+  getPopularMakes,
   type SearchParams,
   type SearchFacets,
   type SearchResponse,
 } from '@alifh/database';
 
-// 1 hour TTL for facets (they are UI hints, not search correctness)
-const FACET_CACHE_TTL = 3600;
-// 2 minute TTL for public search result pages
-const SEARCH_RESULT_CACHE_TTL = 120;
+const _getCachedSearchFacets = unstable_cache(
+  async (params: SearchParams) => getSearchFacets(params),
+  ['search-facets'],
+  { revalidate: 3600 } // 1 hour
+);
 
-function stableParamValue(value: unknown): string {
-  if (Array.isArray(value)) {
-    return [...value].map(String).sort().join(',');
-  }
-  return String(value);
-}
+const _getCachedSearchResults = unstable_cache(
+  async (params: SearchParams) => searchListings(params, { fast: true }),
+  ['search-results'],
+  { revalidate: 120 } // 2 minutes
+);
 
-function getSearchResultCacheKey(params: SearchParams): string {
-  const entries = Object.entries(params)
-    .filter(([, value]) => value !== undefined && value !== null && value !== '')
-    .sort(([a], [b]) => a.localeCompare(b));
+// Cache quick search (autocomplete) for 10 minutes
+// Longer cache OK since make/model/trim names don't change often
+const _getCachedQuickSearch = unstable_cache(
+  async (query: string, limit: number, context?: { make?: string; model?: string }) => 
+    quickSearch(query, limit, context),
+  ['quick-search'],
+  { revalidate: 600 } // 10 minutes
+);
 
-  if (entries.length === 0) return 'default';
+// Cache popular makes for 1 hour
+// Very stable data - top makes rarely change
+const _getCachedPopularMakes = unstable_cache(
+  async (limit: number) => getPopularMakes(limit),
+  ['popular-makes'],
+  { revalidate: 3600 } // 1 hour
+);
 
-  return entries.map(([key, value]) => `${key}:${stableParamValue(value)}`).join('|');
-}
-
-/**
- * Generate a stable cache key from search params.
- * Uses a hierarchical make → model structure for trim facet correctness:
- *   - No filters       → 'all'
- *   - make only        → 'make:Toyota'
- *   - make + model     → 'make:Toyota|model:Camry'
- *
- * Include an hourly bucket so expired listings naturally fall out of cached
- * facets as the cache rolls over (facets are live-listing scoped in the DB query).
- */
-function getFacetCacheKey(params: SearchParams): string {
-  const keyParts: string[] = [];
-  
-  if (params.make?.length) keyParts.push(`make:${[...params.make].sort().join(',')}`);
-  if (params.model?.length) keyParts.push(`model:${[...params.model].sort().join(',')}`);
-
-  // Hourly bucket ensures cached facets don't serve expired listings indefinitely
-  const hourBucket = Math.floor(Date.now() / (1000 * 60 * 60));
-  keyParts.push(`h:${hourBucket}`);
-  
-  return keyParts.join('|') || `all|h:${Math.floor(Date.now() / (1000 * 60 * 60))}`;
-}
-
-/**
- * Cached version of getSearchFacets
- * Uses Next.js unstable_cache with 1 hour TTL
- */
 export async function getCachedSearchFacets(params: SearchParams): Promise<SearchFacets> {
-  const cacheKey = getFacetCacheKey(params);
-  
-  const cachedFn = unstable_cache(
-    async () => {
-      return getSearchFacetsUncached(params);
-    },
-    ['search-facets', cacheKey],
-    {
-      revalidate: FACET_CACHE_TTL,
-    }
-  );
-  
-  return cachedFn();
+  return _getCachedSearchFacets(params);
 }
 
 export async function getCachedSearchResults(params: SearchParams): Promise<SearchResponse> {
-  const cacheKey = getSearchResultCacheKey(params);
+  return _getCachedSearchResults(params);
+}
 
-  const cachedFn = unstable_cache(
-    async () => searchListingsUncached(params, { fast: true }),
-    ['search-results', cacheKey],
-    {
-      revalidate: SEARCH_RESULT_CACHE_TTL,
-    }
-  );
+export async function getCachedQuickSearch(
+  query: string, 
+  limit: number, 
+  context?: { make?: string; model?: string }
+) {
+  return _getCachedQuickSearch(query, limit, context);
+}
 
-  return cachedFn();
+export async function getCachedPopularMakes(limit: number) {
+  return _getCachedPopularMakes(limit);
 }
 
 // Re-export for convenience
-export { getSearchFacetsUncached as getSearchFacets };
+export { getSearchFacets };

@@ -126,7 +126,6 @@ const serviceSchema = {
 };
 
 // ISR: Static page, cached until redeploy
-export const revalidate = false;
 
 export default function PricingPage() {
   return (

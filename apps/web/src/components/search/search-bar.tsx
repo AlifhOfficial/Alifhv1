@@ -113,6 +113,8 @@ interface SearchBarProps {
   onFocus?: () => void;
   /** Callback when input loses focus */
   onBlur?: () => void;
+  /** Server-fetched initial popular suggestions */
+  initialSuggestions?: Array<any>;
 }
 
 export function SearchBar({
@@ -124,6 +126,7 @@ export function SearchBar({
   redirectOnSearch = true,
   onFocus: onFocusProp,
   onBlur: onBlurProp,
+  initialSuggestions,
 }: SearchBarProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -137,8 +140,8 @@ export function SearchBar({
   const searchTerm = query.trim();
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
   
-  // Get suggestions - no context, always show makes/models/partners
-  const { suggestions: apiSuggestions, isLoading } = useQuickSearch(debouncedSearchTerm, isFocused);
+  // Get suggestions - server-preloaded popular suggestions, client-fetched when typing
+  const { suggestions: apiSuggestions, isLoading } = useQuickSearch(debouncedSearchTerm, isFocused, undefined, initialSuggestions);
   
   // VIN lookup using external store pattern (no setState in effect)
   const vinLookup = useVinLookup(query);

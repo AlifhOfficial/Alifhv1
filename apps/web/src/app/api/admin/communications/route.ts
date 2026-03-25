@@ -16,7 +16,6 @@ import {
   getCommunicationStats,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -57,9 +56,6 @@ export async function GET(request: NextRequest) {
     });
 
     const response = NextResponse.json({ communications });
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
     return response;
   } catch (error) {
     console.error('Error fetching communications:', error);

@@ -1,4 +1,0 @@
-{
-  "$schema": "https://schema.railpack.com",
-  "aptPackages": ["python3", "python3-dev", "build-essential", "make", "g++"]
-}

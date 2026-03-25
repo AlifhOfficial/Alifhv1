@@ -28,7 +28,6 @@ import {
   ConfettiBurst,
   useConfettiBurst,
 } from '@/components/ui';
-import { playFavChime } from '@/lib/chime';
 import {
   getAvailableDates,
   getTimeSlots,
@@ -265,10 +264,9 @@ export const BookingSheet = memo(function BookingSheet({
         numberOfAttendees: attendees,
       });
 
-      // Fire confetti + chime + haptic on success
+      // Fire confetti + haptic on success
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       successConfetti.fire({ colors: BOOKING_CONFETTI_COLORS, count: 16 });
-      playFavChime();
 
       setBookingResult({
         bookingId: result.bookingId,

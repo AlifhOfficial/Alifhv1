@@ -65,7 +65,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Resolve the actual color scheme based on mode
   const colorScheme: ColorScheme = 
     themeMode === 'system' 
-      ? (deviceColorScheme ?? 'dark') 
+      ? (deviceColorScheme === 'light' || deviceColorScheme === 'dark' ? deviceColorScheme : 'dark') 
       : themeMode;
 
   const isDark = colorScheme === 'dark';
@@ -95,11 +95,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         if (Platform.OS === 'android') {
           // Nav bar button colors (light/dark icons) for 3-button navigation
           // Has no effect on gesture navigation - Android provides no API for that
-          NavigationBar.setStyle(colorScheme === 'dark' ? 'dark' : 'light');
+          try {
+            NavigationBar.setStyle(colorScheme === 'dark' ? 'dark' : 'light');
+          } catch {
+            // Ignore errors if activity is no longer available
+          }
         }
         if (Platform.OS === 'ios') {
           // Keyboard, alerts, action sheets, pickers
-          Appearance.setColorScheme(themeMode === 'system' ? null : themeMode);
+          // Only set explicit theme, let iOS follow system when in 'system' mode
+          if (themeMode !== 'system') {
+            Appearance.setColorScheme(themeMode);
+          }
         }
       });
     });

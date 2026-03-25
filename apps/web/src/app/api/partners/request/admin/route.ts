@@ -26,7 +26,6 @@ import {
   createPartnerFromRequest,
 } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 
 export const runtime = 'nodejs';
@@ -95,7 +94,7 @@ export async function GET(req: NextRequest) {
       includeCounts ? getPartnerRequestCounts() : Promise.resolve(null),
     ]);
 
-    const response = NextResponse.json({ 
+    return NextResponse.json({ 
       requests,
       counts,
       pagination: {
@@ -104,12 +103,6 @@ export async function GET(req: NextRequest) {
         total: requests.length,
       }
     });
-
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-
-    return response;
   } catch (error) {
     console.error('[partners/request/admin] GET failed', error);
     return NextResponse.json({ 
@@ -212,7 +205,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const response = NextResponse.json({ 
+    return NextResponse.json({ 
       success: true,
       request: updated,
       partner: partnerData?.partner || null,
@@ -221,12 +214,6 @@ export async function POST(req: NextRequest) {
         ? 'Partner request approved and partner account created.'
         : 'Partner request rejected.'
     });
-
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-
-    return response;
   } catch (error) {
     console.error('[partners/request/admin] POST failed', error);
     return NextResponse.json({ 

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminBanAppeals, approveBanAppeal, rejectBanAppeal } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -27,11 +26,7 @@ export async function GET(request: NextRequest) {
 
     const appeals = await getAdminBanAppeals(status || undefined);
 
-    const response = NextResponse.json({ appeals });
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-    return response;
+    return NextResponse.json({ appeals });
   } catch {
     return NextResponse.json(
       { error: 'Failed to fetch ban appeals' },
@@ -73,9 +68,6 @@ export async function POST(request: NextRequest) {
     }
 
     const response = NextResponse.json(result);
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
     return response;
   } catch {
     return NextResponse.json(

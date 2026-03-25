@@ -11,7 +11,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { getPublicBlackListings } from '@alifh/database';
 
 export const runtime = 'nodejs';
@@ -64,9 +63,7 @@ export async function GET(req: NextRequest) {
       },
     };
 
-    const response = NextResponse.json(responseData);
-    applyCdnHeaders(response, 'black');
-    return response;
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error('[API] Error fetching public black listings:', error);
     return NextResponse.json(

@@ -4,115 +4,67 @@ import type { NextRequest } from "next/server";
 // Site password protection cookie name
 const SITE_ACCESS_COOKIE = "site-access-granted";
 
-// Routes that bypass site password protection
-const BYPASS_SITE_PASSWORD = [
-  '/staging-login',      // The password entry page
-  '/api/',               // All API routes (mobile app, webhooks, etc.)
-  '/api/staging-auth',   // The password verification endpoint
-  '/status',             // Public status page
-  '/_next/',             // Next.js assets
-  '/favicon.ico',
-  '/robots.txt',
-  '/sitemap.xml',
-  '/manifest.webmanifest', // PWA manifest (must be publicly accessible)
-  '/sw.js',              // Service worker
-  '/.well-known/',       // Well-known URIs
-];
-
 /**
  * Check if site password protection is enabled and handle access
  * Returns NextResponse if access denied, or null if access granted/not required
  */
 function checkSitePassword(request: NextRequest): NextResponse | null {
-  // Skip protection in development mode
-  if (process.env.NODE_ENV === 'development') {
-    return null;
-  }
-  
+  // Only enforce when SITE_PASSWORD is set — skip entirely in dev mode
+  if (process.env.NODE_ENV === "development") return null;
+
   const sitePassword = process.env.SITE_PASSWORD;
-  
-  // No password set = no protection
-  if (!sitePassword) {
-    return null;
-  }
-  
-  const { pathname } = request.nextUrl;
-  
-  // Allow bypass routes
-  if (BYPASS_SITE_PASSWORD.some(route => pathname.startsWith(route))) {
-    return null;
-  }
-  
-  // Check for access cookie
+  if (!sitePassword) return null;
+
   const accessCookie = request.cookies.get(SITE_ACCESS_COOKIE)?.value;
-  if (accessCookie === 'true') {
-    return null;
-  }
-  
-  // Redirect to staging login page
-  const loginUrl = new URL('/staging-login', request.url);
-  loginUrl.searchParams.set('redirect', pathname);
+  if (accessCookie === "true") return null;
+
+  const { pathname } = request.nextUrl;
+  const loginUrl = new URL("/staging-login", request.url);
+  loginUrl.searchParams.set("redirect", pathname);
   return NextResponse.redirect(loginUrl);
 }
 
 /**
  * Lightweight middleware proxy.
- * 
- * Auth is resolved server-side in layouts/route handlers via getSessionUser()
- * which uses unstable_cache (5min TTL) — no Redis dependency.
- * 
+ *
+ * Subdomain routing (status.revvup.ae) is handled by Vercel rewrites in vercel.json.
+ *
  * Middleware only handles:
- * 1. Subdomain routing (status.revvup.ae)
- * 2. Site password protection (staging)
- * 3. Cookie-existence check → redirect unauthenticated users from protected pages
+ * 1. Site password protection (staging environments)
+ * 2. Cookie-existence check -> redirect unauthenticated users from protected dashboard pages
+ *
+ * Matcher is scoped tightly - static public pages never hit this middleware.
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const hostname = request.headers.get('host') || '';
-  
-  // ==========================================================================
-  // Subdomain Routing: status.revvup.ae
-  // ==========================================================================
-  if (hostname.startsWith('status.')) {
-    if (pathname === '/' || pathname === '') {
-      const url = request.nextUrl.clone();
-      url.pathname = '/status';
-      return NextResponse.rewrite(url);
-    }
-    
-    if (pathname.startsWith('/api/status')) {
-      return NextResponse.next();
-    }
-    
-    if (pathname.startsWith('/_next/') || pathname.startsWith('/favicon')) {
-      return NextResponse.next();
-    }
-    
-    const url = request.nextUrl.clone();
-    url.pathname = '/status';
-    return NextResponse.redirect(url);
+
+  // /staging-login is the page that grants site-password access — never gate it
+  if (pathname === "/staging-login") {
+    return NextResponse.next();
   }
-  
-  // ==========================================================================
-  // Site password protection
-  // ==========================================================================
+
+  // API routes must never be blocked by the site-password gate — the staging-auth
+  // endpoint itself needs to be reachable to set the access cookie
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
+  // Site password protection (staging only - skipped when SITE_PASSWORD unset or in dev)
   const sitePasswordResponse = checkSitePassword(request);
   if (sitePasswordResponse) {
     return sitePasswordResponse;
   }
-  
-  // ==========================================================================
-  // Cookie-existence gate for protected page routes
-  // Auth validation + role checks happen in server component layouts
-  // ==========================================================================
-  const isProtectedPage = 
-    pathname.startsWith('/user-dashboard') ||
-    pathname.startsWith('/admin-dashboard') ||
-    pathname.startsWith('/partner-dashboard') ||
-    pathname.startsWith('/staff-dashboard');
 
-  if (isProtectedPage) {
-    const sessionToken = 
+  // Cookie-existence gate for protected dashboard routes only
+  // Auth validation + role checks happen in server component layouts
+  const isDashboard =
+    pathname.startsWith("/user-dashboard") ||
+    pathname.startsWith("/partner-dashboard") ||
+    pathname.startsWith("/staff-dashboard") ||
+    pathname.startsWith("/admin-dashboard");
+
+  if (isDashboard) {
+    const sessionToken =
       request.cookies.get("__Secure-better-auth.session_token")?.value ||
       request.cookies.get("better-auth.session_token")?.value;
 
@@ -128,7 +80,9 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
+  // Broad matcher so staging gate covers all pages, not just dashboards.
+  // Short-circuits quickly for public pages when SITE_PASSWORD is unset.
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

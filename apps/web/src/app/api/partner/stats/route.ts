@@ -16,7 +16,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getCachedPartnerDescriptiveStats } from '@/lib/partner-stats-cache';
+import { getPartnerDescriptiveStats } from '@alifh/database';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get all stats
-    const stats = await getCachedPartnerDescriptiveStats(partnerId);
+    const stats = await getPartnerDescriptiveStats(partnerId);
 
     return NextResponse.json({
       success: true,

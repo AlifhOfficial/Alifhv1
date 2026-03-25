@@ -15,10 +15,6 @@
  * - Stats (rating, reviews, active listings)
  * - Operating hours and specialties
  * 
- * Cache Strategy:
- * - GET: applyCdnHeaders(res, 'dealerProfile') (see @/lib/cdn-cache)
- * - PATCH: no-cache (immediate invalidation)
- * 
  * Standards:
  * - Returns 400 for invalid input
  * - Returns 401 for unauthenticated PATCH
@@ -27,14 +23,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { applyCdnHeaders, NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 import { z } from 'zod';
 import { getDealerBaseProfile, updateDealerBaseProfile } from '@alifh/database';
 import { getSessionUser } from '@/lib/auth/session-context';
 
 // Force dynamic - disable ALL Vercel caching
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 export const fetchCache = 'force-no-store';
 
 
@@ -115,9 +109,7 @@ export async function GET(
     // Attach cache-busted URLs for images
     const profileWithUrls = attachImageUrls(profile);
 
-    const response = NextResponse.json(profileWithUrls);
-    applyCdnHeaders(response, 'dealerProfile');
-    return response;
+    return NextResponse.json(profileWithUrls);
   } catch (error) {
     console.error('[partner dealer-profile] GET failed', error);
     return NextResponse.json(
@@ -183,11 +175,7 @@ export async function PATCH(
     // Attach cache-busted URLs for images
     const profileWithUrls = attachImageUrls(updatedProfile);
 
-    const response = NextResponse.json(profileWithUrls);
-    Object.entries(NO_CACHE_HEADERS).forEach(([key, value]) => 
-      response.headers.set(key, value)
-    );
-    return response;
+    return NextResponse.json(profileWithUrls);
   } catch (error) {
     console.error('[partner dealer-profile] PATCH failed', error);
     return NextResponse.json(

@@ -13,7 +13,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { applyCdnHeaders } from '@/lib/cdn-cache';
 import { getPartnersList } from '@alifh/database';
 
 export const runtime = 'nodejs';
@@ -59,9 +58,7 @@ export async function GET(req: NextRequest) {
     // Attach image URLs
     const withUrls = partners.map(attachImageUrls);
 
-    const response = NextResponse.json({ partners: withUrls });
-    applyCdnHeaders(response, 'partnerList');
-    return response;
+    return NextResponse.json({ partners: withUrls });
   } catch (error) {
     console.error('[partner-list] GET failed', error);
     return NextResponse.json({ error: 'Failed to fetch partners' }, { status: 500 });

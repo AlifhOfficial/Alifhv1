@@ -35,6 +35,8 @@ interface ListingsViewProps {
   serverDriven?: boolean;
   /** Subscribe to favorites-status from this parent */
   hydrateFavoritesStatus?: boolean;
+  /** Server-fetched initial popular suggestions for autocomplete */
+  initialSuggestions?: Array<any>;
 }
 
 const VIEW_MODE_KEY = 'listings-view-mode';
@@ -50,6 +52,7 @@ export function ListingsView({
   initialData,
   serverDriven = false,
   hydrateFavoritesStatus = true,
+  initialSuggestions,
 }: ListingsViewProps) {
   const pathname = usePathname();
   const shouldPersistPublicSidebar = pathname === '/listings' && !embedded;
@@ -212,6 +215,7 @@ export function ListingsView({
                 setFilters={setFilters}
                 clearFilters={clearFilters}
                 setSort={setSort}
+                initialSuggestions={initialSuggestions}
               />
             </div>
 
@@ -299,6 +303,7 @@ export function ListingsView({
                   setFilters={setFilters}
                   clearFilters={clearFilters}
                   setSort={setSort}
+                  initialSuggestions={initialSuggestions}
                 />
               </div>
 

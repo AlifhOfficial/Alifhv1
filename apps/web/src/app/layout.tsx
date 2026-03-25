@@ -14,7 +14,6 @@ import { ThemeProvider } from '@/components/shared/providers/theme-provider'
 import { QueryProvider } from '@/components/shared/providers/query-provider'
 import { AuthProvider } from '@/providers/auth-provider'
 import { Toaster } from '@/components/ui/sonner'
-import { getSessionUser } from '@/lib/auth/session-context'
 import {
   BRAND_APPLE_TOUCH_ICON_URL,
   BRAND_FAVICON_ICO_URL,
@@ -87,12 +86,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const initialSession = await getSessionUser();
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -111,7 +109,7 @@ export default async function RootLayout({
       </head>
       <body className={`${inter.variable} ${geomFont.variable}`} suppressHydrationWarning>
         <ThemeProvider>
-          <AuthProvider initialSession={initialSession}>
+          <AuthProvider>
             <QueryProvider>
               {children}
               <Toaster />

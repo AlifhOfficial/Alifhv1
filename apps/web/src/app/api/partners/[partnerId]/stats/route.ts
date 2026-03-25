@@ -14,7 +14,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { calculatePartnerStats } from '@alifh/database';
-import { NO_CACHE_HEADERS } from '@/lib/cdn-cache';
 
 
 export const runtime = 'nodejs';
@@ -48,7 +47,6 @@ export async function GET(
     const stats = await calculatePartnerStats(partnerId);
 
     const response = NextResponse.json(stats);
-    Object.entries(NO_CACHE_HEADERS).forEach(([k, v]) => response.headers.set(k, v));
     return response;
   } catch (error) {
     console.error('[Partner Stats API] Error:', error);
