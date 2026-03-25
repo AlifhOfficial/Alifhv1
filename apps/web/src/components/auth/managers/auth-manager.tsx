@@ -56,6 +56,7 @@ export function AuthManager({
         // onAppleSignIn disabled for v1
         onPasskeySuccess={() => flowController.handlePasskeySignIn()}
         isLoading={state.isLoading}
+        loadingMessage={state.loadingMessage}
         error={state.error}
       />
 
@@ -68,6 +69,7 @@ export function AuthManager({
         onGoogleSignUp={() => flowController.handleGoogleSignUp()}
         // onAppleSignUp disabled for v1
         isLoading={state.isLoading}
+        loadingMessage={state.loadingMessage}
         error={state.error}
       />
 

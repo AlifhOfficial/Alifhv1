@@ -87,138 +87,55 @@ export const signInWithEmail = async (
 };
 
 /**
- * Open Google OAuth in a popup window
- * Returns a promise that resolves when auth completes (via postMessage)
+ * Sign in with Google OAuth
+ * Uses Better Auth's redirect flow - user will be redirected away and back
+ * Note: This function triggers a redirect, so code after the call won't execute
  */
-export const signInWithGooglePopup = (): Promise<AuthResult> => {
-  return new Promise((resolve) => {
-    // Popup dimensions
-    const width = 500;
-    const height = 600;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
+export const signInWithGooglePopup = async (): Promise<AuthResult> => {
+  try {
+    // This triggers an immediate redirect to Google OAuth
+    // The browser will navigate away, so this promise never resolves normally
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/", // Redirect to home after successful auth
+    });
     
-    // Open popup to our start page which initiates the OAuth flow
-    // This page calls signIn.social which redirects to Google
-    const popup = window.open(
-      '/auth/google/start',
-      'google-auth',
-      `width=${width},height=${height},left=${left},top=${top},popup=1`
-    );
-    
-    if (!popup) {
-      resolve({ success: false, error: "Popup was blocked. Please allow popups for this site." });
-      return;
-    }
-
-    // Listen for postMessage from popup
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      if (event.data?.type !== 'google-auth-complete') return;
-      
-      window.removeEventListener('message', handleMessage);
-      clearInterval(pollTimer);
-      
-      if (event.data.success) {
-        resolve({ success: true });
-      } else {
-        resolve({ 
-          success: false, 
-          error: event.data.error === 'access_denied' 
-            ? 'Sign in was cancelled' 
-            : 'Google sign in failed'
-        });
-      }
+    // This code won't execute due to redirect, but TypeScript needs a return
+    return { success: true };
+  } catch (error) {
+    // Only reaches here if redirect failed (very rare)
+    console.error('[Auth] Google sign in failed:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Failed to start Google sign in" 
     };
-    
-    window.addEventListener('message', handleMessage);
-    
-    // Poll to check if popup was closed manually
-    const pollTimer = setInterval(() => {
-      if (popup.closed) {
-        clearInterval(pollTimer);
-        window.removeEventListener('message', handleMessage);
-        resolve({ success: false, error: "Sign in window was closed" });
-      }
-    }, 500);
-    
-    // Timeout after 5 minutes
-    setTimeout(() => {
-      clearInterval(pollTimer);
-      window.removeEventListener('message', handleMessage);
-      if (!popup.closed) {
-        popup.close();
-      }
-      resolve({ success: false, error: "Sign in timed out" });
-    }, 5 * 60 * 1000);
-  });
+  }
 };
 
 /**
- * Open Apple OAuth in a popup window
- * Returns a promise that resolves when auth completes (via postMessage)
+ * Sign in with Apple OAuth
+ * Uses Better Auth's redirect flow - user will be redirected away and back
+ * Note: This function triggers a redirect, so code after the call won't execute
  */
-export const signInWithApplePopup = (): Promise<AuthResult> => {
-  return new Promise((resolve) => {
-    // Popup dimensions
-    const width = 500;
-    const height = 600;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
+export const signInWithApplePopup = async (): Promise<AuthResult> => {
+  try {
+    // This triggers an immediate redirect to Apple OAuth
+    // The browser will navigate away, so this promise never resolves normally
+    await authClient.signIn.social({
+      provider: "apple",
+      callbackURL: "/", // Redirect to home after successful auth
+    });
     
-    // Open popup to our start page which initiates the OAuth flow
-    const popup = window.open(
-      '/auth/apple/start',
-      'apple-auth',
-      `width=${width},height=${height},left=${left},top=${top},popup=1`
-    );
-    
-    if (!popup) {
-      resolve({ success: false, error: "Popup was blocked. Please allow popups for this site." });
-      return;
-    }
-
-    // Listen for postMessage from popup
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      if (event.data?.type !== 'apple-auth-complete') return;
-      
-      window.removeEventListener('message', handleMessage);
-      clearInterval(pollTimer);
-      
-      if (event.data.success) {
-        resolve({ success: true });
-      } else {
-        resolve({ 
-          success: false, 
-          error: event.data.error === 'access_denied' 
-            ? 'Sign in was cancelled' 
-            : 'Apple sign in failed'
-        });
-      }
+    // This code won't execute due to redirect, but TypeScript needs a return
+    return { success: true };
+  } catch (error) {
+    // Only reaches here if redirect failed (very rare)
+    console.error('[Auth] Apple sign in failed:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Failed to start Apple sign in" 
     };
-    
-    window.addEventListener('message', handleMessage);
-    
-    // Poll to check if popup was closed manually
-    const pollTimer = setInterval(() => {
-      if (popup.closed) {
-        clearInterval(pollTimer);
-        window.removeEventListener('message', handleMessage);
-        resolve({ success: false, error: "Sign in window was closed" });
-      }
-    }, 500);
-    
-    // Timeout after 5 minutes
-    setTimeout(() => {
-      clearInterval(pollTimer);
-      window.removeEventListener('message', handleMessage);
-      if (!popup.closed) {
-        popup.close();
-      }
-      resolve({ success: false, error: "Sign in timed out" });
-    }, 5 * 60 * 1000);
-  });
+  }
 };
 
 /**

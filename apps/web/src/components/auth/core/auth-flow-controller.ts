@@ -112,35 +112,19 @@ export class AuthFlowController {
   }
 
   /**
-   * Google Sign In - Opens in popup window for better UX
-   * User stays on current page, popup handles OAuth flow
+   * Google Sign In - Uses Better Auth redirect flow
+   * User will be redirected to Google immediately - no loading state needed
    */
   async handleGoogleSignIn() {
     this.startFlow(async () => {
-      // Show loading state in current modal (don't switch to redirect modal)
-      this.actions.setLoading(true);
+      // Don't set loading state - just redirect immediately
       this.actions.setError(null);
 
-      // Open Google OAuth in popup - this awaits until popup completes/closes
+      // Trigger redirect to Google OAuth
       const result = await signInWithGooglePopup();
-      if (!this.isFlowActive) return;
-
-      if (result.success) {
-        // Show success feedback briefly
-        this.actions.setSignInSuccess(true);
-        this.actions.setLoading(false);
-        this.actions.setCurrentModal("signin-feedback");
-        this.callbacks.onSuccess?.(result.user);
-        this.handleCloseAll();
-      } else {
-        // User cancelled or error occurred
-        // If just cancelled, close modal silently
-        if (result.error === "Sign in window was closed" || result.error === "Sign in was cancelled") {
-          this.actions.setLoading(false);
-          // Keep current modal open, user can try again
-          return;
-        }
-        
+      
+      // Only reaches here if redirect failed
+      if (!result.success) {
         const errorMessage = parseAuthError(result.error);
         const errorInfo = getAuthErrorInfo(errorMessage);
         
@@ -210,35 +194,19 @@ export class AuthFlowController {
   }
 
   /**
-   * Apple Sign In - Opens in popup window for better UX
-   * User stays on current page, popup handles OAuth flow
+   * Apple Sign In - Uses Better Auth redirect flow
+   * User will be redirected to Apple immediately - no loading state needed
    */
   async handleAppleSignIn() {
     this.startFlow(async () => {
-      // Show loading state in current modal (don't switch to redirect modal)
-      this.actions.setLoading(true);
+      // Don't set loading state - just redirect immediately
       this.actions.setError(null);
 
-      // Open Apple OAuth in popup - this awaits until popup completes/closes
+      // Trigger redirect to Apple OAuth
       const result = await signInWithApplePopup();
-      if (!this.isFlowActive) return;
-
-      if (result.success) {
-        // Show success feedback briefly
-        this.actions.setSignInSuccess(true);
-        this.actions.setLoading(false);
-        this.actions.setCurrentModal("signin-feedback");
-        this.callbacks.onSuccess?.(result.user);
-        this.handleCloseAll();
-      } else {
-        // User cancelled or error occurred
-        // If just cancelled, close modal silently
-        if (result.error === "Sign in window was closed" || result.error === "Sign in was cancelled") {
-          this.actions.setLoading(false);
-          // Keep current modal open, user can try again
-          return;
-        }
-        
+      
+      // Only reaches here if redirect failed
+      if (!result.success) {
         const errorMessage = parseAuthError(result.error);
         const errorInfo = getAuthErrorInfo(errorMessage);
         

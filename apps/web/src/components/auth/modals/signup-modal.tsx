@@ -6,7 +6,7 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BRAND_LOGO_SVG } from "@/lib/brand-assets";
 
@@ -17,6 +17,7 @@ interface SignUpModalProps {
   onSubmit: (name: string, email: string, password: string) => Promise<void>;
   onGoogleSignUp?: () => Promise<void>;
   isLoading?: boolean;
+  loadingMessage?: string; // Custom loading message for OAuth redirects
   error?: string | null;
 }
 
@@ -27,6 +28,7 @@ export function SignUpModal({
   onSubmit,
   onGoogleSignUp,
   isLoading = false,
+  loadingMessage,
   error,
 }: SignUpModalProps) {
   const [name, setName] = useState("");
@@ -165,7 +167,7 @@ export function SignUpModal({
                   "disabled:opacity-50 disabled:cursor-not-allowed"
                 )}
               >
-                {isLoading ? "Creating account..." : "Create account"}
+                {isLoading ? (loadingMessage || "Creating account...") : "Create account"}
               </button>
             </form>
 
@@ -182,11 +184,10 @@ export function SignUpModal({
             {onGoogleSignUp && (
               <button
                 onClick={onGoogleSignUp}
-                disabled={isLoading}
                 className={cn(
                   "w-full h-11 rounded-xl text-[14px] font-semibold transition-all",
                   "border border-border/50 bg-muted/20 text-foreground",
-                  "hover:bg-muted/40 disabled:opacity-50",
+                  "hover:bg-muted/40",
                   "flex items-center justify-center gap-2.5"
                 )}
               >

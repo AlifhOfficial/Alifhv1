@@ -31,6 +31,7 @@ export interface OtpData {
 export interface AuthState {
   currentModal: AuthModalType;
   isLoading: boolean;
+  loadingMessage?: string; // Custom loading message (e.g., "Redirecting to Google...")
   error: string | null;
   emailSentData: EmailData | null;
   otpData: OtpData | null;
@@ -47,7 +48,7 @@ export interface AuthState {
 
 export interface AuthActions {
   setCurrentModal: (modal: AuthModalType) => void;
-  setLoading: (loading: boolean) => void;
+  setLoading: (loading: boolean, message?: string) => void;
   setError: (error: string | null) => void;
   setEmailSentData: (data: EmailData | null) => void;
   setOtpData: (data: OtpData | null) => void;
@@ -65,6 +66,7 @@ export interface AuthCallbacks {
 const initialState: AuthState = {
   currentModal: null,
   isLoading: false,
+  loadingMessage: undefined,
   error: null,
   emailSentData: null,
   otpData: null,
@@ -91,8 +93,8 @@ export function useAuthState(
 
   const actions: AuthActions = {
     setCurrentModal,
-    setLoading: (isLoading: boolean) => {
-      setInternalState(prev => ({ ...prev, isLoading }));
+    setLoading: (isLoading: boolean, loadingMessage?: string) => {
+      setInternalState(prev => ({ ...prev, isLoading, loadingMessage }));
     },
     setError: (error: string | null) => {
       setInternalState(prev => ({ ...prev, error }));

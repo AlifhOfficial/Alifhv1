@@ -23,6 +23,7 @@ interface SignInModalProps {
   // onAppleSignIn?: () => Promise<void>;
   onPasskeySuccess?: () => void;
   isLoading?: boolean;
+  loadingMessage?: string; // Custom loading message for OAuth redirects
   error?: string | null;
 }
 
@@ -37,6 +38,7 @@ export function SignInModal({
   // onAppleSignIn, // Disabled for v1
   onPasskeySuccess,
   isLoading = false,
+  loadingMessage,
   error,
 }: SignInModalProps) {
   const [email, setEmail] = useState("");
@@ -196,7 +198,7 @@ export function SignInModal({
                   "disabled:opacity-50 disabled:cursor-not-allowed"
                 )}
               >
-                {isLoading ? "Signing in..." : "Sign in"}
+                {isLoading ? (loadingMessage || "Signing in...") : "Sign in"}
               </button>
             </form>
 
@@ -215,11 +217,10 @@ export function SignInModal({
                 {onGoogleSignIn && (
                   <button
                     onClick={onGoogleSignIn}
-                    disabled={isLoading}
                     className={cn(
                       "flex-1 h-11 rounded-xl text-[14px] font-semibold transition-all",
                       "border border-border/50 bg-muted/20 text-foreground",
-                      "hover:bg-muted/40 disabled:opacity-50",
+                      "hover:bg-muted/40",
                       "flex items-center justify-center gap-2.5"
                     )}
                   >

@@ -14,34 +14,6 @@ import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 
-/**
- * Clear stale OAuth state cookies before starting a new flow.
- * This prevents state_mismatch errors from previous incomplete attempts.
- * Safe to call in popup context since we're about to set new cookies anyway.
- */
-function clearStaleOAuthCookies() {
-  if (typeof document === 'undefined') return;
-  
-  const cookies = document.cookie.split(";");
-  for (const cookie of cookies) {
-    const [name] = cookie.split("=");
-    const trimmedName = name.trim();
-    
-    // Only clear OAuth-related state/PKCE cookies, NOT session cookies
-    if (
-      trimmedName.includes("state") ||
-      trimmedName.includes("pkce") ||
-      trimmedName.includes("code_verifier")
-    ) {
-      // Clear with various path combinations
-      const paths = ["/", "/api", "/api/auth", "/auth"];
-      for (const path of paths) {
-        document.cookie = `${trimmedName}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;
-      }
-    }
-  }
-}
-
 function GoogleStartContent() {
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
@@ -49,9 +21,8 @@ function GoogleStartContent() {
   useEffect(() => {
     const startAuth = async () => {
       try {
-        // Clear stale OAuth cookies from previous incomplete attempts
-        // This prevents state_mismatch errors
-        clearStaleOAuthCookies();
+        // Better Auth handles OAuth state management internally
+        // No manual cookie clearing needed - it can cause state_mismatch errors
         
         // Check if this is a retry attempt (passed from callback on state_mismatch)
         const retry = searchParams.get('retry');
