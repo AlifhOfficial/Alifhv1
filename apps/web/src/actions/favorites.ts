@@ -50,7 +50,7 @@ export async function getFavoritesStatusAction(): Promise<FavoritesStatusData> {
 export async function getNavbarFavoriteListings(ids: string[]) {
   if (!ids.length) return [];
   const top3 = ids.slice(0, 3);
-  const listings = await getListingCardsByIds(top3);
+  const listings = await getListingCards({ ids: top3, status: 'published' });
   // Map to lightweight payload and preserve order
   const byId = new Map(listings.map((l) => [l.id, l]));
   return top3
