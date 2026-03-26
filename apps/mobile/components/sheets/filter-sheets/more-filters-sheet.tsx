@@ -243,7 +243,7 @@ export function MoreFiltersSheet({
               size="medium" 
               style={{ 
                 color: colors.text,
-                fontFamily: 'Inter_600SemiBold',
+                fontWeight: '600',
               }}
             >
               {title}
@@ -313,7 +313,7 @@ export function MoreFiltersSheet({
         size="medium" 
         style={{ 
           color: value ? colors.text : colors.text2,
-          fontFamily: value ? 'Inter_700Bold' : 'Inter_500Medium',
+          fontWeight: value ? '700' : '500',
         }}
       >
         {label}
@@ -623,7 +623,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   sectionTitle: {
-    fontFamily: 'Inter_600SemiBold',
+    fontWeight: '600',
   },
   badge: {
     width: Spacing['2xl'],

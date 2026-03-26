@@ -1,30 +1,21 @@
 /**
- * Home Header - Profile, Notifications, Saved & Inventory
- * Revvup Design System + Inter font
+ * Home Header - "Home" title (left) + Theme toggle (right)
  */
 
 import React from 'react';
-import { View, StyleSheet, Platform, ScrollView } from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { View, StyleSheet, Platform } from 'react-native';
+import { HapticPressable, Heading } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Sun, Moon, Bookmark, Package, CalendarDays, Plus } from 'lucide-react-native';
+import { Sun, Moon } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
-import { useState, useCallback } from 'react';
 
-import { ProfileMenu } from './profile-menu';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
-import { Data } from '@/components/ui';
-import { CreateListingFlow } from '@/components/sheets';
+import { Colors, Spacing, Layout, Sizes } from '@/constants/theme';
 
 export function HomeHeader() {
   const { colorScheme, toggleTheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const router = useRouter();
-
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const handleToggleTheme = () => {
     if (Platform.OS === 'ios') {
@@ -33,183 +24,37 @@ export function HomeHeader() {
     toggleTheme();
   };
 
-  const handleSavedPress = () => {
-    if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    router.push('/saved');
-  };
-
-  const handleInventoryPress = () => {
-    if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    router.push('/inventory');
-  };
-
-  const handleBookingsPress = () => {
-    if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    router.push('/bookings');
-  };
-
-  const handleCreatePress = useCallback(() => {
-    if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
-    setIsCreateOpen(true);
-  }, []);
-
-  const handleCreateSuccess = useCallback((listingId: string) => {
-    setIsCreateOpen(false);
-    router.push(`/listing/${listingId}` as any);
-  }, [router]);
-
   const ThemeIcon = colorScheme === 'dark' ? Moon : Sun;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
-      {/* Left: Profile + Saved + Inventory + Bookings (Scrollable) */}
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.leftGroup}
-        style={styles.scrollView}
-      >
-        <ProfileMenu />
-        <View
-          style={[
-            styles.iconButton,
-            styles.glass,
-            { 
-              borderColor: colors.glassBorder,
-              backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
-            }
-          ]}
-        >
-          <HapticPressable
-            style={styles.iconButtonInner}
-            onPress={handleToggleTheme}
-            hitSlop={Layout.hitSlop}
-          >
-            {({ pressed }) => (
-              <ThemeIcon 
-                size={Sizes.iconSm} 
-                color={colors.icon}
-                strokeWidth={2}
-                style={{ opacity: pressed ? 0.7 : 1 }}
-              />
-            )}
-          </HapticPressable>
-        </View>
-        <View
-          style={[
-            styles.pillButton,
-            styles.glass,
-            {
-              borderColor: colors.glassBorder,
-              backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
-            },
-          ]}
-        >
-          <HapticPressable
-            style={styles.pillButtonInner}
-            onPress={handleSavedPress}
-            hitSlop={Layout.hitSlop}
-          >
-            {({ pressed }) => (
-              <View style={styles.pillContent}>
-                <Bookmark size={Sizes.iconXs} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
-                <Data size="small" style={{ opacity: pressed ? 0.7 : 1 }}>
-                  Saved
-                </Data>
-              </View>
-            )}
-          </HapticPressable>
-        </View>
-        <View
-          style={[
-            styles.pillButton,
-            styles.glass,
-            {
-              borderColor: colors.glassBorder,
-              backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
-            },
-          ]}
-        >
-          <HapticPressable
-            style={styles.pillButtonInner}
-            onPress={handleInventoryPress}
-            hitSlop={Layout.hitSlop}
-          >
-            {({ pressed }) => (
-              <View style={styles.pillContent}>
-                <Package size={Sizes.iconXs} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
-                <Data size="small" style={{ opacity: pressed ? 0.7 : 1 }}>
-                  Inventory
-                </Data>
-              </View>
-            )}
-          </HapticPressable>
-        </View>
-        <View
-          style={[
-            styles.pillButton,
-            styles.glass,
-            {
-              borderColor: colors.glassBorder,
-              backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
-            },
-          ]}
-        >
-          <HapticPressable
-            style={styles.pillButtonInner}
-            onPress={handleBookingsPress}
-            hitSlop={Layout.hitSlop}
-          >
-            {({ pressed }) => (
-              <View style={styles.pillContent}>
-                <CalendarDays size={Sizes.iconXs} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
-                <Data size="small" style={{ opacity: pressed ? 0.7 : 1 }}>
-                  Bookings
-                </Data>
-              </View>
-            )}
-          </HapticPressable>
-        </View>
-        <View
-          style={[
-            styles.pillButton,
-            styles.glass,
-            {
-              borderColor: colors.glassBorder,
-              backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
-            },
-          ]}
-        >
-          <HapticPressable
-            style={styles.pillButtonInner}
-            onPress={handleCreatePress}
-            hitSlop={Layout.hitSlop}
-          >
-            {({ pressed }) => (
-              <View style={styles.pillContent}>
-                <Plus size={Sizes.iconXs} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
-                <Data size="small" style={{ opacity: pressed ? 0.7 : 1 }}>
-                  Create
-                </Data>
-              </View>
-            )}
-          </HapticPressable>
-        </View>
-      </ScrollView>
+      <Heading size="large">Home</Heading>
 
-      <CreateListingFlow
-        visible={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-        onSuccess={handleCreateSuccess}
-      />
+      <View
+        style={[
+          styles.iconButton,
+          {
+            borderColor: colors.glassBorder,
+            borderWidth: 1,
+            backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
+          },
+        ]}
+      >
+        <HapticPressable
+          style={styles.iconButtonInner}
+          onPress={handleToggleTheme}
+          hitSlop={Layout.hitSlop}
+        >
+          {({ pressed }) => (
+            <ThemeIcon
+              size={Sizes.iconSm}
+              color={colors.icon}
+              strokeWidth={2}
+              style={{ opacity: pressed ? 0.7 : 1 }}
+            />
+          )}
+        </HapticPressable>
+      </View>
     </View>
   );
 }
@@ -227,17 +72,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  scrollView: {
-    flex: 1,
-  },
-  leftGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Layout.headerGap,
-  },
-  glass: {
-    borderWidth: 1,
-  },
   iconButton: {
     width: Sizes.bubble,
     height: Sizes.bubble,
@@ -250,24 +84,5 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  pillButton: {
-    height: Sizes.pillHeight,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Sizes.pillRadius,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  pillButtonInner: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pillContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
   },
 });

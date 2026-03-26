@@ -2,6 +2,7 @@
 export { HomeHeader } from './home-header';
 export { BackgroundDoodle } from './background-doodle';
 export { GreetingNote } from './greeting-note';
+export { QuickActions } from './quick-actions';
 export { SavedTube } from './saved-tube';
 export { InventoryTube } from './inventory-tube';
 

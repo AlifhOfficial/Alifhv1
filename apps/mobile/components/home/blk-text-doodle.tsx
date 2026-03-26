@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   },
   text: {
     position: 'absolute',
-    fontFamily: Fonts.bold,
+    fontWeight: Fonts.bold,
     color: '#FFFFFF',
     letterSpacing: 3,
   },

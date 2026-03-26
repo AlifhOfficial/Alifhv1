@@ -133,7 +133,7 @@ export function BrowseToolbar() {
   return (
     <>
       {/* Floating action row */}
-      <View style={[styles.container, { paddingBottom: insets.bottom + Spacing.xs }]}>
+      <View style={[styles.container, { paddingBottom: insets.bottom + Sizes.bubbleMd + Spacing.lg }]}>
         <View style={styles.row}>
           <HapticPressable
             onPress={handleSearchPress}

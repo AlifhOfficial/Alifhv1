@@ -155,7 +155,7 @@ export function LogoLoader({ size = 32 }: { size?: number }) {
       style={[
         { 
           fontSize: size, 
-          fontFamily: 'Inter_800ExtraBold', 
+          fontWeight: '800', 
           letterSpacing: -1,
           color: colors.text2,
         }, 
@@ -201,7 +201,7 @@ export function RefreshLoader({ size = 24, isRefreshing = false }: { size?: numb
         style={[
           { 
             fontSize: size, 
-            fontFamily: 'Inter_800ExtraBold', 
+            fontWeight: '800', 
             letterSpacing: -0.5,
             color: colors.text2,
           }, 
@@ -231,12 +231,12 @@ const styles = StyleSheet.create({
   },
   brandName: {
     fontSize: 64,
-    fontFamily: 'Inter_800ExtraBold',
+    fontWeight: '800',
     letterSpacing: -3,
   },
   brandNameSmall: {
     fontSize: 48,
-    fontFamily: 'Inter_800ExtraBold',
+    fontWeight: '800',
     letterSpacing: -2,
   },
   message: {

@@ -16,5 +16,8 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
+// Follow symlinks for bun-hoisted packages
+config.resolver.unstable_enableSymlinks = true;
+
 module.exports = withNativeWind(config, { input: './global.css' });
 

@@ -6,7 +6,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { useRouter } from 'expo-router';
-import { User } from 'lucide-react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -66,10 +66,10 @@ export function ProfileMenu() {
         onPress={handlePress}
       >
         {({ pressed }) => (
-          <User 
-            size={Sizes.iconSm} 
+          <Ionicons
+            name="person-circle-outline"
+            size={Sizes.iconSm}
             color={colors.icon}
-            strokeWidth={2}
             style={{ opacity: pressed ? 0.7 : 1 }}
           />
         )}

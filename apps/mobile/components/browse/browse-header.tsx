@@ -6,7 +6,6 @@
 
 import React from 'react';
 import { View, StyleSheet, ScrollView, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { LayoutGrid, List } from 'lucide-react-native';
@@ -14,7 +13,6 @@ import { LayoutGrid, List } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Layout, Radius, Sizes } from '@/constants/theme';
 import { Data, Label } from '@/components/ui';
-import { ProfileMenu } from '@/components/home/profile-menu';
 
 export type ViewMode = 'grid' | 'list';
 export type FilterPillType = 'make' | 'model' | 'price' | 'yearMileage' | 'location';
@@ -46,7 +44,6 @@ export function BrowseHeader({
 }: BrowseHeaderProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
 
   const handlePress = (type: FilterPillType) => {
     if (Platform.OS === 'ios') {
@@ -78,15 +75,12 @@ export function BrowseHeader({
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Profile Avatar */}
-        <ProfileMenu />
-
         {/* Browse Title Pill */}
         <View
           style={[
@@ -200,11 +194,7 @@ export function BrowseHeader({
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 20,
+    paddingTop: Spacing.sm,
     paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
   },

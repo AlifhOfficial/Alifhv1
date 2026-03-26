@@ -59,7 +59,7 @@ function ColorChip({
         numberOfLines={1}
         style={{
           color: isSelected ? themeColors.bg : themeColors.text,
-          fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
+          fontWeight: isSelected ? '600' : '400',
         }}
       >
         {color.label}

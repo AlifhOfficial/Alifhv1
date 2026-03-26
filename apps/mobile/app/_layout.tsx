@@ -8,14 +8,6 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { useFonts } from 'expo-font';
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-  Inter_800ExtraBold,
-} from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -34,7 +26,7 @@ LogBox.ignoreLogs([
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
-import { Colors, Fonts } from '@/constants/theme';
+import { Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { FavoritesProvider } from '@/context/favorites-context';
@@ -64,10 +56,10 @@ const LightTheme: NavTheme = {
     notification: Colors.light.primary,
   },
   fonts: {
-    regular: { fontFamily: Fonts.regular, fontWeight: '400' },
-    medium: { fontFamily: Fonts.medium, fontWeight: '500' },
-    bold: { fontFamily: Fonts.bold, fontWeight: '700' },
-    heavy: { fontFamily: Fonts.bold, fontWeight: '800' },
+    regular: { fontFamily: 'System', fontWeight: '400' },
+    medium: { fontFamily: 'System', fontWeight: '500' },
+    bold: { fontFamily: 'System', fontWeight: '700' },
+    heavy: { fontFamily: 'System', fontWeight: '800' },
   },
 };
 
@@ -82,10 +74,10 @@ const CustomDarkTheme: NavTheme = {
     notification: Colors.dark.primary,
   },
   fonts: {
-    regular: { fontFamily: Fonts.regular, fontWeight: '400' },
-    medium: { fontFamily: Fonts.medium, fontWeight: '500' },
-    bold: { fontFamily: Fonts.bold, fontWeight: '700' },
-    heavy: { fontFamily: Fonts.bold, fontWeight: '800' },
+    regular: { fontFamily: 'System', fontWeight: '400' },
+    medium: { fontFamily: 'System', fontWeight: '500' },
+    bold: { fontFamily: 'System', fontWeight: '700' },
+    heavy: { fontFamily: 'System', fontWeight: '800' },
   },
 };
 
@@ -214,7 +206,7 @@ function RootLayoutNav() {
       signIn(user);
     }
     closeAuthFlow();
-    router.replace('/browse');
+    router.replace('/(tabs)/(browse)');
   };
 
   // Show onboarding auth flow if not completed
@@ -283,33 +275,19 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-    Inter_800ExtraBold,
-  });
   const [appReady, setAppReady] = useState(false);
 
-  // Hide splash screen when fonts are loaded and theme is applied
+  // Hide splash screen after mount
   useEffect(() => {
-    if (fontsLoaded && !appReady) {
-      // Wait for next frame to ensure theme provider has mounted
+    if (!appReady) {
       requestAnimationFrame(() => {
         setAppReady(true);
-        // Small delay to ensure colors are applied before hiding splash
         setTimeout(() => {
           SplashScreen.hideAsync().catch(() => {});
         }, 50);
       });
     }
-  }, [fontsLoaded, appReady]);
-
-  // Don't render anything until fonts are loaded
-  if (!fontsLoaded) {
-    return null;
-  }
+  }, [appReady]);
 
   // Always render with full provider stack - onboarding is handled inside RootLayoutNav
   return (

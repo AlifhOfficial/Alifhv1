@@ -92,7 +92,7 @@ export function SavedList({
   }, [router]);
 
   const handleBrowse = useCallback(() => {
-    router.push('/browse');
+    router.push('/(tabs)/(browse)');
   }, [router]);
 
   // Empty state

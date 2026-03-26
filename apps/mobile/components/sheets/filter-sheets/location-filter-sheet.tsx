@@ -193,7 +193,7 @@ export function LocationFilterSheet({
                     size="medium"
                     style={{ 
                       color: isSelected ? colors.text : colors.text2,
-                      fontFamily: isSelected ? 'Inter_700Bold' : 'Inter_500Medium',
+                      fontWeight: isSelected ? '700' : '500',
                     }}
                   >
                     {option.label}

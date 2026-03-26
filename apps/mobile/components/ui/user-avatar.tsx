@@ -128,6 +128,6 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   initials: {
-    fontFamily: 'Inter_700Bold', // font-bold to match BrandAvatar
+    fontWeight: '700',
   },
 });

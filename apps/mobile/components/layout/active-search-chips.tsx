@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   },
   pillText: {
     fontSize: 12,
-    fontFamily: 'Inter_500Medium',
+    fontWeight: '500',
     maxWidth: 100,
   },
   clearPill: {
@@ -232,6 +232,6 @@ const styles = StyleSheet.create({
   },
   clearText: {
     fontSize: 12,
-    fontFamily: 'Inter_500Medium',
+    fontWeight: '500',
   },
 });

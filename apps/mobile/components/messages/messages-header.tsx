@@ -10,7 +10,6 @@ import { MessageCircle } from 'lucide-react-native';
 import { Colors, Spacing, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Data } from '@/components/ui';
-import { ProfileMenu } from '@/components/home/profile-menu';
 
 export function MessagesHeader() {
   const { colorScheme } = useTheme();
@@ -19,9 +18,6 @@ export function MessagesHeader() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
-      {/* Profile Avatar */}
-      <ProfileMenu />
-
       <View
         style={[
           styles.pillButton,

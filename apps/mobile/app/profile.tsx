@@ -14,7 +14,6 @@ import { ScreenContainer } from '@/components/layout';
 
 import { Layout, Spacing, Radius, Sizes, Colors } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
-import { TopSafeAreaGradient } from '@/components/layout';
 import {
   useProfileColors,
   useProfile,
@@ -121,7 +120,6 @@ export default function ProfileScreen() {
   if (!isAuthenticated) {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg }]}>
-        <TopSafeAreaGradient />
         <ProfileHeader colors={colors} topInset={insets.top} />
         <AuthRequiredEmptyState
           title="Sign in to view profile"
@@ -135,7 +133,6 @@ export default function ProfileScreen() {
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: colors.bg }]}>
-        <TopSafeAreaGradient />
         <ProfileHeader colors={colors} topInset={insets.top} />
         <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerHeight }]}>
           {/* Avatar */}
@@ -193,7 +190,6 @@ export default function ProfileScreen() {
   if (error && !profile) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: colors.bg }]}>
-        <TopSafeAreaGradient />
         <ProfileHeader colors={colors} topInset={insets.top} />
         <View style={[styles.errorContainer, { backgroundColor: colors.bg, paddingTop: headerHeight }]}>
           <Body size="medium" tone="error" style={styles.errorText}>
@@ -209,7 +205,6 @@ export default function ProfileScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
-      <TopSafeAreaGradient />
       <ProfileHeader colors={colors} topInset={insets.top} />
       <ScreenContainer
         refreshing={isRefreshing}

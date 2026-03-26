@@ -928,7 +928,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     lineHeight: 22,
-    fontFamily: 'Inter_500Medium',
+    fontWeight: '500',
     paddingTop: 0,
     paddingBottom: 0,
     minHeight: 66,

@@ -12,12 +12,10 @@
 
 import React, { useCallback, useState } from 'react';
 import { StyleSheet, View, FlatList, RefreshControl, Dimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { TopSafeAreaGradient } from '@/components/layout';
 
 import {
-  HomeHeader,
   GreetingNote,
+  QuickActions,
   BlkGridCard,
   RevvupFirstGrid,
   CategoryCard,
@@ -35,9 +33,8 @@ import { type PartnerListItem } from '@/lib/partner-api';
 // CONSTANTS
 // ============================================================================
 
-const HEADER_HEIGHT = Layout.headerPadding + Sizes.bubble + Spacing.md;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
-const TOP_SPACING = SCREEN_HEIGHT * 0.2; // 20% of screen height
+// Ghost spacer height — breathing room above the greeting
+const GHOST_SPACER_HEIGHT = Dimensions.get('window').height * 0.15;
 
 // ============================================================================
 // HOME SCREEN SKELETON (Initial Loading State)
@@ -160,7 +157,6 @@ const GridItem = React.memo(function GridItem({ gridState, partners }: GridItemP
 export default function HomeScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
   
   // Load grids with lazy loading
@@ -172,9 +168,6 @@ export default function HomeScreen() {
     refresh,
     partners,
   } = useHomeGrids();
-
-  // Dynamic top padding based on safe area + header
-  const contentTopPadding = insets.top + HEADER_HEIGHT;
 
   // Pull to refresh handler
   const handleRefresh = useCallback(async () => {
@@ -203,13 +196,14 @@ export default function HomeScreen() {
     <View style={styles.bottomSpacer} />
   ), []);
 
-  // Header component with greeting
+  // Header component with greeting + quick actions
   const renderHeader = useCallback(() => (
     <View>
-      <View style={{ height: TOP_SPACING }} />
+      <View style={styles.ghostSpacer} />
       <View style={styles.greetingContainer}>
         <GreetingNote />
       </View>
+      <QuickActions />
     </View>
   ), []);
 
@@ -222,35 +216,30 @@ export default function HomeScreen() {
   }, [isLoading, loadedGrids.length]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colorScheme === 'light' ? colors.white : colors.black }]}>
-      <TopSafeAreaGradient useOled />
-      <HomeHeader />
-      
-      <FlatList
-        data={loadedGrids}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        onEndReached={handleEndReached}
-        onEndReachedThreshold={0.5}
-        ListHeaderComponent={renderHeader}
-        ListFooterComponent={renderFooter}
-        ListEmptyComponent={renderEmpty}
-        contentContainerStyle={[styles.listContent, { paddingTop: contentTopPadding }]}
-        showsVerticalScrollIndicator={false}
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={4}
-        updateCellsBatchingPeriod={50}
-        windowSize={5}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            tintColor={colors.text}
-            progressViewOffset={contentTopPadding}
-          />
-        }
-      />
-    </View>
+    <FlatList
+      data={loadedGrids}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      onEndReached={handleEndReached}
+      onEndReachedThreshold={0.5}
+      ListHeaderComponent={renderHeader}
+      ListFooterComponent={renderFooter}
+      ListEmptyComponent={renderEmpty}
+      contentContainerStyle={styles.listContent}
+      contentInsetAdjustmentBehavior="automatic"
+      showsVerticalScrollIndicator={false}
+      removeClippedSubviews={true}
+      maxToRenderPerBatch={4}
+      updateCellsBatchingPeriod={50}
+      windowSize={5}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor={colors.text}
+        />
+      }
+    />
   );
 }
 
@@ -259,11 +248,11 @@ export default function HomeScreen() {
 // ============================================================================
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   listContent: {
     gap: Spacing.lg,
+  },
+  ghostSpacer: {
+    height: GHOST_SPACER_HEIGHT,
   },
   greetingContainer: {
     marginBottom: Spacing.md,

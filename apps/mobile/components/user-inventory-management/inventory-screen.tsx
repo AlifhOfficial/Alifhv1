@@ -73,12 +73,10 @@ import {
 import { MarkSoldSheet } from './sub-operations/mark-sold-sheet';
 import { ExtendListingSheet } from './sub-operations/extend-listing-sheet';
 import { ArchiveListingSheet } from './sub-operations/archive-listing-sheet';
-import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
-import { TopSafeAreaGradient } from '@/components/layout';
+
 import { DeleteListingSheet } from './sub-operations/delete-listing-sheet';
 import { ListingStatsSheet } from './sub-operations/listing-stats-sheet';
 import { PendingReviewReasonSheet } from './sub-operations/pending-review-reason-sheet';
-import { ProfileMenu } from '@/components/home/profile-menu';
 import { CreateListingFlow } from '@/components/sheets/create-listing/create-listing-flow';
 import type { CreateListingData } from '@/components/sheets/create-listing/types';
 import { useInventory } from '@/hooks/use-inventory-query';
@@ -464,9 +462,6 @@ export function InventoryScreen() {
 
   return (
     <View style={styles.container}>
-      {/* ─────────────────────── Top Safe Area Gradient ────────────────────────────────── */}
-      <TopSafeAreaGradient />
-
       {/* ─────────────────────── Floating Header (absolute) ────────────────────────────────── */}
       <View style={[styles.header, { paddingTop: insets.top + Layout.headerPadding }]}>
         <ScrollView
@@ -475,9 +470,6 @@ export function InventoryScreen() {
           contentContainerStyle={styles.headerScrollContent}
           style={styles.headerScroll}
         >
-          {/* Profile Avatar */}
-          <ProfileMenu />
-
           {/* Inventory Title Pill */}
           <View
             style={[
@@ -679,9 +671,6 @@ export function InventoryScreen() {
         listingId={editingListingId ?? undefined}
         isPublishedEdit={isPublishedEdit}
       />
-
-      {/* ─────────────────────── Bottom Safe Area ────────────────────────── */}
-      <BottomSafeAreaGradient />
 
       {/* ─────────────────────── FAB: Create Listing ─────────────────────── */}
       <HapticPressable

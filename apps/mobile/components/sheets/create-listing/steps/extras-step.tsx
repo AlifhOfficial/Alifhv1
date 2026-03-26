@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 15,
-    fontFamily: 'Inter_400Regular',
+    fontWeight: '400',
     paddingVertical: Spacing.md,
   },
   addButton: {

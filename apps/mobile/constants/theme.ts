@@ -12,11 +12,11 @@ export const scale = (size: number, factor = 0.5): number => {
 export const fontScale = (size: number) => scale(size, 0.3);
 
 export const Fonts = {
-  regular:   'Inter_400Regular',
-  medium:    'Inter_500Medium',
-  semiBold:  'Inter_600SemiBold',
-  bold:      'Inter_700Bold',
-  extraBold: 'Inter_800ExtraBold',
+  regular:   '400' as const,
+  medium:    '500' as const,
+  semiBold:  '600' as const,
+  bold:      '700' as const,
+  extraBold: '800' as const,
 } as const;
 
 export const Colors = {
@@ -107,15 +107,15 @@ export const TextDefaults = { allowFontScaling: false, maxFontSizeMultiplier: 1 
 
 const b:  TextStyle = { includeFontPadding: false };
 const bc: TextStyle = { includeFontPadding: false, textAlignVertical: 'center' };
-const t  = (fs: number, lh: number, ff: string, x?: Partial<TextStyle>): TextStyle =>
-  ({ ...b,  fontSize: fontScale(fs), lineHeight: fontScale(lh), fontFamily: ff, ...x });
-const tc = (fs: number, lh: number, ff: string, x?: Partial<TextStyle>): TextStyle =>
-  ({ ...bc, fontSize: fontScale(fs), lineHeight: fontScale(lh), fontFamily: ff, ...x });
+const t  = (fs: number, lh: number, fw: TextStyle['fontWeight'], x?: Partial<TextStyle>): TextStyle =>
+  ({ ...b,  fontSize: fontScale(fs), lineHeight: fontScale(lh), fontWeight: fw, ...x });
+const tc = (fs: number, lh: number, fw: TextStyle['fontWeight'], x?: Partial<TextStyle>): TextStyle =>
+  ({ ...bc, fontSize: fontScale(fs), lineHeight: fontScale(lh), fontWeight: fw, ...x });
 
-const R5 = 'Inter_500Medium';
-const R6 = 'Inter_600SemiBold';
-const R7 = 'Inter_700Bold';
-const R8 = 'Inter_800ExtraBold';
+const R5: TextStyle['fontWeight'] = '500';
+const R6: TextStyle['fontWeight'] = '600';
+const R7: TextStyle['fontWeight'] = '700';
+const R8: TextStyle['fontWeight'] = '800';
 
 //  hero · title · heading · subheading
 //  bodyLg · body · bodySm

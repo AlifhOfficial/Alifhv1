@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     fontSize: 15,
     lineHeight: 22,
-    fontFamily: 'Inter_500Medium',
+    fontWeight: '500',
     minHeight: 100,
     textAlignVertical: 'top',
   },

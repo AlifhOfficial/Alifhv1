@@ -14,8 +14,6 @@ import {
   Alert,
   FlatList,
   RefreshControl,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
@@ -31,8 +29,6 @@ import { useSearch } from '@/context/search-context';
 import { useListingDetail, useSellerListings } from '@/hooks/use-listing-query';
 import { normalizeSellerData, SellerInfo } from '@/lib/seller-api';
 import { createConversation } from '@/lib/messaging-api';
-import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
-import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { PhoneActionSheet, FinancingSheet, BookingSheet, SellerDescriptionSheet } from '@/components/sheets';
 
 // Modular components
@@ -84,7 +80,6 @@ export default function SellerContactScreen() {
   const [bookingSheetVisible, setBookingSheetVisible] = useState(false);
   const [descriptionSheetVisible, setDescriptionSheetVisible] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
-  const [showTopGradient, setShowTopGradient] = useState(false);
   
   // Calculator state
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
@@ -261,7 +256,7 @@ export default function SellerContactScreen() {
       });
     }
     // Navigate to browse tab
-    router.push('/browse');
+    router.push('/(tabs)/(browse)');
   }, [seller, applySearch, clearSearch, clearFilterParams, router]);
 
   const handleCustomizeFinancing = useCallback(() => {
@@ -271,12 +266,6 @@ export default function SellerContactScreen() {
   const handleApplyCustomFinancing = useCallback((dp: number, term: number) => {
     setDownPaymentPercent(dp);
     setLoanTermMonths(term);
-  }, []);
-
-  // Handle scroll to show/hide top gradient
-  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const nextVisible = event.nativeEvent.contentOffset.y > 10;
-    setShowTopGradient((current) => (current === nextVisible ? current : nextVisible));
   }, []);
 
   // Loading state
@@ -415,9 +404,6 @@ export default function SellerContactScreen() {
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <Stack.Screen options={{ headerShown: false }} />
       
-      {/* Top Safe Area Gradient - visible on scroll */}
-      {showTopGradient && <TopSafeAreaGradient />}
-
       <FlatList
         data={flatListData}
         renderItem={() => null}
@@ -432,7 +418,6 @@ export default function SellerContactScreen() {
           },
         ]}
         showsVerticalScrollIndicator={false}
-        onScroll={handleScroll}
         scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
@@ -444,9 +429,6 @@ export default function SellerContactScreen() {
           />
         }
       />
-
-      {/* Bottom Safe Area Gradient */}
-      <BottomSafeAreaGradient />
 
       {/* Phone Action Sheet */}
       {seller.phone && (

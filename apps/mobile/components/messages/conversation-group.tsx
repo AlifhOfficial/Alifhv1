@@ -124,7 +124,7 @@ export function ConversationGroup({
                     style={{ 
                       flex: 1, 
                       color: hasUnread ? colors.text : colors.text2,
-                      fontFamily: hasUnread ? Fonts.semiBold : Fonts.medium,
+                      fontWeight: hasUnread ? Fonts.semiBold : Fonts.medium,
                     }}
                     numberOfLines={1}
                   >

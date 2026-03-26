@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    fontFamily: 'Inter_500Medium',
+    fontWeight: '500',
     paddingVertical: 0,
   },
   formattedRow: {

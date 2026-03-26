@@ -15,15 +15,12 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MessageCircle } from 'lucide-react-native';
 
 import {
-  MessagesHeader,
   ConversationGroup,
   useConversations,
 } from '@/components/messages';
-import { TopSafeAreaGradient } from '@/components/layout';
 import { Colors, Layout, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -40,18 +37,13 @@ type ListItem = {
   conversations: Conversation[];
 };
 
-// Header height calculation: headerPadding + pill height + bottom padding
-const HEADER_HEIGHT = Layout.headerPadding + Sizes.pillHeight + Spacing.md;
+// Header height calculation removed — native Stack header handles this
 
 export default function MessagesScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
-
-  // Dynamic top padding based on safe area + header
-  const contentTopPadding = insets.top + HEADER_HEIGHT + Spacing.md;
 
   const {
     conversations,
@@ -217,9 +209,8 @@ export default function MessagesScreen() {
     [handleSelect]
   );
 
-  // ── Single layout — header is always mounted once ──────────
-  const renderContent = () => {
-    // Not authenticated
+  // ── Empty / loading / error component for FlatList ──────────
+  const renderEmpty = useCallback(() => {
     if (!isAuthenticated) {
       return (
         <AuthRequiredEmptyState
@@ -229,10 +220,9 @@ export default function MessagesScreen() {
       );
     }
 
-    // Still loading for the first time (no data yet, not a refresh)
     if ((isLoading || isRefreshing) && conversations.length === 0) {
       return (
-        <View style={[styles.skeletonList, { paddingTop: contentTopPadding }]}>
+        <View style={styles.skeletonList}>
           {Array.from({ length: 6 }).map((_, i) => (
             <View key={i} style={styles.skeletonRow}>
               <SkeletonCircle size={Sizes.avatarLg} />
@@ -249,71 +239,54 @@ export default function MessagesScreen() {
       );
     }
 
-    // Error (only if we have nothing to show)
     if (error && conversations.length === 0) {
       return (
-        <View style={[styles.emptyState, { paddingTop: contentTopPadding }]}>
+        <View style={styles.emptyState}>
           <Data size="medium" style={{ textAlign: 'center', color: colors.text2 }}>{error}</Data>
         </View>
       );
     }
 
-    // Always render the FlatList — it handles empty + populated states.
-    // This avoids swapping between FlatList and empty-state Views which
-    // causes the layout flash. ListEmptyComponent fills the gap when there
-    // are no conversations yet.
     return (
-      <FlatList
-        style={{ flex: 1 }}
-        data={listItems}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.key}
-        contentContainerStyle={[
-          {
-            paddingTop: contentTopPadding,
-            paddingHorizontal: Spacing.sm,
-            paddingBottom: insets.bottom + Layout.tabBarHeight,
-          },
-          // When list is empty, fill the screen so the empty component centres
-          listItems.length === 0 && { flexGrow: 1 },
-        ]}
-        ListEmptyComponent={
-          !isLoading && !isRefreshing ? (
-            <View style={styles.emptyState}>
-              <View style={[styles.iconCircle, { backgroundColor: colors.fill2 }]}>
-                <MessageCircle size={Sizes.avatarSm} color={colors.text3} strokeWidth={1.5} />
-              </View>
-              <Heading size="medium">No Messages Yet</Heading>
-              <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
-                Your conversations will appear here
-              </Body>
-            </View>
-          ) : null
-        }
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={pullToRefresh}
-            tintColor={colors.primary}
-          />
-        }
-        showsVerticalScrollIndicator={false}
-      />
+      <View style={styles.emptyState}>
+        <View style={[styles.iconCircle, { backgroundColor: colors.fill2 }]}>
+          <MessageCircle size={Sizes.avatarSm} color={colors.text3} strokeWidth={1.5} />
+        </View>
+        <Heading size="medium">No Messages Yet</Heading>
+        <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
+          Your conversations will appear here
+        </Body>
+      </View>
     );
-  };
+  }, [isAuthenticated, isLoading, isRefreshing, conversations.length, error, colors]);
 
   return (
-    <View style={[styles.screen, { backgroundColor: colors.bg }]}>
-      <TopSafeAreaGradient />
-      <MessagesHeader />
-      {renderContent()}
-    </View>
+    <FlatList
+      data={listItems}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.key}
+      contentContainerStyle={[
+        styles.listContent,
+        listItems.length === 0 && { flexGrow: 1 },
+      ]}
+      contentInsetAdjustmentBehavior="automatic"
+      ListEmptyComponent={renderEmpty}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={pullToRefresh}
+          tintColor={colors.primary}
+        />
+      }
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
+  listContent: {
+    paddingHorizontal: Spacing.sm,
+    paddingBottom: Layout.tabBarHeight + Spacing['3xl'],
   },
   centered: {
     flex: 1,

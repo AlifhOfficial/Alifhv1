@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   labelSelected: {
-    fontFamily: Fonts.semiBold,
+    fontWeight: Fonts.semiBold,
   },
   rightContent: {
     flexDirection: 'row',

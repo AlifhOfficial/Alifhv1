@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     paddingHorizontal: Spacing.md,
     fontSize: 16,
-    fontFamily: 'Inter_500Medium',
+    fontWeight: '500',
   },
   section: {
     gap: Spacing.sm,

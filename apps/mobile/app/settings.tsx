@@ -16,7 +16,6 @@ import { ScreenContainer } from '@/components/layout';
 import { Layout, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { TopSafeAreaGradient } from '@/components/layout';
 import {
   useSettingsColors,
   useSettings,
@@ -102,7 +101,6 @@ export default function SettingsScreen() {
   if (!isAuthenticated) {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg }]}>
-        <TopSafeAreaGradient />
         <SettingsHeader colors={colors} topInset={insets.top} />
         <AuthRequiredEmptyState
           title="Sign in to settings"
@@ -116,7 +114,6 @@ export default function SettingsScreen() {
   if (isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg }]}>
-        <TopSafeAreaGradient />
         <SettingsHeader colors={colors} topInset={insets.top} />
         <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerHeight }]}>
           {/* Section skeletons */}
@@ -134,7 +131,6 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
-      <TopSafeAreaGradient />
       <SettingsHeader colors={colors} topInset={insets.top} />
       <ScreenContainer
         keyboardAvoiding={false}

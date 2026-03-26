@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 28,
-    fontFamily: 'Inter_700Bold',
+    fontWeight: '700',
     paddingVertical: Spacing.sm,
     textAlign: 'left',
   },

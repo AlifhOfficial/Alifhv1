@@ -10,7 +10,6 @@ import { View, StyleSheet } from 'react-native';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/context/theme-context';
 import { BookingsScreen } from '@/components/bookings/bookings-screen';
-import { TopSafeAreaGradient } from '@/components/layout';
 import { AuthRequiredEmptyState } from '@/components/ui';
 import { Colors } from '@/constants/theme';
 
@@ -23,7 +22,6 @@ export default function BookingsRoute() {
   if (!isAuthenticated) {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg }]}>
-        <TopSafeAreaGradient />
         <AuthRequiredEmptyState
           title="Sign in to view bookings"
           subtitle="Manage your test drive appointments on Revvup"

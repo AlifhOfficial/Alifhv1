@@ -13,8 +13,6 @@ import {
   RefreshControl,
   Text,
   InteractionManager,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
 } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,8 +20,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
-import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
-import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import { FloatingListingActions } from '@/components/listings';
 import { useListingDetail } from '@/hooks/use-listing-query';
 import { shareListing } from '@/lib/listing-share';
@@ -41,14 +37,7 @@ export default function ListingDetailScreen() {
     trackView: true,
   });
   
-  const [showTopGradient, setShowTopGradient] = useState(false);
   const [showActions, setShowActions] = useState(false);
-
-  // Handle scroll to show/hide top gradient
-  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const nextVisible = event.nativeEvent.contentOffset.y > 10;
-    setShowTopGradient((current) => (current === nextVisible ? current : nextVisible));
-  }, []);
 
   useEffect(() => {
     if (!listing) {
@@ -103,9 +92,6 @@ export default function ListingDetailScreen() {
         }}
       />
 
-      {/* Top Safe Area Gradient - visible on scroll */}
-      {showTopGradient && <TopSafeAreaGradient />}
-      
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
@@ -113,7 +99,6 @@ export default function ListingDetailScreen() {
           { paddingBottom: insets.bottom + Spacing['3xl'] + Sizes.actionButtonLg + Spacing['3xl'] },
         ]}
         showsVerticalScrollIndicator={false}
-        onScroll={handleScroll}
         scrollEventThrottle={32}
         refreshControl={
           <RefreshControl
@@ -150,8 +135,6 @@ export default function ListingDetailScreen() {
         />
       )}
 
-      {/* Bottom Safe Area Gradient */}
-      <BottomSafeAreaGradient />
     </View>
   );
 }

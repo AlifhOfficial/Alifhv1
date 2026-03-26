@@ -15,7 +15,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Layout, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
 import {
   SavedHeader,
   SavedList,
@@ -64,7 +63,6 @@ export default function SavedScreen() {
   if (!isAuthenticated) {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg }]}>
-        <TopSafeAreaGradient />
         <SavedHeader
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -81,7 +79,6 @@ export default function SavedScreen() {
   if (isLoading && currentListings.length === 0) {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg }]}>
-        <TopSafeAreaGradient />
         <SavedHeader
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -99,7 +96,6 @@ export default function SavedScreen() {
   if (error && currentListings.length === 0) {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg }]}>
-        <TopSafeAreaGradient />
         <SavedHeader
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -121,7 +117,6 @@ export default function SavedScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
-      <TopSafeAreaGradient />
       {/* Header */}
       <SavedHeader
         activeTab={activeTab}
@@ -162,10 +157,10 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 15,
-    fontFamily: 'Inter_500Medium',
+    fontWeight: '500',
   },
   retryText: {
     fontSize: 14,
-    fontFamily: 'Inter_500Medium',
+    fontWeight: '500',
   },
 });

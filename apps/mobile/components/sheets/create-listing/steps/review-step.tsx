@@ -201,7 +201,7 @@ export function ReviewStepContent({
           ) : (
             <>
               <Check size={Sizes.iconSm} color={canPublish ? colors.bg : colors.textMuted} strokeWidth={2} />
-              <Body size="medium" style={{ color: canPublish ? colors.bg : colors.textMuted, fontFamily: 'Inter_600SemiBold' }}>
+              <Body size="medium" style={{ color: canPublish ? colors.bg : colors.textMuted, fontWeight: '600' }}>
                 Publish
               </Body>
             </>

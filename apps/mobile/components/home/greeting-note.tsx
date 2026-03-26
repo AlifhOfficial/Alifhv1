@@ -166,6 +166,7 @@ export function GreetingNote() {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: Spacing['3xl'],
     paddingHorizontal: Layout.screenPadding,
     gap: Spacing.xs,
   },

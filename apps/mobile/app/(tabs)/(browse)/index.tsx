@@ -8,11 +8,9 @@
 
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { TopSafeAreaGradient } from '@/components/layout';
 import { BrowseHeader, BrowseToolbar, type FilterPillType } from '@/components/browse';
 import { ACTIVE_CHIPS_HEIGHT } from '@/components/layout/active-search-chips';
 import { 
@@ -31,7 +29,7 @@ import { Body, Supporting } from '@/components/ui';
 import { searchApi, type ListingCard, type SearchParams } from '@/lib/search-api';
 import { queryKeys } from '@/lib/query-client';
 import { consumeDataReady, markInteractionStart, scheduleRenderPerf } from '@/lib/config';
-import { Colors, Spacing, Layout, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type FilterParams } from '@/context/search-context';
 import { getModelsForMake } from '@/lib/filter-constants';
@@ -41,8 +39,7 @@ import { getModelsForMake } from '@/lib/filter-constants';
 // ============================================================================
 let persistedViewMode: ViewMode = 'grid';
 
-// Header height calculation: headerPadding + bubble height + bottom padding
-const HEADER_HEIGHT = Layout.headerPadding + Sizes.bubble + Spacing.md;
+// Header height removed — native Stack header handles top inset
 
 // ============================================================================
 // HELPERS
@@ -97,7 +94,6 @@ function compactSearchParams(params: SearchParams): SearchParams {
 export default function BrowseScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const router = useRouter();
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -409,9 +405,7 @@ export default function BrowseScreen() {
   // RENDER
   // ──────────────────────────────────────────────────────────────────────────
 
-  // Dynamic top padding based on safe area + header
-  const contentTopPadding = insets.top + HEADER_HEIGHT + Spacing.md;
-  const bottomPadding = Layout.tabBarHeight + insets.bottom + (hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0);
+  const bottomPadding = Layout.tabBarHeight + Spacing['3xl'] + (hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0);
 
   const renderListing = useCallback(({ item }: { item: ListingCard }) => {
     if (viewMode === 'grid') {
@@ -504,91 +498,20 @@ export default function BrowseScreen() {
     );
   }, [hasMore, isFetchingNextPage]);
 
+  const renderListHeader = useCallback(() => (
+    <BrowseHeader 
+      pills={filterPillConfigs}
+      onPillPress={handleFilterPillPress}
+      onSettingsPress={handleSettingsPress}
+      settingsCount={moreFiltersCount}
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
+      onBrowsePress={handleBrowsePress}
+    />
+  ), [filterPillConfigs, handleFilterPillPress, handleSettingsPress, moreFiltersCount, viewMode, setViewMode, handleBrowsePress]);
+
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}> 
-      <TopSafeAreaGradient />
-      {/* Browse Header with Filter Pills */}
-      <BrowseHeader 
-        pills={filterPillConfigs}
-        onPillPress={handleFilterPillPress}
-        onSettingsPress={handleSettingsPress}
-        settingsCount={moreFiltersCount}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onBrowsePress={handleBrowsePress}
-      />
-
-      {/* Make Filter Sheet - reads from searchParams */}
-      <MakeFilterSheet
-        visible={makeSheetVisible}
-        onClose={() => setMakeSheetVisible(false)}
-        selected={searchParams?.make ?? []}
-        filterContext={filterContext}
-        onApply={handleMakeApply}
-      />
-
-      {/* Model Filter Sheet - reads from searchParams */}
-      <ModelFilterSheet
-        visible={modelSheetVisible}
-        onClose={() => setModelSheetVisible(false)}
-        selectedMakes={searchParams?.make ?? []}
-        selected={searchParams?.model ?? []}
-        filterContext={filterContext}
-        onApply={handleModelApply}
-      />
-
-      {/* Price Filter Sheet - reads from context */}
-      <PriceFilterSheet
-        visible={priceSheetVisible}
-        onClose={() => setPriceSheetVisible(false)}
-        priceMin={filterParams.priceMin}
-        priceMax={filterParams.priceMax}
-        onApply={handlePriceApply}
-      />
-
-      {/* Year & Mileage Filter Sheet - reads from context */}
-      <YearMileageFilterSheet
-        visible={yearMileageSheetVisible}
-        onClose={() => setYearMileageSheetVisible(false)}
-        yearMin={filterParams.yearMin}
-        yearMax={filterParams.yearMax}
-        mileageMin={filterParams.mileageMin}
-        mileageMax={filterParams.mileageMax}
-        onApply={handleYearMileageApply}
-      />
-
-      {/* Location Filter Sheet - reads from context */}
-      <LocationFilterSheet
-        visible={locationSheetVisible}
-        onClose={() => setLocationSheetVisible(false)}
-        selected={filterParams.emirate ?? []}
-        filterContext={filterContext}
-        onApply={handleLocationApply}
-      />
-
-      {/* Settings & More Filters Sheet - reads from context */}
-      <MoreFiltersSheet
-        visible={settingsSheetVisible}
-        onClose={() => setSettingsSheetVisible(false)}
-        filters={moreFiltersState}
-        filterContext={filterContext}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onApply={handleMoreFiltersApply}
-      />
-
-      {/* Car Info Sheet - AI summary on long-press */}
-      <CarInfoSheet
-        visible={infoSheetVisible}
-        onClose={() => setInfoSheetVisible(false)}
-        listingId={infoSheetListingId}
-        make={infoSheetMeta.make}
-        model={infoSheetMeta.model}
-        year={infoSheetMeta.year}
-        price={infoSheetMeta.price}
-        sellerName={infoSheetMeta.sellerName}
-      />
-
+    <>
       <FlatList
         ref={scrollRef}
         data={listings}
@@ -597,14 +520,16 @@ export default function BrowseScreen() {
         keyExtractor={keyExtractor}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
+        ListHeaderComponent={renderListHeader}
         ListEmptyComponent={renderEmptyState}
         ListFooterComponent={renderFooter}
+        stickyHeaderIndices={[0]}
         contentContainerStyle={{
-          paddingTop: contentTopPadding,
           paddingBottom: bottomPadding,
           paddingHorizontal: Spacing.sm,
           flexGrow: listings.length === 0 ? 1 : undefined,
         }}
+        contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         removeClippedSubviews
@@ -623,17 +548,73 @@ export default function BrowseScreen() {
         }
       />
 
+      {/* Filter Sheets (modals — don't affect layout) */}
+      <MakeFilterSheet
+        visible={makeSheetVisible}
+        onClose={() => setMakeSheetVisible(false)}
+        selected={searchParams?.make ?? []}
+        filterContext={filterContext}
+        onApply={handleMakeApply}
+      />
+      <ModelFilterSheet
+        visible={modelSheetVisible}
+        onClose={() => setModelSheetVisible(false)}
+        selectedMakes={searchParams?.make ?? []}
+        selected={searchParams?.model ?? []}
+        filterContext={filterContext}
+        onApply={handleModelApply}
+      />
+      <PriceFilterSheet
+        visible={priceSheetVisible}
+        onClose={() => setPriceSheetVisible(false)}
+        priceMin={filterParams.priceMin}
+        priceMax={filterParams.priceMax}
+        onApply={handlePriceApply}
+      />
+      <YearMileageFilterSheet
+        visible={yearMileageSheetVisible}
+        onClose={() => setYearMileageSheetVisible(false)}
+        yearMin={filterParams.yearMin}
+        yearMax={filterParams.yearMax}
+        mileageMin={filterParams.mileageMin}
+        mileageMax={filterParams.mileageMax}
+        onApply={handleYearMileageApply}
+      />
+      <LocationFilterSheet
+        visible={locationSheetVisible}
+        onClose={() => setLocationSheetVisible(false)}
+        selected={filterParams.emirate ?? []}
+        filterContext={filterContext}
+        onApply={handleLocationApply}
+      />
+      <MoreFiltersSheet
+        visible={settingsSheetVisible}
+        onClose={() => setSettingsSheetVisible(false)}
+        filters={moreFiltersState}
+        filterContext={filterContext}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        onApply={handleMoreFiltersApply}
+      />
+      <CarInfoSheet
+        visible={infoSheetVisible}
+        onClose={() => setInfoSheetVisible(false)}
+        listingId={infoSheetListingId}
+        make={infoSheetMeta.make}
+        model={infoSheetMeta.model}
+        year={infoSheetMeta.year}
+        price={infoSheetMeta.price}
+        sellerName={infoSheetMeta.sellerName}
+      />
+
       <BrowseToolbar />
-    </View>
+    </>
   );
 }
 // STYLES
 // ============================================================================
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   empty: {
     alignItems: 'center',
     paddingVertical: Spacing['3xl'],

@@ -10,7 +10,6 @@ import { View, StyleSheet } from 'react-native';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/context/theme-context';
 import { InventoryScreen } from '@/components/user-inventory-management/inventory-screen';
-import { TopSafeAreaGradient } from '@/components/layout';
 import { AuthRequiredEmptyState } from '@/components/ui';
 import { Colors } from '@/constants/theme';
 
@@ -23,7 +22,6 @@ export default function InventoryRoute() {
   if (!isAuthenticated) {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg }]}>
-        <TopSafeAreaGradient />
         <AuthRequiredEmptyState
           title="Sign in to view inventory"
           subtitle="Manage your car listings on Revvup"

@@ -57,9 +57,7 @@ import {
 } from './utilities/booking-helpers';
 import { CancelBookingSheet } from './cancel-booking-sheet';
 import { BookingDetailsSheet } from './booking-details-sheet';
-import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
-import { TopSafeAreaGradient } from '@/components/layout';
-import { ProfileMenu } from '@/components/home/profile-menu';
+
 
 // ─── Constants (derived from theme for responsive scaling) ──────────────────
 
@@ -306,9 +304,6 @@ export function BookingsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* ─────────────────────── Top Safe Area Gradient ────────────────────────────────── */}
-      <TopSafeAreaGradient />
-
       {/* ─────────────────────── Floating Header (absolute) ────────────────────────────────── */}
       <View style={[styles.header, { paddingTop: insets.top + Layout.headerPadding }]}>
         <ScrollView
@@ -317,9 +312,6 @@ export function BookingsScreen() {
           contentContainerStyle={styles.headerScrollContent}
           style={styles.headerScroll}
         >
-          {/* Profile Avatar */}
-          <ProfileMenu />
-
           {/* Bookings Title Pill */}
           <View
             style={[
@@ -453,8 +445,6 @@ export function BookingsScreen() {
         />
       )}
 
-      {/* ─────────────────────── Bottom Safe Area ──────────────────────── */}
-      <BottomSafeAreaGradient />
     </View>
   );
 }

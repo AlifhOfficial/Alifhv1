@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   },
   doodleText: {
     position: 'absolute',
-    fontFamily: Fonts.regular,
+    fontWeight: Fonts.regular,
     letterSpacing: 0.5,
   },
 });

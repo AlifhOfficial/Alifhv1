@@ -89,7 +89,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
               size="large"
               style={{
                 color: isSelected ? colors.text : colors.text2,
-                fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
+                fontWeight: isSelected ? '600' : '400',
               }}
             >
               {year}
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    fontFamily: 'Inter_400Regular',
+    fontWeight: '400',
     paddingVertical: Spacing.xs,
   },
   listContent: {

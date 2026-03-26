@@ -29,7 +29,6 @@ import { MessageInput } from './message-input';
 import { LocationPickerSheet } from './location-picker-sheet';
 import { useMessages } from './hooks/useMessages';
 import { Body, Data, Supporting, Skeleton } from '@/components/ui';
-import { TopSafeAreaGradient } from '@/components/layout';
 import { markConversationAsRead, sendLocationMessage, type Message, type Conversation } from '@/lib/messaging-api';
 import type { LocationResult } from '@/hooks/use-location';
 
@@ -330,9 +329,6 @@ export function ChatWindow({
       behavior="padding"
       keyboardVerticalOffset={0}
     >
-      {/* Top safe area gradient */}
-      <TopSafeAreaGradient />
-
       {/* Header */}
       <ChatHeader
         name={displayName}

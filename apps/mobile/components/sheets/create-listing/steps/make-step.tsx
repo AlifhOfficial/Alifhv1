@@ -90,7 +90,7 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
               size="medium"
               style={{
                 color: isSelected ? colors.text : colors.text2,
-                fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
+                fontWeight: isSelected ? '600' : '400',
               }}
             >
               {make}
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 15,
-    fontFamily: 'Inter_400Regular',
+    fontWeight: '400',
     paddingVertical: 0,
   },
   listContent: {

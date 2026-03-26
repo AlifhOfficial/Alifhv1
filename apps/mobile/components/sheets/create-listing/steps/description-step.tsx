@@ -135,7 +135,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
             ) : (
               <Sparkles size={14} color={colors.primary} strokeWidth={2} />
             )}
-            <Body size="small" style={{ color: colors.primary, fontFamily: 'Inter_600SemiBold' }}>
+            <Body size="small" style={{ color: colors.primary, fontWeight: '600' }}>
               {isGenerating ? 'Generating...' : hasDescription ? 'Regenerate' : 'AI Generate'}
             </Body>
           </HapticPressable>
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     padding: Spacing.md,
     fontSize: 16,
-    fontFamily: 'Inter_400Regular',
+    fontWeight: '400',
     lineHeight: 24,
     textAlignVertical: 'top',
   },

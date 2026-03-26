@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingRight: 48,
     fontSize: 18,
-    fontFamily: 'Inter_500Medium',
+    fontWeight: '500',
     letterSpacing: 1,
   },
   statusIcon: {

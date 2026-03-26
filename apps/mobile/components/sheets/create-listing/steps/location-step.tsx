@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     paddingHorizontal: Spacing.md,
     fontSize: 16,
-    fontFamily: 'Inter_400Regular',
+    fontWeight: '400',
   },
   summaryBox: {
     padding: Spacing.md,

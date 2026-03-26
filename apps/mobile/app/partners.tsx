@@ -17,7 +17,6 @@ import { Colors, Spacing, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { Body } from '@/components/ui';
-import { TopSafeAreaGradient } from '@/components/layout';
 import { PartnersHeader, PartnerCard, PartnerCardSkeleton } from '@/components/partners';
 import { getPartnersList, type PartnerListItem } from '@/lib/partner-api';
 
@@ -124,9 +123,6 @@ export default function PartnersScreen() {
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
       {/* Header - Absolute positioned */}
       <PartnersHeader count={partners.length} />
-
-      {/* Safe Area Gradient */}
-      <TopSafeAreaGradient />
 
       <FlatList
         data={partners}
