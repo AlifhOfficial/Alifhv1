@@ -6,10 +6,8 @@
  * Requires authentication — shows auth empty state if not signed in.
  */
 
-import { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useAuth } from '@/context/auth-context';
-import { useTabBar } from '@/context/tab-bar-context';
 import { useTheme } from '@/context/theme-context';
 import { BookingsScreen } from '@/components/bookings/bookings-screen';
 import { TopSafeAreaGradient } from '@/components/layout';
@@ -18,22 +16,13 @@ import { Colors } from '@/constants/theme';
 
 export default function BookingsRoute() {
   const { isAuthenticated } = useAuth();
-  const { hideChrome, showChrome } = useTabBar();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-
-  // Hide tab bar for immersive experience
-  useEffect(() => {
-    hideChrome();
-    return () => {
-      showChrome();
-    };
-  }, [hideChrome, showChrome]);
 
   // Show auth empty state when not authenticated
   if (!isAuthenticated) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <TopSafeAreaGradient />
         <AuthRequiredEmptyState
           title="Sign in to view bookings"

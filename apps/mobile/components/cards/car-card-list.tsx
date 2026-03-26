@@ -83,14 +83,14 @@ const SPECS_SHORT: Record<string, string> = {
 // ============================================================================
 
 interface CardTheme {
-  background: string;
+  bg: string;
   border: string;
   text: string;
   price: string;
   meta: string;
   icon: string;
   imageBg: string;
-  glassBackground: string;
+  glassBg: string;
   glassBorder: string;
 }
 
@@ -134,27 +134,27 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean): CardT
   return useMemo(() => {
     if (isBlkListing) {
       return {
-        background: colors.blkBackground,
+        bg: colors.blkBg,
         border: colors.blkBorder,
         text: colors.blkText,
         price: colors.blkText,
-        meta: colors.blkTextSecondary,
-        icon: colors.blkTextSecondary,
-        imageBg: colors.blkBackground,
-        glassBackground: colors.blkBackground,
+        meta: colors.blkText2,
+        icon: colors.blkText2,
+        imageBg: colors.blkBg,
+        glassBg: colors.blkBg,
         glassBorder: colors.blkBorder,
       };
     }
     // Surface aesthetic - standard card styling (matches car-card-m)
     return {
-      background: colors.surface,
+      bg: colors.surface,
       border: colors.border,
       text: colors.text,
       price: colors.primary,
-      meta: colors.textSecondary,
+      meta: colors.text2,
       icon: colors.icon,
-      imageBg: colors.surfaceSecondary,
-      glassBackground: colors.glassBackground,
+      imageBg: colors.surface2,
+      glassBg: colors.glassBg,
       glassBorder: colors.glassBorder,
     };
   }, [colors, isBlkListing]);
@@ -224,7 +224,7 @@ export const CarCardList = memo(function CarCardList({
     <HapticPressable
       onPress={handlePress}
       onPressIn={onPressIn ? handlePressIn : undefined}
-      style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}
+      style={[styles.container, { backgroundColor: theme.bg, borderColor: theme.border }]}
     >
       {/* === IMAGE SECTION === */}
       <ListImage
@@ -232,9 +232,9 @@ export const CarCardList = memo(function CarCardList({
         backgroundColor={theme.imageBg}
         skeletonColor={colors.skeleton}
         isBlkListing={isBlkListing}
-        blkBadgeBackground={colors.blkBadgeBackground}
+        blkBadgeBackground={colors.blkBadgeBg}
         blkBadgeBorder={colors.blkBadgeBorder}
-        blkBadgeText={colors.blkBadgeText}
+        blkBadgeText={colors.blkBadgeFg}
       />
 
       {/* === INFO SECTION === */}
@@ -247,7 +247,7 @@ export const CarCardList = memo(function CarCardList({
           <Supporting size="small" style={{ color: theme.meta }}>
             {year}
           </Supporting>
-          <Text variant="priceMini" style={{ color: theme.price }}>
+          <Text variant="price" style={{ color: theme.price }}>
             {formatPrice(price)}
           </Text>
           <Supporting size="mini" style={{ color: theme.meta }}>
@@ -257,7 +257,7 @@ export const CarCardList = memo(function CarCardList({
 
         {/* Actions - Bottom Row */}
         <View style={styles.bottomActions}>
-          <View style={[styles.actionBubble, { backgroundColor: theme.glassBackground, borderColor: theme.glassBorder }]}>
+          <View style={[styles.actionBubble, { backgroundColor: theme.glassBg, borderColor: theme.glassBorder }]}>
             <FavoriteButton
               listingId={id}
               size={Sizes.iconXs}
@@ -267,7 +267,7 @@ export const CarCardList = memo(function CarCardList({
             />
           </View>
           {showSuperlike && (
-            <View style={[styles.actionBubble, { backgroundColor: theme.glassBackground, borderColor: theme.glassBorder }]}>
+            <View style={[styles.actionBubble, { backgroundColor: theme.glassBg, borderColor: theme.glassBorder }]}>
               <SuperlikeButton
                 listingId={id}
                 size={Sizes.iconXs}
@@ -281,7 +281,7 @@ export const CarCardList = memo(function CarCardList({
             <HapticPressable 
               onPress={handleSharePress} 
               hitSlop={Layout.hitSlopSmall}
-              style={[styles.actionBubble, { backgroundColor: theme.glassBackground, borderColor: theme.glassBorder }]}
+              style={[styles.actionBubble, { backgroundColor: theme.glassBg, borderColor: theme.glassBorder }]}
             >
               <Share2 size={Sizes.iconXs} color={theme.icon} strokeWidth={ICON_STROKE_WIDTH} />
             </HapticPressable>

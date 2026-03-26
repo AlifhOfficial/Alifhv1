@@ -282,7 +282,7 @@ export default function SellerContactScreen() {
   // Loading state
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <Stack.Screen options={{ headerShown: false }} />
         <Header colors={colors} insets={insets} onBack={handleBack} />
         <SellerContactSkeleton colors={colors} />
@@ -293,7 +293,7 @@ export default function SellerContactScreen() {
   // Error state
   if (!listing || !seller) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <Stack.Screen options={{ headerShown: false }} />
         <Header colors={colors} insets={insets} onBack={handleBack} />
         <View style={styles.errorContainer}>
@@ -412,7 +412,7 @@ export default function SellerContactScreen() {
   ]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <Stack.Screen options={{ headerShown: false }} />
       
       {/* Top Safe Area Gradient - visible on scroll */}
@@ -440,7 +440,7 @@ export default function SellerContactScreen() {
             onRefresh={refresh}
             tintColor={colors.primary}
             colors={[colors.primary]}
-            progressBackgroundColor={colors.background}
+            progressBackgroundColor={colors.bg}
           />
         }
       />

@@ -33,7 +33,7 @@ function RevvupLogo({ size = LOGO_SIZE }: { size?: number }) {
     <Svg width={size} height={size} viewBox="0 0 400 400">
       <Path
         d={LOGO_PATH}
-        fill={colors.oledWhite}
+        fill={colors.white}
         transform="translate(80,15) scale(0.88)"
       />
     </Svg>
@@ -44,7 +44,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.oledBlack, paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: colors.black, paddingTop: insets.top }]}>
       {/* Main content - Logo centered with CTAs below */}
       <View style={styles.mainSection}>
         {/* Logo - centered */}
@@ -63,9 +63,9 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
               style={styles.getStartedRow}
               hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
             >
-              <Heading size="medium" style={{ color: colors.oledWhite }}>Get Started</Heading>
-              <View style={[styles.glassBubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorderOnDark }]}>
-                <ArrowRight size={Sizes.iconXs} color={colors.oledWhite} strokeWidth={2} />
+              <Heading size="medium" style={{ color: colors.white }}>Get Started</Heading>
+              <View style={[styles.glassBubble, { backgroundColor: colors.glassBg, borderColor: colors.glassBorderDark }]}>
+                <ArrowRight size={Sizes.iconXs} color={colors.white} strokeWidth={2} />
               </View>
             </HapticPressable>
           </Animated.View>

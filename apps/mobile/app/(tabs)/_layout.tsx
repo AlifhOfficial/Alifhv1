@@ -1,36 +1,28 @@
 /**
  * Tab Layout - Revvup Mobile App
- * Main tabs: Home, Messages, Search
- * Profile, Saved, Settings are at root level (accessed via GlobalTabBar)
+ * 3 tabs: Home, Messages, Browse
+ * Uses NativeTabs for platform-native tab bar (liquid glass on iOS 26+).
  */
 
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-
-import { useTheme } from '@/context/theme-context';
-import { Colors } from '@/constants/theme';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
-
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Tabs
-        tabBar={() => null}
-        screenOptions={{
-          freezeOnBlur: true,
-          headerShown: false,
-        }}
-        detachInactiveScreens
-      />
-    </View>
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="messages">
+        <NativeTabs.Trigger.Icon sf={{ default: 'message', selected: 'message.fill' }} md="chat" />
+        <NativeTabs.Trigger.Label>Messages</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="browse">
+        <NativeTabs.Trigger.Icon sf={{ default: 'square.grid.2x2', selected: 'square.grid.2x2.fill' }} md="grid_view" />
+        <NativeTabs.Trigger.Label>Browse</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

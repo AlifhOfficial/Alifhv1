@@ -120,7 +120,7 @@ export default function ProfileScreen() {
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <TopSafeAreaGradient />
         <ProfileHeader colors={colors} topInset={insets.top} />
         <AuthRequiredEmptyState
@@ -134,7 +134,7 @@ export default function ProfileScreen() {
   // Loading state — skeleton
   if (isLoading) {
     return (
-      <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, styles.centered, { backgroundColor: colors.bg }]}>
         <TopSafeAreaGradient />
         <ProfileHeader colors={colors} topInset={insets.top} />
         <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerHeight }]}>
@@ -192,10 +192,10 @@ export default function ProfileScreen() {
   // Error state
   if (error && !profile) {
     return (
-      <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, styles.centered, { backgroundColor: colors.bg }]}>
         <TopSafeAreaGradient />
         <ProfileHeader colors={colors} topInset={insets.top} />
-        <View style={[styles.errorContainer, { backgroundColor: colors.background, paddingTop: headerHeight }]}>
+        <View style={[styles.errorContainer, { backgroundColor: colors.bg, paddingTop: headerHeight }]}>
           <Body size="medium" tone="error" style={styles.errorText}>
             {error}
           </Body>
@@ -208,7 +208,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <TopSafeAreaGradient />
       <ProfileHeader colors={colors} topInset={insets.top} />
       <ScreenContainer

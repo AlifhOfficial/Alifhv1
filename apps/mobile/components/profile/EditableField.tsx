@@ -112,10 +112,10 @@ export function EditableField({
               value={value}
               onChangeText={onChange}
               placeholder={placeholder}
-              placeholderTextColor={colors.textTertiary}
+              placeholderTextColor={colors.text3}
               style={[
                 styles.input,
-                Typography.bodyLarge,
+                Typography.bodyLg,
                 { backgroundColor: colors.surface, color: colors.text },
               ]}
               keyboardType={keyboardType}
@@ -186,7 +186,7 @@ export function EditableField({
             {!disabled && (
               <ChevronRight
                 size={Sizes.iconSm}
-                color={colors.textTertiary}
+                color={colors.text3}
                 strokeWidth={2}
                 style={styles.chevron}
               />

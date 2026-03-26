@@ -222,7 +222,7 @@ export default function HomeScreen() {
   }, [isLoading, loadedGrids.length]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack }]}>
+    <View style={[styles.container, { backgroundColor: colorScheme === 'light' ? colors.white : colors.black }]}>
       <TopSafeAreaGradient useOled />
       <HomeHeader />
       

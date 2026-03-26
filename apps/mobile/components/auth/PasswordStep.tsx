@@ -59,7 +59,7 @@ export function PasswordStep({
   };
 
   return (
-    <View style={[onboardingStyles.container, { backgroundColor: colors.oledBlack }]}>
+    <View style={[onboardingStyles.container, { backgroundColor: colors.black }]}>
       <KeyboardAvoidingView behavior="padding" style={onboardingStyles.keyboardView}>
         <View
           style={[
@@ -73,7 +73,7 @@ export function PasswordStep({
               onPress={onBack}
               style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
-              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.oledWhite} />
+              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.white} />
             </HapticPressable>
 
             <View style={onboardingStyles.progressContainer}>
@@ -84,7 +84,7 @@ export function PasswordStep({
                     onboardingStyles.progressBar,
                     {
                       backgroundColor:
-                        index < currentStep ? colors.primary : colors.glassBorderOnDark,
+                        index < currentStep ? colors.primary : colors.glassBorderDark,
                     },
                   ]}
                 />
@@ -99,10 +99,10 @@ export function PasswordStep({
             <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
               Almost there, {userName}
             </Supporting>
-            <Heading size="large" style={[onboardingStyles.title, { color: colors.oledWhite }]}>
+            <Heading size="large" style={[onboardingStyles.title, { color: colors.white }]}>
               Create a password
             </Heading>
-            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.textSecondary }]}>
+            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
               Keep your account secure
             </Body>
           </Animated.View>
@@ -125,14 +125,14 @@ export function PasswordStep({
               style={[
                 onboardingStyles.inputWrapper,
                 {
-                  backgroundColor: `${colors.oledWhite}08`,
+                  backgroundColor: `${colors.white}08`,
                   borderColor: error
                     ? colors.error
                     : password.length > 0
                     ? isValid
                       ? colors.success
-                      : `${colors.oledWhite}30`
-                    : `${colors.oledWhite}15`,
+                      : `${colors.white}30`
+                    : `${colors.white}15`,
                 },
               ]}
             >
@@ -141,12 +141,12 @@ export function PasswordStep({
                 style={[
                   onboardingStyles.inputInner,
                   onboardingStyles.passwordInputInner,
-                  { color: colors.oledWhite },
+                  { color: colors.white },
                 ]}
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Min. 8 characters"
-                placeholderTextColor={colors.textTertiary}
+                placeholderTextColor={colors.text3}
                 keyboardAppearance="dark"
                 secureTextEntry={!showPassword}
                 autoComplete={Platform.OS === 'android' ? 'off' : 'new-password'}
@@ -162,7 +162,7 @@ export function PasswordStep({
                 onPress={() => setShowPassword(!showPassword)}
                 style={onboardingStyles.showPasswordButton}
               >
-                <Data size="mini" style={{ color: colors.textTertiary }}>
+                <Data size="mini" style={{ color: colors.text3 }}>
                   {showPassword ? 'Hide' : 'Show'}
                 </Data>
               </HapticPressable>
@@ -186,7 +186,7 @@ export function PasswordStep({
               style={({ pressed }) => [
                 onboardingStyles.continueButton,
                 {
-                  backgroundColor: isValid ? colors.primary : `${colors.oledWhite}10`,
+                  backgroundColor: isValid ? colors.primary : `${colors.white}10`,
                   opacity: pressed ? 0.9 : 1,
                 },
               ]}
@@ -194,7 +194,7 @@ export function PasswordStep({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <ButtonText style={{ color: isValid ? colors.primaryForeground : colors.textTertiary }}>
+                <ButtonText style={{ color: isValid ? colors.primaryFg : colors.text3 }}>
                   Create Account
                 </ButtonText>
               )}
@@ -218,10 +218,10 @@ function PasswordRequirement({ met, text, colors }: PasswordRequirementProps) {
       <View
         style={[
           onboardingStyles.requirementDot,
-          { backgroundColor: met ? colors.success : colors.textTertiary },
+          { backgroundColor: met ? colors.success : colors.text3 },
         ]}
       />
-      <Supporting size="small" style={{ color: met ? colors.success : colors.textTertiary }}>
+      <Supporting size="small" style={{ color: met ? colors.success : colors.text3 }}>
         {text}
       </Supporting>
     </View>

@@ -1,812 +1,149 @@
-/**
- * Revvup Design System - Mobile Theme
- * ═══════════════════════════════════════════════════════════════════════════════
- * 
- * Primary: #0066FF | OLED Dark Mode | Clean Neutrals
- * 
- * Typography System Architecture:
- * ─────────────────────────────────────────────────────────────────────────────
- * This theme implements a comprehensive typography system designed for
- * automotive marketplace UI patterns. Every text style is tokenized to ensure
- * consistency across the entire app.
- * 
- * FONT WEIGHTS LOADED:
- *   • Inter_400Regular   → Supporting text, placeholders
- *   • Inter_500Medium    → Body text, labels, descriptions
- *   • Inter_600SemiBold  → Data values, stats, interactive elements
- *   • Inter_700Bold      → Titles, prices, headings
- *   • Inter_800ExtraBold → Hero numbers, marketing callouts
- * 
- * IMPORTANT RULES:
- *   1. NEVER set fontWeight inline - fontFamily handles weight
- *   2. Always use tokens via ...Typography.xxx spread
- *   3. Font scaling is DISABLED for UI consistency across devices
- *   4. Do NOT override fontSize/lineHeight unless absolutely necessary
- * 
- * RESPONSIVE SCALING:
- *   • Layout/spacing scales with screen width via scale() (factor 0.5)
- *   • Font sizes scale gently via fontScale() (factor 0.3)
- *   • Base design width: 430px (iPhone 15 Pro Max)
- *   • All sizes adapt proportionally to smaller/larger screens
- * 
- * ═══════════════════════════════════════════════════════════════════════════════
- */
+/** Revvup Mobile Theme — Inter only, OLED dark mode */
 
 import { Dimensions, PixelRatio, TextStyle } from 'react-native';
 
-// ═══════════════════════════════════════════════════
-// SCREEN METRICS
-// ═══════════════════════════════════════════════════
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const BASE_WIDTH = 430; // iPhone 15 Pro Max - scales down gracefully on smaller devices
+export const SCREEN_WIDTH = Dimensions.get('window').width;
+export const BASE_WIDTH   = 430;
 
-/**
- * Scales a size value proportionally to screen width.
- * @param size - Base size designed at 430px width (iPhone 15 Pro Max)
- * @param factor - How aggressively to scale (0 = none, 1 = full proportional). Default 0.5
- */
-const scale = (size: number, factor = 0.5): number => {
-  const scaleRatio = SCREEN_WIDTH / BASE_WIDTH;
-  const newSize = size + (size * (scaleRatio - 1) * factor);
-  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+export const scale = (size: number, factor = 0.5): number => {
+  const ratio = SCREEN_WIDTH / BASE_WIDTH;
+  return Math.round(PixelRatio.roundToNearestPixel(size + size * (ratio - 1) * factor));
 };
+export const fontScale = (size: number) => scale(size, 0.3);
 
-/**
- * Scales font sizes gently with screen width.
- * Uses a conservative factor (0.3) so text stays readable on all sizes
- * but still adapts to small/large screens.
- */
-const fontScale = (size: number): number => scale(size, 0.3);
-
-// ═══════════════════════════════════════════════════
-// FONT FAMILY NAMES
-// ═══════════════════════════════════════════════════
 export const Fonts = {
-  regular: 'Inter_400Regular',
-  medium: 'Inter_500Medium',
-  semiBold: 'Inter_600SemiBold',
-  bold: 'Inter_700Bold',
+  regular:   'Inter_400Regular',
+  medium:    'Inter_500Medium',
+  semiBold:  'Inter_600SemiBold',
+  bold:      'Inter_700Bold',
   extraBold: 'Inter_800ExtraBold',
-  // Script/Signature fonts
-  script: 'DancingScript_400Regular',
-  scriptBold: 'DancingScript_700Bold',
 } as const;
 
 export const Colors = {
   light: {
-    // OLED - True black/white for AMOLED screens (always present for typing)
-    oledBlack: '#000000',
-    oledWhite: '#FFFFFF',
-    // BACKGROUNDS - Pure white base
-    background: '#FFFFFF',
-    backgroundSecondary: '#F5F5F7',
-    backgroundTertiary: '#EAEAEC',
-    
-    // SURFACES (Cards, Sheets, Modals) - Elevated gray on white
-    surface: '#F5F5F7',
-    surfaceSecondary: '#EAEAEC',
-    surfacePressed: '#E0E0E2',
-    
-    // INPUT FIELDS - Distinct from both background and surface
+    black: '#000000',    white: '#FFFFFF',
+    bg: '#FFFFFF',       bg2: '#F5F5F7',
+    surface: '#F5F5F7',  surface2: '#EAEAEC',
     input: '#F0F0F2',
-    inputFocused: '#FFFFFF',
-    
-    // TEXT
-    text: '#0A0A0A',
-    textSecondary: '#333333',
-    textTertiary: '#737373',
-    textMuted: '#A3A3A3',
-    
-    // BRAND
-    primary: '#0066FF',
-    primaryForeground: '#FFFFFF',
-    primaryMuted: '#E6F0FF',
-    
-    // SECONDARY (Buttons)
-    secondary: '#F5F5F7',
-    secondaryForeground: '#0A0A0A',
-    
-    // SEMANTIC
-    success: '#22C55E',
-    successMuted: '#DCFCE7',
-    warning: '#F59E0B',
-    warningMuted: '#FEF3C7',
-    error: '#EF4444',
-    errorMuted: '#FEE2E2',
-    
-    // BORDERS
+    text: '#0A0A0A',     text2: '#333333',   text3: '#737373',   textMuted: '#A3A3A3',
+    primary: '#0066FF',  primaryFg: '#FFFFFF', primaryMuted: '#E6F0FF',
+    success: '#22C55E',  successMuted: '#DCFCE7',
+    warning: '#F59E0B',  warningMuted: '#FEF3C7',
+    error: '#EF4444',    errorMuted: '#FEE2E2',
     border: '#DCDCDE',
-    borderSecondary: '#C8C8CC',
-    
-    // ICONS
-    icon: '#333333',
-    iconMuted: '#A3A3A3',
-    
-    // GLASS (Pills, bubbles - solid backgrounds)
+    icon: '#333333',     iconMuted: '#A3A3A3',
     glassBorder: 'rgba(0,0,0,0.14)',
-    glassBackground: '#FFFFFF',
-    glassBorderOnDark: 'rgba(255,255,255,0.22)', // For dark surfaces regardless of theme
-    
-    // INTERACTIVE
-    fill: 'rgba(115, 115, 115, 0.16)',
-    fillSecondary: 'rgba(115, 115, 115, 0.10)',
-    overlay: 'rgba(0, 0, 0, 0.4)',
+    glassBg: '#FFFFFF',
+    glassBorderDark: 'rgba(255,255,255,0.22)',
+    fill: 'rgba(115,115,115,0.16)',
+    fill2: 'rgba(115,115,115,0.10)',
+    overlay: 'rgba(0,0,0,0.4)',
     skeleton: '#DCDCDE',
-    
-    // ACTIONS
     favorite: '#F43F5E',
-    
-    // BLK Badge - glass pill style
-    blkBadgeBackground: 'rgba(0,0,0,0.85)',
+    blkBadgeBg: 'rgba(0,0,0,0.85)',
     blkBadgeBorder: 'rgba(255,255,255,0.12)',
-    blkBadgeText: '#FAFAFA',
-    // BLK LISTING - Premium tier (light mode variant - macOS-style gray)
-    blkBackground: '#FFFFFF',
-    blkBorder: '#B6B6B6',
-    blkText: '#1C1C1E',
-    blkTextSecondary: '#6E6E73',
-    
-    // DOODLE ACCENTS - Royal luxury palette (Gucci/LV inspired)
-    doodleAccent1: '#1E3A5F', // Deep navy
-    doodleAccent2: '#8B2942', // Burgundy wine
-    doodleAccent3: '#2D4A3E', // Forest green
-    doodleAccent4: '#9C7C38', // Antique gold
-    doodleAccent5: '#5C4033', // Rich espresso
-    
-    // ACTIVITY STATUS - Communication indicators
-    activityActive: '#FF6B6B', // Coral moon - online/active
-    activityInactive: '#9B87F5', // Purple moon - offline/inactive
+    blkBadgeFg: '#FAFAFA',
+    blkBg: '#FFFFFF',    blkBorder: '#B6B6B6',
+    blkText: '#1C1C1E',  blkText2: '#6E6E73',
+    online: '#FF6B6B',   offline: '#9B87F5',
   },
-  
   dark: {
-    // OLED - True black/white for AMOLED screens
-    oledBlack: '#000000',
-    oledWhite: '#FFFFFF',
-    
-    // BACKGROUNDS - Near-black
-    background: '#0D0D0D',
-    backgroundSecondary: '#141414',
-    backgroundTertiary: '#1A1A1A',
-    
-    // SURFACES (Cards, Sheets, Modals)
-    surface: '#1A1A1A',
-    surfaceSecondary: '#262626',
-    surfacePressed: '#333333',
-    
-    // INPUT FIELDS
+    black: '#000000',    white: '#FFFFFF',
+    bg: '#0D0D0D',       bg2: '#141414',
+    surface: '#1A1A1A',  surface2: '#262626',
     input: '#1A1A1A',
-    inputFocused: '#262626',
-    
-    // TEXT
-    text: '#FAFAFA',
-    textSecondary: '#D4D4D4',
-    textTertiary: '#737373',
-    textMuted: '#525252',
-    
-    // BRAND
-    primary: '#0066FF',
-    primaryForeground: '#FAFAFA',
-    primaryMuted: '#0D2847',
-    
-    // SECONDARY (Buttons)
-    secondary: '#262626',
-    secondaryForeground: '#FAFAFA',
-    
-    // SEMANTIC
-    success: '#22C55E',
-    successMuted: '#14532D',
-    warning: '#F59E0B',
-    warningMuted: '#451A03',
-    error: '#EF4444',
-    errorMuted: '#450A0A',
-    
-    // BORDERS
+    text: '#FAFAFA',     text2: '#D4D4D4',   text3: '#737373',   textMuted: '#525252',
+    primary: '#0066FF',  primaryFg: '#FAFAFA', primaryMuted: '#0D2847',
+    success: '#22C55E',  successMuted: '#14532D',
+    warning: '#F59E0B',  warningMuted: '#451A03',
+    error: '#EF4444',    errorMuted: '#450A0A',
     border: '#262626',
-    borderSecondary: '#333333',
-    
-    // ICONS
-    icon: '#D4D4D4',
-    iconMuted: '#525252',
-    
-    // GLASS (Pills, bubbles - solid backgrounds)
+    icon: '#D4D4D4',     iconMuted: '#525252',
     glassBorder: 'rgba(255,255,255,0.22)',
-    glassBackground: '#0D0D0D',
-    glassBorderOnDark: 'rgba(255,255,255,0.22)', // For dark surfaces regardless of theme
-    
-    // INTERACTIVE
-    fill: 'rgba(115, 115, 115, 0.24)',
-    fillSecondary: 'rgba(115, 115, 115, 0.16)',
-    overlay: 'rgba(0, 0, 0, 0.7)',
+    glassBg: '#0D0D0D',
+    glassBorderDark: 'rgba(255,255,255,0.22)',
+    fill: 'rgba(115,115,115,0.24)',
+    fill2: 'rgba(115,115,115,0.16)',
+    overlay: 'rgba(0,0,0,0.7)',
     skeleton: '#262626',
-    
-    // ACTIONS
     favorite: '#F43F5E',
-    
-    // BLK Badge - glass pill style
-    blkBadgeBackground: 'rgba(0,0,0,0.9)',
+    blkBadgeBg: 'rgba(0,0,0,0.9)',
     blkBadgeBorder: 'rgba(255,255,255,0.14)',
-    blkBadgeText: '#FAFAFA',
-    // BLK LISTING - Premium tier
-    blkBackground: '#0D0D0D',
-    blkBorder: '#262626',
-    blkText: '#FAFAFA',
-    blkTextSecondary: '#A3A3A3',
-    
-    // DOODLE ACCENTS - Royal luxury palette (Gucci/LV inspired)
-    doodleAccent1: '#4A6A8A', // Muted steel blue
-    doodleAccent2: '#A85A6D', // Dusty rose burgundy
-    doodleAccent3: '#5A7A6A', // Sage green
-    doodleAccent4: '#C9A962', // Champagne gold
-    doodleAccent5: '#8B7355', // Warm taupe
-    
-    // ACTIVITY STATUS - Communication indicators
-    activityActive: '#FF6B6B', // Coral moon - online/active
-    activityInactive: '#9B87F5', // Purple moon - offline/inactive
+    blkBadgeFg: '#FAFAFA',
+    blkBg: '#0D0D0D',    blkBorder: '#262626',
+    blkText: '#FAFAFA',  blkText2: '#A3A3A3',
+    online: '#FF6B6B',   offline: '#9B87F5',
   },
 };
 
-// ═══════════════════════════════════════════════════
-// SPACING SCALE (8pt grid)
-// ═══════════════════════════════════════════════════
 export const Spacing = {
-  xs: scale(4),
-  sm: scale(8),
-  md: scale(12),
-  lg: scale(16),
-  xl: scale(20),
-  '2xl': scale(24),
-  '3xl': scale(32),
-  '4xl': scale(40),
-  '5xl': scale(48),
+  xs: scale(4), sm: scale(8), md: scale(12), lg: scale(16),
+  xl: scale(20), '2xl': scale(24), '3xl': scale(32), '4xl': scale(40), '5xl': scale(48),
 } as const;
 
-// ═══════════════════════════════════════════════════
-// LAYOUT CONSTANTS
-// ═══════════════════════════════════════════════════
 export const Layout = {
-  // Screen
-  screenPadding: scale(16),
-  tabBarHeight: scale(85),
-  
-  // Header
-  headerPadding: scale(8),
-  headerGap: scale(8),
-  
-  // Gradient overlays (extend beyond safe area)
-  topGradientExtension: scale(60),
-  bottomGradientExtension: scale(30),
-  
-  // Hit targets (Apple HIG: 44pt minimum)
-  hitTarget: scale(44),
-  hitTargetSmall: scale(36),
-  hitSlop: scale(10),
-  hitSlopSmall: scale(8),
+  screenPadding: scale(16), tabBarHeight: scale(85),
+  headerPadding: scale(8),  headerGap: scale(8),
+  topGradientExtension: scale(60), bottomGradientExtension: scale(30),
+  hitTarget: scale(44), hitTargetSmall: scale(36), hitSlop: scale(10), hitSlopSmall: scale(8),
 } as const;
 
-// ═══════════════════════════════════════════════════
-// COMPONENT SIZES
-// ═══════════════════════════════════════════════════
 export const Sizes = {
-  // Icons
-  iconXs: scale(14),
-  iconSm: scale(18),
-  iconMd: scale(22),
-  iconLg: scale(24),
-  iconXl: scale(28),
-  
-  // Avatars
-  avatarSm: scale(32),
-  avatarMd: scale(40),
-  avatarLg: scale(48),
-  
-  // Bubbles & Pills (universal action containers)
-  bubbleXs: scale(28),      // Extra small bubble for compact lists
-  bubble: scale(36),        // Standard action bubble (home header, etc.)
-  bubbleMd: scale(42),      // Medium bubble for global tab bar
-  pillHeight: scale(36),    // Inner pill height for tab bars
-  pillHeightMd: scale(42),  // Medium pill height for global tab bar
-  pillRadius: 18,           // Pill border radius
-  pillRadiusMd: 21,         // Medium pill border radius
-  
-  // Action buttons (icon containers)
-  actionButtonSm: scale(36),
-  actionButtonMd: scale(40),
-  actionButtonLg: scale(48),
-  
-  // Card thumbnails
-  cardThumbnailWidth: scale(160),
-  cardThumbnailHeight: scale(140),
-
-  // Badge padding
-  badgePaddingH: scale(6),
-  badgePaddingV: scale(3),
+  iconXs: scale(14), iconSm: scale(18), iconMd: scale(22), iconLg: scale(24), iconXl: scale(28),
+  avatarSm: scale(32), avatarMd: scale(40), avatarLg: scale(48),
+  bubbleXs: scale(28), bubble: scale(36), bubbleMd: scale(42),
+  pillHeight: scale(36), pillHeightMd: scale(42), pillRadius: 18, pillRadiusMd: 21,
+  actionButtonSm: scale(36), actionButtonMd: scale(40), actionButtonLg: scale(48),
+  cardThumbnailWidth: scale(160), cardThumbnailHeight: scale(140),
+  badgePaddingH: scale(6), badgePaddingV: scale(3),
 } as const;
 
-// ═══════════════════════════════════════════════════
-// BORDER RADIUS
-// ═══════════════════════════════════════════════════
 export const Radius = {
-  none: 0,
-  sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 16,
-  '2xl': 20,
-  '3xl': 24,
-  full: 9999,
+  none: 0, sm: 4, md: 8, lg: 12, xl: 16, '2xl': 20, '3xl': 24, full: 9999,
 } as const;
 
-// ═══════════════════════════════════════════════════
-// TYPOGRAPHY SYSTEM
-// ═══════════════════════════════════════════════════
-// 
-// A comprehensive, semantic typography system designed for
-// automotive marketplace UI. Organized by purpose, not just size.
-//
-// ═══════════════════════════════════════════════════
-// CATEGORY GUIDE
-// ═══════════════════════════════════════════════════
-//
-// ┌─────────────────────────────────────────────────────────────────────────┐
-// │ DISPLAY (Inter_800ExtraBold / Inter_700Bold)                           │
-// │ Hero screens, large numbers, marketing callouts                        │
-// ├─────────────────────────────────────────────────────────────────────────┤
-// │ displayLarge   → 34px  Hero onboarding, splash screens                 │
-// │ displayMedium  → 28px  Feature highlights, empty states                │
-// │ displayNumber  → 32px  Large stats (price totals, counts)              │
-// └─────────────────────────────────────────────────────────────────────────┘
-//
-// ┌─────────────────────────────────────────────────────────────────────────┐
-// │ HEADINGS (Inter_700Bold / Inter_600SemiBold)                           │
-// │ Screen titles, section headers, card titles                            │
-// ├─────────────────────────────────────────────────────────────────────────┤
-// │ headingLarge   → 20px  Screen titles, detail page titles               │
-// │ headingMedium  → 18px  Large prices, modal titles                      │
-// │ headingSmall   → 17px  Navigation titles, card headers                 │
-// │ headingCard    → 17px  Car make/model in list cards                    │
-// │ headingMini    → 15px  Small section titles, drawer headers            │
-// └─────────────────────────────────────────────────────────────────────────┘
-//
-// ┌─────────────────────────────────────────────────────────────────────────┐
-// │ BODY (Inter_500Medium / Inter_400Regular)                              │
-// │ Long-form content, descriptions, readable paragraphs                   │
-// ├─────────────────────────────────────────────────────────────────────────┤
-// │ bodyLarge      → 17px  Primary body text, descriptions                 │
-// │ bodyMedium     → 15px  Standard body, listing descriptions             │
-// │ bodySmall      → 14px  Secondary descriptions, compact text            │
-// │ bodyMini       → 13px  Fine print, disclaimers, captions               │
-// └─────────────────────────────────────────────────────────────────────────┘
-//
-// ┌─────────────────────────────────────────────────────────────────────────┐
-// │ DATA / VALUES (Inter_600SemiBold)                                      │
-// │ Statistics, specs, metadata - tight line heights for data density      │
-// ├─────────────────────────────────────────────────────────────────────────┤
-// │ dataLarge      → 16px  Prominent prices in cards                       │
-// │ dataMedium     → 15px  Spec values, stats (mileage, km, year)          │
-// │ dataSmall      → 14px  Seller names, secondary values                  │
-// │ dataMini       → 13px  Highlights, negotiable labels, VIN              │
-// └─────────────────────────────────────────────────────────────────────────┘
-//
-// ┌─────────────────────────────────────────────────────────────────────────┐
-// │ LABELS (Inter_700Bold + letter-spacing)                                │
-// │ Section headers (uppercase), category titles, form labels              │
-// ├─────────────────────────────────────────────────────────────────────────┤
-// │ labelLarge     → 13px  Form labels, filter headers                     │
-// │ labelMedium    → 12px  SECTION HEADERS (uppercase)                     │
-// │ labelSmall     → 11px  Small tags, VIN labels                          │
-// │ labelBadge     → 10px  Badge text (BLK, VERIFIED)                      │
-// └─────────────────────────────────────────────────────────────────────────┘
-//
-// ┌─────────────────────────────────────────────────────────────────────────┐
-// │ UI CONTROLS (Inter_600SemiBold)                                        │
-// │ Buttons, tabs, chips, interactive elements                             │
-// ├─────────────────────────────────────────────────────────────────────────┤
-// │ buttonLarge    → 17px  Primary CTA buttons                             │
-// │ buttonMedium   → 15px  Standard buttons                                │
-// │ buttonSmall    → 13px  Compact buttons, action links                   │
-// │ tabLabel       → 10px  Tab bar labels                                  │
-// │ chip           → 13px  Filter chips, feature tags                      │
-// │ link           → 14px  Clickable text links ("Read more")              │
-// └─────────────────────────────────────────────────────────────────────────┘
-//
-// ┌─────────────────────────────────────────────────────────────────────────┐
-// │ SUPPORTING (Inter_500Medium / Inter_400Regular)                        │
-// │ Helper text, timestamps, tertiary information                          │
-// ├─────────────────────────────────────────────────────────────────────────┤
-// │ supportingMedium → 15px  Spec labels (left side), form hints           │
-// │ supportingSmall  → 13px  Seller type, timestamps, helper text          │
-// │ supportingMini   → 12px  Subtle metadata, copyright text               │
-// │ placeholder      → 15px  Input placeholders                            │
-// └─────────────────────────────────────────────────────────────────────────┘
-//
-// ┌─────────────────────────────────────────────────────────────────────────┐
-// │ SPECIAL PURPOSE                                                        │
-// │ Unique use cases with specific requirements                            │
-// ├─────────────────────────────────────────────────────────────────────────┤
-// │ avatarInitial  → 18px  Avatar letter initials                          │
-// │ avatarSmall    → 14px  Small avatar initials                           │
-// │ priceTag       → 18px  Standalone price display                        │
-// │ priceMini      → 16px  Compact price (in cards)                        │
-// │ vinCode        → 15px  VIN numbers (monospace feel)                    │
-// │ counter        → 20px  Notification badges, counts                     │
-// └─────────────────────────────────────────────────────────────────────────┘
-//
-// ═══════════════════════════════════════════════════
-// USAGE EXAMPLES
-// ═══════════════════════════════════════════════════
-//
-// Screen Title:         ...Typography.headingLarge
-// Car Title (Detail):   ...Typography.headingLarge
-// Car Title (Card):     ...Typography.headingCard
-// Price (Detail):       ...Typography.priceTag
-// Price (Card):         ...Typography.priceMini
-// Stats Row:            ...Typography.dataMedium
-// Description:          ...Typography.bodyMedium
-// Section Header:       ...Typography.labelMedium (+ uppercase)
-// Spec Label:           ...Typography.supportingMedium
-// Spec Value:           ...Typography.dataMedium
-// Feature Badge:        ...Typography.chip
-// Seller Name:          ...Typography.dataSmall
-// Seller Type:          ...Typography.supportingSmall
-// Timestamp:            ...Typography.dataMedium
-// "Read more" link:     ...Typography.link
-// Primary Button:       ...Typography.buttonMedium
-// Tab Bar:              ...Typography.tabLabel
-//
-// ═══════════════════════════════════════════════════
+// ── TYPOGRAPHY (Inter only, 5 weights) ─────────────────────────────────────
+export const TextDefaults = { allowFontScaling: false, maxFontSizeMultiplier: 1 } as const;
 
-// ═══════════════════════════════════════════════════
-// BASE TEXT STYLE - Cross-platform consistency
-// ═══════════════════════════════════════════════════
-// Applied to ALL typography tokens for consistent rendering
-//
-// NOTE: To disable font scaling, set allowFontScaling={false} 
-// on Text components, or use a custom Text wrapper component.
+const b:  TextStyle = { includeFontPadding: false };
+const bc: TextStyle = { includeFontPadding: false, textAlignVertical: 'center' };
+const t  = (fs: number, lh: number, ff: string, x?: Partial<TextStyle>): TextStyle =>
+  ({ ...b,  fontSize: fontScale(fs), lineHeight: fontScale(lh), fontFamily: ff, ...x });
+const tc = (fs: number, lh: number, ff: string, x?: Partial<TextStyle>): TextStyle =>
+  ({ ...bc, fontSize: fontScale(fs), lineHeight: fontScale(lh), fontFamily: ff, ...x });
 
-const base: TextStyle = {
-  // Android-specific fix for consistent rendering
-  includeFontPadding: false,        // Remove extra top/bottom padding
-};
+const R5 = 'Inter_500Medium';
+const R6 = 'Inter_600SemiBold';
+const R7 = 'Inter_700Bold';
+const R8 = 'Inter_800ExtraBold';
 
-// Centered variant for single-line UI controls (buttons, labels, chips, tabs)
-// NOT for multi-line body text which would look "off" on Android
-const centered: TextStyle = {
-  textAlignVertical: 'center',
-};
-
-// ═══════════════════════════════════════════════════
-// TEXT COMPONENT DEFAULTS
-// ═══════════════════════════════════════════════════
-// Export these to use in a custom Text wrapper component
-// to ensure consistent behavior app-wide
-
-export const TextDefaults = {
-  allowFontScaling: false,  // Disable accessibility font scaling for UI consistency
-  maxFontSizeMultiplier: 1, // Cap font scaling if allowFontScaling is enabled
-} as const;
-
-// ═══════════════════════════════════════════════════
-// PRIMARY SEMANTIC TOKENS
-// ═══════════════════════════════════════════════════
-
-const SemanticTypography = {
-  // ─────────────────────────────────────────────────────
-  // DISPLAY - Hero screens, large attention text
-  // ─────────────────────────────────────────────────────
-  displayLarge: { 
-    ...base, 
-    fontSize: fontScale(34), 
-    lineHeight: fontScale(41), 
-    fontFamily: 'Inter_700Bold' 
-  },
-  displayMedium: { 
-    ...base, 
-    fontSize: fontScale(28), 
-    lineHeight: fontScale(34), 
-    fontFamily: 'Inter_700Bold' 
-  },
-  displayNumber: { 
-    ...base, 
-    fontSize: fontScale(32), 
-    lineHeight: fontScale(38), 
-    fontFamily: 'Inter_800ExtraBold' 
-  },
-
-  // ─────────────────────────────────────────────────────
-  // HEADINGS - Titles and section headers
-  // ─────────────────────────────────────────────────────
-  headingLarge: { 
-    ...base, 
-    fontSize: fontScale(22), 
-    lineHeight: fontScale(24), 
-    fontFamily: 'Inter_700Bold' 
-  },
-  headingMedium: { 
-    ...base, 
-    fontSize: fontScale(18), 
-    lineHeight: fontScale(24), 
-    fontFamily: 'Inter_700Bold' 
-  },
-  headingSmall: { 
-    ...base, 
-    fontSize: fontScale(17), 
-    lineHeight: fontScale(22), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-  headingCard: { 
-    ...base, 
-    fontSize: fontScale(17), 
-    lineHeight: fontScale(22), 
-    fontFamily: 'Inter_700Bold' 
-  },
-  headingMini: { 
-    ...base, 
-    fontSize: fontScale(15), 
-    lineHeight: fontScale(20), 
-    fontFamily: 'Inter_700Bold' 
-  },
-
-  // ─────────────────────────────────────────────────────
-  // BODY - Long-form readable content
-  // ─────────────────────────────────────────────────────
-  bodyLarge: { 
-    ...base, 
-    fontSize: fontScale(17), 
-    lineHeight: fontScale(24), 
-    fontFamily: 'Inter_500Medium' 
-  },
-  bodyMedium: { 
-    ...base, 
-    fontSize: fontScale(15), 
-    lineHeight: fontScale(22), 
-    fontFamily: 'Inter_500Medium' 
-  },
-  bodySmall: { 
-    ...base, 
-    fontSize: fontScale(14), 
-    lineHeight: fontScale(20), 
-    fontFamily: 'Inter_500Medium' 
-  },
-  bodyMini: { 
-    ...base, 
-    fontSize: fontScale(13), 
-    lineHeight: fontScale(18), 
-    fontFamily: 'Inter_500Medium' 
-  },
-
-  // ─────────────────────────────────────────────────────
-  // DATA / VALUES - Stats, specs, metadata (tight)
-  // ─────────────────────────────────────────────────────
-  dataLarge: { 
-    ...base, 
-    fontSize: fontScale(16), 
-    lineHeight: fontScale(22), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-  dataMedium: { 
-    ...base, 
-    fontSize: fontScale(15), 
-    lineHeight: fontScale(20), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-  dataSmall: { 
-    ...base, 
-    fontSize: fontScale(14), 
-    lineHeight: fontScale(18), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-  dataMini: { 
-    ...base, 
-    fontSize: fontScale(13), 
-    lineHeight: fontScale(18), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-
-  // ─────────────────────────────────────────────────────
-  // LABELS - Section headers, form labels, tags
-  // ─────────────────────────────────────────────────────
-  labelLarge: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(13), 
-    lineHeight: fontScale(18), 
-    fontFamily: 'Inter_700Bold', 
-    letterSpacing: 0.5 
-  },
-  labelMedium: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(12), 
-    lineHeight: fontScale(16), 
-    fontFamily: 'Inter_700Bold', 
-    letterSpacing: 1 
-  },
-  labelSmall: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(11), 
-    lineHeight: fontScale(14), 
-    fontFamily: 'Inter_700Bold', 
-    letterSpacing: 0.3 
-  },
-  labelBadge: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(10), 
-    lineHeight: fontScale(14), 
-    fontFamily: 'Inter_700Bold', 
-    letterSpacing: 0.5 
-  },
-
-  // ─────────────────────────────────────────────────────
-  // UI CONTROLS - Buttons, tabs, chips, links
-  // ─────────────────────────────────────────────────────
-  buttonLarge: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(17), 
-    lineHeight: fontScale(22), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-  buttonMedium: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(15), 
-    lineHeight: fontScale(20), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-  buttonSmall: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(13), 
-    lineHeight: fontScale(18), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-  tabLabel: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(10), 
-    lineHeight: fontScale(14), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-  chip: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(13), 
-    lineHeight: fontScale(18), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-  link: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(14), 
-    lineHeight: fontScale(20), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-
-  // ─────────────────────────────────────────────────────
-  // SUPPORTING - Helper text, captions, metadata
-  // ─────────────────────────────────────────────────────
-  supportingMedium: { 
-    ...base, 
-    fontSize: fontScale(15), 
-    lineHeight: fontScale(20), 
-    fontFamily: 'Inter_500Medium' 
-  },
-  supportingSmall: { 
-    ...base, 
-    fontSize: fontScale(13), 
-    lineHeight: fontScale(18), 
-    fontFamily: 'Inter_500Medium' 
-  },
-  supportingMini: { 
-    ...base, 
-    fontSize: fontScale(12), 
-    lineHeight: fontScale(16), 
-    fontFamily: 'Inter_500Medium' 
-  },
-  placeholder: { 
-    ...base, 
-    fontSize: fontScale(15), 
-    lineHeight: fontScale(20), 
-    fontFamily: 'Inter_400Regular' 
-  },
-
-  // ─────────────────────────────────────────────────────
-  // SPECIAL PURPOSE - Unique use cases
-  // ─────────────────────────────────────────────────────
-  avatarInitial: { 
-    ...base, 
-    fontSize: fontScale(18), 
-    lineHeight: fontScale(22), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-  avatarSmall: { 
-    ...base, 
-    fontSize: fontScale(14), 
-    lineHeight: fontScale(18), 
-    fontFamily: 'Inter_600SemiBold' 
-  },
-  priceTag: { 
-    ...base, 
-    fontSize: fontScale(18), 
-    lineHeight: fontScale(24), 
-    fontFamily: 'Inter_800ExtraBold' 
-  },
-  priceMini: { 
-    ...base, 
-    fontSize: fontScale(16), 
-    lineHeight: fontScale(22), 
-    fontFamily: 'Inter_800ExtraBold' 
-  },
-  vinCode: { 
-    ...base, 
-    fontSize: fontScale(15), 
-    lineHeight: fontScale(20), 
-    fontFamily: 'Inter_600SemiBold',
-    letterSpacing: 0.5 
-  },
-  counter: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(20), 
-    lineHeight: fontScale(24), 
-    fontFamily: 'Inter_700Bold' 
-  },
-
-  // ─────────────────────────────────────────────────────
-  // BLK PREMIUM - Signature line styling
-  // ─────────────────────────────────────────────────────
-  blkBadge: { 
-    ...base, 
-    ...centered,
-    fontSize: fontScale(8), 
-    lineHeight: fontScale(10), 
-    fontFamily: 'Inter_700Bold',
-    letterSpacing: 1.5,
-  },
-  blkSignature: { 
-    ...base, 
-    fontSize: fontScale(18), 
-    lineHeight: fontScale(24), 
-    fontFamily: 'DancingScript_400Regular',
-  },
-} as const;
-
+//  hero · title · heading · subheading
+//  bodyLg · body · bodySm
+//  label · micro
+//  price · code · num
 export const Typography = {
-  ...SemanticTypography,
+  hero:       t(34, 41, R8),               // display, hero numbers
+  title:      t(22, 28, R7),               // screen titles
+  heading:    t(18, 24, R7),               // section headers
+  subheading: t(15, 20, R7),               // card titles, sub-sections
+
+  bodyLg:  t(17, 24, R5),                  // prominent body
+  body:    t(15, 22, R5),                  // default paragraph
+  bodySm:  t(13, 18, R5),                  // captions, secondary
+
+  label: tc(12, 16, R7, { letterSpacing: 0.8 }),   // uppercase labels
+  micro: tc(10, 14, R7, { letterSpacing: 0.5 }),   // badges, tabs
+
+  price: t(18, 24, R8),                    // price display
+  code:  t(14, 20, R6, { letterSpacing: 0.5 }),   // VIN, plate numbers
+  num:   tc(20, 24, R7),                   // counters
 } as const;
 
-// ═══════════════════════════════════════════════════
-// SHADOWS
-// ═══════════════════════════════════════════════════
 export const Shadows = {
-  sm: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  md: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  lg: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 4,
-  },
+  sm: { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 },
+  md: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4, elevation: 2 },
+  lg: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4 },
 } as const;
 
-// Type helpers
 export type ColorScheme = keyof typeof Colors;
-export type ThemeColors = typeof Colors.light & { oledBlack: string; oledWhite: string };
-
-// Export scaling utilities for custom use
-export { scale, fontScale, SCREEN_WIDTH, BASE_WIDTH };
+export type ThemeColors = typeof Colors.light;

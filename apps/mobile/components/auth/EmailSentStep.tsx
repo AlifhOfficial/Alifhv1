@@ -82,7 +82,7 @@ export function EmailSentStep({
   };
 
   return (
-    <View style={[onboardingStyles.container, { backgroundColor: colors.oledBlack }]}>
+    <View style={[onboardingStyles.container, { backgroundColor: colors.black }]}>
       <View
         style={[
           onboardingStyles.content,
@@ -95,7 +95,7 @@ export function EmailSentStep({
             onPress={onBack}
             style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
           >
-            <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.oledWhite} />
+            <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.white} />
           </HapticPressable>
 
           <View style={onboardingStyles.progressContainer}>
@@ -106,7 +106,7 @@ export function EmailSentStep({
                   onboardingStyles.progressBar,
                   {
                     backgroundColor:
-                      index < currentStep ? colors.primary : colors.glassBorderOnDark,
+                      index < currentStep ? colors.primary : colors.glassBorderDark,
                   },
                 ]}
               />
@@ -123,7 +123,7 @@ export function EmailSentStep({
             <View
               style={[
                 onboardingStyles.emailSentIcon,
-                { backgroundColor: colors.primaryLight },
+                { backgroundColor: colors.primaryMuted },
               ]}
             >
               <MailIcon color={colors.primary} size={ONBOARDING_LAYOUT.emailIconSize} />
@@ -132,14 +132,14 @@ export function EmailSentStep({
 
           {/* Title */}
           <Animated.View entering={FadeInDown.delay(200).duration(400)}>
-            <Heading size="large" style={[onboardingStyles.welcomeTitle, { color: colors.oledWhite }]}>
+            <Heading size="large" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
               Check your inbox
             </Heading>
           </Animated.View>
 
           {/* Subtitle */}
           <Animated.View entering={FadeInDown.delay(300).duration(400)}>
-            <Body size="small" style={[onboardingStyles.welcomeSubtitle, { color: colors.textSecondary }]}>
+            <Body size="small" style={[onboardingStyles.welcomeSubtitle, { color: colors.text2 }]}>
               We've sent a verification code to
             </Body>
           </Animated.View>
@@ -147,9 +147,9 @@ export function EmailSentStep({
           {/* Email highlight */}
           <Animated.View
             entering={FadeInDown.delay(400).duration(400)}
-            style={[onboardingStyles.emailHighlight, { backgroundColor: `${colors.oledWhite}08` }]}
+            style={[onboardingStyles.emailHighlight, { backgroundColor: `${colors.white}08` }]}
           >
-            <Data size="small" style={{ color: colors.oledWhite }}>
+            <Data size="small" style={{ color: colors.white }}>
               {email}
             </Data>
           </Animated.View>
@@ -171,14 +171,14 @@ export function EmailSentStep({
             {isLoading ? (
               <ButtonLoader size="sm" variant="white" />
             ) : (
-              <ButtonText style={{ color: colors.primaryForeground }}>Enter Code</ButtonText>
+              <ButtonText style={{ color: colors.primaryFg }}>Enter Code</ButtonText>
             )}
           </HapticPressable>
 
           {/* Resend link */}
           <View style={onboardingStyles.resendSection}>
             <HapticPressable onPress={handleResend} disabled={isResending || isLoading}>
-              <Body size="small" style={{ color: colors.textSecondary }}>
+              <Body size="small" style={{ color: colors.text2 }}>
                 Didn't receive it?{' '}
                 <Body size="small" style={{ color: colors.primary }}>
                   {isResending ? 'Sending...' : 'Resend'}

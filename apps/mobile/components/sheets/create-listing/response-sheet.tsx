@@ -206,7 +206,7 @@ export function ResponseSheet({
             <>
               <HapticPressable
                 onPress={handleDismiss}
-                style={[styles.secondaryButton, { backgroundColor: colors.fillSecondary }]}
+                style={[styles.secondaryButton, { backgroundColor: colors.fill2 }]}
               >
                 <ButtonText size="medium" style={{ color: colors.text }}>
                   Dismiss
@@ -218,7 +218,7 @@ export function ResponseSheet({
                   onPress={handleRetry}
                   style={[styles.primaryButton, { backgroundColor: colors.primary }]}
                 >
-                  <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
+                  <ButtonText size="medium" style={{ color: colors.primaryFg }}>
                     {retryLabel}
                   </ButtonText>
                 </HapticPressable>
@@ -229,7 +229,7 @@ export function ResponseSheet({
                   onPress={handlePrimary}
                   style={[styles.primaryButton, { backgroundColor: colors.primary }]}
                 >
-                  <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
+                  <ButtonText size="medium" style={{ color: colors.primaryFg }}>
                     {primaryLabel}
                   </ButtonText>
                 </HapticPressable>
@@ -238,7 +238,7 @@ export function ResponseSheet({
           ) : (
             <HapticPressable
               onPress={handleDismiss}
-              style={[styles.fullButton, { backgroundColor: colors.fillSecondary }]}
+              style={[styles.fullButton, { backgroundColor: colors.fill2 }]}
             >
               <ButtonText size="medium" style={{ color: colors.text }}>
                 OK

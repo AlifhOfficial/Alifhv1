@@ -68,7 +68,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
       <View
         style={[
           styles.inputBox,
-          { backgroundColor: colors.fillSecondary, borderColor: colors.border },
+          { backgroundColor: colors.fill2, borderColor: colors.border },
         ]}
       >
         <BottomSheetTextInput
@@ -112,12 +112,12 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.presetChip,
                   {
-                    backgroundColor: isActive ? colors.text : colors.surfaceSecondary,
+                    backgroundColor: isActive ? colors.text : colors.surface2,
                     borderColor: isActive ? colors.text : colors.border,
                   },
                 ]}
               >
-                <Body size="small" style={{ color: isActive ? colors.background : colors.text }}>
+                <Body size="small" style={{ color: isActive ? colors.bg : colors.text }}>
                   {preset.label}
                 </Body>
               </HapticPressable>
@@ -127,7 +127,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
       </View>
 
       {/* Info */}
-      <View style={[styles.infoBox, { backgroundColor: colors.fillSecondary }]}>
+      <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
         <Supporting size="small" tone="muted">
           Odometer reading in kilometers. Vehicles under 5,000 km are marked as "new condition".
         </Supporting>

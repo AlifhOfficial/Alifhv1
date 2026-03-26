@@ -253,7 +253,7 @@ export default function MessagesScreen() {
     if (error && conversations.length === 0) {
       return (
         <View style={[styles.emptyState, { paddingTop: contentTopPadding }]}>
-          <Data size="medium" style={{ textAlign: 'center', color: colors.textSecondary }}>{error}</Data>
+          <Data size="medium" style={{ textAlign: 'center', color: colors.text2 }}>{error}</Data>
         </View>
       );
     }
@@ -280,8 +280,8 @@ export default function MessagesScreen() {
         ListEmptyComponent={
           !isLoading && !isRefreshing ? (
             <View style={styles.emptyState}>
-              <View style={[styles.iconCircle, { backgroundColor: colors.fillSecondary }]}>
-                <MessageCircle size={Sizes.avatarSm} color={colors.textTertiary} strokeWidth={1.5} />
+              <View style={[styles.iconCircle, { backgroundColor: colors.fill2 }]}>
+                <MessageCircle size={Sizes.avatarSm} color={colors.text3} strokeWidth={1.5} />
               </View>
               <Heading size="medium">No Messages Yet</Heading>
               <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
@@ -303,7 +303,7 @@ export default function MessagesScreen() {
   };
 
   return (
-    <View style={[styles.screen, { backgroundColor: colors.background }]}>
+    <View style={[styles.screen, { backgroundColor: colors.bg }]}>
       <TopSafeAreaGradient />
       <MessagesHeader />
       {renderContent()}

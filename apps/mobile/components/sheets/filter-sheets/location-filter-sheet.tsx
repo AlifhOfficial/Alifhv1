@@ -148,13 +148,13 @@ export function LocationFilterSheet({
           <HapticPressable
             style={[
               styles.applyButton,
-              { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
+              { backgroundColor: hasValue ? colors.primary : colors.fill2 },
             ]}
             onPress={handleApply}
           >
             <ButtonText
               size="small"
-              style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
+              style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
             >
               Apply
             </ButtonText>
@@ -192,7 +192,7 @@ export function LocationFilterSheet({
                   <Body
                     size="medium"
                     style={{ 
-                      color: isSelected ? colors.text : colors.textSecondary,
+                      color: isSelected ? colors.text : colors.text2,
                       fontFamily: isSelected ? 'Inter_700Bold' : 'Inter_500Medium',
                     }}
                   >

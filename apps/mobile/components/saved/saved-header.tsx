@@ -56,7 +56,7 @@ export function SavedHeader({
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
+              backgroundColor: colors.glassBg,
             },
           ]}
         >
@@ -78,7 +78,7 @@ export function SavedHeader({
                 styles.iconButton,
                 styles.glass,
                 {
-                  backgroundColor: colors.glassBackground,
+                  backgroundColor: colors.glassBg,
                   borderColor: colors.glassBorder,
                 },
               ]}

@@ -283,7 +283,7 @@ export function ImageGridModal({
       statusBarTranslucent
     >
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         {showLightbox ? (
           <ImageLightbox
             images={validFullImages}
@@ -297,13 +297,13 @@ export function ImageGridModal({
         ) : (
           <>
             {/* Header */}
-            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.background, borderBottomColor: colors.glassBorder }]}>
+            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.bg, borderBottomColor: colors.glassBorder }]}>
               <Supporting size="small">
                 {totalImages} photos
               </Supporting>
               <HapticPressable
                 onPress={onClose}
-                style={[styles.closeButton, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}
+                style={[styles.closeButton, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}
                 hitSlop={Layout.hitSlop}
               >
                 {({ pressed }) => (

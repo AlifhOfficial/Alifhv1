@@ -31,7 +31,7 @@ export default function NotFoundScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
       <View style={styles.content}>
         {/* Icon */}
         <View style={[styles.iconContainer, { backgroundColor: colors.primary + '15' }]}>

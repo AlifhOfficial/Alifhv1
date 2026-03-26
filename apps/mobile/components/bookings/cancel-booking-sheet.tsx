@@ -156,7 +156,7 @@ export function CancelBookingSheet({
         </View>
 
         {/* Booking preview */}
-        <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.previewCard, { backgroundColor: colors.surface2 }]}>
           {listingThumbnail ? (
             <Image source={{ uri: getAppThumbUrl(listingThumbnail)! }} style={styles.thumbnail} />
           ) : (
@@ -189,7 +189,7 @@ export function CancelBookingSheet({
                   style={[
                     styles.reasonItem,
                     {
-                      backgroundColor: isSelected ? colors.primaryMuted : colors.surfaceSecondary,
+                      backgroundColor: isSelected ? colors.primaryMuted : colors.surface2,
                       borderColor: isSelected ? colors.primary : colors.border,
                     },
                   ]}
@@ -228,7 +228,7 @@ export function CancelBookingSheet({
             style={[
               styles.textInput,
               {
-                backgroundColor: colors.surfaceSecondary,
+                backgroundColor: colors.surface2,
                 color: colors.text,
                 borderColor: colors.border,
               },

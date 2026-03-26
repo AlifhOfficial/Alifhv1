@@ -49,12 +49,12 @@ const sizes = {
 // Font sizes for initials - proportional to avatar size
 const fontSizes = {
   xxs: 8,                                     // tiny
-  xs: Typography.labelBadge.fontSize,         // ~10
-  sm: Typography.labelSmall.fontSize,         // ~12
-  md: Typography.labelMedium.fontSize,        // ~14
-  lg: Typography.bodyMedium.fontSize,         // ~16
-  xl: Typography.headingSmall.fontSize,       // ~22
-  xxl: Typography.displayLarge.fontSize,      // ~34
+  xs: Typography.micro.fontSize,
+  sm: Typography.label.fontSize,
+  md: Typography.bodySm.fontSize,
+  lg: Typography.body.fontSize,
+  xl: Typography.heading.fontSize,
+  xxl: Typography.hero.fontSize,
 };
 
 /** Generate initials from a name */
@@ -97,7 +97,7 @@ export function UserAvatar({
     borderRadius: pixelSize / 2,
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.glassBorderOnDark,
+    borderColor: colors.glassBorderDark,
     overflow: 'hidden' as const,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
@@ -114,7 +114,7 @@ export function UserAvatar({
         />
       )}
       {!showImage && (
-        <Body style={[styles.initials, { fontSize, color: colors.textSecondary }]}>
+        <Body style={[styles.initials, { fontSize, color: colors.text2 }]}>
           {getInitials(name)}
         </Body>
       )}

@@ -125,7 +125,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             onPress={handleCall}
             style={({ pressed }) => [
               styles.actionBtn,
-              { backgroundColor: pressed ? colors.surfacePressed : 'transparent' },
+              { backgroundColor: pressed ? colors.surface2 : 'transparent' },
             ]}
           >
             <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
@@ -138,7 +138,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             onPress={handleWhatsApp}
             style={({ pressed }) => [
               styles.actionBtn,
-              { backgroundColor: pressed ? colors.surfacePressed : 'transparent' },
+              { backgroundColor: pressed ? colors.surface2 : 'transparent' },
             ]}
           >
             <View style={[styles.iconCircle, { backgroundColor: '#25D366' }]}>
@@ -151,10 +151,10 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             onPress={handleCopy}
             style={({ pressed }) => [
               styles.actionBtn,
-              { backgroundColor: pressed ? colors.surfacePressed : 'transparent' },
+              { backgroundColor: pressed ? colors.surface2 : 'transparent' },
             ]}
           >
-            <View style={[styles.iconCircle, { backgroundColor: colors.surfaceSecondary }]}>
+            <View style={[styles.iconCircle, { backgroundColor: colors.surface2 }]}>
               <Copy size={Sizes.iconMd} color={colors.text} />
             </View>
             <ButtonText size="small" style={styles.actionLabel}>Copy</ButtonText>

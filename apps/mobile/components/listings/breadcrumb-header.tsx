@@ -33,7 +33,7 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
   const title = `${year} ${make} ${model}`;
 
   return (
-    <View style={[styles.container, { paddingTop: topInset + 8, backgroundColor: colors.background }]}>
+    <View style={[styles.container, { paddingTop: topInset + 8, backgroundColor: colors.bg }]}>
       {/* Left: Title */}
       <Heading size="medium" style={{ flex: 1 }} numberOfLines={1}>
         {title}
@@ -47,7 +47,7 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
           styles.iconButton,
           {
             borderColor: colors.glassBorder,
-            backgroundColor: colors.glassBackground,
+            backgroundColor: colors.glassBg,
           },
         ]}
       >

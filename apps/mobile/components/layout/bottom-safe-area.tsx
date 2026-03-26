@@ -40,7 +40,7 @@ export function BottomSafeAreaGradient() {
   // Use rgba colors for consistent gradient rendering on both Android and iOS
   const isLightMode = colorScheme === 'light';
   const gradientColors = useMemo((): readonly [ColorValue, ColorValue, ...ColorValue[]] => {
-    const bg = colors.background;
+    const bg = colors.bg;
     return isLightMode ? [
       hexToRgba(bg, 0),
       hexToRgba(bg, 0.15),
@@ -54,7 +54,7 @@ export function BottomSafeAreaGradient() {
       hexToRgba(bg, 0.85),
       hexToRgba(bg, 1),
     ] as const;
-  }, [colors.background, isLightMode]);
+  }, [colors.bg, isLightMode]);
 
   return (
     <View style={styles.container} pointerEvents="none">

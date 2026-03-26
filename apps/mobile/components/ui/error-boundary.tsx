@@ -78,7 +78,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
   const [showDetails, setShowDetails] = React.useState(false);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
       <ScrollView 
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}

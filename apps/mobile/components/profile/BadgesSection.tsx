@@ -34,7 +34,7 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
           {badges.map((badge, index) => (
             <View
               key={index}
-              style={[styles.badge, { backgroundColor: colors.surfaceSecondary }]}
+              style={[styles.badge, { backgroundColor: colors.surface2 }]}
             >
               <Data size="small" style={styles.badgeText}>{badge}</Data>
             </View>

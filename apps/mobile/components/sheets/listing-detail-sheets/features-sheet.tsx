@@ -94,13 +94,13 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
               hitSlop={Spacing.md}
               style={[
                 styles.iconButton,
-                { backgroundColor: colors.fillSecondary }
+                { backgroundColor: colors.fill2 }
               ]}
             >
               {copied ? (
                 <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primary} />
               ) : (
-                <Copy size={Sizes.iconSm} color={colors.textSecondary} />
+                <Copy size={Sizes.iconSm} color={colors.text2} />
               )}
             </HapticPressable>
             <HapticPressable
@@ -127,7 +127,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
                 key={idx} 
                 style={[
                   styles.badge,
-                  { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+                  { backgroundColor: colors.surface2, borderColor: colors.border },
                 ]}
               >
                 <Body size="small" tone="secondary">

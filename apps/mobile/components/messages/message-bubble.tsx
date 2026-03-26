@@ -58,10 +58,10 @@ export function MessageBubble({
         <View
           style={[
             styles.systemBubble,
-            { backgroundColor: colors.fillSecondary },
+            { backgroundColor: colors.fill2 },
           ]}
         >
-          <Data size="mini" style={{ color: colors.textTertiary }}>{text}</Data>
+          <Data size="mini" style={{ color: colors.text3 }}>{text}</Data>
         </View>
       </View>
     );
@@ -133,7 +133,7 @@ export function MessageBubble({
                     styles.bubbleOther,
                     showAvatar ? styles.bubbleOtherTail : styles.bubbleOtherContinuation,
                     {
-                      backgroundColor: colors.surfaceSecondary,
+                      backgroundColor: colors.surface2,
                     },
                   ],
             ]}
@@ -162,7 +162,7 @@ export function MessageBubble({
           {text && (
             <Body
               size="medium"
-              style={{ color: isOwn ? colors.primaryForeground : colors.text }}
+              style={{ color: isOwn ? colors.primaryFg : colors.text }}
             >
               {text}
             </Body>
@@ -173,7 +173,7 @@ export function MessageBubble({
             <Data
               size="mini"
               style={{ 
-                color: isOwn ? 'rgba(255,255,255,0.6)' : colors.textTertiary,
+                color: isOwn ? 'rgba(255,255,255,0.6)' : colors.text3,
                 marginTop: 2,
               }}
             >
@@ -184,14 +184,14 @@ export function MessageBubble({
           
           {/* Sending dot - right of bubble for own messages */}
           {isOptimistic && isOwn && (
-            <View style={[styles.sendingDot, { backgroundColor: colors.textTertiary }]} />
+            <View style={[styles.sendingDot, { backgroundColor: colors.text3 }]} />
           )}
         </View>
 
         {/* Seen indicator */}
         {showSeen && isOwn && (
           <View style={styles.seenContainer}>
-            <Data size="mini" style={{ color: colors.textTertiary }}>Seen</Data>
+            <Data size="mini" style={{ color: colors.text3 }}>Seen</Data>
             <UserAvatar
               src={otherUserAvatar}
               name={otherUserName || 'User'}

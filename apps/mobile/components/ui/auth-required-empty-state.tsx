@@ -105,7 +105,7 @@ export const AuthRequiredEmptyState = memo(function AuthRequiredEmptyState({
               hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
             >
               <Heading size="small" style={{ color: colors.text }}>Sign In</Heading>
-              <View style={[styles.glassBubble, { backgroundColor: colors.glassBackground, borderColor: colors.border }]}>
+              <View style={[styles.glassBubble, { backgroundColor: colors.glassBg, borderColor: colors.border }]}>
                 <ArrowRight size={Sizes.iconXs} color={colors.text} strokeWidth={2} />
               </View>
             </HapticPressable>

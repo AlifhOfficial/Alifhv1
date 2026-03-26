@@ -32,8 +32,8 @@ export function BlkHeader({}: BlkHeaderProps) {
           styles.backButton,
           styles.glass,
           { 
-            backgroundColor: colors.glassBackground, 
-            borderColor: colors.glassBorderOnDark 
+            backgroundColor: colors.glassBg, 
+            borderColor: colors.glassBorderDark 
           }
         ]}
       >
@@ -41,7 +41,7 @@ export function BlkHeader({}: BlkHeaderProps) {
           onPress={() => router.back()}
           style={styles.buttonInner}
         >
-          <ChevronLeft size={Sizes.iconMd} color={colors.oledWhite} strokeWidth={2} />
+          <ChevronLeft size={Sizes.iconMd} color={colors.white} strokeWidth={2} />
         </HapticPressable>
       </View>
 
@@ -51,8 +51,8 @@ export function BlkHeader({}: BlkHeaderProps) {
           styles.pill,
           styles.glass,
           { 
-            backgroundColor: colors.glassBackground, 
-            borderColor: colors.glassBorderOnDark 
+            backgroundColor: colors.glassBg, 
+            borderColor: colors.glassBorderDark 
           }
         ]}
       >
@@ -63,7 +63,7 @@ export function BlkHeader({}: BlkHeaderProps) {
         >
           {({ pressed }) => (
             <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-              <Data size="small" style={{ color: colors.oledWhite }}>BLK</Data>
+              <Data size="small" style={{ color: colors.white }}>BLK</Data>
             </View>
           )}
         </HapticPressable>

@@ -115,7 +115,7 @@ const PartnerItem = memo(function PartnerItem({
             name={partner.name}
             size="xl"
             shape="round"
-            backgroundColor={colors.background}
+            backgroundColor={colors.bg}
           />
         </View>
         
@@ -170,9 +170,9 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
     return null;
   }
 
-  const cardBg = colors.blkBackground;
+  const cardBg = colors.blkBg;
   const textColor = colors.blkText;
-  const textSecondary = colors.blkTextSecondary;
+  const textSecondary = colors.blkText2;
 
   return (
     <View style={[styles.container, { backgroundColor: cardBg }]}>
@@ -182,13 +182,13 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
           style={[
             styles.avatar,
             {
-              backgroundColor: colors.blkBadgeBackground,
+              backgroundColor: colors.blkBadgeBg,
               borderColor: colors.blkBadgeBorder,
               borderWidth: 1,
             },
           ]}
         >
-          <RevvupLogo size={20} color={colors.blkBadgeText} />
+          <RevvupLogo size={20} color={colors.blkBadgeFg} />
         </View>
         <View style={styles.headerText}>
           <Heading size="mini" style={{ color: textColor }}>Founding Partners</Heading>
@@ -223,13 +223,13 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
           style={[
             styles.arrowBtn,
             {
-              backgroundColor: colors.blkBadgeBackground,
+              backgroundColor: colors.blkBadgeBg,
               borderColor: colors.blkBadgeBorder,
               borderWidth: 1,
             },
           ]}
         >
-          <ChevronRight size={Sizes.iconSm} color={colors.blkBadgeText} strokeWidth={2} />
+          <ChevronRight size={Sizes.iconSm} color={colors.blkBadgeFg} strokeWidth={2} />
         </View>
       </HapticPressable>
     </View>

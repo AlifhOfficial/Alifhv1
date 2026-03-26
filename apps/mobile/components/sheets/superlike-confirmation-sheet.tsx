@@ -104,15 +104,15 @@ export function SuperlikeConfirmationSheet({
               </Supporting>
             )}
           </View>
-          <View style={[styles.quotaBadge, { backgroundColor: remaining === 0 ? colors.warning + '20' : colors.backgroundSecondary }]}>
-            <Data size="small" style={{ color: remaining === 0 ? colors.warning : colors.textSecondary }}>
+          <View style={[styles.quotaBadge, { backgroundColor: remaining === 0 ? colors.warning + '20' : colors.bg2 }]}>
+            <Data size="small" style={{ color: remaining === 0 ? colors.warning : colors.text2 }}>
               {remaining}/{total}
             </Data>
           </View>
         </View>
 
         {/* Description */}
-        <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundSecondary }]}>
+        <View style={[styles.descriptionBox, { backgroundColor: colors.bg2 }]}>
           <Supporting size="small" style={{ textAlign: 'center' }}>
             Superlikes notify sellers that you're highly interested. Use them wisely — you have limited superlikes each month.
           </Supporting>

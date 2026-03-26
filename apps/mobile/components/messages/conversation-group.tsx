@@ -64,14 +64,14 @@ export function ConversationGroup({
       <HapticPressable
         onPress={toggleExpanded}
         style={styles.header}
-        android_ripple={{ color: colors.surfacePressed }}
+        android_ripple={{ color: colors.surface2 }}
       >
         {({ pressed }) => (
           <View style={[styles.headerRow, pressed && { opacity: 0.7 }]}>
-            <View style={[styles.avatarBubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+            <View style={[styles.avatarBubble, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}>
               <UserAvatar src={avatarUrl} name={name} size="md" />
               {totalUnread > 0 && (
-                <View style={[styles.unreadDot, { backgroundColor: colors.error, borderColor: colors.background }]} />
+                <View style={[styles.unreadDot, { backgroundColor: colors.error, borderColor: colors.bg }]} />
               )}
             </View>
             <Data size="large" style={{ flex: 1, color: colors.text }} numberOfLines={1}>
@@ -82,21 +82,21 @@ export function ConversationGroup({
               const activityText = isOnline ? 'now' : lastSeenAt ? formatTime(lastSeenAt) : 'offline';
               const isActive = isOnline || activityText === 'now';
               return (
-                <View style={[styles.activityPill, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+                <View style={[styles.activityPill, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}>
                   <Moon
                     size={12}
-                    color={isActive ? colors.activityActive : colors.activityInactive}
-                    fill={isActive ? colors.activityActive : colors.activityInactive}
+                    color={isActive ? colors.online : colors.offline}
+                    fill={isActive ? colors.online : colors.offline}
                     strokeWidth={1.5}
                   />
-                  <Data size="mini" style={{ color: colors.textSecondary }}>
+                  <Data size="mini" style={{ color: colors.text2 }}>
                     {activityText}
                   </Data>
                 </View>
               );
             })()}
-            <View style={[styles.bubble, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
-              <ChevronIcon size={Sizes.iconXs} color={colors.textSecondary} strokeWidth={2.5} />
+            <View style={[styles.bubble, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}>
+              <ChevronIcon size={Sizes.iconXs} color={colors.text2} strokeWidth={2.5} />
             </View>
           </View>
         )}
@@ -114,7 +114,7 @@ export function ConversationGroup({
                 onPress={() => onSelect(c)}
                 style={[
                   styles.chatItem,
-                  isActive && { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder },
+                  isActive && { backgroundColor: colors.glassBg, borderColor: colors.glassBorder },
                 ]}
               >
                 {/* Title + Time */}
@@ -123,14 +123,14 @@ export function ConversationGroup({
                     size="medium" 
                     style={{ 
                       flex: 1, 
-                      color: hasUnread ? colors.text : colors.textSecondary,
+                      color: hasUnread ? colors.text : colors.text2,
                       fontFamily: hasUnread ? Fonts.semiBold : Fonts.medium,
                     }}
                     numberOfLines={1}
                   >
                     {c.listing?.title || 'General Inquiry'}
                   </Data>
-                  <Data size="mini" style={{ color: colors.textTertiary, marginLeft: Spacing.sm }}>
+                  <Data size="mini" style={{ color: colors.text3, marginLeft: Spacing.sm }}>
                     {formatTime(c.lastMessageAt)}
                   </Data>
                 </View>
@@ -141,7 +141,7 @@ export function ConversationGroup({
                     style={{ 
                       flex: 1, 
                       marginTop: Spacing.xs,
-                      color: hasUnread ? colors.textSecondary : colors.textTertiary,
+                      color: hasUnread ? colors.text2 : colors.text3,
                     }}
                     numberOfLines={1}
                   >

@@ -1,6 +1,6 @@
 /**
  * Search Context
- * Manages search state between GlobalTabBar and Browse screen
+ * Manages search state for the Browse screen
  */
 
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';

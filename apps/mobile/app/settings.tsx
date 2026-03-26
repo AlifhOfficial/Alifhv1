@@ -101,7 +101,7 @@ export default function SettingsScreen() {
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <TopSafeAreaGradient />
         <SettingsHeader colors={colors} topInset={insets.top} />
         <AuthRequiredEmptyState
@@ -115,7 +115,7 @@ export default function SettingsScreen() {
   // Loading state — skeleton
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <TopSafeAreaGradient />
         <SettingsHeader colors={colors} topInset={insets.top} />
         <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerHeight }]}>
@@ -133,7 +133,7 @@ export default function SettingsScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <TopSafeAreaGradient />
       <SettingsHeader colors={colors} topInset={insets.top} />
       <ScreenContainer

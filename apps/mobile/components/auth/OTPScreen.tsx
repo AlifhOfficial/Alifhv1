@@ -84,7 +84,7 @@ export function OTPScreen({
   };
 
   return (
-    <View style={[onboardingStyles.container, { backgroundColor: colors.oledBlack }]}>
+    <View style={[onboardingStyles.container, { backgroundColor: colors.black }]}>
       <KeyboardAvoidingView behavior="padding" style={onboardingStyles.keyboardView}>
         <View
           style={[
@@ -98,7 +98,7 @@ export function OTPScreen({
               onPress={onBack}
               style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
-              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.oledWhite} />
+              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.white} />
             </HapticPressable>
             <View style={{ flex: 1 }} />
             <View style={onboardingStyles.skipButton} />
@@ -109,10 +109,10 @@ export function OTPScreen({
             <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
               Verify your email
             </Supporting>
-            <Heading size="large" style={[onboardingStyles.title, { color: colors.oledWhite }]}>
+            <Heading size="large" style={[onboardingStyles.title, { color: colors.white }]}>
               Enter the code
             </Heading>
-            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.textSecondary }]}>
+            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
               Sent to {email}
             </Body>
           </Animated.View>
@@ -145,18 +145,18 @@ export function OTPScreen({
                       {
                         backgroundColor: isFilled
                           ? `${colors.primary}15`
-                          : `${colors.oledWhite}08`,
+                          : `${colors.white}08`,
                         borderColor: error
                           ? colors.error
                           : isActive
                           ? colors.primary
                           : isFilled
                           ? colors.primary
-                          : `${colors.oledWhite}15`,
+                          : `${colors.white}15`,
                       },
                     ]}
                   >
-                    <Heading size="medium" style={{ color: colors.oledWhite }}>
+                    <Heading size="medium" style={{ color: colors.white }}>
                       {digit}
                     </Heading>
                     {isActive && !isLoading && (
@@ -205,7 +205,7 @@ export function OTPScreen({
                   </Data>
                 </HapticPressable>
               ) : (
-                <Supporting size="small" style={{ color: colors.textTertiary }}>
+                <Supporting size="small" style={{ color: colors.text3 }}>
                   Resend in {resendTimer}s
                 </Supporting>
               )}
@@ -213,7 +213,7 @@ export function OTPScreen({
 
             {/* Help text */}
             <Animated.View entering={FadeIn.delay(400).duration(300)}>
-              <Supporting size="mini" style={[onboardingStyles.helpText, { color: colors.textTertiary }]}>
+              <Supporting size="mini" style={[onboardingStyles.helpText, { color: colors.text3 }]}>
                 Check your spam folder if you don't see it
               </Supporting>
             </Animated.View>

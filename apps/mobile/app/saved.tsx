@@ -63,7 +63,7 @@ export default function SavedScreen() {
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <TopSafeAreaGradient />
         <SavedHeader
           activeTab={activeTab}
@@ -80,7 +80,7 @@ export default function SavedScreen() {
   // Loading state
   if (isLoading && currentListings.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <TopSafeAreaGradient />
         <SavedHeader
           activeTab={activeTab}
@@ -98,14 +98,14 @@ export default function SavedScreen() {
   // Error state
   if (error && currentListings.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.bg }]}>
         <TopSafeAreaGradient />
         <SavedHeader
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
         <View style={styles.emptyContainer}>
-          <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>
+          <Text style={[styles.emptyTitle, { color: colors.text2 }]}>
             Something went wrong
           </Text>
           <Text
@@ -120,7 +120,7 @@ export default function SavedScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <TopSafeAreaGradient />
       {/* Header */}
       <SavedHeader

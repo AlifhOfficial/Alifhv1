@@ -17,7 +17,6 @@ import { useRouter } from 'expo-router';
 
 import { Spacing, Layout } from '@/constants/theme';
 import { Body, LogoLoader } from '@/components/ui';
-import { BlkTextDoodle } from '@/components/home/blk-text-doodle';
 import { BlkHeader, BLK_HEADER_HEIGHT, BlkCard, BlkCardSkeleton } from '@/components/blk';
 import { searchApi, type ListingCard } from '@/lib/search-api';
 
@@ -191,7 +190,6 @@ export default function BlkScreen() {
       />
 
       {/* BLK Doodle Pattern - Behind everything */}
-      <BlkTextDoodle />
 
       {/* BLK Header - Absolute positioned (outside ScrollView) */}
       <BlkHeader />

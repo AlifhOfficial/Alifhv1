@@ -32,7 +32,7 @@ export function getBookingStatusColor(
     error: string;
     primary: string;
     textMuted: string;
-    textSecondary: string;
+    text2: string;
   },
 ): string {
   switch (status) {
@@ -42,7 +42,7 @@ export function getBookingStatusColor(
     case 'cancelled': return colors.textMuted;
     case 'rejected':  return colors.error;
     case 'no_show':   return colors.error;
-    case 'expired':   return colors.textSecondary;
+    case 'expired':   return colors.text2;
     default:          return colors.textMuted;
   }
 }

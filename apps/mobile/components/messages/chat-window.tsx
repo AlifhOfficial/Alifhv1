@@ -259,7 +259,7 @@ export function ChatWindow({
             </View>
             <View style={styles.timestampSide}>
               {timestamp && (
-                <Supporting size="mini" style={{ color: colors.textTertiary, opacity: 0.5 }}>
+                <Supporting size="mini" style={{ color: colors.text3, opacity: 0.5 }}>
                   {timestamp}
                 </Supporting>
               )}
@@ -267,7 +267,7 @@ export function ChatWindow({
           </View>
           {showDateSeparator && (
             <View style={styles.dateSeparator}>
-              <Data size="mini" style={{ color: colors.textTertiary }}>
+              <Data size="mini" style={{ color: colors.text3 }}>
                 {formatDateLabel(messageDate)}
               </Data>
             </View>
@@ -283,7 +283,7 @@ export function ChatWindow({
       otherUserAvatar,
       otherUserName,
       colors.border,
-      colors.textTertiary,
+      colors.text3,
       formatDateLabel,
     ]
   );
@@ -296,18 +296,18 @@ export function ChatWindow({
     if (isFetchingMore && messages.length > 0) {
       return (
         <View style={styles.loadingMore}>
-          <ActivityIndicator size="small" color={colors.textTertiary} />
+          <ActivityIndicator size="small" color={colors.text3} />
         </View>
       );
     }
     return null;
-  }, [isFetchingMore, messages.length, colors.textTertiary]);
+  }, [isFetchingMore, messages.length, colors.text3]);
 
   // Empty state
   const ListEmptyComponent = useMemo(() => {
     return (
       <View style={styles.emptyContainer}>
-        <Data size="medium" style={{ color: colors.textTertiary }}>No messages yet. Say hi! 👋</Data>
+        <Data size="medium" style={{ color: colors.text3 }}>No messages yet. Say hi! 👋</Data>
       </View>
     );
   }, [colors]);
@@ -317,16 +317,16 @@ export function ChatWindow({
     if (!isOtherTyping) return null;
     return (
       <View style={styles.typingContainer}>
-        <Supporting size="small" style={{ color: colors.textTertiary }}>
+        <Supporting size="small" style={{ color: colors.text3 }}>
           typing...
         </Supporting>
       </View>
     );
-  }, [isOtherTyping, colors.textTertiary]);
+  }, [isOtherTyping, colors.text3]);
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={[styles.container, { backgroundColor: colors.bg }]}
       behavior="padding"
       keyboardVerticalOffset={0}
     >

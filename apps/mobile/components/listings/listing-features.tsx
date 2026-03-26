@@ -106,9 +106,9 @@ export const ListingFeatures = memo(function ListingFeatures({
         {visibleExtras.map((extra, idx) => (
           <View 
             key={idx} 
-            style={[styles.badge, { backgroundColor: colors.backgroundSecondary }]}
+            style={[styles.badge, { backgroundColor: colors.bg2 }]}
           >
-            <Text variant="chip" style={{ color: textColor }}>
+            <Text variant="bodySm" style={{ color: textColor }}>
               {formatEnumValue(extra)}
             </Text>
           </View>
@@ -118,7 +118,7 @@ export const ListingFeatures = memo(function ListingFeatures({
             onPress={onViewAll}
             style={[styles.badge, { backgroundColor: colors.primary + '15' }]}
           >
-            <Text variant="chip" tone="primary">
+            <Text variant="bodySm" tone="primary">
               +{remainingCount} more
             </Text>
           </HapticPressable>

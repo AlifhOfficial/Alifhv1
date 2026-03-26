@@ -84,7 +84,7 @@ export function SignInScreen({
 
   return (
     <ScrollView
-      style={[onboardingStyles.container, { backgroundColor: colors.oledBlack }]}
+      style={[onboardingStyles.container, { backgroundColor: colors.black }]}
       contentContainerStyle={[
         onboardingStyles.content,
         { paddingTop: insets.top + Spacing.sm, paddingBottom: insets.bottom + Spacing['2xl'] },
@@ -98,7 +98,7 @@ export function SignInScreen({
               onPress={onBack}
               style={[onboardingStyles.backButton]}
             >
-              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.oledWhite} />
+              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.white} />
             </HapticPressable>
             <View style={{ flex: 1 }} />
             <View style={onboardingStyles.skipButton} />
@@ -109,7 +109,7 @@ export function SignInScreen({
             <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
               Welcome back
             </Supporting>
-            <Heading size="large" style={[onboardingStyles.title, { color: colors.oledWhite }]}>
+            <Heading size="large" style={[onboardingStyles.title, { color: colors.white }]}>
               Sign in to continue
             </Heading>
           </Animated.View>
@@ -133,20 +133,20 @@ export function SignInScreen({
               style={[
                 onboardingStyles.inputWrapper,
                 {
-                  backgroundColor: `${colors.oledWhite}08`,
+                  backgroundColor: `${colors.white}08`,
                   borderColor: email.length > 0
                     ? isValidEmail(email) ? colors.primary : colors.error
-                    : `${colors.oledWhite}15`,
+                    : `${colors.white}15`,
                 },
               ]}
             >
               <TextInput
                 ref={emailRef}
-                style={[onboardingStyles.inputInner, { color: colors.oledWhite }]}
+                style={[onboardingStyles.inputInner, { color: colors.white }]}
                 value={email}
                 onChangeText={setEmail}
                 placeholder="Email"
-                placeholderTextColor={colors.textTertiary}
+                placeholderTextColor={colors.text3}
                 keyboardType="email-address"
                 keyboardAppearance="dark"
                 autoCapitalize="none"
@@ -166,8 +166,8 @@ export function SignInScreen({
               style={[
                 onboardingStyles.inputWrapper,
                 {
-                  backgroundColor: `${colors.oledWhite}08`,
-                  borderColor: password.length > 0 ? colors.primary : `${colors.oledWhite}15`,
+                  backgroundColor: `${colors.white}08`,
+                  borderColor: password.length > 0 ? colors.primary : `${colors.white}15`,
                 },
               ]}
             >
@@ -176,12 +176,12 @@ export function SignInScreen({
                 style={[
                   onboardingStyles.inputInner,
                   onboardingStyles.passwordInputInner,
-                  { color: colors.oledWhite },
+                  { color: colors.white },
                 ]}
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Password"
-                placeholderTextColor={colors.textTertiary}
+                placeholderTextColor={colors.text3}
                 keyboardAppearance="dark"
                 secureTextEntry={!showPassword}
                 autoComplete={Platform.OS === 'android' ? 'off' : 'password'}
@@ -196,7 +196,7 @@ export function SignInScreen({
                 onPress={() => setShowPassword(!showPassword)}
                 style={onboardingStyles.showPasswordButton}
               >
-                <Data size="mini" style={{ color: colors.textTertiary }}>
+                <Data size="mini" style={{ color: colors.text3 }}>
                   {showPassword ? 'Hide' : 'Show'}
                 </Data>
               </HapticPressable>
@@ -207,7 +207,7 @@ export function SignInScreen({
               onPress={onForgotPassword}
               style={{ alignSelf: 'flex-end', paddingVertical: Spacing.xs }}
             >
-              <Data size="mini" style={{ color: colors.textSecondary }}>
+              <Data size="mini" style={{ color: colors.text2 }}>
                 Forgot password?
               </Data>
             </HapticPressable>
@@ -223,7 +223,7 @@ export function SignInScreen({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="primary" />
               ) : (
-                <Heading size="medium" style={{ color: isValid ? colors.oledWhite : colors.textTertiary }}>
+                <Heading size="medium" style={{ color: isValid ? colors.white : colors.text3 }}>
                   Sign In
                 </Heading>
               )}
@@ -233,9 +233,9 @@ export function SignInScreen({
             {(onGoogleSignIn || onAppleSignIn) && (
               <View style={styles.socialSection}>
                 <View style={styles.dividerRow}>
-                  <View style={[styles.dividerLine, { backgroundColor: colors.glassBorderOnDark }]} />
-                  <Supporting size="small" style={{ color: colors.textTertiary }}>or</Supporting>
-                  <View style={[styles.dividerLine, { backgroundColor: colors.glassBorderOnDark }]} />
+                  <View style={[styles.dividerLine, { backgroundColor: colors.glassBorderDark }]} />
+                  <Supporting size="small" style={{ color: colors.text3 }}>or</Supporting>
+                  <View style={[styles.dividerLine, { backgroundColor: colors.glassBorderDark }]} />
                 </View>
 
                 <View style={styles.socialButtonsRow}>
@@ -246,10 +246,10 @@ export function SignInScreen({
                       disabled={isLoading}
                       style={[
                         styles.socialButton,
-                        { backgroundColor: colors.oledWhite, opacity: isLoading ? 0.5 : 1 },
+                        { backgroundColor: colors.white, opacity: isLoading ? 0.5 : 1 },
                       ]}
                     >
-                      <Ionicons name="logo-apple" size={Sizes.iconSm} color={colors.oledBlack} />
+                      <Ionicons name="logo-apple" size={Sizes.iconSm} color={colors.black} />
                     </HapticPressable>
                   )}
 
@@ -261,7 +261,7 @@ export function SignInScreen({
                       style={[
                         styles.socialButton,
                         { 
-                          backgroundColor: colors.oledWhite, 
+                          backgroundColor: colors.white, 
                           opacity: isLoading ? 0.5 : 1,
                         },
                       ]}
@@ -275,7 +275,7 @@ export function SignInScreen({
 
             {/* Switch to Sign Up */}
             <Animated.View entering={FadeIn.delay(400).duration(300)} style={onboardingStyles.footer}>
-              <Body size="small" style={{ color: colors.textSecondary }}>
+              <Body size="small" style={{ color: colors.text2 }}>
                 Don't have an account?{' '}
               </Body>
               <HapticPressable onPress={onSwitchToSignUp}>

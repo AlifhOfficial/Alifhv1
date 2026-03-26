@@ -88,13 +88,13 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
               hitSlop={Spacing.md}
               style={[
                 styles.iconButton,
-                { backgroundColor: colors.fillSecondary }
+                { backgroundColor: colors.fill2 }
               ]}
             >
               {copied ? (
                 <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primary} />
               ) : (
-                <Copy size={Sizes.iconSm} color={colors.textSecondary} />
+                <Copy size={Sizes.iconSm} color={colors.text2} />
               )}
             </HapticPressable>
             <HapticPressable 

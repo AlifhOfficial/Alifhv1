@@ -69,7 +69,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
         <View
           style={[
             styles.inputBox,
-            { backgroundColor: colors.fillSecondary, borderColor: colors.border },
+            { backgroundColor: colors.fill2, borderColor: colors.border },
           ]}
         >
           <Body size="large" tone="secondary">
@@ -109,14 +109,14 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.presetChip,
                   {
-                    backgroundColor: isActive ? colors.text : colors.surfaceSecondary,
+                    backgroundColor: isActive ? colors.text : colors.surface2,
                     borderColor: isActive ? colors.text : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="small"
-                  style={{ color: isActive ? colors.background : colors.text }}
+                  style={{ color: isActive ? colors.bg : colors.text }}
                 >
                   {preset.label}
                 </Body>
@@ -127,7 +127,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
       </View>
 
       {/* Negotiable toggle */}
-      <View style={[styles.toggleRow, { backgroundColor: colors.surfaceSecondary }]}>
+      <View style={[styles.toggleRow, { backgroundColor: colors.surface2 }]}>
         <View style={styles.toggleText}>
           <Label size="small">Price Negotiable?</Label>
           <Supporting size="small" tone="muted">
@@ -137,7 +137,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
         <Switch
           value={data.isNegotiable || false}
           onValueChange={handleNegotiableToggle}
-          trackColor={{ false: colors.fillSecondary, true: colors.text + '80' }}
+          trackColor={{ false: colors.fill2, true: colors.text + '80' }}
           thumbColor={data.isNegotiable ? colors.text : colors.textMuted}
         />
       </View>

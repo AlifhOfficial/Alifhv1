@@ -99,7 +99,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.quickChip,
                   {
-                    backgroundColor: isAdded ? colors.text : colors.surfaceSecondary,
+                    backgroundColor: isAdded ? colors.text : colors.surface2,
                     borderColor: isAdded ? colors.text : colors.border,
                     opacity: isAdded || notes.length >= MAX_SPECIAL_NOTES ? 0.5 : 1,
                   },
@@ -108,7 +108,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                 <Body
                   size="small"
                   numberOfLines={1}
-                  style={{ color: isAdded ? colors.background : colors.text }}
+                  style={{ color: isAdded ? colors.bg : colors.text }}
                 >
                   {note}
                 </Body>
@@ -128,7 +128,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                 key={index}
                 style={[
                   styles.noteItem,
-                  { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+                  { backgroundColor: colors.surface2, borderColor: colors.border },
                 ]}
               >
                 <Body size="small" style={{ flex: 1 }}>
@@ -171,13 +171,13 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
               style={[
                 styles.addButton,
                 {
-                  backgroundColor: noteInput.trim() ? colors.primary : colors.fillSecondary,
+                  backgroundColor: noteInput.trim() ? colors.primary : colors.fill2,
                 },
               ]}
             >
               <Plus
                 size={Sizes.iconSm}
-                color={noteInput.trim() ? colors.primaryForeground : colors.textMuted}
+                color={noteInput.trim() ? colors.primaryFg : colors.textMuted}
                 strokeWidth={2}
               />
             </HapticPressable>

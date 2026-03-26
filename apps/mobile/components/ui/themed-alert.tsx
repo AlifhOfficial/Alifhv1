@@ -124,7 +124,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
 
             {/* Message */}
             {config?.message && (
-              <Body size="medium" style={[styles.message, { color: colors.textSecondary }]}>
+              <Body size="medium" style={[styles.message, { color: colors.text2 }]}>
                 {config.message}
               </Body>
             )}
@@ -145,7 +145,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
                         backgroundColor: isDestructive
                           ? colors.error
                           : isCancel
-                            ? colors.fillSecondary
+                            ? colors.fill2
                             : colors.primary,
                         opacity: pressed ? 0.8 : 1,
                       },
@@ -158,7 +158,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
                           ? '#FFFFFF'
                           : isCancel
                             ? colors.text
-                            : colors.primaryForeground,
+                            : colors.primaryFg,
                       }}
                     >
                       {button.text}

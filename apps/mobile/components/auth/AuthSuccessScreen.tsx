@@ -117,7 +117,7 @@ export function AuthSuccessScreen({
   const firstName = userName?.split(' ')[0];
 
   return (
-    <View style={[onboardingStyles.container, { backgroundColor: colors.oledBlack }]}>
+    <View style={[onboardingStyles.container, { backgroundColor: colors.black }]}>
       {/* Confetti */}
       <ConfettiBurst ref={confettiRef} />
 
@@ -146,7 +146,7 @@ export function AuthSuccessScreen({
 
           {/* Welcome message */}
           <Animated.View entering={FadeInDown.delay(400).duration(400)}>
-            <Heading size="large" style={[onboardingStyles.welcomeTitle, { color: colors.oledWhite }]}>
+            <Heading size="large" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
               {firstName ? `Welcome back, ${firstName}!` : "You're in!"}
             </Heading>
           </Animated.View>
@@ -155,7 +155,7 @@ export function AuthSuccessScreen({
           <Animated.View entering={FadeInDown.delay(500).duration(400)}>
             <Body
               size="small"
-              style={[onboardingStyles.welcomeSubtitle, { color: colors.textSecondary }]}
+              style={[onboardingStyles.welcomeSubtitle, { color: colors.text2 }]}
             >
               Ready to find your next ride?
             </Body>
@@ -174,7 +174,7 @@ export function AuthSuccessScreen({
               },
             ]}
           >
-            <ButtonText style={{ color: colors.primaryForeground }}>Let's Go</ButtonText>
+            <ButtonText style={{ color: colors.primaryFg }}>Let's Go</ButtonText>
           </HapticPressable>
         </Animated.View>
       </View>

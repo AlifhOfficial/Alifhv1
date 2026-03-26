@@ -240,7 +240,7 @@ export function ProfileAvatar({
       {/* Camera badge */}
       {!isUploading && (
         <View style={styles.cameraBadge}>
-          <Camera size={Sizes.iconXs} color={colors.primaryForeground} strokeWidth={2.5} />
+          <Camera size={Sizes.iconXs} color={colors.primaryFg} strokeWidth={2.5} />
         </View>
       )}
     </AnimatedPressable>

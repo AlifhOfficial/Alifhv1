@@ -131,14 +131,14 @@ export function ReviewStepContent({
   return (
     <StepContainer>
       {/* Hero Card */}
-      <View style={[styles.heroCard, { backgroundColor: colors.surfaceSecondary }]}>
+      <View style={[styles.heroCard, { backgroundColor: colors.surface2 }]}>
         {data.images.length > 0 ? (
           <Image
             source={{ uri: toAbsoluteUrl(data.images[0]) }}
             style={styles.heroImage}
           />
         ) : (
-          <View style={[styles.heroImage, { backgroundColor: colors.fillSecondary }]} />
+          <View style={[styles.heroImage, { backgroundColor: colors.fill2 }]} />
         )}
         
         <View style={styles.heroInfo}>
@@ -152,15 +152,15 @@ export function ReviewStepContent({
 
       {/* Quick Stats */}
       <View style={styles.statsRow}>
-        <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.statItem, { backgroundColor: colors.surface2 }]}>
           <Supporting size="small" tone="muted">Mileage</Supporting>
           <Body size="medium">{mileageNum.toLocaleString()} km</Body>
         </View>
-        <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.statItem, { backgroundColor: colors.surface2 }]}>
           <Supporting size="small" tone="muted">Location</Supporting>
           <Body size="medium" numberOfLines={1}>{emirateLabel}</Body>
         </View>
-        <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.statItem, { backgroundColor: colors.surface2 }]}>
           <Supporting size="small" tone="muted">Photos</Supporting>
           <Body size="medium">{data.images.length}</Body>
         </View>
@@ -193,15 +193,15 @@ export function ReviewStepContent({
           disabled={submitting || !canPublish}
           style={[
             styles.publishBtn,
-            { backgroundColor: canPublish ? colors.text : colors.fillSecondary },
+            { backgroundColor: canPublish ? colors.text : colors.fill2 },
           ]}
         >
           {submitting ? (
-            <ActivityIndicator size="small" color={colors.background} />
+            <ActivityIndicator size="small" color={colors.bg} />
           ) : (
             <>
-              <Check size={Sizes.iconSm} color={canPublish ? colors.background : colors.textMuted} strokeWidth={2} />
-              <Body size="medium" style={{ color: canPublish ? colors.background : colors.textMuted, fontFamily: 'Inter_600SemiBold' }}>
+              <Check size={Sizes.iconSm} color={canPublish ? colors.bg : colors.textMuted} strokeWidth={2} />
+              <Body size="medium" style={{ color: canPublish ? colors.bg : colors.textMuted, fontFamily: 'Inter_600SemiBold' }}>
                 Publish
               </Body>
             </>
@@ -213,7 +213,7 @@ export function ReviewStepContent({
           disabled={submitting}
           style={[styles.draftBtn, { borderColor: colors.border }]}
         >
-          <Save size={Sizes.iconSm} color={colors.textSecondary} strokeWidth={2} />
+          <Save size={Sizes.iconSm} color={colors.text2} strokeWidth={2} />
           <Body size="medium" tone="secondary">Draft</Body>
         </HapticPressable>
       </View>

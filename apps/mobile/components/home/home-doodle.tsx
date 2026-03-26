@@ -81,7 +81,7 @@ export const HomeDoodle = memo(function HomeDoodle() {
               opacity: pos.opacity,
               fontSize: pos.size,
               color: VIBRANT_COLORS[pos.colorIndex],
-            },
+            } as any,
           ]}
         >
           revvup
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   },
   doodleText: {
     position: 'absolute',
-    fontFamily: Fonts.script,
+    fontFamily: Fonts.regular,
     letterSpacing: 0.5,
   },
 });

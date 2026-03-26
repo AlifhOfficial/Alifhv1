@@ -38,7 +38,7 @@ function ColorChip({
       style={[
         styles.colorChip,
         {
-          backgroundColor: isSelected ? themeColors.text : themeColors.surfaceSecondary,
+          backgroundColor: isSelected ? themeColors.text : themeColors.surface2,
           borderColor: isSelected ? themeColors.text : themeColors.border,
         },
       ]}
@@ -58,7 +58,7 @@ function ColorChip({
         size="small"
         numberOfLines={1}
         style={{
-          color: isSelected ? themeColors.background : themeColors.text,
+          color: isSelected ? themeColors.bg : themeColors.text,
           fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
         }}
       >
@@ -113,14 +113,14 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
+                    backgroundColor: isSelected ? colors.text : colors.surface2,
                     borderColor: isSelected ? colors.text : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="small"
-                  style={{ color: isSelected ? colors.background : colors.text }}
+                  style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {type.label}
                 </Body>

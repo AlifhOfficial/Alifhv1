@@ -80,7 +80,7 @@ const ProductItem = memo(function ProductItem({ listing, colors, onPress, onFavo
           transition={150}
         />
         {/* Heart - Overlapping thumbnail */}
-        <View style={[styles.favBtn, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+        <View style={[styles.favBtn, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}>
           <FavoriteButton
             listingId={listing.id}
             size={Sizes.iconSm}
@@ -157,16 +157,16 @@ export const BlkGridCard = memo(function BlkGridCard({
   if (!isLoading && !listings.length) return null;
 
   // BLK collection uses theme-aware colors
-  const cardBg = colors.blkBackground;
+  const cardBg = colors.blkBg;
   const textColor = colors.blkText;
-  const textSecondary = colors.blkTextSecondary;
+  const textSecondary = colors.blkText2;
 
   return (
     <View style={[styles.container, { backgroundColor: cardBg }]}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={[styles.avatar, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder, borderWidth: 1 }]}>
-          <Heading size="mini" style={{ color: colors.blkBadgeText }}>BLK</Heading>
+        <View style={[styles.avatar, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder, borderWidth: 1 }]}>
+          <Heading size="mini" style={{ color: colors.blkBadgeFg }}>BLK</Heading>
         </View>
         <View style={styles.headerText}>
           <Heading size="mini" style={{ color: textColor }}>BLK Collection</Heading>
@@ -194,8 +194,8 @@ export const BlkGridCard = memo(function BlkGridCard({
       {/* Footer */}
       <HapticPressable onPress={handleShopAll} style={styles.footer}>
         <Heading size="mini" style={{ color: textColor }}>View collection</Heading>
-        <View style={[styles.arrowBtn, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder, borderWidth: 1 }]}>
-          <ChevronRight size={Sizes.iconSm} color={colors.blkBadgeText} strokeWidth={2} />
+        <View style={[styles.arrowBtn, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder, borderWidth: 1 }]}>
+          <ChevronRight size={Sizes.iconSm} color={colors.blkBadgeFg} strokeWidth={2} />
         </View>
       </HapticPressable>
     </View>

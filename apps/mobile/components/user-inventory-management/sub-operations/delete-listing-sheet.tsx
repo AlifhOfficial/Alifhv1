@@ -156,7 +156,7 @@ export function DeleteListingSheet({
         )}
 
         {/* Listing preview */}
-        <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.previewCard, { backgroundColor: colors.surface2 }]}>
           {listingThumbnail ? (
             <Image source={{ uri: getAppThumbUrl(listingThumbnail)! }} style={styles.thumbnail} />
           ) : (

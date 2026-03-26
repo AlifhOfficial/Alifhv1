@@ -57,14 +57,14 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isActive ? colors.text : colors.surfaceSecondary,
+                    backgroundColor: isActive ? colors.text : colors.surface2,
                     borderColor: isActive ? colors.text : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="small"
-                  style={{ color: isActive ? colors.background : colors.text }}
+                  style={{ color: isActive ? colors.bg : colors.text }}
                 >
                   {emirate.label}
                 </Body>
@@ -87,7 +87,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
           style={[
             styles.input,
             {
-              backgroundColor: colors.fillSecondary,
+              backgroundColor: colors.fill2,
               borderColor: colors.border,
               color: colors.text,
             },
@@ -103,7 +103,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Selected summary */}
       {data.emirate && (
-        <View style={[styles.summaryBox, { backgroundColor: colors.fillSecondary }]}>
+        <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
           <Supporting size="small" tone="secondary">
             {data.emirate}{data.city ? `, ${data.city}` : ''}
           </Supporting>

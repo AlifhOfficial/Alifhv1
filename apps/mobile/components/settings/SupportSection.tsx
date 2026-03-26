@@ -66,13 +66,13 @@ function SupportItem({
         ]}
       >
         <View style={styles.itemLeft}>
-          <Icon size={Sizes.iconSm} color={colors.textSecondary} strokeWidth={1.5} />
+          <Icon size={Sizes.iconSm} color={colors.text2} strokeWidth={1.5} />
           <View style={styles.itemContent}>
             <Body size="small" tone="muted">Navigate</Body>
             <Body size="medium">{label}</Body>
           </View>
         </View>
-        <ChevronRight size={Sizes.iconSm} color={colors.textTertiary} strokeWidth={2} />
+        <ChevronRight size={Sizes.iconSm} color={colors.text3} strokeWidth={2} />
       </Animated.View>
     </HapticPressable>
   );

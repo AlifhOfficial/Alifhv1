@@ -545,7 +545,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
       style={[
         styles.chip,
         {
-          backgroundColor: isSelected ? colors.text : colors.fillSecondary,
+          backgroundColor: isSelected ? colors.text : colors.fill2,
           borderColor: isSelected ? colors.text : colors.border,
         },
       ]}
@@ -553,7 +553,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
     >
       <Supporting
         size="small"
-        style={{ color: isSelected ? colors.background : colors.text }}
+        style={{ color: isSelected ? colors.bg : colors.text }}
       >
         {label}
       </Supporting>
@@ -563,7 +563,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
         </Supporting>
       )}
       {isSelected && (
-        <Ionicons name="close" size={Spacing.md} color={colors.background} />
+        <Ionicons name="close" size={Spacing.md} color={colors.bg} />
       )}
     </HapticPressable>
   );
@@ -604,14 +604,14 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
             <HapticPressable
               style={[
                 styles.applyButton,
-                { backgroundColor: canApply ? colors.primary : colors.fillSecondary },
+                { backgroundColor: canApply ? colors.primary : colors.fill2 },
               ]}
               onPress={handleApply}
               disabled={!canApply}
             >
               <ButtonText
                 size="small"
-                style={{ color: canApply ? colors.primaryForeground : colors.textMuted }}
+                style={{ color: canApply ? colors.primaryFg : colors.textMuted }}
               >
                 Apply
               </ButtonText>
@@ -677,7 +677,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                   <ActivityIndicator size="small" color={colors.textMuted} />
                 </View>
               ) : suggestions.length > 0 ? (
-                <View style={[styles.suggestionsContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                <View style={[styles.suggestionsContainer, { backgroundColor: colors.bg, borderColor: colors.border }]}>
                   {suggestions.slice(0, 8).map((suggestion, index) => {
                     const category = SUGGESTION_CATEGORIES[suggestion.type];
                     return (
@@ -801,7 +801,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                         style={[
                           styles.chip,
                           {
-                            backgroundColor: colors.fillSecondary,
+                            backgroundColor: colors.fill2,
                             borderColor: colors.border,
                           },
                         ]}

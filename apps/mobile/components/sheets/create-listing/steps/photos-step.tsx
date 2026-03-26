@@ -185,7 +185,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             {/* Thumbnail badge — only on confirmed CDN cover */}
             {isThumbnail && (
               <View style={[styles.thumbnailBadge, { backgroundColor: colors.primary }]}>
-                <Body size="small" style={{ color: colors.primaryForeground, fontSize: 8, fontWeight: '600' }}>
+                <Body size="small" style={{ color: colors.primaryFg, fontSize: 8, fontWeight: '600' }}>
                   COVER
                 </Body>
               </View>
@@ -199,7 +199,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
                 disabled={isActive}
                 style={[styles.dragHandle, { backgroundColor: colors.text + '80' }]}
               >
-                <GripVertical size={12} color={colors.background} />
+                <GripVertical size={12} color={colors.bg} />
               </HapticPressable>
             )}
 
@@ -209,7 +209,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
                 onPress={() => handleDeleteImage(item.url)}
                 style={[styles.deleteBtn, { backgroundColor: colors.text + 'CC' }]}
               >
-                <X size={12} color={colors.background} strokeWidth={2.5} />
+                <X size={12} color={colors.bg} strokeWidth={2.5} />
               </HapticPressable>
             )}
           </View>
@@ -235,7 +235,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
         disabled={uploading}
         style={[
           styles.uploadButton,
-          { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+          { backgroundColor: colors.surface2, borderColor: colors.border },
         ]}
       >
         {uploading && uploadProgress.total > 0 ? (

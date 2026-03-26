@@ -310,7 +310,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
               style={[
                 styles.submitButton,
                 {
-                  backgroundColor: query.trim() ? '#8B5CF6' : colors.fillSecondary,
+                  backgroundColor: query.trim() ? '#8B5CF6' : colors.fill2,
                 },
               ]}
             >
@@ -363,7 +363,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
                     style={[
                       styles.suggestionChip,
                       {
-                        backgroundColor: colors.fillSecondary,
+                        backgroundColor: colors.fill2,
                         borderColor: colors.border,
                       },
                     ]}

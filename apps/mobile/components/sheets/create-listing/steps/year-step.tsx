@@ -88,7 +88,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
             <Body
               size="large"
               style={{
-                color: isSelected ? colors.text : colors.textSecondary,
+                color: isSelected ? colors.text : colors.text2,
                 fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
               }}
             >
@@ -114,7 +114,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
     <View style={styles.container}>
       {/* Search - outside FlatList to prevent focus loss */}
       <View style={[styles.searchWrapper, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <View style={[styles.searchBox, { backgroundColor: colors.fillSecondary }]}>
+        <View style={[styles.searchBox, { backgroundColor: colors.fill2 }]}>
           <Search size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
           <BottomSheetTextInput
             style={[styles.searchInput, { color: colors.text }]}

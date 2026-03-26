@@ -167,13 +167,13 @@ export function YearMileageFilterSheet({
           <HapticPressable
             style={[
               styles.applyButton,
-              { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
+              { backgroundColor: hasValue ? colors.primary : colors.fill2 },
             ]}
             onPress={handleApply}
           >
             <ButtonText
               size="small"
-              style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
+              style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
             >
               Apply
             </ButtonText>
@@ -207,13 +207,13 @@ export function YearMileageFilterSheet({
                 style={[
                   styles.input,
                   { 
-                    backgroundColor: colors.surfaceSecondary,
+                    backgroundColor: colors.surface2,
                     borderColor: colors.border,
                     color: colors.text,
                   },
                 ]}
                 placeholder="Min"
-                placeholderTextColor={colors.textTertiary}
+                placeholderTextColor={colors.text3}
                 keyboardType="number-pad"
                 value={localYearMin}
                 onChangeText={setLocalYearMin}
@@ -226,13 +226,13 @@ export function YearMileageFilterSheet({
                 style={[
                   styles.input,
                   { 
-                    backgroundColor: colors.surfaceSecondary,
+                    backgroundColor: colors.surface2,
                     borderColor: colors.border,
                     color: colors.text,
                   },
                 ]}
                 placeholder="Max"
-                placeholderTextColor={colors.textTertiary}
+                placeholderTextColor={colors.text3}
                 keyboardType="number-pad"
                 value={localYearMax}
                 onChangeText={setLocalYearMax}
@@ -261,14 +261,14 @@ export function YearMileageFilterSheet({
                   style={[
                     styles.presetChip,
                     { 
-                      backgroundColor: isActive ? colors.text : colors.surfaceSecondary,
+                      backgroundColor: isActive ? colors.text : colors.surface2,
                       borderColor: isActive ? colors.text : colors.border,
                     },
                   ]}
                 >
                   <Supporting
                     size="small"
-                    style={{ color: isActive ? colors.background : colors.textSecondary }}
+                    style={{ color: isActive ? colors.bg : colors.text2 }}
                   >
                     {preset.label}
                   </Supporting>
@@ -284,13 +284,13 @@ export function YearMileageFilterSheet({
                 style={[
                   styles.input,
                   { 
-                    backgroundColor: colors.surfaceSecondary,
+                    backgroundColor: colors.surface2,
                     borderColor: colors.border,
                     color: colors.text,
                   },
                 ]}
                 placeholder="Min"
-                placeholderTextColor={colors.textTertiary}
+                placeholderTextColor={colors.text3}
                 keyboardType="number-pad"
                 value={localMileageMin}
                 onChangeText={setLocalMileageMin}
@@ -302,13 +302,13 @@ export function YearMileageFilterSheet({
                 style={[
                   styles.input,
                   { 
-                    backgroundColor: colors.surfaceSecondary,
+                    backgroundColor: colors.surface2,
                     borderColor: colors.border,
                     color: colors.text,
                   },
                 ]}
                 placeholder="Max"
-                placeholderTextColor={colors.textTertiary}
+                placeholderTextColor={colors.text3}
                 keyboardType="number-pad"
                 value={localMileageMax}
                 onChangeText={setLocalMileageMax}

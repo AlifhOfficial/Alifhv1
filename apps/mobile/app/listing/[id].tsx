@@ -21,7 +21,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { useTabBar } from '@/context/tab-bar-context';
 import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
 import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { TopSafeAreaGradient } from '@/components/layout/top-safe-area';
@@ -33,7 +32,6 @@ import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 export default function ListingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colorScheme } = useTheme();
-  const { hideChrome, showChrome } = useTabBar();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   
@@ -51,14 +49,6 @@ export default function ListingDetailScreen() {
     const nextVisible = event.nativeEvent.contentOffset.y > 10;
     setShowTopGradient((current) => (current === nextVisible ? current : nextVisible));
   }, []);
-
-  // Hide tab bar on this screen for immersive view
-  useEffect(() => {
-    hideChrome();
-    return () => {
-      showChrome();
-    };
-  }, [hideChrome, showChrome]);
 
   useEffect(() => {
     if (!listing) {
@@ -106,7 +96,7 @@ export default function ListingDetailScreen() {
   }, [listing]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <Stack.Screen
         options={{
           headerShown: false,
@@ -137,7 +127,7 @@ export default function ListingDetailScreen() {
           <CarCardDetailedMSkeleton />
         ) : error ? (
           <View style={styles.errorContainer}>
-            <Text style={[styles.errorText, { color: colors.textSecondary }]}>
+            <Text style={[styles.errorText, { color: colors.text2 }]}>
               {error.message?.includes('not found') 
                 ? 'This listing is no longer available or may have expired'
                 : 'Failed to load listing. Please try again.'}

@@ -121,7 +121,7 @@ export default function PartnersScreen() {
   // ──────────────────────────────────────────────────────────────────────────
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       {/* Header - Absolute positioned */}
       <PartnersHeader count={partners.length} />
 

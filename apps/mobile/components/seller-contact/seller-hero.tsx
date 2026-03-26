@@ -52,8 +52,8 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
               <CheckCircle2 size={Sizes.iconXs} color={colors.primary} />
             )}
             {seller.tier?.toLowerCase() === 'black' && (
-              <View style={[localStyles.tierBadge, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder }]}>
-                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>
+              <View style={[localStyles.tierBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
+                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>
                   BLK
                 </Label>
               </View>
@@ -92,7 +92,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
         {/* Avatar - Right side (squared for dealers, rounded for private) */}
         <View style={[
           seller.isDealer ? localStyles.logo : localStyles.avatar, 
-          { backgroundColor: colors.surfaceSecondary }
+          { backgroundColor: colors.surface2 }
         ]}>
           {avatarUrl ? (
             <Image 

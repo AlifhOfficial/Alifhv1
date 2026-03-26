@@ -64,7 +64,7 @@ export const ListingHeader = memo(function ListingHeader({
             {carTitle}
           </Heading>
           <View style={styles.priceRow}>
-            <Text variant="priceTag" style={{ color: priceColor }}>
+            <Text variant="price" style={{ color: priceColor }}>
               {formatPrice(price)}
             </Text>
             {isNegotiable && (
@@ -76,8 +76,8 @@ export const ListingHeader = memo(function ListingHeader({
         </View>
 
         {isBlk && (
-          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
-            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
+          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
+            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
           </View>
         )}
       </View>

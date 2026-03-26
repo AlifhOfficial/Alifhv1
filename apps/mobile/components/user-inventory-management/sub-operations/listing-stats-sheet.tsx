@@ -133,13 +133,13 @@ export function ListingStatsSheet({
       label: 'Views',
       value: viewCount,
       icon: Eye,
-      color: colors.textSecondary,
+      color: colors.text2,
     },
     {
       label: 'Impressions',
       value: impressionCount,
       icon: MousePointerClick,
-      color: colors.textSecondary,
+      color: colors.text2,
     },
     {
       label: 'Saves',
@@ -196,14 +196,14 @@ export function ListingStatsSheet({
         </View>
 
         <View style={styles.metricsGrid}>
-          <View style={[styles.metricCard, { backgroundColor: colors.fillSecondary }]}>
+          <View style={[styles.metricCard, { backgroundColor: colors.fill2 }]}>
             <Supporting size="small">Click Rate</Supporting>
             <View style={styles.metricValueRow}>
               <Data size="large">{ctr}%</Data>
             </View>
           </View>
 
-          <View style={[styles.metricCard, { backgroundColor: colors.fillSecondary }]}>
+          <View style={[styles.metricCard, { backgroundColor: colors.fill2 }]}>
             <Supporting size="small">Engagement</Supporting>
             <View style={styles.metricValueRow}>
               <Flame size={Sizes.iconSm} color={hotLevel.color} />
@@ -234,7 +234,7 @@ export function ListingStatsSheet({
                     fill={stat.label === 'Saves' ? stat.color : 'none'}
                     strokeWidth={1.75}
                   />
-                  <Data size="small" style={{ color: colors.textSecondary }}>
+                  <Data size="small" style={{ color: colors.text2 }}>
                     {stat.label}
                   </Data>
                 </View>

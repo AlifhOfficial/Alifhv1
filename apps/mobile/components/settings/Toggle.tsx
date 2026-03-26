@@ -39,7 +39,7 @@ export function Toggle({ enabled, onToggle, disabled, colors }: ToggleProps) {
       disabled={disabled}
       style={[
         styles.toggle,
-        { backgroundColor: enabled ? colors.success : colors.surfaceSecondary },
+        { backgroundColor: enabled ? colors.success : colors.surface2 },
         disabled && styles.disabled,
       ]}
     >

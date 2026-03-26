@@ -84,7 +84,7 @@ export const authStyles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: Spacing.lg,
-    ...Typography.bodyMedium,
+    ...Typography.body,
     backgroundColor: 'transparent',
   },
   passwordInputInner: {

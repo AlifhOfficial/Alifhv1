@@ -243,7 +243,7 @@ export function BookingDetailsSheet({
         {/* ── Listing Hero ────────────────────────────────────────────── */}
         <HapticPressable
           onPress={() => onViewListing?.(booking.listingId)}
-          style={[styles.heroCard, { backgroundColor: colors.surfaceSecondary }]}
+          style={[styles.heroCard, { backgroundColor: colors.surface2 }]}
         >
           {booking.listingThumbnail ? (
             <Image
@@ -288,7 +288,7 @@ export function BookingDetailsSheet({
                         ? colors.successMuted
                         : booking.status === 'cancelled' || booking.status === 'rejected' || booking.status === 'no_show'
                           ? colors.errorMuted
-                          : colors.fillSecondary,
+                          : colors.fill2,
               },
             ]}
           >
@@ -325,9 +325,9 @@ export function BookingDetailsSheet({
         </View>
 
         {/* ── Date & Time ──────────────────────────────────────────────── */}
-        <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.section, { backgroundColor: colors.surface2 }]}>
           <View style={styles.detailRow}>
-            <Calendar size={Sizes.iconSm} color={colors.textSecondary} />
+            <Calendar size={Sizes.iconSm} color={colors.text2} />
             <View style={styles.detailText}>
               <Supporting size="small" tone="secondary">Date</Supporting>
               <Body size="medium">{formatBookingDate(booking.scheduledDate)}</Body>
@@ -335,7 +335,7 @@ export function BookingDetailsSheet({
           </View>
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
           <View style={styles.detailRow}>
-            <Clock size={Sizes.iconSm} color={colors.textSecondary} />
+            <Clock size={Sizes.iconSm} color={colors.text2} />
             <View style={styles.detailText}>
               <Supporting size="small" tone="secondary">Time</Supporting>
               <Body size="medium">{timeRange}</Body>
@@ -344,13 +344,13 @@ export function BookingDetailsSheet({
         </View>
 
         {/* ── Partner Info ──────────────────────────────────────────────── */}
-        <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.section, { backgroundColor: colors.surface2 }]}>
           <View style={styles.detailRow}>
             {booking.partnerLogo ? (
               <Image source={{ uri: getAppThumbUrl(booking.partnerLogo)! }} style={styles.partnerLogoLg} contentFit="contain" />
             ) : (
-              <View style={[styles.dealerIconCircle, { backgroundColor: colors.surfaceSecondary }]}>
-                <Ionicons name="storefront-outline" size={Sizes.iconXs} color={colors.textSecondary} />
+              <View style={[styles.dealerIconCircle, { backgroundColor: colors.surface2 }]}>
+                <Ionicons name="storefront-outline" size={Sizes.iconXs} color={colors.text2} />
               </View>
             )}
             <View style={styles.detailText}>
@@ -366,7 +366,7 @@ export function BookingDetailsSheet({
                 onPress={() => handleOpenMaps(booking.partnerAddress!)}
                 style={styles.detailRow}
               >
-                <MapPin size={Sizes.iconSm} color={colors.textSecondary} />
+                <MapPin size={Sizes.iconSm} color={colors.text2} />
                 <View style={[styles.detailText, { flex: 1 }]}>
                   <Supporting size="small" tone="secondary">Address</Supporting>
                   <Body size="small" numberOfLines={2}>{booking.partnerAddress}</Body>
@@ -383,7 +383,7 @@ export function BookingDetailsSheet({
                 onPress={() => handleCall(booking.partnerPhone)}
                 style={styles.detailRow}
               >
-                <Phone size={Sizes.iconSm} color={colors.textSecondary} />
+                <Phone size={Sizes.iconSm} color={colors.text2} />
                 <View style={[styles.detailText, { flex: 1 }]}>
                   <Supporting size="small" tone="secondary">Phone</Supporting>
                   <Body size="medium">{booking.partnerPhone}</Body>
@@ -397,7 +397,7 @@ export function BookingDetailsSheet({
             <>
               <View style={[styles.divider, { backgroundColor: colors.border }]} />
               <View style={styles.detailRow}>
-                <User size={Sizes.iconSm} color={colors.textSecondary} />
+                <User size={Sizes.iconSm} color={colors.text2} />
                 <View style={styles.detailText}>
                   <Supporting size="small" tone="secondary">Contact Person</Supporting>
                   <Body size="medium">
@@ -412,9 +412,9 @@ export function BookingDetailsSheet({
 
         {/* ── Confirmation Token ───────────────────────────────────────── */}
         {booking.confirmationToken && isActive && (
-          <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
+          <View style={[styles.section, { backgroundColor: colors.surface2 }]}>
             <View style={styles.detailRow}>
-              <Hash size={Sizes.iconSm} color={colors.textSecondary} />
+              <Hash size={Sizes.iconSm} color={colors.text2} />
               <View style={styles.detailText}>
                 <Supporting size="small" tone="secondary">Confirmation Code</Supporting>
                 <Data size="medium" style={{ color: colors.text, fontWeight: '700', letterSpacing: 1 }}>
@@ -427,10 +427,10 @@ export function BookingDetailsSheet({
 
         {/* ── Booking Details ──────────────────────────────────────────── */}
         {(booking.numberOfAttendees > 1 || booking.notes || booking.specialRequests) && (
-          <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
+          <View style={[styles.section, { backgroundColor: colors.surface2 }]}>
             {booking.numberOfAttendees > 1 && (
               <View style={styles.detailRow}>
-                <Users size={Sizes.iconSm} color={colors.textSecondary} />
+                <Users size={Sizes.iconSm} color={colors.text2} />
                 <View style={styles.detailText}>
                   <Supporting size="small" tone="secondary">Attendees</Supporting>
                   <Body size="medium">{booking.numberOfAttendees}</Body>
@@ -443,7 +443,7 @@ export function BookingDetailsSheet({
                   <View style={[styles.divider, { backgroundColor: colors.border }]} />
                 )}
                 <View style={styles.detailRow}>
-                  <FileText size={Sizes.iconSm} color={colors.textSecondary} />
+                  <FileText size={Sizes.iconSm} color={colors.text2} />
                   <View style={styles.detailText}>
                     <Supporting size="small" tone="secondary">Notes</Supporting>
                     <Body size="small">{booking.notes}</Body>
@@ -455,7 +455,7 @@ export function BookingDetailsSheet({
               <>
                 <View style={[styles.divider, { backgroundColor: colors.border }]} />
                 <View style={styles.detailRow}>
-                  <Star size={Sizes.iconSm} color={colors.textSecondary} />
+                  <Star size={Sizes.iconSm} color={colors.text2} />
                   <View style={styles.detailText}>
                     <Supporting size="small" tone="secondary">Special Requests</Supporting>
                     <Body size="small">{booking.specialRequests}</Body>
@@ -564,7 +564,7 @@ export function BookingDetailsSheet({
               <ButtonText size="medium" style={{ color: '#FFF' }}>Cancel Booking</ButtonText>
             </HapticPressable>
           ) : isActive && cancelCheck.reason ? (
-            <View style={[styles.cancelDisabledRow, { backgroundColor: colors.surfaceSecondary }]}>
+            <View style={[styles.cancelDisabledRow, { backgroundColor: colors.surface2 }]}>
               <Info size={Sizes.iconXs} color={colors.textMuted} />
               <Body size="small" style={styles.cancelDisabledText}>
                 {cancelCheck.reason}

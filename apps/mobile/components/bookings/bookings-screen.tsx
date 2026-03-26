@@ -178,7 +178,7 @@ export function BookingsScreen() {
           style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
           {/* ── Image ────────────────────────────────────────────────── */}
-          <View style={[styles.imageContainer, { backgroundColor: colors.backgroundSecondary }]}>
+          <View style={[styles.imageContainer, { backgroundColor: colors.bg2 }]}>
             {item.listingThumbnail ? (
               <Image
                 source={{ uri: getAppThumbUrl(item.listingThumbnail)! }}
@@ -205,22 +205,22 @@ export function BookingsScreen() {
             </Data>
 
             {/* Partner */}
-            <Data size="mini" style={{ color: colors.textSecondary }} numberOfLines={1}>
+            <Data size="mini" style={{ color: colors.text2 }} numberOfLines={1}>
               {item.partnerName}
             </Data>
 
             {/* Date */}
             <View style={styles.metaRow}>
-              <Calendar size={Sizes.iconXs} color={colors.textSecondary} />
-              <Data size="mini" style={{ color: colors.textSecondary }}>
+              <Calendar size={Sizes.iconXs} color={colors.text2} />
+              <Data size="mini" style={{ color: colors.text2 }}>
                 {formatBookingDate(item.scheduledDate)}
               </Data>
             </View>
 
             {/* Time */}
             <View style={styles.metaRow}>
-              <Clock size={Sizes.iconXs} color={colors.textSecondary} />
-              <Data size="mini" style={{ color: colors.textSecondary }}>
+              <Clock size={Sizes.iconXs} color={colors.text2} />
+              <Data size="mini" style={{ color: colors.text2 }}>
                 {formatTimeRange(item.scheduledStartTime, item.scheduledEndTime)}
               </Data>
             </View>
@@ -274,7 +274,7 @@ export function BookingsScreen() {
 
     return (
       <View style={styles.emptyContainer}>
-        <View style={[styles.emptyIcon, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.emptyIcon, { backgroundColor: colors.surface2 }]}>
           <Ionicons name="calendar-outline" size={Sizes.iconXl} color={colors.textMuted} />
         </View>
         <Heading size="small" style={{ marginTop: Spacing.lg }}>
@@ -327,7 +327,7 @@ export function BookingsScreen() {
               styles.glass,
               {
                 borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBackground,
+                backgroundColor: colors.glassBg,
               },
             ]}
           >
@@ -349,7 +349,7 @@ export function BookingsScreen() {
                   styles.glass,
                   {
                     borderColor: colors.glassBorder,
-                    backgroundColor: colors.glassBackground,
+                    backgroundColor: colors.glassBg,
                   },
                 ]}
               >

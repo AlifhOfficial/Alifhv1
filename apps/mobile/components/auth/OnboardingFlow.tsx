@@ -197,7 +197,7 @@ export function OnboardingFlow({ onComplete, onBack }: OnboardingFlowProps) {
   const stepNumber = getStepNumber(currentStep);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.oledBlack }]}>
+    <View style={[styles.container, { backgroundColor: colors.black }]}>
       {/* Force light status bar content for OLED black onboarding screens */}
       <StatusBar style="light" />
       <Animated.View key={currentStep} entering={entering} exiting={exiting} style={styles.screen}>

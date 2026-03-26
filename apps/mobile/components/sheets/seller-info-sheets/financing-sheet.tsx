@@ -118,7 +118,7 @@ export function FinancingSheet({
         </View>
 
         {/* Live Output */}
-        <View style={[styles.outputContainer, { backgroundColor: colors.fillSecondary }]}>
+        <View style={[styles.outputContainer, { backgroundColor: colors.fill2 }]}>
           <Label size="medium" tone="muted">ESTIMATED MONTHLY PAYMENT</Label>
           <Data size="large" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Data>
           <View style={styles.outputDetails}>
@@ -142,7 +142,7 @@ export function FinancingSheet({
           {/* Down Payment */}
           <View style={styles.inputRow}>
             <Supporting size="medium" style={styles.inputLabel}>Down Payment</Supporting>
-            <View style={[styles.inputWrapper, { backgroundColor: colors.fillSecondary, borderColor: colors.border }]}>
+            <View style={[styles.inputWrapper, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
               <TextInput
                 style={[styles.input, { color: colors.text }]}
                 value={downPayment}
@@ -159,7 +159,7 @@ export function FinancingSheet({
           {/* Loan Term */}
           <View style={styles.inputRow}>
             <Supporting size="medium" style={styles.inputLabel}>Loan Term</Supporting>
-            <View style={[styles.inputWrapper, { backgroundColor: colors.fillSecondary, borderColor: colors.border }]}>
+            <View style={[styles.inputWrapper, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
               <TextInput
                 style={[styles.input, { color: colors.text }]}
                 value={term}
@@ -175,8 +175,8 @@ export function FinancingSheet({
         </View>
 
         {/* Disclaimer */}
-        <View style={[styles.disclaimer, { backgroundColor: colors.fillSecondary }]}>
-          <Ionicons name="information-circle-outline" size={Sizes.iconSm} color={colors.textSecondary} />
+        <View style={[styles.disclaimer, { backgroundColor: colors.fill2 }]}>
+          <Ionicons name="information-circle-outline" size={Sizes.iconSm} color={colors.text2} />
           <Supporting size="small" style={styles.disclaimerText}>
             This is an estimate only. Actual rates and terms may vary based on your bank, credit profile, and other factors.
           </Supporting>

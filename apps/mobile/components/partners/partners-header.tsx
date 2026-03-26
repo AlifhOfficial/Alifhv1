@@ -32,7 +32,7 @@ export function PartnersHeader({ count }: PartnersHeaderProps) {
           styles.glass,
           {
             borderColor: colors.glassBorder,
-            backgroundColor: colors.glassBackground,
+            backgroundColor: colors.glassBg,
           },
         ]}
       >
@@ -40,7 +40,7 @@ export function PartnersHeader({ count }: PartnersHeaderProps) {
           <Store size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
           <Data size="small">Partners</Data>
           {count !== undefined && count > 0 && (
-            <Data size="small" style={{ color: colors.textTertiary }}>({count})</Data>
+            <Data size="small" style={{ color: colors.text3 }}>({count})</Data>
           )}
         </View>
       </View>

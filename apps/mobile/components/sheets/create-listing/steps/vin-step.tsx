@@ -136,7 +136,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
           style={[
             styles.vinInput,
             {
-              backgroundColor: colors.fillSecondary,
+              backgroundColor: colors.fill2,
               color: colors.text,
               borderColor,
             },
@@ -187,7 +187,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       )}
 
       {/* VIN Visibility Toggle */}
-      <View style={[styles.visibilitySection, { backgroundColor: colors.fillSecondary }]}>
+      <View style={[styles.visibilitySection, { backgroundColor: colors.fill2 }]}>
         <View style={styles.visibilityContent}>
           <Label size="small">Show VIN publicly</Label>
         </View>
@@ -197,13 +197,13 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             onUpdate({ vinVisibility: value ? 'public' : 'private' });
           }}
-          trackColor={{ false: colors.fillSecondary, true: colors.success + '80' }}
+          trackColor={{ false: colors.fill2, true: colors.success + '80' }}
           thumbColor={data.vinVisibility === 'public' ? colors.success : colors.textMuted}
         />
       </View>
 
       {/* Info */}
-      <View style={[styles.infoBox, { backgroundColor: colors.fillSecondary }]}>
+      <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
         <Supporting size="small" tone="muted">
           Find your VIN on the driver's door jamb, dashboard, or vehicle registration. This setting is permanent for this listing.
         </Supporting>

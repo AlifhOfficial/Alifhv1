@@ -119,16 +119,16 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
         {/* Footer CTA */}
         <HapticPressable onPress={handlePress} style={styles.footer}>
           <View style={styles.footerText}>
-            <Heading size="small" style={{ color: colors.oledWhite }}>
+            <Heading size="small" style={{ color: colors.white }}>
               {showroom.partner.brandName}
             </Heading>
-            <Supporting size="small" style={{ color: colors.textTertiary }}>
+            <Supporting size="small" style={{ color: colors.text3 }}>
               {showroom.heroTagline || 'Visit showroom'}
             </Supporting>
           </View>
           {/* Always use dark glass style since button is over video */}
-          <View style={[styles.arrowBtn, { backgroundColor: Colors.dark.glassBackground, borderColor: colors.glassBorderOnDark }]}>
-            <ChevronRight size={Sizes.iconSm} color={colors.oledWhite} strokeWidth={2} />
+          <View style={[styles.arrowBtn, { backgroundColor: Colors.dark.glassBg, borderColor: colors.glassBorderDark }]}>
+            <ChevronRight size={Sizes.iconSm} color={colors.white} strokeWidth={2} />
           </View>
         </HapticPressable>
       </View>

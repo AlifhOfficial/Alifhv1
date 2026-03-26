@@ -70,7 +70,7 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
+                    backgroundColor: isSelected ? colors.text : colors.surface2,
                     borderColor: isSelected ? colors.text : colors.border,
                     opacity: isDisabled ? 0.5 : 1,
                   },
@@ -78,7 +78,7 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
               >
                 <Body
                   size="small"
-                  style={{ color: isSelected ? colors.background : colors.text }}
+                  style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {tag.label}
                 </Body>
@@ -96,7 +96,7 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Summary */}
       {tags.length > 0 && (
-        <View style={[styles.summaryBox, { backgroundColor: colors.fillSecondary }]}>
+        <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
           <Supporting size="small" tone="secondary">
             {tags.length} highlight{tags.length !== 1 ? 's' : ''} selected
           </Supporting>

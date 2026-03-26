@@ -33,13 +33,13 @@ const IMAGE_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 
 // Glass colors for BLK screen - using theme's OLED black
 const GLASS = {
-  background: Colors.dark.oledBlack, // True OLED black (#000000)
+  bg: Colors.dark.black, // True OLED black (#000000)
   border: Colors.dark.blkBorder, // #262626
   text: Colors.dark.blkText, // #FAFAFA
-  textSecondary: Colors.dark.blkTextSecondary, // #A3A3A3
-  textTertiary: 'rgba(255,255,255,0.4)',
+  text2: Colors.dark.blkText2, // #A3A3A3
+  text3: 'rgba(255,255,255,0.4)',
   separator: 'rgba(255,255,255,0.25)',
-  imageBg: Colors.dark.blkBackground, // #0D0D0D
+  imageBg: Colors.dark.blkBg, // #0D0D0D
 };
 
 // ============================================================================
@@ -218,7 +218,7 @@ export const BlkCard = memo(function BlkCard({
           />
         ) : (
           <View style={styles.imagePlaceholder}>
-            <Supporting size="small" style={{ color: GLASS.textTertiary }}>No Image</Supporting>
+            <Supporting size="small" style={{ color: GLASS.text3 }}>No Image</Supporting>
           </View>
         )}
       </View>
@@ -260,7 +260,7 @@ export const BlkCard = memo(function BlkCard({
                   transition={150} 
                 />
               ) : (
-                <Text variant="avatarSmall" style={{ color: GLASS.textSecondary }}>
+                <Text variant="bodySm" style={{ color: GLASS.text2 }}>
                   {displaySellerName.charAt(0).toUpperCase()}
                 </Text>
               )}
@@ -275,7 +275,7 @@ export const BlkCard = memo(function BlkCard({
               )}
               {isBlackTierPartner && (
                 <View style={styles.blkBadge}>
-                  <Label size="badge" uppercase={false} style={styles.blkBadgeText}>BLK</Label>
+                  <Label size="badge" uppercase={false} style={styles.blkBadgeFg}>BLK</Label>
                 </View>
               )}
             </View>
@@ -308,7 +308,7 @@ export const BlkCard = memo(function BlkCard({
               hitSlop={Layout.hitSlop}
               style={styles.actionBubble}
             >
-              <Share2 size={Sizes.iconXs} color={GLASS.textSecondary} strokeWidth={1.75} />
+              <Share2 size={Sizes.iconXs} color={GLASS.text2} strokeWidth={1.75} />
             </HapticPressable>
           </View>
         </View>
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius['2xl'],
     borderWidth: 1,
     borderColor: GLASS.border,
-    backgroundColor: GLASS.background,
+    backgroundColor: GLASS.bg,
     overflow: 'hidden',
     marginBottom: Spacing.lg,
   },
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
     color: GLASS.text,
   },
   year: {
-    color: GLASS.textSecondary,
+    color: GLASS.text2,
   },
 
   // Price
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   stat: {
-    color: GLASS.textSecondary,
+    color: GLASS.text2,
   },
   separator: {
     color: GLASS.separator,
@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
     borderRadius: Sizes.bubble / 2,
     borderWidth: 1,
     borderColor: GLASS.border,
-    backgroundColor: GLASS.background,
+    backgroundColor: GLASS.bg,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -479,9 +479,9 @@ const styles = StyleSheet.create({
     borderRadius: Radius.none,
     borderWidth: 1,
     borderColor: GLASS.border,
-    backgroundColor: GLASS.background,
+    backgroundColor: GLASS.bg,
   },
-  blkBadgeText: {
+  blkBadgeFg: {
     color: GLASS.text,
   },
 
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
     borderRadius: Sizes.bubbleXs / 2,
     borderWidth: 1,
     borderColor: GLASS.border,
-    backgroundColor: GLASS.background,
+    backgroundColor: GLASS.bg,
   },
 
   // Skeleton styles

@@ -43,7 +43,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
         <Label size="medium" tone="muted">FINANCING ESTIMATE</Label>
         {onCustomize && (
           <HapticPressable onPress={onCustomize} hitSlop={Layout.hitSlopSmall} style={localStyles.customizeBtn}>
-            <Settings2 size={Sizes.iconXs} color={colors.textSecondary} />
+            <Settings2 size={Sizes.iconXs} color={colors.text2} />
             <Supporting size="small">Customize</Supporting>
           </HapticPressable>
         )}
@@ -77,7 +77,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
               >
                 <Data 
                   size="small" 
-                  style={{ color: isSelected ? colors.primaryForeground : colors.textSecondary }}
+                  style={{ color: isSelected ? colors.primaryFg : colors.text2 }}
                 >
                   {dp}%
                 </Data>
@@ -107,7 +107,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
               >
                 <Data 
                   size="small" 
-                  style={{ color: isSelected ? colors.primaryForeground : colors.textSecondary }}
+                  style={{ color: isSelected ? colors.primaryFg : colors.text2 }}
                 >
                   {term}mo
                 </Data>

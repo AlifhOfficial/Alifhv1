@@ -78,14 +78,14 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
+                    backgroundColor: isSelected ? colors.text : colors.surface2,
                     borderColor: isSelected ? colors.text : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="small"
-                  style={{ color: isSelected ? colors.background : colors.text }}
+                  style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {extra.label}
                 </Body>
@@ -98,7 +98,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
       {/* Custom extras input */}
       <View style={styles.section}>
         <Label size="small">Add Custom Extra</Label>
-        <View style={[styles.inputRow, { backgroundColor: colors.fillSecondary }]}>
+        <View style={[styles.inputRow, { backgroundColor: colors.fill2 }]}>
           <BottomSheetTextInput
             style={[styles.input, { color: colors.text }]}
             placeholder="e.g. Custom exhaust..."
@@ -113,10 +113,10 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
             disabled={!customExtra.trim()}
             style={[
               styles.addButton,
-              { backgroundColor: customExtra.trim() ? colors.primary : colors.fillSecondary },
+              { backgroundColor: customExtra.trim() ? colors.primary : colors.fill2 },
             ]}
           >
-            <Plus size={Sizes.iconSm} color={customExtra.trim() ? colors.primaryForeground : colors.textMuted} strokeWidth={2} />
+            <Plus size={Sizes.iconSm} color={customExtra.trim() ? colors.primaryFg : colors.textMuted} strokeWidth={2} />
           </HapticPressable>
         </View>
 
@@ -130,11 +130,11 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                   key={extra}
                   style={[styles.customChip, { backgroundColor: colors.text }]}
                 >
-                  <Body size="small" style={{ color: colors.background }}>
+                  <Body size="small" style={{ color: colors.bg }}>
                     {extra}
                   </Body>
                   <HapticPressable onPress={() => toggleExtra(extra)} hitSlop={Layout.hitSlopSmall}>
-                    <X size={14} color={colors.background} strokeWidth={2} />
+                    <X size={14} color={colors.bg} strokeWidth={2} />
                   </HapticPressable>
                 </View>
               ))}

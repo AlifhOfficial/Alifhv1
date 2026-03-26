@@ -250,14 +250,14 @@ export function MoreFiltersSheet({
             </Body>
             {selectedCount > 0 && (
               <View style={[styles.badge, { backgroundColor: colors.text }]}>  
-                <Label size="badge" style={{ color: colors.background }}>{selectedCount}</Label>
+                <Label size="badge" style={{ color: colors.bg }}>{selectedCount}</Label>
               </View>
             )}
           </View>
           <Ionicons 
             name={isExpanded ? 'chevron-up' : 'chevron-down'} 
             size={Spacing.xl} 
-            color={colors.textSecondary} 
+            color={colors.text2} 
           />
         </HapticPressable>
         {isExpanded && <View style={styles.sectionContent}>{content}</View>}
@@ -282,14 +282,14 @@ export function MoreFiltersSheet({
             style={[
               styles.chip,
               { 
-                backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
+                backgroundColor: isSelected ? colors.text : colors.surface2,
                 borderColor: isSelected ? colors.text : colors.border,
               },
             ]}
           >
             <Supporting
               size="small"
-              style={{ color: isSelected ? colors.background : colors.text }}
+              style={{ color: isSelected ? colors.bg : colors.text }}
             >
               {option.label}
             </Supporting>
@@ -312,7 +312,7 @@ export function MoreFiltersSheet({
       <Body 
         size="medium" 
         style={{ 
-          color: value ? colors.text : colors.textSecondary,
+          color: value ? colors.text : colors.text2,
           fontFamily: value ? 'Inter_700Bold' : 'Inter_500Medium',
         }}
       >
@@ -357,13 +357,13 @@ export function MoreFiltersSheet({
           <HapticPressable
             style={[
               styles.applyButton,
-              { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
+              { backgroundColor: hasValue ? colors.primary : colors.fill2 },
             ]}
             onPress={handleApply}
           >
             <ButtonText
               size="small"
-              style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
+              style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
             >
               Apply
             </ButtonText>
@@ -511,14 +511,14 @@ export function MoreFiltersSheet({
                   style={[
                     styles.chip,
                     { 
-                      backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
+                      backgroundColor: isSelected ? colors.text : colors.surface2,
                       borderColor: isSelected ? colors.text : colors.border,
                     },
                   ]}
                 >
                   <Supporting
                     size="small"
-                    style={{ color: isSelected ? colors.background : colors.text }}
+                    style={{ color: isSelected ? colors.bg : colors.text }}
                   >
                     {option.label}
                   </Supporting>
@@ -543,14 +543,14 @@ export function MoreFiltersSheet({
                   style={[
                     styles.chip,
                     { 
-                      backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
+                      backgroundColor: isSelected ? colors.text : colors.surface2,
                       borderColor: isSelected ? colors.text : colors.border,
                     },
                   ]}
                 >
                   <Supporting
                     size="small"
-                    style={{ color: isSelected ? colors.background : colors.text }}
+                    style={{ color: isSelected ? colors.bg : colors.text }}
                   >
                     {option.label}
                   </Supporting>

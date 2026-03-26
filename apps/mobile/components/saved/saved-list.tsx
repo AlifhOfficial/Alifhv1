@@ -64,7 +64,7 @@ function EmptyState({
           style={styles.ctaRow}
         >
           <Heading size="small" style={{ color: colors.text }}>Browse</Heading>
-          <View style={[styles.ctaBubble, { backgroundColor: colors.glassBackground, borderColor: colors.border }]}>
+          <View style={[styles.ctaBubble, { backgroundColor: colors.glassBg, borderColor: colors.border }]}>
             <ArrowRight size={Sizes.iconXs} color={colors.text} strokeWidth={2} />
           </View>
         </HapticPressable>

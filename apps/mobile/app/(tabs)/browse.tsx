@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { TopSafeAreaGradient } from '@/components/layout';
-import { BrowseHeader, type FilterPillType } from '@/components/browse';
+import { BrowseHeader, BrowseToolbar, type FilterPillType } from '@/components/browse';
 import { ACTIVE_CHIPS_HEIGHT } from '@/components/layout/active-search-chips';
 import { 
   MakeFilterSheet,
@@ -505,7 +505,7 @@ export default function BrowseScreen() {
   }, [hasMore, isFetchingNextPage]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}> 
+    <View style={[styles.container, { backgroundColor: colors.bg }]}> 
       <TopSafeAreaGradient />
       {/* Browse Header with Filter Pills */}
       <BrowseHeader 
@@ -618,15 +618,15 @@ export default function BrowseScreen() {
             onRefresh={handleRefresh}
             tintColor={colors.primary}
             colors={[colors.primary]}
-            progressBackgroundColor={colors.background}
+            progressBackgroundColor={colors.bg}
           />
         }
       />
+
+      <BrowseToolbar />
     </View>
   );
 }
-
-// ============================================================================
 // STYLES
 // ============================================================================
 

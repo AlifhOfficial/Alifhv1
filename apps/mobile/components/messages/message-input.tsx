@@ -176,7 +176,7 @@ export function MessageInput({
               styles.actionButton,
               styles.glass,
               {
-                backgroundColor: colors.glassBackground,
+                backgroundColor: colors.glassBg,
                 borderColor: colors.glassBorder,
               },
             ]}
@@ -195,7 +195,7 @@ export function MessageInput({
             styles.glass,
             styles.inputGlow,
             { 
-              backgroundColor: colors.glassBackground, 
+              backgroundColor: colors.glassBg, 
               borderColor: colors.glassBorder,
               minHeight: Math.max(inputHeight, MIN_HEIGHT),
             },
@@ -227,14 +227,14 @@ export function MessageInput({
             styles.sendWrapper,
             styles.glass,
             {
-              backgroundColor: canSend ? colors.primary : colors.glassBackground,
+              backgroundColor: canSend ? colors.primary : colors.glassBg,
               borderColor: canSend ? colors.primary : colors.glassBorder,
             },
           ]}
         >
           <Send
             size={Sizes.iconSm}
-            color={canSend ? colors.primaryForeground : colors.textMuted}
+            color={canSend ? colors.primaryFg : colors.textMuted}
             strokeWidth={2}
           />
         </HapticPressable>
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     ...Shadows.md,
   },
   input: {
-    ...Typography.bodyLarge,
+    ...Typography.bodyLg,
     lineHeight: undefined,
     paddingVertical: Spacing.md,
     textAlignVertical: 'center',

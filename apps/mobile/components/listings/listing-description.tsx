@@ -33,7 +33,7 @@ export const ListingDescription = memo(function ListingDescription({
   const [showReadMore, setShowReadMore] = useState(false);
   const [measured, setMeasured] = useState(false);
 
-  const textColor = isBlk ? colors.blkTextSecondary : colors.textSecondary;
+  const textColor = isBlk ? colors.blkText2 : colors.text2;
 
   // Fired by the *hidden* full-text render (no numberOfLines).
   // Reliably reports all lines on both platforms.
@@ -70,7 +70,7 @@ export const ListingDescription = memo(function ListingDescription({
 
       {showReadMore && (
         <HapticPressable onPress={onReadMore} hitSlop={Layout.hitSlopSmall}>
-          <Text variant="link" tone="primary">
+          <Text variant="bodySm" tone="primary">
             Read more
           </Text>
         </HapticPressable>
@@ -87,6 +87,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     opacity: 0,
     pointerEvents: 'none',
-    ...Typography.bodyMedium,
+    ...Typography.body,
   },
 });

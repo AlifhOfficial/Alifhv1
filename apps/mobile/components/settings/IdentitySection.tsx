@@ -102,7 +102,7 @@ function getKycDisplayInfo(
 
   return {
     statusLabel: 'Not Verified',
-    statusColor: colors.textSecondary,
+    statusColor: colors.text2,
     description: 'Verify to build trust and unlock features',
     buttonText: 'Verify Identity',
   };

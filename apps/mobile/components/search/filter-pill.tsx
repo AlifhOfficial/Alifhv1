@@ -32,7 +32,7 @@ export function FilterPill({
       style={[
         styles.container,
         { 
-          backgroundColor: isPrimary ? colors.primary : colors.backgroundTertiary,
+          backgroundColor: isPrimary ? colors.primary : colors.bg2,
           borderColor: isPrimary ? colors.primary : colors.border,
         }
       ]}
@@ -40,7 +40,7 @@ export function FilterPill({
     >
       <Data 
         size="small" 
-        style={{ color: isPrimary ? colors.primaryForeground : colors.text }}
+        style={{ color: isPrimary ? colors.primaryFg : colors.text }}
       >
         {label}
       </Data>
@@ -48,7 +48,7 @@ export function FilterPill({
         <Ionicons 
           name="close" 
           size={Sizes.iconXs} 
-          color={isPrimary ? colors.primaryForeground : colors.textSecondary} 
+          color={isPrimary ? colors.primaryFg : colors.text2} 
         />
       )}
     </HapticPressable>

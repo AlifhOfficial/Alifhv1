@@ -115,7 +115,7 @@ export const onboardingStyles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: Spacing.xl,
-    ...Typography.bodyMedium,
+    ...Typography.body,
     backgroundColor: 'transparent',
   },
   passwordInputInner: {

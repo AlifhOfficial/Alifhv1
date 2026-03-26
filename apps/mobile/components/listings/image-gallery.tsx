@@ -167,7 +167,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
       </View>
 
       {/* Thumbnail Strip with View All */}
-      <View style={[styles.thumbnailStrip, { backgroundColor: colors.background }]}>
+      <View style={[styles.thumbnailStrip, { backgroundColor: colors.bg }]}>
         <FlatList
           ref={thumbnailListRef}
           data={allImages}
@@ -208,7 +208,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         {/* View All Button */}
         <HapticPressable
           onPress={onViewAllPress}
-          style={[styles.viewAllButton, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}
+          style={[styles.viewAllButton, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}
         >
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
@@ -259,7 +259,7 @@ export function ImageGallerySkeleton() {
       <Skeleton width="100%" height={MAIN_IMAGE_HEIGHT} borderRadius={0} />
       
       {/* Thumbnails skeleton */}
-      <View style={[styles.thumbnailStrip, { backgroundColor: colors.background }]}>
+      <View style={[styles.thumbnailStrip, { backgroundColor: colors.bg }]}>
         <View style={styles.thumbnailList}>
           {[1, 2, 3, 4, 5].map((i) => (
             <Skeleton 

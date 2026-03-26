@@ -9,7 +9,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useFonts } from 'expo-font';
-import { DancingScript_400Regular, DancingScript_700Bold } from '@expo-google-fonts/dancing-script';
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -39,7 +38,7 @@ import { Colors, Fonts } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { FavoritesProvider } from '@/context/favorites-context';
-import { TabBarProvider, useTabBar } from '@/context/tab-bar-context';
+
 import { SearchProvider } from '@/context/search-context';
 import { WebSocketProvider } from '@/context/websocket-context';
 import { NotificationProvider } from '@/context/notification-context';
@@ -47,8 +46,6 @@ import { NetworkProvider } from '@/context/network-context';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { AlertProvider } from '@/components/ui/themed-alert';
-import { GlobalTabBar } from '@/components/layout/global-tab-bar';
-import { BottomSafeAreaGradient } from '@/components/layout/bottom-safe-area';
 import { AuthFlow } from '@/components/auth';
 import { AuthSheet } from '@/components/sheets';
 
@@ -60,7 +57,7 @@ const LightTheme: NavTheme = {
   dark: false,
   colors: {
     primary: Colors.light.primary,
-    background: Colors.light.background,
+    background: Colors.light.bg,
     card: Colors.light.surface,
     text: Colors.light.text,
     border: Colors.light.border,
@@ -78,7 +75,7 @@ const CustomDarkTheme: NavTheme = {
   dark: true,
   colors: {
     primary: Colors.dark.primary,
-    background: Colors.dark.background,
+    background: Colors.dark.bg,
     card: Colors.dark.surface,
     text: Colors.dark.text,
     border: Colors.dark.border,
@@ -143,7 +140,6 @@ if (!navLockState.installed) {
 function RootLayoutNav() {
   const { colorScheme } = useTheme();
   const { showAuthFlow, closeAuthFlow, signIn } = useAuth();
-  const { isTabBarVisible } = useTabBar();
   const router = useRouter();
   const colors = Colors[colorScheme];
   
@@ -160,7 +156,7 @@ function RootLayoutNav() {
 
     const frameId = requestAnimationFrame(() => {
       interactionTask = InteractionManager.runAfterInteractions(() => {
-        SystemUI.setBackgroundColorAsync(colors.background).catch(() => {});
+        SystemUI.setBackgroundColorAsync(colors.bg).catch(() => {});
       });
     });
 
@@ -168,7 +164,7 @@ function RootLayoutNav() {
       cancelAnimationFrame(frameId);
       interactionTask?.cancel();
     };
-  }, [colors.background]);
+  }, [colors.bg]);
   
   // Memoize navigation theme to prevent full re-renders
   const navTheme = useMemo(
@@ -224,7 +220,7 @@ function RootLayoutNav() {
   // Show onboarding auth flow if not completed
   if (hasCompletedOnboarding === false) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <AuthFlow 
           onComplete={handleOnboardingComplete}
           onSkip={handleOnboardingSkip}
@@ -238,36 +234,30 @@ function RootLayoutNav() {
 
   return (
     <NavigationThemeProvider value={navTheme}>
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg }}>
         <Stack
           screenOptions={{
-            headerShown: false,
+            headerShown: true,
+            headerBackTitle: 'Back',
             gestureEnabled: true,
             gestureDirection: 'horizontal',
             animation: 'slide_from_right',
-            contentStyle: { backgroundColor: colors.background },
-            animationTypeForReplace: 'push',
+            contentStyle: { backgroundColor: colors.bg },
           }}
         >
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="browse" options={{ animation: 'none' }} />
-          <Stack.Screen name="messages" options={{ animation: 'none' }} />
-          <Stack.Screen name="listing/[id]" />
-          <Stack.Screen name="seller-contact/[listingId]" />
-          <Stack.Screen name="profile" />
-          <Stack.Screen name="settings" />
-          <Stack.Screen name="chat/[conversationId]" />
-          <Stack.Screen name="inventory" />
-          <Stack.Screen name="blk" />
-          <Stack.Screen name="partners" />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="listing/[id]" options={{ title: 'Listing' }} />
+          <Stack.Screen name="seller-contact/[listingId]" options={{ title: 'Contact Seller' }} />
+          <Stack.Screen name="profile" options={{ title: 'Profile' }} />
+          <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+          <Stack.Screen name="chat/[conversationId]" options={{ title: 'Chat' }} />
+          <Stack.Screen name="inventory" options={{ title: 'Inventory' }} />
+          <Stack.Screen name="blk" options={{ title: 'BLK' }} />
+          <Stack.Screen name="partners" options={{ title: 'Partners' }} />
+          <Stack.Screen name="bookings" options={{ title: 'Bookings' }} />
+          <Stack.Screen name="saved" options={{ title: 'Saved' }} />
         </Stack>
       </View>
-      
-      {/* Global Safe Area Gradients - hidden when chrome is hidden */}
-      {isTabBarVisible && <BottomSafeAreaGradient />}
-      
-      {/* Global Tab Bar - unified navigation */}
-      <GlobalTabBar />
       
       {/* Auth Sheet - renders above tab bar */}
       <AuthSheetRenderer />
@@ -281,7 +271,7 @@ function RootLayoutNav() {
         presentationStyle="fullScreen"
         statusBarTranslucent
       >
-        <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg }}>
           <AuthFlow 
             onComplete={handleAuthComplete}
             onSkip={closeAuthFlow}
@@ -299,8 +289,6 @@ export default function RootLayout() {
     Inter_600SemiBold,
     Inter_700Bold,
     Inter_800ExtraBold,
-    DancingScript_400Regular,
-    DancingScript_700Bold,
   });
   const [appReady, setAppReady] = useState(false);
 
@@ -334,7 +322,6 @@ export default function RootLayout() {
                 <KeyboardProvider>
                   <NetworkProvider>
                     <BottomSheetModalProvider>
-                      <TabBarProvider>
                         <SearchProvider>
                           <AuthProvider>
                             <FavoritesProvider>
@@ -347,7 +334,6 @@ export default function RootLayout() {
                             </FavoritesProvider>
                           </AuthProvider>
                         </SearchProvider>
-                      </TabBarProvider>
                     </BottomSheetModalProvider>
                   </NetworkProvider>
                 </KeyboardProvider>

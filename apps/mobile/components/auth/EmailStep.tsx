@@ -61,7 +61,7 @@ export function EmailStep({
   };
 
   return (
-    <View style={[onboardingStyles.container, { backgroundColor: colors.oledBlack }]}>
+    <View style={[onboardingStyles.container, { backgroundColor: colors.black }]}>
       <KeyboardAvoidingView behavior="padding" style={onboardingStyles.keyboardView}>
         <View
           style={[
@@ -75,7 +75,7 @@ export function EmailStep({
               onPress={onBack}
               style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
-              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.oledWhite} />
+              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.white} />
             </HapticPressable>
 
             <View style={onboardingStyles.progressContainer}>
@@ -86,7 +86,7 @@ export function EmailStep({
                     onboardingStyles.progressBar,
                     {
                       backgroundColor:
-                        index < currentStep ? colors.primary : colors.glassBorderOnDark,
+                        index < currentStep ? colors.primary : colors.glassBorderDark,
                     },
                   ]}
                 />
@@ -101,10 +101,10 @@ export function EmailStep({
             <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
               Nice to meet you, {userName}
             </Supporting>
-            <Heading size="large" style={[onboardingStyles.title, { color: colors.oledWhite }]}>
+            <Heading size="large" style={[onboardingStyles.title, { color: colors.white }]}>
               What's your email?
             </Heading>
-            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.textSecondary }]}>
+            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
               We'll send you a code to verify
             </Body>
           </Animated.View>
@@ -127,24 +127,24 @@ export function EmailStep({
               style={[
                 onboardingStyles.inputWrapper,
                 {
-                  backgroundColor: `${colors.oledWhite}08`,
+                  backgroundColor: `${colors.white}08`,
                   borderColor: error
                     ? colors.error
                     : email.length > 0
                     ? isValid
                       ? colors.primary
-                      : `${colors.oledWhite}30`
-                    : `${colors.oledWhite}15`,
+                      : `${colors.white}30`
+                    : `${colors.white}15`,
                 },
               ]}
             >
               <TextInput
                 ref={inputRef}
-                style={[onboardingStyles.inputInner, { color: colors.oledWhite }]}
+                style={[onboardingStyles.inputInner, { color: colors.white }]}
                 value={email}
                 onChangeText={setEmail}
                 placeholder="your@email.com"
-                placeholderTextColor={colors.textTertiary}
+                placeholderTextColor={colors.text3}
                 keyboardType="email-address"
                 keyboardAppearance="dark"
                 autoCapitalize="none"
@@ -168,7 +168,7 @@ export function EmailStep({
               style={({ pressed }) => [
                 onboardingStyles.continueButton,
                 {
-                  backgroundColor: isValid ? colors.primary : `${colors.oledWhite}10`,
+                  backgroundColor: isValid ? colors.primary : `${colors.white}10`,
                   opacity: pressed ? 0.9 : 1,
                 },
               ]}
@@ -176,7 +176,7 @@ export function EmailStep({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <ButtonText style={{ color: isValid ? colors.primaryForeground : colors.textTertiary }}>
+                <ButtonText style={{ color: isValid ? colors.primaryFg : colors.text3 }}>
                   Continue
                 </ButtonText>
               )}

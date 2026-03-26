@@ -15,7 +15,6 @@ import { Colors, Spacing } from '@/constants/theme';
 import { Supporting, ButtonText } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { useTabBar } from '@/context/tab-bar-context';
 import { useConversation, useMarkAsRead } from '@/hooks/use-messaging-query';
 import type { Conversation } from '@/lib/messaging-api';
 
@@ -34,14 +33,7 @@ export default function ChatScreen() {
   const { conversationId, conversationData } = params;
   
   const { isAuthenticated, user } = useAuth();
-  const { hideChrome, showChrome } = useTabBar();
   const markedAsReadRef = useRef(false);
-
-  // Hide tab bar and header gradient when in chat
-  useEffect(() => {
-    hideChrome();
-    return () => showChrome();
-  }, [hideChrome, showChrome]);
 
   // Parse initial conversation data from nav params (avoids fetch if available)
   const initialConversation = useMemo<Conversation | undefined>(() => {
@@ -84,7 +76,7 @@ export default function ChatScreen() {
   // No conversation ID
   if (!conversationId) {
     return (
-      <View style={[styles.screen, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+      <View style={[styles.screen, { backgroundColor: colors.bg, paddingTop: insets.top }]}>
         <View style={styles.centered}>
           <Supporting size="medium" tone="secondary" style={styles.errorText}>
             Conversation not found
@@ -104,7 +96,7 @@ export default function ChatScreen() {
   // Error state
   if (error && !conversation) {
     return (
-      <View style={[styles.screen, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+      <View style={[styles.screen, { backgroundColor: colors.bg, paddingTop: insets.top }]}>
         <View style={styles.centered}>
           <Supporting size="medium" tone="secondary" style={styles.errorText}>
             {error.message}

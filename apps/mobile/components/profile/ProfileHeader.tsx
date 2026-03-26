@@ -52,7 +52,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
           styles.glass,
           {
             borderColor: colors.glassBorder,
-            backgroundColor: colors.glassBackground,
+            backgroundColor: colors.glassBg,
           },
         ]}
       >
@@ -72,7 +72,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
+              backgroundColor: colors.glassBg,
             },
           ]}
         >
@@ -95,7 +95,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
               styles.glass,
               {
                 borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBackground,
+                backgroundColor: colors.glassBg,
               },
             ]}
           >

@@ -77,7 +77,7 @@ export function LocationBubble({
         />
         {/* Pin overlay */}
         <View style={[styles.pinOverlay, { backgroundColor: colors.primary }]}>
-          <MapPin size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2.5} />
+          <MapPin size={Sizes.iconSm} color={colors.primaryFg} strokeWidth={2.5} />
         </View>
       </View>
 
@@ -85,7 +85,7 @@ export function LocationBubble({
       <View
         style={[
           styles.infoContainer,
-          { backgroundColor: isOwn ? colors.primary : colors.surfaceSecondary },
+          { backgroundColor: isOwn ? colors.primary : colors.surface2 },
         ]}
       >
         <View style={styles.textContainer}>
@@ -94,7 +94,7 @@ export function LocationBubble({
               size="medium"
               style={[
                 styles.placeName,
-                { color: isOwn ? colors.primaryForeground : colors.text },
+                { color: isOwn ? colors.primaryFg : colors.text },
               ]}
               numberOfLines={1}
             >
@@ -104,7 +104,7 @@ export function LocationBubble({
           {address && (
             <Data
               size="small"
-              style={{ color: isOwn ? 'rgba(255,255,255,0.8)' : colors.textSecondary }}
+              style={{ color: isOwn ? 'rgba(255,255,255,0.8)' : colors.text2 }}
               numberOfLines={2}
             >
               {address}
@@ -113,7 +113,7 @@ export function LocationBubble({
           {!placeName && !address && (
             <Data
               size="small"
-              style={{ color: isOwn ? 'rgba(255,255,255,0.8)' : colors.textSecondary }}
+              style={{ color: isOwn ? 'rgba(255,255,255,0.8)' : colors.text2 }}
             >
               {latitude.toFixed(6)}, {longitude.toFixed(6)}
             </Data>
@@ -121,7 +121,7 @@ export function LocationBubble({
         </View>
         <ExternalLink
           size={Sizes.iconSm}
-          color={isOwn ? 'rgba(255,255,255,0.6)' : colors.textTertiary}
+          color={isOwn ? 'rgba(255,255,255,0.6)' : colors.text3}
           strokeWidth={1.5}
         />
       </View>

@@ -8,7 +8,7 @@ import { Colors } from '@/constants/theme';
 import { ThemeProvider } from '@/context/theme-context';
 import { AuthProvider } from '@/context/auth-context';
 import { FavoritesProvider } from '@/context/favorites-context';
-import { TabBarProvider } from '@/context/tab-bar-context';
+
 import { SearchProvider } from '@/context/search-context';
 import { NetworkProvider } from '@/context/network-context';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
@@ -16,12 +16,11 @@ import { ErrorBoundary } from '@/components/ui/error-boundary';
 export default function WebLayout() {
   return (
     <ErrorBoundary>
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.bg }}>
         <SafeAreaProvider>
           <ThemeProvider>
             <NetworkProvider>
               <BottomSheetModalProvider>
-                <TabBarProvider>
                   <SearchProvider>
                     <AuthProvider>
                       <FavoritesProvider>
@@ -29,7 +28,6 @@ export default function WebLayout() {
                       </FavoritesProvider>
                     </AuthProvider>
                   </SearchProvider>
-                </TabBarProvider>
               </BottomSheetModalProvider>
             </NetworkProvider>
           </ThemeProvider>

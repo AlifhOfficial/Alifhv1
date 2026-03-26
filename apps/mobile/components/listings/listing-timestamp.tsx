@@ -77,7 +77,7 @@ export const ListingTimestamp = memo(function ListingTimestamp({
   const colors = Colors[colorScheme];
 
   const textColor = isBlk ? colors.blkText : colors.text;
-  const secondaryTextColor = isBlk ? colors.blkTextSecondary : colors.textSecondary;
+  const secondaryTextColor = isBlk ? colors.blkText2 : colors.text2;
 
   // Compute display values
   const { postedTimeAgo, wasUpdated, updatedTimeAgo } = useMemo(() => {

@@ -65,7 +65,7 @@ export const SellerCard = memo(function SellerCard({
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={[styles.avatar, { backgroundColor: colors.glassBackground, borderColor: colors.glassBorder }]}>
+        <View style={[styles.avatar, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}>
           {sellerLogo ? (
             <Image
               source={{ uri: sellerLogo }}
@@ -73,7 +73,7 @@ export const SellerCard = memo(function SellerCard({
               contentFit="cover"
             />
           ) : (
-            <Text variant="avatarInitial" tone="secondary">
+            <Text variant="heading" tone="secondary">
               {sellerName.charAt(0).toUpperCase()}
             </Text>
           )}
@@ -86,8 +86,8 @@ export const SellerCard = memo(function SellerCard({
               <CheckCircle2 size={Sizes.iconXs} color={colors.primary} />
             )}
             {isBlackTier && (
-              <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground }]}>
-                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
+              <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
+                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
               </View>
             )}
           </View>

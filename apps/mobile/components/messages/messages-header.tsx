@@ -28,7 +28,7 @@ export function MessagesHeader() {
           styles.glass,
           {
             borderColor: colors.glassBorder,
-            backgroundColor: colors.glassBackground,
+            backgroundColor: colors.glassBg,
           },
         ]}
       >

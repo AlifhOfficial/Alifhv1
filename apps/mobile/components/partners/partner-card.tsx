@@ -60,7 +60,7 @@ export interface PartnerCardProps {
 // ============================================================================
 
 interface CardTheme {
-  background: string;
+  bg: string;
   border: string;
   title: string;
   meta: string;
@@ -72,21 +72,21 @@ function useCardTheme(colors: typeof Colors.light, isBlkPartner: boolean): CardT
   return useMemo(() => {
     if (isBlkPartner) {
       return {
-        background: colors.blkBackground,
+        bg: colors.blkBg,
         border: colors.blkBorder,
         title: colors.blkText,
-        meta: colors.blkTextSecondary,
-        stats: colors.blkTextSecondary,
-        imageBg: colors.blkBackground,
+        meta: colors.blkText2,
+        stats: colors.blkText2,
+        imageBg: colors.blkBg,
       };
     }
     return {
-      background: colors.surface,
+      bg: colors.surface,
       border: colors.border,
       title: colors.text,
-      meta: colors.textSecondary,
-      stats: colors.textSecondary,
-      imageBg: colors.surfaceSecondary,
+      meta: colors.text2,
+      stats: colors.text2,
+      imageBg: colors.surface2,
     };
   }, [colors, isBlkPartner]);
 }
@@ -120,7 +120,7 @@ export const PartnerCard = memo(function PartnerCard({
   return (
     <HapticPressable
       onPress={handlePress}
-      style={[styles.container, { borderColor: theme.border, backgroundColor: theme.background }]}
+      style={[styles.container, { borderColor: theme.border, backgroundColor: theme.bg }]}
     >
       {/* BLK Accent Line */}
       {isBlkPartner && <View style={[styles.blkAccent, { backgroundColor: theme.border }]} />}
@@ -137,7 +137,7 @@ export const PartnerCard = memo(function PartnerCard({
           />
         ) : (
           <View style={[styles.imagePlaceholder, { backgroundColor: theme.imageBg }]}>
-            <Supporting size="small" style={{ color: colors.textTertiary }}>No Image</Supporting>
+            <Supporting size="small" style={{ color: colors.text3 }}>No Image</Supporting>
           </View>
         )}
         
@@ -162,8 +162,8 @@ export const PartnerCard = memo(function PartnerCard({
           </Heading>
           {/* BLK partners get BLK badge, regular verified partners get checkmark */}
           {isBlkPartner ? (
-            <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder }]}>
-              <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
+            <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
+              <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
             </View>
           ) : partner.isVerified && (
             <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
@@ -222,7 +222,7 @@ export const PartnerCard = memo(function PartnerCard({
             {partner.specialties.slice(0, 3).map((specialty, idx) => (
               <View 
                 key={specialty} 
-                style={[styles.specialtyChip, { backgroundColor: isBlkPartner ? colors.blkBackground : colors.fillSecondary, borderColor: theme.border }]}
+                style={[styles.specialtyChip, { backgroundColor: isBlkPartner ? colors.blkBg : colors.fill2, borderColor: theme.border }]}
               >
                 <Label size="badge" style={{ color: theme.stats }}>{specialty}</Label>
               </View>
@@ -250,7 +250,7 @@ export function PartnerCardSkeleton() {
     <View style={[styles.container, { borderColor: colors.border, backgroundColor: colors.surface }]}>
       {/* Image */}
       <View style={styles.imageContainer}>
-        <View style={[styles.imagePlaceholder, { backgroundColor: colors.surfaceSecondary }]} />
+        <View style={[styles.imagePlaceholder, { backgroundColor: colors.surface2 }]} />
         <View style={styles.logoOverlay}>
           <SkeletonCircle size={Sizes.avatarMd} />
         </View>

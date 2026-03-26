@@ -69,7 +69,7 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
       <Animated.Text 
         style={[
           styles.brandNameSmall, 
-          { color: colors.textSecondary },
+          { color: colors.text2 },
           animatedStyle
         ]}
       >
@@ -157,7 +157,7 @@ export function LogoLoader({ size = 32 }: { size?: number }) {
           fontSize: size, 
           fontFamily: 'Inter_800ExtraBold', 
           letterSpacing: -1,
-          color: colors.textSecondary,
+          color: colors.text2,
         }, 
         animatedStyle
       ]}
@@ -203,7 +203,7 @@ export function RefreshLoader({ size = 24, isRefreshing = false }: { size?: numb
             fontSize: size, 
             fontFamily: 'Inter_800ExtraBold', 
             letterSpacing: -0.5,
-            color: colors.textSecondary,
+            color: colors.text2,
           }, 
           animatedStyle
         ]}

@@ -52,7 +52,7 @@ export function getStatusColor(
     error: string;
     primary: string;
     textMuted: string;
-    textSecondary: string;
+    text2: string;
   },
 ): string {
   // Rejected takes priority — rejected listings have lifecycleStatus 'archived'
@@ -69,7 +69,7 @@ export function getStatusColor(
 
   // Active → moderation determines color
   switch (moderation) {
-    case 'draft':          return colors.textSecondary;
+    case 'draft':          return colors.text2;
     case 'submitted':      return colors.warning;
     case 'pending_review': return colors.warning;
     case 'approved':       return colors.success;

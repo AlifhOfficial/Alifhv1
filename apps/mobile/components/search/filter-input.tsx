@@ -24,14 +24,14 @@ export function FilterInput({
 
   return (
     <View style={[styles.container, { 
-      backgroundColor: colors.fillSecondary, 
+      backgroundColor: colors.fill2, 
       borderColor: colors.border 
     }]}>
-      <Ionicons name="search" size={Sizes.iconSm} color={colors.textTertiary} />
+      <Ionicons name="search" size={Sizes.iconSm} color={colors.text3} />
       <BottomSheetTextInput
         style={[styles.input, { color: colors.text }]}
         placeholder={placeholder}
-        placeholderTextColor={colors.textTertiary}
+        placeholderTextColor={colors.text3}
         value={value}
         onChangeText={onChangeText}
         autoCapitalize="none"
@@ -42,7 +42,7 @@ export function FilterInput({
         <Ionicons 
           name="close-circle" 
           size={Sizes.iconSm} 
-          color={colors.textTertiary}
+          color={colors.text3}
           onPress={() => onChangeText('')}
         />
       )}

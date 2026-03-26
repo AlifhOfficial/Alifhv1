@@ -56,14 +56,14 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
+                    backgroundColor: isSelected ? colors.text : colors.surface2,
                     borderColor: isSelected ? colors.text : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="small"
-                  style={{ color: isSelected ? colors.background : colors.text }}
+                  style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {spec.label}
                 </Body>
@@ -86,14 +86,14 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
+                    backgroundColor: isSelected ? colors.text : colors.surface2,
                     borderColor: isSelected ? colors.text : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="small"
-                  style={{ color: isSelected ? colors.background : colors.text }}
+                  style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {side.label}
                 </Body>
@@ -104,7 +104,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
       </View>
 
       {/* Summary */}
-      <View style={[styles.summaryBox, { backgroundColor: colors.fillSecondary }]}>
+      <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
         <Supporting size="small" tone="muted">
           {SPECS_TYPES.find((s) => s.value === data.specs)?.label ?? 'GCC'} specs
           {' · '}

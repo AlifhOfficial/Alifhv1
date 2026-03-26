@@ -213,9 +213,9 @@ export const CategoryCard = memo(function CategoryCard({
     return null;
   }
 
-  const cardBg = colors.blkBackground;
+  const cardBg = colors.blkBg;
   const textColor = colors.blkText;
-  const textSecondary = colors.blkTextSecondary;
+  const textSecondary = colors.blkText2;
 
   return (
     <View style={[styles.categoryCard, { backgroundColor: cardBg }]}>
@@ -266,13 +266,13 @@ export const CategoryCard = memo(function CategoryCard({
           style={[
             styles.arrowCircle,
             {
-              backgroundColor: colors.blkBadgeBackground,
+              backgroundColor: colors.blkBadgeBg,
               borderColor: colors.blkBadgeBorder,
               borderWidth: 1,
             },
           ]}
         >
-          <ChevronRight size={Sizes.iconSm} color={colors.blkBadgeText} strokeWidth={2} />
+          <ChevronRight size={Sizes.iconSm} color={colors.blkBadgeFg} strokeWidth={2} />
         </View>
       </HapticPressable>
     </View>
@@ -316,7 +316,7 @@ export const CategoryGrid = memo(function CategoryGrid({
   if (isLoading && sortedCategories.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={[styles.categoryCard, { backgroundColor: colors.blkBackground }]}>
+        <View style={[styles.categoryCard, { backgroundColor: colors.blkBg }]}>
           <View style={styles.header}>
             <Skeleton width="50%" height={20} />
             <Skeleton width="70%" height={14} style={{ marginTop: Spacing.xs }} />

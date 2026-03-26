@@ -134,7 +134,7 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
                     </Body>
                     <X 
                       size={Spacing.md} 
-                      color={colors.textTertiary} 
+                      color={colors.text3} 
                       strokeWidth={2.5} 
                     />
                   </View>
@@ -162,7 +162,7 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
             >
               {({ pressed }) => (
                 <>
-                  <ButtonText size="small" style={[styles.clearText, { color: colors.primaryForeground, opacity: pressed ? 0.7 : 1 }]}>
+                  <ButtonText size="small" style={[styles.clearText, { color: colors.primaryFg, opacity: pressed ? 0.7 : 1 }]}>
                     Clear all
                   </ButtonText>
                 </>

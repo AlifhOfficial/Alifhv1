@@ -134,7 +134,7 @@ export function ExtendListingSheet({
         </View>
 
         {/* Listing preview */}
-        <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.previewCard, { backgroundColor: colors.surface2 }]}>
           {listingThumbnail ? (
             <Image source={{ uri: getAppThumbUrl(listingThumbnail)! }} style={styles.thumbnail} />
           ) : (
@@ -167,7 +167,7 @@ export function ExtendListingSheet({
                 style={[
                   styles.durationOption,
                   {
-                    backgroundColor: selected ? colors.primaryMuted : colors.surfaceSecondary,
+                    backgroundColor: selected ? colors.primaryMuted : colors.surface2,
                     borderColor: selected ? colors.primary : colors.border,
                     borderWidth: selected ? 1.5 : 1,
                   },

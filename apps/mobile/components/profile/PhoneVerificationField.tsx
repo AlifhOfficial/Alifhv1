@@ -212,12 +212,12 @@ export function PhoneVerificationField({
             value={phone}
             onChangeText={(text) => onPhoneChange(text.replace(/[^\d]/g, '').slice(0, 9))}
             placeholder="50 000 0000"
-            placeholderTextColor={colors.textTertiary}
+            placeholderTextColor={colors.text3}
             keyboardType="phone-pad"
             maxLength={9}
             style={[
               styles.input,
-              Typography.bodyLarge,
+              Typography.bodyLg,
               {
                 backgroundColor: colors.surface,
                 color: colors.text,
@@ -280,12 +280,12 @@ export function PhoneVerificationField({
         value={otp}
         onChangeText={(text) => setOtp(text.replace(/[^\d]/g, '').slice(0, 6))}
         placeholder="000000"
-        placeholderTextColor={colors.textTertiary}
+        placeholderTextColor={colors.text3}
         keyboardType="number-pad"
         maxLength={6}
         style={[
           styles.otpInput,
-          Typography.headingMedium,
+          Typography.heading,
           {
             backgroundColor: colors.surface,
             color: colors.text,

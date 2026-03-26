@@ -54,11 +54,11 @@ export const SellerActions = memo(function SellerActions({
           ]}
         >
           {isChatLoading ? (
-            <ActivityIndicator size="small" color={colors.primaryForeground} />
+            <ActivityIndicator size="small" color={colors.primaryFg} />
           ) : (
             <>
-              <MessageCircle size={Sizes.iconSm} color={colors.primaryForeground} />
-              <ButtonText size="medium" style={{ color: colors.primaryForeground }}>
+              <MessageCircle size={Sizes.iconSm} color={colors.primaryFg} />
+              <ButtonText size="medium" style={{ color: colors.primaryFg }}>
                 Chat
               </ButtonText>
             </>
@@ -72,7 +72,7 @@ export const SellerActions = memo(function SellerActions({
             style={[
               styles.button,
               {
-                backgroundColor: colors.surfaceSecondary,
+                backgroundColor: colors.surface2,
                 borderWidth: 1,
                 borderColor: colors.border,
               },

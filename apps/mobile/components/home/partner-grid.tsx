@@ -78,10 +78,10 @@ interface ProductCardProps {
 const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavorite, isBlkPartner }: ProductCardProps) {
   const { thumb, full } = getAppListingImageUrls(listing.thumbnail);
   const metaBorder = isBlkPartner ? colors.blkBorder : colors.border;
-  const actionBackground = isBlkPartner ? colors.blkBadgeBackground : colors.fillSecondary;
+  const actionBackground = isBlkPartner ? colors.blkBadgeBg : colors.fill2;
   const actionBorder = isBlkPartner ? colors.blkBadgeBorder : colors.border;
-  const actionColor = isBlkPartner ? colors.blkBadgeText : colors.icon;
-  const metaColor = isBlkPartner ? colors.blkTextSecondary : colors.textSecondary;
+  const actionColor = isBlkPartner ? colors.blkBadgeFg : colors.icon;
+  const metaColor = isBlkPartner ? colors.blkText2 : colors.text2;
   const title = `${listing.make} ${listing.model}`.trim();
 
   return (
@@ -89,7 +89,7 @@ const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavo
       onPress={() => onPress(listing.id)}
       style={[styles.product, { backgroundColor: colors.surface, borderColor: metaBorder }]}
     >
-      <View style={[styles.productImageShell, { backgroundColor: colors.surfaceSecondary, borderColor: metaBorder }]}>
+      <View style={[styles.productImageShell, { backgroundColor: colors.surface2, borderColor: metaBorder }]}>
         <Image
           source={thumb ? [{ uri: thumb }, ...(full && full !== thumb ? [{ uri: full }] : [])] : full ? { uri: full } : undefined}
           style={styles.productImage}
@@ -98,8 +98,8 @@ const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavo
           transition={150}
         />
         {isBlkPartner && (
-          <View style={[styles.priceBadge, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder }]}>
-            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
+          <View style={[styles.priceBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
+            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
           </View>
         )}
       </View>
@@ -176,9 +176,9 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
     router.push('/browse' as any);
   }, [onPress, partner.id, partner.name, applySearch, clearSearch, clearFilterParams, resetSort, router]);
 
-  const cardBg = colors.blkBackground;
+  const cardBg = colors.blkBg;
   const textColor = colors.blkText;
-  const textSecondary = colors.blkTextSecondary;
+  const textSecondary = colors.blkText2;
   const avatarBg = colors.surface;
   const avatarTextColor = textColor;
 
@@ -209,8 +209,8 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
               <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
             )}
             {partner.isBlk && (
-              <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder }]}>
-                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
+              <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
+                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
               </View>
             )}
           </View>
@@ -249,7 +249,7 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
           style={[
             styles.arrowBtn,
             {
-              backgroundColor: colors.blkBadgeBackground,
+              backgroundColor: colors.blkBadgeBg,
               borderColor: colors.blkBadgeBorder,
               borderWidth: 1,
             },
@@ -257,7 +257,7 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
         >
           <ChevronRight
             size={Sizes.iconSm}
-            color={colors.blkBadgeText}
+            color={colors.blkBadgeFg}
             strokeWidth={2}
           />
         </View>

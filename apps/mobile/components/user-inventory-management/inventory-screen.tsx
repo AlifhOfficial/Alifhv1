@@ -364,7 +364,7 @@ export function InventoryScreen() {
                 hitSlop={Layout.hitSlop}
                 style={{ padding: Spacing.xs }}
               >
-                <MoreVertical size={Sizes.iconSm} color={colors.textSecondary} strokeWidth={2} />
+                <MoreVertical size={Sizes.iconSm} color={colors.text2} strokeWidth={2} />
               </HapticPressable>
             </View>
 
@@ -374,7 +374,7 @@ export function InventoryScreen() {
             </Data>
 
             {/* Row 3: Meta line — specs · emirate */}
-            <Data size="mini" style={{ color: colors.textSecondary }}>
+            <Data size="mini" style={{ color: colors.text2 }}>
               {displaySpecs} · {displayEmirate}
             </Data>
 
@@ -394,7 +394,7 @@ export function InventoryScreen() {
                       ? colors.error
                       : expiry.isUrgent
                         ? colors.warning
-                        : colors.textSecondary,
+                        : colors.text2,
                     fontWeight: expiry.isUrgent || expiry.isExpired ? '700' : '500',
                   }}
                 >
@@ -420,7 +420,7 @@ export function InventoryScreen() {
 
     return (
       <View style={styles.emptyContainer}>
-        <View style={[styles.emptyIcon, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.emptyIcon, { backgroundColor: colors.surface2 }]}>
           <Ionicons name="image-outline" size={Sizes.iconXl} color={colors.textMuted} />
         </View>
         <Heading size="small" style={{ marginTop: Spacing.lg }}>
@@ -485,7 +485,7 @@ export function InventoryScreen() {
               styles.glass,
               {
                 borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBackground,
+                backgroundColor: colors.glassBg,
               },
             ]}
           >
@@ -507,7 +507,7 @@ export function InventoryScreen() {
                   styles.glass,
                   {
                     borderColor: colors.glassBorder,
-                    backgroundColor: colors.glassBackground,
+                    backgroundColor: colors.glassBg,
                   },
                 ]}
               >
@@ -690,7 +690,7 @@ export function InventoryScreen() {
           styles.fab,
           styles.glass,
           {
-            backgroundColor: colors.glassBackground,
+            backgroundColor: colors.glassBg,
             borderColor: colors.glassBorder,
             bottom: insets.bottom + Spacing.xl,
           },

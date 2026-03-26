@@ -84,11 +84,11 @@ export const AuthDoodle = memo(function AuthDoodle({ style }: AuthDoodleProps) {
   // Accent colors from theme
   const accentColors = [
     colors.blkText, // 0 - neutral
-    colors.doodleAccent1, // 1 - blue
-    colors.doodleAccent2, // 2 - purple
-    colors.doodleAccent3, // 3 - green
-    colors.doodleAccent4, // 4 - amber
-    colors.doodleAccent5, // 5 - rose
+    colors.primary, // 1 - blue
+    colors.error, // 2 - purple
+    colors.success, // 3 - green
+    colors.warning, // 4 - amber
+    colors.text3, // 5 - rose
   ];
   
   // Convert hex to rgba with opacity
@@ -111,7 +111,7 @@ export const AuthDoodle = memo(function AuthDoodle({ style }: AuthDoodleProps) {
             {
               ...item.position,
               transform: [{ rotate: `${item.rotation}deg` }],
-            },
+            } as any,
           ]}
         >
           <RevvupLogo 

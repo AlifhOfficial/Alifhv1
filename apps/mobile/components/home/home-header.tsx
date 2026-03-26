@@ -7,20 +7,24 @@ import React from 'react';
 import { View, StyleSheet, Platform, ScrollView } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Sun, Moon, Bookmark, Package, CalendarDays } from 'lucide-react-native';
+import { Sun, Moon, Bookmark, Package, CalendarDays, Plus } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
+import { useState, useCallback } from 'react';
 
 import { ProfileMenu } from './profile-menu';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { Data } from '@/components/ui';
+import { CreateListingFlow } from '@/components/sheets';
 
 export function HomeHeader() {
   const { colorScheme, toggleTheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const handleToggleTheme = () => {
     if (Platform.OS === 'ios') {
@@ -50,6 +54,18 @@ export function HomeHeader() {
     router.push('/bookings');
   };
 
+  const handleCreatePress = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+    setIsCreateOpen(true);
+  }, []);
+
+  const handleCreateSuccess = useCallback((listingId: string) => {
+    setIsCreateOpen(false);
+    router.push(`/listing/${listingId}` as any);
+  }, [router]);
+
   const ThemeIcon = colorScheme === 'dark' ? Moon : Sun;
 
   return (
@@ -68,7 +84,7 @@ export function HomeHeader() {
             styles.glass,
             { 
               borderColor: colors.glassBorder,
-              backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
+              backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
             }
           ]}
         >
@@ -93,7 +109,7 @@ export function HomeHeader() {
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
+              backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
             },
           ]}
         >
@@ -118,7 +134,7 @@ export function HomeHeader() {
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
+              backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
             },
           ]}
         >
@@ -143,7 +159,7 @@ export function HomeHeader() {
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
+              backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
             },
           ]}
         >
@@ -162,7 +178,38 @@ export function HomeHeader() {
             )}
           </HapticPressable>
         </View>
+        <View
+          style={[
+            styles.pillButton,
+            styles.glass,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
+            },
+          ]}
+        >
+          <HapticPressable
+            style={styles.pillButtonInner}
+            onPress={handleCreatePress}
+            hitSlop={Layout.hitSlop}
+          >
+            {({ pressed }) => (
+              <View style={styles.pillContent}>
+                <Plus size={Sizes.iconXs} color={colors.icon} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+                <Data size="small" style={{ opacity: pressed ? 0.7 : 1 }}>
+                  Create
+                </Data>
+              </View>
+            )}
+          </HapticPressable>
+        </View>
       </ScrollView>
+
+      <CreateListingFlow
+        visible={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        onSuccess={handleCreateSuccess}
+      />
     </View>
   );
 }

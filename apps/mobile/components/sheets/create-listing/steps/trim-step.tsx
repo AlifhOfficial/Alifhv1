@@ -58,7 +58,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
         style={[
           styles.input,
           {
-            backgroundColor: colors.fillSecondary,
+            backgroundColor: colors.fill2,
             color: colors.text,
             borderColor: colors.border,
           },
@@ -85,14 +85,14 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text : colors.surfaceSecondary,
+                    backgroundColor: isSelected ? colors.text : colors.surface2,
                     borderColor: isSelected ? colors.text : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="small"
-                  style={{ color: isSelected ? colors.background : colors.text }}
+                  style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {trim}
                 </Body>
@@ -103,7 +103,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
       </View>
 
       {/* Hint */}
-      <View style={[styles.hintBox, { backgroundColor: colors.fillSecondary }]}>
+      <View style={[styles.hintBox, { backgroundColor: colors.fill2 }]}>
         <Supporting size="small" tone="muted">
           Trim is optional but helps buyers identify your exact variant.
         </Supporting>

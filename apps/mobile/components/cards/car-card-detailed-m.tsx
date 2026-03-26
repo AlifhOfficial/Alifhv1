@@ -76,7 +76,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
   const router = useRouter();
   const isBlk = listing.isBlkListing;
   // Use standard theme colors for all listings (BLK branding shown via badges only)
-  const bgColor = colors.background;
+  const bgColor = colors.bg;
 
   const carTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
 
@@ -275,7 +275,7 @@ export function CarCardDetailedMSkeleton() {
   const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <ImageGallerySkeleton />
 
       <View style={styles.content}>

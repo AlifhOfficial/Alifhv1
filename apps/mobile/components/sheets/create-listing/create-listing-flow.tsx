@@ -314,7 +314,7 @@ export function CreateListingFlow({
         <View style={styles.fixedHeader}>
           {/* Progress Bar */}
           <View style={styles.progressSection}>
-            <View style={[styles.progressTrack, { backgroundColor: colors.fillSecondary }]}>
+            <View style={[styles.progressTrack, { backgroundColor: colors.fill2 }]}>
               <View style={[styles.progressFill, { width: `${progress}%`, backgroundColor: colors.primary }]} />
             </View>
           </View>
@@ -333,9 +333,9 @@ export function CreateListingFlow({
                 <HapticPressable
                   onPress={goToPrevStep}
                   hitSlop={Spacing.md}
-                  style={[styles.circleButton, { backgroundColor: colors.fillSecondary }]}
+                  style={[styles.circleButton, { backgroundColor: colors.fill2 }]}
                 >
-                  <ChevronLeft size={Sizes.iconSm} color={colors.textSecondary} strokeWidth={2} />
+                  <ChevronLeft size={Sizes.iconSm} color={colors.text2} strokeWidth={2} />
                 </HapticPressable>
               )}
             </View>
@@ -348,9 +348,9 @@ export function CreateListingFlow({
               <HapticPressable
                 onPress={isOptionalStep && stepError ? skipStep : goToNextStep}
                 disabled={!canProceed && !isOptionalStep}
-                style={[styles.nextButton, { backgroundColor: canProceed ? colors.primary : colors.fillSecondary }]}
+                style={[styles.nextButton, { backgroundColor: canProceed ? colors.primary : colors.fill2 }]}
               >
-                <ButtonText size="small" style={{ color: canProceed ? colors.primaryForeground : colors.textMuted }}>
+                <ButtonText size="small" style={{ color: canProceed ? colors.primaryFg : colors.textMuted }}>
                   {primaryLabel}
                 </ButtonText>
               </HapticPressable>

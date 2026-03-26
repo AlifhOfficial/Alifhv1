@@ -157,7 +157,7 @@ export function MakeFilterSheet({
           <Body
             size="medium"
             style={{ 
-              color: isSelected ? colors.text : colors.textSecondary,
+              color: isSelected ? colors.text : colors.text2,
               fontFamily: isSelected ? 'Inter_700Bold' : 'Inter_500Medium',
             }}
           >
@@ -209,14 +209,14 @@ export function MakeFilterSheet({
             <HapticPressable
               style={[
                 styles.applyButton,
-                { backgroundColor: hasValue ? colors.primary : colors.fillSecondary },
+                { backgroundColor: hasValue ? colors.primary : colors.fill2 },
               ]}
               onPress={handleApply}
               disabled={!hasValue}
             >
               <ButtonText
                 size="small"
-                style={{ color: hasValue ? colors.primaryForeground : colors.textMuted }}
+                style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
               >
                 Apply
               </ButtonText>
@@ -239,7 +239,7 @@ export function MakeFilterSheet({
         </View>
 
         {/* Search Input */}
-        <View style={[styles.searchContainer, { backgroundColor: colors.fillSecondary, borderColor: colors.border }]}>
+        <View style={[styles.searchContainer, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
           <Search size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
           <TextInput
             ref={searchInputRef}

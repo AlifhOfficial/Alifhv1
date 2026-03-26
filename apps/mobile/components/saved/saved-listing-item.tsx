@@ -93,15 +93,15 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
             transition={200}
           />
         ) : (
-          <View style={[styles.imagePlaceholder, { backgroundColor: colors.surfaceSecondary }]}>
+          <View style={[styles.imagePlaceholder, { backgroundColor: colors.surface2 }]}>
             <Supporting size="mini" tone="muted">No Image</Supporting>
           </View>
         )}
         
         {/* BLK Badge */}
         {listing.isBlkListing && (
-          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder }]}>
-            <Label size="badge" uppercase style={{ color: colors.blkBadgeText }}>BLK</Label>
+          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
+            <Label size="badge" uppercase style={{ color: colors.blkBadgeFg }}>BLK</Label>
           </View>
         )}
       </View>
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs,
   },
   metaDot: {
-    ...Typography.supportingMini,
+    ...Typography.micro,
     marginHorizontal: Spacing.xs,
   },
   seller: {

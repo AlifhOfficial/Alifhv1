@@ -52,7 +52,7 @@ export interface TextProps extends Omit<RNTextProps, 'allowFontScaling' | 'maxFo
 // ═══════════════════════════════════════════════════
 
 export const Text = memo(function Text({
-  variant = 'bodyMedium',
+  variant = 'body',
   tone = 'default',
   allowScaling = false,
   style,
@@ -65,7 +65,7 @@ export const Text = memo(function Text({
   // Determine text color based on tone (mutually exclusive)
   const textColor = (() => {
     switch (tone) {
-      case 'secondary': return colors.textSecondary;
+      case 'secondary': return colors.text2;
       case 'muted': return colors.textMuted;
       case 'primary': return colors.primary;
       case 'error': return colors.error;
@@ -98,9 +98,9 @@ export const Text = memo(function Text({
 // DISPLAY - Hero text, large callouts
 type DisplaySize = 'large' | 'medium' | 'number';
 const displayMap: Record<DisplaySize, TypographyKey> = {
-  large: 'displayLarge',
-  medium: 'displayMedium',
-  number: 'displayNumber',
+  large: 'hero',
+  medium: 'title',
+  number: 'hero',
 };
 
 export interface DisplayProps extends Omit<TextProps, 'variant'> {
@@ -117,11 +117,11 @@ export const Display = memo(function Display({ size = 'large', ...props }: Displ
 // HEADING - Titles, section headers
 type HeadingSize = 'large' | 'medium' | 'small' | 'card' | 'mini';
 const headingMap: Record<HeadingSize, TypographyKey> = {
-  large: 'headingLarge',
-  medium: 'headingMedium',
-  small: 'headingSmall',
-  card: 'headingCard',
-  mini: 'headingMini',
+  large: 'title',
+  medium: 'heading',
+  small: 'subheading',
+  card: 'subheading',
+  mini: 'subheading',
 };
 
 export interface HeadingProps extends Omit<TextProps, 'variant'> {
@@ -135,10 +135,10 @@ export const Heading = memo(function Heading({ size = 'large', ...props }: Headi
 // BODY - Readable content, descriptions
 type BodySize = 'large' | 'medium' | 'small' | 'mini';
 const bodyMap: Record<BodySize, TypographyKey> = {
-  large: 'bodyLarge',
-  medium: 'bodyMedium',
-  small: 'bodySmall',
-  mini: 'bodyMini',
+  large: 'bodyLg',
+  medium: 'body',
+  small: 'bodySm',
+  mini: 'bodySm',
 };
 
 export interface BodyProps extends Omit<TextProps, 'variant'> {
@@ -152,10 +152,10 @@ export const Body = memo(function Body({ size = 'medium', ...props }: BodyProps)
 // DATA - Stats, values, specs
 type DataSize = 'large' | 'medium' | 'small' | 'mini';
 const dataMap: Record<DataSize, TypographyKey> = {
-  large: 'dataLarge',
-  medium: 'dataMedium',
-  small: 'dataSmall',
-  mini: 'dataMini',
+  large: 'bodyLg',
+  medium: 'body',
+  small: 'bodySm',
+  mini: 'bodySm',
 };
 
 export interface DataProps extends Omit<TextProps, 'variant'> {
@@ -169,10 +169,10 @@ export const Data = memo(function Data({ size = 'medium', ...props }: DataProps)
 // LABEL - Section headers, form labels (often uppercase)
 type LabelSize = 'large' | 'medium' | 'small' | 'badge';
 const labelMap: Record<LabelSize, TypographyKey> = {
-  large: 'labelLarge',
-  medium: 'labelMedium',
-  small: 'labelSmall',
-  badge: 'labelBadge',
+  large: 'label',
+  medium: 'label',
+  small: 'micro',
+  badge: 'micro',
 };
 
 export interface LabelProps extends Omit<TextProps, 'variant'> {
@@ -202,9 +202,9 @@ export const Label = memo(function Label({
 // SUPPORTING - Helper text, captions
 type SupportingSize = 'medium' | 'small' | 'mini';
 const supportingMap: Record<SupportingSize, TypographyKey> = {
-  medium: 'supportingMedium',
-  small: 'supportingSmall',
-  mini: 'supportingMini',
+  medium: 'body',
+  small: 'bodySm',
+  mini: 'micro',
 };
 
 export interface SupportingProps extends Omit<TextProps, 'variant'> {
@@ -218,9 +218,9 @@ export const Supporting = memo(function Supporting({ size = 'small', ...props }:
 // BUTTON TEXT - For button labels
 type ButtonSize = 'large' | 'medium' | 'small';
 const buttonMap: Record<ButtonSize, TypographyKey> = {
-  large: 'buttonLarge',
-  medium: 'buttonMedium',
-  small: 'buttonSmall',
+  large: 'subheading',
+  medium: 'body',
+  small: 'bodySm',
 };
 
 export interface ButtonTextProps extends Omit<TextProps, 'variant'> {
@@ -234,8 +234,8 @@ export const ButtonText = memo(function ButtonText({ size = 'medium', ...props }
 // PRICE - For price displays
 type PriceSize = 'tag' | 'mini';
 const priceMap: Record<PriceSize, TypographyKey> = {
-  tag: 'priceTag',
-  mini: 'priceMini',
+  tag: 'price',
+  mini: 'price',
 };
 
 export interface PriceProps extends Omit<TextProps, 'variant'> {

@@ -52,7 +52,7 @@ export function NameStep({
   };
 
   return (
-    <View style={[onboardingStyles.container, { backgroundColor: colors.oledBlack }]}>
+    <View style={[onboardingStyles.container, { backgroundColor: colors.black }]}>
       <KeyboardAvoidingView behavior="padding" style={onboardingStyles.keyboardView}>
         <View
           style={[
@@ -66,7 +66,7 @@ export function NameStep({
               onPress={onBack}
               style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
             >
-              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.oledWhite} />
+              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.white} />
             </HapticPressable>
 
             <View style={onboardingStyles.progressContainer}>
@@ -77,7 +77,7 @@ export function NameStep({
                     onboardingStyles.progressBar,
                     {
                       backgroundColor:
-                        index < currentStep ? colors.primary : colors.glassBorderOnDark,
+                        index < currentStep ? colors.primary : colors.glassBorderDark,
                     },
                   ]}
                 />
@@ -92,10 +92,10 @@ export function NameStep({
             <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
               Let's get started
             </Supporting>
-            <Heading size="large" style={[onboardingStyles.title, { color: colors.oledWhite }]}>
+            <Heading size="large" style={[onboardingStyles.title, { color: colors.white }]}>
               What's your name?
             </Heading>
-            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.textSecondary }]}>
+            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
               We'd love to know what to call you
             </Body>
           </Animated.View>
@@ -106,18 +106,18 @@ export function NameStep({
               style={[
                 onboardingStyles.inputWrapper,
                 {
-                  backgroundColor: `${colors.oledWhite}08`,
-                  borderColor: name.length > 0 ? colors.primary : `${colors.oledWhite}15`,
+                  backgroundColor: `${colors.white}08`,
+                  borderColor: name.length > 0 ? colors.primary : `${colors.white}15`,
                 },
               ]}
             >
               <TextInput
                 ref={inputRef}
-                style={[onboardingStyles.inputInner, { color: colors.oledWhite }]}
+                style={[onboardingStyles.inputInner, { color: colors.white }]}
                 value={name}
                 onChangeText={setName}
                 placeholder="Your first name"
-                placeholderTextColor={colors.textTertiary}
+                placeholderTextColor={colors.text3}
                 keyboardAppearance="dark"
                 autoCapitalize="words"
                 autoCorrect={false}
@@ -140,7 +140,7 @@ export function NameStep({
               style={({ pressed }) => [
                 onboardingStyles.continueButton,
                 {
-                  backgroundColor: isValid ? colors.primary : `${colors.oledWhite}10`,
+                  backgroundColor: isValid ? colors.primary : `${colors.white}10`,
                   opacity: pressed ? 0.9 : 1,
                 },
               ]}
@@ -148,7 +148,7 @@ export function NameStep({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <ButtonText style={{ color: isValid ? colors.primaryForeground : colors.textTertiary }}>
+                <ButtonText style={{ color: isValid ? colors.primaryFg : colors.text3 }}>
                   Continue
                 </ButtonText>
               )}

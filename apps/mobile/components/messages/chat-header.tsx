@@ -91,7 +91,7 @@ export function ChatHeader({
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
+              backgroundColor: colors.glassBg,
             },
           ]}
         >
@@ -116,7 +116,7 @@ export function ChatHeader({
               styles.glass,
               {
                 borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBackground,
+                backgroundColor: colors.glassBg,
                 minWidth: isLoading ? Spacing['5xl'] * 2 : undefined,
               },
             ]}
@@ -134,7 +134,7 @@ export function ChatHeader({
               styles.glass,
               {
                 borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBackground,
+                backgroundColor: colors.glassBg,
                 minWidth: isLoading ? Spacing['5xl'] * 2 : undefined,
               },
             ]}
@@ -154,7 +154,7 @@ export function ChatHeader({
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
+              backgroundColor: colors.glassBg,
             },
           ]}
         >
@@ -164,11 +164,11 @@ export function ChatHeader({
             <>
               <Moon
                 size={12}
-                color={isActive ? colors.activityActive : colors.activityInactive}
-                fill={isActive ? colors.activityActive : colors.activityInactive}
+                color={isActive ? colors.online : colors.offline}
+                fill={isActive ? colors.online : colors.offline}
                 strokeWidth={1.5}
               />
-              <Data size="mini" style={{ color: colors.textSecondary }}>
+              <Data size="mini" style={{ color: colors.text2 }}>
                 {activityText}
               </Data>
             </>
@@ -189,11 +189,11 @@ export function ChatHeader({
               styles.glass,
               {
                 borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBackground,
+                backgroundColor: colors.glassBg,
               },
             ]}
           >
-            <Data size="small" style={{ color: colors.textSecondary }}>
+            <Data size="small" style={{ color: colors.text2 }}>
               Re: {listingTitle}
             </Data>
           </HapticPressable>

@@ -53,9 +53,9 @@ export const LocationSection = memo(function LocationSection({
   const colors = Colors[colorScheme];
 
   const textColor = isBlk ? colors.blkText : colors.text;
-  const secondaryTextColor = isBlk ? colors.blkTextSecondary : colors.textSecondary;
+  const secondaryTextColor = isBlk ? colors.blkText2 : colors.text2;
   const borderColor = isBlk ? colors.blkBorder : colors.glassBorder;
-  const bgColor = isBlk ? colors.blkBackground : colors.glassBackground;
+  const bgColor = isBlk ? colors.blkBg : colors.glassBg;
 
   const hasCoordinates = lat != null && lng != null;
   const hasLocation = city || emirate || address;

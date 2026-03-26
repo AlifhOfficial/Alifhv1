@@ -125,8 +125,8 @@ export function AuthSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.blkBackground, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.blkTextSecondary, width: Sizes.bubble }}
+      backgroundStyle={{ backgroundColor: colors.blkBg, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.blkText2, width: Sizes.bubble }}
       containerStyle={{ zIndex: 100 }}
     >
       <BottomSheetView style={styles.content}>
@@ -152,7 +152,7 @@ export function AuthSheet({
           <Heading size="medium" style={[styles.title, { color: colors.blkText }]}>
             {displayTitle}
           </Heading>
-          <Supporting size="small" style={[styles.subtitle, { color: colors.blkTextSecondary }]}>
+          <Supporting size="small" style={[styles.subtitle, { color: colors.blkText2 }]}>
             {displaySubtitle}
           </Supporting>
         </Animated.View>
@@ -173,7 +173,7 @@ export function AuthSheet({
               opacity: pressed ? 0.8 : 1,
             }]}
           >
-            <Data size="medium" style={{ color: colors.primaryForeground }}>
+            <Data size="medium" style={{ color: colors.primaryFg }}>
               Sign In
             </Data>
           </HapticPressable>
@@ -190,7 +190,7 @@ export function AuthSheet({
               opacity: pressed ? 0.7 : 1,
             }]}
           >
-            <Data size="medium" style={{ color: colors.blkTextSecondary }}>
+            <Data size="medium" style={{ color: colors.blkText2 }}>
               Maybe Later
             </Data>
           </HapticPressable>

@@ -1,6 +1,6 @@
 /**
  * Floating Listing Actions - Like, Superlike, Share
- * Positioned at bottom of screen like bubbles (inspired by global-tab-bar)
+ * Positioned at bottom of screen as floating bubbles
  */
 
 import React, { useState, useEffect } from 'react';
@@ -151,7 +151,7 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.glassBackground,
+                backgroundColor: colors.glassBg,
                 borderColor: colors.glassBorder,
               },
             ]}
@@ -173,7 +173,7 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.glassBackground,
+                backgroundColor: colors.glassBg,
                 borderColor: colors.glassBorder,
               },
             ]}
@@ -195,7 +195,7 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.glassBackground,
+                backgroundColor: colors.glassBg,
                 borderColor: colors.glassBorder,
               },
             ]}

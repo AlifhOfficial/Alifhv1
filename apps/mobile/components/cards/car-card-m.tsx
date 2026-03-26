@@ -90,7 +90,7 @@ function formatSpecs(specs: string): string {
 // ============================================================================
 
 interface CardTheme {
-  background: string;
+  bg: string;
   border: string;
   title: string;
   price: string;
@@ -147,30 +147,30 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlac
   return useMemo(() => {
     if (isBlkListing) {
       return {
-        background: colors.blkBackground,
+        bg: colors.blkBg,
         border: colors.blkBorder,
         title: colors.blkText,
         price: colors.blkText,
-        stats: colors.blkTextSecondary,
-        meta: colors.blkTextSecondary,
-        sellerText: colors.blkTextSecondary,
-        actionIcon: colors.blkTextSecondary,
-        imageBg: colors.blkBackground,
-        avatarBg: colors.blkBackground,
+        stats: colors.blkText2,
+        meta: colors.blkText2,
+        sellerText: colors.blkText2,
+        actionIcon: colors.blkText2,
+        imageBg: colors.blkBg,
+        avatarBg: colors.blkBg,
         avatarBorder: colors.blkBorder,
       };
     }
     // Surface aesthetic - standard card styling for normal listings
     return {
-      background: colors.surface,
+      bg: colors.surface,
       border: colors.border,
       title: colors.text,
       price: colors.primary,
-      stats: colors.textSecondary,
-      meta: colors.textSecondary,
+      stats: colors.text2,
+      meta: colors.text2,
       sellerText: colors.text,
       actionIcon: colors.icon,
-      imageBg: colors.surfaceSecondary,
+      imageBg: colors.surface2,
       avatarBg: colors.surface,
       avatarBorder: colors.border,
     };
@@ -262,7 +262,7 @@ export const CarCardM = memo(function CarCardM({
       onPressIn={onPressIn ? handlePressIn : undefined}
       onLongPress={onLongPress ? handleLongPress : undefined}
       delayLongPress={400}
-      style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}
+      style={[styles.container, { backgroundColor: theme.bg, borderColor: theme.border }]}
     >
       {/* BLK Accent Line */}
       {isBlkListing && <View style={[styles.blkAccent, { backgroundColor: theme.border }]} />}
@@ -272,7 +272,7 @@ export const CarCardM = memo(function CarCardM({
         <CardImage 
           uri={displayImage} 
           backgroundColor={theme.imageBg}
-          placeholderColor={colors.textTertiary}
+          placeholderColor={colors.text3}
           skeletonColor={colors.skeleton}
         />
         {/* Avatar overlay (partner card pattern) */}
@@ -292,7 +292,7 @@ export const CarCardM = memo(function CarCardM({
                 transition={150} 
               />
             ) : (
-              <Text variant="avatarSmall" style={{ color: theme.meta }}>
+              <Text variant="bodySm" style={{ color: theme.meta }}>
                 {displaySellerName.charAt(0).toUpperCase()}
               </Text>
             )}
@@ -312,7 +312,7 @@ export const CarCardM = memo(function CarCardM({
         />
 
         {/* Price */}
-        <Text variant="priceTag" style={{ color: theme.price }}>
+        <Text variant="price" style={{ color: theme.price }}>
           {formatPrice(price)}
         </Text>
 
@@ -339,7 +339,7 @@ export const CarCardM = memo(function CarCardM({
             isSuperliked={isSuperlikedProp}
             isBlkListing={isBlkListing}
             actionIconColor={theme.actionIcon}
-            glassBackground={colors.glassBackground}
+            glassBackground={colors.glassBg}
             glassBorder={colors.glassBorder}
             onFavoritePress={onFavoritePress}
             onSuperlikePress={onSuperlikePress}
@@ -439,8 +439,8 @@ const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartn
           <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
         )}
         {isBlackTierPartner && (
-          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBackground, borderColor: colors.blkBadgeBorder }]}>
-            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeText }}>BLK</Label>
+          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
+            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
           </View>
         )}
       </View>

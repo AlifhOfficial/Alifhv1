@@ -31,7 +31,7 @@ export function ProfileMenu() {
           styles.glass,
           {
             borderColor: colors.glassBorder,
-            backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
+            backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
           },
         ]}
       >
@@ -57,7 +57,7 @@ export function ProfileMenu() {
         styles.glass,
         { 
           borderColor: colors.glassBorder,
-          backgroundColor: colorScheme === 'light' ? colors.oledWhite : colors.oledBlack,
+          backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
         }
       ]}
     >

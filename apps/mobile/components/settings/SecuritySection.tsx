@@ -41,10 +41,10 @@ export function SecuritySection({
         <HapticPressable
           onPress={onAddPasskey}
           disabled={addingPasskey}
-          style={[styles.addButton, { backgroundColor: colors.surfaceSecondary }]}
+          style={[styles.addButton, { backgroundColor: colors.surface2 }]}
         >
           {addingPasskey ? (
-            <Loader2 size={Sizes.iconMd} color={colors.textSecondary} strokeWidth={2} />
+            <Loader2 size={Sizes.iconMd} color={colors.text2} strokeWidth={2} />
           ) : Platform.OS === 'ios' ? (
             <ScanFace size={Sizes.iconMd} color={colors.text} strokeWidth={1.5} />
           ) : (
@@ -64,9 +64,9 @@ export function SecuritySection({
           {passkeys.map((pk) => (
             <View
               key={pk.id}
-              style={[styles.item, { backgroundColor: colors.surfaceSecondary }]}
+              style={[styles.item, { backgroundColor: colors.surface2 }]}
             >
-              <Key size={Sizes.iconXs} color={colors.textSecondary} strokeWidth={1.5} />
+              <Key size={Sizes.iconXs} color={colors.text2} strokeWidth={1.5} />
               <View style={styles.itemInfo}>
                 <Body size="small">{pk.name || 'Passkey'}</Body>
                 <Supporting size="small" tone="muted">Added {pk.createdAt}</Supporting>

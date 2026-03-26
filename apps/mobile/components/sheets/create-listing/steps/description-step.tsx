@@ -149,7 +149,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
           style={[
             styles.textArea,
             {
-              backgroundColor: colors.fillSecondary,
+              backgroundColor: colors.fill2,
               color: colors.text,
               borderColor: colors.border,
             },

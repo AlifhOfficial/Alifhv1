@@ -94,7 +94,7 @@ export function BrowseHeader({
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
+              backgroundColor: colors.glassBg,
             },
           ]}
         >
@@ -115,7 +115,7 @@ export function BrowseHeader({
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
+              backgroundColor: colors.glassBg,
             },
           ]}
         >
@@ -125,7 +125,7 @@ export function BrowseHeader({
                 <Data size="small">Filters</Data>
                 {settingsCount > 0 && (
                   <View style={[styles.badge, { backgroundColor: colors.text }]}>
-                    <Label size="badge" uppercase={false} style={{ color: colors.background }}>
+                    <Label size="badge" uppercase={false} style={{ color: colors.bg }}>
                       {settingsCount > 9 ? '9+' : settingsCount}
                     </Label>
                   </View>
@@ -144,7 +144,7 @@ export function BrowseHeader({
               styles.glass,
               {
                 borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBackground,
+                backgroundColor: colors.glassBg,
               },
             ]}
           >
@@ -159,7 +159,7 @@ export function BrowseHeader({
                   </Data>
                   {pill.activeCount > 0 && (
                     <View style={[styles.badge, { backgroundColor: colors.text }]}>
-                      <Label size="badge" uppercase={false} style={{ color: colors.background }}>
+                      <Label size="badge" uppercase={false} style={{ color: colors.bg }}>
                         {pill.activeCount}
                       </Label>
                     </View>
@@ -177,7 +177,7 @@ export function BrowseHeader({
             styles.glass,
             {
               borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBackground,
+              backgroundColor: colors.glassBg,
             },
           ]}
         >

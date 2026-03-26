@@ -157,7 +157,7 @@ export function GreetingNote() {
           </Heading>
         )}
       </View>
-      <Supporting size="medium" style={{ color: colors.textTertiary }}>
+      <Supporting size="medium" style={{ color: colors.text3 }}>
         {content.subtitle}
       </Supporting>
     </View>

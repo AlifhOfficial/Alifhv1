@@ -136,7 +136,7 @@ export function DeleteAccountSheet({
             placeholderTextColor={colors.textMuted}
             style={[
               styles.input,
-              Typography.dataMedium,
+              Typography.body,
               {
                 backgroundColor: colors.input,
                 borderColor: colors.border,
@@ -175,9 +175,9 @@ export function DeleteAccountSheet({
             ]}
           >
             {isDeleting ? (
-              <Loader2 size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
+              <Loader2 size={Sizes.iconSm} color={colors.primaryFg} strokeWidth={2} />
             ) : (
-              <Data size="medium" style={{ color: colors.primaryForeground }}>Delete</Data>
+              <Data size="medium" style={{ color: colors.primaryFg }}>Delete</Data>
             )}
           </HapticPressable>
         </View>
