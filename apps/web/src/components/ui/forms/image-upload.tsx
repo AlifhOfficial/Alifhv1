@@ -209,7 +209,9 @@ export function ImageUpload({
     if (!files || files.length === 0) return;
     
     if (!vin || vin.length < 11) {
-      toast.error('VIN required', { description: 'Enter a valid VIN before uploading images.' });
+      toast.error('VIN required', { 
+        description: 'A valid VIN (minimum 11 characters) is required to upload listing images. Please go back and enter the VIN first.' 
+      });
       return;
     }
 

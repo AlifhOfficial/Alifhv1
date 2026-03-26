@@ -136,48 +136,28 @@ export function ListingsView({
     window.sessionStorage.setItem(LAST_PUBLIC_LISTINGS_URL_KEY, currentUrl);
   }, [pathname, params]);
 
-  // Scroll to top when user changes pagination (not on initial mount/back navigation)
-  // Skip initial mount to let browser restore scroll position naturally
-  const prevPageRef = useRef(currentPage);
+  // Scroll to top on filter/pagination changes (intentional user actions)
+  // But skip on initial mount to let browser handle back/forward navigation naturally
   const isInitialMount = useRef(true);
-  // Stable key for non-pagination params (filters, query, sort)
-  // Excludes page/cursor so pagination doesn't double-scroll
-  const filterKey = JSON.stringify({
-    q: params.q,
-    make: params.make,
-    model: params.model,
-    emirate: params.emirate,
-    priceMin: params.priceMin,
-    priceMax: params.priceMax,
-    yearMin: params.yearMin,
-    yearMax: params.yearMax,
-    mileageMin: params.mileageMin,
-    mileageMax: params.mileageMax,
-    specs: params.specs,
-    bodyType: params.bodyType,
-    transmission: params.transmission,
-    fuelType: params.fuelType,
-    exteriorColor: params.exteriorColor,
-    sortBy: params.sortBy,
-    partnerId: params.partnerId,
-    limit: params.limit,
-  });
-  const prevFilterKeyRef = useRef(filterKey);
+  const prevParamsRef = useRef(params);
+  
   useEffect(() => {
+    // Skip scroll on initial mount - let browser restore position for back navigation
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      prevPageRef.current = currentPage;
-      prevFilterKeyRef.current = filterKey;
+      prevParamsRef.current = params;
       return;
     }
-    const pageChanged = prevPageRef.current !== currentPage;
-    const filtersChanged = prevFilterKeyRef.current !== filterKey;
-    if ((pageChanged || filtersChanged) && !isFetching) {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-      prevPageRef.current = currentPage;
-      prevFilterKeyRef.current = filterKey;
+    
+    // Check if params actually changed (user clicked filter/pagination)
+    const paramsChanged = JSON.stringify(prevParamsRef.current) !== JSON.stringify(params);
+    
+    if (paramsChanged && !isFetching) {
+      // User intentionally changed something - scroll to top to show new results
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      prevParamsRef.current = params;
     }
-  }, [currentPage, filterKey, isFetching]);
+  }, [params, isFetching]);
 
   return (
     <TooltipProvider>

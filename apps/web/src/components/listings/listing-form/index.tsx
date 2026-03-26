@@ -35,12 +35,16 @@ export function ListingForm({
   isStaff: _isStaff,
   partnerId,
 }: ListingFormProps) {
-  // In edit mode, only allow details and publish steps (skip VIN)
-  const editableSteps = mode === 'edit' 
+  // In edit mode, check if VIN is missing or invalid (< 11 chars)
+  // If so, include VIN step to allow fixing it (needed for image uploads)
+  const hasInvalidVin = mode === 'edit' && (!initialData?.vin || initialData.vin.length < 11);
+  const editableSteps = mode === 'edit' && !hasInvalidVin
     ? FORM_STEPS.filter(s => s.id !== 'vin') 
     : FORM_STEPS;
   
-  const [currentStep, setCurrentStep] = useState<FormStep>(mode === 'edit' ? 'details' : 'vin');
+  // Start on VIN step in edit mode if VIN is invalid, otherwise start on details
+  const initialStep = mode === 'edit' ? (hasInvalidVin ? 'vin' : 'details') : 'vin';
+  const [currentStep, setCurrentStep] = useState<FormStep>(initialStep);
   const [formData, setFormData] = useState<Partial<ListingFormData>>(() => ({
     ...getDefaultFormValues(),
     ...initialData,

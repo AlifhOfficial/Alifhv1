@@ -7,6 +7,7 @@
 
 'use client';
 
+import { Suspense } from 'react';
 import { usePublicShowroom } from '@/hooks/showroom';
 import type { ShowroomData } from '@/components/pages/showroom/types';
 import {
@@ -38,6 +39,32 @@ interface ShowroomViewProps {
    * Avoids client-side waterfall for inventory section.
    */
   initialListings?: any | null;
+}
+
+/**
+ * Loading skeleton for inventory section
+ */
+function InventorySkeleton() {
+  return (
+    <section className="py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between mb-8">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+        {/* Car cards grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="space-y-3">
+              <Skeleton className="aspect-[16/10] rounded-xl" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 /**
@@ -157,7 +184,9 @@ export function ShowroomView({ slug, initialShowroom, initialListings }: Showroo
   return (
     <div className="min-h-screen bg-background">
       <ShowroomHero showroom={showroomData} />
-      <ShowroomInventory showroom={showroomData} initialListings={initialListings} />
+      <Suspense fallback={<InventorySkeleton />}>
+        <ShowroomInventory showroom={showroomData} initialListings={initialListings} />
+      </Suspense>
       <ShowroomStory showroom={showroomData} />
       <ShowroomFounder showroom={showroomData} />
       <ShowroomGallery showroom={showroomData} />

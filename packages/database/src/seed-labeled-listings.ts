@@ -1,6 +1,6 @@
 /**
  * Seed Script for Labeled Car Listings
- * Creates listings using labeled car images from /public/Labeled_Cars/
+ * Creates listings using labeled car images from R2: revvup-public/static/Labeled_Cars/
  */
 
 import 'dotenv/config';
@@ -37,7 +37,7 @@ const makeListingId = () => `listing_${createId()}`;
 // Format: { thumbnail, make, model, year, trim?, bodyType, isLuxury }
 const labeledCars = [
   {
-    thumbnail: '/Labeled_Cars/Audi_RS7_2021.jpeg',
+    thumbnail: 'static/Black_cars/c1.webp',
     make: 'Audi',
     model: 'RS7',
     year: 2021,
@@ -46,7 +46,7 @@ const labeledCars = [
     isLuxury: true,
   },
   {
-    thumbnail: '/Labeled_Cars/Lamborgini_Hurccan_2016.jpeg',
+    thumbnail: 'static/Black_cars/c2.webp',
     make: 'Lamborghini',
     model: 'Huracan',
     year: 2016,
@@ -55,7 +55,7 @@ const labeledCars = [
     isLuxury: true,
   },
   {
-    thumbnail: '/Labeled_Cars/Lamborgini_Urus_2020.jpeg',
+    thumbnail: 'static/Black_cars/c3.webp',
     make: 'Lamborghini',
     model: 'Urus',
     year: 2020,
@@ -64,7 +64,7 @@ const labeledCars = [
     isLuxury: true,
   },
   {
-    thumbnail: '/Labeled_Cars/Mercedes_Gwagon_2020.jpeg',
+    thumbnail: 'static/Black_cars/c4.webp',
     make: 'Mercedes-Benz',
     model: 'G-Class',
     year: 2020,
@@ -73,7 +73,7 @@ const labeledCars = [
     isLuxury: true,
   },
   {
-    thumbnail: '/Labeled_Cars/Porsche_gt3rs_limtied_2020.jpeg',
+    thumbnail: 'static/Black_cars/c5.webp',
     make: 'Porsche',
     model: '911 GT3 RS',
     year: 2020,
@@ -82,7 +82,7 @@ const labeledCars = [
     isLuxury: true,
   },
   {
-    thumbnail: '/Labeled_Cars/Range_Rover_Sport_SVA_2018.jpeg',
+    thumbnail: 'static/Black_cars/c6.webp',
     make: 'Land Rover',
     model: 'Range Rover Sport',
     year: 2018,
@@ -91,7 +91,7 @@ const labeledCars = [
     isLuxury: true,
   },
   {
-    thumbnail: '/Labeled_Cars/audi_rs5_2014.jpeg',
+    thumbnail: 'static/Black_cars/c7.webp',
     make: 'Audi',
     model: 'RS5',
     year: 2014,
@@ -100,7 +100,7 @@ const labeledCars = [
     isLuxury: true,
   },
   {
-    thumbnail: '/Labeled_Cars/lexus_lfa_2014.jpeg',
+    thumbnail: 'static/Black_cars/c8.webp',
     make: 'Lexus',
     model: 'LFA',
     year: 2014,
@@ -109,7 +109,7 @@ const labeledCars = [
     isLuxury: true,
   },
   {
-    thumbnail: '/Labeled_Cars/mclearn_spyder_2020.jpeg',
+    thumbnail: 'static/Black_cars/c9.webp',
     make: 'McLaren',
     model: '720S Spider',
     year: 2020,
@@ -118,7 +118,7 @@ const labeledCars = [
     isLuxury: true,
   },
   {
-    thumbnail: '/Labeled_Cars/toyota_landcruiser_2020.jpeg',
+    thumbnail: 'static/Black_cars/c10.webp',
     make: 'Toyota',
     model: 'Land Cruiser',
     year: 2020,
@@ -130,13 +130,19 @@ const labeledCars = [
 
 // ===== RANDOM IMAGES FOR GALLERY =====
 const carImages = [
-  '/Black_cars/car1.webp', '/Black_cars/car2.webp', '/Black_cars/car3.webp',
-  '/Black_cars/car4.webp', '/Black_cars/car5.webp', '/Black_cars/car6.webp',
-  '/Black_cars/car7.webp', '/Black_cars/car8.webp', '/Black_cars/car9.webp',
-  '/Black_cars/car10.webp', '/Black_cars/car11.webp', '/Black_cars/car12.webp',
-  '/Black_cars/car13.webp', '/Black_cars/car14.webp', '/Black_cars/car15.webp',
-  '/Black_cars/car16.webp', '/Black_cars/car17.webp', '/Black_cars/car18.webp',
-  '/Black_cars/car19.webp', '/Black_cars/car20.webp',
+  'static/Black_cars/c1.webp',
+  'static/Black_cars/c2.webp',
+  'static/Black_cars/c3.webp',
+  'static/Black_cars/c4.webp',
+  'static/Black_cars/c5.webp',
+  'static/Black_cars/c6.webp',
+  'static/Black_cars/c7.webp',
+  'static/Black_cars/c8.webp',
+  'static/Black_cars/c9.webp',
+  'static/Black_cars/c10.webp',
+  'static/Black_cars/c11.webp',
+  'static/Black_cars/c12.webp',
+  'static/Black_cars/c13.webp',
 ];
 
 // ===== ENUMS =====
@@ -535,7 +541,7 @@ async function seedLabeledListings() {
     console.log('🎉 SEEDING COMPLETE!');
     console.log('='.repeat(60));
     console.log(`\n   ✅ Inserted ${listings.length} labeled car listings`);
-    console.log(`   📸 Images from: /public/Labeled_Cars/`);
+    console.log(`   📸 Images from: revvup-public/static/Labeled_Cars/ & Black_cars/`);
     console.log(`   🏷️  Max highlights: 3 badges per listing`);
     console.log(`   🎬 No video URLs`);
     console.log('\n' + '='.repeat(60) + '\n');
