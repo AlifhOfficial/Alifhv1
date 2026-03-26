@@ -4,7 +4,8 @@
  */
 
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getListingsByUserId, getListingStatsByUserId, expirePublishedListingsForUser } from '@alifh/database';
+import { expirePublishedListingsForUser } from '@alifh/database';
+import { getCachedMyListings, getCachedMyListingStats } from '@/lib/my-listings-cache';
 import { MyListingsView } from '@/components/listings/my-listings';
 import type { ListingStats as MyListingsStats } from '@/components/listings/my-listings';
 import type { ListingsSort } from '@/components/listings/my-listings';
@@ -47,7 +48,7 @@ export default async function MyListingsPage({ searchParams }: PageProps) {
   expirePublishedListingsForUser(user.id).catch(() => {});
 
   const [listingsResult, stats] = await Promise.all([
-    getListingsByUserId(user.id, {
+    getCachedMyListings(user.id, {
       status,
       listingType: 'personal',
       q: q || undefined,
@@ -55,7 +56,7 @@ export default async function MyListingsPage({ searchParams }: PageProps) {
       limit,
       offset,
     }),
-    getListingStatsByUserId(user.id, { listingType: 'personal' }),
+    getCachedMyListingStats(user.id, 'personal'),
   ]);
 
   const initialStats: MyListingsStats = {

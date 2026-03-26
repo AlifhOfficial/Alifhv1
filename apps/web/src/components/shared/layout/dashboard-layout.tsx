@@ -147,7 +147,7 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto overscroll-contain rounded-xl bg-background">
-          <div className="p-5 sm:p-6">
+          <div className="p-4 sm:p-5 min-h-full flex flex-col">
             {children}
           </div>
         </div>

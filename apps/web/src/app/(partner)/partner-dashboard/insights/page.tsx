@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 import { PartnerInsightsView } from '@/components/partner/insights';
 import { getSessionUser } from '@/lib/auth/session-context';
 import { getCachedHealthCheckResponse } from '@/lib/health';
-import { getPartnerDescriptiveStats } from '@alifh/database';
+import { getCachedPartnerDescriptiveStats } from '@/lib/partner-stats-cache';
 
 const DASHBOARD_HEALTH_CACHE_TTL_MS = 60 * 60 * 1000;
 
@@ -30,7 +30,7 @@ export default async function PartnerInsightsPage() {
   }
 
   const [stats, health] = await Promise.all([
-    getPartnerDescriptiveStats(partnerMembership.partnerId),
+    getCachedPartnerDescriptiveStats(partnerMembership.partnerId),
     getCachedHealthCheckResponse(DASHBOARD_HEALTH_CACHE_TTL_MS),
   ]);
 

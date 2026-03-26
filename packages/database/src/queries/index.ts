@@ -19,3 +19,4 @@ export * from './audit';
 export * from './conversation';
 export * from './message';
 export * from './notifications';
+export * from './user-dashboard';

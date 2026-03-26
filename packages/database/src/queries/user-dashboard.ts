@@ -12,7 +12,7 @@
  * - Trend: placeholder last 7 days data until daily aggregates are introduced
  */
 
-import { db } from '../index';
+import { db } from '../dbclient';
 import { 
   carListing, 
   userFavorite, 
