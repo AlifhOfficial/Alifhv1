@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     
     // Return empty data for guests (allows public browsing)
     if (!user) {
-      const response = NextResponse.json({ 
+      return NextResponse.json({ 
         favorites: [],
         superlikes: [],
         listings: includeListings ? [] : undefined,
