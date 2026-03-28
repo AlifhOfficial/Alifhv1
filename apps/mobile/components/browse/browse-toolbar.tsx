@@ -5,57 +5,50 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Pressable, StyleSheet, Platform } from 'react-native';
-import { HapticPressable, ConfettiBurst, useConfettiBurst, Body } from '@/components/ui';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, StyleSheet, Platform } from 'react-native';
+import { HapticPressable, Body, Label } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
-import { Search, ArrowUpDown, Zap } from 'lucide-react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  interpolate,
-  Easing,
-} from 'react-native-reanimated';
+import { Search } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { Colors, Layout, Sizes, Spacing, Shadows, ZIndex} from '@/constants/theme';
-import { SearchSheet, SortSheet, AmnaSheet, ActiveFiltersSheet } from '@/components/sheets';
+import { SearchSheet, SortSheet } from '@/components/sheets';
 import type { SearchSortOption } from '@/lib/search-api';
+import { BrowseDrawerSheet, type FilterPillConfig, type FilterPillType, type ViewMode } from './browse-drawer-sheet';
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-const GAP = Spacing.sm;
+export const BROWSE_TOOLBAR_HEIGHT = Sizes.bubbleMd + Spacing.sm;
 
-export function BrowseToolbar() {
+interface BrowseToolbarProps {
+  pills?: FilterPillConfig[];
+  onPillPress?: (type: FilterPillType) => void;
+  onSettingsPress?: () => void;
+  settingsCount?: number;
+  viewMode?: ViewMode;
+  onViewModeChange?: (mode: ViewMode) => void;
+  bottomOffset?: number;
+}
+
+export function BrowseToolbar({
+  pills = [],
+  onPillPress,
+  onSettingsPress,
+  settingsCount = 0,
+  viewMode = 'grid',
+  onViewModeChange,
+  bottomOffset = Layout.tabBarHeight,
+}: BrowseToolbarProps) {
   const { colorScheme } = useTheme();
   const { applySearch, sortBy, applySort, updateFilterParams, getSearchChips } = useSearch();
-  const insets = useSafeAreaInsets();
   const colors = Colors[colorScheme];
 
   // Sheet visibility
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const [isAmnaOpen, setIsAmnaOpen] = useState(false);
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const chips = getSearchChips();
   const activeFilterCount = chips.length;
-
-  // Filter badge animation
-  const filterProgress = useSharedValue(activeFilterCount > 0 ? 1 : 0);
-  React.useEffect(() => {
-    filterProgress.value = withTiming(activeFilterCount > 0 ? 1 : 0, {
-      duration: 200,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    });
-  }, [activeFilterCount]);
-
-  const filterBubbleStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: interpolate(filterProgress.value, [0, 1], [0, 1]) }],
-    width: interpolate(filterProgress.value, [0, 1], [0, Sizes.bubbleMd]),
-    marginLeft: interpolate(filterProgress.value, [0, 1], [0, GAP]),
-  }));
 
   // ── Handlers ────────────────────────────────────────────────────
 
@@ -77,45 +70,6 @@ export function BrowseToolbar() {
     if (Object.keys(filterUpdates).length > 0) updateFilterParams(filterUpdates);
   }, [applySearch, updateFilterParams]);
 
-  // Confetti for Amna
-  const amnaConfetti = useConfettiBurst();
-
-  const handleAmnaPress = useCallback(() => {
-    if (Platform.OS === 'ios') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    amnaConfetti.fire({ colors: [colors.amna, '#A78BFA', '#C4B5FD', '#7C3AED', '#6D28D9', '#DDD6FE'], count: 12 });
-    setIsAmnaOpen(true);
-  }, [amnaConfetti]);
-
-  const handleAmnaSearch = useCallback((params: Record<string, any>) => {
-    const { make, model, trim, tags, extras, q, ...filterLevel } = params;
-    const searchLevel: Record<string, any> = {};
-    if (make?.length) searchLevel.make = make;
-    if (model?.length) searchLevel.model = model;
-    if (trim?.length) searchLevel.trim = trim;
-    if (tags?.length) searchLevel.tags = tags;
-    if (extras?.length) searchLevel.extras = extras;
-    if (q) searchLevel.q = q;
-    if (Object.keys(searchLevel).length > 0) applySearch(searchLevel);
-    const filterUpdates: Record<string, any> = {};
-    if (filterLevel.bodyType?.length) filterUpdates.bodyType = filterLevel.bodyType;
-    if (filterLevel.fuelType?.length) filterUpdates.fuelType = filterLevel.fuelType;
-    if (filterLevel.transmission?.length) filterUpdates.transmission = filterLevel.transmission;
-    if (filterLevel.specs?.length) filterUpdates.specs = filterLevel.specs;
-    if (filterLevel.exteriorColor?.length) filterUpdates.exteriorColor = filterLevel.exteriorColor;
-    if (filterLevel.interiorColor?.length) filterUpdates.interiorColor = filterLevel.interiorColor;
-    if (filterLevel.engineSize?.length) filterUpdates.engineSize = filterLevel.engineSize;
-    if (filterLevel.emirate?.length) filterUpdates.emirate = filterLevel.emirate;
-    if (filterLevel.priceMin) filterUpdates.priceMin = filterLevel.priceMin;
-    if (filterLevel.priceMax) filterUpdates.priceMax = filterLevel.priceMax;
-    if (filterLevel.yearMin) filterUpdates.yearMin = filterLevel.yearMin;
-    if (filterLevel.yearMax) filterUpdates.yearMax = filterLevel.yearMax;
-    if (filterLevel.mileageMax) filterUpdates.mileageMax = filterLevel.mileageMax;
-    if (filterLevel.condition) filterUpdates.condition = filterLevel.condition;
-    if (filterLevel.sellerType) filterUpdates.sellerType = filterLevel.sellerType;
-    if (Object.keys(filterUpdates).length > 0) updateFilterParams(filterUpdates);
-    if (filterLevel.sortBy) applySort(filterLevel.sortBy);
-  }, [applySearch, updateFilterParams, applySort]);
-
   const handleSortPress = useCallback(() => {
     if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setIsSortOpen(true);
@@ -125,55 +79,63 @@ export function BrowseToolbar() {
     applySort(sort);
   }, [applySort]);
 
-  const handleFiltersPress = useCallback(() => {
+  const handleDrawerPress = useCallback(() => {
     if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setIsFiltersOpen(true);
+    setIsDrawerOpen(true);
   }, []);
 
   return (
     <>
-      {/* Floating action row */}
-      <View style={[styles.container, { paddingBottom: insets.bottom + Sizes.bubbleMd + Spacing.lg }]}>
+      <View style={[styles.container, { bottom: bottomOffset + Spacing.sm }]}> 
         <View style={styles.row}>
           <HapticPressable
             onPress={handleSearchPress}
-            style={[styles.bubble, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg }]}
+            style={[styles.control, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg }]}
           >
-            <Search size={Sizes.iconMd} color={colors.label} strokeWidth={2} />
+            <View style={styles.labelRow}>
+              <Search size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
+              <Body size="bodySm">Search</Body>
+            </View>
           </HapticPressable>
-
-          <View style={{ overflow: 'visible', marginLeft: GAP }}>
-            <HapticPressable
-              onPress={handleAmnaPress}
-              style={[styles.bubble, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg }]}
-            >
-              <Zap size={Sizes.iconMd} color={colors.amna} strokeWidth={2} />
-            </HapticPressable>
-            <ConfettiBurst ref={amnaConfetti.ref} />
-          </View>
 
           <HapticPressable
             onPress={handleSortPress}
-            style={[styles.bubble, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg, marginLeft: GAP }]}
+            style={[styles.control, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg }]}
           >
-            <ArrowUpDown size={Sizes.iconMd} color={colors.label} strokeWidth={2} />
+            <Body size="bodySm">Sort</Body>
           </HapticPressable>
 
-          <AnimatedPressable
-            onPress={handleFiltersPress}
-            style={[styles.bubble, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg }, filterBubbleStyle]}
-            pointerEvents={activeFilterCount > 0 ? 'auto' : 'none'}
+          <HapticPressable
+            onPress={handleDrawerPress}
+            style={[styles.control, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg }]}
           >
-            <Body tone="secondary">{activeFilterCount > 9 ? '9+' : activeFilterCount}</Body>
-          </AnimatedPressable>
+            <View style={styles.labelRow}>
+              <Body size="bodySm">Drawer</Body>
+              {activeFilterCount > 0 && (
+                <View style={[styles.badge, { backgroundColor: colors.label }]}> 
+                  <Label size="caption" uppercase={false} style={{ color: colors.background }}>
+                    {activeFilterCount > 9 ? '9+' : activeFilterCount}
+                  </Label>
+                </View>
+              )}
+            </View>
+          </HapticPressable>
         </View>
       </View>
 
       {/* Sheets */}
       <SearchSheet visible={isSearchOpen} onClose={() => setIsSearchOpen(false)} onSearch={handleSearchSubmit} />
       <SortSheet visible={isSortOpen} onClose={() => setIsSortOpen(false)} currentSort={sortBy} onSortChange={handleSortChange} />
-      <AmnaSheet visible={isAmnaOpen} onClose={() => setIsAmnaOpen(false)} onSearch={handleAmnaSearch} />
-      <ActiveFiltersSheet visible={isFiltersOpen} onClose={() => setIsFiltersOpen(false)} />
+      <BrowseDrawerSheet
+        visible={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        pills={pills}
+        onPillPress={onPillPress}
+        onSettingsPress={onSettingsPress}
+        settingsCount={settingsCount}
+        viewMode={viewMode}
+        onViewModeChange={onViewModeChange}
+      />
     </>
   );
 }
@@ -187,20 +149,36 @@ const styles = StyleSheet.create({
     zIndex: ZIndex.overlay,
     paddingHorizontal: Layout.screenPadding,
     paddingTop: Spacing.sm,
+    gap: Spacing.sm,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: Spacing.sm,
   },
   glass: {
     borderWidth: 1,
     ...Shadows.md,
   },
-  bubble: {
-    width: Sizes.bubbleMd,
+  control: {
+    minWidth: 92,
     height: Sizes.bubbleMd,
     borderRadius: Sizes.bubbleMd / 2,
+    paddingHorizontal: Spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  badge: {
+    minWidth: Sizes.iconSm,
+    height: Sizes.iconSm,
+    paddingHorizontal: Spacing.xs,
+    borderRadius: Sizes.iconSm / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },

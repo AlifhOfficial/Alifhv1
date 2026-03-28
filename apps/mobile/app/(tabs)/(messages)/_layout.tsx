@@ -6,11 +6,9 @@ import { Colors } from '@/constants/theme';
 const iosOptions = {
   headerTransparent: true,
   headerShadowVisible: false,
-  headerLargeTitleShadowVisible: false,
-  headerLargeStyle: { backgroundColor: 'transparent' },
-  headerLargeTitle: true,
   headerBlurEffect: 'none' as const,
   headerBackButtonDisplayMode: 'minimal' as const,
+  headerTitleAlign: 'center' as const,
 };
 
 export default function MessagesLayout() {

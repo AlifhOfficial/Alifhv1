@@ -6,9 +6,8 @@
  */
 
 import React, { useEffect, useRef, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, StyleSheet, Platform } from 'react-native';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { ChatWindow } from '@/components/messages';
 import { Colors, Spacing } from '@/constants/theme';
@@ -22,7 +21,6 @@ export default function ChatScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   
   // Get conversationId and optional conversation data from nav params
   const params = useLocalSearchParams<{ 
@@ -73,10 +71,22 @@ export default function ChatScreen() {
     router.back();
   };
 
+  const nativeHeaderOptions = Platform.OS === 'ios'
+    ? {
+        headerTransparent: false,
+        headerShadowVisible: false,
+        headerBackButtonDisplayMode: 'minimal' as const,
+        headerBackTitle: '',
+      }
+    : {
+        headerStyle: { backgroundColor: colors.background },
+      };
+
   // No conversation ID
   if (!conversationId) {
     return (
-      <View style={[styles.screen, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+      <View style={[styles.screen, { backgroundColor: colors.background }]}>
+        <Stack.Screen options={{ ...nativeHeaderOptions, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.label, title: '' }} />
         <View style={styles.centered}>
           <Supporting size="body" tone="secondary" style={styles.errorText}>
             Conversation not found
@@ -96,7 +106,8 @@ export default function ChatScreen() {
   // Error state
   if (error && !conversation) {
     return (
-      <View style={[styles.screen, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+      <View style={[styles.screen, { backgroundColor: colors.background }]}>
+        <Stack.Screen options={{ ...nativeHeaderOptions, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.label, title: '' }} />
         <View style={styles.centered}>
           <Supporting size="body" tone="secondary" style={styles.errorText}>
             {error.message}

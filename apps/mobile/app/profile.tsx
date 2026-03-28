@@ -8,12 +8,14 @@ import { Stack, useRouter } from 'expo-router';
 import {
   StyleSheet,
   View,
+  Platform,
 } from 'react-native';
 import { Body, Skeleton, SkeletonCircle, AuthRequiredEmptyState, HapticPressable, useAlert } from '@/components/ui';
 import { Settings2, LogOut } from 'lucide-react-native';
 import { ScreenContainer } from '@/components/layout';
 
 import { Layout, Spacing, Radius, Sizes } from '@/constants/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/auth-context';
 import {
   useProfileColors,
@@ -35,6 +37,7 @@ import {
 export default function ProfileScreen() {
   const colors = useProfileColors();
   const { user, isAuthenticated, refreshSession, signOut } = useAuth();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { showAlert } = useAlert();
 
@@ -128,17 +131,21 @@ export default function ProfileScreen() {
     );
   }, [showAlert, signOut]);
 
-  const renderHeaderActions = useCallback(() => (
-    <View style={styles.headerActions}>
+  const nativeHeaderOptions = Platform.OS === 'ios'
+    ? {
+        headerTransparent: true,
+        headerShadowVisible: false,
+        headerBackButtonDisplayMode: 'minimal' as const,
+        headerBackTitle: '',
+      }
+    : {
+        headerStyle: { backgroundColor: colors.background },
+      };
+
+  const renderHeaderRight = useCallback(() => (
+    <View style={styles.headerRight}>
       <HapticPressable
         onPress={() => router.push('/settings')}
-        style={[
-          styles.headerActionButton,
-          {
-            borderColor: colors.glassBorder,
-            backgroundColor: colors.glassBg,
-          },
-        ]}
         accessibilityRole="button"
         accessibilityLabel="Open settings"
       >
@@ -146,23 +153,19 @@ export default function ProfileScreen() {
       </HapticPressable>
 
       {isAuthenticated && (
-        <HapticPressable
-          onPress={handleSignOut}
-          style={[
-            styles.headerActionButton,
-            {
-              borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBg,
-            },
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel="Sign out"
-        >
-          <LogOut size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-        </HapticPressable>
+        <>
+          <View style={styles.headerDivider} />
+          <HapticPressable
+            onPress={handleSignOut}
+            accessibilityRole="button"
+            accessibilityLabel="Sign out"
+          >
+            <LogOut size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
+          </HapticPressable>
+        </>
       )}
     </View>
-  ), [colors.error, colors.glassBg, colors.glassBorder, colors.label, handleSignOut, isAuthenticated, router]);
+  ), [colors.error, colors.label, handleSignOut, isAuthenticated, router]);
 
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
@@ -170,10 +173,10 @@ export default function ProfileScreen() {
       <>
         <Stack.Screen
           options={{
+            ...nativeHeaderOptions,
             title: 'Profile',
-            headerRight: renderHeaderActions,
-            headerBackButtonDisplayMode: 'minimal',
-            headerBackTitleVisible: false,
+            headerTintColor: colors.label,
+            headerRight: renderHeaderRight,
           }}
         />
         <View style={[styles.container, { backgroundColor: colors.background }]}> 
@@ -192,14 +195,14 @@ export default function ProfileScreen() {
       <>
         <Stack.Screen
           options={{
+            ...nativeHeaderOptions,
             title: 'Profile',
-            headerRight: renderHeaderActions,
-            headerBackButtonDisplayMode: 'minimal',
-            headerBackTitleVisible: false,
+            headerTintColor: colors.label,
+            headerRight: renderHeaderRight,
           }}
         />
         <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}> 
-        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: Spacing.lg }]}> 
+        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: insets.top + Spacing.lg }]}> 
           {/* Avatar */}
           <View style={styles.skeletonIdentity}>
             <SkeletonCircle size={88} />
@@ -258,10 +261,10 @@ export default function ProfileScreen() {
       <>
         <Stack.Screen
           options={{
+            ...nativeHeaderOptions,
             title: 'Profile',
-            headerRight: renderHeaderActions,
-            headerBackButtonDisplayMode: 'minimal',
-            headerBackTitleVisible: false,
+            headerTintColor: colors.label,
+            headerRight: renderHeaderRight,
           }}
         />
         <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}> 
@@ -282,10 +285,10 @@ export default function ProfileScreen() {
     <>
       <Stack.Screen
         options={{
+          ...nativeHeaderOptions,
           title: 'Profile',
-          headerRight: renderHeaderActions,
-          headerBackButtonDisplayMode: 'minimal',
-          headerBackTitleVisible: false,
+          headerTintColor: colors.label,
+          headerRight: renderHeaderRight,
         }}
       />
     <View style={[styles.container, { backgroundColor: colors.background }]}> 
@@ -372,18 +375,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  headerActions: {
+  headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
-  headerActionButton: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Sizes.bubble / 2,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  headerDivider: {
+    width: 1,
+    height: Sizes.iconSm,
+    borderRadius: 1,
+    opacity: 0.25,
+    backgroundColor: 'gray',
   },
   centered: {
     justifyContent: 'flex-start',

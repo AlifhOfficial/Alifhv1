@@ -13,7 +13,7 @@ import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { ChevronLeft, ChevronRight, CheckCircle2, Calendar, Clock, Users, FileText } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, CheckCircle2, Calendar1, Clock, Users, FileText } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Typography, Fonts, Colors, Spacing, Radius, Sizes, ZIndex} from '@/constants/theme';
@@ -423,7 +423,7 @@ export const BookingSheet = memo(function BookingSheet({
               <Data size="bodySm" style={{ color: colors.label }}>{listingTitle}</Data>
               {selectedDate && selectedSlot && (
                 <View style={styles.successCardRow}>
-                  <Calendar size={Spacing.md} color={colors.labelSecondary} />
+                  <Calendar1 size={Spacing.md} color={colors.labelSecondary} />
                   <Supporting size="body">
                     {formatDateShort(selectedDate)} at {formatTime(selectedSlot.startTime)}
                   </Supporting>
@@ -601,7 +601,7 @@ export const BookingSheet = memo(function BookingSheet({
               <View style={styles.stepContainer}>
                 {/* Selected date display */}
                 <View style={[styles.selectedDateBar, { backgroundColor: colors.fill2 }]}>
-                  <Calendar size={Sizes.iconXs} color={colors.labelSecondary} />
+                  <Calendar1 size={Sizes.iconXs} color={colors.labelSecondary} />
                   <Data size="bodySm" style={{ color: colors.label }}>
                     {formatDate(selectedDate)}
                   </Data>
@@ -675,7 +675,7 @@ export const BookingSheet = memo(function BookingSheet({
                 <View style={[styles.confirmCard, { backgroundColor: colors.fill2 }]}>
                   <View style={styles.confirmRow}>
                     <View style={[styles.confirmIconBox, { backgroundColor: colors.fill2 }]}>
-                      <Calendar size={Spacing.lg} color={colors.labelSecondary} />
+                      <Calendar1 size={Spacing.lg} color={colors.labelSecondary} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Supporting size="bodySm" tone="muted">Date</Supporting>

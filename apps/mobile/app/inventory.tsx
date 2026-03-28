@@ -6,7 +6,8 @@
  * Requires authentication — shows auth empty state if not signed in.
  */
 
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
+import { Stack } from 'expo-router';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/context/theme-context';
 import { InventoryScreen } from '@/components/user-inventory-management/inventory-screen';
@@ -18,10 +19,22 @@ export default function InventoryRoute() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
+  const nativeHeaderOptions = Platform.OS === 'ios'
+    ? {
+        headerTransparent: true,
+        headerShadowVisible: false,
+        headerBackButtonDisplayMode: 'minimal' as const,
+        headerBackTitle: '',
+      }
+    : {
+        headerStyle: { backgroundColor: colors.background },
+      };
+
   // Show auth empty state when not authenticated
   if (!isAuthenticated) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Inventory', headerTintColor: colors.label }} />
         <AuthRequiredEmptyState
           title="Sign in to view inventory"
           subtitle="Manage your car listings on Revvup"
@@ -30,7 +43,12 @@ export default function InventoryRoute() {
     );
   }
 
-  return <InventoryScreen />;
+  return (
+    <>
+      <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Inventory', headerTintColor: colors.label }} />
+      <InventoryScreen />
+    </>
+  );
 }
 
 const styles = StyleSheet.create({

@@ -31,7 +31,7 @@ import * as Haptics from 'expo-haptics';
 import * as ExpoCalendar from 'expo-calendar';
 import { Ionicons } from '@expo/vector-icons';
 import {
-  Calendar,
+  Calendar1,
   CalendarPlus,
   Clock,
   MapPin,
@@ -326,7 +326,7 @@ export function BookingDetailsSheet({
         {/* ── Date & Time ──────────────────────────────────────────────── */}
         <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
           <View style={styles.detailRow}>
-            <Calendar size={Sizes.iconSm} color={colors.labelSecondary} />
+            <Calendar1 size={Sizes.iconSm} color={colors.labelSecondary} />
             <View style={styles.detailText}>
               <Supporting size="bodySm" tone="secondary">Date</Supporting>
               <Body size="body">{formatBookingDate(booking.scheduledDate)}</Body>

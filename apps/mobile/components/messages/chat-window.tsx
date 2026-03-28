@@ -10,8 +10,12 @@ import {
   StyleSheet,
   ActivityIndicator,
   Dimensions,
+  Platform,
+  Pressable,
 } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { useHeaderHeight } from '@react-navigation/elements';
+import { Stack, useRouter } from 'expo-router';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -22,21 +26,19 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { format, isToday, isYesterday, isThisWeek, isSameDay } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
+import { useSearch } from '@/context/search-context';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
-import { ChatHeader } from './chat-header';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { LocationPickerSheet } from './location-picker-sheet';
 import { useMessages } from './hooks/useMessages';
 import { Body, Data, Supporting, Skeleton } from '@/components/ui';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { markConversationAsRead, sendLocationMessage, type Message, type Conversation } from '@/lib/messaging-api';
 import type { LocationResult } from '@/hooks/use-location';
 
 const PANEL_WIDTH = Spacing['5xl'] + Spacing['3xl']; // ~80
 const SCREEN_WIDTH = Dimensions.get('window').width;
-
-// Header height: avatar + bottom padding (safe area handled dynamically)
-const HEADER_HEIGHT = Sizes.avatarSm + Spacing.md + Spacing.lg;
 
 interface ChatWindowProps {
   conversationId: string;
@@ -56,6 +58,7 @@ export function ChatWindow({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
   const listRef = useRef<FlatList<Message>>(null);
 
   // Timestamp panel state
@@ -323,31 +326,117 @@ export function ChatWindow({
     );
   }, [isOtherTyping, colors.labelTertiary]);
 
+  // Activity status text for native header
+  const activityText = useMemo(() => {
+    if (isOtherTyping) return 'typing...';
+    if (isOnline) return 'now';
+    if (lastSeenAt) {
+      const date = new Date(lastSeenAt);
+      if (!isNaN(date.getTime())) {
+        const diffMs = Date.now() - date.getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        if (diffMins < 1) return 'now';
+        if (diffMins < 60) return `${diffMins}m`;
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours}h`;
+        const diffDays = Math.floor(diffHours / 24);
+        if (diffDays < 7) return `${diffDays}d`;
+        return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      }
+    }
+    return 'offline';
+  }, [isOtherTyping, isOnline, lastSeenAt]);
+
+  const router = useRouter();
+  const { applySearch, clearSearch, clearFilterParams } = useSearch();
+
+  // Centered title: name + status — iMessage/native style
+  const renderHeaderTitle = useCallback(() => {
+    if (!conversation) {
+      return (
+        <View style={styles.headerTitleCenter}>
+          <Skeleton width={100} height={14} />
+          <Skeleton width={60} height={11} style={{ marginTop: 2 }} />
+        </View>
+      );
+    }
+    return (
+      <View style={styles.headerTitleCenter}>
+        <Data size="body" style={{ color: colors.label }} numberOfLines={1}>
+          {displayName}
+        </Data>
+        <Supporting size="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1}>
+          {activityText}{listingTitle ? `  ·  ${listingTitle}` : ''}
+        </Supporting>
+      </View>
+    );
+  }, [conversation, displayName, activityText, listingTitle, colors]);
+
+  // Avatar in headerRight with online dot — press navigates to partner if dealer
+  const renderHeaderRight = useCallback(() => {
+    const partnerId = conversation?.partner?.id ?? conversation?.partnerId ?? null;
+    const partnerName = conversation?.partner?.name ?? null;
+    const avatar = (
+      <View style={[styles.headerAvatarWrap, { marginRight: Spacing.sm }]}>
+        {!conversation ? (
+          <Skeleton circle width={Sizes.avatarSm} height={Sizes.avatarSm} />
+        ) : (
+          <UserAvatar src={avatarUrl} name={displayName} size="sm" />
+        )}
+        {isOnline && conversation && (
+          <View style={[styles.headerOnlineDot, { backgroundColor: colors.success, borderColor: colors.background }]} />
+        )}
+      </View>
+    );
+    if (partnerId && partnerName) {
+      return (
+        <Pressable
+          onPress={() => {
+            clearSearch();
+            clearFilterParams();
+            applySearch({ partnerId, partnerName });
+            router.push('/browse' as any);
+          }}
+        >
+          {avatar}
+        </Pressable>
+      );
+    }
+    return avatar;
+  }, [conversation, avatarUrl, displayName, isOnline, colors, router, applySearch, clearSearch, clearFilterParams]);
+
+  const nativeHeaderOptions = Platform.OS === 'ios'
+    ? {
+        headerTransparent: false,
+        headerShadowVisible: false,
+        headerBackButtonDisplayMode: 'minimal' as const,
+        headerBackTitle: '',
+      }
+    : {
+        headerStyle: { backgroundColor: colors.background },
+      };
+
   return (
+    <>
+      <Stack.Screen
+        options={{
+          ...nativeHeaderOptions,
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.label,
+          headerTitle: renderHeaderTitle,
+          headerRight: renderHeaderRight,
+        }}
+      />
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
       behavior="padding"
-      keyboardVerticalOffset={0}
+      keyboardVerticalOffset={headerHeight}
     >
-      {/* Header */}
-      <ChatHeader
-        name={displayName}
-        avatarUrl={avatarUrl}
-        isOnline={isOnline}
-        isTyping={isOtherTyping}
-        lastSeenAt={lastSeenAt}
-        listingTitle={listingTitle}
-        listingId={conversation?.listing?.id ?? conversation?.listingId ?? null}
-        partnerId={conversation?.partner?.id ?? conversation?.partnerId ?? null}
-        partnerName={conversation?.partner?.name ?? null}
-        isLoading={!conversation}
-      />
-
       {/* Messages List with horizontal swipe for timestamps */}
       <GestureDetector gesture={swipeGesture}>
         <View style={styles.messagesArea}>
           {isLoading ? (
-            <View style={[styles.skeletonContainer, { paddingTop: insets.top + HEADER_HEIGHT }]}>
+            <View style={styles.skeletonContainer}>
               {/* Simulate a chat thread with alternating left/right skeleton bubbles */}
               {[...Array(12)].map((_, i) => {
                 const isRight = i % 3 !== 0;
@@ -393,8 +482,8 @@ export function ChatWindow({
                 inverted
                 contentContainerStyle={[
                   styles.messagesContent,
-                  { 
-                    paddingBottom: insets.top + HEADER_HEIGHT,
+                  {
+                    paddingBottom: Spacing.md,
                     paddingTop: Spacing.md,
                   },
                 ]}
@@ -433,6 +522,7 @@ export function ChatWindow({
         onConfirm={handleConfirmLocation}
       />
     </KeyboardAvoidingView>
+    </>
   );
 }
 
@@ -478,7 +568,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing['5xl'],
   },
   skeletonContainer: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     gap: Spacing.lg,
@@ -500,5 +590,22 @@ const styles = StyleSheet.create({
   typingContainer: {
     paddingHorizontal: Layout.screenPadding + Sizes.iconXl + Spacing.sm,
     paddingVertical: Spacing.xs,
+  },
+  // Native header title (centered)
+  headerTitleCenter: {
+    alignItems: 'center',
+    gap: 1,
+  },
+  headerAvatarWrap: {
+    position: 'relative',
+  },
+  headerOnlineDot: {
+    position: 'absolute',
+    bottom: 1,
+    right: 1,
+    width: Spacing.md,
+    height: Spacing.md,
+    borderRadius: Spacing.md / 2,
+    borderWidth: 2,
   },
 });

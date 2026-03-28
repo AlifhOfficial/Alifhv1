@@ -9,6 +9,7 @@ import {
   StyleSheet,
   View,
   Linking,
+  Platform,
 } from 'react-native';
 import { Body, Skeleton, AuthRequiredEmptyState, useAlert } from '@/components/ui';
 import { ScreenContainer } from '@/components/layout';
@@ -81,14 +82,26 @@ export default function SettingsScreen() {
     Linking.openURL('https://revvup.ae/contact');
   }, []);
 
+  const nativeHeaderOptions = Platform.OS === 'ios'
+    ? {
+        headerTransparent: true,
+        headerShadowVisible: false,
+        headerBackButtonDisplayMode: 'minimal' as const,
+        headerBackTitle: '',
+      }
+    : {
+        headerStyle: { backgroundColor: colors.background },
+      };
+
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
     return (
       <>
         <Stack.Screen
           options={{
+            ...nativeHeaderOptions,
             title: 'Settings',
-            headerBackButtonDisplayMode: 'minimal',
+            headerTintColor: colors.label,
           }}
         />
         <View style={[styles.container, { backgroundColor: colors.background }]}> 
@@ -107,8 +120,9 @@ export default function SettingsScreen() {
       <>
         <Stack.Screen
           options={{
+            ...nativeHeaderOptions,
             title: 'Settings',
-            headerBackButtonDisplayMode: 'minimal',
+            headerTintColor: colors.label,
           }}
         />
         <View style={[styles.container, { backgroundColor: colors.background }]}> 
@@ -131,8 +145,9 @@ export default function SettingsScreen() {
     <>
       <Stack.Screen
         options={{
+          ...nativeHeaderOptions,
           title: 'Settings',
-          headerBackButtonDisplayMode: 'minimal',
+          headerTintColor: colors.label,
         }}
       />
       <View style={[styles.container, { backgroundColor: colors.background }]}> 

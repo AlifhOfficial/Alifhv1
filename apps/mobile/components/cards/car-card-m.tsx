@@ -12,7 +12,7 @@ import { Image } from 'expo-image';
 import { Share2, CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Layout, Sizes, ZIndex, BorderWidths, Timing, Stroke, AspectRatio } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { shareListing } from '@/lib/listing-share';
@@ -34,6 +34,7 @@ import {
 // CONSTANTS
 // ============================================================================
 
+const IMAGE_ASPECT_RATIO = 16 / 9;
 const IMAGE_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 
 // ============================================================================
@@ -261,7 +262,7 @@ export const CarCardM = memo(function CarCardM({
       onPress={handlePress}
       onPressIn={onPressIn ? handlePressIn : undefined}
       onLongPress={onLongPress ? handleLongPress : undefined}
-      delayLongPress={Timing.longPress}
+      delayLongPress={400}
       style={[styles.container, { backgroundColor: theme.bg, borderColor: theme.border }]}
     >
       {/* BLK Accent Line */}
@@ -297,7 +298,6 @@ export const CarCardM = memo(function CarCardM({
           specs={displaySpecs}
           emirate={displayEmirate}
           statsColor={theme.stats}
-          separatorColor={theme.meta}
         />
 
         {/* Footer: Seller + Actions */}
@@ -347,7 +347,7 @@ const CardImage = memo(function CardImage({ uri, backgroundColor, placeholderCol
           source={{ uri }}
           style={styles.image}
           contentFit="cover"
-          transition={Timing.imageTransition}
+          transition={200}
           placeholder={{ blurhash: IMAGE_BLURHASH }}
         />
       ) : (
@@ -383,16 +383,15 @@ interface CardStatsProps {
   specs: string;
   emirate: string;
   statsColor: string;
-  separatorColor: string;
 }
 
-const CardStats = memo(function CardStats({ mileage, specs, emirate, statsColor, separatorColor }: CardStatsProps) {
+const CardStats = memo(function CardStats({ mileage, specs, emirate, statsColor }: CardStatsProps) {
   return (
     <View style={styles.statsRow}>
       <Data size="bodySm" style={{ color: statsColor }}>{formatMileage(mileage)} km</Data>
-      <Data size="bodySm" style={{ color: separatorColor }}>·</Data>
+      <Data size="bodySm" style={{ color: statsColor, opacity: 0.4 }}>·</Data>
       <Data size="bodySm" style={{ color: statsColor }}>{specs}</Data>
-      <Data size="bodySm" style={{ color: separatorColor }}>·</Data>
+      <Data size="bodySm" style={{ color: statsColor, opacity: 0.4 }}>·</Data>
       <Data size="bodySm" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Data>
     </View>
   );
@@ -419,7 +418,7 @@ const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartn
             source={{ uri: avatarUri }}
             style={styles.avatarImage}
             contentFit="cover"
-            transition={Timing.avatarTransition}
+            transition={150}
           />
         ) : (
           <Text variant="heading" style={{ color: theme.meta }}>
@@ -496,7 +495,7 @@ const CardActions = memo(function CardActions({
         hitSlop={Layout.hitSlop}
         style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}
       >
-        <Share2 size={Sizes.iconXs} color={actionIconColor} strokeWidth={Stroke.icon} />
+        <Share2 size={Sizes.iconXs} color={actionIconColor} strokeWidth={1.75} />
       </HapticPressable>
     </View>
   );
@@ -555,7 +554,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: Radius['2xl'],
     borderCurve: 'continuous',
-    borderWidth: BorderWidths.thin,
+    borderWidth: 1,
     overflow: 'hidden',
     marginBottom: Spacing.md,
   },
@@ -564,8 +563,8 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: BorderWidths.thin,
-    zIndex: ZIndex.raised,
+    height: 1,
+    zIndex: 1,
   },
   content: {
     padding: Spacing.md,
@@ -575,7 +574,7 @@ const styles = StyleSheet.create({
   // Image Section
   imageContainer: {
     width: '100%',
-    aspectRatio: AspectRatio.cardImage,
+    aspectRatio: IMAGE_ASPECT_RATIO,
     borderTopLeftRadius: Radius['2xl'],
     borderTopRightRadius: Radius['2xl'],
     borderCurve: 'continuous',
@@ -632,17 +631,17 @@ const styles = StyleSheet.create({
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    borderWidth: BorderWidths.thin,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
   avatarRing: {
     position: 'absolute',
-    width: Sizes.bubble + Spacing.sm,
-    height: Sizes.bubble + Spacing.sm,
-    borderRadius: (Sizes.bubble + Spacing.sm) / 2,
-    borderWidth: BorderWidths.medium,
+    width: Sizes.bubble + 6,
+    height: Sizes.bubble + 6,
+    borderRadius: (Sizes.bubble + 6) / 2,
+    borderWidth: 2,
     top: -Spacing.xs,
     left: -Spacing.xs,
   },
@@ -665,7 +664,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Sizes.badgePaddingH,
     paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.none,
-    borderWidth: BorderWidths.thin,
+    borderWidth: 1,
   },
 
   // Actions
@@ -680,6 +679,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Sizes.bubbleXs / 2,
-    borderWidth: BorderWidths.thin,
+    borderWidth: 1,
   },
 });

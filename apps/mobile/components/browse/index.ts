@@ -1,3 +1,3 @@
 // Browse screen components
-export { BrowseHeader, type FilterPillType, type ViewMode } from './browse-header';
-export { BrowseToolbar } from './browse-toolbar';
+export { BrowseToolbar, BROWSE_TOOLBAR_HEIGHT } from './browse-toolbar';
+export { BrowseDrawerSheet, type FilterPillType, type FilterPillConfig, type ViewMode } from './browse-drawer-sheet';

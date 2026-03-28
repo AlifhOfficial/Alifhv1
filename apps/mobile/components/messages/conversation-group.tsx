@@ -1,13 +1,21 @@
 /**
- * Conversation Group - Clean native chat list row
+ * Conversation Group - Native chat list row
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 import { HapticPressable } from '@/components/ui';
-import { ChevronRight } from 'lucide-react-native';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Sizes, Radius} from '@/constants/theme';
+import { Colors, Layout, Spacing, Sizes, Radius, Timing } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Heading, Supporting, Text } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
@@ -37,6 +45,11 @@ function formatTime(dateStr: string): string {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
+const AVATAR_SIZE = Sizes.avatarMd;
+const ROW_H_PAD = Layout.screenPadding;
+const ROW_GAP = Spacing.md;
+const INDENT = ROW_H_PAD + AVATAR_SIZE + ROW_GAP;
+
 export function ConversationGroup({
   name,
   avatarUrl,
@@ -57,6 +70,15 @@ export function ConversationGroup({
   const hasUnread = totalUnread > 0;
   const latest = conversations[0];
 
+  const chevronRotation = useSharedValue(isExpanded ? 90 : 0);
+  const chevronStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${chevronRotation.value}deg` }],
+  }));
+
+  useEffect(() => {
+    chevronRotation.value = withTiming(isExpanded ? 90 : 0, { duration: Timing.imageTransition });
+  }, [isExpanded]);
+
   const toggleExpanded = useCallback(() => setIsExpanded((p) => !p), []);
 
   const handlePress = useCallback(() => {
@@ -73,26 +95,45 @@ export function ConversationGroup({
       <HapticPressable
         onPress={handlePress}
         android_ripple={{ color: colors.surfaceSecondary }}
-        style={styles.row}
+        style={{ paddingHorizontal: ROW_H_PAD }}
       >
         {({ pressed }) => (
-          <View style={[styles.rowInner, pressed && { opacity: 0.7 }]}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingVertical: Spacing.md,
+              gap: ROW_GAP,
+              opacity: pressed ? 0.7 : 1,
+            }}
+          >
             {/* Avatar with online dot */}
-            <View style={styles.avatarWrap}>
+            <View style={{ position: 'relative' }}>
               <UserAvatar src={avatarUrl} name={name} size="md" />
               {isOnline && (
-                <View style={[styles.onlineDot, { backgroundColor: colors.success, borderColor: colors.background }]} />
+                <View
+                  style={{
+                    position: 'absolute',
+                    bottom: 1,
+                    right: 1,
+                    width: Spacing.md,
+                    height: Spacing.md,
+                    borderRadius: Spacing.md / 2,
+                    borderWidth: 2,
+                    backgroundColor: colors.success,
+                    borderColor: colors.background,
+                  }}
+                />
               )}
             </View>
 
             {/* Text content */}
-            <View style={styles.content}>
-              <View style={styles.topRow}>
-                {/* Name: default tone = full weight; secondary = read/dimmer */}
+            <View style={{ flex: 1, gap: Spacing.xs }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
                 <Heading
                   size="subheading"
                   tone={hasUnread ? 'default' : 'secondary'}
-                  style={styles.flex1}
+                  style={{ flex: 1 }}
                   numberOfLines={1}
                 >
                   {name}
@@ -101,28 +142,46 @@ export function ConversationGroup({
                   {formatTime(latest.lastMessageAt)}
                 </Text>
               </View>
-              <View style={styles.bottomRow}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
                 <Supporting
                   size="bodySm"
                   tone={hasUnread ? 'secondary' : 'muted'}
-                  style={styles.flex1}
+                  style={{ flex: 1 }}
                   numberOfLines={1}
                 >
                   {latest.lastMessagePreview || 'No messages'}
                 </Supporting>
                 {totalUnread > 0 ? (
-                  <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-                    <Text variant="bodySm" style={{ color: colors.primaryForeground }}>
+                  <View
+                    style={{
+                      minWidth: Spacing.xl,
+                      height: Spacing.xl,
+                      borderRadius: Radius.md,
+                      borderCurve: 'continuous',
+                      paddingHorizontal: Spacing.xs,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: colors.primary,
+                    }}
+                  >
+                    <Text
+                      variant="bodySm"
+                      style={{
+                        color: colors.primaryForeground,
+                        fontVariant: ['tabular-nums'],
+                      }}
+                    >
                       {totalUnread > 99 ? '99+' : String(totalUnread)}
                     </Text>
                   </View>
                 ) : isMulti ? (
-                  <ChevronRight
-                    size={Sizes.iconXs}
-                    color={colors.labelTertiary}
-                    strokeWidth={2}
-                    style={{ transform: [{ rotate: isExpanded ? '90deg' : '0deg' }] }}
-                  />
+                  <Animated.View style={chevronStyle}>
+                    <IconSymbol
+                      name="chevron.right"
+                      size={Sizes.iconXs}
+                      color={colors.labelTertiary}
+                    />
+                  </Animated.View>
                 ) : null}
               </View>
             </View>
@@ -131,129 +190,103 @@ export function ConversationGroup({
       </HapticPressable>
 
       {/* Hairline separator indented past avatar */}
-      <View style={[styles.separator, { backgroundColor: colors.border }]} />
+      <View
+        style={{
+          height: StyleSheet.hairlineWidth,
+          marginLeft: INDENT,
+          backgroundColor: colors.border,
+        }}
+      />
 
       {/* Sub-items for multi-conversation groups */}
       {isMulti && isExpanded && (
-        <View style={[styles.subList, { borderLeftColor: colors.border }]}>
-          {conversations.map((c) => {
+        <Animated.View
+          entering={FadeIn.duration(Timing.imageTransition)}
+          exiting={FadeOut.duration(Timing.avatarTransition)}
+          layout={LinearTransition}
+          style={{
+            marginLeft: INDENT,
+            borderLeftWidth: StyleSheet.hairlineWidth,
+            borderLeftColor: colors.border,
+          }}
+        >
+          {conversations.map((c, i) => {
             const cUnread = c.unreadCount > 0;
             return (
-              <HapticPressable
+              <Animated.View
                 key={c.id}
-                onPress={() => onSelect(c)}
-                android_ripple={{ color: colors.surfaceSecondary }}
-                style={styles.subRow}
+                entering={FadeIn.duration(Timing.imageTransition).delay(i * 40)}
+                layout={LinearTransition}
               >
-                {({ pressed }) => (
-                  <View style={[styles.subRowInner, pressed && { opacity: 0.7 }]}>
-                    <View style={styles.topRow}>
-                      <Supporting
-                        size="body"
-                        tone={cUnread ? 'default' : 'secondary'}
-                        style={styles.flex1}
-                        numberOfLines={1}
-                      >
-                        {c.listing?.title || 'General Inquiry'}
-                      </Supporting>
-                      <Text variant="bodySm" tone="muted">
-                        {formatTime(c.lastMessageAt)}
-                      </Text>
+                <HapticPressable
+                  onPress={() => onSelect(c)}
+                  android_ripple={{ color: colors.surfaceSecondary }}
+                  style={{ paddingLeft: Spacing.md, paddingRight: ROW_H_PAD }}
+                >
+                  {({ pressed }) => (
+                    <View
+                      style={{
+                        paddingVertical: Spacing.sm,
+                        gap: Spacing.xs,
+                        opacity: pressed ? 0.7 : 1,
+                      }}
+                    >
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
+                        <Supporting
+                          size="body"
+                          tone={cUnread ? 'default' : 'secondary'}
+                          style={{ flex: 1 }}
+                          numberOfLines={1}
+                        >
+                          {c.listing?.title || 'General Inquiry'}
+                        </Supporting>
+                        <Text variant="bodySm" tone="muted">
+                          {formatTime(c.lastMessageAt)}
+                        </Text>
+                      </View>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
+                        <Supporting
+                          size="bodySm"
+                          tone={cUnread ? 'secondary' : 'muted'}
+                          style={{ flex: 1 }}
+                          numberOfLines={1}
+                        >
+                          {c.lastMessagePreview || 'No messages'}
+                        </Supporting>
+                        {c.unreadCount > 0 && (
+                          <View
+                            style={{
+                              minWidth: Spacing.xl,
+                              height: Spacing.xl,
+                              borderRadius: Radius.md,
+                              borderCurve: 'continuous',
+                              paddingHorizontal: Spacing.xs,
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              backgroundColor: colors.primary,
+                            }}
+                          >
+                            <Text
+                              variant="bodySm"
+                              style={{
+                                color: colors.primaryForeground,
+                                fontVariant: ['tabular-nums'],
+                              }}
+                            >
+                              {c.unreadCount > 99 ? '99+' : String(c.unreadCount)}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
                     </View>
-                    <View style={styles.bottomRow}>
-                      <Supporting
-                        size="bodySm"
-                        tone={cUnread ? 'secondary' : 'muted'}
-                        style={styles.flex1}
-                        numberOfLines={1}
-                      >
-                        {c.lastMessagePreview || 'No messages'}
-                      </Supporting>
-                      {c.unreadCount > 0 && (
-                        <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-                          <Text variant="bodySm" style={{ color: colors.primaryForeground }}>
-                            {c.unreadCount > 99 ? '99+' : String(c.unreadCount)}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                )}
-              </HapticPressable>
+                  )}
+                </HapticPressable>
+              </Animated.View>
             );
           })}
-          <View style={[styles.separator, { backgroundColor: colors.border }]} />
-        </View>
+          <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border }} />
+        </Animated.View>
       )}
     </View>
   );
 }
-
-const AVATAR_SIZE = Sizes.avatarMd; // 40
-const ROW_H_PAD = Spacing.lg;       // 16
-const ROW_GAP = Spacing.md;         // 12
-
-const styles = StyleSheet.create({
-  row: {
-    paddingHorizontal: ROW_H_PAD,
-  },
-  rowInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: Spacing.md,
-    gap: ROW_GAP,
-  },
-  avatarWrap: {
-    position: 'relative',
-  },
-  onlineDot: {
-    position: 'absolute',
-    bottom: 1,
-    right: 1,
-    width: Spacing.md,
-    height: Spacing.md,
-    borderRadius: Spacing.md / 2,
-    borderWidth: 2,
-  },
-  content: {
-    flex: 1,
-    gap: Spacing.xs,
-  },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  bottomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  flex1: {
-    flex: 1,
-  },
-  badge: {
-    minWidth: Spacing.xl,
-    height: Spacing.xl,
-    borderRadius: Radius.md,
-    paddingHorizontal: Spacing.xs,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    marginLeft: ROW_H_PAD + AVATAR_SIZE + ROW_GAP,
-  },
-  subList: {
-    marginLeft: ROW_H_PAD + AVATAR_SIZE + ROW_GAP,
-    borderLeftWidth: StyleSheet.hairlineWidth,
-  },
-  subRow: {
-    paddingLeft: Spacing.md,
-    paddingRight: ROW_H_PAD,
-  },
-  subRowInner: {
-    paddingVertical: Spacing.sm,
-    gap: Spacing.xs,
-  },
-});

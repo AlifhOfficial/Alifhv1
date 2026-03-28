@@ -8,7 +8,7 @@
 import React, { memo, useCallback } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { HapticPressable } from '@/components/ui';
-import { MessageCircle, Calendar } from 'lucide-react-native';
+import { MessageCircle, Calendar1 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
@@ -78,7 +78,7 @@ export const SellerActions = memo(function SellerActions({
               },
             ]}
           >
-            <Calendar size={Sizes.iconSm} color={colors.label} />
+            <Calendar1 size={Sizes.iconSm} color={colors.label} />
             <ButtonText size="body" style={{ color: colors.label }}>
               Book
             </ButtonText>

@@ -126,6 +126,7 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
         ref={ref}
         style={styles.scrollView}
         contentContainerStyle={contentStyle}
+        contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={showScrollIndicator}
         keyboardShouldPersistTaps="handled"
         onScroll={handleScroll}

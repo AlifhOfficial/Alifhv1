@@ -22,6 +22,7 @@ import {
   RefreshControl,
   ActivityIndicator,
   Platform,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
@@ -29,12 +30,9 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  Calendar,
-  Clock,
-} from 'lucide-react-native';
+import { Calendar1, Clock, ListFilter, Check } from 'lucide-react-native';
 
-import { Colors, Fonts, Spacing, Radius, Layout, Sizes, ZIndex} from '@/constants/theme';
+import { Colors, Fonts, Spacing, Radius, Layout, Sizes, ZIndex } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import {
@@ -63,6 +61,9 @@ import { BookingDetailsSheet } from './booking-details-sheet';
 
 const IMAGE_WIDTH = Sizes.cardThumbnailWidth;
 const IMAGE_HEIGHT = Sizes.cardThumbnailHeight;
+
+/** FAB dimensions — derived from theme */
+const FAB_SIZE = Sizes.bubbleMd + Spacing.xs;
 
 /** Empty state icon container — derived from theme */
 const EMPTY_ICON_SIZE = Spacing['5xl'] + Spacing['3xl'];
@@ -115,6 +116,18 @@ export function BookingsScreen() {
   const [showCancel, setShowCancel] = useState(false);
 
   const flatListRef = useRef<FlatList>(null);
+
+  // ── Filter Drawer State ──────────────────────────────────────────────────
+  const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+
+  const openFilterDrawer = useCallback(() => {
+    if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setShowFilterDrawer(true);
+  }, []);
+
+  const closeFilterDrawer = useCallback(() => {
+    setShowFilterDrawer(false);
+  }, []);
 
   // ── Handlers ─────────────────────────────────────────────────────────────
 
@@ -209,7 +222,7 @@ export function BookingsScreen() {
 
             {/* Date */}
             <View style={styles.metaRow}>
-              <Calendar size={Sizes.iconXs} color={colors.labelSecondary} />
+              <Calendar1 size={Sizes.iconXs} color={colors.labelSecondary} />
               <Data size="bodySm" style={{ color: colors.labelSecondary }}>
                 {formatBookingDate(item.scheduledDate)}
               </Data>
@@ -300,76 +313,14 @@ export function BookingsScreen() {
   // MAIN RENDER
   // ════════════════════════════════════════════════════════════════════════
 
-  const headerHeight = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
+  const footerHeight = insets.bottom + FAB_SIZE + Spacing.xl * 2;
 
   return (
     <View style={styles.container}>
-      {/* ─────────────────────── Floating Header (absolute) ────────────────────────────────── */}
-      <View style={[styles.header, { paddingTop: insets.top + Layout.headerPadding }]}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.headerScrollContent}
-          style={styles.headerScroll}
-        >
-          {/* Bookings Title Pill */}
-          <View
-            style={[
-              styles.pillButton,
-              styles.glass,
-              {
-                borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBg,
-              },
-            ]}
-          >
-            <View style={styles.pillContent}>
-              <Calendar size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
-              <Data size="bodySm">Bookings</Data>
-            </View>
-          </View>
-
-          {/* Filter Pills */}
-          {STATUS_TABS.map((tab) => {
-            const isActive = tab.key === activeTab;
-
-            return (
-              <View
-                key={tab.key}
-                style={[
-                  styles.pill,
-                  styles.glass,
-                  {
-                    borderColor: colors.glassBorder,
-                    backgroundColor: colors.glassBg,
-                  },
-                ]}
-              >
-                <HapticPressable
-                  onPress={() => handleTabChange(tab.key)}
-                  style={styles.pillInner}
-                >
-                  {({ pressed }) => (
-                    <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                      <Data
-                        size="bodySm"
-                        style={{ color: isActive ? colors.label : colors.labelQuaternary }}
-                        numberOfLines={1}
-                      >
-                        {tab.label}
-                      </Data>
-                    </View>
-                  )}
-                </HapticPressable>
-              </View>
-            );
-          })}
-        </ScrollView>
-      </View>
 
       {/* ─────────────────────── Content ────────────────────────────────── */}
       {isLoading && bookings.length === 0 ? (
-        <View style={[styles.listContent, { paddingTop: headerHeight }]}>
+        <View style={[styles.listContent, { paddingTop: insets.top + Spacing.lg, paddingBottom: footerHeight }]}>
           {Array.from({ length: 5 }).map((_, i) => (
             <View
               key={i}
@@ -387,7 +338,7 @@ export function BookingsScreen() {
           ))}
         </View>
       ) : error && bookings.length === 0 ? (
-        <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>
+        <View style={[styles.centerContainer, { paddingTop: insets.top + Spacing.lg, paddingBottom: footerHeight }]}>
           <Ionicons name="alert-circle-outline" size={Sizes.avatarLg} color={colors.error} />
           <Body
             size="body"
@@ -405,7 +356,8 @@ export function BookingsScreen() {
           data={bookings}
           keyExtractor={(item) => item.id}
           renderItem={renderCard}
-          contentContainerStyle={[styles.listContent, { paddingTop: headerHeight }]}
+          contentInsetAdjustmentBehavior="automatic"
+          contentContainerStyle={[styles.listContent, { paddingBottom: footerHeight }]}
           ListEmptyComponent={renderEmptyState}
           ListFooterComponent={renderFooter}
           refreshControl={
@@ -413,7 +365,6 @@ export function BookingsScreen() {
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
               tintColor={colors.primary}
-              progressViewOffset={headerHeight}
             />
           }
           onEndReached={handleLoadMore}
@@ -421,6 +372,90 @@ export function BookingsScreen() {
           showsVerticalScrollIndicator={false}
         />
       )}
+
+      {/* ─────────────────────── Filter Drawer Bubble ─────────────────────── */}
+      <View
+        style={[styles.fabCluster, { bottom: insets.bottom + Spacing.xl }]}
+        pointerEvents="box-none"
+      >
+        {showFilterDrawer && (
+          <TouchableWithoutFeedback onPress={closeFilterDrawer}>
+            <View style={StyleSheet.absoluteFillObject} />
+          </TouchableWithoutFeedback>
+        )}
+
+        {showFilterDrawer && (
+          <View
+            style={[
+              styles.drawerContainer,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
+            {STATUS_TABS.map((t, index) => {
+              const isActive = t.key === activeTab;
+              const isLast = index === STATUS_TABS.length - 1;
+              return (
+                <View key={t.key}>
+                  <HapticPressable
+                    onPress={() => {
+                      handleTabChange(t.key);
+                      closeFilterDrawer();
+                    }}
+                    style={styles.drawerItem}
+                  >
+                    {({ pressed }) => (
+                      <View style={[styles.drawerItemInner, { opacity: pressed ? 0.6 : 1 }]}>
+                        <View style={styles.drawerItemLeft}>
+                          {isActive ? (
+                            <Check size={Sizes.iconSm} color={colors.primary} strokeWidth={2.5} />
+                          ) : (
+                            <View style={{ width: Sizes.iconSm }} />
+                          )}
+                          <Data
+                            size="body"
+                            style={{
+                              color: isActive ? colors.primary : colors.label,
+                              fontWeight: isActive ? '600' : '400',
+                            }}
+                          >
+                            {t.label}
+                          </Data>
+                        </View>
+                      </View>
+                    )}
+                  </HapticPressable>
+                  {!isLast && (
+                    <View style={[styles.drawerDivider, { backgroundColor: colors.border }]} />
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        )}
+
+        <HapticPressable
+          onPress={showFilterDrawer ? closeFilterDrawer : openFilterDrawer}
+          style={[
+            styles.fab,
+            styles.glass,
+            {
+              width: FAB_SIZE,
+              paddingHorizontal: 0,
+              backgroundColor: showFilterDrawer ? colors.primary : colors.glassBg,
+              borderColor: showFilterDrawer ? colors.primary : colors.glassBorder,
+            },
+          ]}
+        >
+          {({ pressed }) => (
+            <ListFilter
+              size={Sizes.iconSm}
+              color={showFilterDrawer ? colors.primaryForeground : colors.label}
+              strokeWidth={2}
+              style={{ opacity: pressed ? 0.7 : 1 }}
+            />
+          )}
+        </HapticPressable>
+      </View>
 
       {/* ─────────────────────── Details Sheet ─────────────────────────── */}
       <BookingDetailsSheet
@@ -456,50 +491,52 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ── Header (absolute floating) ─────────────────────────────────────────────────────────────────
-  header: {
+  // ── FAB cluster (bottom-right absolute) ──────────────────────────────
+  fabCluster: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
+    right: Layout.screenPadding,
+    alignItems: 'flex-end',
     zIndex: ZIndex.overlay,
-    paddingBottom: Spacing.md,
-    paddingHorizontal: Layout.screenPadding,
-    flexDirection: 'row',
-    alignItems: 'center',
   },
-  headerScroll: {
-    flex: 1,
-  },
-  headerScrollContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Layout.headerGap,
-  },
-  pillButton: {
-    height: Sizes.pillHeight,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Sizes.pillRadius,
+  fab: {
+    height: FAB_SIZE,
+    borderRadius: FAB_SIZE / 2,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
+    paddingHorizontal: Spacing.md,
+    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+  } as any,
   glass: {
     borderWidth: 1,
   },
-  pill: {
-    borderRadius: Radius.full,
+
+  // ── Filter Drawer popover ─────────────────────────────────────────────
+  drawerContainer: {
+    marginBottom: Spacing.sm,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
     overflow: 'hidden',
+    minWidth: 200,
+    boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+  } as any,
+  drawerItem: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md + 2,
   },
-  pillInner: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pillContent: {
+  drawerItemInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    justifyContent: 'space-between',
+  },
+  drawerItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  drawerDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginHorizontal: Spacing.lg,
   },
 
   // ── List ───────────────────────────────────────────────────────────────

@@ -174,7 +174,7 @@ export function MessageInput({
             disabled={disabled}
             style={[
               styles.actionButton,
-              { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: StyleSheet.hairlineWidth },
+              { backgroundColor: colors.fill, borderColor: colors.glassBorder, borderWidth: StyleSheet.hairlineWidth },
             ]}
           >
             <MapPin
@@ -189,8 +189,8 @@ export function MessageInput({
           style={[
             styles.inputWrapper,
             { 
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.fill,
+              borderColor: colors.glassBorder,
               borderWidth: StyleSheet.hairlineWidth,
               minHeight: Math.max(inputHeight, MIN_HEIGHT),
             },
@@ -206,7 +206,7 @@ export function MessageInput({
             onChangeText={handleChangeText}
             onContentSizeChange={handleContentSizeChange}
             placeholder={placeholder}
-            placeholderTextColor={colors.labelQuaternary}
+            placeholderTextColor={colors.labelTertiary}
             multiline
             editable={!disabled}
             returnKeyType="default"
@@ -221,16 +221,16 @@ export function MessageInput({
           style={[
             styles.sendWrapper,
             {
-              backgroundColor: canSend ? colors.primary : colors.surface,
-              borderColor: canSend ? colors.primary : colors.border,
+              backgroundColor: canSend ? colors.primary : colors.fill,
+              borderColor: canSend ? colors.primary : colors.glassBorder,
               borderWidth: StyleSheet.hairlineWidth,
             },
           ]}
         >
           <Send
             size={Sizes.iconSm}
-            color={canSend ? colors.primaryForeground : colors.labelQuaternary}
-            strokeWidth={2}
+            color={canSend ? colors.primaryForeground : colors.labelTertiary}
+            strokeWidth={2.5}
           />
         </HapticPressable>
       </Animated.View>
@@ -251,6 +251,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flex: 1,
     borderRadius: Radius['2xl'],
+    borderCurve: 'continuous',
     paddingHorizontal: Spacing.lg,
     justifyContent: 'center',
   },
@@ -265,6 +266,7 @@ const styles = StyleSheet.create({
     width: Sizes.bubbleMd,
     height: Sizes.bubbleMd,
     borderRadius: Sizes.bubbleMd / 2,
+    borderCurve: 'continuous',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.xs,
@@ -273,6 +275,7 @@ const styles = StyleSheet.create({
     width: Sizes.bubbleMd,
     height: Sizes.bubbleMd,
     borderRadius: Sizes.bubbleMd / 2,
+    borderCurve: 'continuous',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.xs,

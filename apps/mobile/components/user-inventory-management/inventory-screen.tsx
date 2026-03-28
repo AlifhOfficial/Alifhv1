@@ -25,7 +25,9 @@ import {
   RefreshControl,
   ActivityIndicator,
   Platform,
+  TouchableWithoutFeedback,
 } from 'react-native';
+
 import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { getAppThumbUrl } from '@/lib/config';
@@ -38,6 +40,8 @@ import {
   Plus,
   Clock,
   Package,
+  ListFilter,
+  Check,
 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Layout, Sizes, ZIndex} from '@/constants/theme';
@@ -178,6 +182,18 @@ export function InventoryScreen() {
   const [editInitialData, setEditInitialData] = useState<Partial<CreateListingData> | undefined>(undefined);
   const [editingListingId, setEditingListingId] = useState<string | null>(null);
   const [isPublishedEdit, setIsPublishedEdit] = useState(false);
+
+  // ── Filter Drawer State ─────────────────────────────────────────────────
+  const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+
+  const openFilterDrawer = useCallback(() => {
+    if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setShowFilterDrawer(true);
+  }, []);
+
+  const closeFilterDrawer = useCallback(() => {
+    setShowFilterDrawer(false);
+  }, []);
 
   // Handler to open create flow (fresh, no initial data)
   const openCreateFlow = useCallback(() => {
@@ -457,77 +473,14 @@ export function InventoryScreen() {
   // MAIN RENDER
   // ════════════════════════════════════════════════════════════════════════
 
-  // Calculate header height for content offset (matches browse-header pattern)
-  const headerHeight = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md; // safe area + pill height + bottom padding
+  const footerHeight = insets.bottom + FAB_SIZE + Spacing.xl * 2;
 
   return (
     <View style={styles.container}>
-      {/* ─────────────────────── Floating Header (absolute) ────────────────────────────────── */}
-      <View style={[styles.header, { paddingTop: insets.top + Layout.headerPadding }]}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.headerScrollContent}
-          style={styles.headerScroll}
-        >
-          {/* Inventory Title Pill */}
-          <View
-            style={[
-              styles.pillButton,
-              styles.glass,
-              {
-                borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBg,
-              },
-            ]}
-          >
-            <View style={styles.pillContent}>
-              <Package size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
-              <Data size="bodySm">Inventory</Data>
-            </View>
-          </View>
-
-          {/* Filter Pills */}
-          {STATUS_TABS.map((tab) => {
-            const isActive = tab.key === activeTab;
-
-            return (
-              <View
-                key={tab.key}
-                style={[
-                  styles.pill,
-                  styles.glass,
-                  {
-                    borderColor: colors.glassBorder,
-                    backgroundColor: colors.glassBg,
-                  },
-                ]}
-              >
-                <HapticPressable
-                  onPress={() => handleTabChange(tab.key)}
-                  style={styles.pillInner}
-                >
-                  {({ pressed }) => (
-                    <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                      <Data
-                        size="bodySm"
-                        style={{ color: isActive ? colors.label : colors.labelQuaternary }}
-                        numberOfLines={1}
-                      >
-                        {tab.label}
-                      </Data>
-                    </View>
-                  )}
-                </HapticPressable>
-              </View>
-            );
-          })}
-        </ScrollView>
-      </View>
 
       {/* ─────────────────────── Content ─────────────────────────────────── */}
       {isLoading && listings.length === 0 ? (
-        <View style={[styles.listContent, { paddingTop: headerHeight }]}>
+        <View style={[styles.listContent, { paddingTop: insets.top + Spacing.lg, paddingBottom: footerHeight }]}>
           {Array.from({ length: 5 }).map((_, i) => (
             <View
               key={i}
@@ -546,7 +499,7 @@ export function InventoryScreen() {
           ))}
         </View>
       ) : error && listings.length === 0 ? (
-        <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>
+        <View style={[styles.centerContainer, { paddingTop: insets.top + Spacing.lg, paddingBottom: footerHeight }]}>
           <Ionicons name="alert-circle-outline" size={Sizes.avatarLg} color={colors.error} />
           <Body
             size="body"
@@ -564,7 +517,8 @@ export function InventoryScreen() {
           data={listings}
           keyExtractor={(item) => item.id}
           renderItem={renderCard}
-          contentContainerStyle={[styles.listContent, { paddingTop: headerHeight }]}
+          contentInsetAdjustmentBehavior="automatic"
+          contentContainerStyle={[styles.listContent, { paddingBottom: footerHeight }]}
           ListEmptyComponent={renderEmptyState}
           ListFooterComponent={renderFooter}
           refreshControl={
@@ -572,7 +526,6 @@ export function InventoryScreen() {
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
               tintColor={colors.primary}
-              progressViewOffset={headerHeight}
             />
           }
           onEndReached={handleLoadMore}
@@ -672,25 +625,112 @@ export function InventoryScreen() {
         isPublishedEdit={isPublishedEdit}
       />
 
-      {/* ─────────────────────── FAB: Create Listing ─────────────────────── */}
-      <HapticPressable
-        onPress={openCreateFlow}
-        style={[
-          styles.fab,
-          styles.glass,
-          {
-            backgroundColor: colors.glassBg,
-            borderColor: colors.glassBorder,
-            bottom: insets.bottom + Spacing.xl,
-          },
-        ]}
+      {/* ─────────────────────── Filter Drawer Bubble ─────────────────────── */}
+      <View
+        style={[styles.fabCluster, { bottom: insets.bottom + Spacing.xl }]}
+        pointerEvents="box-none"
       >
-        {({ pressed }) => (
-          <>
-            <Plus size={Sizes.iconMd} color={colors.label} strokeWidth={2} style={{ opacity: pressed ? 0.6 : 1 }} />
-          </>
+        {/* Backdrop to dismiss */}
+        {showFilterDrawer && (
+          <TouchableWithoutFeedback onPress={closeFilterDrawer}>
+            <View style={StyleSheet.absoluteFillObject} />
+          </TouchableWithoutFeedback>
         )}
-      </HapticPressable>
+
+        {/* Popover menu */}
+        {showFilterDrawer && (
+          <View
+            style={[
+              styles.drawerContainer,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
+            {STATUS_TABS.map((t, index) => {
+              const isActive = t.key === activeTab;
+              const isLast = index === STATUS_TABS.length - 1;
+              return (
+                <View key={t.key}>
+                  <HapticPressable
+                    onPress={() => {
+                      handleTabChange(t.key);
+                      closeFilterDrawer();
+                    }}
+                    style={styles.drawerItem}
+                  >
+                    {({ pressed }) => (
+                      <View style={[styles.drawerItemInner, { opacity: pressed ? 0.6 : 1 }]}>
+                        <View style={styles.drawerItemLeft}>
+                          {isActive ? (
+                            <Check size={Sizes.iconSm} color={colors.primary} strokeWidth={2.5} />
+                          ) : (
+                            <View style={{ width: Sizes.iconSm }} />
+                          )}
+                          <Data
+                            size="body"
+                            style={{
+                              color: isActive ? colors.primary : colors.label,
+                              fontWeight: isActive ? '600' : '400',
+                            }}
+                          >
+                            {t.label}
+                          </Data>
+                        </View>
+                      </View>
+                    )}
+                  </HapticPressable>
+                  {!isLast && (
+                    <View style={[styles.drawerDivider, { backgroundColor: colors.border }]} />
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        )}
+
+        {/* FAB row: filter pill + create button */}
+        <View style={styles.fabRow}>
+          <HapticPressable
+            onPress={showFilterDrawer ? closeFilterDrawer : openFilterDrawer}
+            style={[
+              styles.fab,
+              styles.glass,
+              {
+                width: FAB_SIZE,
+                paddingHorizontal: 0,
+                backgroundColor: showFilterDrawer ? colors.primary : colors.glassBg,
+                borderColor: showFilterDrawer ? colors.primary : colors.glassBorder,
+              },
+            ]}
+          >
+            {({ pressed }) => (
+              <ListFilter
+                size={Sizes.iconSm}
+                color={showFilterDrawer ? colors.primaryForeground : colors.label}
+                strokeWidth={2}
+                style={{ opacity: pressed ? 0.7 : 1 }}
+              />
+            )}
+          </HapticPressable>
+
+          <HapticPressable
+            onPress={openCreateFlow}
+            style={[
+              styles.fab,
+              styles.glass,
+              {
+                width: FAB_SIZE,
+                paddingHorizontal: 0,
+                backgroundColor: colors.glassBg,
+                borderColor: colors.glassBorder,
+              },
+            ]}
+          >
+            {({ pressed }) => (
+              <Plus size={Sizes.iconMd} color={colors.label} strokeWidth={2} style={{ opacity: pressed ? 0.6 : 1 }} />
+            )}
+          </HapticPressable>
+        </View>
+      </View>
     </View>
   );
 }
@@ -702,76 +742,69 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ── Header (absolute floating) ─────────────────────────────────────────────────────────────────
-  header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: ZIndex.overlay,
-    paddingBottom: Spacing.md,
-    paddingHorizontal: Layout.screenPadding,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerScroll: {
-    flex: 1,
-  },
-  headerScrollContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Layout.headerGap,
-  },
-  pillButton: {
-    height: Sizes.pillHeight,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Sizes.pillRadius,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  // ── Filter Pills (floating tabs) ───────────────────────────────────────
-  fab: {
+  // ── FAB cluster (bottom-right absolute) ──────────────────────────────
+  fabCluster: {
     position: 'absolute',
     right: Layout.screenPadding,
-    width: FAB_SIZE,
+    alignItems: 'flex-end',
+    zIndex: ZIndex.overlay,
+  },
+  fabRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  fab: {
     height: FAB_SIZE,
     borderRadius: FAB_SIZE / 2,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: ZIndex.raised,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: Spacing.md,
-    elevation: 6,
-  },
-  glass: {
-    borderWidth: 1,
-  },
-  pill: {
-    height: Sizes.pillHeight,
-    borderRadius: Sizes.pillRadius,
-    overflow: 'hidden',
-  },
-  pillInner: {
-    height: '100%',
     paddingHorizontal: Spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pillContent: {
+    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+  } as any,
+  fabInner: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
   },
-  pillBadge: {
-    paddingHorizontal: Sizes.badgePaddingH,
-    paddingVertical: Sizes.badgePaddingV,
-    borderRadius: Radius.lg,
-    minWidth: Sizes.iconSm,
+  glass: {
+    borderWidth: 1,
+  },
+
+  // ── Filter Drawer popover ─────────────────────────────────────────────
+  drawerContainer: {
+    marginBottom: Spacing.sm,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    overflow: 'hidden',
+    minWidth: 220,
+    boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+  } as any,
+  drawerItem: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md + 2,
+  },
+  drawerItemInner: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  drawerItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  drawerBadge: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: Radius.lg,
+    minWidth: Sizes.iconSm + 4,
+    alignItems: 'center',
+  },
+  drawerDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginHorizontal: Spacing.lg,
   },
 
   // ── List ───────────────────────────────────────────────────────────────

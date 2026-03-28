@@ -11,7 +11,7 @@ import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { BrowseHeader, BrowseToolbar, type FilterPillType } from '@/components/browse';
+import { BROWSE_TOOLBAR_HEIGHT, BrowseToolbar, type FilterPillType } from '@/components/browse';
 import { ACTIVE_CHIPS_HEIGHT } from '@/components/layout/active-search-chips';
 import { 
   MakeFilterSheet,
@@ -405,7 +405,12 @@ export default function BrowseScreen() {
   // RENDER
   // ──────────────────────────────────────────────────────────────────────────
 
-  const bottomPadding = Layout.tabBarHeight + Spacing['3xl'] + (hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0);
+  const toolbarBottomOffset = Layout.tabBarHeight + (hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0);
+
+  const bottomPadding =
+    toolbarBottomOffset +
+    BROWSE_TOOLBAR_HEIGHT +
+    Spacing['3xl'];
 
   const renderListing = useCallback(({ item }: { item: ListingCard }) => {
     if (viewMode === 'grid') {
@@ -498,18 +503,6 @@ export default function BrowseScreen() {
     );
   }, [hasMore, isFetchingNextPage]);
 
-  const renderListHeader = useCallback(() => (
-    <BrowseHeader 
-      pills={filterPillConfigs}
-      onPillPress={handleFilterPillPress}
-      onSettingsPress={handleSettingsPress}
-      settingsCount={moreFiltersCount}
-      viewMode={viewMode}
-      onViewModeChange={setViewMode}
-      onBrowsePress={handleBrowsePress}
-    />
-  ), [filterPillConfigs, handleFilterPillPress, handleSettingsPress, moreFiltersCount, viewMode, setViewMode, handleBrowsePress]);
-
   return (
     <>
       <FlatList
@@ -520,10 +513,8 @@ export default function BrowseScreen() {
         keyExtractor={keyExtractor}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
-        ListHeaderComponent={renderListHeader}
         ListEmptyComponent={renderEmptyState}
         ListFooterComponent={renderFooter}
-        stickyHeaderIndices={[0]}
         contentContainerStyle={{
           paddingBottom: bottomPadding,
           paddingHorizontal: Spacing.sm,
@@ -607,7 +598,15 @@ export default function BrowseScreen() {
         sellerName={infoSheetMeta.sellerName}
       />
 
-      <BrowseToolbar />
+      <BrowseToolbar
+        pills={filterPillConfigs}
+        onPillPress={handleFilterPillPress}
+        onSettingsPress={handleSettingsPress}
+        settingsCount={moreFiltersCount}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        bottomOffset={toolbarBottomOffset}
+      />
     </>
   );
 }

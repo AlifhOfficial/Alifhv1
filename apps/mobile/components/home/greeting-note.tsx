@@ -11,7 +11,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { Spacing, Layout } from '@/constants/theme';
-import { Heading, Supporting } from '@/components/ui';
+import { Display, Supporting } from '@/components/ui';
 
 /**
  * Time periods for contextual greetings
@@ -144,20 +144,34 @@ export function GreetingNote() {
     };
   }, [isAuthenticated, firstName, timePeriod]);
 
+  const tone = useMemo(() => {
+    if (timePeriod === 'earlyMorning' || timePeriod === 'morning') {
+      return { label: 'Morning', color: colors.info, bg: colors.infoMuted };
+    }
+    if (timePeriod === 'afternoon') {
+      return { label: 'Afternoon', color: colors.primary, bg: colors.primaryMuted };
+    }
+    if (timePeriod === 'evening') {
+      return { label: 'Evening', color: colors.warning, bg: colors.warningMuted };
+    }
+    return { label: 'Night', color: colors.amna, bg: colors.amnaMuted };
+  }, [timePeriod, colors]);
+
   return (
     <View style={styles.container}>
       <View style={styles.greetingRow}>
-        <Heading size="title" style={{ color: colors.label }}>
+        <Display size="hero" style={{ color: colors.label }}>
           {content.greeting}
-          {content.name ? `, ` : ''}
-        </Heading>
+          {content.name ? ', ' : ''}
+        </Display>
         {content.name && (
-          <Heading size="title" style={{ color: colors.primary }}>
+          <Display size="hero" style={{ color: tone.color }}>
             {content.name}
-          </Heading>
+          </Display>
         )}
       </View>
-      <Supporting size="body" style={{ color: colors.labelTertiary }}>
+
+      <Supporting size="body" style={{ color: colors.labelSecondary }}>
         {content.subtitle}
       </Supporting>
     </View>
@@ -173,5 +187,6 @@ const styles = StyleSheet.create({
   greetingRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    gap: Spacing.xs,
   },
 });

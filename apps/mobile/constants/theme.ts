@@ -183,14 +183,14 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     white: '#FFFFFF',
     
     // ── Backgrounds (3-tier hierarchy) ────────────────────────────────────
-    background:          iosSystemColors.systemBackground,           // Primary background
-    backgroundSecondary: iosSystemColors.secondarySystemBackground,  // Cards, grouped content
-    backgroundTertiary:  iosSystemColors.tertiarySystemBackground,   // Third-level grouping
+    background:          '#FFFFFF',   // Pure white (mirrors dark #000000)
+    backgroundSecondary: '#FAFAFA',   // Near-white step (mirrors dark #1A1A1A)
+    backgroundTertiary:  '#F5F5F5',   // Subtle grey step (mirrors dark #262626)
     
     // ── Surfaces (for elevated/grouped content) ───────────────────────────
-    surface:          md3Colors.surfaceContainer,        // Default surface (cards, sheets)
-    surfaceSecondary: md3Colors.surfaceContainerHigh,    // Elevated surface
-    surfaceTertiary:  md3Colors.surfaceContainerHighest, // Highest elevation
+    surface:          '#FFFFFF',   // Pure white surface (mirrors dark #1A1A1A)
+    surfaceSecondary: '#FAFAFA',   // Near-white elevated (mirrors dark #262626)
+    surfaceTertiary:  '#F5F5F5',   // Subtle grey elevated (mirrors dark #333333)
     
     // ── Text/Labels (4-tier semantic hierarchy) ───────────────────────────
     label:           iosSystemColors.label,           // Primary text
