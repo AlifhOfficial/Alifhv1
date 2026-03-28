@@ -1,13 +1,11 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'optional', // No FOUT — if font isn't ready, keep system font (no swap flash)
+const inter = localFont({
+  src: './fonts/inter-variable.woff2',
+  display: 'optional',
   variable: '--font-inter',
   preload: true,
-  weight: ['300', '400', '500', '600', '700', '800', '900'],
 })
 import './globals.css'
 import { ThemeProvider } from '@/components/shared/providers/theme-provider'
