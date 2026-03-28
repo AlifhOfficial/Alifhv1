@@ -61,7 +61,7 @@ export function MessageBubble({
             { backgroundColor: colors.fill2 },
           ]}
         >
-          <Data size="bodySm" style={{ color: colors.text3 }}>{text}</Data>
+          <Data size="bodySm" style={{ color: colors.labelTertiary }}>{text}</Data>
         </View>
       </View>
     );
@@ -133,7 +133,7 @@ export function MessageBubble({
                     styles.bubbleOther,
                     showAvatar ? styles.bubbleOtherTail : styles.bubbleOtherContinuation,
                     {
-                      backgroundColor: colors.surface2,
+                      backgroundColor: colors.surfaceSecondary,
                     },
                   ],
             ]}
@@ -162,7 +162,7 @@ export function MessageBubble({
           {text && (
             <Body
               size="body"
-              style={{ color: isOwn ? colors.primaryFg : colors.text }}
+              style={{ color: isOwn ? colors.primaryForeground : colors.label }}
             >
               {text}
             </Body>
@@ -173,7 +173,7 @@ export function MessageBubble({
             <Data
               size="bodySm"
               style={{ 
-                color: isOwn ? 'rgba(255,255,255,0.6)' : colors.text3,
+                color: isOwn ? colors.white : colors.labelTertiary,
                 marginTop: 2,
               }}
             >
@@ -184,14 +184,14 @@ export function MessageBubble({
           
           {/* Sending dot - right of bubble for own messages */}
           {isOptimistic && isOwn && (
-            <View style={[styles.sendingDot, { backgroundColor: colors.text3 }]} />
+            <View style={[styles.sendingDot, { backgroundColor: colors.labelTertiary }]} />
           )}
         </View>
 
         {/* Seen indicator */}
         {showSeen && isOwn && (
           <View style={styles.seenContainer}>
-            <Data size="bodySm" style={{ color: colors.text3 }}>Seen</Data>
+            <Data size="bodySm" style={{ color: colors.labelTertiary }}>Seen</Data>
             <UserAvatar
               src={otherUserAvatar}
               name={otherUserName || 'User'}

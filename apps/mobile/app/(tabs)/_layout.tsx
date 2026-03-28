@@ -41,7 +41,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         style={[
           styles.pill,
           {
-            backgroundColor: colors.bg,
+            backgroundColor: colors.background,
             borderColor: colors.border,
             shadowColor: colors.black,
           },
@@ -66,7 +66,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
               style={[
                 styles.tabBtn,
                 focused && {
-                  backgroundColor: colorScheme === 'light' ? colors.bg2 : colors.surface2,
+                  backgroundColor: colorScheme === 'light' ? colors.backgroundSecondary : colors.surfaceSecondary,
                   borderRadius: Radius.full,
                 },
               ]}
@@ -76,9 +76,9 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             >
               <Icon
                 size={Sizes.iconMd}
-                color={focused ? colors.text : colors.iconMuted}
+                color={focused ? colors.label : colors.labelSecondary}
                 strokeWidth={focused ? 3.2 : 3.2}
-                fill={focused ? colors.text : 'transparent'}
+                fill={focused ? colors.label : 'transparent'}
               />
             </HapticPressable>
           );

@@ -113,7 +113,7 @@ export function ImageLightbox({
 
   const content = (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
+      <StatusBar barStyle="light-content" backgroundColor={Colors.dark.black} />
       <View style={styles.container}>
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
@@ -129,7 +129,7 @@ export function ImageLightbox({
             hitSlop={Layout.hitSlop}
           >
             {({ pressed }) => (
-              <X size={Sizes.iconMd} color="#fff" strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+              <X size={Sizes.iconMd} color={colors.white} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
             )}
           </HapticPressable>
         </View>
@@ -183,7 +183,7 @@ export function ImageLightbox({
                 style={[
                   styles.thumbnail,
                   { 
-                    borderColor: index === safeIndex ? '#fff' : 'transparent',
+                    borderColor: index === safeIndex ? colors.white : 'transparent',
                     opacity: index === safeIndex ? 1 : 0.5,
                   },
                 ]}
@@ -222,7 +222,7 @@ export function ImageLightbox({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: Colors.dark.black,
   },
   header: {
     position: 'absolute',
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     width: Sizes.actionButtonMd,
     height: Sizes.actionButtonMd,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: Colors.dark.fill,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -248,10 +248,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.xl,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: Colors.dark.fill,
   },
   counterText: {
-    color: '#fff',
+    color: Colors.dark.white,
   },
   imageContainer: {
     width: SCREEN_WIDTH,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: Colors.dark.overlay,
     paddingTop: Spacing.md,
   },
   thumbnailList: {

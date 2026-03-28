@@ -126,7 +126,7 @@ export function DeleteListingSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
@@ -141,7 +141,7 @@ export function DeleteListingSheet({
               { backgroundColor: colors.error },
             ]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
           </HapticPressable>
         </View>
 
@@ -156,12 +156,12 @@ export function DeleteListingSheet({
         )}
 
         {/* Listing preview */}
-        <View style={[styles.previewCard, { backgroundColor: colors.surface2 }]}>
+        <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
           {listingThumbnail ? (
             <Image source={{ uri: getAppThumbUrl(listingThumbnail)! }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
-              <Ionicons name="image-outline" size={Sizes.iconLg} color={colors.textMuted} />
+              <Ionicons name="image-outline" size={Sizes.iconLg} color={colors.labelQuaternary} />
             </View>
           )}
           <View style={styles.previewInfo}>
@@ -205,11 +205,11 @@ export function DeleteListingSheet({
             ]}
           >
             {loading ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.primaryForeground} />
             ) : (
               <>
-                <Trash2 size={Sizes.iconSm} color="#FFF" />
-                <ButtonText size="body" style={{ color: '#FFF' }}>
+                <Trash2 size={Sizes.iconSm} color={colors.primaryForeground} />
+                <ButtonText size="body" style={{ color: colors.primaryForeground }}>
                   {hardDelete ? 'Delete Forever' : 'Delete'}
                 </ButtonText>
               </>

@@ -112,7 +112,7 @@ export function OTPScreen({
             <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
               Enter the code
             </Heading>
-            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
+            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
               Sent to {email}
             </Body>
           </Animated.View>
@@ -205,7 +205,7 @@ export function OTPScreen({
                   </Data>
                 </HapticPressable>
               ) : (
-                <Supporting size="bodySm" style={{ color: colors.text3 }}>
+                <Supporting size="bodySm" style={{ color: colors.labelTertiary }}>
                   Resend in {resendTimer}s
                 </Supporting>
               )}
@@ -213,7 +213,7 @@ export function OTPScreen({
 
             {/* Help text */}
             <Animated.View entering={FadeIn.delay(400).duration(300)}>
-              <Supporting size="bodySm" style={[onboardingStyles.helpText, { color: colors.text3 }]}>
+              <Supporting size="bodySm" style={[onboardingStyles.helpText, { color: colors.labelTertiary }]}>
                 Check your spam folder if you don't see it
               </Supporting>
             </Animated.View>

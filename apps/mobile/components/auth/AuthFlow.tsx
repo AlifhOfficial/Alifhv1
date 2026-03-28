@@ -397,7 +397,7 @@ export function AuthFlow({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Force light status bar content for OLED black auth screens */}
       <StatusBar style="light" />
       {renderScreen()}

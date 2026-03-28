@@ -57,7 +57,7 @@ export const SellerCard = memo(function SellerCard({
   
   const isBlackTier = isPartner && partner?.tier === 'black';
   
-  const textColor = isBlk ? colors.blkText : colors.text;
+  const textColor = isBlk ? colors.blkText : colors.label;
 
   // Private seller extra info
   const memberSince = !isPartner ? formatMemberSince(userProfile?.memberSince) : null;

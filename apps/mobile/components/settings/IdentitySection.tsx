@@ -102,7 +102,7 @@ function getKycDisplayInfo(
 
   return {
     statusLabel: 'Not Verified',
-    statusColor: colors.text2,
+    statusColor: colors.labelSecondary,
     description: 'Verify to build trust and unlock features',
     buttonText: 'Verify Identity',
   };
@@ -137,7 +137,7 @@ export function IdentitySection({
             onPress={onAction}
             hitSlop={Spacing.md}
           >
-            <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.textMuted} />
+            <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.labelQuaternary} />
           </HapticPressable>
         )}
       </View>

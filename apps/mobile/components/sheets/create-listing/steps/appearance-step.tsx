@@ -10,7 +10,7 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Fonts, Typography, Colors, Spacing, Radius } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -30,7 +30,7 @@ function ColorChip({
   color: { value: string; label: string; hex?: string };
   isSelected: boolean;
   onPress: () => void;
-  themeColors: Record<string, string>;
+  themeColors: ColorPalette;
 }) {
   return (
     <HapticPressable
@@ -38,8 +38,8 @@ function ColorChip({
       style={[
         styles.colorChip,
         {
-          backgroundColor: isSelected ? themeColors.text : themeColors.surface2,
-          borderColor: isSelected ? themeColors.text : themeColors.border,
+          backgroundColor: isSelected ? themeColors.label : themeColors.surface,
+          borderColor: isSelected ? themeColors.label : themeColors.border,
         },
       ]}
     >
@@ -58,7 +58,7 @@ function ColorChip({
         size="bodySm"
         numberOfLines={1}
         style={{
-          color: isSelected ? themeColors.bg : themeColors.text,
+          color: isSelected ? themeColors.background : themeColors.label,
           fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
         }}
       >
@@ -113,14 +113,14 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text : colors.surface2,
-                    borderColor: isSelected ? colors.text : colors.border,
+                    backgroundColor: isSelected ? colors.label : colors.surfaceSecondary,
+                    borderColor: isSelected ? colors.label : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="bodySm"
-                  style={{ color: isSelected ? colors.bg : colors.text }}
+                  style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {type.label}
                 </Body>

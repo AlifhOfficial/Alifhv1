@@ -48,7 +48,7 @@ export function HomeHeader() {
           {({ pressed }) => (
             <ThemeIcon
               size={Sizes.iconSm}
-              color={colors.icon}
+              color={colors.label}
               strokeWidth={2}
               style={{ opacity: pressed ? 0.7 : 1 }}
             />

@@ -19,60 +19,321 @@ export const Fonts = {
   extraBold: '800' as const,
 } as const;
 
-export const Colors = {
+// ── SYSTEM COLORS (Apple HIG + Material Design 3) ──────────────────────────
+// All color values are from official platform specifications.
+// iOS: Apple Human Interface Guidelines system colors
+// Android: Material Design 3 dynamic color equivalents
+
+/** Apple HIG system colors — official specifications */
+const iosSystemColors = {
+  // System grays (neutral — 0% saturation)
+  gray:  '#8C8C8C',  gray2: '#ADADAD',  gray3: '#C7C7C7',
+  gray4: '#D1D1D1',  gray5: '#E5E5E5',  gray6: '#F2F2F2',
+  
+  // Semantic labels (neutral greys)
+  label:           '#000000',  // Primary text (light mode)
+  labelDark:       '#FAFAFA',  // Primary text (dark mode) - hsl(0,0%,98%)
+  secondaryLabel:  '#3C3C3C',  secondaryLabelDark:  '#ADADAD',  // hsl(0,0%,68%) - matches web muted-foreground
+  tertiaryLabel:   '#737373',  tertiaryLabelDark:   '#8C8C8C',  // hsl(0,0%,55%) - mid grey, readable on elevated surfaces
+  quaternaryLabel: '#A3A3A3',  quaternaryLabelDark: '#6B6B6B',  // hsl(0,0%,42%) - low-emphasis but visible on dark surfaces
+  
+  // Backgrounds
+  systemBackground:          '#FFFFFF',  systemBackgroundDark:          '#000000',
+  secondarySystemBackground: '#F5F5F5',  secondarySystemBackgroundDark: '#1A1A1A',  // hsl(0,0%,10%) - matches web card
+  tertiarySystemBackground:  '#FFFFFF',  tertiarySystemBackgroundDark:  '#262626',  // hsl(0,0%,15%) - matches web muted
+  
+  // Grouped backgrounds (for grouped lists/tables)
+  groupedBackground:          '#F5F5F5',  groupedBackgroundDark:          '#000000',
+  secondaryGroupedBackground: '#FFFFFF',  secondaryGroupedBackgroundDark: '#1A1A1A',
+  tertiaryGroupedBackground:  '#F5F5F5',  tertiaryGroupedBackgroundDark:  '#262626',
+  
+  // Fills (translucent overlays — neutral)
+  fill:  'rgba(128,128,128,0.20)',  fillDark:  'rgba(128,128,128,0.36)',
+  fill2: 'rgba(128,128,128,0.16)',  fill2Dark: 'rgba(128,128,128,0.32)',
+  fill3: 'rgba(128,128,128,0.12)',  fill3Dark: 'rgba(128,128,128,0.24)',
+  
+  // Separators (neutral greys)
+  separator:       'rgba(0,0,0,0.10)',     separatorDark:       'rgba(255,255,255,0.10)',
+  opaqueSeparator: '#E0E0E0',              opaqueSeparatorDark: '#383838',  // hsl(0,0%,22%) - matches web border
+  
+  // System accent colors (official HIG values)
+  blue:   '#007AFF',  blueDark:   '#0A84FF',
+  green:  '#34C759',  greenDark:  '#30D158',
+  indigo: '#5856D6',  indigoDark: '#5E5CE6',
+  orange: '#FF9500',  orangeDark: '#FF9F0A',
+  pink:   '#FF2D55',  pinkDark:   '#FF375F',
+  purple: '#AF52DE',  purpleDark: '#BF5AF2',
+  red:    '#FF3B30',  redDark:    '#FF453A',
+  teal:   '#5AC8FA',  tealDark:   '#64D2FF',
+  yellow: '#FFCC00',  yellowDark: '#FFD60A',
+} as const;
+
+/** Material Design 3 equivalent mappings */
+const md3Colors = {
+  // Surface tiers (neutral greys to match web, no purple tint)
+  surfaceContainerLowest:  '#FFFFFF',  surfaceContainerLowestDark:  '#0D0D0D',  // hsl(0,0%,5%)
+  surfaceContainerLow:     '#F5F5F5',  surfaceContainerLowDark:     '#141414',  // hsl(0,0%,8%)
+  surfaceContainer:        '#F0F0F0',  surfaceContainerDark:        '#1A1A1A',  // hsl(0,0%,10%) - web card
+  surfaceContainerHigh:    '#EBEBEB',  surfaceContainerHighDark:    '#262626',  // hsl(0,0%,15%) - web muted
+  surfaceContainerHighest: '#E6E6E6',  surfaceContainerHighestDark: '#333333',  // hsl(0,0%,20%)
+  
+  // On-surface text (neutral)
+  onSurface:          '#1A1A1A',  onSurfaceDark:          '#E6E6E6',
+  onSurfaceVariant:   '#474747',  onSurfaceVariantDark:   '#C7C7C7',
+  
+  // Outline (borders/separators — neutral)
+  outline:        '#787878',  outlineDark:        '#939393',
+  outlineVariant: '#C7C7C7',  outlineVariantDark: '#474747',
+  
+  // Primary (brand/accent color — using HIG blue as default)
+  primary:         '#0066FF',  primaryDark:         '#0A84FF',
+  onPrimary:       '#FFFFFF',  onPrimaryDark:       '#FFFFFF',
+  primaryContainer:'#E6F0FF',  primaryContainerDark:'#0D2847',
+  
+  // Semantic states
+  error:         '#BA1A1A',  errorDark:         '#FF5449',
+  onError:       '#FFFFFF',  onErrorDark:       '#690005',
+  errorContainer:'#FFDAD6',  errorContainerDark:'#93000A',
+} as const;
+
+/** Color palette type — ensures light/dark compatibility */
+export interface ColorPalette {
+  // Base
+  black: string;
+  white: string;
+  
+  // Backgrounds
+  background: string;
+  backgroundSecondary: string;
+  backgroundTertiary: string;
+  
+  // Surfaces
+  surface: string;
+  surfaceSecondary: string;
+  surfaceTertiary: string;
+  
+  // Text/Labels
+  label: string;
+  labelSecondary: string;
+  labelTertiary: string;
+  labelQuaternary: string;
+  placeholder: string;
+  
+  // Borders & Separators
+  border: string;
+  separator: string;
+  outline: string;
+  
+  // Fills
+  fill: string;
+  fill2: string;
+  fill3: string;
+  
+  // Primary
+  primary: string;
+  primaryForeground: string;
+  primaryMuted: string;
+  
+  // Semantic states
+  success: string;
+  successMuted: string;
+  warning: string;
+  warningMuted: string;
+  error: string;
+  errorMuted: string;
+  
+  // Additional
+  link: string;
+  overlay: string;
+  skeleton: string;
+  favorite: string;
+  
+  // BLK tier
+  blkBg: string;
+  blkBorder: string;
+  blkText: string;
+  blkText2: string;
+  blkBadgeBg: string;
+  blkBadgeBorder: string;
+  blkBadgeFg: string;
+  
+  // Glass/translucency
+  glassBg: string;
+  glassBorder: string;
+  glassBorderDark: string;
+  
+  // Status
+  online: string;
+  offline: string;
+  
+  // Semantic accent colors (for UI elements that need specific hues)
+  star: string;           // Rating stars
+  amna: string;           // AI/Amna purple
+  amnaMuted: string;      // AI/Amna purple background
+  whatsapp: string;       // WhatsApp brand
+  info: string;           // Info/blue-500 accent
+  infoMuted: string;      // Info background
+}
+
+/** Semantic color system — platform-adaptive */
+export const Colors: { light: ColorPalette; dark: ColorPalette } = {
   light: {
-    black: '#000000',    white: '#FFFFFF',
-    bg: '#F2F2F2',       bg2: '#EBEBEB',
-    surface: '#E5E5E5',  surface2: '#D9D9D9',
-    input: '#E5E5E5',
-    text: '#050505',     text2: '#2B2B2B',   text3: '#8C8C8C',   textMuted: '#ADADAD',
-    primary: '#0066FF',  primaryFg: '#FFFFFF', primaryMuted: '#E6F0FF',
-    success: '#22C55E',  successMuted: '#DCFCE7',
-    warning: '#F59E0B',  warningMuted: '#FEF3C7',
-    error: '#EF4444',    errorMuted: '#FEE2E2',
-    border: '#D9D9D9',
-    icon: '#2B2B2B',     iconMuted: '#ADADAD',
-    glassBorder: 'rgba(0,0,0,0.22)',
-    glassBg: '#F2F2F2',
-    glassBorderDark: 'rgba(0,0,0,0.22)',
-    fill: 'rgba(115,115,115,0.16)',
-    fill2: 'rgba(115,115,115,0.10)',
-    overlay: 'rgba(0,0,0,0.4)',
-    skeleton: '#D9D9D9',
-    favorite: '#F43F5E',
-    blkBadgeBg: 'rgba(0,0,0,0.85)',
-    blkBadgeBorder: 'rgba(255,255,255,0.12)',
-    blkBadgeFg: '#FAFAFA',
-    blkBg: '#F2F2F2',    blkBorder: '#D9D9D9',
-    blkText: '#050505',  blkText2: '#5C5C5C',
-    online: '#FF6B6B',   offline: '#9B87F5',
+    // ── Base ──────────────────────────────────────────────────────────────
+    black: '#000000',
+    white: '#FFFFFF',
+    
+    // ── Backgrounds (3-tier hierarchy) ────────────────────────────────────
+    background:          iosSystemColors.systemBackground,           // Primary background
+    backgroundSecondary: iosSystemColors.secondarySystemBackground,  // Cards, grouped content
+    backgroundTertiary:  iosSystemColors.tertiarySystemBackground,   // Third-level grouping
+    
+    // ── Surfaces (for elevated/grouped content) ───────────────────────────
+    surface:          md3Colors.surfaceContainer,        // Default surface (cards, sheets)
+    surfaceSecondary: md3Colors.surfaceContainerHigh,    // Elevated surface
+    surfaceTertiary:  md3Colors.surfaceContainerHighest, // Highest elevation
+    
+    // ── Text/Labels (4-tier semantic hierarchy) ───────────────────────────
+    label:           iosSystemColors.label,           // Primary text
+    labelSecondary:  iosSystemColors.secondaryLabel,  // Secondary text (60% opacity equivalent)
+    labelTertiary:   iosSystemColors.tertiaryLabel,   // Tertiary text (30% opacity equivalent)
+    labelQuaternary: iosSystemColors.quaternaryLabel, // Quaternary text (18% opacity equivalent)
+    placeholder:     iosSystemColors.tertiaryLabel,   // Placeholder text in inputs
+    
+    // ── Borders & Separators ──────────────────────────────────────────────
+    border:    iosSystemColors.separator,       // Standard separator (translucent)
+    separator: iosSystemColors.opaqueSeparator, // Opaque separator
+    outline:   md3Colors.outline,               // MD3 outline (for borders)
+    
+    // ── Fills (translucent overlays) ──────────────────────────────────────
+    fill:  iosSystemColors.fill,  // Primary fill
+    fill2: iosSystemColors.fill2, // Secondary fill
+    fill3: iosSystemColors.fill3, // Tertiary fill
+    
+    // ── Accent/Primary (brand color) ──────────────────────────────────────
+    primary:          iosSystemColors.blue,           // Primary accent
+    primaryForeground:md3Colors.onPrimary,            // Text on primary
+    primaryMuted:     md3Colors.primaryContainer,     // Subtle primary background
+    
+    // ── Semantic states ───────────────────────────────────────────────────
+    success:      iosSystemColors.green,           // Success state
+    successMuted: 'rgba(52,199,89,0.15)',          // Success background
+    warning:      iosSystemColors.orange,          // Warning state
+    warningMuted: 'rgba(255,149,0,0.15)',          // Warning background
+    error:        iosSystemColors.red,             // Error state
+    errorMuted:   md3Colors.errorContainer,        // Error background
+    
+    // ── Additional semantic colors ────────────────────────────────────────
+    link:     iosSystemColors.blue,  // Hyperlinks
+    overlay:  'rgba(0,0,0,0.4)',     // Modal/sheet overlay
+    skeleton: iosSystemColors.gray3, // Skeleton loader
+    
+    // ── App-specific ──────────────────────────────────────────────────────
+    favorite: iosSystemColors.pink,  // Favorite/like indicator
+    
+    // ── BLK tier (premium listing/partner branding) ───────────────────────
+    blkBg:           iosSystemColors.systemBackground,   // Same as background
+    blkBorder:       iosSystemColors.separator,          // Same as border
+    blkText:         iosSystemColors.label,              // Same as label
+    blkText2:        iosSystemColors.secondaryLabel,     // Same as labelSecondary
+    blkBadgeBg:      'rgba(0,0,0,0.85)',                 // Dark badge background
+    blkBadgeBorder:  'rgba(255,255,255,0.12)',           // Subtle light border
+    blkBadgeFg:      '#FAFAFA',                          // Light text on dark badge
+    
+    // ── Glass/translucency (Liquid Glass) ─────────────────────────────────
+    glassBg:          iosSystemColors.systemBackground,   // Same as background
+    glassBorder:      'rgba(0,0,0,0.22)',                 // Translucent border
+    glassBorderDark:  'rgba(0,0,0,0.22)',                 // Same in light mode
+    
+    // ── Status indicators (online/presence) ───────────────────────────────
+    online:  iosSystemColors.red,     // Online indicator (red per brand)
+    offline: iosSystemColors.purple,  // Offline/away indicator
+    
+    // ── Semantic accent colors ────────────────────────────────────────────
+    star:      '#FACC15',                  // Rating stars (amber)
+    amna:      '#8B5CF6',                  // AI/Amna purple
+    amnaMuted: 'rgba(139,92,246,0.15)',     // AI/Amna purple background
+    whatsapp:  '#25D366',                  // WhatsApp brand green
+    info:      '#3B82F6',                  // Info/blue-500
+    infoMuted: 'rgba(59,130,246,0.12)',     // Info background
   },
   dark: {
-    black: '#000000',    white: '#FFFFFF',
-    bg: '#0D0D0D',       bg2: '#141414',
-    surface: '#1A1A1A',  surface2: '#262626',
-    input: '#1A1A1A',
-    text: '#FAFAFA',     text2: '#D4D4D4',   text3: '#737373',   textMuted: '#525252',
-    primary: '#0066FF',  primaryFg: '#FAFAFA', primaryMuted: '#0D2847',
-    success: '#22C55E',  successMuted: '#14532D',
-    warning: '#F59E0B',  warningMuted: '#451A03',
-    error: '#EF4444',    errorMuted: '#450A0A',
-    border: '#262626',
-    icon: '#D4D4D4',     iconMuted: '#525252',
-    glassBorder: 'rgba(255,255,255,0.22)',
-    glassBg: '#0D0D0D',
-    glassBorderDark: 'rgba(255,255,255,0.22)',
-    fill: 'rgba(115,115,115,0.24)',
-    fill2: 'rgba(115,115,115,0.16)',
-    overlay: 'rgba(0,0,0,0.7)',
-    skeleton: '#262626',
-    favorite: '#F43F5E',
-    blkBadgeBg: 'rgba(0,0,0,0.9)',
-    blkBadgeBorder: 'rgba(255,255,255,0.14)',
-    blkBadgeFg: '#FAFAFA',
-    blkBg: '#0D0D0D',    blkBorder: '#262626',
-    blkText: '#FAFAFA',  blkText2: '#A3A3A3',
-    online: '#FF6B6B',   offline: '#9B87F5',
+    // ── Base ──────────────────────────────────────────────────────────────
+    black: '#000000',
+    white: '#FFFFFF',
+    
+    // ── Backgrounds (3-tier hierarchy) ────────────────────────────────────
+    background:          iosSystemColors.systemBackgroundDark,           // Pure black (OLED)
+    backgroundSecondary: iosSystemColors.secondarySystemBackgroundDark,  // Slightly elevated
+    backgroundTertiary:  iosSystemColors.tertiarySystemBackgroundDark,   // Third-level
+    
+    // ── Surfaces (for elevated/grouped content) ───────────────────────────
+    surface:          md3Colors.surfaceContainerDark,     // Default surface
+    surfaceSecondary: md3Colors.surfaceContainerHighDark, // Elevated
+    surfaceTertiary:  md3Colors.surfaceContainerHighestDark, // Highest
+    
+    // ── Text/Labels (4-tier semantic hierarchy) ───────────────────────────
+    label:           iosSystemColors.labelDark,           // Primary text (white)
+    labelSecondary:  iosSystemColors.secondaryLabelDark,  // Secondary
+    labelTertiary:   iosSystemColors.tertiaryLabelDark,   // Tertiary
+    labelQuaternary: iosSystemColors.quaternaryLabelDark, // Quaternary
+    placeholder:     iosSystemColors.tertiaryLabelDark,   // Placeholder
+    
+    // ── Borders & Separators ──────────────────────────────────────────────
+    border:    iosSystemColors.separatorDark,
+    separator: iosSystemColors.opaqueSeparatorDark,
+    outline:   md3Colors.outlineDark,
+    
+    // ── Fills (translucent overlays) ──────────────────────────────────────
+    fill:  iosSystemColors.fillDark,
+    fill2: iosSystemColors.fill2Dark,
+    fill3: iosSystemColors.fill3Dark,
+    
+    // ── Accent/Primary (brand color) ──────────────────────────────────────
+    primary:          iosSystemColors.blueDark,
+    primaryForeground:md3Colors.onPrimaryDark,
+    primaryMuted:     md3Colors.primaryContainerDark,
+    
+    // ── Semantic states ───────────────────────────────────────────────────
+    success:      iosSystemColors.greenDark,
+    successMuted: 'rgba(48,209,88,0.20)',
+    warning:      iosSystemColors.orangeDark,
+    warningMuted: 'rgba(255,159,10,0.20)',
+    error:        iosSystemColors.redDark,
+    errorMuted:   md3Colors.errorContainerDark,
+    
+    // ── Additional semantic colors ────────────────────────────────────────
+    link:     iosSystemColors.blueDark,
+    overlay:  'rgba(0,0,0,0.7)',
+    skeleton: md3Colors.surfaceContainerHighestDark, // #333333 — subtle neutral on dark surfaces
+    
+    // ── App-specific ──────────────────────────────────────────────────────
+    favorite: iosSystemColors.pinkDark,
+    
+    // ── BLK tier (premium listing/partner branding) ───────────────────────
+    blkBg:           iosSystemColors.systemBackgroundDark,  // Pure black
+    blkBorder:       iosSystemColors.separatorDark,         // Separator
+    blkText:         iosSystemColors.labelDark,             // White text
+    blkText2:        iosSystemColors.secondaryLabelDark,    // Secondary text
+    blkBadgeBg:      'rgba(0,0,0,0.9)',                     // Slightly darker badge
+    blkBadgeBorder:  'rgba(255,255,255,0.14)',              // Slightly more visible border
+    blkBadgeFg:      '#FAFAFA',                             // Same light text
+    
+    // ── Glass/translucency (Liquid Glass) ─────────────────────────────────
+    glassBg:          iosSystemColors.systemBackgroundDark,
+    glassBorder:      'rgba(255,255,255,0.22)',            // Light translucent border
+    glassBorderDark:  'rgba(255,255,255,0.22)',            // Same in dark mode
+    
+    // ── Status indicators (online/presence) ───────────────────────────────
+    online:  iosSystemColors.redDark,
+    offline: iosSystemColors.purpleDark,
+    
+    // ── Semantic accent colors ────────────────────────────────────────────
+    star:      '#FBBF24',                  // Rating stars (amber, slightly brighter for dark)
+    amna:      '#A78BFA',                  // AI/Amna purple (lighter for dark)
+    amnaMuted: 'rgba(167,139,250,0.20)',    // AI/Amna purple background
+    whatsapp:  '#25D366',                  // WhatsApp brand green
+    info:      '#60A5FA',                  // Info/blue-400 (lighter for dark)
+    infoMuted: 'rgba(96,165,250,0.15)',     // Info background
   },
 };
 
@@ -204,5 +465,18 @@ export const Shadows = {
   lg: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4 },
 } as const;
 
+// ── Type exports ────────────────────────────────────────────────────────────
 export type ColorScheme = keyof typeof Colors;
-export type ThemeColors = typeof Colors.light;
+export type ThemeColors = ColorPalette;
+
+/** iOS system grays — neutral scale aligned with md3 surface tiers
+ *  Light values: original HIG, all hsl(0,0%,N%)
+ *  Dark values:  inverted to match our established neutral dark scale */
+export const SystemGrays = {
+  gray:  iosSystemColors.gray,   grayDark:  iosSystemColors.quaternaryLabelDark,  // #595959 — hsl(0,0%,35%)
+  gray2: iosSystemColors.gray2,  gray2Dark: md3Colors.outlineVariantDark,         // #474747 — hsl(0,0%,28%)
+  gray3: iosSystemColors.gray3,  gray3Dark: iosSystemColors.opaqueSeparatorDark,  // #383838 — hsl(0,0%,22%)
+  gray4: iosSystemColors.gray4,  gray4Dark: md3Colors.surfaceContainerHighestDark,// #333333 — hsl(0,0%,20%)
+  gray5: iosSystemColors.gray5,  gray5Dark: iosSystemColors.tertiarySystemBackgroundDark, // #262626 — hsl(0,0%,15%)
+  gray6: iosSystemColors.gray6,  gray6Dark: iosSystemColors.secondarySystemBackgroundDark,// #1A1A1A — hsl(0,0%,10%)
+} as const;

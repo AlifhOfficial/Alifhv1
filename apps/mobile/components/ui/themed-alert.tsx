@@ -102,7 +102,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
           {Platform.OS === 'ios' ? (
             <BlurView intensity={20} tint={colorScheme} style={StyleSheet.absoluteFill} />
           ) : (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)' }]} />
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.overlay }]} />
           )}
         </Pressable>
 
@@ -124,7 +124,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
 
             {/* Message */}
             {config?.message && (
-              <Body size="body" style={[styles.message, { color: colors.text2 }]}>
+              <Body size="body" style={[styles.message, { color: colors.labelSecondary }]}>
                 {config.message}
               </Body>
             )}
@@ -155,10 +155,10 @@ export function AlertProvider({ children }: AlertProviderProps) {
                       size="body"
                       style={{
                         color: isDestructive
-                          ? '#FFFFFF'
+                          ? colors.white
                           : isCancel
-                            ? colors.text
-                            : colors.primaryFg,
+                            ? colors.label
+                            : colors.primaryForeground,
                       }}
                     >
                       {button.text}

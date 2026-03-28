@@ -154,7 +154,7 @@ export function LocationFilterSheet({
           >
             <ButtonText
               size="bodySm"
-              style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
+              style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
             >
               Apply
             </ButtonText>
@@ -192,7 +192,7 @@ export function LocationFilterSheet({
                   <Body
                     size="body"
                     style={{ 
-                      color: isSelected ? colors.text : colors.text2,
+                      color: isSelected ? colors.label : colors.labelSecondary,
                       fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
                     }}
                   >
@@ -204,10 +204,10 @@ export function LocationFilterSheet({
                 </View>
                 <View style={[
                   styles.radio,
-                  { borderColor: isSelected ? colors.textMuted : colors.border },
+                  { borderColor: isSelected ? colors.labelQuaternary : colors.border },
                 ]}>
                   {isSelected && (
-                    <View style={[styles.radioInner, { backgroundColor: colors.textMuted }]} />
+                    <View style={[styles.radioInner, { backgroundColor: colors.labelQuaternary }]} />
                   )}
                 </View>
               </HapticPressable>

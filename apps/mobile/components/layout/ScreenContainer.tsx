@@ -137,7 +137,7 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
               onRefresh={onRefresh}
               tintColor={colors.primary}
               colors={[colors.primary]}
-              progressBackgroundColor={colors.bg}
+              progressBackgroundColor={colors.background}
             />
           ) : undefined
         }

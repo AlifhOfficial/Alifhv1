@@ -33,10 +33,10 @@ export function PartnersHeader({ count }: PartnersHeaderProps) {
         ]}
       >
         <View style={styles.pillContent}>
-          <Store size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+          <Store size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
           <Data size="bodySm">Partners</Data>
           {count !== undefined && count > 0 && (
-            <Data size="bodySm" style={{ color: colors.text3 }}>({count})</Data>
+            <Data size="bodySm" style={{ color: colors.labelTertiary }}>({count})</Data>
           )}
         </View>
       </View>

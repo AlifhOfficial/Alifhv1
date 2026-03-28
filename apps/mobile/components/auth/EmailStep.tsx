@@ -104,7 +104,7 @@ export function EmailStep({
             <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
               What's your email?
             </Heading>
-            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
+            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
               We'll send you a code to verify
             </Body>
           </Animated.View>
@@ -144,7 +144,7 @@ export function EmailStep({
                 value={email}
                 onChangeText={setEmail}
                 placeholder="your@email.com"
-                placeholderTextColor={colors.text3}
+                placeholderTextColor={colors.labelTertiary}
                 keyboardType="email-address"
                 keyboardAppearance="dark"
                 autoCapitalize="none"
@@ -176,7 +176,7 @@ export function EmailStep({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <ButtonText style={{ color: isValid ? colors.primaryFg : colors.text3 }}>
+                <ButtonText style={{ color: isValid ? colors.primaryForeground : colors.labelTertiary }}>
                   Continue
                 </ButtonText>
               )}

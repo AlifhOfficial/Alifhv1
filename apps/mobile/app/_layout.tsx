@@ -49,9 +49,9 @@ const LightTheme: NavTheme = {
   dark: false,
   colors: {
     primary: Colors.light.primary,
-    background: Colors.light.bg,
+    background: Colors.light.background,
     card: Colors.light.surface,
-    text: Colors.light.text,
+    text: Colors.light.label,
     border: Colors.light.border,
     notification: Colors.light.primary,
   },
@@ -67,9 +67,9 @@ const CustomDarkTheme: NavTheme = {
   dark: true,
   colors: {
     primary: Colors.dark.primary,
-    background: Colors.dark.bg,
+    background: Colors.dark.background,
     card: Colors.dark.surface,
-    text: Colors.dark.text,
+    text: Colors.dark.label,
     border: Colors.dark.border,
     notification: Colors.dark.primary,
   },
@@ -142,13 +142,13 @@ function RootLayoutNav() {
     }
 
     // Set immediately on mount to avoid flash, then update when theme changes
-    SystemUI.setBackgroundColorAsync('#000000').catch(() => {});
+    SystemUI.setBackgroundColorAsync(Colors.dark.black).catch(() => {});
 
     let interactionTask: ReturnType<typeof InteractionManager.runAfterInteractions> | null = null;
 
     const frameId = requestAnimationFrame(() => {
       interactionTask = InteractionManager.runAfterInteractions(() => {
-        SystemUI.setBackgroundColorAsync(colors.bg).catch(() => {});
+        SystemUI.setBackgroundColorAsync(colors.background).catch(() => {});
       });
     });
 
@@ -156,7 +156,7 @@ function RootLayoutNav() {
       cancelAnimationFrame(frameId);
       interactionTask?.cancel();
     };
-  }, [colors.bg]);
+  }, [colors.background]);
   
   // Memoize navigation theme to prevent full re-renders
   const navTheme = useMemo(
@@ -212,7 +212,7 @@ function RootLayoutNav() {
   // Show onboarding auth flow if not completed
   if (hasCompletedOnboarding === false) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
         <AuthFlow 
           onComplete={handleOnboardingComplete}
           onSkip={handleOnboardingSkip}
@@ -226,7 +226,7 @@ function RootLayoutNav() {
 
   return (
     <NavigationThemeProvider value={navTheme}>
-      <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
         <Stack
           screenOptions={{
             headerShown: true,
@@ -234,7 +234,7 @@ function RootLayoutNav() {
             gestureEnabled: true,
             gestureDirection: 'horizontal',
             animation: 'slide_from_right',
-            contentStyle: { backgroundColor: colors.bg },
+            contentStyle: { backgroundColor: colors.background },
           }}
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -263,7 +263,7 @@ function RootLayoutNav() {
         presentationStyle="fullScreen"
         statusBarTranslucent
       >
-        <View style={{ flex: 1, backgroundColor: colors.bg }}>
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
           <AuthFlow 
             onComplete={handleAuthComplete}
             onSkip={closeAuthFlow}
@@ -292,7 +292,7 @@ export default function RootLayout() {
   // Always render with full provider stack - onboarding is handled inside RootLayoutNav
   return (
     <ErrorBoundary>
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#000000' }}>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.black }}>
         <SafeAreaProvider>
           <QueryClientProvider client={queryClient}>
             <ThemeProvider>

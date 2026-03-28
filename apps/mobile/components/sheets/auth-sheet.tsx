@@ -169,7 +169,7 @@ export function AuthSheet({
               opacity: pressed ? 0.8 : 1,
             }]}
           >
-            <Data size="body" style={{ color: colors.primaryFg }}>
+            <Data size="body" style={{ color: colors.primaryForeground }}>
               Sign In
             </Data>
           </HapticPressable>

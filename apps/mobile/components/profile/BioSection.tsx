@@ -66,7 +66,7 @@ export function BioSection({
   };
 
   const charCountColor =
-    bio.length >= MAX_BIO_LENGTH ? colors.error : colors.text3;
+    bio.length >= MAX_BIO_LENGTH ? colors.error : colors.labelTertiary;
 
   return (
     <Section title="Bio" colors={colors} delay={250}>
@@ -79,13 +79,13 @@ export function BioSection({
               value={bio}
               onChangeText={handleChange}
               placeholder="Tell others about yourself..."
-              placeholderTextColor={colors.text3}
+              placeholderTextColor={colors.labelTertiary}
               style={[
                 styles.input,
                 Typography.body,
                 {
                   backgroundColor: colors.surface,
-                  color: colors.text,
+                  color: colors.label,
                   borderColor: colors.border,
                 },
               ]}

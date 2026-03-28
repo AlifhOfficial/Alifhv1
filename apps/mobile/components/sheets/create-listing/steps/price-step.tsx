@@ -76,9 +76,9 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
             AED
           </Body>
           <BottomSheetTextInput
-            style={[styles.input, { color: colors.text }]}
+            style={[styles.input, { color: colors.label }]}
             placeholder="0"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.labelQuaternary}
             value={data.price || ''}
             onChangeText={handleChange}
             keyboardType="number-pad"
@@ -88,7 +88,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
 
         {/* Formatted display */}
         {data.price && priceNum > 0 && (
-          <Data size="title" style={{ color: colors.text, textAlign: 'center' }}>
+          <Data size="title" style={{ color: colors.label, textAlign: 'center' }}>
             AED {priceNum.toLocaleString()}
           </Data>
         )}
@@ -109,14 +109,14 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.presetChip,
                   {
-                    backgroundColor: isActive ? colors.text : colors.surface2,
-                    borderColor: isActive ? colors.text : colors.border,
+                    backgroundColor: isActive ? colors.label : colors.surfaceSecondary,
+                    borderColor: isActive ? colors.label : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="bodySm"
-                  style={{ color: isActive ? colors.bg : colors.text }}
+                  style={{ color: isActive ? colors.background : colors.label }}
                 >
                   {preset.label}
                 </Body>
@@ -127,7 +127,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
       </View>
 
       {/* Negotiable toggle */}
-      <View style={[styles.toggleRow, { backgroundColor: colors.surface2 }]}>
+      <View style={[styles.toggleRow, { backgroundColor: colors.surfaceSecondary }]}>
         <View style={styles.toggleText}>
           <Label size="caption">Price Negotiable?</Label>
           <Supporting size="bodySm" tone="muted">
@@ -137,8 +137,8 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
         <Switch
           value={data.isNegotiable || false}
           onValueChange={handleNegotiableToggle}
-          trackColor={{ false: colors.fill2, true: colors.text + '80' }}
-          thumbColor={data.isNegotiable ? colors.text : colors.textMuted}
+          trackColor={{ false: colors.fill2, true: colors.label + '80' }}
+          thumbColor={data.isNegotiable ? colors.label : colors.labelQuaternary}
         />
       </View>
     </StepContainer>

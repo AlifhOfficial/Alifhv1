@@ -37,8 +37,8 @@ const GLASS = {
   border: Colors.dark.blkBorder, // #262626
   text: Colors.dark.blkText, // #FAFAFA
   text2: Colors.dark.blkText2, // #A3A3A3
-  text3: 'rgba(255,255,255,0.4)',
-  separator: 'rgba(255,255,255,0.25)',
+  text3: Colors.dark.labelTertiary,
+  separator: Colors.dark.border,
   imageBg: Colors.dark.blkBg, // #0D0D0D
 };
 

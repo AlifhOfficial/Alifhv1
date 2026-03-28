@@ -61,7 +61,7 @@ export default function SavedScreen() {
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <SavedHeader
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -77,7 +77,7 @@ export default function SavedScreen() {
   // Loading state
   if (isLoading && currentListings.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <SavedHeader
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -94,7 +94,7 @@ export default function SavedScreen() {
   // Error state
   if (error && currentListings.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <SavedHeader
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -108,7 +108,7 @@ export default function SavedScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <SavedHeader
         activeTab={activeTab}

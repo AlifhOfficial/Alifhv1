@@ -543,7 +543,7 @@ export default function BrowseScreen() {
             onRefresh={handleRefresh}
             tintColor={colors.primary}
             colors={[colors.primary]}
-            progressBackgroundColor={colors.bg}
+            progressBackgroundColor={colors.background}
           />
         }
       />

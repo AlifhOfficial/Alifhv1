@@ -31,7 +31,7 @@ export default function NotFoundScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
         {/* Icon */}
         <View style={[styles.iconContainer, { backgroundColor: colors.primary + '15' }]}>
@@ -54,16 +54,16 @@ export default function NotFoundScreen() {
             onPress={handleGoHome}
             style={[styles.button, styles.primaryButton, { backgroundColor: colors.primary }]}
           >
-            <Home size={18} color="#fff" strokeWidth={2} />
-            <ButtonText size="body" style={{ color: '#fff' }}>Go Home</ButtonText>
+            <Home size={18} color={colors.primaryForeground} strokeWidth={2} />
+            <ButtonText size="body" style={{ color: colors.primaryForeground }}>Go Home</ButtonText>
           </Pressable>
 
           <Pressable
             onPress={handleGoBack}
             style={[styles.button, styles.secondaryButton, { borderColor: colors.border }]}
           >
-            <ArrowLeft size={18} color={colors.text} strokeWidth={2} />
-            <ButtonText size="body" style={{ color: colors.text }}>Go Back</ButtonText>
+            <ArrowLeft size={18} color={colors.label} strokeWidth={2} />
+            <ButtonText size="body" style={{ color: colors.label }}>Go Back</ButtonText>
           </Pressable>
         </View>
       </View>

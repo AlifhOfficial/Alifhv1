@@ -102,7 +102,7 @@ export function DeleteAccountSheet({
       enablePanDownToClose={!isDeleting}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.actionButtonSm }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.actionButtonSm }}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
@@ -133,14 +133,14 @@ export function DeleteAccountSheet({
             value={deleteText}
             onChangeText={setDeleteText}
             placeholder="DELETE"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.labelQuaternary}
             style={[
               styles.input,
               Typography.body,
               {
-                backgroundColor: colors.input,
+                backgroundColor: colors.surface,
                 borderColor: colors.border,
-                color: colors.text,
+                color: colors.label,
               },
             ]}
             autoCapitalize="characters"
@@ -160,7 +160,7 @@ export function DeleteAccountSheet({
               },
             ]}
           >
-            <Data size="body" style={{ color: colors.text }}>Cancel</Data>
+            <Data size="body" style={{ color: colors.label }}>Cancel</Data>
           </HapticPressable>
           <HapticPressable
             onPress={handleConfirm}
@@ -175,9 +175,9 @@ export function DeleteAccountSheet({
             ]}
           >
             {isDeleting ? (
-              <Loader2 size={Sizes.iconSm} color={colors.primaryFg} strokeWidth={2} />
+              <Loader2 size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
             ) : (
-              <Data size="body" style={{ color: colors.primaryFg }}>Delete</Data>
+              <Data size="body" style={{ color: colors.primaryForeground }}>Delete</Data>
             )}
           </HapticPressable>
         </View>

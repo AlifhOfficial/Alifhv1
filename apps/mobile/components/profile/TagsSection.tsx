@@ -30,8 +30,8 @@ function TagItem({ tag, isSelected, colors, onPress }: TagItemProps) {
       style={[
         styles.tag,
         {
-          backgroundColor: isSelected ? colors.surface2 : colors.surface,
-          borderColor: isSelected ? colors.text2 : colors.border,
+          backgroundColor: isSelected ? colors.surfaceSecondary : colors.surface,
+          borderColor: isSelected ? colors.labelSecondary : colors.border,
         },
       ]}
     >

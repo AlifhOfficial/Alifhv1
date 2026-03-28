@@ -157,7 +157,7 @@ export function MakeFilterSheet({
           <Body
             size="body"
             style={{ 
-              color: isSelected ? colors.text : colors.text2,
+              color: isSelected ? colors.label : colors.labelSecondary,
               fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
             }}
           >
@@ -171,10 +171,10 @@ export function MakeFilterSheet({
         </View>
         <View style={[
           styles.radio,
-          { borderColor: isSelected ? colors.textMuted : colors.border },
+          { borderColor: isSelected ? colors.labelQuaternary : colors.border },
         ]}>
           {isSelected && (
-            <View style={[styles.radioInner, { backgroundColor: colors.textMuted }]} />
+            <View style={[styles.radioInner, { backgroundColor: colors.labelQuaternary }]} />
           )}
         </View>
       </HapticPressable>
@@ -216,7 +216,7 @@ export function MakeFilterSheet({
             >
               <ButtonText
                 size="bodySm"
-                style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
+                style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
               >
                 Apply
               </ButtonText>
@@ -240,12 +240,12 @@ export function MakeFilterSheet({
 
         {/* Search Input */}
         <View style={[styles.searchContainer, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
-          <Search size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
+          <Search size={Sizes.iconSm} color={colors.labelQuaternary} strokeWidth={2} />
           <TextInput
             ref={searchInputRef}
-            style={[styles.searchInput, { color: colors.text }]}
+            style={[styles.searchInput, { color: colors.label }]}
             placeholder="Search makes..."
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.labelQuaternary}
             value={searchQuery}
             onChangeText={setSearchQuery}
             autoCorrect={false}
@@ -253,7 +253,7 @@ export function MakeFilterSheet({
           />
           {searchQuery.length > 0 && (
             <HapticPressable onPress={() => setSearchQuery('')} hitSlop={Layout.hitSlopSmall}>
-              <X size={Spacing.lg} color={colors.textMuted} strokeWidth={2} />
+              <X size={Spacing.lg} color={colors.labelQuaternary} strokeWidth={2} />
             </HapticPressable>
           )}
         </View>

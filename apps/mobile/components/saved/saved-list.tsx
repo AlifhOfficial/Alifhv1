@@ -63,9 +63,9 @@ function EmptyState({
           onPress={onBrowse}
           style={styles.ctaRow}
         >
-          <Heading size="subheading" style={{ color: colors.text }}>Browse</Heading>
+          <Heading size="subheading" style={{ color: colors.label }}>Browse</Heading>
           <View style={[styles.ctaBubble, { backgroundColor: colors.glassBg, borderColor: colors.border }]}>
-            <ArrowRight size={Sizes.iconXs} color={colors.text} strokeWidth={2} />
+            <ArrowRight size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
           </View>
         </HapticPressable>
       </Animated.View>

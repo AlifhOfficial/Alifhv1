@@ -72,7 +72,7 @@ export function ChatHeader({
     <View
       style={[
         styles.container,
-        { paddingTop: insets.top, borderBottomColor: colors.border, backgroundColor: colors.bg },
+        { paddingTop: insets.top, borderBottomColor: colors.border, backgroundColor: colors.background },
       ]}
     >
       {/* Avatar */}
@@ -83,7 +83,7 @@ export function ChatHeader({
           <UserAvatar src={avatarUrl} name={name} size="sm" />
         )}
         {isOnline && !isLoading && (
-          <View style={[styles.onlineDot, { backgroundColor: colors.success, borderColor: colors.bg }]} />
+          <View style={[styles.onlineDot, { backgroundColor: colors.success, borderColor: colors.background }]} />
         )}
       </View>
 
@@ -102,10 +102,10 @@ export function ChatHeader({
             <Skeleton width={120} height={14} />
           ) : (
             <>
-              <Data size="body" style={{ color: colors.text }} numberOfLines={1}>
+              <Data size="body" style={{ color: colors.label }} numberOfLines={1}>
                 {name}
               </Data>
-              <Supporting size="bodySm" style={{ color: colors.text3 }} numberOfLines={1}>
+              <Supporting size="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1}>
                 {activityText}
                 {listingTitle ? `  ·  ${listingTitle}` : ''}
               </Supporting>
@@ -118,10 +118,10 @@ export function ChatHeader({
             <Skeleton width={120} height={14} />
           ) : (
             <>
-              <Data size="body" style={{ color: colors.text }} numberOfLines={1}>
+              <Data size="body" style={{ color: colors.label }} numberOfLines={1}>
                 {name}
               </Data>
-              <Supporting size="bodySm" style={{ color: colors.text3 }} numberOfLines={1}>
+              <Supporting size="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1}>
                 {activityText}
                 {listingTitle ? `  ·  ${listingTitle}` : ''}
               </Supporting>

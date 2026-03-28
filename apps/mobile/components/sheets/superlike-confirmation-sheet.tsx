@@ -87,7 +87,7 @@ export function SuperlikeConfirmationSheet({
       enablePanDownToClose
       onDismiss={onClose}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
     >
       <BottomSheetView style={styles.content}>
@@ -104,15 +104,15 @@ export function SuperlikeConfirmationSheet({
               </Supporting>
             )}
           </View>
-          <View style={[styles.quotaBadge, { backgroundColor: remaining === 0 ? colors.warning + '20' : colors.bg2 }]}>
-            <Data size="bodySm" style={{ color: remaining === 0 ? colors.warning : colors.text2 }}>
+          <View style={[styles.quotaBadge, { backgroundColor: remaining === 0 ? colors.warning + '20' : colors.backgroundSecondary }]}>
+            <Data size="bodySm" style={{ color: remaining === 0 ? colors.warning : colors.labelSecondary }}>
               {remaining}/{total}
             </Data>
           </View>
         </View>
 
         {/* Description */}
-        <View style={[styles.descriptionBox, { backgroundColor: colors.bg2 }]}>
+        <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundSecondary }]}>
           <Supporting size="bodySm" style={{ textAlign: 'center' }}>
             Superlikes notify sellers that you're highly interested. Use them wisely — you have limited superlikes each month.
           </Supporting>
@@ -128,7 +128,7 @@ export function SuperlikeConfirmationSheet({
               { borderColor: colors.border, opacity: pressed ? 0.7 : 1 },
             ]}
           >
-            <Data size="body" style={{ color: colors.text }}>Cancel</Data>
+            <Data size="body" style={{ color: colors.label }}>Cancel</Data>
           </HapticPressable>
           <HapticPressable
             onPress={handleConfirm}
@@ -138,8 +138,8 @@ export function SuperlikeConfirmationSheet({
               { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 },
             ]}
           >
-            <Zap size={Spacing.lg} color="#fff" />
-            <Data size="body" style={{ color: '#fff' }}>Confirm</Data>
+            <Zap size={Spacing.lg} color={colors.primaryForeground} />
+            <Data size="body" style={{ color: colors.primaryForeground }}>Confirm</Data>
           </HapticPressable>
         </View>
       </BottomSheetView>
@@ -203,7 +203,7 @@ export function SuperlikeQuotaExhaustedSheet({
       enablePanDownToClose
       onDismiss={onClose}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
     >
       <BottomSheetView style={styles.content}>
@@ -230,7 +230,7 @@ export function SuperlikeQuotaExhaustedSheet({
             { backgroundColor: colors.primary, marginTop: Spacing.lg, opacity: pressed ? 0.8 : 1 },
           ]}
         >
-          <Data size="body" style={{ color: '#fff' }}>Got it</Data>
+          <Data size="body" style={{ color: colors.primaryForeground }}>Got it</Data>
         </HapticPressable>
       </BottomSheetView>
     </BottomSheetModal>

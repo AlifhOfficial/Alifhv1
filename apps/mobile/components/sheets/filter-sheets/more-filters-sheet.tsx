@@ -242,21 +242,21 @@ export function MoreFiltersSheet({
             <Body 
               size="body" 
               style={{ 
-                color: colors.text,
+                color: colors.label,
               }}
             >
               {title}
             </Body>
             {selectedCount > 0 && (
-              <View style={[styles.badge, { backgroundColor: colors.text }]}>  
-                <Label size="caption" style={{ color: colors.bg }}>{selectedCount}</Label>
+              <View style={[styles.badge, { backgroundColor: colors.label }]}>  
+                <Label size="caption" style={{ color: colors.background }}>{selectedCount}</Label>
               </View>
             )}
           </View>
           <Ionicons 
             name={isExpanded ? 'chevron-up' : 'chevron-down'} 
             size={Spacing.xl} 
-            color={colors.text2} 
+            color={colors.labelSecondary} 
           />
         </HapticPressable>
         {isExpanded && <View style={styles.sectionContent}>{content}</View>}
@@ -281,14 +281,14 @@ export function MoreFiltersSheet({
             style={[
               styles.chip,
               { 
-                backgroundColor: isSelected ? colors.text : colors.surface2,
-                borderColor: isSelected ? colors.text : colors.border,
+                backgroundColor: isSelected ? colors.label : colors.surfaceSecondary,
+                borderColor: isSelected ? colors.label : colors.border,
               },
             ]}
           >
             <Supporting
               size="bodySm"
-              style={{ color: isSelected ? colors.bg : colors.text }}
+              style={{ color: isSelected ? colors.background : colors.label }}
             >
               {option.label}
             </Supporting>
@@ -311,7 +311,7 @@ export function MoreFiltersSheet({
       <Body 
         size="body" 
         style={{ 
-          color: value ? colors.text : colors.text2,
+          color: value ? colors.label : colors.labelSecondary,
           fontWeight: value ? Fonts.bold : Fonts.semiBold,
         }}
       >
@@ -319,10 +319,10 @@ export function MoreFiltersSheet({
       </Body>
       <View style={[
         styles.radio,
-        { borderColor: value ? colors.textMuted : colors.border },
+        { borderColor: value ? colors.labelQuaternary : colors.border },
       ]}>
         {value && (
-          <View style={[styles.radioInner, { backgroundColor: colors.textMuted }]} />
+          <View style={[styles.radioInner, { backgroundColor: colors.labelQuaternary }]} />
         )}
       </View>
     </HapticPressable>
@@ -362,7 +362,7 @@ export function MoreFiltersSheet({
           >
             <ButtonText
               size="bodySm"
-              style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
+              style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
             >
               Apply
             </ButtonText>
@@ -510,14 +510,14 @@ export function MoreFiltersSheet({
                   style={[
                     styles.chip,
                     { 
-                      backgroundColor: isSelected ? colors.text : colors.surface2,
-                      borderColor: isSelected ? colors.text : colors.border,
+                      backgroundColor: isSelected ? colors.label : colors.surfaceSecondary,
+                      borderColor: isSelected ? colors.label : colors.border,
                     },
                   ]}
                 >
                   <Supporting
                     size="bodySm"
-                    style={{ color: isSelected ? colors.bg : colors.text }}
+                    style={{ color: isSelected ? colors.background : colors.label }}
                   >
                     {option.label}
                   </Supporting>
@@ -542,14 +542,14 @@ export function MoreFiltersSheet({
                   style={[
                     styles.chip,
                     { 
-                      backgroundColor: isSelected ? colors.text : colors.surface2,
-                      borderColor: isSelected ? colors.text : colors.border,
+                      backgroundColor: isSelected ? colors.label : colors.surfaceSecondary,
+                      borderColor: isSelected ? colors.label : colors.border,
                     },
                   ]}
                 >
                   <Supporting
                     size="bodySm"
-                    style={{ color: isSelected ? colors.bg : colors.text }}
+                    style={{ color: isSelected ? colors.background : colors.label }}
                   >
                     {option.label}
                   </Supporting>

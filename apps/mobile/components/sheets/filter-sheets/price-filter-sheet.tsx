@@ -158,7 +158,7 @@ export function PriceFilterSheet({
             >
               <ButtonText
                 size="bodySm"
-                style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
+                style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
               >
                 Apply
               </ButtonText>
@@ -194,14 +194,14 @@ export function PriceFilterSheet({
                 style={[
                   styles.presetChip,
                   { 
-                    backgroundColor: isActive ? colors.text : colors.surface2,
-                    borderColor: isActive ? colors.text : colors.border,
+                    backgroundColor: isActive ? colors.label : colors.surfaceSecondary,
+                    borderColor: isActive ? colors.label : colors.border,
                   },
                 ]}
               >
                 <Supporting
                   size="bodySm"
-                  style={{ color: isActive ? colors.bg : colors.text2 }}
+                  style={{ color: isActive ? colors.background : colors.labelSecondary }}
                 >
                   {preset.label}
                 </Supporting>
@@ -213,20 +213,20 @@ export function PriceFilterSheet({
         {/* Range Inputs */}
         <View style={styles.rangeRow}>
           <View style={styles.inputWrapper}>
-            <Label size="caption" style={{ color: colors.text2, marginBottom: Spacing.xs }}>
+            <Label size="caption" style={{ color: colors.labelSecondary, marginBottom: Spacing.xs }}>
               MIN
             </Label>
             <TextInput
               style={[
                 styles.input,
                 { 
-                  backgroundColor: colors.surface2,
+                  backgroundColor: colors.surfaceSecondary,
                   borderColor: colors.border,
-                  color: colors.text,
+                  color: colors.label,
                 },
               ]}
               placeholder="0"
-              placeholderTextColor={colors.text3}
+              placeholderTextColor={colors.labelTertiary}
               keyboardType="number-pad"
               value={localMin}
               onChangeText={setLocalMin}
@@ -234,20 +234,20 @@ export function PriceFilterSheet({
           </View>
           <Body size="bodyLg" tone="muted" style={styles.rangeDash}>–</Body>
           <View style={styles.inputWrapper}>
-            <Label size="caption" style={{ color: colors.text2, marginBottom: Spacing.xs }}>
+            <Label size="caption" style={{ color: colors.labelSecondary, marginBottom: Spacing.xs }}>
               MAX
             </Label>
             <TextInput
               style={[
                 styles.input,
                 { 
-                  backgroundColor: colors.surface2,
+                  backgroundColor: colors.surfaceSecondary,
                   borderColor: colors.border,
-                  color: colors.text,
+                  color: colors.label,
                 },
               ]}
               placeholder="Any"
-              placeholderTextColor={colors.text3}
+              placeholderTextColor={colors.labelTertiary}
               keyboardType="number-pad"
               value={localMax}
               onChangeText={setLocalMax}

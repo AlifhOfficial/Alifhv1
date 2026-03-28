@@ -103,6 +103,7 @@ export function SkeletonLoader({
 }: SkeletonLoaderProps) {
   const { colorScheme } = useTheme();
   const isDark = colorScheme === 'dark';
+  const colors = Colors[colorScheme];
   
   const shimmer = useSharedValue(-1);
 
@@ -125,8 +126,8 @@ export function SkeletonLoader({
     };
   });
 
-  const baseColor = isDark ? '#27272A' : '#E4E4E7';
-  const highlightColor = isDark ? '#3F3F46' : '#F4F4F5';
+  const baseColor = colors.surfaceSecondary;
+  const highlightColor = colors.fill;
 
   return (
     <View

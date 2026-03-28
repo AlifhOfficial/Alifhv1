@@ -22,9 +22,9 @@ export default function BrowseLayout() {
       screenOptions={{
         ...(Platform.OS === 'ios'
           ? iosOptions
-          : { headerStyle: { backgroundColor: colors.bg } }),
-        headerTintColor: colors.text,
-        contentStyle: { backgroundColor: colors.bg },
+          : { headerStyle: { backgroundColor: colors.background } }),
+        headerTintColor: colors.label,
+        contentStyle: { backgroundColor: colors.background },
       }}
     >
       <Stack.Screen

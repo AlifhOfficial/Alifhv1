@@ -32,7 +32,7 @@ export const ListingDescription = memo(function ListingDescription({
   const [showReadMore, setShowReadMore] = useState(false);
   const [measured, setMeasured] = useState(false);
 
-  const textColor = isBlk ? colors.blkText2 : colors.text2;
+  const textColor = isBlk ? colors.blkText2 : colors.labelSecondary;
 
   // Fired by the *hidden* full-text render (no numberOfLines).
   // Reliably reports all lines on both platforms.

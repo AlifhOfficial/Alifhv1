@@ -29,9 +29,9 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
           {seller.emailVerified ? (
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
           ) : (
-            <Circle size={Sizes.iconXs} color={colors.textMuted} />
+            <Circle size={Sizes.iconXs} color={colors.labelQuaternary} />
           )}
-          <Data size="bodySm" style={{ color: seller.emailVerified ? colors.success : colors.textMuted }}>
+          <Data size="bodySm" style={{ color: seller.emailVerified ? colors.success : colors.labelQuaternary }}>
             {seller.emailVerified ? 'Verified' : 'Unverified'}
           </Data>
         </View>
@@ -44,9 +44,9 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
           {seller.phoneVerified ? (
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
           ) : (
-            <Circle size={Sizes.iconXs} color={colors.textMuted} />
+            <Circle size={Sizes.iconXs} color={colors.labelQuaternary} />
           )}
-          <Data size="bodySm" style={{ color: seller.phoneVerified ? colors.success : colors.textMuted }}>
+          <Data size="bodySm" style={{ color: seller.phoneVerified ? colors.success : colors.labelQuaternary }}>
             {seller.phoneVerified ? 'Verified' : 'Unverified'}
           </Data>
         </View>

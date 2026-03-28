@@ -80,8 +80,8 @@ const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavo
   const metaBorder = isBlkPartner ? colors.blkBorder : colors.border;
   const actionBackground = isBlkPartner ? colors.blkBadgeBg : colors.fill2;
   const actionBorder = isBlkPartner ? colors.blkBadgeBorder : colors.border;
-  const actionColor = isBlkPartner ? colors.blkBadgeFg : colors.icon;
-  const metaColor = isBlkPartner ? colors.blkText2 : colors.text2;
+  const actionColor = isBlkPartner ? colors.blkBadgeFg : colors.label;
+  const metaColor = isBlkPartner ? colors.blkText2 : colors.labelSecondary;
   const title = `${listing.make} ${listing.model}`.trim();
 
   return (
@@ -89,7 +89,7 @@ const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavo
       onPress={() => onPress(listing.id)}
       style={[styles.product, { backgroundColor: colors.surface, borderColor: metaBorder }]}
     >
-      <View style={[styles.productImageShell, { backgroundColor: colors.surface2, borderColor: metaBorder }]}>
+      <View style={[styles.productImageShell, { backgroundColor: colors.surfaceSecondary, borderColor: metaBorder }]}>
         <Image
           source={thumb ? [{ uri: thumb }, ...(full && full !== thumb ? [{ uri: full }] : [])] : full ? { uri: full } : undefined}
           style={styles.productImage}
@@ -106,7 +106,7 @@ const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavo
 
       <View style={styles.productContent}>
         <View style={styles.productText}>
-          <Heading size="subheading" style={{ color: colors.text }} numberOfLines={2}>
+          <Heading size="subheading" style={{ color: colors.label }} numberOfLines={2}>
             {title}
           </Heading>
           {listing.year ? (

@@ -221,7 +221,7 @@ export function BookingDetailsSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
     >
       <BottomSheetScrollView
         style={styles.scrollView}
@@ -236,14 +236,14 @@ export function BookingDetailsSheet({
             hitSlop={Layout.hitSlop}
             style={[styles.closeButton, { backgroundColor: colors.error }]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
           </HapticPressable>
         </View>
 
         {/* ── Listing Hero ────────────────────────────────────────────── */}
         <HapticPressable
           onPress={() => onViewListing?.(booking.listingId)}
-          style={[styles.heroCard, { backgroundColor: colors.surface2 }]}
+          style={[styles.heroCard, { backgroundColor: colors.surfaceSecondary }]}
         >
           {booking.listingThumbnail ? (
             <Image
@@ -254,7 +254,7 @@ export function BookingDetailsSheet({
             />
           ) : (
             <View style={[styles.heroImage, { backgroundColor: colors.fill, alignItems: 'center', justifyContent: 'center' }]}>
-              <Ionicons name="car-outline" size={Sizes.iconXl} color={colors.textMuted} />
+              <Ionicons name="car-outline" size={Sizes.iconXl} color={colors.labelQuaternary} />
             </View>
           )}
           <View style={styles.heroInfo}>
@@ -314,7 +314,7 @@ export function BookingDetailsSheet({
               <Label
                 size="caption"
                 style={{
-                  color: '#FFFFFF',
+                  color: colors.primaryForeground,
                 }}
               >
                 {countdown.text}
@@ -324,9 +324,9 @@ export function BookingDetailsSheet({
         </View>
 
         {/* ── Date & Time ──────────────────────────────────────────────── */}
-        <View style={[styles.section, { backgroundColor: colors.surface2 }]}>
+        <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
           <View style={styles.detailRow}>
-            <Calendar size={Sizes.iconSm} color={colors.text2} />
+            <Calendar size={Sizes.iconSm} color={colors.labelSecondary} />
             <View style={styles.detailText}>
               <Supporting size="bodySm" tone="secondary">Date</Supporting>
               <Body size="body">{formatBookingDate(booking.scheduledDate)}</Body>
@@ -334,7 +334,7 @@ export function BookingDetailsSheet({
           </View>
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
           <View style={styles.detailRow}>
-            <Clock size={Sizes.iconSm} color={colors.text2} />
+            <Clock size={Sizes.iconSm} color={colors.labelSecondary} />
             <View style={styles.detailText}>
               <Supporting size="bodySm" tone="secondary">Time</Supporting>
               <Body size="body">{timeRange}</Body>
@@ -343,13 +343,13 @@ export function BookingDetailsSheet({
         </View>
 
         {/* ── Partner Info ──────────────────────────────────────────────── */}
-        <View style={[styles.section, { backgroundColor: colors.surface2 }]}>
+        <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
           <View style={styles.detailRow}>
             {booking.partnerLogo ? (
               <Image source={{ uri: getAppThumbUrl(booking.partnerLogo)! }} style={styles.partnerLogoLg} contentFit="contain" />
             ) : (
-              <View style={[styles.dealerIconCircle, { backgroundColor: colors.surface2 }]}>
-                <Ionicons name="storefront-outline" size={Sizes.iconXs} color={colors.text2} />
+              <View style={[styles.dealerIconCircle, { backgroundColor: colors.surfaceSecondary }]}>
+                <Ionicons name="storefront-outline" size={Sizes.iconXs} color={colors.labelSecondary} />
               </View>
             )}
             <View style={styles.detailText}>
@@ -365,7 +365,7 @@ export function BookingDetailsSheet({
                 onPress={() => handleOpenMaps(booking.partnerAddress!)}
                 style={styles.detailRow}
               >
-                <MapPin size={Sizes.iconSm} color={colors.text2} />
+                <MapPin size={Sizes.iconSm} color={colors.labelSecondary} />
                 <View style={[styles.detailText, { flex: 1 }]}>
                   <Supporting size="bodySm" tone="secondary">Address</Supporting>
                   <Body size="bodySm" numberOfLines={2}>{booking.partnerAddress}</Body>
@@ -382,7 +382,7 @@ export function BookingDetailsSheet({
                 onPress={() => handleCall(booking.partnerPhone)}
                 style={styles.detailRow}
               >
-                <Phone size={Sizes.iconSm} color={colors.text2} />
+                <Phone size={Sizes.iconSm} color={colors.labelSecondary} />
                 <View style={[styles.detailText, { flex: 1 }]}>
                   <Supporting size="bodySm" tone="secondary">Phone</Supporting>
                   <Body size="body">{booking.partnerPhone}</Body>
@@ -396,7 +396,7 @@ export function BookingDetailsSheet({
             <>
               <View style={[styles.divider, { backgroundColor: colors.border }]} />
               <View style={styles.detailRow}>
-                <User size={Sizes.iconSm} color={colors.text2} />
+                <User size={Sizes.iconSm} color={colors.labelSecondary} />
                 <View style={styles.detailText}>
                   <Supporting size="bodySm" tone="secondary">Contact Person</Supporting>
                   <Body size="body">
@@ -411,12 +411,12 @@ export function BookingDetailsSheet({
 
         {/* ── Confirmation Token ───────────────────────────────────────── */}
         {booking.confirmationToken && isActive && (
-          <View style={[styles.section, { backgroundColor: colors.surface2 }]}>
+          <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
             <View style={styles.detailRow}>
-              <Hash size={Sizes.iconSm} color={colors.text2} />
+              <Hash size={Sizes.iconSm} color={colors.labelSecondary} />
               <View style={styles.detailText}>
                 <Supporting size="bodySm" tone="secondary">Confirmation Code</Supporting>
-                <Data size="body" style={{ color: colors.text, letterSpacing: 1 }}>
+                <Data size="body" style={{ color: colors.label, letterSpacing: 1 }}>
                   {booking.confirmationToken}
                 </Data>
               </View>
@@ -426,10 +426,10 @@ export function BookingDetailsSheet({
 
         {/* ── Booking Details ──────────────────────────────────────────── */}
         {(booking.numberOfAttendees > 1 || booking.notes || booking.specialRequests) && (
-          <View style={[styles.section, { backgroundColor: colors.surface2 }]}>
+          <View style={[styles.section, { backgroundColor: colors.surfaceSecondary }]}>
             {booking.numberOfAttendees > 1 && (
               <View style={styles.detailRow}>
-                <Users size={Sizes.iconSm} color={colors.text2} />
+                <Users size={Sizes.iconSm} color={colors.labelSecondary} />
                 <View style={styles.detailText}>
                   <Supporting size="bodySm" tone="secondary">Attendees</Supporting>
                   <Body size="body">{booking.numberOfAttendees}</Body>
@@ -442,7 +442,7 @@ export function BookingDetailsSheet({
                   <View style={[styles.divider, { backgroundColor: colors.border }]} />
                 )}
                 <View style={styles.detailRow}>
-                  <FileText size={Sizes.iconSm} color={colors.text2} />
+                  <FileText size={Sizes.iconSm} color={colors.labelSecondary} />
                   <View style={styles.detailText}>
                     <Supporting size="bodySm" tone="secondary">Notes</Supporting>
                     <Body size="bodySm">{booking.notes}</Body>
@@ -454,7 +454,7 @@ export function BookingDetailsSheet({
               <>
                 <View style={[styles.divider, { backgroundColor: colors.border }]} />
                 <View style={styles.detailRow}>
-                  <Star size={Sizes.iconSm} color={colors.text2} />
+                  <Star size={Sizes.iconSm} color={colors.labelSecondary} />
                   <View style={styles.detailText}>
                     <Supporting size="bodySm" tone="secondary">Special Requests</Supporting>
                     <Body size="bodySm">{booking.specialRequests}</Body>
@@ -546,7 +546,7 @@ export function BookingDetailsSheet({
                 { backgroundColor: 'transparent', borderColor: colors.border },
               ]}
             >
-              <CalendarPlus size={Sizes.iconSm} color={colors.text} />
+              <CalendarPlus size={Sizes.iconSm} color={colors.label} />
               <ButtonText size="body">Add to Calendar</ButtonText>
             </HapticPressable>
           )}
@@ -559,12 +559,12 @@ export function BookingDetailsSheet({
               }}
               style={[styles.cancelBtn, { backgroundColor: colors.error }]}
             >
-              <XIcon size={Sizes.iconSm} color="#FFF" />
-              <ButtonText size="body" style={{ color: '#FFF' }}>Cancel Booking</ButtonText>
+              <XIcon size={Sizes.iconSm} color={colors.primaryForeground} />
+              <ButtonText size="body" style={{ color: colors.primaryForeground }}>Cancel Booking</ButtonText>
             </HapticPressable>
           ) : isActive && cancelCheck.reason ? (
-            <View style={[styles.cancelDisabledRow, { backgroundColor: colors.surface2 }]}>
-              <Info size={Sizes.iconXs} color={colors.textMuted} />
+            <View style={[styles.cancelDisabledRow, { backgroundColor: colors.surfaceSecondary }]}>
+              <Info size={Sizes.iconXs} color={colors.labelQuaternary} />
               <Body size="bodySm" style={styles.cancelDisabledText}>
                 {cancelCheck.reason}
               </Body>

@@ -39,7 +39,7 @@ export const QuickStats = memo(function QuickStats({
   const displaySpecs = formatSpecs(specs);
   const displayEmirate = city ? `${city}, ${formatEmirate(emirate)}` : formatEmirate(emirate);
   
-  const secondaryTextColor = isBlk ? colors.blkText2 : colors.text2;
+  const secondaryTextColor = isBlk ? colors.blkText2 : colors.labelSecondary;
 
   const handleCopyVin = useCallback(async () => {
     if (!vin) return;
@@ -91,7 +91,7 @@ export const QuickStats = memo(function QuickStats({
               {copied ? (
                 <Check size={Sizes.iconXs} color={colors.success} strokeWidth={2.5} />
               ) : (
-                <Copy size={Sizes.iconXs} color={colors.text3} strokeWidth={1.75} />
+                <Copy size={Sizes.iconXs} color={colors.labelTertiary} strokeWidth={1.75} />
               )}
             </>
           )}

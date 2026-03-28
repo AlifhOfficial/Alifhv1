@@ -21,7 +21,7 @@ export default function BookingsRoute() {
   // Show auth empty state when not authenticated
   if (!isAuthenticated) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <AuthRequiredEmptyState
           title="Sign in to view bookings"
           subtitle="Manage your test drive appointments on Revvup"

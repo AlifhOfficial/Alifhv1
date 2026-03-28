@@ -150,12 +150,12 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
             styles.textArea,
             {
               backgroundColor: colors.fill2,
-              color: colors.text,
+              color: colors.label,
               borderColor: colors.border,
             },
           ]}
           placeholder="Describe your vehicle's condition, history, notable features..."
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={colors.labelQuaternary}
           value={description}
           onChangeText={handleChange}
           multiline
@@ -166,7 +166,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
         <View style={styles.charCount}>
           <Supporting
             size="bodySm"
-            style={{ color: isNearLimit ? colors.warning : colors.textMuted }}
+            style={{ color: isNearLimit ? colors.warning : colors.labelQuaternary }}
           >
             {charCount}/{MAX_DESCRIPTION}
           </Supporting>

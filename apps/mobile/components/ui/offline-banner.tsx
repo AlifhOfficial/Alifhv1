@@ -80,7 +80,7 @@ export function OfflineBanner() {
         animatedStyle,
       ]}
     >
-      <WifiOff size={Sizes.iconSm} color="#fff" strokeWidth={2} />
+      <WifiOff size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
       <Body size="bodySm" style={styles.text}>
         {isReconnecting ? 'Reconnecting...' : 'No internet connection'}
       </Body>
@@ -91,7 +91,7 @@ export function OfflineBanner() {
       )}
       <Pressable onPress={retry} style={styles.retryButton} hitSlop={12}>
         <Animated.View style={spinStyle}>
-          <RefreshCw size={Spacing.lg} color="#fff" strokeWidth={2.5} />
+          <RefreshCw size={Spacing.lg} color={colors.primaryForeground} strokeWidth={2.5} />
         </Animated.View>
       </Pressable>
     </Animated.View>
@@ -113,10 +113,10 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   text: {
-    color: '#fff',
+    color: Colors.dark.primaryForeground,
   },
   duration: {
-    color: 'rgba(255,255,255,0.75)',
+    color: Colors.dark.primaryForeground,
   },
   retryButton: {
     marginLeft: 'auto',

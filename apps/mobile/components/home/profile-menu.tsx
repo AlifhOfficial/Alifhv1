@@ -69,7 +69,7 @@ export function ProfileMenu() {
           <Ionicons
             name="person-circle-outline"
             size={Sizes.iconSm}
-            color={colors.icon}
+            color={colors.label}
             style={{ opacity: pressed ? 0.7 : 1 }}
           />
         )}

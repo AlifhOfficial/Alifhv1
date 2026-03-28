@@ -283,7 +283,7 @@ export function ImageGridModal({
       statusBarTranslucent
     >
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
-      <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         {showLightbox ? (
           <ImageLightbox
             images={validFullImages}
@@ -297,7 +297,7 @@ export function ImageGridModal({
         ) : (
           <>
             {/* Header */}
-            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.bg, borderBottomColor: colors.glassBorder }]}>
+            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.background, borderBottomColor: colors.glassBorder }]}>
               <Supporting size="bodySm">
                 {totalImages} photos
               </Supporting>
@@ -307,7 +307,7 @@ export function ImageGridModal({
                 hitSlop={Layout.hitSlop}
               >
                 {({ pressed }) => (
-                  <X size={Sizes.iconMd} color={colors.text} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+                  <X size={Sizes.iconMd} color={colors.label} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
                 )}
               </HapticPressable>
             </View>
@@ -397,9 +397,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs / 2,
     borderRadius: Radius.sm,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: Colors.dark.overlay,
   },
   indexText: {
-    color: '#fff',
+    color: Colors.dark.white,
   },
 });

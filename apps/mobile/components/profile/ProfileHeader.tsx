@@ -57,7 +57,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
         ]}
       >
         <View style={styles.pillContent}>
-          <User size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+          <User size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
           <Data size="bodySm">Profile</Data>
         </View>
       </View>
@@ -79,7 +79,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
           {({ pressed }) => (
             <Settings2
               size={Sizes.iconXs}
-              color={colors.icon}
+              color={colors.label}
               strokeWidth={2}
               style={{ opacity: pressed ? 0.7 : 1 }}
             />

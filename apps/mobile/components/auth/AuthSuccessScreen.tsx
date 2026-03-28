@@ -155,7 +155,7 @@ export function AuthSuccessScreen({
           <Animated.View entering={FadeInDown.delay(500).duration(400)}>
             <Body
               size="bodySm"
-              style={[onboardingStyles.welcomeSubtitle, { color: colors.text2 }]}
+              style={[onboardingStyles.welcomeSubtitle, { color: colors.labelSecondary }]}
             >
               Ready to find your next ride?
             </Body>
@@ -174,7 +174,7 @@ export function AuthSuccessScreen({
               },
             ]}
           >
-            <ButtonText style={{ color: colors.primaryFg }}>Let's Go</ButtonText>
+            <ButtonText style={{ color: colors.primaryForeground }}>Let's Go</ButtonText>
           </HapticPressable>
         </Animated.View>
       </View>

@@ -81,7 +81,7 @@ export const BrandAvatar = memo(function BrandAvatar({
   const borderRadius = shape === 'round' ? pixelSize / 2 : Radius.sm;
   
   // Glass styling or custom background
-  const bgColor = glass ? colors.glassBg : (backgroundColor ?? colors.surface2);
+  const bgColor = glass ? colors.glassBg : (backgroundColor ?? colors.surfaceSecondary);
   const borderColor = glass ? colors.glassBorderDark : (ringColor ?? colors.glassBorderDark);
   const shouldShowBorder = glass || showRing;
   

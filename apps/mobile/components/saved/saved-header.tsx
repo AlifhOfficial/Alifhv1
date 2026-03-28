@@ -57,7 +57,7 @@ export function SavedHeader({
           ]}
         >
           <View style={styles.pillContent}>
-            <Bookmark size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+            <Bookmark size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
             <Data size="bodySm">Saved</Data>
           </View>
         </View>
@@ -86,7 +86,7 @@ export function SavedHeader({
                 {({ pressed }) => (
                   <Icon 
                     size={Sizes.iconSm} 
-                    color={isActive ? colors.icon : colors.textMuted} 
+                    color={isActive ? colors.label : colors.labelQuaternary} 
                     strokeWidth={2}
                     style={{ opacity: pressed ? 0.7 : 1 }}
                   />

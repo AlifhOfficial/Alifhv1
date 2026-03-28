@@ -159,7 +159,7 @@ export function MessageInput({
     <Animated.View
       style={[
         styles.container,
-        { borderTopColor: colors.border, borderTopWidth: StyleSheet.hairlineWidth, backgroundColor: colors.bg },
+        { borderTopColor: colors.border, borderTopWidth: StyleSheet.hairlineWidth, backgroundColor: colors.background },
         animatedContainerStyle,
       ]}
     >
@@ -179,7 +179,7 @@ export function MessageInput({
           >
             <MapPin
               size={Sizes.iconSm}
-              color={disabled ? colors.textMuted : colors.text3}
+              color={disabled ? colors.labelQuaternary : colors.labelTertiary}
               strokeWidth={2}
             />
           </HapticPressable>
@@ -189,7 +189,7 @@ export function MessageInput({
           style={[
             styles.inputWrapper,
             { 
-              backgroundColor: colors.input,
+              backgroundColor: colors.surface,
               borderColor: colors.border,
               borderWidth: StyleSheet.hairlineWidth,
               minHeight: Math.max(inputHeight, MIN_HEIGHT),
@@ -200,13 +200,13 @@ export function MessageInput({
             ref={inputRef}
             style={[
               styles.input,
-              { color: colors.text },
+              { color: colors.label },
             ]}
             value={text}
             onChangeText={handleChangeText}
             onContentSizeChange={handleContentSizeChange}
             placeholder={placeholder}
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.labelQuaternary}
             multiline
             editable={!disabled}
             returnKeyType="default"
@@ -229,7 +229,7 @@ export function MessageInput({
         >
           <Send
             size={Sizes.iconSm}
-            color={canSend ? colors.primaryFg : colors.textMuted}
+            color={canSend ? colors.primaryForeground : colors.labelQuaternary}
             strokeWidth={2}
           />
         </HapticPressable>

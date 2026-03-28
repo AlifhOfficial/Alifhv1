@@ -65,12 +65,12 @@ const MONTH_NAMES = [
 const BOOKING_TIME_ZONE = 'Asia/Dubai';
 
 const BOOKING_CONFETTI_COLORS = [
-  '#0066FF', // primary blue
-  '#22C55E', // success green
-  '#3B82F6', // blue-500
-  '#10B981', // emerald-500
-  '#06B6D4', // cyan-500
-  '#8B5CF6', // violet-500
+  Colors.light.primary, // primary blue
+  Colors.light.success, // success green
+  Colors.light.info, // blue-500
+  Colors.light.success, // emerald-500
+  Colors.light.info, // cyan-500
+  Colors.light.amna, // violet-500
 ];
 
 // ============================================================================
@@ -396,7 +396,7 @@ export const BookingSheet = memo(function BookingSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
     >
@@ -420,10 +420,10 @@ export const BookingSheet = memo(function BookingSheet({
 
             {/* Booking summary */}
             <View style={[styles.successCard, { backgroundColor: colors.fill2 }]}>
-              <Data size="bodySm" style={{ color: colors.text }}>{listingTitle}</Data>
+              <Data size="bodySm" style={{ color: colors.label }}>{listingTitle}</Data>
               {selectedDate && selectedSlot && (
                 <View style={styles.successCardRow}>
-                  <Calendar size={Spacing.md} color={colors.text2} />
+                  <Calendar size={Spacing.md} color={colors.labelSecondary} />
                   <Supporting size="body">
                     {formatDateShort(selectedDate)} at {formatTime(selectedSlot.startTime)}
                   </Supporting>
@@ -443,9 +443,9 @@ export const BookingSheet = memo(function BookingSheet({
 
             <HapticPressable
               onPress={onClose}
-              style={[styles.primaryButton, styles.doneButton, { backgroundColor: colors.text }]}
+              style={[styles.primaryButton, styles.doneButton, { backgroundColor: colors.label }]}
             >
-              <ButtonText size="body" style={{ color: colors.bg }}>
+              <ButtonText size="body" style={{ color: colors.background }}>
                 Done
               </ButtonText>
             </HapticPressable>
@@ -461,7 +461,7 @@ export const BookingSheet = memo(function BookingSheet({
                     hitSlop={Spacing.md}
                     style={[styles.backButton, { backgroundColor: colors.fill2 }]}
                   >
-                    <ChevronLeft size={Sizes.iconSm} color={colors.text} />
+                    <ChevronLeft size={Sizes.iconSm} color={colors.label} />
                   </HapticPressable>
                 )}
                 <View>
@@ -474,7 +474,7 @@ export const BookingSheet = memo(function BookingSheet({
                 hitSlop={Spacing.md}
                 style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
               >
-                <Ionicons name="close" size={Spacing.lg} color={colors.text2} />
+                <Ionicons name="close" size={Spacing.lg} color={colors.labelSecondary} />
               </HapticPressable>
             </View>
 
@@ -487,8 +487,8 @@ export const BookingSheet = memo(function BookingSheet({
                     styles.stepDot,
                     {
                       backgroundColor:
-                        step === s ? colors.text :
-                        (['date', 'time', 'confirm'].indexOf(step) > i) ? colors.text :
+                        step === s ? colors.label :
+                        (['date', 'time', 'confirm'].indexOf(step) > i) ? colors.label :
                         colors.fill2,
                     },
                   ]}
@@ -509,7 +509,7 @@ export const BookingSheet = memo(function BookingSheet({
             {/* ── LOADING ─────────────────────────────────────────── */}
             {isLoading && (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="small" color={colors.textMuted} />
+                <ActivityIndicator size="small" color={colors.labelQuaternary} />
               </View>
             )}
 
@@ -528,7 +528,7 @@ export const BookingSheet = memo(function BookingSheet({
                       !canGoPreviousMonth && styles.monthNavBtnDisabled,
                     ]}
                   >
-                    <ChevronLeft size={Spacing.lg} color={canGoPreviousMonth ? colors.text : colors.textMuted} />
+                    <ChevronLeft size={Spacing.lg} color={canGoPreviousMonth ? colors.label : colors.labelQuaternary} />
                   </HapticPressable>
                   <Data size="body">
                     {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
@@ -538,7 +538,7 @@ export const BookingSheet = memo(function BookingSheet({
                     hitSlop={12}
                     style={[styles.monthNavBtn, { backgroundColor: colors.fill2 }]}
                   >
-                    <ChevronRight size={Spacing.lg} color={colors.text} />
+                    <ChevronRight size={Spacing.lg} color={colors.label} />
                   </HapticPressable>
                 </View>
 
@@ -570,17 +570,17 @@ export const BookingSheet = memo(function BookingSheet({
                           disabled={!available}
                           style={[
                             styles.calendarDayInner,
-                            isSelected && { backgroundColor: colors.text },
+                            isSelected && { backgroundColor: colors.label },
                             isToday && !isSelected && { backgroundColor: colors.fill2 },
                           ]}
                         >
                           <Data
                             size="bodySm"
                             style={[
-                              isSelected && { color: colors.bg },
-                              !isSelected && available && { color: colors.text },
-                              !isSelected && !available && { color: colors.textMuted + '30' },
-                              isToday && !isSelected && { color: colors.text },
+                              isSelected && { color: colors.background },
+                              !isSelected && available && { color: colors.label },
+                              !isSelected && !available && { color: colors.labelQuaternary + '30' },
+                              isToday && !isSelected && { color: colors.label },
                             ]}
                           >
                             {date.getUTCDate()}
@@ -601,15 +601,15 @@ export const BookingSheet = memo(function BookingSheet({
               <View style={styles.stepContainer}>
                 {/* Selected date display */}
                 <View style={[styles.selectedDateBar, { backgroundColor: colors.fill2 }]}>
-                  <Calendar size={Sizes.iconXs} color={colors.text2} />
-                  <Data size="bodySm" style={{ color: colors.text }}>
+                  <Calendar size={Sizes.iconXs} color={colors.labelSecondary} />
+                  <Data size="bodySm" style={{ color: colors.label }}>
                     {formatDate(selectedDate)}
                   </Data>
                 </View>
 
                 {availableSlots.length === 0 ? (
                   <View style={styles.emptySlots}>
-                    <Clock size={Sizes.iconLg} color={colors.textMuted} />
+                    <Clock size={Sizes.iconLg} color={colors.labelQuaternary} />
                     <Supporting size="body" tone="muted" style={{ marginTop: Spacing.sm }}>
                       No times available for this date
                     </Supporting>
@@ -628,8 +628,8 @@ export const BookingSheet = memo(function BookingSheet({
                             style={[
                               styles.slotButton,
                               {
-                                backgroundColor: isSelected ? colors.text : colors.fill2,
-                                borderColor: isSelected ? colors.text : 'transparent',
+                                backgroundColor: isSelected ? colors.label : colors.fill2,
+                                borderColor: isSelected ? colors.label : 'transparent',
                               },
                               !slot.isAvailable && styles.slotDisabled,
                             ]}
@@ -637,15 +637,15 @@ export const BookingSheet = memo(function BookingSheet({
                             <Data
                               size="bodySm"
                               style={[
-                                isSelected && { color: colors.bg },
-                                !isSelected && slot.isAvailable && { color: colors.text },
-                                !slot.isAvailable && { color: colors.textMuted },
+                                isSelected && { color: colors.background },
+                                !isSelected && slot.isAvailable && { color: colors.label },
+                                !slot.isAvailable && { color: colors.labelQuaternary },
                               ]}
                             >
                               {formatTime(slot.startTime)}
                             </Data>
                             {slot.isAvailable && (
-                              <Supporting size="bodySm" style={isSelected ? { color: colors.bg + 'AA' } : undefined} tone={isSelected ? undefined : 'muted'}>{slot.duration}m</Supporting>
+                              <Supporting size="bodySm" style={isSelected ? { color: colors.background + 'AA' } : undefined} tone={isSelected ? undefined : 'muted'}>{slot.duration}m</Supporting>
                             )}
                           </HapticPressable>
                         );
@@ -658,9 +658,9 @@ export const BookingSheet = memo(function BookingSheet({
                 {selectedSlot && (
                   <HapticPressable
                     onPress={handleContinueToConfirm}
-                    style={[styles.primaryButton, { backgroundColor: colors.text }]}
+                    style={[styles.primaryButton, { backgroundColor: colors.label }]}
                   >
-                    <ButtonText size="body" style={{ color: colors.bg }}>
+                    <ButtonText size="body" style={{ color: colors.background }}>
                       Continue
                     </ButtonText>
                   </HapticPressable>
@@ -675,7 +675,7 @@ export const BookingSheet = memo(function BookingSheet({
                 <View style={[styles.confirmCard, { backgroundColor: colors.fill2 }]}>
                   <View style={styles.confirmRow}>
                     <View style={[styles.confirmIconBox, { backgroundColor: colors.fill2 }]}>
-                      <Calendar size={Spacing.lg} color={colors.text2} />
+                      <Calendar size={Spacing.lg} color={colors.labelSecondary} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Supporting size="bodySm" tone="muted">Date</Supporting>
@@ -685,7 +685,7 @@ export const BookingSheet = memo(function BookingSheet({
                   <View style={[styles.confirmDivider, { backgroundColor: colors.border + '30' }]} />
                   <View style={styles.confirmRow}>
                     <View style={[styles.confirmIconBox, { backgroundColor: colors.fill2 }]}>
-                      <Clock size={Spacing.lg} color={colors.text2} />
+                      <Clock size={Spacing.lg} color={colors.labelSecondary} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Supporting size="bodySm" tone="muted">Time</Supporting>
@@ -694,7 +694,7 @@ export const BookingSheet = memo(function BookingSheet({
                       </Data>
                     </View>
                     <View style={[styles.durationBadge, { backgroundColor: colors.fill2 }]}>
-                      <Supporting size="bodySm" style={{ color: colors.text2 }}>{selectedSlot.duration}m</Supporting>
+                      <Supporting size="bodySm" style={{ color: colors.labelSecondary }}>{selectedSlot.duration}m</Supporting>
                     </View>
                   </View>
                 </View>
@@ -702,7 +702,7 @@ export const BookingSheet = memo(function BookingSheet({
                 {/* Attendees */}
                 <View style={styles.fieldGroup}>
                   <View style={styles.fieldHeader}>
-                    <Users size={Sizes.iconXs} color={colors.text2} />
+                    <Users size={Sizes.iconXs} color={colors.labelSecondary} />
                     <Label size="caption" tone="muted">ATTENDEES</Label>
                   </View>
                   <View style={[styles.attendeePicker, { backgroundColor: colors.fill2 }]}>
@@ -715,7 +715,7 @@ export const BookingSheet = memo(function BookingSheet({
                         attendees <= 1 && styles.attendeeBtnDisabled,
                       ]}
                     >
-                      <Ionicons name="remove" size={Spacing.lg} color={attendees <= 1 ? colors.textMuted : colors.text} />
+                      <Ionicons name="remove" size={Spacing.lg} color={attendees <= 1 ? colors.labelQuaternary : colors.label} />
                     </HapticPressable>
                     <Data size="body" style={{ minWidth: Spacing["2xl"], textAlign: 'center' }}>{attendees}</Data>
                     <HapticPressable
@@ -727,7 +727,7 @@ export const BookingSheet = memo(function BookingSheet({
                         attendees >= 5 && styles.attendeeBtnDisabled,
                       ]}
                     >
-                      <Ionicons name="add" size={Spacing.lg} color={attendees >= 5 ? colors.textMuted : colors.text} />
+                      <Ionicons name="add" size={Spacing.lg} color={attendees >= 5 ? colors.labelQuaternary : colors.label} />
                     </HapticPressable>
                   </View>
                 </View>
@@ -735,7 +735,7 @@ export const BookingSheet = memo(function BookingSheet({
                 {/* Notes */}
                 <View style={styles.fieldGroup}>
                   <View style={styles.fieldHeader}>
-                    <FileText size={Sizes.iconXs} color={colors.text2} />
+                    <FileText size={Sizes.iconXs} color={colors.labelSecondary} />
                     <Label size="caption" tone="muted">NOTES</Label>
                     <Supporting size="bodySm" tone="muted">(optional)</Supporting>
                   </View>
@@ -743,13 +743,13 @@ export const BookingSheet = memo(function BookingSheet({
                     value={notes}
                     onChangeText={setNotes}
                     placeholder="Any questions or special requests..."
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={colors.labelQuaternary}
                     multiline
                     numberOfLines={2}
                     style={[
                       styles.notesInput,
                       {
-                        color: colors.text,
+                        color: colors.label,
                         backgroundColor: colors.fill2,
                         borderColor: colors.border + '30',
                       },
@@ -761,9 +761,9 @@ export const BookingSheet = memo(function BookingSheet({
                 {!isAuthenticated ? (
                   <HapticPressable
                     onPress={onLoginRequired}
-                    style={[styles.primaryButton, { backgroundColor: colors.text }]}
+                    style={[styles.primaryButton, { backgroundColor: colors.label }]}
                   >
-                    <ButtonText size="body" style={{ color: colors.bg }}>
+                    <ButtonText size="body" style={{ color: colors.background }}>
                       Sign in to Book
                     </ButtonText>
                   </HapticPressable>
@@ -773,14 +773,14 @@ export const BookingSheet = memo(function BookingSheet({
                     disabled={isLoading}
                     style={[
                       styles.primaryButton,
-                      { backgroundColor: colors.text },
+                      { backgroundColor: colors.label },
                       isLoading && styles.buttonDisabled,
                     ]}
                   >
                     {isLoading ? (
-                      <ActivityIndicator size="small" color={colors.bg} />
+                      <ActivityIndicator size="small" color={colors.background} />
                     ) : (
-                      <ButtonText size="body" style={{ color: colors.bg }}>
+                      <ButtonText size="body" style={{ color: colors.background }}>
                         Confirm Booking
                       </ButtonText>
                     )}

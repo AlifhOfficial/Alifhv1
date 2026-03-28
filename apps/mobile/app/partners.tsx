@@ -120,7 +120,7 @@ export default function PartnersScreen() {
   // ──────────────────────────────────────────────────────────────────────────
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header - Absolute positioned */}
       <PartnersHeader count={partners.length} />
 
@@ -142,7 +142,7 @@ export default function PartnersScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={colors.text}
+            tintColor={colors.label}
           />
         }
         initialNumToRender={8}

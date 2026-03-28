@@ -212,7 +212,7 @@ export function PhoneVerificationField({
             value={phone}
             onChangeText={(text) => onPhoneChange(text.replace(/[^\d]/g, '').slice(0, 9))}
             placeholder="50 000 0000"
-            placeholderTextColor={colors.text3}
+            placeholderTextColor={colors.labelTertiary}
             keyboardType="phone-pad"
             maxLength={9}
             style={[
@@ -220,7 +220,7 @@ export function PhoneVerificationField({
               Typography.bodyLg,
               {
                 backgroundColor: colors.surface,
-                color: colors.text,
+                color: colors.label,
                 borderColor: colors.border,
               },
             ]}
@@ -280,7 +280,7 @@ export function PhoneVerificationField({
         value={otp}
         onChangeText={(text) => setOtp(text.replace(/[^\d]/g, '').slice(0, 6))}
         placeholder="000000"
-        placeholderTextColor={colors.text3}
+        placeholderTextColor={colors.labelTertiary}
         keyboardType="number-pad"
         maxLength={6}
         style={[
@@ -288,7 +288,7 @@ export function PhoneVerificationField({
           Typography.heading,
           {
             backgroundColor: colors.surface,
-            color: colors.text,
+            color: colors.label,
             borderColor: error ? colors.error : colors.border,
             letterSpacing: 8,
           },

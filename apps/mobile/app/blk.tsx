@@ -184,7 +184,7 @@ export default function BlkScreen() {
     <View style={styles.container}>
       {/* Pure Black Background */}
       <LinearGradient
-        colors={['#000000', '#0A0A0A', '#000000']}
+        colors={[Colors.dark.black, '#0A0A0A', Colors.dark.black]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
@@ -214,8 +214,8 @@ export default function BlkScreen() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor="#FAFAFA"
-            progressBackgroundColor="#000000"
+            tintColor={Colors.dark.white}
+            progressBackgroundColor={Colors.dark.black}
           />
         }
         onEndReached={handleLoadMore}
@@ -230,7 +230,7 @@ export default function BlkScreen() {
 
       {/* Bottom Safe Area Gradient */}
       <LinearGradient
-        colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.6)', 'rgba(0,0,0,0.9)', '#000000']}
+        colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.6)', 'rgba(0,0,0,0.9)', Colors.dark.black]}
         locations={[0, 0.3, 0.7, 1]}
         style={[styles.bottomGradient, { height: insets.bottom + Layout.tabBarHeight + Spacing.xl }]}
         pointerEvents="none"
@@ -246,7 +246,7 @@ export default function BlkScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: Colors.dark.black,
   },
   scrollContent: {
     paddingHorizontal: Spacing.sm,
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing['3xl'],
   },
   emptyText: {
-    color: 'rgba(255,255,255,0.5)',
+    color: Colors.dark.labelSecondary,
   },
   loadingMore: {
     alignItems: 'center',

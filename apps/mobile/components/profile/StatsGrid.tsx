@@ -25,7 +25,7 @@ function StatItem({ label, value, colors, showStar }: StatItemProps) {
       <Label size="label" tone="muted" style={styles.statLabel}>{label}</Label>
       <View style={styles.valueRow}>
         {showStar && value !== '—' && (
-          <Star size={Sizes.iconXs} color="#FACC15" fill="#FACC15" strokeWidth={0} style={styles.starIcon} />
+          <Star size={Sizes.iconXs} color={colors.star} fill={colors.star} strokeWidth={0} style={styles.starIcon} />
         )}
         <Display size="title" style={styles.statValue}>{value}</Display>
       </View>

@@ -21,7 +21,7 @@ export default function InventoryRoute() {
   // Show auth empty state when not authenticated
   if (!isAuthenticated) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <AuthRequiredEmptyState
           title="Sign in to view inventory"
           subtitle="Manage your car listings on Revvup"

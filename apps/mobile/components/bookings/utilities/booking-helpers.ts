@@ -31,19 +31,19 @@ export function getBookingStatusColor(
     warning: string;
     error: string;
     primary: string;
-    textMuted: string;
-    text2: string;
+    labelSecondary: string;
+    labelQuaternary: string;
   },
 ): string {
   switch (status) {
     case 'pending':   return colors.warning;
     case 'confirmed': return colors.primary;
     case 'completed': return colors.success;
-    case 'cancelled': return colors.textMuted;
+    case 'cancelled': return colors.labelQuaternary;
     case 'rejected':  return colors.error;
     case 'no_show':   return colors.error;
-    case 'expired':   return colors.text2;
-    default:          return colors.textMuted;
+    case 'expired':   return colors.labelSecondary;
+    default:          return colors.labelQuaternary;
   }
 }
 

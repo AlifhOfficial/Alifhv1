@@ -33,7 +33,7 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
   const title = `${year} ${make} ${model}`;
 
   return (
-    <View style={[styles.container, { paddingTop: topInset + 8, backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { paddingTop: topInset + 8, backgroundColor: colors.background }]}>
       {/* Left: Title */}
       <Heading size="heading" style={{ flex: 1 }} numberOfLines={1}>
         {title}
@@ -54,7 +54,7 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
         {({ pressed }) => (
           <Share2
             size={Spacing.xl}
-            color={colors.icon}
+            color={colors.label}
             strokeWidth={1.75}
             style={{ opacity: pressed ? 0.7 : 1 }}
           />

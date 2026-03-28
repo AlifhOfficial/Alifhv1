@@ -115,7 +115,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
               { backgroundColor: colors.error }
             ]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
           </HapticPressable>
         </View>
 
@@ -125,11 +125,11 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             onPress={handleCall}
             style={({ pressed }) => [
               styles.actionBtn,
-              { backgroundColor: pressed ? colors.surface2 : 'transparent' },
+              { backgroundColor: pressed ? colors.surfaceSecondary : 'transparent' },
             ]}
           >
             <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
-              <Phone size={Sizes.iconMd} color="#FFF" />
+              <Phone size={Sizes.iconMd} color={colors.primaryForeground} />
             </View>
             <ButtonText size="bodySm" style={styles.actionLabel}>Call</ButtonText>
           </HapticPressable>
@@ -138,11 +138,11 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             onPress={handleWhatsApp}
             style={({ pressed }) => [
               styles.actionBtn,
-              { backgroundColor: pressed ? colors.surface2 : 'transparent' },
+              { backgroundColor: pressed ? colors.surfaceSecondary : 'transparent' },
             ]}
           >
-            <View style={[styles.iconCircle, { backgroundColor: '#25D366' }]}>
-              <Ionicons name="logo-whatsapp" size={Sizes.iconLg} color="#FFF" />
+            <View style={[styles.iconCircle, { backgroundColor: colors.whatsapp }]}>
+              <Ionicons name="logo-whatsapp" size={Sizes.iconLg} color={colors.primaryForeground} />
             </View>
             <ButtonText size="bodySm" style={styles.actionLabel}>WhatsApp</ButtonText>
           </HapticPressable>
@@ -151,11 +151,11 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             onPress={handleCopy}
             style={({ pressed }) => [
               styles.actionBtn,
-              { backgroundColor: pressed ? colors.surface2 : 'transparent' },
+              { backgroundColor: pressed ? colors.surfaceSecondary : 'transparent' },
             ]}
           >
-            <View style={[styles.iconCircle, { backgroundColor: colors.surface2 }]}>
-              <Copy size={Sizes.iconMd} color={colors.text} />
+            <View style={[styles.iconCircle, { backgroundColor: colors.surfaceSecondary }]}>
+              <Copy size={Sizes.iconMd} color={colors.label} />
             </View>
             <ButtonText size="bodySm" style={styles.actionLabel}>Copy</ButtonText>
           </HapticPressable>

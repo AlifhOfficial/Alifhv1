@@ -9,11 +9,12 @@ import React from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Path } from 'react-native-svg';
 import { useTheme } from '@/context/theme-context';
+import { Colors } from '@/constants/theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Brand blue
-const BRAND_BLUE = '#0066FF';
+// Brand blue - uses primary from theme (always same value)
+const BRAND_BLUE = Colors.light.primary;
 
 export function BackgroundDoodle() {
   const { colorScheme } = useTheme();

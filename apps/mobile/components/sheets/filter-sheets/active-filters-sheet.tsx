@@ -221,7 +221,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
                       {chip.label}
                     </Body>
                     {!chip.locked && (
-                      <Ionicons name="close" size={Spacing.md} color={colors.text3} />
+                      <Ionicons name="close" size={Spacing.md} color={colors.labelTertiary} />
                     )}
                   </HapticPressable>
                 ))}

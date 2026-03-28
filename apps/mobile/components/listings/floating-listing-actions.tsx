@@ -158,7 +158,7 @@ export function FloatingListingActions({
           >
             <Heart
               size={Sizes.iconMd}
-              color={isFavorite ? colors.favorite : colors.text}
+              color={isFavorite ? colors.favorite : colors.label}
               fill={isFavorite ? colors.favorite : 'none'}
               strokeWidth={isFavorite ? 2.25 : 1.75}
             />
@@ -180,7 +180,7 @@ export function FloatingListingActions({
           >
             <Zap
               size={Sizes.iconMd}
-              color={isSuperliked ? colors.warning : colors.text}
+              color={isSuperliked ? colors.warning : colors.label}
               fill={isSuperliked ? colors.warning : 'none'}
               strokeWidth={1.75}
             />
@@ -202,7 +202,7 @@ export function FloatingListingActions({
           >
             <Share2
               size={Sizes.iconMd}
-              color={colors.text}
+              color={colors.label}
               strokeWidth={2}
             />
           </HapticPressable>

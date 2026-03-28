@@ -112,31 +112,31 @@ export const Button = memo(function Button({
       case 'primary':
         return {
           backgroundColor: colors.primary,
-          textColor: colors.primaryFg,
+          textColor: colors.primaryForeground,
           opacity: baseOpacity * disabledOpacity,
         };
       case 'secondary':
         return {
-          backgroundColor: colors.surface2,
-          textColor: colors.text,
+          backgroundColor: colors.surfaceSecondary,
+          textColor: colors.label,
           opacity: baseOpacity * disabledOpacity,
         };
       case 'ghost':
         return {
           backgroundColor: pressed ? colors.fill2 : 'transparent',
-          textColor: colors.text,
+          textColor: colors.label,
           opacity: disabledOpacity,
         };
       case 'destructive':
         return {
           backgroundColor: colors.error,
-          textColor: '#FFFFFF',
+          textColor: colors.primaryForeground,
           opacity: baseOpacity * disabledOpacity,
         };
       default:
         return {
           backgroundColor: colors.primary,
-          textColor: colors.primaryFg,
+          textColor: colors.primaryForeground,
           opacity: baseOpacity * disabledOpacity,
         };
     }

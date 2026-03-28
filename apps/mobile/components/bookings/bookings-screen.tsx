@@ -176,7 +176,7 @@ export function BookingsScreen() {
           style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
           {/* ── Image ────────────────────────────────────────────────── */}
-          <View style={[styles.imageContainer, { backgroundColor: colors.bg2 }]}>
+          <View style={[styles.imageContainer, { backgroundColor: colors.backgroundSecondary }]}>
             {item.listingThumbnail ? (
               <Image
                 source={{ uri: getAppThumbUrl(item.listingThumbnail)! }}
@@ -189,7 +189,7 @@ export function BookingsScreen() {
             )}
             {/* Status badge (BLK-badge style) */}
             <View style={[styles.statusBadge, { backgroundColor: statusColor + 'E6' }]}>
-              <Label size="caption" uppercase={false} style={{ color: '#FFF' }}>
+              <Label size="caption" uppercase={false} style={{ color: colors.primaryForeground }}>
                 {statusLabel}
               </Label>
             </View>
@@ -198,27 +198,27 @@ export function BookingsScreen() {
           {/* ── Content ──────────────────────────────────────────────── */}
           <View style={styles.content}>
             {/* Title */}
-            <Data size="bodySm" style={{ color: colors.text, }} numberOfLines={1}>
+            <Data size="bodySm" style={{ color: colors.label, }} numberOfLines={1}>
               {item.listingTitle}
             </Data>
 
             {/* Partner */}
-            <Data size="bodySm" style={{ color: colors.text2 }} numberOfLines={1}>
+            <Data size="bodySm" style={{ color: colors.labelSecondary }} numberOfLines={1}>
               {item.partnerName}
             </Data>
 
             {/* Date */}
             <View style={styles.metaRow}>
-              <Calendar size={Sizes.iconXs} color={colors.text2} />
-              <Data size="bodySm" style={{ color: colors.text2 }}>
+              <Calendar size={Sizes.iconXs} color={colors.labelSecondary} />
+              <Data size="bodySm" style={{ color: colors.labelSecondary }}>
                 {formatBookingDate(item.scheduledDate)}
               </Data>
             </View>
 
             {/* Time */}
             <View style={styles.metaRow}>
-              <Clock size={Sizes.iconXs} color={colors.text2} />
-              <Data size="bodySm" style={{ color: colors.text2 }}>
+              <Clock size={Sizes.iconXs} color={colors.labelSecondary} />
+              <Data size="bodySm" style={{ color: colors.labelSecondary }}>
                 {formatTimeRange(item.scheduledStartTime, item.scheduledEndTime)}
               </Data>
             </View>
@@ -272,8 +272,8 @@ export function BookingsScreen() {
 
     return (
       <View style={styles.emptyContainer}>
-        <View style={[styles.emptyIcon, { backgroundColor: colors.surface2 }]}>
-          <Ionicons name="calendar-outline" size={Sizes.iconXl} color={colors.textMuted} />
+        <View style={[styles.emptyIcon, { backgroundColor: colors.surfaceSecondary }]}>
+          <Ionicons name="calendar-outline" size={Sizes.iconXl} color={colors.labelQuaternary} />
         </View>
         <Heading size="subheading" style={{ marginTop: Spacing.lg }}>
           {isAll ? 'No bookings yet' : `No ${tabLabel.toLowerCase()} bookings`}
@@ -324,7 +324,7 @@ export function BookingsScreen() {
             ]}
           >
             <View style={styles.pillContent}>
-              <Calendar size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+              <Calendar size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
               <Data size="bodySm">Bookings</Data>
             </View>
           </View>
@@ -353,7 +353,7 @@ export function BookingsScreen() {
                     <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
                       <Data
                         size="bodySm"
-                        style={{ color: isActive ? colors.text : colors.textMuted }}
+                        style={{ color: isActive ? colors.label : colors.labelQuaternary }}
                         numberOfLines={1}
                       >
                         {tab.label}

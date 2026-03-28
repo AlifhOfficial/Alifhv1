@@ -57,14 +57,14 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isActive ? colors.text : colors.surface2,
-                    borderColor: isActive ? colors.text : colors.border,
+                    backgroundColor: isActive ? colors.label : colors.surfaceSecondary,
+                    borderColor: isActive ? colors.label : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="bodySm"
-                  style={{ color: isActive ? colors.bg : colors.text }}
+                  style={{ color: isActive ? colors.background : colors.label }}
                 >
                   {emirate.label}
                 </Body>
@@ -89,11 +89,11 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
             {
               backgroundColor: colors.fill2,
               borderColor: colors.border,
-              color: colors.text,
+              color: colors.label,
             },
           ]}
           placeholder="e.g. Downtown, JBR, Al Ain..."
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={colors.labelQuaternary}
           value={data.city || ''}
           onChangeText={handleCityChange}
           autoCapitalize="words"

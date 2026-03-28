@@ -78,7 +78,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
   const [showDetails, setShowDetails] = React.useState(false);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView 
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -89,7 +89,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
         </View>
 
         {/* Title */}
-        <Heading size="title" style={[styles.title, { color: colors.text }]}>
+        <Heading size="title" style={[styles.title, { color: colors.label }]}>
           Something went wrong
         </Heading>
 
@@ -104,16 +104,16 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
             onPress={onReload}
             style={[styles.button, styles.primaryButton, { backgroundColor: colors.primary }]}
           >
-            <RefreshCw size={Sizes.iconSm} color="#fff" strokeWidth={2} />
-            <ButtonText size="body" style={{ color: '#fff' }}>Reload App</ButtonText>
+            <RefreshCw size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
+            <ButtonText size="body" style={{ color: colors.primaryForeground }}>Reload App</ButtonText>
           </Pressable>
 
           <Pressable
             onPress={onReset}
             style={[styles.button, styles.secondaryButton, { borderColor: colors.border }]}
           >
-            <Home size={Sizes.iconSm} color={colors.text} strokeWidth={2} />
-            <ButtonText size="body" style={{ color: colors.text }}>Try Again</ButtonText>
+            <Home size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
+            <ButtonText size="body" style={{ color: colors.label }}>Try Again</ButtonText>
           </Pressable>
         </View>
 
@@ -124,7 +124,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
               onPress={() => setShowDetails(!showDetails)}
               style={styles.detailsToggle}
             >
-              <Bug size={Sizes.iconXs} color={colors.textMuted} />
+              <Bug size={Sizes.iconXs} color={colors.labelQuaternary} />
               <Supporting size="bodySm" tone="muted">
                 {showDetails ? 'Hide' : 'Show'} error details
               </Supporting>

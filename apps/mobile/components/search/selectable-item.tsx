@@ -32,7 +32,7 @@ export function SelectableItem({
       style={({ pressed }) => [
         styles.container,
         { 
-          backgroundColor: pressed ? colors.bg2 : 'transparent',
+          backgroundColor: pressed ? colors.backgroundSecondary : 'transparent',
           borderBottomColor: colors.border,
         }
       ]}
@@ -48,7 +48,7 @@ export function SelectableItem({
             }
           ]}>
             {isSelected && (
-              <Ionicons name="checkmark" size={Sizes.iconXs} color={colors.primaryFg} />
+              <Ionicons name="checkmark" size={Sizes.iconXs} color={colors.primaryForeground} />
             )}
           </View>
         )}
@@ -65,7 +65,7 @@ export function SelectableItem({
           <Data size="bodySm" tone="muted">{count.toLocaleString()}</Data>
         )}
         {showChevron && (
-          <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.text3} />
+          <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.labelTertiary} />
         )}
       </View>
     </HapticPressable>

@@ -271,7 +271,7 @@ export default function SellerContactScreen() {
   // Loading state
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
         <Header colors={colors} insets={insets} onBack={handleBack} />
         <SellerContactSkeleton colors={colors} />
@@ -282,7 +282,7 @@ export default function SellerContactScreen() {
   // Error state
   if (!listing || !seller) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
         <Header colors={colors} insets={insets} onBack={handleBack} />
         <View style={styles.errorContainer}>
@@ -401,7 +401,7 @@ export default function SellerContactScreen() {
   ]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen options={{ headerShown: false }} />
       
       <FlatList
@@ -425,7 +425,7 @@ export default function SellerContactScreen() {
             onRefresh={refresh}
             tintColor={colors.primary}
             colors={[colors.primary]}
-            progressBackgroundColor={colors.bg}
+            progressBackgroundColor={colors.background}
           />
         }
       />
@@ -491,7 +491,7 @@ function Header({
   return (
     <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
       <HapticPressable style={styles.backBtn} onPress={onBack} hitSlop={Layout.hitSlop}>
-        <ChevronLeft size={Sizes.iconLg} color={colors.text} />
+        <ChevronLeft size={Sizes.iconLg} color={colors.label} />
       </HapticPressable>
     </View>
   );

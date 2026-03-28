@@ -113,7 +113,7 @@ export function FinancingSheet({
             hitSlop={Spacing.md}
             style={[styles.closeButton, { backgroundColor: colors.error }]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
           </HapticPressable>
         </View>
 
@@ -121,7 +121,7 @@ export function FinancingSheet({
         <View style={[styles.outputContainer, { backgroundColor: colors.fill2 }]}>
           <Label size="label" tone="muted">ESTIMATED MONTHLY PAYMENT</Label>
           <Data size="title" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Data>
-          <View style={styles.outputDetails}>
+          <View style={[styles.outputDetails, { borderTopColor: colors.border }]}>
             <View style={styles.outputItem}>
               <Supporting size="bodySm" tone="muted">Down Payment</Supporting>
               <Data size="bodySm">{formatPrice(downPaymentAmount)}</Data>
@@ -144,13 +144,13 @@ export function FinancingSheet({
             <Supporting size="body" style={styles.inputLabel}>Down Payment</Supporting>
             <View style={[styles.inputWrapper, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
               <TextInput
-                style={[styles.input, { color: colors.text }]}
+                style={[styles.input, { color: colors.label }]}
                 value={downPayment}
                 onChangeText={setDownPayment}
                 keyboardType="number-pad"
                 maxLength={2}
                 placeholder="20"
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor={colors.labelQuaternary}
               />
               <Data size="body" tone="secondary">%</Data>
             </View>
@@ -161,13 +161,13 @@ export function FinancingSheet({
             <Supporting size="body" style={styles.inputLabel}>Loan Term</Supporting>
             <View style={[styles.inputWrapper, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
               <TextInput
-                style={[styles.input, { color: colors.text }]}
+                style={[styles.input, { color: colors.label }]}
                 value={term}
                 onChangeText={setTerm}
                 keyboardType="number-pad"
                 maxLength={2}
                 placeholder="48"
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor={colors.labelQuaternary}
               />
               <Data size="body" tone="secondary">months</Data>
             </View>
@@ -176,7 +176,7 @@ export function FinancingSheet({
 
         {/* Disclaimer */}
         <View style={[styles.disclaimer, { backgroundColor: colors.fill2 }]}>
-          <Ionicons name="information-circle-outline" size={Sizes.iconSm} color={colors.text2} />
+          <Ionicons name="information-circle-outline" size={Sizes.iconSm} color={colors.labelSecondary} />
           <Supporting size="bodySm" style={styles.disclaimerText}>
             This is an estimate only. Actual rates and terms may vary based on your bank, credit profile, and other factors.
           </Supporting>
@@ -265,7 +265,6 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
     paddingTop: Spacing.md,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(128, 128, 128, 0.2)',
   },
   outputItem: {
     alignItems: 'center',

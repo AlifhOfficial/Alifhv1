@@ -102,7 +102,7 @@ export function PasswordStep({
             <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
               Create a password
             </Heading>
-            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
+            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
               Keep your account secure
             </Body>
           </Animated.View>
@@ -146,7 +146,7 @@ export function PasswordStep({
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Min. 8 characters"
-                placeholderTextColor={colors.text3}
+                placeholderTextColor={colors.labelTertiary}
                 keyboardAppearance="dark"
                 secureTextEntry={!showPassword}
                 autoComplete={Platform.OS === 'android' ? 'off' : 'new-password'}
@@ -162,7 +162,7 @@ export function PasswordStep({
                 onPress={() => setShowPassword(!showPassword)}
                 style={onboardingStyles.showPasswordButton}
               >
-                <Data size="bodySm" style={{ color: colors.text3 }}>
+                <Data size="bodySm" style={{ color: colors.labelTertiary }}>
                   {showPassword ? 'Hide' : 'Show'}
                 </Data>
               </HapticPressable>
@@ -194,7 +194,7 @@ export function PasswordStep({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <ButtonText style={{ color: isValid ? colors.primaryFg : colors.text3 }}>
+                <ButtonText style={{ color: isValid ? colors.primaryForeground : colors.labelTertiary }}>
                   Create Account
                 </ButtonText>
               )}
@@ -218,10 +218,10 @@ function PasswordRequirement({ met, text, colors }: PasswordRequirementProps) {
       <View
         style={[
           onboardingStyles.requirementDot,
-          { backgroundColor: met ? colors.success : colors.text3 },
+          { backgroundColor: met ? colors.success : colors.labelTertiary },
         ]}
       />
-      <Supporting size="bodySm" style={{ color: met ? colors.success : colors.text3 }}>
+      <Supporting size="bodySm" style={{ color: met ? colors.success : colors.labelTertiary }}>
         {text}
       </Supporting>
     </View>

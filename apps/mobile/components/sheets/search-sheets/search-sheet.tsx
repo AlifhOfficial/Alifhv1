@@ -29,7 +29,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
 import {
@@ -77,21 +77,21 @@ interface SearchParams {
   partnerName?: string;
 }
 
-// Suggestion category colors (dot indicators)
-const SUGGESTION_CATEGORIES: Record<string, { dot: string; label: string }> = {
-  make: { dot: '#3B82F6', label: 'Make' },
-  model: { dot: '#3B82F6', label: 'Model' },
-  make_model: { dot: '#3B82F6', label: 'Make & Model' },
-  make_model_trim: { dot: '#3B82F6', label: 'Full Match' },
-  partner: { dot: '#EAB308', label: 'Dealer' },
-  tag: { dot: '#22C55E', label: 'Tag' },
-  extra: { dot: '#A855F7', label: 'Feature' },
-  bodyType: { dot: '#F97316', label: 'Body Type' },
-  fuelType: { dot: '#F97316', label: 'Fuel' },
-  transmission: { dot: '#F97316', label: 'Transmission' },
-  specs: { dot: '#F97316', label: 'Specs' },
-  condition: { dot: '#F97316', label: 'Condition' },
-  sellerType: { dot: '#F97316', label: 'Seller' },
+// Suggestion category config (dot color keys → resolved via theme)
+const SUGGESTION_CATEGORIES: Record<string, { dotKey: keyof ColorPalette; label: string }> = {
+  make: { dotKey: 'info', label: 'Make' },
+  model: { dotKey: 'info', label: 'Model' },
+  make_model: { dotKey: 'info', label: 'Make & Model' },
+  make_model_trim: { dotKey: 'info', label: 'Full Match' },
+  partner: { dotKey: 'star', label: 'Dealer' },
+  tag: { dotKey: 'success', label: 'Tag' },
+  extra: { dotKey: 'amna', label: 'Feature' },
+  bodyType: { dotKey: 'warning', label: 'Body Type' },
+  fuelType: { dotKey: 'warning', label: 'Fuel' },
+  transmission: { dotKey: 'warning', label: 'Transmission' },
+  specs: { dotKey: 'warning', label: 'Specs' },
+  condition: { dotKey: 'warning', label: 'Condition' },
+  sellerType: { dotKey: 'warning', label: 'Seller' },
 };
 
 // ============================================================================
@@ -545,15 +545,15 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
       style={[
         styles.chip,
         {
-          backgroundColor: isSelected ? colors.text : colors.fill2,
-          borderColor: isSelected ? colors.text : colors.border,
+          backgroundColor: isSelected ? colors.label : colors.fill2,
+          borderColor: isSelected ? colors.label : colors.border,
         },
       ]}
       onPress={onPress}
     >
       <Supporting
         size="bodySm"
-        style={{ color: isSelected ? colors.bg : colors.text }}
+        style={{ color: isSelected ? colors.background : colors.label }}
       >
         {label}
       </Supporting>
@@ -563,7 +563,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
         </Supporting>
       )}
       {isSelected && (
-        <Ionicons name="close" size={Spacing.md} color={colors.bg} />
+        <Ionicons name="close" size={Spacing.md} color={colors.background} />
       )}
     </HapticPressable>
   );
@@ -581,7 +581,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
@@ -611,7 +611,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
             >
               <ButtonText
                 size="bodySm"
-                style={{ color: canApply ? colors.primaryFg : colors.textMuted }}
+                style={{ color: canApply ? colors.primaryForeground : colors.labelQuaternary }}
               >
                 Apply
               </ButtonText>
@@ -619,12 +619,12 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
           </View>
 
           {/* Search Input */}
-          <View style={[styles.searchInputContainer, { backgroundColor: colors.input, borderColor: colors.border }]}>
-            <Ionicons name="search" size={Spacing.xl} color={colors.textMuted} style={{ marginTop: 2 }} />
+          <View style={[styles.searchInputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Ionicons name="search" size={Spacing.xl} color={colors.labelQuaternary} style={{ marginTop: 2 }} />
             <BottomSheetTextInput
-              style={[styles.searchInput, { color: colors.text }]}
+              style={[styles.searchInput, { color: colors.label }]}
               placeholder={'Search by keyword, make, model, dealer...\ne.g. "Audi RS5", "accident free", "sunroof"'}
-              placeholderTextColor={colorScheme === 'dark' ? 'rgba(255,255,255,0.28)' : 'rgba(0,0,0,0.25)'}
+              placeholderTextColor={colors.placeholder}
               value={query}
               onChangeText={setQuery}
               onSubmitEditing={handleApply}
@@ -638,7 +638,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
             />
             {query.length > 0 && (
               <HapticPressable onPress={() => setQuery('')} hitSlop={Spacing.md}>
-                <Ionicons name="close-circle" size={Sizes.iconSm} color={colors.textMuted} />
+                <Ionicons name="close-circle" size={Sizes.iconSm} color={colors.labelQuaternary} />
               </HapticPressable>
             )}
           </View>
@@ -674,10 +674,10 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
 
               {isLoadingSuggestions ? (
                 <View style={styles.loadingRow}>
-                  <ActivityIndicator size="small" color={colors.textMuted} />
+                  <ActivityIndicator size="small" color={colors.labelQuaternary} />
                 </View>
               ) : suggestions.length > 0 ? (
-                <View style={[styles.suggestionsContainer, { backgroundColor: colors.bg, borderColor: colors.border }]}>
+                <View style={[styles.suggestionsContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
                   {suggestions.slice(0, 8).map((suggestion, index) => {
                     const category = SUGGESTION_CATEGORIES[suggestion.type];
                     return (
@@ -695,7 +695,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                     >
                       <View style={styles.suggestionLeft}>
                         {category && (
-                          <View style={[styles.categoryDot, { backgroundColor: category.dot }]} />
+                          <View style={[styles.categoryDot, { backgroundColor: colors[category.dotKey] }]} />
                         )}
                         <Body size="body" numberOfLines={1} style={{ flex: 1 }}>
                           {suggestion.text}
@@ -726,7 +726,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
               </Label>
               {isLoadingFacets ? (
                 <View style={styles.loadingRow}>
-                  <ActivityIndicator size="small" color={colors.textMuted} />
+                  <ActivityIndicator size="small" color={colors.labelQuaternary} />
                 </View>
               ) : (
                 <View style={styles.chipGrid}>

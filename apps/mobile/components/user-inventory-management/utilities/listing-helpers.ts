@@ -51,8 +51,8 @@ export function getStatusColor(
     warning: string;
     error: string;
     primary: string;
-    textMuted: string;
-    text2: string;
+    labelQuaternary: string;
+    labelSecondary: string;
   },
 ): string {
   // Rejected takes priority — rejected listings have lifecycleStatus 'archived'
@@ -64,16 +64,16 @@ export function getStatusColor(
     case 'sold':     return colors.success;
     case 'expired':  return colors.warning;
     case 'deleted':  return colors.error;
-    case 'archived': return colors.textMuted;
+    case 'archived': return colors.labelQuaternary;
   }
 
   // Active → moderation determines color
   switch (moderation) {
-    case 'draft':          return colors.text2;
+    case 'draft':          return colors.labelSecondary;
     case 'submitted':      return colors.warning;
     case 'pending_review': return colors.warning;
     case 'approved':       return colors.success;
-    default:               return colors.textMuted;
+    default:               return colors.labelQuaternary;
   }
 }
 

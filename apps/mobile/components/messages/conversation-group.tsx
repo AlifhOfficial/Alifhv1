@@ -72,7 +72,7 @@ export function ConversationGroup({
       {/* Main row */}
       <HapticPressable
         onPress={handlePress}
-        android_ripple={{ color: colors.surface2 }}
+        android_ripple={{ color: colors.surfaceSecondary }}
         style={styles.row}
       >
         {({ pressed }) => (
@@ -81,7 +81,7 @@ export function ConversationGroup({
             <View style={styles.avatarWrap}>
               <UserAvatar src={avatarUrl} name={name} size="md" />
               {isOnline && (
-                <View style={[styles.onlineDot, { backgroundColor: colors.success, borderColor: colors.bg }]} />
+                <View style={[styles.onlineDot, { backgroundColor: colors.success, borderColor: colors.background }]} />
               )}
             </View>
 
@@ -112,14 +112,14 @@ export function ConversationGroup({
                 </Supporting>
                 {totalUnread > 0 ? (
                   <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-                    <Text variant="bodySm" style={{ color: colors.primaryFg }}>
+                    <Text variant="bodySm" style={{ color: colors.primaryForeground }}>
                       {totalUnread > 99 ? '99+' : String(totalUnread)}
                     </Text>
                   </View>
                 ) : isMulti ? (
                   <ChevronRight
                     size={Sizes.iconXs}
-                    color={colors.text3}
+                    color={colors.labelTertiary}
                     strokeWidth={2}
                     style={{ transform: [{ rotate: isExpanded ? '90deg' : '0deg' }] }}
                   />
@@ -142,7 +142,7 @@ export function ConversationGroup({
               <HapticPressable
                 key={c.id}
                 onPress={() => onSelect(c)}
-                android_ripple={{ color: colors.surface2 }}
+                android_ripple={{ color: colors.surfaceSecondary }}
                 style={styles.subRow}
               >
                 {({ pressed }) => (
@@ -171,7 +171,7 @@ export function ConversationGroup({
                       </Supporting>
                       {c.unreadCount > 0 && (
                         <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-                          <Text variant="bodySm" style={{ color: colors.primaryFg }}>
+                          <Text variant="bodySm" style={{ color: colors.primaryForeground }}>
                             {c.unreadCount > 99 ? '99+' : String(c.unreadCount)}
                           </Text>
                         </View>

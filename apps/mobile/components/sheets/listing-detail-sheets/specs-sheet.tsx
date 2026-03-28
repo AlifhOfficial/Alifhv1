@@ -95,7 +95,7 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
     >
       <View style={styles.content}>
         {/* Header */}
@@ -113,7 +113,7 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
               {copied ? (
                 <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primary} />
               ) : (
-                <Copy size={Sizes.iconSm} color={colors.text2} />
+                <Copy size={Sizes.iconSm} color={colors.labelSecondary} />
               )}
             </HapticPressable>
             <HapticPressable
@@ -124,7 +124,7 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
                 { backgroundColor: colors.error }
               ]}
             >
-              <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
+              <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
             </HapticPressable>
           </View>
         </View>

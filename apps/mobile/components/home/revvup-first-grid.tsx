@@ -114,13 +114,13 @@ const PartnerItem = memo(function PartnerItem({
             name={partner.name}
             size="xl"
             shape="round"
-            backgroundColor={colors.bg}
+            backgroundColor={colors.background}
           />
         </View>
         
         {/* Partner Name - Bottom, wraps to multiple lines */}
         <View style={styles.partnerTextContainer}>
-          <Heading size="subheading" style={{ color: colors.text, textAlign: 'center' }}>
+          <Heading size="subheading" style={{ color: colors.label, textAlign: 'center' }}>
             {partner.name}
           </Heading>
         </View>

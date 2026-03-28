@@ -16,7 +16,7 @@ import { ErrorBoundary } from '@/components/ui/error-boundary';
 export default function WebLayout() {
   return (
     <ErrorBoundary>
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.bg }}>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.dark.background }}>
         <SafeAreaProvider>
           <ThemeProvider>
             <NetworkProvider>

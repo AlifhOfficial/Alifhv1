@@ -95,7 +95,7 @@ export function NameStep({
             <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
               What's your name?
             </Heading>
-            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
+            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
               We'd love to know what to call you
             </Body>
           </Animated.View>
@@ -117,7 +117,7 @@ export function NameStep({
                 value={name}
                 onChangeText={setName}
                 placeholder="Your first name"
-                placeholderTextColor={colors.text3}
+                placeholderTextColor={colors.labelTertiary}
                 keyboardAppearance="dark"
                 autoCapitalize="words"
                 autoCorrect={false}
@@ -148,7 +148,7 @@ export function NameStep({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="white" />
               ) : (
-                <ButtonText style={{ color: isValid ? colors.primaryFg : colors.text3 }}>
+                <ButtonText style={{ color: isValid ? colors.primaryForeground : colors.labelTertiary }}>
                   Continue
                 </ButtonText>
               )}

@@ -2,7 +2,7 @@
  * Loader Types
  */
 
-import { Spacing, Sizes } from '@/constants/theme';
+import { Spacing, Sizes, Colors } from '@/constants/theme';
 
 export type LoaderSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type LoaderVariant = 'primary' | 'secondary' | 'white' | 'dark' | 'muted';
@@ -23,17 +23,17 @@ export const LOADER_SIZES: Record<LoaderSize, number> = {
 
 export const LOADER_COLORS = {
   light: {
-    primary: '#0066FF',
-    secondary: '#6366F1',
-    white: '#FFFFFF',
-    dark: '#18181B',
-    muted: '#71717A',
+    primary: Colors.light.primary,
+    secondary: Colors.light.amna,
+    white: Colors.light.white,
+    dark: Colors.light.label,
+    muted: Colors.light.labelTertiary,
   },
   dark: {
-    primary: '#3B82F6',
-    secondary: '#818CF8',
-    white: '#FFFFFF',
-    dark: '#FAFAFA',
-    muted: '#A1A1AA',
+    primary: Colors.dark.primary,
+    secondary: Colors.dark.amna,
+    white: Colors.dark.white,
+    dark: Colors.dark.label,
+    muted: Colors.dark.labelTertiary,
   },
 };

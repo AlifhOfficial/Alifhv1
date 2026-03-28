@@ -64,14 +64,14 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text : colors.surface2,
-                    borderColor: isSelected ? colors.text : colors.border,
+                    backgroundColor: isSelected ? colors.label : colors.surfaceSecondary,
+                    borderColor: isSelected ? colors.label : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="bodySm"
-                  style={{ color: isSelected ? colors.bg : colors.text }}
+                  style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {type.label}
                 </Body>
@@ -94,14 +94,14 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text : colors.surface2,
-                    borderColor: isSelected ? colors.text : colors.border,
+                    backgroundColor: isSelected ? colors.label : colors.surfaceSecondary,
+                    borderColor: isSelected ? colors.label : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="bodySm"
-                  style={{ color: isSelected ? colors.bg : colors.text }}
+                  style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {fuel.label}
                 </Body>
@@ -124,14 +124,14 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text : colors.surface2,
-                    borderColor: isSelected ? colors.text : colors.border,
+                    backgroundColor: isSelected ? colors.label : colors.surfaceSecondary,
+                    borderColor: isSelected ? colors.label : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="bodySm"
-                  style={{ color: isSelected ? colors.bg : colors.text }}
+                  style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {size.label}
                 </Body>

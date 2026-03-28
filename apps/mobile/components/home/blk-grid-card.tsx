@@ -62,7 +62,7 @@ const ProductItem = memo(function ProductItem({ listing, colors, onPress, onFavo
     <HapticPressable onPress={() => onPress(listing.id)} style={[styles.product, { backgroundColor: colors.surface }]}>
       {/* Car Name & Price - Top Left */}
       <View style={styles.textContainer}>
-        <Heading size="subheading" style={{ color: colors.text }}>
+        <Heading size="subheading" style={{ color: colors.label }}>
           {listing.make} {listing.model}
         </Heading>
         <Heading size="title" style={{ color: colors.primary }}>
@@ -86,7 +86,7 @@ const ProductItem = memo(function ProductItem({ listing, colors, onPress, onFavo
             size={Sizes.iconSm}
             onPress={onFavorite}
             isBlkListing={true}
-            inactiveColor={colors.icon}
+            inactiveColor={colors.label}
           />
         </View>
       </View>

@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Eye, Heart, Zap, MousePointerClick, Flame } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { Heading, Body, Data, Supporting } from '@/components/ui';
@@ -62,11 +62,11 @@ function calculateHotScore({
   return Math.round(ctrScore + engagementScore + volumeBonus);
 }
 
-function getHotLevel(score: number): { label: string; color: string } {
-  if (score >= 70) return { label: 'Hot', color: '#F97316' };
-  if (score >= 40) return { label: 'Warm', color: '#F59E0B' };
-  if (score >= 20) return { label: 'Active', color: '#10B981' };
-  return { label: 'New', color: '#9CA3AF' };
+function getHotLevel(score: number): { label: string; colorKey: keyof ColorPalette } {
+  if (score >= 70) return { label: 'Hot', colorKey: 'warning' };
+  if (score >= 40) return { label: 'Warm', colorKey: 'warning' };
+  if (score >= 20) return { label: 'Active', colorKey: 'success' };
+  return { label: 'New', colorKey: 'labelQuaternary' };
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -133,13 +133,13 @@ export function ListingStatsSheet({
       label: 'Views',
       value: viewCount,
       icon: Eye,
-      color: colors.text2,
+      color: colors.labelSecondary,
     },
     {
       label: 'Impressions',
       value: impressionCount,
       icon: MousePointerClick,
-      color: colors.text2,
+      color: colors.labelSecondary,
     },
     {
       label: 'Saves',
@@ -163,7 +163,7 @@ export function ListingStatsSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
@@ -177,7 +177,7 @@ export function ListingStatsSheet({
               { backgroundColor: colors.error },
             ]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
           </HapticPressable>
         </View>
 
@@ -187,10 +187,10 @@ export function ListingStatsSheet({
             <Image source={{ uri: getAppThumbUrl(listingThumbnail)! }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
-              <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.textMuted} />
+              <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.labelQuaternary} />
             </View>
           )}
-          <Data size="bodySm" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
+          <Data size="bodySm" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
             {listingTitle}
           </Data>
         </View>
@@ -206,8 +206,8 @@ export function ListingStatsSheet({
           <View style={[styles.metricCard, { backgroundColor: colors.fill2 }]}>
             <Supporting size="bodySm">Engagement</Supporting>
             <View style={styles.metricValueRow}>
-              <Flame size={Sizes.iconSm} color={hotLevel.color} />
-              <Data size="title" style={{ color: hotLevel.color }}>
+              <Flame size={Sizes.iconSm} color={colors[hotLevel.colorKey]} />
+              <Data size="title" style={{ color: colors[hotLevel.colorKey] }}>
                 {hotLevel.label}
               </Data>
             </View>
@@ -234,11 +234,11 @@ export function ListingStatsSheet({
                     fill={stat.label === 'Saves' ? stat.color : 'none'}
                     strokeWidth={1.75}
                   />
-                  <Data size="bodySm" style={{ color: colors.text2 }}>
+                  <Data size="bodySm" style={{ color: colors.labelSecondary }}>
                     {stat.label}
                   </Data>
                 </View>
-                <Data size="bodySm" style={{ color: colors.text, }}>
+                <Data size="bodySm" style={{ color: colors.label, }}>
                   {formatCount(stat.value)}
                 </Data>
               </View>

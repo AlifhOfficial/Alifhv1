@@ -167,7 +167,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
       </View>
 
       {/* Thumbnail Strip with View All */}
-      <View style={[styles.thumbnailStrip, { backgroundColor: colors.bg }]}>
+      <View style={[styles.thumbnailStrip, { backgroundColor: colors.background }]}>
         <FlatList
           ref={thumbnailListRef}
           data={allImages}
@@ -212,7 +212,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         >
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
-              <Grid3x3 size={Sizes.iconXs} color={colors.text} strokeWidth={1.75} />
+              <Grid3x3 size={Sizes.iconXs} color={colors.label} strokeWidth={1.75} />
               <ButtonText size="bodySm">All</ButtonText>
             </View>
           )}
@@ -239,7 +239,6 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           previewImages={thumbImages}
           currentIndex={currentIndex}
           isOpen={lightboxOpen}
-          title={title}
           onClose={() => setLightboxOpen(false)}
           onIndexChange={setCurrentIndex}
         />
@@ -259,7 +258,7 @@ export function ImageGallerySkeleton() {
       <Skeleton width="100%" height={MAIN_IMAGE_HEIGHT} borderRadius={0} />
       
       {/* Thumbnails skeleton */}
-      <View style={[styles.thumbnailStrip, { backgroundColor: colors.bg }]}>
+      <View style={[styles.thumbnailStrip, { backgroundColor: colors.background }]}>
         <View style={styles.thumbnailList}>
           {[1, 2, 3, 4, 5].map((i) => (
             <Skeleton 
@@ -305,10 +304,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: Radius.lg,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: Colors.dark.overlay,
   },
   counterOverlayText: {
-    color: '#FAFAFA',
+    color: Colors.dark.white,
   },
   
   // Thumbnails

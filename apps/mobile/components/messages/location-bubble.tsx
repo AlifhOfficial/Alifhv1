@@ -69,7 +69,7 @@ export function LocationBubble({
   return (
     <HapticPressable haptic="light" onPress={handleOpenMaps} style={styles.container}>
       {/* Map Preview */}
-      <View style={styles.mapContainer}>
+      <View style={[styles.mapContainer, { backgroundColor: colors.surfaceSecondary }]}>
         <Image
           source={{ uri: mapPreviewUrl }}
           style={styles.mapImage}
@@ -77,7 +77,7 @@ export function LocationBubble({
         />
         {/* Pin overlay */}
         <View style={[styles.pinOverlay, { backgroundColor: colors.primary }]}>
-          <MapPin size={Sizes.iconSm} color={colors.primaryFg} strokeWidth={2.5} />
+          <MapPin size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2.5} />
         </View>
       </View>
 
@@ -85,7 +85,7 @@ export function LocationBubble({
       <View
         style={[
           styles.infoContainer,
-          { backgroundColor: isOwn ? colors.primary : colors.surface2 },
+          { backgroundColor: isOwn ? colors.primary : colors.surfaceSecondary },
         ]}
       >
         <View style={styles.textContainer}>
@@ -94,7 +94,7 @@ export function LocationBubble({
               size="body"
               style={[
                 styles.placeName,
-                { color: isOwn ? colors.primaryFg : colors.text },
+                { color: isOwn ? colors.primaryForeground : colors.label },
               ]}
               numberOfLines={1}
             >
@@ -104,7 +104,7 @@ export function LocationBubble({
           {address && (
             <Data
               size="bodySm"
-              style={{ color: isOwn ? 'rgba(255,255,255,0.8)' : colors.text2 }}
+              style={{ color: isOwn ? colors.white : colors.labelSecondary }}
               numberOfLines={2}
             >
               {address}
@@ -113,7 +113,7 @@ export function LocationBubble({
           {!placeName && !address && (
             <Data
               size="bodySm"
-              style={{ color: isOwn ? 'rgba(255,255,255,0.8)' : colors.text2 }}
+              style={{ color: isOwn ? colors.white : colors.labelSecondary }}
             >
               {latitude.toFixed(6)}, {longitude.toFixed(6)}
             </Data>
@@ -121,7 +121,7 @@ export function LocationBubble({
         </View>
         <ExternalLink
           size={Sizes.iconSm}
-          color={isOwn ? 'rgba(255,255,255,0.6)' : colors.text3}
+          color={isOwn ? colors.white : colors.labelTertiary}
           strokeWidth={1.5}
         />
       </View>
@@ -141,7 +141,6 @@ const styles = StyleSheet.create({
   mapContainer: {
     width: MAP_WIDTH,
     height: MAP_HEIGHT,
-    backgroundColor: '#E5E3DF', // Map loading background
     position: 'relative',
   },
   mapImage: {

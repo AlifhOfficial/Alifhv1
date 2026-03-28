@@ -88,7 +88,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
             <Body
               size="bodyLg"
               style={{
-                color: isSelected ? colors.text : colors.text2,
+                color: isSelected ? colors.label : colors.labelSecondary,
                 fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
               }}
             >
@@ -115,11 +115,11 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
       {/* Search - outside FlatList to prevent focus loss */}
       <View style={[styles.searchWrapper, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View style={[styles.searchBox, { backgroundColor: colors.fill2 }]}>
-          <Search size={Sizes.iconSm} color={colors.textMuted} strokeWidth={2} />
+          <Search size={Sizes.iconSm} color={colors.labelQuaternary} strokeWidth={2} />
           <BottomSheetTextInput
-            style={[styles.searchInput, { color: colors.text }]}
+            style={[styles.searchInput, { color: colors.label }]}
             placeholder="Search year..."
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.labelQuaternary}
             value={query}
             onChangeText={setQuery}
             keyboardType="number-pad"
@@ -128,7 +128,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
           />
           {query.length > 0 && (
             <HapticPressable onPress={() => setQuery('')} hitSlop={Layout.hitSlopSmall}>
-              <X size={Spacing.lg} color={colors.textMuted} strokeWidth={2} />
+              <X size={Spacing.lg} color={colors.labelQuaternary} strokeWidth={2} />
             </HapticPressable>
           )}
         </View>

@@ -223,7 +223,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
@@ -233,7 +233,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
         {isLoading && (
           <View style={[styles.overlay, { backgroundColor: colors.surface }]}>
             <View style={styles.overlayContent}>
-              <Ionicons name="flash" size={Spacing['4xl']} color="#8B5CF6" />
+              <Ionicons name="flash" size={Spacing['4xl']} color={colors.amna} />
               <View style={{ alignItems: 'center', gap: Spacing.sm, marginTop: Spacing.lg, width: '100%', paddingHorizontal: Spacing.md }}>
                 {message ? (
                   <Heading size="subheading" style={{ textAlign: 'center', flexShrink: 1 }}>
@@ -246,7 +246,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
                   </>
                 )}
               </View>
-              {!message && <ActivityIndicator size="small" color="#8B5CF6" style={{ marginTop: Spacing.lg }} />}
+              {!message && <ActivityIndicator size="small" color={colors.amna} style={{ marginTop: Spacing.lg }} />}
             </View>
           </View>
         )}
@@ -261,7 +261,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
               <Body size="body" tone="secondary">Cancel</Body>
             </HapticPressable>
             <View style={styles.headerTitle}>
-              <Ionicons name="flash" size={Spacing.lg} color="#8B5CF6" />
+              <Ionicons name="flash" size={Spacing.lg} color={colors.amna} />
               <Heading size="subheading">Ask Amna</Heading>
             </View>
             <View style={{ width: Spacing["5xl"] }} />
@@ -282,8 +282,8 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
             <View style={[
               styles.inputBox,
               {
-                backgroundColor: colors.input,
-                borderColor: 'rgba(139, 92, 246, 0.25)',
+                backgroundColor: colors.surface,
+                borderColor: colors.amnaMuted,
               },
             ]}>
               <TextInput
@@ -292,8 +292,8 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
                 onChangeText={setQuery}
                 onSubmitEditing={handleSubmit}
                 placeholder="Red SUV under 200K..."
-                placeholderTextColor={colorScheme === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.22)'}
-                style={[styles.textInput, { color: colors.text }]}
+                placeholderTextColor={colors.placeholder}
+                style={[styles.textInput, { color: colors.label }]}
                 multiline
                 numberOfLines={4}
                 returnKeyType="send"
@@ -310,7 +310,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
               style={[
                 styles.submitButton,
                 {
-                  backgroundColor: query.trim() ? '#8B5CF6' : colors.fill2,
+                  backgroundColor: query.trim() ? colors.amna : colors.fill2,
                 },
               ]}
             >
@@ -319,11 +319,11 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
                   <Ionicons
                     name="flash"
                     size={Spacing.lg}
-                    color={query.trim() ? '#fff' : colors.textMuted}
+                    color={query.trim() ? colors.primaryForeground : colors.labelQuaternary}
                   />
                   <ButtonText
                     size="body"
-                    style={{ color: query.trim() ? '#fff' : colors.textMuted }}
+                    style={{ color: query.trim() ? colors.primaryForeground : colors.labelQuaternary }}
                   >
                     Ask Amna
                   </ButtonText>
@@ -334,7 +334,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
             {/* Error message display */}
             {message && !isLoading && (
               <View style={styles.messageBox}>
-                <Body size="bodySm" style={{ textAlign: 'center', color: '#8B5CF6' }}>
+                <Body size="bodySm" style={{ textAlign: 'center', color: colors.amna }}>
                   {message}
                 </Body>
               </View>
@@ -368,7 +368,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
                       },
                     ]}
                   >
-                    <Supporting size="bodySm" style={{ color: colors.text }}>
+                    <Supporting size="bodySm" style={{ color: colors.label }}>
                       {suggestion}
                     </Supporting>
                   </HapticPressable>

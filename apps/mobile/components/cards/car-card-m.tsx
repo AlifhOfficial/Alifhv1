@@ -165,13 +165,13 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlac
     return {
       bg: colors.surface,
       border: colors.border,
-      title: colors.text,
+      title: colors.label,
       price: colors.primary,
-      stats: colors.text2,
-      meta: colors.text2,
-      sellerText: colors.text,
-      actionIcon: colors.icon,
-      imageBg: colors.surface2,
+      stats: colors.labelSecondary,
+      meta: colors.labelSecondary,
+      sellerText: colors.label,
+      actionIcon: colors.label,
+      imageBg: colors.surfaceSecondary,
       avatarBg: colors.surface,
       avatarBorder: colors.border,
     };
@@ -272,7 +272,7 @@ export const CarCardM = memo(function CarCardM({
       <CardImage 
         uri={displayImage} 
         backgroundColor={theme.imageBg}
-        placeholderColor={colors.text3}
+        placeholderColor={colors.labelTertiary}
         skeletonColor={colors.skeleton}
       />
 
@@ -553,6 +553,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     borderRadius: Radius['2xl'],
+    borderCurve: 'continuous',
     borderWidth: 1,
     overflow: 'hidden',
     marginBottom: Spacing.md,
@@ -566,7 +567,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   content: {
-    padding: Spacing.lg,
+    padding: Spacing.md,
     gap: Spacing.xs,
   },
 
@@ -574,11 +575,16 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     aspectRatio: IMAGE_ASPECT_RATIO,
+    borderTopLeftRadius: Radius['2xl'],
+    borderTopRightRadius: Radius['2xl'],
+    borderCurve: 'continuous',
     overflow: 'hidden',
   },
   image: {
     width: '100%',
     height: '100%',
+    borderTopLeftRadius: Radius['2xl'],
+    borderTopRightRadius: Radius['2xl'],
   },
   imagePlaceholder: {
     flex: 1,
@@ -610,6 +616,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingTop: Spacing.sm,
   },
 
   // Seller Info

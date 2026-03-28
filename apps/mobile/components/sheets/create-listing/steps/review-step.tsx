@@ -131,7 +131,7 @@ export function ReviewStepContent({
   return (
     <StepContainer>
       {/* Hero Card */}
-      <View style={[styles.heroCard, { backgroundColor: colors.surface2 }]}>
+      <View style={[styles.heroCard, { backgroundColor: colors.surfaceSecondary }]}>
         {data.images.length > 0 ? (
           <Image
             source={{ uri: toAbsoluteUrl(data.images[0]) }}
@@ -152,15 +152,15 @@ export function ReviewStepContent({
 
       {/* Quick Stats */}
       <View style={styles.statsRow}>
-        <View style={[styles.statItem, { backgroundColor: colors.surface2 }]}>
+        <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
           <Supporting size="bodySm" tone="muted">Mileage</Supporting>
           <Body size="body">{mileageNum.toLocaleString()} km</Body>
         </View>
-        <View style={[styles.statItem, { backgroundColor: colors.surface2 }]}>
+        <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
           <Supporting size="bodySm" tone="muted">Location</Supporting>
           <Body size="body" numberOfLines={1}>{emirateLabel}</Body>
         </View>
-        <View style={[styles.statItem, { backgroundColor: colors.surface2 }]}>
+        <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
           <Supporting size="bodySm" tone="muted">Photos</Supporting>
           <Body size="body">{data.images.length}</Body>
         </View>
@@ -168,9 +168,9 @@ export function ReviewStepContent({
 
       {/* Missing Items Warning */}
       {!canPublish && missingItems.length > 0 && (
-        <View style={[styles.warningBox, { backgroundColor: (colors.warning ?? '#F59E0B') + '15' }]}>
-          <AlertCircle size={Sizes.iconSm} color={colors.warning ?? '#F59E0B'} strokeWidth={2} />
-          <Body size="bodySm" style={{ color: colors.warning ?? '#F59E0B', flex: 1 }}>
+        <View style={[styles.warningBox, { backgroundColor: colors.warningMuted }]}>
+          <AlertCircle size={Sizes.iconSm} color={colors.warning} strokeWidth={2} />
+          <Body size="bodySm" style={{ color: colors.warning, flex: 1 }}>
             Missing: {missingItems.join(', ')}
           </Body>
         </View>
@@ -178,9 +178,9 @@ export function ReviewStepContent({
 
       {/* Error */}
       {error && (
-        <View style={[styles.warningBox, { backgroundColor: (colors.error ?? '#EF4444') + '15' }]}>
-          <AlertCircle size={Sizes.iconSm} color={colors.error ?? '#EF4444'} strokeWidth={2} />
-          <Body size="bodySm" style={{ color: colors.error ?? '#EF4444', flex: 1 }}>
+        <View style={[styles.warningBox, { backgroundColor: colors.errorMuted }]}>
+          <AlertCircle size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
+          <Body size="bodySm" style={{ color: colors.error, flex: 1 }}>
             {error}
           </Body>
         </View>
@@ -193,15 +193,15 @@ export function ReviewStepContent({
           disabled={submitting || !canPublish}
           style={[
             styles.publishBtn,
-            { backgroundColor: canPublish ? colors.text : colors.fill2 },
+            { backgroundColor: canPublish ? colors.label : colors.fill2 },
           ]}
         >
           {submitting ? (
-            <ActivityIndicator size="small" color={colors.bg} />
+            <ActivityIndicator size="small" color={colors.background} />
           ) : (
             <>
-              <Check size={Sizes.iconSm} color={canPublish ? colors.bg : colors.textMuted} strokeWidth={2} />
-              <Body size="body" style={{ color: canPublish ? colors.bg : colors.textMuted, }}>
+              <Check size={Sizes.iconSm} color={canPublish ? colors.background : colors.labelQuaternary} strokeWidth={2} />
+              <Body size="body" style={{ color: canPublish ? colors.background : colors.labelQuaternary, }}>
                 Publish
               </Body>
             </>
@@ -213,7 +213,7 @@ export function ReviewStepContent({
           disabled={submitting}
           style={[styles.draftBtn, { borderColor: colors.border }]}
         >
-          <Save size={Sizes.iconSm} color={colors.text2} strokeWidth={2} />
+          <Save size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
           <Body size="body" tone="secondary">Draft</Body>
         </HapticPressable>
       </View>

@@ -68,7 +68,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           {/* Member Since */}
           {seller.memberSince && (
             <View style={localStyles.metaRow}>
-              <Clock size={Sizes.iconXs} color={colors.iconMuted} />
+              <Clock size={Sizes.iconXs} color={colors.labelSecondary} />
               <Supporting size="bodySm" tone="muted">
                 Member since {formatMemberSince(seller.memberSince)}
               </Supporting>
@@ -92,7 +92,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
         {/* Avatar - Right side (squared for dealers, rounded for private) */}
         <View style={[
           seller.isDealer ? localStyles.logo : localStyles.avatar, 
-          { backgroundColor: colors.surface2 }
+          { backgroundColor: colors.surfaceSecondary }
         ]}>
           {avatarUrl ? (
             <Image 

@@ -122,7 +122,7 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
             <Heading size="subheading" style={{ color: colors.white }}>
               {showroom.partner.brandName}
             </Heading>
-            <Supporting size="bodySm" style={{ color: colors.text3 }}>
+            <Supporting size="bodySm" style={{ color: colors.labelTertiary }}>
               {showroom.heroTagline || 'Visit showroom'}
             </Supporting>
           </View>

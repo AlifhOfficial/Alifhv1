@@ -86,7 +86,7 @@ export function KycVerificationSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
       detached
       bottomInset={insets.bottom + Spacing.xl}
@@ -101,7 +101,7 @@ export function KycVerificationSheet({
             hitSlop={Spacing.md}
             style={[styles.iconButton, { backgroundColor: colors.error }]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
           </HapticPressable>
         </View>
 

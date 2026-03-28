@@ -173,7 +173,7 @@ export function YearMileageFilterSheet({
           >
             <ButtonText
               size="bodySm"
-              style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
+              style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
             >
               Apply
             </ButtonText>
@@ -207,13 +207,13 @@ export function YearMileageFilterSheet({
                 style={[
                   styles.input,
                   { 
-                    backgroundColor: colors.surface2,
+                    backgroundColor: colors.surfaceSecondary,
                     borderColor: colors.border,
-                    color: colors.text,
+                    color: colors.label,
                   },
                 ]}
                 placeholder="Min"
-                placeholderTextColor={colors.text3}
+                placeholderTextColor={colors.labelTertiary}
                 keyboardType="number-pad"
                 value={localYearMin}
                 onChangeText={setLocalYearMin}
@@ -226,13 +226,13 @@ export function YearMileageFilterSheet({
                 style={[
                   styles.input,
                   { 
-                    backgroundColor: colors.surface2,
+                    backgroundColor: colors.surfaceSecondary,
                     borderColor: colors.border,
-                    color: colors.text,
+                    color: colors.label,
                   },
                 ]}
                 placeholder="Max"
-                placeholderTextColor={colors.text3}
+                placeholderTextColor={colors.labelTertiary}
                 keyboardType="number-pad"
                 value={localYearMax}
                 onChangeText={setLocalYearMax}
@@ -261,14 +261,14 @@ export function YearMileageFilterSheet({
                   style={[
                     styles.presetChip,
                     { 
-                      backgroundColor: isActive ? colors.text : colors.surface2,
-                      borderColor: isActive ? colors.text : colors.border,
+                      backgroundColor: isActive ? colors.label : colors.surfaceSecondary,
+                      borderColor: isActive ? colors.label : colors.border,
                     },
                   ]}
                 >
                   <Supporting
                     size="bodySm"
-                    style={{ color: isActive ? colors.bg : colors.text2 }}
+                    style={{ color: isActive ? colors.background : colors.labelSecondary }}
                   >
                     {preset.label}
                   </Supporting>
@@ -284,13 +284,13 @@ export function YearMileageFilterSheet({
                 style={[
                   styles.input,
                   { 
-                    backgroundColor: colors.surface2,
+                    backgroundColor: colors.surfaceSecondary,
                     borderColor: colors.border,
-                    color: colors.text,
+                    color: colors.label,
                   },
                 ]}
                 placeholder="Min"
-                placeholderTextColor={colors.text3}
+                placeholderTextColor={colors.labelTertiary}
                 keyboardType="number-pad"
                 value={localMileageMin}
                 onChangeText={setLocalMileageMin}
@@ -302,13 +302,13 @@ export function YearMileageFilterSheet({
                 style={[
                   styles.input,
                   { 
-                    backgroundColor: colors.surface2,
+                    backgroundColor: colors.surfaceSecondary,
                     borderColor: colors.border,
-                    color: colors.text,
+                    color: colors.label,
                   },
                 ]}
                 placeholder="Max"
-                placeholderTextColor={colors.text3}
+                placeholderTextColor={colors.labelTertiary}
                 keyboardType="number-pad"
                 value={localMileageMax}
                 onChangeText={setLocalMileageMax}

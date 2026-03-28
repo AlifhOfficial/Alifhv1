@@ -28,7 +28,7 @@ export const ThemeToggle = memo(function ThemeToggle() {
       <IconSymbol 
         name={isDark ? 'moon.fill' : 'sun.max.fill'} 
         size={Sizes.iconMd} 
-        color={colors.iconMuted} 
+        color={colors.labelSecondary} 
       />
     </HapticPressable>
   );

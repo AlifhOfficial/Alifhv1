@@ -139,7 +139,7 @@ export function CancelBookingSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
@@ -151,17 +151,17 @@ export function CancelBookingSheet({
             disabled={loading}
             style={[styles.closeButton, { backgroundColor: colors.error }]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
           </HapticPressable>
         </View>
 
         {/* Booking preview */}
-        <View style={[styles.previewCard, { backgroundColor: colors.surface2 }]}>
+        <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
           {listingThumbnail ? (
             <Image source={{ uri: getAppThumbUrl(listingThumbnail)! }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
-              <Ionicons name="car-outline" size={Sizes.iconLg} color={colors.textMuted} />
+              <Ionicons name="car-outline" size={Sizes.iconLg} color={colors.labelQuaternary} />
             </View>
           )}
           <View style={styles.previewInfo}>
@@ -189,7 +189,7 @@ export function CancelBookingSheet({
                   style={[
                     styles.reasonItem,
                     {
-                      backgroundColor: isSelected ? colors.primaryMuted : colors.surface2,
+                      backgroundColor: isSelected ? colors.primaryMuted : colors.surfaceSecondary,
                       borderColor: isSelected ? colors.primary : colors.border,
                     },
                   ]}
@@ -198,7 +198,7 @@ export function CancelBookingSheet({
                     style={[
                       styles.radioOuter,
                       {
-                        borderColor: isSelected ? colors.primary : colors.textMuted,
+                        borderColor: isSelected ? colors.primary : colors.labelQuaternary,
                       },
                     ]}
                   >
@@ -222,14 +222,14 @@ export function CancelBookingSheet({
             value={notes}
             onChangeText={setNotes}
             placeholder="Any additional details…"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.labelQuaternary}
             multiline
             numberOfLines={2}
             style={[
               styles.textInput,
               {
-                backgroundColor: colors.surface2,
-                color: colors.text,
+                backgroundColor: colors.surfaceSecondary,
+                color: colors.label,
                 borderColor: colors.border,
               },
             ]}
@@ -268,11 +268,11 @@ export function CancelBookingSheet({
             ]}
           >
             {loading ? (
-              <ActivityIndicator size="small" color="#FFF" />
+              <ActivityIndicator size="small" color={colors.primaryForeground} />
             ) : (
               <>
-                <XIcon size={Sizes.iconSm} color="#FFF" />
-                <ButtonText size="body" style={{ color: '#FFF' }}>
+                <XIcon size={Sizes.iconSm} color={colors.primaryForeground} />
+                <ButtonText size="body" style={{ color: colors.primaryForeground }}>
                   Cancel Booking
                 </ButtonText>
               </>

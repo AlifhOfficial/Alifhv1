@@ -59,12 +59,12 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
           styles.input,
           {
             backgroundColor: colors.fill2,
-            color: colors.text,
+            color: colors.label,
             borderColor: colors.border,
           },
         ]}
         placeholder="e.g. Sport, AMG, M-Sport..."
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={colors.labelQuaternary}
         value={localTrim}
         onChangeText={handleChange}
         autoCapitalize="words"
@@ -85,14 +85,14 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.chip,
                   {
-                    backgroundColor: isSelected ? colors.text : colors.surface2,
-                    borderColor: isSelected ? colors.text : colors.border,
+                    backgroundColor: isSelected ? colors.label : colors.surfaceSecondary,
+                    borderColor: isSelected ? colors.label : colors.border,
                   },
                 ]}
               >
                 <Body
                   size="bodySm"
-                  style={{ color: isSelected ? colors.bg : colors.text }}
+                  style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {trim}
                 </Body>

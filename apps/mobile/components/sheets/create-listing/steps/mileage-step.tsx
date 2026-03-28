@@ -72,9 +72,9 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
         ]}
       >
         <BottomSheetTextInput
-          style={[styles.input, { color: colors.text }]}
+          style={[styles.input, { color: colors.label }]}
           placeholder="Enter mileage"
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={colors.labelQuaternary}
           value={localMileage}
           onChangeText={handleChange}
           keyboardType="number-pad"
@@ -86,12 +86,12 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
       {/* Formatted display */}
       {localMileage && (
         <View style={styles.formattedRow}>
-          <Data size="title" style={{ color: colors.text }}>
+          <Data size="title" style={{ color: colors.label }}>
             {mileageNum.toLocaleString()} km
           </Data>
           {isLowMileage && (
-            <View style={[styles.badge, { backgroundColor: (colors.success ?? '#10B981') + '20' }]}>
-              <Supporting size="bodySm" style={{ color: colors.success ?? '#10B981' }}>
+            <View style={[styles.badge, { backgroundColor: colors.successMuted }]}>
+              <Supporting size="bodySm" style={{ color: colors.success }}>
                 Low mileage
               </Supporting>
             </View>
@@ -112,12 +112,12 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.presetChip,
                   {
-                    backgroundColor: isActive ? colors.text : colors.surface2,
-                    borderColor: isActive ? colors.text : colors.border,
+                    backgroundColor: isActive ? colors.label : colors.surfaceSecondary,
+                    borderColor: isActive ? colors.label : colors.border,
                   },
                 ]}
               >
-                <Body size="bodySm" style={{ color: isActive ? colors.bg : colors.text }}>
+                <Body size="bodySm" style={{ color: isActive ? colors.background : colors.label }}>
                   {preset.label}
                 </Body>
               </HapticPressable>

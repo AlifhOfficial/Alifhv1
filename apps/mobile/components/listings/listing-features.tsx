@@ -80,7 +80,7 @@ export const ListingFeatures = memo(function ListingFeatures({
   const colors = Colors[colorScheme];
   const [containerWidth, setContainerWidth] = useState(0);
 
-  const textColor = isBlk ? colors.blkText : colors.text;
+  const textColor = isBlk ? colors.blkText : colors.label;
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
@@ -106,7 +106,7 @@ export const ListingFeatures = memo(function ListingFeatures({
         {visibleExtras.map((extra, idx) => (
           <View 
             key={idx} 
-            style={[styles.badge, { backgroundColor: colors.bg2 }]}
+            style={[styles.badge, { backgroundColor: colors.backgroundSecondary }]}
           >
             <Text variant="bodySm" style={{ color: textColor }}>
               {formatEnumValue(extra)}

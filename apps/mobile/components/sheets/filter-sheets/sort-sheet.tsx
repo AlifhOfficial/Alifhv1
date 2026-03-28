@@ -126,7 +126,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
                 <Body
                   size="body"
                   style={{ 
-                    color: selected ? colors.text : colors.text2,
+                    color: selected ? colors.label : colors.labelSecondary,
                     fontWeight: selected ? Fonts.bold : Fonts.semiBold,
                   }}
                 >
@@ -134,10 +134,10 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
                 </Body>
                 <View style={[
                   styles.radio,
-                  { borderColor: selected ? colors.textMuted : colors.border },
+                  { borderColor: selected ? colors.labelQuaternary : colors.border },
                 ]}>
                   {selected && (
-                    <View style={[styles.radioInner, { backgroundColor: colors.textMuted }]} />
+                    <View style={[styles.radioInner, { backgroundColor: colors.labelQuaternary }]} />
                   )}
                 </View>
               </HapticPressable>

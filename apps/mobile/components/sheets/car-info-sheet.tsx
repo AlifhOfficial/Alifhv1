@@ -25,22 +25,22 @@ import {
   Lightbulb,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Data, Supporting, Label } from '@/components/ui';
 import { getListingSummary, type ListingSummary } from '@/lib/summary-api';
 
 // ============================================================================
-// DEAL RATING CONFIG — outline colors only
+// DEAL RATING CONFIG — uses semantic color keys resolved via theme
 // ============================================================================
 
-const DEAL_RATING_CONFIG = {
-  steal: { label: 'STEAL', color: '#10B981' },
-  solid: { label: 'SOLID', color: '#3B82F6' },
-  fair: { label: 'FAIR', color: '#737373' },
-  steep: { label: 'STEEP', color: '#F59E0B' },
-  unclear: { label: '—', color: '#737373' },
-} as const;
+const DEAL_RATING_CONFIG: Record<string, { label: string; colorKey: keyof ColorPalette }> = {
+  steal: { label: 'STEAL', colorKey: 'success' },
+  solid: { label: 'SOLID', colorKey: 'info' },
+  fair: { label: 'FAIR', colorKey: 'labelSecondary' },
+  steep: { label: 'STEEP', colorKey: 'warning' },
+  unclear: { label: '—', colorKey: 'labelSecondary' },
+};
 
 // ============================================================================
 // TYPES
@@ -157,7 +157,7 @@ export function CarInfoSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
     >
       <BottomSheetScrollView
         style={styles.scrollView}
@@ -167,7 +167,7 @@ export function CarInfoSheet({
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerTitle}>
-            <Zap size={Sizes.iconSm} color={colors.text} fill={colors.text} />
+            <Zap size={Sizes.iconSm} color={colors.label} fill={colors.label} />
             <Heading size="heading">DarkWeave</Heading>
           </View>
           <HapticPressable 
@@ -175,7 +175,7 @@ export function CarInfoSheet({
             hitSlop={Spacing.md}
             style={[styles.closeButton, { backgroundColor: colors.error }]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
           </HapticPressable>
         </View>
 
@@ -187,8 +187,8 @@ export function CarInfoSheet({
               <Data size="title" style={{ color: colors.primary }}>{formattedPrice}</Data>
             )}
             {dealConfig && (
-              <View style={[styles.dealBadge, { borderColor: dealConfig.color }]}>
-                <Label size="caption" style={{ color: dealConfig.color, letterSpacing: 1 }}>
+              <View style={[styles.dealBadge, { borderColor: colors[dealConfig.colorKey] }]}>
+                <Label size="caption" style={{ color: colors[dealConfig.colorKey], letterSpacing: 1 }}>
                   {dealConfig.label}
                 </Label>
               </View>
@@ -200,7 +200,7 @@ export function CarInfoSheet({
         {isLoading && (
           <View style={styles.centeredState}>
             <ActivityIndicator size="small" color={colors.primary} />
-            <Supporting size="bodySm" style={{ color: colors.text2 }}>
+            <Supporting size="bodySm" style={{ color: colors.labelSecondary }}>
               Weaving the thread...
             </Supporting>
           </View>
@@ -209,8 +209,8 @@ export function CarInfoSheet({
         {/* Error State */}
         {error && !isLoading && (
           <View style={styles.centeredState}>
-            <Zap size={Sizes.iconLg} color={colors.text3} />
-            <Supporting size="bodySm" style={{ color: colors.text2 }}>
+            <Zap size={Sizes.iconLg} color={colors.labelTertiary} />
+            <Supporting size="bodySm" style={{ color: colors.labelSecondary }}>
               {error}
             </Supporting>
           </View>
@@ -225,9 +225,9 @@ export function CarInfoSheet({
               <View style={styles.flowSection}>
                 <View style={styles.flowHeader}>
                   <View style={[styles.flowIcon, { backgroundColor: colors.fill2 }]}>
-                    <Info size={Sizes.iconXs} color={colors.text2} />
+                    <Info size={Sizes.iconXs} color={colors.labelSecondary} />
                   </View>
-                  <Label size="caption" style={{ color: colors.text3, letterSpacing: 0.5 }}>
+                  <Label size="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }}>
                     DATA CONSIDERED
                   </Label>
                 </View>
@@ -235,7 +235,7 @@ export function CarInfoSheet({
                   <View style={styles.metricsWrap}>
                     {contextMetrics.map((metric, i) => (
                       <View key={i} style={[styles.metricChip, { backgroundColor: colors.fill2 }]}>
-                        <Label size="caption" style={{ color: colors.text2 }}>{metric}</Label>
+                        <Label size="caption" style={{ color: colors.labelSecondary }}>{metric}</Label>
                       </View>
                     ))}
                   </View>
@@ -247,15 +247,15 @@ export function CarInfoSheet({
             {summary.darkTake && (
               <View style={styles.flowSection}>
                 <View style={styles.flowHeader}>
-                  <View style={[styles.flowIcon, { backgroundColor: 'rgba(255, 107, 53, 0.12)' }]}>
-                    <Flame size={Sizes.iconXs} color="#FF6B35" />
+                  <View style={[styles.flowIcon, { backgroundColor: colors.warningMuted }]}>
+                    <Flame size={Sizes.iconXs} color={colors.warning} />
                   </View>
-                  <Label size="caption" style={{ color: colors.text3, letterSpacing: 0.5 }}>
+                  <Label size="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }}>
                     THE TAKE
                   </Label>
                 </View>
                 <View style={[styles.flowContent, { borderLeftColor: colors.border }]}>
-                  <Body size="body" style={{ color: colors.text, }}>
+                  <Body size="body" style={{ color: colors.label, }}>
                     {summary.darkTake}
                   </Body>
                 </View>
@@ -267,9 +267,9 @@ export function CarInfoSheet({
               <View style={styles.flowSection}>
                 <View style={styles.flowHeader}>
                   <View style={[styles.flowIcon, { backgroundColor: colors.fill2 }]}>
-                    <Crosshair size={Sizes.iconXs} color={colors.text2} />
+                    <Crosshair size={Sizes.iconXs} color={colors.labelSecondary} />
                   </View>
-                  <Label size="caption" style={{ color: colors.text3, letterSpacing: 0.5 }}>
+                  <Label size="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }}>
                     THE READ
                   </Label>
                 </View>
@@ -277,7 +277,7 @@ export function CarInfoSheet({
                   {(summary.machineNotes ?? []).map((note, i) => (
                     <View key={i} style={styles.bulletRow}>
                       <View style={[styles.bulletDot, { backgroundColor: colors.primary }]} />
-                      <Body size="bodySm" style={{ flex: 1, color: colors.text }}>
+                      <Body size="bodySm" style={{ flex: 1, color: colors.label }}>
                         {note}
                       </Body>
                     </View>
@@ -290,19 +290,19 @@ export function CarInfoSheet({
             {(summary.flags ?? []).length > 0 && (
               <View style={styles.flowSection}>
                 <View style={styles.flowHeader}>
-                  <View style={[styles.flowIcon, { backgroundColor: 'rgba(245, 158, 11, 0.12)' }]}>
-                    <AlertTriangle size={Sizes.iconXs} color="#F59E0B" />
+                  <View style={[styles.flowIcon, { backgroundColor: colors.warningMuted }]}>
+                    <AlertTriangle size={Sizes.iconXs} color={colors.warning} />
                   </View>
-                  <Label size="caption" style={{ color: colors.text3, letterSpacing: 0.5 }}>
+                  <Label size="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }}>
                     WORTH NOTING
                   </Label>
                 </View>
                 <View style={[styles.flowContent, { borderLeftColor: colors.border }]}>
                   {(summary.flags ?? []).map((flag, i) => {
-                    const flagColor = flag.type === 'red' ? '#F59E0B' : '#10B981';
+                    const flagColor = flag.type === 'red' ? colors.warning : colors.success;
                     return (
                       <View key={i} style={[styles.flagItem, { borderLeftColor: flagColor }]}>
-                        <Body size="bodySm" style={{ color: colors.text }}>
+                        <Body size="bodySm" style={{ color: colors.label }}>
                           {flag.text}
                         </Body>
                       </View>
@@ -317,18 +317,18 @@ export function CarInfoSheet({
               <View style={styles.flowSection}>
                 <View style={styles.flowHeader}>
                   <View style={[styles.flowIcon, { backgroundColor: colors.fill2 }]}>
-                    <User size={Sizes.iconXs} color={colors.text2} />
+                    <User size={Sizes.iconXs} color={colors.labelSecondary} />
                   </View>
-                  <Label size="caption" style={{ color: colors.text3, letterSpacing: 0.5 }}>
+                  <Label size="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }}>
                     {sellerName ? sellerName.toUpperCase() : 'SELLER'}
                   </Label>
                   {summary.context?.sellerRating && (
                     <View style={[styles.ratingBadge, { backgroundColor: colors.fill2 }]}>
-                      <Label size="caption" style={{ color: colors.text }}>
+                      <Label size="caption" style={{ color: colors.label }}>
                         {summary.context.sellerRating.toFixed(1)}
                       </Label>
                       {summary.context.sellerReviewCount && (
-                        <Label size="caption" style={{ color: colors.text3 }}>
+                        <Label size="caption" style={{ color: colors.labelTertiary }}>
                           · {summary.context.sellerReviewCount}
                         </Label>
                       )}
@@ -336,7 +336,7 @@ export function CarInfoSheet({
                   )}
                 </View>
                 <View style={[styles.flowContent, { borderLeftColor: colors.border }]}>
-                  <Body size="bodySm" style={{ color: colors.text }}>
+                  <Body size="bodySm" style={{ color: colors.label }}>
                     {summary.sellerVibe}
                   </Body>
                 </View>
@@ -347,15 +347,15 @@ export function CarInfoSheet({
             {summary.negotiationTip && (
               <View style={styles.flowSection}>
                 <View style={styles.flowHeader}>
-                  <View style={[styles.flowIcon, { backgroundColor: 'rgba(16, 185, 129, 0.12)' }]}>
-                    <Lightbulb size={Sizes.iconXs} color="#10B981" />
+                  <View style={[styles.flowIcon, { backgroundColor: colors.successMuted }]}>
+                    <Lightbulb size={Sizes.iconXs} color={colors.success} />
                   </View>
-                  <Label size="caption" style={{ color: colors.text3, letterSpacing: 0.5 }}>
+                  <Label size="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }}>
                     GOOD TO KNOW
                   </Label>
                 </View>
                 <View style={[styles.flowContent, styles.flowContentLast]}>
-                  <Body size="bodySm" style={{ color: colors.text }}>
+                  <Body size="bodySm" style={{ color: colors.label }}>
                     {summary.negotiationTip}
                   </Body>
                 </View>
@@ -364,7 +364,7 @@ export function CarInfoSheet({
 
             {/* ─── Disclaimer ─── */}
             <View style={styles.disclaimer}>
-              <Supporting size="bodySm" style={{ color: colors.text3, textAlign: 'center' }}>
+              <Supporting size="bodySm" style={{ color: colors.labelTertiary, textAlign: 'center' }}>
                 AI-generated · may not be accurate · do your own check
               </Supporting>
             </View>

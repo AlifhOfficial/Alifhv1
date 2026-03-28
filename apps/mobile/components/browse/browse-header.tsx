@@ -75,7 +75,7 @@ export function BrowseHeader({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -95,7 +95,7 @@ export function BrowseHeader({
           <HapticPressable onPress={handleBrowsePress} style={styles.pillInner}>
             {({ pressed }) => (
               <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                <LayoutGrid size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+                <LayoutGrid size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
                 <Data size="bodySm">Browse</Data>
               </View>
             )}
@@ -118,8 +118,8 @@ export function BrowseHeader({
               <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
                 <Data size="bodySm">Filters</Data>
                 {settingsCount > 0 && (
-                  <View style={[styles.badge, { backgroundColor: colors.text }]}>
-                    <Label size="caption" uppercase={false} style={{ color: colors.bg }}>
+                  <View style={[styles.badge, { backgroundColor: colors.label }]}>
+                    <Label size="caption" uppercase={false} style={{ color: colors.background }}>
                       {settingsCount > 9 ? '9+' : settingsCount}
                     </Label>
                   </View>
@@ -152,8 +152,8 @@ export function BrowseHeader({
                     {pill.label}
                   </Data>
                   {pill.activeCount > 0 && (
-                    <View style={[styles.badge, { backgroundColor: colors.text }]}>
-                      <Label size="caption" uppercase={false} style={{ color: colors.bg }}>
+                    <View style={[styles.badge, { backgroundColor: colors.label }]}>
+                      <Label size="caption" uppercase={false} style={{ color: colors.background }}>
                         {pill.activeCount}
                       </Label>
                     </View>
@@ -179,9 +179,9 @@ export function BrowseHeader({
             {({ pressed }) => (
               <View style={{ opacity: pressed ? 0.7 : 1 }}>
                 {viewMode === 'grid' ? (
-                  <LayoutGrid size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
+                  <LayoutGrid size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
                 ) : (
-                  <List size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
+                  <List size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
                 )}
               </View>
             )}

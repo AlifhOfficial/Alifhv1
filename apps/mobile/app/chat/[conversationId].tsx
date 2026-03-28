@@ -76,7 +76,7 @@ export default function ChatScreen() {
   // No conversation ID
   if (!conversationId) {
     return (
-      <View style={[styles.screen, { backgroundColor: colors.bg, paddingTop: insets.top }]}>
+      <View style={[styles.screen, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <View style={styles.centered}>
           <Supporting size="body" tone="secondary" style={styles.errorText}>
             Conversation not found
@@ -96,7 +96,7 @@ export default function ChatScreen() {
   // Error state
   if (error && !conversation) {
     return (
-      <View style={[styles.screen, { backgroundColor: colors.bg, paddingTop: insets.top }]}>
+      <View style={[styles.screen, { backgroundColor: colors.background, paddingTop: insets.top }]}>
         <View style={styles.centered}>
           <Supporting size="body" tone="secondary" style={styles.errorText}>
             {error.message}

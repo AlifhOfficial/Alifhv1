@@ -147,7 +147,7 @@ export function GreetingNote() {
   return (
     <View style={styles.container}>
       <View style={styles.greetingRow}>
-        <Heading size="title" style={{ color: colors.text }}>
+        <Heading size="title" style={{ color: colors.label }}>
           {content.greeting}
           {content.name ? `, ` : ''}
         </Heading>
@@ -157,7 +157,7 @@ export function GreetingNote() {
           </Heading>
         )}
       </View>
-      <Supporting size="body" style={{ color: colors.text3 }}>
+      <Supporting size="body" style={{ color: colors.labelTertiary }}>
         {content.subtitle}
       </Supporting>
     </View>

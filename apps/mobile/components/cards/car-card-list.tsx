@@ -150,11 +150,11 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean): CardT
     return {
       bg: colors.surface,
       border: colors.border,
-      text: colors.text,
+      text: colors.label,
       price: colors.primary,
-      meta: colors.text2,
-      icon: colors.icon,
-      imageBg: colors.surface2,
+      meta: colors.labelSecondary,
+      icon: colors.label,
+      imageBg: colors.surfaceSecondary,
       glassBg: colors.glassBg,
       glassBorder: colors.glassBorder,
     };

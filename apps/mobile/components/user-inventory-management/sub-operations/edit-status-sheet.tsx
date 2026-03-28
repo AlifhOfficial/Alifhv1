@@ -89,7 +89,7 @@ const ACTION_ROWS: ActionRow[] = [
     key: 'edit',
     label: 'Edit Listing',
     icon: Pencil,
-    color: (c) => c.text,
+    color: (c) => c.label,
     // Can't edit sold, expired, deleted, or rejected listings
     visible: ({ lifecycleStatus, moderationStatus }) =>
       lifecycleStatus !== 'expired' &&
@@ -101,7 +101,7 @@ const ACTION_ROWS: ActionRow[] = [
     key: 'view_stats',
     label: 'View Insights',
     icon: BarChart3,
-    color: (c) => c.text,
+    color: (c) => c.label,
     // Only show stats for listings that were/are live (approved)
     visible: ({ moderationStatus }) => moderationStatus === 'approved',
   },
@@ -253,7 +253,7 @@ export function EditStatusSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
@@ -267,17 +267,17 @@ export function EditStatusSheet({
               { backgroundColor: colors.error },
             ]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
           </HapticPressable>
         </View>
 
         {/* Listing preview with status badge */}
-        <View style={[styles.previewCard, { backgroundColor: colors.surface2 }]}>
+        <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}>
           {listingThumbnail ? (
             <Image source={{ uri: getAppThumbUrl(listingThumbnail)! }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
-              <Ionicons name="image-outline" size={Sizes.iconLg} color={colors.textMuted} />
+              <Ionicons name="image-outline" size={Sizes.iconLg} color={colors.labelQuaternary} />
             </View>
           )}
           <View style={styles.previewInfo}>
@@ -316,11 +316,11 @@ export function EditStatusSheet({
                 </View>
                 <Body
                   size="body"
-                  style={{ color: isDestructive ? colors.error : colors.text, flex: 1 }}
+                  style={{ color: isDestructive ? colors.error : colors.label, flex: 1 }}
                 >
                   {action.label}
                 </Body>
-                <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.textMuted} />
+                <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.labelQuaternary} />
               </HapticPressable>
             );
           })}

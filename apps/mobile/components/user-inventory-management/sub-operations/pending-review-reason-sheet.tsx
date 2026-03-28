@@ -88,7 +88,7 @@ export function PendingReviewReasonSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
@@ -107,7 +107,7 @@ export function PendingReviewReasonSheet({
               { backgroundColor: colors.error },
             ]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color="#FFFFFF" />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
           </HapticPressable>
         </View>
 
@@ -117,10 +117,10 @@ export function PendingReviewReasonSheet({
             <Image source={{ uri: getAppThumbUrl(listingThumbnail)! }} style={styles.thumbnail} />
           ) : (
             <View style={[styles.thumbnail, { backgroundColor: colors.fill }]}>
-              <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.textMuted} />
+              <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.labelQuaternary} />
             </View>
           )}
-          <Body size="bodySm" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
+          <Body size="bodySm" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
             {listingTitle}
           </Body>
         </View>
@@ -135,7 +135,7 @@ export function PendingReviewReasonSheet({
             <View style={[styles.section, { backgroundColor: colors.fill }]}>
               {/* Reasoning */}
               {hasReasoning && (
-                <Body size="bodySm" style={{ color: colors.text, lineHeight: 20 }}>
+                <Body size="bodySm" style={{ color: colors.label, lineHeight: 20 }}>
                   {aiModeration?.reasoning}
                 </Body>
               )}
@@ -162,7 +162,7 @@ export function PendingReviewReasonSheet({
             </View>
           ) : (
             <View style={[styles.section, { backgroundColor: colors.fill }]}>
-              <Body size="bodySm" style={{ color: colors.textMuted, textAlign: 'center' }}>
+              <Body size="bodySm" style={{ color: colors.labelQuaternary, textAlign: 'center' }}>
                 No specific details available.
               </Body>
             </View>
@@ -170,7 +170,7 @@ export function PendingReviewReasonSheet({
 
           {/* Footer Note */}
           <View style={styles.footerNote}>
-            <Supporting style={{ color: colors.textMuted, textAlign: 'center', lineHeight: 18 }}>
+            <Supporting style={{ color: colors.labelQuaternary, textAlign: 'center', lineHeight: 18 }}>
               Our team will review within 24 hours. This assessment is automated — your listing will be reviewed by a human.
             </Supporting>
           </View>

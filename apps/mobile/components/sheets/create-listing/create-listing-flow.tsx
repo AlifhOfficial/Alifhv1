@@ -304,7 +304,7 @@ export function CreateListingFlow({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
@@ -327,7 +327,7 @@ export function CreateListingFlow({
                 hitSlop={Spacing.md}
                 style={[styles.circleButton, { backgroundColor: colors.error }]}
               >
-                <X size={Sizes.iconSm} color="#FFFFFF" strokeWidth={2} />
+                <X size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
               </HapticPressable>
               {currentStepIndex > initialStepIndex && (
                 <HapticPressable
@@ -335,7 +335,7 @@ export function CreateListingFlow({
                   hitSlop={Spacing.md}
                   style={[styles.circleButton, { backgroundColor: colors.fill2 }]}
                 >
-                  <ChevronLeft size={Sizes.iconSm} color={colors.text2} strokeWidth={2} />
+                  <ChevronLeft size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
                 </HapticPressable>
               )}
             </View>
@@ -350,7 +350,7 @@ export function CreateListingFlow({
                 disabled={!canProceed && !isOptionalStep}
                 style={[styles.nextButton, { backgroundColor: canProceed ? colors.primary : colors.fill2 }]}
               >
-                <ButtonText size="bodySm" style={{ color: canProceed ? colors.primaryFg : colors.textMuted }}>
+                <ButtonText size="bodySm" style={{ color: canProceed ? colors.primaryForeground : colors.labelQuaternary }}>
                   {primaryLabel}
                 </ButtonText>
               </HapticPressable>

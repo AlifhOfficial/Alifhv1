@@ -80,12 +80,12 @@ export function QuickActions() {
                   paddingVertical: Spacing.md,
                   borderRadius: Radius.xl,
                   borderCurve: 'continuous',
-                  backgroundColor: colors.surface2,
+                  backgroundColor: colors.surfaceSecondary,
                 }}
               >
                 {({ pressed }) => (
                   <View style={{ alignItems: 'center', gap: Spacing.xs, opacity: pressed ? 0.6 : 1 }}>
-                    <Icon size={Sizes.iconMd} color={colors.icon} strokeWidth={1.8} />
+                    <Icon size={Sizes.iconMd} color={colors.label} strokeWidth={1.8} />
                     <Data size="bodySm">{action.label}</Data>
                   </View>
                 )}

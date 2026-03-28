@@ -26,8 +26,8 @@ export const ListingHighlights = memo(function ListingHighlights({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
-  const textColor = isBlk ? colors.blkText : colors.text;
-  const bgColor = isBlk ? colors.blkBg : colors.bg;
+  const textColor = isBlk ? colors.blkText : colors.label;
+  const bgColor = isBlk ? colors.blkBg : colors.background;
 
   // Highlights from special notes and tags
   const highlights = useMemo(() => {

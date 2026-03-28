@@ -5,7 +5,7 @@
 
 import React, { memo } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { Fonts } from '@/constants/theme';
+import { Fonts, Colors } from '@/constants/theme';
 
 const POSITIONS = [
   { top: '4%',  left: '3%',   rotation: -15, opacity: 0.08, size: 20 },
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   text: {
     position: 'absolute',
     fontWeight: Fonts.bold,
-    color: '#FFFFFF',
+    color: Colors.dark.white,
     letterSpacing: 3,
   },
 });

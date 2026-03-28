@@ -114,7 +114,7 @@ export function UserAvatar({
         />
       )}
       {!showImage && (
-        <Body style={[styles.initials, { fontSize, color: colors.text2 }]}>
+        <Body style={[styles.initials, { fontSize, color: colors.labelSecondary }]}>
           {getInitials(name)}
         </Body>
       )}

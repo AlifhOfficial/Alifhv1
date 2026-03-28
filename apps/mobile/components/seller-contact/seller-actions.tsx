@@ -54,11 +54,11 @@ export const SellerActions = memo(function SellerActions({
           ]}
         >
           {isChatLoading ? (
-            <ActivityIndicator size="small" color={colors.primaryFg} />
+            <ActivityIndicator size="small" color={colors.primaryForeground} />
           ) : (
             <>
-              <MessageCircle size={Sizes.iconSm} color={colors.primaryFg} />
-              <ButtonText size="body" style={{ color: colors.primaryFg }}>
+              <MessageCircle size={Sizes.iconSm} color={colors.primaryForeground} />
+              <ButtonText size="body" style={{ color: colors.primaryForeground }}>
                 Chat
               </ButtonText>
             </>
@@ -72,14 +72,14 @@ export const SellerActions = memo(function SellerActions({
             style={[
               styles.button,
               {
-                backgroundColor: colors.surface2,
+                backgroundColor: colors.surfaceSecondary,
                 borderWidth: 1,
                 borderColor: colors.border,
               },
             ]}
           >
-            <Calendar size={Sizes.iconSm} color={colors.text} />
-            <ButtonText size="body" style={{ color: colors.text }}>
+            <Calendar size={Sizes.iconSm} color={colors.label} />
+            <ButtonText size="body" style={{ color: colors.label }}>
               Book
             </ButtonText>
           </HapticPressable>

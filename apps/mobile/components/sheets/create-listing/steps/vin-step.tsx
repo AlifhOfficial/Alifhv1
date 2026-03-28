@@ -26,13 +26,16 @@ import { StepContainer } from '../step-container';
 
 type VinStatus = 'idle' | 'checking' | 'verified' | 'taken' | 'invalid';
 
-function getStatusColor(status: VinStatus, colors: Record<string, string>): string {
+function getStatusColor(
+  status: VinStatus,
+  colors: { success: string; error: string; border: string }
+): string {
   switch (status) {
     case 'verified':
-      return colors.success ?? '#10B981';
+      return colors.success;
     case 'taken':
     case 'invalid':
-      return colors.error ?? '#EF4444';
+      return colors.error;
     default:
       return colors.border;
   }
@@ -137,12 +140,12 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
             styles.vinInput,
             {
               backgroundColor: colors.fill2,
-              color: colors.text,
+              color: colors.label,
               borderColor,
             },
           ]}
           placeholder="e.g. WVWZZZ3CZWE123456"
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={colors.labelQuaternary}
           value={localVin}
           onChangeText={handleVinChange}
           autoCapitalize="characters"
@@ -155,7 +158,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
         {/* Status indicator */}
         <View style={styles.statusIcon}>
           {status === 'checking' ? (
-            <ActivityIndicator size="small" color={colors.text} />
+            <ActivityIndicator size="small" color={colors.label} />
           ) : status === 'verified' ? (
             <CheckCircle2 size={Sizes.iconSm} color={colors.success} strokeWidth={2} />
           ) : status === 'taken' || status === 'invalid' ? (
@@ -198,7 +201,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
             onUpdate({ vinVisibility: value ? 'public' : 'private' });
           }}
           trackColor={{ false: colors.fill2, true: colors.success + '80' }}
-          thumbColor={data.vinVisibility === 'public' ? colors.success : colors.textMuted}
+          thumbColor={data.vinVisibility === 'public' ? colors.success : colors.labelQuaternary}
         />
       </View>
 

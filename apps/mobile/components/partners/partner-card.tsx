@@ -83,10 +83,10 @@ function useCardTheme(colors: typeof Colors.light, isBlkPartner: boolean): CardT
     return {
       bg: colors.surface,
       border: colors.border,
-      title: colors.text,
-      meta: colors.text2,
-      stats: colors.text2,
-      imageBg: colors.surface2,
+      title: colors.label,
+      meta: colors.labelSecondary,
+      stats: colors.labelSecondary,
+      imageBg: colors.surfaceSecondary,
     };
   }, [colors, isBlkPartner]);
 }
@@ -137,7 +137,7 @@ export const PartnerCard = memo(function PartnerCard({
           />
         ) : (
           <View style={[styles.imagePlaceholder, { backgroundColor: theme.imageBg }]}>
-            <Supporting size="bodySm" style={{ color: colors.text3 }}>No Image</Supporting>
+            <Supporting size="bodySm" style={{ color: colors.labelTertiary }}>No Image</Supporting>
           </View>
         )}
         
@@ -193,7 +193,7 @@ export const PartnerCard = memo(function PartnerCard({
           {/* Google Rating */}
           {partner.googleRating && (
             <View style={styles.statItem}>
-              <Star size={Sizes.iconXs} color="#FBBF24" fill="#FBBF24" />
+              <Star size={Sizes.iconXs} color={colors.star} fill={colors.star} />
               <Data size="bodySm" style={{ color: theme.stats }}>
                 {partner.googleRating.toFixed(1)}
                 {partner.googleReviewCount && (
@@ -250,7 +250,7 @@ export function PartnerCardSkeleton() {
     <View style={[styles.container, { borderColor: colors.border, backgroundColor: colors.surface }]}>
       {/* Image */}
       <View style={styles.imageContainer}>
-        <View style={[styles.imagePlaceholder, { backgroundColor: colors.surface2 }]} />
+        <View style={[styles.imagePlaceholder, { backgroundColor: colors.surfaceSecondary }]} />
         <View style={styles.logoOverlay}>
           <SkeletonCircle size={Sizes.avatarMd} />
         </View>
@@ -319,11 +319,11 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: Radius.none,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderColor: Colors.dark.glassBorderDark,
+    backgroundColor: Colors.dark.overlay,
   },
   tierBadgeText: {
-    color: '#FAFAFA',
+    color: Colors.dark.white,
   },
 
   // Content Section

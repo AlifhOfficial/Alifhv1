@@ -57,8 +57,8 @@ export const EMICalculator = memo(function EMICalculator({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
-  const textColor = isBlk ? colors.blkText : colors.text;
-  const secondaryTextColor = isBlk ? colors.blkText2 : colors.text2;
+  const textColor = isBlk ? colors.blkText : colors.label;
+  const secondaryTextColor = isBlk ? colors.blkText2 : colors.labelSecondary;
   const borderColor = isBlk ? colors.blkBorder : colors.glassBorder;
   const surfaceColor = isBlk ? colors.blkBg : colors.glassBg;
 

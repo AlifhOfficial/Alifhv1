@@ -93,7 +93,7 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
             transition={200}
           />
         ) : (
-          <View style={[styles.imagePlaceholder, { backgroundColor: colors.surface2 }]}>
+          <View style={[styles.imagePlaceholder, { backgroundColor: colors.surfaceSecondary }]}>
             <Supporting size="bodySm" tone="muted">No Image</Supporting>
           </View>
         )}

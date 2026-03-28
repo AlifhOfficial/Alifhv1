@@ -177,15 +177,15 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
 
             {/* Spinner overlay while uploading */}
             {isUploading && (
-              <View style={styles.uploadingOverlay}>
-                <ActivityIndicator size="small" color="#fff" />
+              <View style={[styles.uploadingOverlay, { backgroundColor: colors.overlay }]}>
+                <ActivityIndicator size="small" color={colors.primaryForeground} />
               </View>
             )}
 
             {/* Thumbnail badge — only on confirmed CDN cover */}
             {isThumbnail && (
               <View style={[styles.thumbnailBadge, { backgroundColor: colors.primary }]}>
-                <Body size="bodySm" style={{ color: colors.primaryFg, fontSize: Spacing.sm, fontWeight: Fonts.semiBold }}>
+                <Body size="bodySm" style={{ color: colors.primaryForeground, fontSize: Spacing.sm, fontWeight: Fonts.semiBold }}>
                   COVER
                 </Body>
               </View>
@@ -197,9 +197,9 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
                 onLongPress={drag}
                 delayLongPress={100}
                 disabled={isActive}
-                style={[styles.dragHandle, { backgroundColor: colors.text + '80' }]}
+                style={[styles.dragHandle, { backgroundColor: colors.label + '80' }]}
               >
-                <GripVertical size={12} color={colors.bg} />
+                <GripVertical size={12} color={colors.background} />
               </HapticPressable>
             )}
 
@@ -207,9 +207,9 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             {!isUploading && item.type === 'cdn' && (
               <HapticPressable
                 onPress={() => handleDeleteImage(item.url)}
-                style={[styles.deleteBtn, { backgroundColor: colors.text + 'CC' }]}
+                style={[styles.deleteBtn, { backgroundColor: colors.label + 'CC' }]}
               >
-                <X size={12} color={colors.bg} strokeWidth={2.5} />
+                <X size={12} color={colors.background} strokeWidth={2.5} />
               </HapticPressable>
             )}
           </View>
@@ -235,19 +235,19 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
         disabled={uploading}
         style={[
           styles.uploadButton,
-          { backgroundColor: colors.surface2, borderColor: colors.border },
+          { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
         ]}
       >
         {uploading && uploadProgress.total > 0 ? (
           <View style={styles.uploadingContent}>
-            <ActivityIndicator size="small" color={colors.text} />
+            <ActivityIndicator size="small" color={colors.label} />
             <Body size="body" tone="secondary">
               {`Uploading ${uploadProgress.done} of ${uploadProgress.total}...`}
             </Body>
           </View>
         ) : (
           <View style={styles.uploadContent}>
-            <ImagePlus size={Sizes.iconLg} color={colors.textMuted} strokeWidth={1.5} />
+            <ImagePlus size={Sizes.iconLg} color={colors.labelQuaternary} strokeWidth={1.5} />
             <Body size="bodySm" tone="muted">
               Add Photos ({totalCount}/{MAX_IMAGES})
             </Body>
@@ -323,7 +323,6 @@ const styles = StyleSheet.create({
   },
   uploadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.45)',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -99,8 +99,8 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                 style={[
                   styles.quickChip,
                   {
-                    backgroundColor: isAdded ? colors.text : colors.surface2,
-                    borderColor: isAdded ? colors.text : colors.border,
+                    backgroundColor: isAdded ? colors.label : colors.surfaceSecondary,
+                    borderColor: isAdded ? colors.label : colors.border,
                     opacity: isAdded || notes.length >= MAX_SPECIAL_NOTES ? 0.5 : 1,
                   },
                 ]}
@@ -108,7 +108,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                 <Body
                   size="bodySm"
                   numberOfLines={1}
-                  style={{ color: isAdded ? colors.bg : colors.text }}
+                  style={{ color: isAdded ? colors.background : colors.label }}
                 >
                   {note}
                 </Body>
@@ -128,14 +128,14 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                 key={index}
                 style={[
                   styles.noteItem,
-                  { backgroundColor: colors.surface2, borderColor: colors.border },
+                  { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
                 ]}
               >
                 <Body size="bodySm" style={{ flex: 1 }}>
                   {note}
                 </Body>
                 <HapticPressable onPress={() => removeNote(index)} hitSlop={Layout.hitSlopSmall}>
-                  <X size={Sizes.iconXs} color={colors.textMuted} strokeWidth={2} />
+                  <X size={Sizes.iconXs} color={colors.labelQuaternary} strokeWidth={2} />
                 </HapticPressable>
               </View>
             ))}
@@ -152,13 +152,13 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
               style={[
                 styles.input,
                 {
-                  backgroundColor: colors.input,
-                  color: colors.text,
+                  backgroundColor: colors.surface,
+                  color: colors.label,
                   borderColor: colors.border,
                 },
               ]}
               placeholder="e.g. New exhaust system installed"
-              placeholderTextColor={colors.textMuted}
+              placeholderTextColor={colors.labelQuaternary}
               value={noteInput}
               onChangeText={setNoteInput}
               onSubmitEditing={addNote}
@@ -177,7 +177,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
             >
               <Plus
                 size={Sizes.iconSm}
-                color={noteInput.trim() ? colors.primaryFg : colors.textMuted}
+                color={noteInput.trim() ? colors.primaryForeground : colors.labelQuaternary}
                 strokeWidth={2}
               />
             </HapticPressable>

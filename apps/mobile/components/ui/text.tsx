@@ -67,12 +67,12 @@ export const Text = memo(function Text({
 
   const textColor = (() => {
     switch (tone) {
-      case 'secondary': return colors.text2;
-      case 'muted':     return colors.textMuted;
+      case 'secondary': return colors.labelSecondary;
+      case 'muted':     return colors.labelQuaternary;
       case 'primary':   return colors.primary;
       case 'error':     return colors.error;
       case 'success':   return colors.success;
-      default:          return colors.text;
+      default:          return colors.label;
     }
   })();
 

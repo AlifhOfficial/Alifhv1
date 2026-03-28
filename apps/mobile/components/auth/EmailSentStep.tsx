@@ -139,7 +139,7 @@ export function EmailSentStep({
 
           {/* Subtitle */}
           <Animated.View entering={FadeInDown.delay(300).duration(400)}>
-            <Body size="bodySm" style={[onboardingStyles.welcomeSubtitle, { color: colors.text2 }]}>
+            <Body size="bodySm" style={[onboardingStyles.welcomeSubtitle, { color: colors.labelSecondary }]}>
               We've sent a verification code to
             </Body>
           </Animated.View>
@@ -171,14 +171,14 @@ export function EmailSentStep({
             {isLoading ? (
               <ButtonLoader size="sm" variant="white" />
             ) : (
-              <ButtonText style={{ color: colors.primaryFg }}>Enter Code</ButtonText>
+              <ButtonText style={{ color: colors.primaryForeground }}>Enter Code</ButtonText>
             )}
           </HapticPressable>
 
           {/* Resend link */}
           <View style={onboardingStyles.resendSection}>
             <HapticPressable onPress={handleResend} disabled={isResending || isLoading}>
-              <Body size="bodySm" style={{ color: colors.text2 }}>
+              <Body size="bodySm" style={{ color: colors.labelSecondary }}>
                 Didn't receive it?{' '}
                 <Body size="bodySm" style={{ color: colors.primary }}>
                   {isResending ? 'Sending...' : 'Resend'}

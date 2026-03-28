@@ -28,7 +28,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Body, useAlert } from '@/components/ui';
-import { Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -240,7 +240,7 @@ export function ProfileAvatar({
       {/* Camera badge */}
       {!isUploading && (
         <View style={styles.cameraBadge}>
-          <Camera size={Sizes.iconXs} color={colors.primaryFg} strokeWidth={2.5} />
+          <Camera size={Sizes.iconXs} color={colors.primaryForeground} strokeWidth={2.5} />
         </View>
       )}
     </AnimatedPressable>
@@ -254,13 +254,13 @@ const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: Spacing['3xl'],
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: Colors.dark.overlay,
     alignItems: 'center',
     justifyContent: 'center',
   },
   loadingText: {
     // White text on overlay - hardcoded for contrast
-    color: '#FFFFFF',
+    color: Colors.dark.primaryForeground,
   },
   cameraBadge: {
     position: 'absolute',
@@ -271,6 +271,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: Colors.dark.overlay,
   },
 });

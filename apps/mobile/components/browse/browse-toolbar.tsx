@@ -82,7 +82,7 @@ export function BrowseToolbar() {
 
   const handleAmnaPress = useCallback(() => {
     if (Platform.OS === 'ios') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    amnaConfetti.fire({ colors: ['#8B5CF6', '#A78BFA', '#C4B5FD', '#7C3AED', '#6D28D9', '#DDD6FE'], count: 12 });
+    amnaConfetti.fire({ colors: [colors.amna, '#A78BFA', '#C4B5FD', '#7C3AED', '#6D28D9', '#DDD6FE'], count: 12 });
     setIsAmnaOpen(true);
   }, [amnaConfetti]);
 
@@ -139,7 +139,7 @@ export function BrowseToolbar() {
             onPress={handleSearchPress}
             style={[styles.bubble, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg }]}
           >
-            <Search size={Sizes.iconMd} color={colors.text} strokeWidth={2} />
+            <Search size={Sizes.iconMd} color={colors.label} strokeWidth={2} />
           </HapticPressable>
 
           <View style={{ overflow: 'visible', marginLeft: GAP }}>
@@ -147,7 +147,7 @@ export function BrowseToolbar() {
               onPress={handleAmnaPress}
               style={[styles.bubble, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg }]}
             >
-              <Zap size={Sizes.iconMd} color="#8B5CF6" strokeWidth={2} />
+              <Zap size={Sizes.iconMd} color={colors.amna} strokeWidth={2} />
             </HapticPressable>
             <ConfettiBurst ref={amnaConfetti.ref} />
           </View>
@@ -156,7 +156,7 @@ export function BrowseToolbar() {
             onPress={handleSortPress}
             style={[styles.bubble, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg, marginLeft: GAP }]}
           >
-            <ArrowUpDown size={Sizes.iconMd} color={colors.text} strokeWidth={2} />
+            <ArrowUpDown size={Sizes.iconMd} color={colors.label} strokeWidth={2} />
           </HapticPressable>
 
           <AnimatedPressable

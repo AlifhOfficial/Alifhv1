@@ -29,6 +29,7 @@ import * as Haptics from 'expo-haptics';
 import { AlertCircle, CheckCircle, AlertTriangle, Info } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import type { ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, ButtonText } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -72,14 +73,14 @@ function getIcon(type: ResponseType, color: string, size: number) {
   }
 }
 
-function getIconColor(type: ResponseType, colors: Record<string, string>): string {
+function getIconColor(type: ResponseType, colors: ColorPalette): string {
   switch (type) {
     case 'error':
-      return colors.error ?? '#EF4444';
+      return colors.error;
     case 'success':
-      return colors.success ?? '#10B981';
+      return colors.success;
     case 'warning':
-      return colors.warning ?? '#F59E0B';
+      return colors.warning;
     case 'info':
     default:
       return colors.primary;
@@ -180,7 +181,7 @@ export function ResponseSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.container}>
         {/* Icon */}
@@ -208,7 +209,7 @@ export function ResponseSheet({
                 onPress={handleDismiss}
                 style={[styles.secondaryButton, { backgroundColor: colors.fill2 }]}
               >
-                <ButtonText size="body" style={{ color: colors.text }}>
+                <ButtonText size="body" style={{ color: colors.label }}>
                   Dismiss
                 </ButtonText>
               </HapticPressable>
@@ -218,7 +219,7 @@ export function ResponseSheet({
                   onPress={handleRetry}
                   style={[styles.primaryButton, { backgroundColor: colors.primary }]}
                 >
-                  <ButtonText size="body" style={{ color: colors.primaryFg }}>
+                  <ButtonText size="body" style={{ color: colors.primaryForeground }}>
                     {retryLabel}
                   </ButtonText>
                 </HapticPressable>
@@ -229,7 +230,7 @@ export function ResponseSheet({
                   onPress={handlePrimary}
                   style={[styles.primaryButton, { backgroundColor: colors.primary }]}
                 >
-                  <ButtonText size="body" style={{ color: colors.primaryFg }}>
+                  <ButtonText size="body" style={{ color: colors.primaryForeground }}>
                     {primaryLabel}
                   </ButtonText>
                 </HapticPressable>
@@ -240,7 +241,7 @@ export function ResponseSheet({
               onPress={handleDismiss}
               style={[styles.fullButton, { backgroundColor: colors.fill2 }]}
             >
-              <ButtonText size="body" style={{ color: colors.text }}>
+              <ButtonText size="body" style={{ color: colors.label }}>
                 OK
               </ButtonText>
             </HapticPressable>

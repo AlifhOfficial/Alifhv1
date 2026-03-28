@@ -34,7 +34,7 @@ export function SettingsHeader({
         ]}
       >
         <View style={styles.pillContent}>
-          <Settings2 size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
+          <Settings2 size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
           <Data size="bodySm">Settings</Data>
         </View>
       </View>

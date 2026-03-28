@@ -85,7 +85,7 @@ export default function ListingDetailScreen() {
   }, [listing]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           headerShown: false,

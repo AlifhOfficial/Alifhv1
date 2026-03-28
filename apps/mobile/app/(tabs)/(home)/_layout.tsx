@@ -35,8 +35,8 @@ export default function HomeLayout() {
       screenOptions={{
         ...(Platform.OS === 'ios'
           ? iosOptions
-          : { headerStyle: { backgroundColor: colors.bg } }),
-        headerTintColor: colors.text,
+          : { headerStyle: { backgroundColor: colors.background } }),
+        headerTintColor: colors.label,
         contentStyle: { backgroundColor: colorScheme === 'light' ? colors.white : colors.black },
       }}
     >
@@ -52,7 +52,7 @@ export default function HomeLayout() {
               onPress={handleToggleTheme}
               style={{ marginRight: Spacing.sm }}
             >
-              <ThemeIcon size={Sizes.iconSm} color={colors.icon} strokeWidth={2} />
+              <ThemeIcon size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
             </HapticPressable>
           ),
         }}
