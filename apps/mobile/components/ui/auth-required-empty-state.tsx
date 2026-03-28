@@ -79,10 +79,10 @@ export const AuthRequiredEmptyState = memo(function AuthRequiredEmptyState({
         <View style={styles.content}>
           {/* Text */}
           <Animated.View entering={FadeInUp.delay(100).duration(400)} style={styles.textContent}>
-            <Heading size="small">
+            <Heading size="subheading">
               {title}
             </Heading>
-            <Supporting size="small" style={styles.subtitle}>
+            <Supporting size="bodySm" style={styles.subtitle}>
               {subtitle}
             </Supporting>
           </Animated.View>
@@ -104,7 +104,7 @@ export const AuthRequiredEmptyState = memo(function AuthRequiredEmptyState({
               style={styles.signInRow}
               hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
             >
-              <Heading size="small" style={{ color: colors.text }}>Sign In</Heading>
+              <Heading size="subheading" style={{ color: colors.text }}>Sign In</Heading>
               <View style={[styles.glassBubble, { backgroundColor: colors.glassBg, borderColor: colors.border }]}>
                 <ArrowRight size={Sizes.iconXs} color={colors.text} strokeWidth={2} />
               </View>
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     // Shadow
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: Spacing.xs },
     shadowOpacity: 0.08,
     shadowRadius: 12,
     elevation: 4,

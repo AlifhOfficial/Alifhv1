@@ -24,14 +24,14 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
     <View style={[localStyles.grid, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
       {/* Email Verified */}
       <View style={localStyles.item}>
-        <Label size="small" tone="muted">EMAIL</Label>
+        <Label size="caption" tone="muted">EMAIL</Label>
         <View style={localStyles.verifiedRow}>
           {seller.emailVerified ? (
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
           ) : (
             <Circle size={Sizes.iconXs} color={colors.textMuted} />
           )}
-          <Data size="small" style={{ color: seller.emailVerified ? colors.success : colors.textMuted }}>
+          <Data size="bodySm" style={{ color: seller.emailVerified ? colors.success : colors.textMuted }}>
             {seller.emailVerified ? 'Verified' : 'Unverified'}
           </Data>
         </View>
@@ -39,14 +39,14 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
 
       {/* Phone Verified */}
       <View style={localStyles.item}>
-        <Label size="small" tone="muted">PHONE</Label>
+        <Label size="caption" tone="muted">PHONE</Label>
         <View style={localStyles.verifiedRow}>
           {seller.phoneVerified ? (
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
           ) : (
             <Circle size={Sizes.iconXs} color={colors.textMuted} />
           )}
-          <Data size="small" style={{ color: seller.phoneVerified ? colors.success : colors.textMuted }}>
+          <Data size="bodySm" style={{ color: seller.phoneVerified ? colors.success : colors.textMuted }}>
             {seller.phoneVerified ? 'Verified' : 'Unverified'}
           </Data>
         </View>
@@ -54,14 +54,14 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
 
       {/* Listings Count */}
       <View style={localStyles.item}>
-        <Label size="small" tone="muted">LISTINGS</Label>
-        <Data size="medium">{listingsCount}</Data>
+        <Label size="caption" tone="muted">LISTINGS</Label>
+        <Data size="body">{listingsCount}</Data>
       </View>
 
       {/* Response Rate placeholder */}
       <View style={localStyles.item}>
-        <Label size="small" tone="muted">RESPONSE</Label>
-        <Data size="medium" tone="muted">—</Data>
+        <Label size="caption" tone="muted">RESPONSE</Label>
+        <Data size="body" tone="muted">—</Data>
       </View>
     </View>
   );

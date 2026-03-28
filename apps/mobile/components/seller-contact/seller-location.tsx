@@ -25,13 +25,13 @@ export const SellerLocation = memo(function SellerLocation({
 
   return (
     <View style={localStyles.section}>
-      <Label size="medium" tone="muted">LOCATION</Label>
+      <Label size="label" tone="muted">LOCATION</Label>
       
       {seller.location && (
         <View style={localStyles.locationRow}>
           <MapPin size={Sizes.iconMd} color={colors.text2} style={localStyles.mapIcon} />
           <View style={localStyles.locationText}>
-            <Data size="medium">{seller.location}</Data>
+            <Data size="body">{seller.location}</Data>
           </View>
         </View>
       )}
@@ -48,7 +48,7 @@ export const SellerLocation = memo(function SellerLocation({
               onPress={onViewMap}
             >
               <ExternalLink size={Sizes.iconXs} color={colors.text} />
-              <ButtonText size="small">View Map</ButtonText>
+              <ButtonText size="bodySm">View Map</ButtonText>
             </HapticPressable>
             <HapticPressable
               style={[
@@ -58,7 +58,7 @@ export const SellerLocation = memo(function SellerLocation({
               onPress={onGetDirections}
             >
               <Navigation size={Sizes.iconXs} color={colors.text} />
-              <ButtonText size="small">Directions</ButtonText>
+              <ButtonText size="bodySm">Directions</ButtonText>
             </HapticPressable>
           </>
         )}
@@ -71,7 +71,7 @@ export const SellerLocation = memo(function SellerLocation({
             onPress={onWebsite}
           >
             <Globe size={Sizes.iconXs} color={colors.text} />
-            <ButtonText size="small">Website</ButtonText>
+            <ButtonText size="bodySm">Website</ButtonText>
           </HapticPressable>
         )}
       </View>

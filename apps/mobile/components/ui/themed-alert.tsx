@@ -118,13 +118,13 @@ export function AlertProvider({ children }: AlertProviderProps) {
             onPress={(e) => e.stopPropagation()}
           >
             {/* Title */}
-            <Heading size="small" style={styles.title}>
+            <Heading size="subheading" style={styles.title}>
               {config?.title}
             </Heading>
 
             {/* Message */}
             {config?.message && (
-              <Body size="medium" style={[styles.message, { color: colors.text2 }]}>
+              <Body size="body" style={[styles.message, { color: colors.text2 }]}>
                 {config.message}
               </Body>
             )}
@@ -152,7 +152,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
                     ]}
                   >
                     <ButtonText
-                      size="medium"
+                      size="body"
                       style={{
                         color: isDestructive
                           ? '#FFFFFF'
@@ -190,12 +190,12 @@ const styles = StyleSheet.create({
   },
   alertBox: {
     width: '100%',
-    maxWidth: 320,
+    maxWidth: Spacing["5xl"],
     borderRadius: Radius['2xl'],
     borderWidth: 1,
     padding: Spacing.xl,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
+    shadowOffset: { width: 0, height: Spacing.sm },
     shadowOpacity: 0.25,
     shadowRadius: 16,
     elevation: 8,

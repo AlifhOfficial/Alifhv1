@@ -7,9 +7,8 @@ import React, { useEffect } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
 } from 'react-native';
-import { Skeleton, AuthRequiredEmptyState } from '@/components/ui';
+import { Skeleton, AuthRequiredEmptyState, Body, Text } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors, Layout, Sizes, Spacing } from '@/constants/theme';
@@ -101,15 +100,8 @@ export default function SavedScreen() {
           onTabChange={setActiveTab}
         />
         <View style={styles.emptyContainer}>
-          <Text style={[styles.emptyTitle, { color: colors.text2 }]}>
-            Something went wrong
-          </Text>
-          <Text
-            style={[styles.retryText, { color: colors.primary }]}
-            onPress={refresh}
-          >
-            Tap to retry
-          </Text>
+          <Body size="bodySm" tone="secondary">Something went wrong</Body>
+          <Text variant="bodySm" tone="primary" onPress={refresh}>Tap to retry</Text>
         </View>
       </View>
     );
@@ -154,13 +146,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: Spacing.sm,
-  },
-  emptyTitle: {
-    fontSize: 15,
-    fontWeight: '500',
-  },
-  retryText: {
-    fontSize: 14,
-    fontWeight: '500',
   },
 });

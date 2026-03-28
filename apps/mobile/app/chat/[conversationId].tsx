@@ -78,7 +78,7 @@ export default function ChatScreen() {
     return (
       <View style={[styles.screen, { backgroundColor: colors.bg, paddingTop: insets.top }]}>
         <View style={styles.centered}>
-          <Supporting size="medium" tone="secondary" style={styles.errorText}>
+          <Supporting size="body" tone="secondary" style={styles.errorText}>
             Conversation not found
           </Supporting>
           <ButtonText
@@ -98,7 +98,7 @@ export default function ChatScreen() {
     return (
       <View style={[styles.screen, { backgroundColor: colors.bg, paddingTop: insets.top }]}>
         <View style={styles.centered}>
-          <Supporting size="medium" tone="secondary" style={styles.errorText}>
+          <Supporting size="body" tone="secondary" style={styles.errorText}>
             {error.message}
           </Supporting>
           <ButtonText

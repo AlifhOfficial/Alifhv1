@@ -106,13 +106,13 @@ export function OTPScreen({
 
           {/* Hero Section */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
+            <Supporting size="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]}>
               Verify your email
             </Supporting>
-            <Heading size="large" style={[onboardingStyles.title, { color: colors.white }]}>
+            <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
               Enter the code
             </Heading>
-            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
+            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
               Sent to {email}
             </Body>
           </Animated.View>
@@ -123,7 +123,7 @@ export function OTPScreen({
               entering={FadeIn.duration(200)}
               style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
             >
-              <Body size="small" tone="error" style={onboardingStyles.errorText}>
+              <Body size="bodySm" tone="error" style={onboardingStyles.errorText}>
                 {error}
               </Body>
             </Animated.View>
@@ -156,7 +156,7 @@ export function OTPScreen({
                       },
                     ]}
                   >
-                    <Heading size="medium" style={{ color: colors.white }}>
+                    <Heading size="heading" style={{ color: colors.white }}>
                       {digit}
                     </Heading>
                     {isActive && !isLoading && (
@@ -200,12 +200,12 @@ export function OTPScreen({
             <Animated.View entering={FadeIn.delay(300).duration(300)} style={onboardingStyles.resendSection}>
               {canResend ? (
                 <HapticPressable onPress={handleResend} disabled={isLoading}>
-                  <Data size="small" style={{ color: colors.primary }}>
+                  <Data size="bodySm" style={{ color: colors.primary }}>
                     Resend code
                   </Data>
                 </HapticPressable>
               ) : (
-                <Supporting size="small" style={{ color: colors.text3 }}>
+                <Supporting size="bodySm" style={{ color: colors.text3 }}>
                   Resend in {resendTimer}s
                 </Supporting>
               )}
@@ -213,7 +213,7 @@ export function OTPScreen({
 
             {/* Help text */}
             <Animated.View entering={FadeIn.delay(400).duration(300)}>
-              <Supporting size="mini" style={[onboardingStyles.helpText, { color: colors.text3 }]}>
+              <Supporting size="bodySm" style={[onboardingStyles.helpText, { color: colors.text3 }]}>
                 Check your spam folder if you don't see it
               </Supporting>
             </Animated.View>

@@ -12,7 +12,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Sizes, Spacing, Typography } from '@/constants/theme';
+import { Colors, Sizes, Spacing, Typography, Fonts } from '@/constants/theme';
 import { getAppImageUrl } from '@/lib/config';
 import { Body } from './text';
 
@@ -49,7 +49,7 @@ const sizes = {
 // Font sizes for initials - proportional to avatar size
 const fontSizes = {
   xxs: 8,                                     // tiny
-  xs: Typography.micro.fontSize,
+  xs: Typography.bodySm.fontSize,
   sm: Typography.label.fontSize,
   md: Typography.bodySm.fontSize,
   lg: Typography.body.fontSize,
@@ -128,6 +128,6 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   initials: {
-    fontWeight: '700',
+    fontWeight: Fonts.bold,
   },
 });

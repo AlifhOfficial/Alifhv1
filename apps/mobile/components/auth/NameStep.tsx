@@ -89,13 +89,13 @@ export function NameStep({
 
           {/* Hero Section */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
+            <Supporting size="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]}>
               Let's get started
             </Supporting>
-            <Heading size="large" style={[onboardingStyles.title, { color: colors.white }]}>
+            <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
               What's your name?
             </Heading>
-            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
+            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
               We'd love to know what to call you
             </Body>
           </Animated.View>

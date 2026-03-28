@@ -225,7 +225,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
                   sellerData={sellerData}
                   action={
                     <View style={styles.contactAction}>
-                      <Data size="medium" tone="primary">
+                      <Data size="body" tone="primary">
                         Contact
                       </Data>
                       <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />

@@ -11,7 +11,7 @@ import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Layout } from '@/constants/theme';
+import { Typography, Fonts, Colors, Spacing, Radius, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Data } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -80,18 +80,18 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
           keyboardType="number-pad"
           returnKeyType="done"
         />
-        <Body size="medium" tone="secondary">km</Body>
+        <Body size="body" tone="secondary">km</Body>
       </View>
 
       {/* Formatted display */}
       {localMileage && (
         <View style={styles.formattedRow}>
-          <Data size="large" style={{ color: colors.text }}>
+          <Data size="title" style={{ color: colors.text }}>
             {mileageNum.toLocaleString()} km
           </Data>
           {isLowMileage && (
             <View style={[styles.badge, { backgroundColor: (colors.success ?? '#10B981') + '20' }]}>
-              <Supporting size="small" style={{ color: colors.success ?? '#10B981' }}>
+              <Supporting size="bodySm" style={{ color: colors.success ?? '#10B981' }}>
                 Low mileage
               </Supporting>
             </View>
@@ -101,7 +101,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick presets */}
       <View style={styles.section}>
-        <Supporting size="small" tone="muted">Quick select</Supporting>
+        <Supporting size="bodySm" tone="muted">Quick select</Supporting>
         <View style={styles.presetsRow}>
           {MILEAGE_PRESETS.map((preset) => {
             const isActive = preset.value === localMileage;
@@ -117,7 +117,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Body size="small" style={{ color: isActive ? colors.bg : colors.text }}>
+                <Body size="bodySm" style={{ color: isActive ? colors.bg : colors.text }}>
                   {preset.label}
                 </Body>
               </HapticPressable>
@@ -128,7 +128,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Info */}
       <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
-        <Supporting size="small" tone="muted">
+        <Supporting size="bodySm" tone="muted">
           Odometer reading in kilometers. Vehicles under 5,000 km are marked as "new condition".
         </Supporting>
       </View>
@@ -150,8 +150,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    fontWeight: '500',
+    ...Typography.body,
     paddingVertical: 0,
   },
   formattedRow: {

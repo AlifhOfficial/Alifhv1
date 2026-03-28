@@ -53,7 +53,7 @@ export function SelectableItem({
           </View>
         )}
         <Body 
-          size="medium" 
+          size="body" 
           style={isSelected ? styles.labelSelected : undefined}
         >
           {label}
@@ -62,7 +62,7 @@ export function SelectableItem({
       
       <View style={styles.rightContent}>
         {count !== undefined && count > 0 && (
-          <Data size="small" tone="muted">{count.toLocaleString()}</Data>
+          <Data size="bodySm" tone="muted">{count.toLocaleString()}</Data>
         )}
         {showChevron && (
           <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.text3} />

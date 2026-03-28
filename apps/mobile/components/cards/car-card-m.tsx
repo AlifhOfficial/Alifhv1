@@ -25,6 +25,7 @@ import {
   Data,
   Label,
   Supporting,
+  Price,
   FavoriteButton,
   SuperlikeButton,
 } from '@/components/ui';
@@ -268,37 +269,12 @@ export const CarCardM = memo(function CarCardM({
       {isBlkListing && <View style={[styles.blkAccent, { backgroundColor: theme.border }]} />}
 
       {/* === IMAGE SECTION === */}
-      <View style={{ position: 'relative' }}>
-        <CardImage 
-          uri={displayImage} 
-          backgroundColor={theme.imageBg}
-          placeholderColor={colors.text3}
-          skeletonColor={colors.skeleton}
-        />
-        {/* Avatar overlay (partner card pattern) */}
-        <View style={styles.avatarOverlay}>
-          {isBlackTierPartner && (
-            <View style={[styles.avatarRing, { borderColor: colors.blkBorder }]} />
-          )}
-          <View style={[
-            styles.avatar,
-            { backgroundColor: theme.avatarBg, borderColor: theme.avatarBorder },
-          ]}>
-            {sellerAvatar ? (
-              <Image 
-                source={{ uri: sellerAvatar }} 
-                style={styles.avatarImage} 
-                contentFit="cover" 
-                transition={150} 
-              />
-            ) : (
-              <Text variant="bodySm" style={{ color: theme.meta }}>
-                {displaySellerName.charAt(0).toUpperCase()}
-              </Text>
-            )}
-          </View>
-        </View>
-      </View>
+      <CardImage 
+        uri={displayImage} 
+        backgroundColor={theme.imageBg}
+        placeholderColor={colors.text3}
+        skeletonColor={colors.skeleton}
+      />
 
       {/* === CONTENT SECTION === */}
       <View style={styles.content}>
@@ -312,9 +288,9 @@ export const CarCardM = memo(function CarCardM({
         />
 
         {/* Price */}
-        <Text variant="price" style={{ color: theme.price }}>
+        <Price style={{ color: theme.price }}>
           {formatPrice(price)}
-        </Text>
+        </Price>
 
         {/* Stats: Mileage · Specs · Location */}
         <CardStats
@@ -330,6 +306,7 @@ export const CarCardM = memo(function CarCardM({
             name={displaySellerName}
             isVerified={isVerified}
             isBlackTierPartner={isBlackTierPartner}
+            avatarUri={sellerAvatar}
             theme={theme}
             colors={colors}
           />
@@ -375,7 +352,7 @@ const CardImage = memo(function CardImage({ uri, backgroundColor, placeholderCol
         />
       ) : (
         <View style={[styles.imagePlaceholder, { backgroundColor: skeletonColor }]}>
-          <Supporting size="small" style={{ color: placeholderColor }}>No Image</Supporting>
+          <Supporting size="bodySm" style={{ color: placeholderColor }}>No Image</Supporting>
         </View>
       )}
     </View>
@@ -393,10 +370,10 @@ interface CardHeaderProps {
 const CardHeader = memo(function CardHeader({ make, model, year, titleColor, metaColor }: CardHeaderProps) {
   return (
     <View style={styles.header}>
-      <Heading size="mini" style={[styles.title, { color: titleColor }]} numberOfLines={1}>
+      <Heading size="subheading" style={[styles.title, { color: titleColor }]} numberOfLines={1}>
         {make} {model}
       </Heading>
-      <Data size="medium" style={{ color: metaColor }}>{year}</Data>
+      <Data size="bodySm" style={{ color: metaColor }}>{year}</Data>
     </View>
   );
 });
@@ -411,11 +388,11 @@ interface CardStatsProps {
 const CardStats = memo(function CardStats({ mileage, specs, emirate, statsColor }: CardStatsProps) {
   return (
     <View style={styles.statsRow}>
-      <Data size="small" style={{ color: statsColor }}>{formatMileage(mileage)} km</Data>
-      <Data size="small" style={{ color: statsColor, opacity: 0.4 }}>·</Data>
-      <Data size="small" style={{ color: statsColor }}>{specs}</Data>
-      <Data size="small" style={{ color: statsColor, opacity: 0.4 }}>·</Data>
-      <Data size="small" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Data>
+      <Data size="bodySm" style={{ color: statsColor }}>{formatMileage(mileage)} km</Data>
+      <Data size="bodySm" style={{ color: statsColor, opacity: 0.4 }}>·</Data>
+      <Data size="bodySm" style={{ color: statsColor }}>{specs}</Data>
+      <Data size="bodySm" style={{ color: statsColor, opacity: 0.4 }}>·</Data>
+      <Data size="bodySm" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Data>
     </View>
   );
 });
@@ -424,23 +401,41 @@ interface SellerInfoProps {
   name: string;
   isVerified: boolean;
   isBlackTierPartner: boolean;
+  avatarUri?: string | null;
   theme: CardTheme;
   colors: typeof Colors.light;
 }
 
-const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartner, theme, colors }: SellerInfoProps) {
+const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartner, avatarUri, theme, colors }: SellerInfoProps) {
   return (
     <View style={styles.sellerInfo}>
+      {isBlackTierPartner && (
+        <View style={[styles.avatarRing, { borderColor: colors.blkBorder }]} />
+      )}
+      <View style={[styles.avatar, { backgroundColor: theme.avatarBg, borderColor: theme.avatarBorder }]}>
+        {avatarUri ? (
+          <Image
+            source={{ uri: avatarUri }}
+            style={styles.avatarImage}
+            contentFit="cover"
+            transition={150}
+          />
+        ) : (
+          <Text variant="heading" style={{ color: theme.meta }}>
+            {name.charAt(0).toUpperCase()}
+          </Text>
+        )}
+      </View>
       <View style={styles.sellerMeta}>
-        <Data size="small" style={[styles.sellerName, { color: theme.sellerText }]} numberOfLines={1}>
+        <Supporting size="bodySm" style={[styles.sellerName, { color: theme.sellerText }]} numberOfLines={1}>
           {name}
-        </Data>
+        </Supporting>
         {!isBlackTierPartner && isVerified && (
           <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
         )}
         {isBlackTierPartner && (
           <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
+            <Label size="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
           </View>
         )}
       </View>
@@ -517,13 +512,8 @@ export function CarCardMSkeleton() {
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {/* Image */}
-      <View style={{ position: 'relative' }}>
-        <View style={styles.imageContainer}>
-          <Skeleton width="100%" height={Spacing['5xl'] * 4} borderRadius={0} />
-        </View>
-        <View style={styles.avatarOverlay}>
-          <SkeletonCircle size={Sizes.bubble} />
-        </View>
+      <View style={styles.imageContainer}>
+        <Skeleton width="100%" height={Spacing['5xl'] * 4} borderRadius={0} />
       </View>
 
       {/* Content */}
@@ -540,6 +530,7 @@ export function CarCardMSkeleton() {
         </View>
         <View style={styles.footer}>
           <View style={styles.sellerInfo}>
+            <SkeletonCircle size={Sizes.bubble} />
             <Skeleton width="40%" height={Spacing.lg} />
           </View>
           <View style={styles.actions}>
@@ -576,7 +567,6 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: Spacing.lg,
-    paddingTop: Sizes.bubble / 2 + Spacing.md,
     gap: Spacing.xs,
   },
 
@@ -607,12 +597,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Avatar Overlay (partner card pattern)
-  avatarOverlay: {
-    position: 'absolute',
-    bottom: -Sizes.bubble / 2,
-    left: Spacing.lg,
-  },
 
   // Stats Section
   statsRow: {
@@ -651,8 +635,8 @@ const styles = StyleSheet.create({
     height: Sizes.bubble + 6,
     borderRadius: (Sizes.bubble + 6) / 2,
     borderWidth: 2,
-    top: -3,
-    left: -3,
+    top: -Spacing.xs,
+    left: -Spacing.xs,
   },
   avatarImage: {
     width: Sizes.bubble,
@@ -670,8 +654,8 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   blkBadge: {
-    paddingHorizontal: Spacing.xs,
-    paddingVertical: 2,
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.none,
     borderWidth: 1,
   },

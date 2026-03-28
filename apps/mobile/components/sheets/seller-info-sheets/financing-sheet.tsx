@@ -10,7 +10,7 @@ import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Supporting, Data, Label } from '@/components/ui';
 import { formatPrice, calculateEMI } from '@/components/seller-contact/utils';
@@ -107,7 +107,7 @@ export function FinancingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">Custom Financing</Heading>
+          <Heading size="heading">Custom Financing</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -119,20 +119,20 @@ export function FinancingSheet({
 
         {/* Live Output */}
         <View style={[styles.outputContainer, { backgroundColor: colors.fill2 }]}>
-          <Label size="medium" tone="muted">ESTIMATED MONTHLY PAYMENT</Label>
-          <Data size="large" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Data>
+          <Label size="label" tone="muted">ESTIMATED MONTHLY PAYMENT</Label>
+          <Data size="title" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Data>
           <View style={styles.outputDetails}>
             <View style={styles.outputItem}>
-              <Supporting size="small" tone="muted">Down Payment</Supporting>
-              <Data size="small">{formatPrice(downPaymentAmount)}</Data>
+              <Supporting size="bodySm" tone="muted">Down Payment</Supporting>
+              <Data size="bodySm">{formatPrice(downPaymentAmount)}</Data>
             </View>
             <View style={styles.outputItem}>
-              <Supporting size="small" tone="muted">Loan Amount</Supporting>
-              <Data size="small">{formatPrice(loanAmount)}</Data>
+              <Supporting size="bodySm" tone="muted">Loan Amount</Supporting>
+              <Data size="bodySm">{formatPrice(loanAmount)}</Data>
             </View>
             <View style={styles.outputItem}>
-              <Supporting size="small" tone="muted">Interest Rate</Supporting>
-              <Data size="small">{interestRate}% APR</Data>
+              <Supporting size="bodySm" tone="muted">Interest Rate</Supporting>
+              <Data size="bodySm">{interestRate}% APR</Data>
             </View>
           </View>
         </View>
@@ -141,7 +141,7 @@ export function FinancingSheet({
         <View style={styles.inputsContainer}>
           {/* Down Payment */}
           <View style={styles.inputRow}>
-            <Supporting size="medium" style={styles.inputLabel}>Down Payment</Supporting>
+            <Supporting size="body" style={styles.inputLabel}>Down Payment</Supporting>
             <View style={[styles.inputWrapper, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
               <TextInput
                 style={[styles.input, { color: colors.text }]}
@@ -152,13 +152,13 @@ export function FinancingSheet({
                 placeholder="20"
                 placeholderTextColor={colors.textMuted}
               />
-              <Data size="medium" tone="secondary">%</Data>
+              <Data size="body" tone="secondary">%</Data>
             </View>
           </View>
 
           {/* Loan Term */}
           <View style={styles.inputRow}>
-            <Supporting size="medium" style={styles.inputLabel}>Loan Term</Supporting>
+            <Supporting size="body" style={styles.inputLabel}>Loan Term</Supporting>
             <View style={[styles.inputWrapper, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
               <TextInput
                 style={[styles.input, { color: colors.text }]}
@@ -169,7 +169,7 @@ export function FinancingSheet({
                 placeholder="48"
                 placeholderTextColor={colors.textMuted}
               />
-              <Data size="medium" tone="secondary">months</Data>
+              <Data size="body" tone="secondary">months</Data>
             </View>
           </View>
         </View>
@@ -177,7 +177,7 @@ export function FinancingSheet({
         {/* Disclaimer */}
         <View style={[styles.disclaimer, { backgroundColor: colors.fill2 }]}>
           <Ionicons name="information-circle-outline" size={Sizes.iconSm} color={colors.text2} />
-          <Supporting size="small" style={styles.disclaimerText}>
+          <Supporting size="bodySm" style={styles.disclaimerText}>
             This is an estimate only. Actual rates and terms may vary based on your bank, credit profile, and other factors.
           </Supporting>
         </View>
@@ -239,8 +239,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 18,
-    fontWeight: '600',
+    ...Typography.subheading,
     padding: 0,
   },
   disclaimer: {

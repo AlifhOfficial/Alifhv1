@@ -341,7 +341,7 @@ export function CreateListingFlow({
             </View>
 
             <View style={styles.headerCenter}>
-              <Heading size="small">{currentStep?.label || 'Create Listing'}</Heading>
+              <Heading size="subheading">{currentStep?.label || 'Create Listing'}</Heading>
             </View>
 
             {!isReviewStep ? (
@@ -350,7 +350,7 @@ export function CreateListingFlow({
                 disabled={!canProceed && !isOptionalStep}
                 style={[styles.nextButton, { backgroundColor: canProceed ? colors.primary : colors.fill2 }]}
               >
-                <ButtonText size="small" style={{ color: canProceed ? colors.primaryFg : colors.textMuted }}>
+                <ButtonText size="bodySm" style={{ color: canProceed ? colors.primaryFg : colors.textMuted }}>
                   {primaryLabel}
                 </ButtonText>
               </HapticPressable>
@@ -395,12 +395,12 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 2,
-    borderRadius: 1,
+    borderRadius: Radius.sm,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    borderRadius: 1,
+    borderRadius: Radius.sm,
   },
   header: {
     flexDirection: 'row',
@@ -414,12 +414,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
-    minWidth: 80,
+    minWidth: Spacing["5xl"],
   },
   circleButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: Sizes.avatarSm,
+    height: Sizes.avatarSm,
+    borderRadius: Sizes.avatarSm / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     marginLeft: -Spacing.xs,
   },
   headerRight: {
-    minWidth: 80,
+    minWidth: Spacing["5xl"],
     alignItems: 'flex-end',
   },
   nextButton: {

@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check, AlertCircle } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -77,10 +77,10 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
           style={[styles.item, { borderBottomColor: colors.border }]}
         >
           <Body
-            size="medium"
+            size="body"
             style={{
               color: isSelected ? colors.text : colors.text2,
-              fontWeight: isSelected ? '600' : '400',
+              fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
             }}
           >
             {model}
@@ -99,7 +99,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
     return (
       <View style={styles.noMakeState}>
         <AlertCircle size={Sizes.iconLg} color={colors.textMuted} strokeWidth={1.5} />
-        <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
+        <Body size="body" tone="secondary" style={{ textAlign: 'center' }}>
           Please select a make first
         </Body>
       </View>
@@ -128,7 +128,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
             </HapticPressable>
           )}
         </View>
-        <Supporting size="small" tone="muted" style={styles.modelCount}>
+        <Supporting size="bodySm" tone="muted" style={styles.modelCount}>
           {allModels.length} models
         </Supporting>
       </View>
@@ -145,7 +145,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Body size="medium" tone="secondary">
+            <Body size="body" tone="secondary">
               {query ? `No models found for "${query}"` : 'No models available'}
             </Body>
           </View>
@@ -178,8 +178,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 15,
-    fontWeight: '400',
+    ...Typography.bodySm,
     paddingVertical: 0,
   },
   modelCount: {

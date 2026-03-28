@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Label, Body, Supporting, ButtonText } from '@/components/ui';
 
@@ -159,10 +159,10 @@ export function YearMileageFilterSheet({
             hitSlop={Spacing.md}
             style={styles.cancelButton}
           >
-            <Body size="medium" tone="secondary">Cancel</Body>
+            <Body size="body" tone="secondary">Cancel</Body>
           </HapticPressable>
           
-          <Heading size="small">Year & Mileage</Heading>
+          <Heading size="subheading">Year & Mileage</Heading>
           
           <HapticPressable
             style={[
@@ -172,7 +172,7 @@ export function YearMileageFilterSheet({
             onPress={handleApply}
           >
             <ButtonText
-              size="small"
+              size="bodySm"
               style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
             >
               Apply
@@ -183,11 +183,11 @@ export function YearMileageFilterSheet({
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+            <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
               {[localYearMin && `From ${localYearMin}`, localYearMax && `To ${localYearMax}`, localMileageMax && `Under ${parseInt(localMileageMax).toLocaleString()} km`].filter(Boolean).join(' · ')}
             </Body>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Supporting size="small" style={{ color: colors.error }}>
+              <Supporting size="bodySm" style={{ color: colors.error }}>
                 Clear
               </Supporting>
             </HapticPressable>
@@ -198,7 +198,7 @@ export function YearMileageFilterSheet({
       <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Year Section */}
         <View style={styles.section}>
-          <Label size="small" tone="muted" style={{ marginBottom: Spacing.md }}>
+          <Label size="caption" tone="muted" style={{ marginBottom: Spacing.md }}>
             YEAR
           </Label>
           <View style={styles.rangeRow}>
@@ -220,7 +220,7 @@ export function YearMileageFilterSheet({
                 maxLength={4}
               />
             </View>
-            <Body size="large" tone="muted" style={styles.rangeDash}>–</Body>
+            <Body size="bodyLg" tone="muted" style={styles.rangeDash}>–</Body>
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[
@@ -244,7 +244,7 @@ export function YearMileageFilterSheet({
 
         {/* Mileage Section */}
         <View style={styles.section}>
-          <Label size="small" tone="muted" style={{ marginBottom: Spacing.md }}>
+          <Label size="caption" tone="muted" style={{ marginBottom: Spacing.md }}>
             MILEAGE
           </Label>
           
@@ -267,7 +267,7 @@ export function YearMileageFilterSheet({
                   ]}
                 >
                   <Supporting
-                    size="small"
+                    size="bodySm"
                     style={{ color: isActive ? colors.bg : colors.text2 }}
                   >
                     {preset.label}
@@ -296,7 +296,7 @@ export function YearMileageFilterSheet({
                 onChangeText={setLocalMileageMin}
               />
             </View>
-            <Body size="large" tone="muted" style={styles.rangeDash}>–</Body>
+            <Body size="bodyLg" tone="muted" style={styles.rangeDash}>–</Body>
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     borderWidth: 1,
     paddingHorizontal: Spacing.md,
-    fontWeight: '600',
+    ...Typography.body,
   },
   rangeDash: {
   },

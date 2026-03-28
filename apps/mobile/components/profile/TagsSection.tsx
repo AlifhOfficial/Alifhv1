@@ -36,7 +36,7 @@ function TagItem({ tag, isSelected, colors, onPress }: TagItemProps) {
       ]}
     >
       <Body
-        size="small"
+        size="bodySm"
         tone={isSelected ? 'default' : 'secondary'}
       >
         {tag}
@@ -77,7 +77,7 @@ export function TagsSection({ selectedTags, colors, onToggle }: TagsSectionProps
       colors={colors}
       delay={275}
       rightElement={
-        <Supporting size="medium" tone="muted">
+        <Supporting size="body" tone="muted">
           {selectedTags.length}/{MAX_TAGS}
         </Supporting>
       }

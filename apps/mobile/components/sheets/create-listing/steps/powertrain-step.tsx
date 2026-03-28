@@ -53,7 +53,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Transmission */}
       <View style={styles.section}>
-        <Label size="small">Transmission</Label>
+        <Label size="caption">Transmission</Label>
         <View style={styles.chipWrap}>
           {TRANSMISSION_TYPES.map((type) => {
             const isSelected = data.transmission === type.value;
@@ -70,7 +70,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="small"
+                  size="bodySm"
                   style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {type.label}
@@ -83,7 +83,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Fuel Type */}
       <View style={styles.section}>
-        <Label size="small">Fuel Type</Label>
+        <Label size="caption">Fuel Type</Label>
         <View style={styles.chipWrap}>
           {FUEL_TYPES.map((fuel) => {
             const isSelected = data.fuelType === fuel.value;
@@ -100,7 +100,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="small"
+                  size="bodySm"
                   style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {fuel.label}
@@ -113,7 +113,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Engine Size */}
       <View style={styles.section}>
-        <Label size="small">Engine Size</Label>
+        <Label size="caption">Engine Size</Label>
         <View style={styles.chipWrap}>
           {ENGINE_SIZES.map((size) => {
             const isSelected = data.engineSize === size.value;
@@ -130,7 +130,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="small"
+                  size="bodySm"
                   style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {size.label}

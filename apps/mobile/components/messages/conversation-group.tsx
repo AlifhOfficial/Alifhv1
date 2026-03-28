@@ -1,16 +1,15 @@
 /**
- * Conversation Group - Always dropdown style
- * Avatar + Name + Dropdown -> Reveals chats
+ * Conversation Group - Clean native chat list row
  */
 
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { HapticPressable } from '@/components/ui';
-import { ChevronDown, ChevronUp, Moon } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Sizes, Fonts } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Radius} from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Data, Supporting } from '@/components/ui';
+import { Heading, Supporting, Text } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
 
 interface ConversationGroupProps {
@@ -42,7 +41,6 @@ export function ConversationGroup({
   name,
   avatarUrl,
   isOnline = false,
-  lastSeenAt,
   conversations,
   activeConversationId,
   onSelect,
@@ -51,187 +49,211 @@ export function ConversationGroup({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
+  const isMulti = conversations.length > 1;
   const [isExpanded, setIsExpanded] = useState(
     defaultExpanded || conversations.some((c) => c.id === activeConversationId)
   );
   const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
+  const hasUnread = totalUnread > 0;
+  const latest = conversations[0];
+
   const toggleExpanded = useCallback(() => setIsExpanded((p) => !p), []);
-  const ChevronIcon = isExpanded ? ChevronUp : ChevronDown;
+
+  const handlePress = useCallback(() => {
+    if (isMulti) {
+      toggleExpanded();
+    } else {
+      onSelect(conversations[0]);
+    }
+  }, [isMulti, toggleExpanded, onSelect, conversations]);
 
   return (
-    <View style={styles.container}>
-      {/* Header Row: [Avatar] [Name] [Badge?] [Chevron] */}
+    <View>
+      {/* Main row */}
       <HapticPressable
-        onPress={toggleExpanded}
-        style={styles.header}
+        onPress={handlePress}
         android_ripple={{ color: colors.surface2 }}
+        style={styles.row}
       >
         {({ pressed }) => (
-          <View style={[styles.headerRow, pressed && { opacity: 0.7 }]}>
-            <View style={[styles.avatarBubble, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}>
+          <View style={[styles.rowInner, pressed && { opacity: 0.7 }]}>
+            {/* Avatar with online dot */}
+            <View style={styles.avatarWrap}>
               <UserAvatar src={avatarUrl} name={name} size="md" />
-              {totalUnread > 0 && (
-                <View style={[styles.unreadDot, { backgroundColor: colors.error, borderColor: colors.bg }]} />
+              {isOnline && (
+                <View style={[styles.onlineDot, { backgroundColor: colors.success, borderColor: colors.bg }]} />
               )}
             </View>
-            <Data size="large" style={{ flex: 1, color: colors.text }} numberOfLines={1}>
-              {name}
-            </Data>
-            {/* Activity Pill - Moon + timestamp (glass style) */}
-            {(() => {
-              const activityText = isOnline ? 'now' : lastSeenAt ? formatTime(lastSeenAt) : 'offline';
-              const isActive = isOnline || activityText === 'now';
-              return (
-                <View style={[styles.activityPill, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}>
-                  <Moon
-                    size={12}
-                    color={isActive ? colors.online : colors.offline}
-                    fill={isActive ? colors.online : colors.offline}
-                    strokeWidth={1.5}
+
+            {/* Text content */}
+            <View style={styles.content}>
+              <View style={styles.topRow}>
+                {/* Name: default tone = full weight; secondary = read/dimmer */}
+                <Heading
+                  size="subheading"
+                  tone={hasUnread ? 'default' : 'secondary'}
+                  style={styles.flex1}
+                  numberOfLines={1}
+                >
+                  {name}
+                </Heading>
+                <Text variant="bodySm" tone="muted">
+                  {formatTime(latest.lastMessageAt)}
+                </Text>
+              </View>
+              <View style={styles.bottomRow}>
+                <Supporting
+                  size="bodySm"
+                  tone={hasUnread ? 'secondary' : 'muted'}
+                  style={styles.flex1}
+                  numberOfLines={1}
+                >
+                  {latest.lastMessagePreview || 'No messages'}
+                </Supporting>
+                {totalUnread > 0 ? (
+                  <View style={[styles.badge, { backgroundColor: colors.primary }]}>
+                    <Text variant="bodySm" style={{ color: colors.primaryFg }}>
+                      {totalUnread > 99 ? '99+' : String(totalUnread)}
+                    </Text>
+                  </View>
+                ) : isMulti ? (
+                  <ChevronRight
+                    size={Sizes.iconXs}
+                    color={colors.text3}
+                    strokeWidth={2}
+                    style={{ transform: [{ rotate: isExpanded ? '90deg' : '0deg' }] }}
                   />
-                  <Data size="mini" style={{ color: colors.text2 }}>
-                    {activityText}
-                  </Data>
-                </View>
-              );
-            })()}
-            <View style={[styles.bubble, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}>
-              <ChevronIcon size={Sizes.iconXs} color={colors.text2} strokeWidth={2.5} />
+                ) : null}
+              </View>
             </View>
           </View>
         )}
       </HapticPressable>
 
-      {/* Dropdown: Nested conversations */}
-      {isExpanded && (
-        <View style={[styles.chatList, { borderLeftColor: colors.glassBorder }]}>
+      {/* Hairline separator indented past avatar */}
+      <View style={[styles.separator, { backgroundColor: colors.border }]} />
+
+      {/* Sub-items for multi-conversation groups */}
+      {isMulti && isExpanded && (
+        <View style={[styles.subList, { borderLeftColor: colors.border }]}>
           {conversations.map((c) => {
-            const hasUnread = c.unreadCount > 0;
-            const isActive = c.id === activeConversationId;
+            const cUnread = c.unreadCount > 0;
             return (
               <HapticPressable
                 key={c.id}
                 onPress={() => onSelect(c)}
-                style={[
-                  styles.chatItem,
-                  isActive && { backgroundColor: colors.glassBg, borderColor: colors.glassBorder },
-                ]}
+                android_ripple={{ color: colors.surface2 }}
+                style={styles.subRow}
               >
-                {/* Title + Time */}
-                <View style={styles.chatRow}>
-                  <Data 
-                    size="medium" 
-                    style={{ 
-                      flex: 1, 
-                      color: hasUnread ? colors.text : colors.text2,
-                      fontWeight: hasUnread ? Fonts.semiBold : Fonts.medium,
-                    }}
-                    numberOfLines={1}
-                  >
-                    {c.listing?.title || 'General Inquiry'}
-                  </Data>
-                  <Data size="mini" style={{ color: colors.text3, marginLeft: Spacing.sm }}>
-                    {formatTime(c.lastMessageAt)}
-                  </Data>
-                </View>
-                {/* Preview + Unread */}
-                <View style={styles.chatRow}>
-                  <Supporting 
-                    size="small"
-                    style={{ 
-                      flex: 1, 
-                      marginTop: Spacing.xs,
-                      color: hasUnread ? colors.text2 : colors.text3,
-                    }}
-                    numberOfLines={1}
-                  >
-                    {c.lastMessagePreview || 'No messages'}
-                  </Supporting>
-                  {hasUnread && (
-                    <View style={[styles.dot, { backgroundColor: colors.error }]} />
-                  )}
-                </View>
+                {({ pressed }) => (
+                  <View style={[styles.subRowInner, pressed && { opacity: 0.7 }]}>
+                    <View style={styles.topRow}>
+                      <Supporting
+                        size="body"
+                        tone={cUnread ? 'default' : 'secondary'}
+                        style={styles.flex1}
+                        numberOfLines={1}
+                      >
+                        {c.listing?.title || 'General Inquiry'}
+                      </Supporting>
+                      <Text variant="bodySm" tone="muted">
+                        {formatTime(c.lastMessageAt)}
+                      </Text>
+                    </View>
+                    <View style={styles.bottomRow}>
+                      <Supporting
+                        size="bodySm"
+                        tone={cUnread ? 'secondary' : 'muted'}
+                        style={styles.flex1}
+                        numberOfLines={1}
+                      >
+                        {c.lastMessagePreview || 'No messages'}
+                      </Supporting>
+                      {c.unreadCount > 0 && (
+                        <View style={[styles.badge, { backgroundColor: colors.primary }]}>
+                          <Text variant="bodySm" style={{ color: colors.primaryFg }}>
+                            {c.unreadCount > 99 ? '99+' : String(c.unreadCount)}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                )}
               </HapticPressable>
             );
           })}
+          <View style={[styles.separator, { backgroundColor: colors.border }]} />
         </View>
       )}
     </View>
   );
 }
 
+const AVATAR_SIZE = Sizes.avatarMd; // 40
+const ROW_H_PAD = Spacing.lg;       // 16
+const ROW_GAP = Spacing.md;         // 12
+
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: Spacing.sm,
+  row: {
+    paddingHorizontal: ROW_H_PAD,
   },
-  header: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.lg,
-  },
-  headerRow: {
+  rowInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.md,
+    paddingVertical: Spacing.md,
+    gap: ROW_GAP,
   },
-  avatarBubble: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Sizes.bubble / 2,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  avatarWrap: {
     position: 'relative',
   },
-  unreadDot: {
+  onlineDot: {
     position: 'absolute',
-    top: -2,
-    right: -2,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    bottom: 1,
+    right: 1,
+    width: Spacing.md,
+    height: Spacing.md,
+    borderRadius: Spacing.md / 2,
     borderWidth: 2,
   },
-  bubble: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Sizes.bubble / 2,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  content: {
+    flex: 1,
+    gap: Spacing.xs,
   },
-  activityPill: {
-    height: Sizes.pillHeight,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: Sizes.pillRadius,
-    borderWidth: 1,
+  topRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
-  chatList: {
-    marginLeft: Spacing.lg + Sizes.avatarMd + Spacing.md,
-    marginRight: Spacing.lg,
-    borderLeftWidth: 1,
-    paddingLeft: Spacing.md,
-    gap: Spacing.xs,
-    marginBottom: Spacing.sm,
+  bottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
   },
-  chatItem: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
+  flex1: {
+    flex: 1,
+  },
+  badge: {
+    minWidth: Spacing.xl,
+    height: Spacing.xl,
     borderRadius: Radius.md,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  chatRow: {
-    flexDirection: 'row',
+    paddingHorizontal: Spacing.xs,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  dot: {
-    width: Spacing.sm,
-    height: Spacing.sm,
-    borderRadius: Radius.full,
-    marginLeft: Spacing.sm,
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: ROW_H_PAD + AVATAR_SIZE + ROW_GAP,
+  },
+  subList: {
+    marginLeft: ROW_H_PAD + AVATAR_SIZE + ROW_GAP,
+    borderLeftWidth: StyleSheet.hairlineWidth,
+  },
+  subRow: {
+    paddingLeft: Spacing.md,
+    paddingRight: ROW_H_PAD,
+  },
+  subRowInner: {
+    paddingVertical: Spacing.sm,
+    gap: Spacing.xs,
   },
 });

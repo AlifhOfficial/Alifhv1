@@ -221,9 +221,9 @@ export const CategoryCard = memo(function CategoryCard({
     <View style={[styles.categoryCard, { backgroundColor: cardBg }]}>
       {/* Header - Category Name & Subtitle */}
       <View style={styles.header}>
-        <Heading size="mini" style={[styles.categoryTitle, { color: textColor }]}>{name}</Heading>
+        <Heading size="subheading" style={[styles.categoryTitle, { color: textColor }]}>{name}</Heading>
         {subtitle && (
-          <Supporting size="small" style={[styles.categorySubtitle, { color: textSecondary }]}>{subtitle}</Supporting>
+          <Supporting size="bodySm" style={[styles.categorySubtitle, { color: textSecondary }]}>{subtitle}</Supporting>
         )}
       </View>
 
@@ -261,7 +261,7 @@ export const CategoryCard = memo(function CategoryCard({
 
       {/* CTA Footer */}
       <HapticPressable onPress={handleCategoryPress} style={styles.footer}>
-        <Heading size="mini" style={[styles.browseText, { color: textColor }]}>Browse all</Heading>
+        <Heading size="subheading" style={[styles.browseText, { color: textColor }]}>Browse all</Heading>
         <View
           style={[
             styles.arrowCircle,

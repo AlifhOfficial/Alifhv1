@@ -89,12 +89,12 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
         </View>
 
         {/* Title */}
-        <Heading size="large" style={[styles.title, { color: colors.text }]}>
+        <Heading size="title" style={[styles.title, { color: colors.text }]}>
           Something went wrong
         </Heading>
 
         {/* Description */}
-        <Body size="medium" tone="secondary" style={styles.description}>
+        <Body size="body" tone="secondary" style={styles.description}>
           The app ran into an unexpected issue. We're sorry for the inconvenience.
         </Body>
 
@@ -105,7 +105,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
             style={[styles.button, styles.primaryButton, { backgroundColor: colors.primary }]}
           >
             <RefreshCw size={Sizes.iconSm} color="#fff" strokeWidth={2} />
-            <ButtonText size="medium" style={{ color: '#fff' }}>Reload App</ButtonText>
+            <ButtonText size="body" style={{ color: '#fff' }}>Reload App</ButtonText>
           </Pressable>
 
           <Pressable
@@ -113,7 +113,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
             style={[styles.button, styles.secondaryButton, { borderColor: colors.border }]}
           >
             <Home size={Sizes.iconSm} color={colors.text} strokeWidth={2} />
-            <ButtonText size="medium" style={{ color: colors.text }}>Try Again</ButtonText>
+            <ButtonText size="body" style={{ color: colors.text }}>Try Again</ButtonText>
           </Pressable>
         </View>
 
@@ -125,18 +125,18 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
               style={styles.detailsToggle}
             >
               <Bug size={Sizes.iconXs} color={colors.textMuted} />
-              <Supporting size="small" tone="muted">
+              <Supporting size="bodySm" tone="muted">
                 {showDetails ? 'Hide' : 'Show'} error details
               </Supporting>
             </Pressable>
 
             {showDetails && (
               <View style={[styles.errorBox, { backgroundColor: colors.surface }]}>
-                <Supporting size="mini" style={{ color: colors.error, fontFamily: 'monospace' }}>
+                <Supporting size="bodySm" style={{ color: colors.error, fontFamily: 'monospace' }}>
                   {error.name}: {error.message}
                 </Supporting>
                 {error.stack && (
-                  <Supporting size="mini" tone="muted" style={styles.stackTrace}>
+                  <Supporting size="bodySm" tone="muted" style={styles.stackTrace}>
                     {error.stack.split('\n').slice(0, 5).join('\n')}
                   </Supporting>
                 )}
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   },
   description: {
     textAlign: 'center',
-    maxWidth: 280,
+    maxWidth: Spacing["5xl"],
     marginBottom: Spacing.xl,
   },
   actions: {
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   stackTrace: {
     marginTop: Spacing.sm,
     fontFamily: 'monospace',
-    fontSize: 10,
-    lineHeight: 14,
+    fontSize: Spacing.sm,
+    lineHeight: Spacing.lg,
   },
 });

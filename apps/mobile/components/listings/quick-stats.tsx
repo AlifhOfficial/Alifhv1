@@ -59,21 +59,21 @@ export const QuickStats = memo(function QuickStats({
     <View style={styles.container}>
       {/* Quick Details Row */}
       <View style={styles.statsRow}>
-        <Data size="medium" style={{ color: secondaryTextColor }}>
+        <Data size="body" style={{ color: secondaryTextColor }}>
           {formatMileage(mileage)} km
         </Data>
-        <Supporting size="small" tone="muted" style={styles.separator}>
+        <Supporting size="bodySm" tone="muted" style={styles.separator}>
           •
         </Supporting>
-        <Data size="medium" style={{ color: secondaryTextColor }}>
+        <Data size="body" style={{ color: secondaryTextColor }}>
           {displaySpecs} Specs
         </Data>
-        <Supporting size="small" tone="muted" style={styles.separator}>
+        <Supporting size="bodySm" tone="muted" style={styles.separator}>
           •
         </Supporting>
         <View style={styles.locationRow}>
           <MapPin size={Sizes.iconXs} color={secondaryTextColor} />
-          <Data size="medium" style={{ color: secondaryTextColor }}>
+          <Data size="body" style={{ color: secondaryTextColor }}>
             {displayEmirate}
           </Data>
         </View>
@@ -84,8 +84,8 @@ export const QuickStats = memo(function QuickStats({
         <HapticPressable onPress={handleCopyVin} style={styles.vinRow}>
           {({ pressed }) => (
             <>
-              <Data size="mini" tone="muted">VIN</Data>
-              <Data size="medium" style={[styles.vinValue, { opacity: pressed ? 0.7 : 1 }]}>
+              <Data size="bodySm" tone="muted">VIN</Data>
+              <Data size="body" style={[styles.vinValue, { opacity: pressed ? 0.7 : 1 }]}>
                 {vin}
               </Data>
               {copied ? (
@@ -98,8 +98,8 @@ export const QuickStats = memo(function QuickStats({
         </HapticPressable>
       ) : vinVisibility === 'private' ? (
         <View style={styles.vinRow}>
-          <Data size="mini" tone="muted">VIN</Data>
-          <Data size="medium" style={{ color: colors.success }}>Verified</Data>
+          <Data size="bodySm" tone="muted">VIN</Data>
+          <Data size="body" style={{ color: colors.success }}>Verified</Data>
         </View>
       ) : null}
     </View>

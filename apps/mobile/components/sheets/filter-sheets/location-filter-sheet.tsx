@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
 import type { SearchParams } from '@/lib/search-api';
@@ -140,10 +140,10 @@ export function LocationFilterSheet({
             hitSlop={Spacing.md}
             style={styles.cancelButton}
           >
-            <Body size="medium" tone="secondary">Cancel</Body>
+            <Body size="body" tone="secondary">Cancel</Body>
           </HapticPressable>
           
-          <Heading size="small">Location</Heading>
+          <Heading size="subheading">Location</Heading>
           
           <HapticPressable
             style={[
@@ -153,7 +153,7 @@ export function LocationFilterSheet({
             onPress={handleApply}
           >
             <ButtonText
-              size="small"
+              size="bodySm"
               style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
             >
               Apply
@@ -164,11 +164,11 @@ export function LocationFilterSheet({
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+            <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
               {localSelected.join(', ')}
             </Body>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Supporting size="small" style={{ color: colors.error }}>
+              <Supporting size="bodySm" style={{ color: colors.error }}>
                 Clear
               </Supporting>
             </HapticPressable>
@@ -190,15 +190,15 @@ export function LocationFilterSheet({
               >
                 <View style={styles.labelRow}>
                   <Body
-                    size="medium"
+                    size="body"
                     style={{ 
                       color: isSelected ? colors.text : colors.text2,
-                      fontWeight: isSelected ? '700' : '500',
+                      fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
                     }}
                   >
                     {option.label}
                   </Body>
-                  <Supporting size="small" tone="muted">
+                  <Supporting size="bodySm" tone="muted">
                     {option.count.toLocaleString()}
                   </Supporting>
                 </View>

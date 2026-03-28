@@ -99,11 +99,11 @@ export function EditableField({
         entering={FadeIn.duration(200)}
         style={[styles.container, !isLast && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }]}
       >
-        <Body size="small" tone="muted">{label}</Body>
+        <Body size="bodySm" tone="muted">{label}</Body>
         <View style={styles.editContainer}>
           <View style={styles.inputWrapper}>
             {prefix && (
-              <Body size="medium" tone="secondary" style={styles.prefix}>
+              <Body size="body" tone="secondary" style={styles.prefix}>
                 {prefix}
               </Body>
             )}
@@ -133,7 +133,7 @@ export function EditableField({
                 pressed && { opacity: 0.6 },
               ]}
             >
-              <Body size="small" tone="secondary">
+              <Body size="bodySm" tone="secondary">
                 Cancel
               </Body>
             </HapticPressable>
@@ -146,7 +146,7 @@ export function EditableField({
                 pressed && { opacity: 0.6 },
               ]}
             >
-              <Data size="medium" tone="primary">
+              <Data size="body" tone="primary">
                 {saving ? 'Saving...' : 'Save'}
               </Data>
             </HapticPressable>
@@ -172,9 +172,9 @@ export function EditableField({
       >
         <View style={styles.row}>
           <View style={styles.labelValueContainer}>
-            <Body size="small" tone="muted">{label}</Body>
+            <Body size="bodySm" tone="muted">{label}</Body>
             <Body
-              size="medium"
+              size="body"
               tone={value ? 'default' : 'muted'}
               numberOfLines={1}
             >

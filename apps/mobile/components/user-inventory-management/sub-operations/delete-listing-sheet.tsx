@@ -125,13 +125,13 @@ export function DeleteListingSheet({
       enablePanDownToClose={!loading}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">{title}</Heading>
+          <Heading size="heading">{title}</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -149,7 +149,7 @@ export function DeleteListingSheet({
         {hardDelete && (
           <View style={[styles.warningBanner, { backgroundColor: colors.errorMuted }]}>
             <Ionicons name="warning" size={Sizes.iconSm} color={colors.error} />
-            <Body size="small" tone="error" style={{ flex: 1 }}>
+            <Body size="bodySm" tone="error" style={{ flex: 1 }}>
               This cannot be undone. All photos will be permanently deleted.
             </Body>
           </View>
@@ -165,15 +165,15 @@ export function DeleteListingSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Body size="medium" numberOfLines={1}>{listingTitle}</Body>
-            <Supporting size="small" tone="secondary">{description}</Supporting>
+            <Body size="body" numberOfLines={1}>{listingTitle}</Body>
+            <Supporting size="bodySm" tone="secondary">{description}</Supporting>
           </View>
         </View>
 
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Body size="small" tone="error">{error}</Body>
+            <Body size="bodySm" tone="error">{error}</Body>
           </View>
         )}
 
@@ -190,7 +190,7 @@ export function DeleteListingSheet({
               },
             ]}
           >
-            <ButtonText size="medium" tone="secondary">Cancel</ButtonText>
+            <ButtonText size="body" tone="secondary">Cancel</ButtonText>
           </HapticPressable>
 
           <HapticPressable
@@ -209,7 +209,7 @@ export function DeleteListingSheet({
             ) : (
               <>
                 <Trash2 size={Sizes.iconSm} color="#FFF" />
-                <ButtonText size="medium" style={{ color: '#FFF' }}>
+                <ButtonText size="body" style={{ color: '#FFF' }}>
                   {hardDelete ? 'Delete Forever' : 'Delete'}
                 </ButtonText>
               </>

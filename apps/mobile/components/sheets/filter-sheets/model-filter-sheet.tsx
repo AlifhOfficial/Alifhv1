@@ -13,7 +13,7 @@ import * as Haptics from 'expo-haptics';
 import { Search, X } from 'lucide-react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
 import { CAR_MODELS, getModelsForMake } from '@/lib/filter-constants';
@@ -192,22 +192,22 @@ export function ModelFilterSheet({
         <View style={styles.labelColumn}>
           <View style={styles.labelRow}>
             <Body
-              size="medium"
+              size="body"
               style={{ 
                 color: isSelected ? colors.text : colors.text2,
-                fontWeight: isSelected ? '700' : '500',
+                fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
               }}
             >
               {item.model}
             </Body>
             {count > 0 && (
-              <Supporting size="small" tone="muted">
+              <Supporting size="bodySm" tone="muted">
                 {count.toLocaleString()}
               </Supporting>
             )}
           </View>
           {showMakeLabel && (
-            <Supporting size="small" tone="muted">{item.make}</Supporting>
+            <Supporting size="bodySm" tone="muted">{item.make}</Supporting>
           )}
         </View>
         <View style={[
@@ -244,10 +244,10 @@ export function ModelFilterSheet({
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Body size="medium" tone="secondary">Cancel</Body>
+              <Body size="body" tone="secondary">Cancel</Body>
             </HapticPressable>
             
-            <Heading size="small">Model</Heading>
+            <Heading size="subheading">Model</Heading>
             
             <HapticPressable
               style={[
@@ -258,7 +258,7 @@ export function ModelFilterSheet({
               disabled={!hasValue}
             >
               <ButtonText
-                size="small"
+                size="bodySm"
                 style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
               >
                 Apply
@@ -269,11 +269,11 @@ export function ModelFilterSheet({
           {/* Selection Summary */}
           {hasValue && (
             <View style={styles.selectionSummary}>
-              <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+              <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
                 {localSelected.join(', ')}
               </Body>
               <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Supporting size="small" style={{ color: colors.error }}>
+                <Supporting size="bodySm" style={{ color: colors.error }}>
                   Clear
                 </Supporting>
               </HapticPressable>
@@ -310,7 +310,7 @@ export function ModelFilterSheet({
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyState}>
-              <Body size="large" tone="secondary">No models found</Body>
+              <Body size="bodyLg" tone="secondary">No models found</Body>
             </View>
           }
         />
@@ -373,8 +373,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 15,
-    fontWeight: '500',
+    ...Typography.bodySm,
     paddingVertical: 0,
   },
   listContainer: {

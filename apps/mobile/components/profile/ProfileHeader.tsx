@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 import { Settings2, User, LogOut } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Spacing, Layout, Sizes } from '@/constants/theme';
+import { Spacing, Layout, Sizes, ZIndex} from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import type { ThemeColors } from './types';
 
@@ -58,7 +58,7 @@ export function ProfileHeader({ colors, topInset }: ProfileHeaderProps) {
       >
         <View style={styles.pillContent}>
           <User size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
-          <Data size="small">Profile</Data>
+          <Data size="bodySm">Profile</Data>
         </View>
       </View>
 
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
+    zIndex: ZIndex.overlay,
     paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',

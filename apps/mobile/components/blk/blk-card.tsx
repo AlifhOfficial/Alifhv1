@@ -218,7 +218,7 @@ export const BlkCard = memo(function BlkCard({
           />
         ) : (
           <View style={styles.imagePlaceholder}>
-            <Supporting size="small" style={{ color: GLASS.text3 }}>No Image</Supporting>
+            <Supporting size="bodySm" style={{ color: GLASS.text3 }}>No Image</Supporting>
           </View>
         )}
       </View>
@@ -227,24 +227,24 @@ export const BlkCard = memo(function BlkCard({
       <View style={styles.content}>
         {/* Header: Title + Year */}
         <View style={styles.header}>
-          <Heading size="mini" style={styles.title} numberOfLines={1}>
+          <Heading size="subheading" style={styles.title} numberOfLines={1}>
             {make} {model}
           </Heading>
-          <Data size="medium" style={styles.year}>{year}</Data>
+          <Data size="body" style={styles.year}>{year}</Data>
         </View>
 
         {/* Price */}
-        <Heading size="small" style={styles.price}>
+        <Heading size="subheading" style={styles.price}>
           {formatPrice(price)}
         </Heading>
 
         {/* Stats: Mileage · Specs · Location */}
         <View style={styles.statsRow}>
-          <Data size="medium" style={styles.stat}>{formatMileage(mileage)} km</Data>
-          <Data size="medium" style={styles.separator}>·</Data>
-          <Data size="small" style={styles.stat}>{displaySpecs}</Data>
-          <Data size="medium" style={styles.separator}>·</Data>
-          <Data size="medium" style={styles.stat} numberOfLines={1}>{displayEmirate}</Data>
+          <Data size="body" style={styles.stat}>{formatMileage(mileage)} km</Data>
+          <Data size="body" style={styles.separator}>·</Data>
+          <Data size="bodySm" style={styles.stat}>{displaySpecs}</Data>
+          <Data size="body" style={styles.separator}>·</Data>
+          <Data size="body" style={styles.stat} numberOfLines={1}>{displayEmirate}</Data>
         </View>
 
         {/* Footer: Seller + Actions */}
@@ -267,7 +267,7 @@ export const BlkCard = memo(function BlkCard({
             </View>
             
             <View style={styles.sellerMeta}>
-              <Data size="small" style={styles.sellerName} numberOfLines={1}>
+              <Data size="bodySm" style={styles.sellerName} numberOfLines={1}>
                 {displaySellerName}
               </Data>
               {!isBlackTierPartner && isVerified && (
@@ -275,7 +275,7 @@ export const BlkCard = memo(function BlkCard({
               )}
               {isBlackTierPartner && (
                 <View style={styles.blkBadge}>
-                  <Label size="badge" uppercase={false} style={styles.blkBadgeFg}>BLK</Label>
+                  <Label size="caption" uppercase={false} style={styles.blkBadgeFg}>BLK</Label>
                 </View>
               )}
             </View>

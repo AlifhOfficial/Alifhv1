@@ -286,7 +286,7 @@ export default function SellerContactScreen() {
         <Stack.Screen options={{ headerShown: false }} />
         <Header colors={colors} insets={insets} onBack={handleBack} />
         <View style={styles.errorContainer}>
-          <Supporting size="medium">
+          <Supporting size="body">
             This listing is no longer available or may have expired
           </Supporting>
         </View>
@@ -309,12 +309,12 @@ export default function SellerContactScreen() {
           style={styles.section}
           onPress={() => setDescriptionSheetVisible(true)}
         >
-          <Label size="medium" tone="muted">ABOUT</Label>
-          <Body size="medium" tone="secondary" numberOfLines={3}>
+          <Label size="label" tone="muted">ABOUT</Label>
+          <Body size="body" tone="secondary" numberOfLines={3}>
             {seller.description}
           </Body>
           {seller.description.length > 120 && (
-            <Body size="small" tone="primary">Read more</Body>
+            <Body size="bodySm" tone="primary">Read more</Body>
           )}
         </Pressable>
       )}

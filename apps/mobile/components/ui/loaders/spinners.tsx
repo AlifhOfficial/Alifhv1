@@ -1,154 +1,87 @@
 /**
- * Revvup Spinners & Loaders
- * Beautiful motion graphics using SVG logo animations
+ * Spinners & Loaders
+ * All spinners use native ActivityIndicator (iOS/Android system spinner).
+ * SkeletonLoader retained for content placeholder shimmer.
  */
 
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
   withTiming,
-  withSequence,
-  withDelay,
   Easing,
   interpolate,
-  FadeIn,
-  FadeOut,
 } from 'react-native-reanimated';
+
 import { useTheme } from '@/context/theme-context';
-import { Sizes, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, ZIndex} from '@/constants/theme';
 import { Body } from '../text';
 import { LoaderProps, LOADER_SIZES, LOADER_COLORS } from './types';
-import { RevvupLogo, RevvupLogoAnimated } from './revvup-logo';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-/**
- * Pulse Loader - Logo with smooth pulse animation (SVG)
- */
 export function PulseLoader({ size = 'md' }: LoaderProps) {
-  const loaderSize = LOADER_SIZES[size];
-
-  return (
-    <View style={[styles.centered, { width: loaderSize, height: loaderSize }]}>
-      <RevvupLogoAnimated size={loaderSize} animation="pulse" duration={1400} />
-    </View>
-  );
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  return <ActivityIndicator size={LOADER_SIZES[size] >= 36 ? 'large' : 'small'} color={colors.primary} />;
 }
 
-/**
- * Spin Loader - Logo with spin animation (SVG)
- */
 export function SpinLoader({ size = 'md' }: LoaderProps) {
-  const loaderSize = LOADER_SIZES[size];
-
-  return (
-    <View style={[styles.centered, { width: loaderSize, height: loaderSize }]}>
-      <RevvupLogoAnimated size={loaderSize} animation="spin" duration={1000} />
-    </View>
-  );
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  return <ActivityIndicator size={LOADER_SIZES[size] >= 36 ? 'large' : 'small'} color={colors.primary} />;
 }
 
-/**
- * Breathe Loader - Logo with breathing animation (SVG)
- */
 export function BreatheLoader({ size = 'md' }: LoaderProps) {
-  const loaderSize = LOADER_SIZES[size];
-
-  return (
-    <View style={[styles.centered, { width: loaderSize, height: loaderSize }]}>
-      <RevvupLogoAnimated size={loaderSize} animation="breathe" duration={1600} />
-    </View>
-  );
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  return <ActivityIndicator size={LOADER_SIZES[size] >= 36 ? 'large' : 'small'} color={colors.primary} />;
 }
 
-/**
- * Glow Loader - Logo with glow/fade animation (SVG)
- */
 export function GlowLoader({ size = 'md' }: LoaderProps) {
-  const loaderSize = LOADER_SIZES[size];
-
-  return (
-    <View style={[styles.centered, { width: loaderSize, height: loaderSize }]}>
-      <RevvupLogoAnimated size={loaderSize} animation="glow" duration={1200} />
-    </View>
-  );
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  return <ActivityIndicator size={LOADER_SIZES[size] >= 36 ? 'large' : 'small'} color={colors.primary} />;
 }
 
-/**
- * Static Logo Loader - Clean static logo (SVG)
- */
 export function LogoLoader({ size = 'md' }: LoaderProps) {
-  const loaderSize = LOADER_SIZES[size];
-
-  return (
-    <View style={[styles.centered, { width: loaderSize, height: loaderSize }]}>
-      <RevvupLogo size={loaderSize} />
-    </View>
-  );
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  return <ActivityIndicator size={LOADER_SIZES[size] >= 36 ? 'large' : 'small'} color={colors.primary} />;
 }
 
-/**
- * Button Loader - Compact logo spinner for buttons (SVG)
- */
-export function ButtonLoader({ size = 'sm', color }: LoaderProps) {
-  const loaderSize = LOADER_SIZES[size];
-
-  return (
-    <View style={[styles.centered, { width: loaderSize, height: loaderSize }]}>
-      <RevvupLogoAnimated size={loaderSize} animation="spin" duration={800} color={color} />
-    </View>
-  );
+/** Button spinner — variant maps to color (white, primary, muted, etc.) */
+export function ButtonLoader({ size = 'sm', color, variant = 'primary' }: LoaderProps) {
+  const { colorScheme } = useTheme();
+  const spinnerColor = color ?? LOADER_COLORS[colorScheme][variant ?? 'primary'];
+  return <ActivityIndicator size="small" color={spinnerColor} />;
 }
 
-/**
- * Inline Loader - For inline loading states (SVG logo)
- */
 export function InlineLoader({ size = 'xs' }: LoaderProps) {
-  const loaderSize = LOADER_SIZES[size];
-
-  return (
-    <View style={[styles.centered, { width: loaderSize, height: loaderSize }]}>
-      <RevvupLogoAnimated size={loaderSize} animation="pulse" duration={1000} />
-    </View>
-  );
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  return <ActivityIndicator size="small" color={colors.primary} />;
 }
 
 interface FullScreenLoaderProps {
   message?: string;
 }
 
-/**
- * Full Screen Loader - Branded loading overlay with SVG logo
- */
-export function FullScreenLoader({ 
-  message,
-}: FullScreenLoaderProps) {
+export function FullScreenLoader({ message }: FullScreenLoaderProps) {
   const { colorScheme } = useTheme();
-  const isDark = colorScheme === 'dark';
+  const colors = Colors[colorScheme];
 
   return (
-    <Animated.View
-      entering={FadeIn.duration(200)}
-      exiting={FadeOut.duration(200)}
-      style={[
-        styles.fullScreen,
-        { backgroundColor: isDark ? '#0A0A0A' : '#E8E8E8' },
-      ]}
-    >
-      <RevvupLogoAnimated size={Sizes.avatarLg + Spacing['3xl']} animation="pulse" duration={1400} />
+    <View style={[styles.fullScreen, { backgroundColor: colors.skeleton }]}>
+      <ActivityIndicator size="large" color={colors.primary} />
       {message && (
-        <Body
-          size="small"
-          tone="muted"
-          style={styles.message}
-        >
+        <Body size="bodySm" tone="muted" style={styles.message}>
           {message}
         </Body>
       )}
-    </Animated.View>
+    </View>
   );
 }
 
@@ -239,9 +172,9 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000,
+    zIndex: ZIndex.modal,
   },
   message: {
-    marginTop: 24,
+    marginTop: Spacing["2xl"],
   },
 });

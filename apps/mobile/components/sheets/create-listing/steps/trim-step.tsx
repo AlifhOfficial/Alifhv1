@@ -11,7 +11,7 @@ import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Typography, Fonts, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -74,7 +74,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick picks */}
       <View style={styles.section}>
-        <Supporting size="small" tone="muted">Quick picks</Supporting>
+        <Supporting size="bodySm" tone="muted">Quick picks</Supporting>
         <View style={styles.chipWrap}>
           {TRIM_EXAMPLES.map((trim) => {
             const isSelected = trim.toLowerCase() === localTrim.toLowerCase();
@@ -91,7 +91,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="small"
+                  size="bodySm"
                   style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {trim}
@@ -104,7 +104,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Hint */}
       <View style={[styles.hintBox, { backgroundColor: colors.fill2 }]}>
-        <Supporting size="small" tone="muted">
+        <Supporting size="bodySm" tone="muted">
           Trim is optional but helps buyers identify your exact variant.
         </Supporting>
       </View>
@@ -116,12 +116,11 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
 const styles = StyleSheet.create({
   input: {
-    height: 48,
+    height: Sizes.actionButtonLg,
     borderWidth: 1,
     borderRadius: Radius.lg,
     paddingHorizontal: Spacing.md,
-    fontSize: 16,
-    fontWeight: '500',
+    ...Typography.body,
   },
   section: {
     gap: Spacing.sm,

@@ -110,7 +110,7 @@ export default function PartnersScreen() {
 
     return (
       <View style={styles.empty}>
-        <Body size="large" tone="secondary">No partners available</Body>
+        <Body size="bodyLg" tone="secondary">No partners available</Body>
       </View>
     );
   }, [isLoading, partners.length]);

@@ -117,7 +117,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
   if (allImages.length === 0) {
     return (
       <View style={[styles.placeholder, { backgroundColor: colors.skeleton }]}>
-        <Data size="medium" tone="muted">
+        <Data size="body" tone="muted">
           No Images
         </Data>
       </View>
@@ -160,7 +160,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         
         {/* Image Counter Overlay */}
         <View style={styles.counterOverlay} pointerEvents="none">
-          <Data size="mini" style={styles.counterOverlayText}>
+          <Data size="bodySm" style={styles.counterOverlayText}>
             {currentIndex + 1}/{allImages.length}
           </Data>
         </View>
@@ -213,7 +213,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
               <Grid3x3 size={Sizes.iconXs} color={colors.text} strokeWidth={1.75} />
-              <ButtonText size="small">All</ButtonText>
+              <ButtonText size="bodySm">All</ButtonText>
             </View>
           )}
         </HapticPressable>

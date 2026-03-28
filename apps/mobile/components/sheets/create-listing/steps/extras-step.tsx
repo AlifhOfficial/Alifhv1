@@ -13,7 +13,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 import { Plus, X } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -60,9 +60,9 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Label size="small">Vehicle Extras</Label>
+          <Label size="caption">Vehicle Extras</Label>
           {extras.length > 0 && (
-            <Supporting size="small" tone="secondary">
+            <Supporting size="bodySm" tone="secondary">
               {extras.length} selected
             </Supporting>
           )}
@@ -84,7 +84,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="small"
+                  size="bodySm"
                   style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {extra.label}
@@ -97,7 +97,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Custom extras input */}
       <View style={styles.section}>
-        <Label size="small">Add Custom Extra</Label>
+        <Label size="caption">Add Custom Extra</Label>
         <View style={[styles.inputRow, { backgroundColor: colors.fill2 }]}>
           <BottomSheetTextInput
             style={[styles.input, { color: colors.text }]}
@@ -130,7 +130,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                   key={extra}
                   style={[styles.customChip, { backgroundColor: colors.text }]}
                 >
-                  <Body size="small" style={{ color: colors.bg }}>
+                  <Body size="bodySm" style={{ color: colors.bg }}>
                     {extra}
                   </Body>
                   <HapticPressable onPress={() => toggleExtra(extra)} hitSlop={Layout.hitSlopSmall}>
@@ -179,13 +179,12 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 15,
-    fontWeight: '400',
+    ...Typography.bodySm,
     paddingVertical: Spacing.md,
   },
   addButton: {
-    width: 40,
-    height: 40,
+    width: Spacing["4xl"],
+    height: Spacing["4xl"],
     borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',

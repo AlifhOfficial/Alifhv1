@@ -5,7 +5,7 @@
  */
 
 import React, { useCallback, useRef, useEffect } from 'react';
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform, Image } from 'react-native';
 import { HapticPressable, Data, Heading, Supporting } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,10 +13,8 @@ import { useRouter } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { RevvupLogo } from '@/components/ui/loaders/revvup-logo';
-import { AuthDoodle } from './auth-doodle';
 
 interface AuthSheetProps {
   visible: boolean;
@@ -127,20 +125,18 @@ export function AuthSheet({
       backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.blkBg, borderRadius: Radius['3xl'] }}
       handleIndicatorStyle={{ backgroundColor: colors.blkText2, width: Sizes.bubble }}
-      containerStyle={{ zIndex: 100 }}
+      containerStyle={{ zIndex: ZIndex.modal }}
     >
       <BottomSheetView style={styles.content}>
-        {/* Doodle Background */}
-        <AuthDoodle />
-
         {/* Header with Logo */}
         <Animated.View 
           entering={FadeInUp.delay(100).duration(400)}
           style={styles.header}
         >
-          <RevvupLogo 
-            size={Sizes.iconXl} 
-            color={colors.blkText}
+          <Image
+            source={require('@/assets/images/revv.png')}
+            style={{ width: Sizes.iconXl, height: Sizes.iconXl, tintColor: colors.blkText }}
+            resizeMode="contain"
           />
         </Animated.View>
 
@@ -149,10 +145,10 @@ export function AuthSheet({
           entering={FadeInUp.delay(200).duration(400)}
           style={styles.textContent}
         >
-          <Heading size="medium" style={[styles.title, { color: colors.blkText }]}>
+          <Heading size="heading" style={[styles.title, { color: colors.blkText }]}>
             {displayTitle}
           </Heading>
-          <Supporting size="small" style={[styles.subtitle, { color: colors.blkText2 }]}>
+          <Supporting size="bodySm" style={[styles.subtitle, { color: colors.blkText2 }]}>
             {displaySubtitle}
           </Supporting>
         </Animated.View>
@@ -173,7 +169,7 @@ export function AuthSheet({
               opacity: pressed ? 0.8 : 1,
             }]}
           >
-            <Data size="medium" style={{ color: colors.primaryFg }}>
+            <Data size="body" style={{ color: colors.primaryFg }}>
               Sign In
             </Data>
           </HapticPressable>
@@ -190,7 +186,7 @@ export function AuthSheet({
               opacity: pressed ? 0.7 : 1,
             }]}
           >
-            <Data size="medium" style={{ color: colors.blkText2 }}>
+            <Data size="body" style={{ color: colors.blkText2 }}>
               Maybe Later
             </Data>
           </HapticPressable>
@@ -228,7 +224,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     textAlign: 'center',
-    maxWidth: 280,
+    maxWidth: Spacing["5xl"],
   },
   actions: {
     marginTop: Spacing['2xl'],

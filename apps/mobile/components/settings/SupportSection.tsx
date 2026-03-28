@@ -68,8 +68,8 @@ function SupportItem({
         <View style={styles.itemLeft}>
           <Icon size={Sizes.iconSm} color={colors.text2} strokeWidth={1.5} />
           <View style={styles.itemContent}>
-            <Body size="small" tone="muted">Navigate</Body>
-            <Body size="medium">{label}</Body>
+            <Body size="bodySm" tone="muted">Navigate</Body>
+            <Body size="body">{label}</Body>
           </View>
         </View>
         <ChevronRight size={Sizes.iconSm} color={colors.text3} strokeWidth={2} />

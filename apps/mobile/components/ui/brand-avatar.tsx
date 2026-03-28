@@ -106,7 +106,7 @@ export const BrandAvatar = memo(function BrandAvatar({
       ]}
     >
       {showFallback ? (
-        <Heading size="small" tone="secondary">
+        <Heading size="subheading" tone="secondary">
           {name.charAt(0).toUpperCase()}
         </Heading>
       ) : (

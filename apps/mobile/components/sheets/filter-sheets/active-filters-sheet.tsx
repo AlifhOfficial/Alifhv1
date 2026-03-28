@@ -166,10 +166,10 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
             hitSlop={Spacing.md}
             style={styles.cancelButton}
           >
-            <Body size="medium" tone="secondary">Cancel</Body>
+            <Body size="body" tone="secondary">Cancel</Body>
           </HapticPressable>
           
-          <Heading size="small">Active Filters</Heading>
+          <Heading size="subheading">Active Filters</Heading>
           
           <View style={styles.placeholder} />
         </View>
@@ -177,11 +177,11 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
         {/* Selection Summary */}
         {hasFilters && (
           <View style={styles.selectionSummary}>
-            <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+            <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
               {chips.length} filter{chips.length !== 1 ? 's' : ''} active
             </Body>
             <HapticPressable onPress={handleClearAll} hitSlop={Layout.hitSlopSmall}>
-              <Supporting size="small" style={{ color: colors.error }}>
+              <Supporting size="bodySm" style={{ color: colors.error }}>
                 Clear all
               </Supporting>
             </HapticPressable>
@@ -202,7 +202,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
         ) : (
           groupedChips.map((group) => (
             <View key={group.category} style={styles.categorySection}>
-              <Label size="small" tone="muted" style={styles.categoryLabel}>
+              <Label size="caption" tone="muted" style={styles.categoryLabel}>
                 {group.label.toUpperCase()}
               </Label>
               <View style={styles.chipGrid}>
@@ -217,7 +217,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
                       chip.locked && { opacity: 0.7 },
                     ]}
                   >
-                    <Body size="small" numberOfLines={1} style={styles.chipText}>
+                    <Body size="bodySm" numberOfLines={1} style={styles.chipText}>
                       {chip.label}
                     </Body>
                     {!chip.locked && (

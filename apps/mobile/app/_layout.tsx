@@ -56,8 +56,8 @@ const LightTheme: NavTheme = {
     notification: Colors.light.primary,
   },
   fonts: {
-    regular: { fontFamily: 'System', fontWeight: '400' },
-    medium: { fontFamily: 'System', fontWeight: '500' },
+    regular: { fontFamily: 'System', fontWeight: '600' },
+    medium: { fontFamily: 'System', fontWeight: '600' },
     bold: { fontFamily: 'System', fontWeight: '700' },
     heavy: { fontFamily: 'System', fontWeight: '800' },
   },
@@ -74,8 +74,8 @@ const CustomDarkTheme: NavTheme = {
     notification: Colors.dark.primary,
   },
   fonts: {
-    regular: { fontFamily: 'System', fontWeight: '400' },
-    medium: { fontFamily: 'System', fontWeight: '500' },
+    regular: { fontFamily: 'System', fontWeight: '600' },
+    medium: { fontFamily: 'System', fontWeight: '600' },
     bold: { fontFamily: 'System', fontWeight: '700' },
     heavy: { fontFamily: 'System', fontWeight: '800' },
   },

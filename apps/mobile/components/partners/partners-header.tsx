@@ -7,7 +7,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Store } from 'lucide-react-native';
-import { Colors, Spacing, Layout, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Layout, Sizes, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Data } from '@/components/ui';
 
@@ -34,9 +34,9 @@ export function PartnersHeader({ count }: PartnersHeaderProps) {
       >
         <View style={styles.pillContent}>
           <Store size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
-          <Data size="small">Partners</Data>
+          <Data size="bodySm">Partners</Data>
           {count !== undefined && count > 0 && (
-            <Data size="small" style={{ color: colors.text3 }}>({count})</Data>
+            <Data size="bodySm" style={{ color: colors.text3 }}>({count})</Data>
           )}
         </View>
       </View>
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
+    zIndex: ZIndex.overlay,
     paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',

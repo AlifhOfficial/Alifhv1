@@ -58,7 +58,7 @@ export const SellerActions = memo(function SellerActions({
           ) : (
             <>
               <MessageCircle size={Sizes.iconSm} color={colors.primaryFg} />
-              <ButtonText size="medium" style={{ color: colors.primaryFg }}>
+              <ButtonText size="body" style={{ color: colors.primaryFg }}>
                 Chat
               </ButtonText>
             </>
@@ -79,7 +79,7 @@ export const SellerActions = memo(function SellerActions({
             ]}
           >
             <Calendar size={Sizes.iconSm} color={colors.text} />
-            <ButtonText size="medium" style={{ color: colors.text }}>
+            <ButtonText size="body" style={{ color: colors.text }}>
               Book
             </ButtonText>
           </HapticPressable>
@@ -89,7 +89,7 @@ export const SellerActions = memo(function SellerActions({
       {/* Phone Number Link */}
       {seller.phone && (
         <HapticPressable onPress={handleShowPhone} hitSlop={Layout.hitSlopSmall}>
-          <Supporting size="medium" style={{ textAlign: 'center' }}>
+          <Supporting size="body" style={{ textAlign: 'center' }}>
             Show phone number
           </Supporting>
         </HapticPressable>

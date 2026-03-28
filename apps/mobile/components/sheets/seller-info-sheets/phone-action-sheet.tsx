@@ -106,7 +106,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
       <BottomSheetView style={styles.content}>
         {/* Header with close */}
         <View style={styles.header}>
-          <Heading size="medium">{phoneNumber}</Heading>
+          <Heading size="heading">{phoneNumber}</Heading>
           <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
@@ -131,7 +131,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
               <Phone size={Sizes.iconMd} color="#FFF" />
             </View>
-            <ButtonText size="small" style={styles.actionLabel}>Call</ButtonText>
+            <ButtonText size="bodySm" style={styles.actionLabel}>Call</ButtonText>
           </HapticPressable>
 
           <HapticPressable
@@ -144,7 +144,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: '#25D366' }]}>
               <Ionicons name="logo-whatsapp" size={Sizes.iconLg} color="#FFF" />
             </View>
-            <ButtonText size="small" style={styles.actionLabel}>WhatsApp</ButtonText>
+            <ButtonText size="bodySm" style={styles.actionLabel}>WhatsApp</ButtonText>
           </HapticPressable>
 
           <HapticPressable
@@ -157,7 +157,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.surface2 }]}>
               <Copy size={Sizes.iconMd} color={colors.text} />
             </View>
-            <ButtonText size="small" style={styles.actionLabel}>Copy</ButtonText>
+            <ButtonText size="bodySm" style={styles.actionLabel}>Copy</ButtonText>
           </HapticPressable>
         </View>
       </BottomSheetView>
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     borderRadius: Radius.lg,
-    minWidth: 80,
+    minWidth: Spacing["5xl"],
   },
   iconCircle: {
     width: Spacing['5xl'] + Spacing.sm,

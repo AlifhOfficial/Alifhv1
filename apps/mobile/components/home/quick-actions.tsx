@@ -86,7 +86,7 @@ export function QuickActions() {
                 {({ pressed }) => (
                   <View style={{ alignItems: 'center', gap: Spacing.xs, opacity: pressed ? 0.6 : 1 }}>
                     <Icon size={Sizes.iconMd} color={colors.icon} strokeWidth={1.8} />
-                    <Data size="small">{action.label}</Data>
+                    <Data size="bodySm">{action.label}</Data>
                   </View>
                 )}
               </HapticPressable>

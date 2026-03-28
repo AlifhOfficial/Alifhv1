@@ -40,7 +40,7 @@ import {
   Package,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Sizes, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import {
   Heading,
@@ -49,6 +49,7 @@ import {
   Supporting,
   ButtonText,
   Label,
+  Price,
   Skeleton,
 } from '@/components/ui';
 import {
@@ -344,7 +345,7 @@ export function InventoryScreen() {
             )}
             {/* Status badge overlaid on image */}
             <View style={[styles.statusOverlay, { backgroundColor: statusColor + 'E6' }]}>
-              <Label size="badge" uppercase={false} style={{ color: '#FFFFFF' }}>
+              <Label size="caption" uppercase={false} style={{ color: '#FFFFFF' }}>
                 {statusLabel}
               </Label>
             </View>
@@ -354,7 +355,7 @@ export function InventoryScreen() {
           <View style={styles.content}>
             {/* Row 1: Title + action */}
             <View style={styles.titleRow}>
-              <Data size="small" style={{ color: colors.text, fontWeight: '600', flex: 1 }} numberOfLines={1}>
+              <Data size="bodySm" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
                 {title}
               </Data>
               <HapticPressable
@@ -367,12 +368,12 @@ export function InventoryScreen() {
             </View>
 
             {/* Row 2: Price */}
-            <Data size="small" style={{ color: colors.primary, fontWeight: '700' }}>
+            <Price>
               {price}
-            </Data>
+            </Price>
 
             {/* Row 3: Meta line — specs · emirate */}
-            <Data size="mini" style={{ color: colors.text2 }}>
+            <Data size="bodySm" style={{ color: colors.text2 }}>
               {displaySpecs} · {displayEmirate}
             </Data>
 
@@ -386,14 +387,13 @@ export function InventoryScreen() {
                   }
                 />
                 <Data
-                  size="mini"
+                  size="bodySm"
                   style={{
                     color: expiry.isExpired
                       ? colors.error
                       : expiry.isUrgent
                         ? colors.warning
                         : colors.text2,
-                    fontWeight: expiry.isUrgent || expiry.isExpired ? '700' : '500',
                   }}
                 >
                   {expiry.text}
@@ -421,10 +421,10 @@ export function InventoryScreen() {
         <View style={[styles.emptyIcon, { backgroundColor: colors.surface2 }]}>
           <Ionicons name="image-outline" size={Sizes.iconXl} color={colors.textMuted} />
         </View>
-        <Heading size="small" style={{ marginTop: Spacing.lg }}>
+        <Heading size="subheading" style={{ marginTop: Spacing.lg }}>
           {isAll ? 'No listings yet' : `No ${tabLabel.toLowerCase()} listings`}
         </Heading>
-        <Body size="medium" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
+        <Body size="body" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
           {isAll
             ? 'Create your first listing to start selling'
             : `Listings matching "${tabLabel}" will appear here`}
@@ -435,7 +435,7 @@ export function InventoryScreen() {
             style={[styles.emptyBtn, { backgroundColor: colors.primary }]}
           >
             <Plus size={Sizes.iconSm} color="#FFFFFF" />
-            <ButtonText size="medium" style={{ color: '#FFFFFF' }}>
+            <ButtonText size="body" style={{ color: '#FFFFFF' }}>
               Create Listing
             </ButtonText>
           </HapticPressable>
@@ -483,7 +483,7 @@ export function InventoryScreen() {
           >
             <View style={styles.pillContent}>
               <Package size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
-              <Data size="small">Inventory</Data>
+              <Data size="bodySm">Inventory</Data>
             </View>
           </View>
 
@@ -510,7 +510,7 @@ export function InventoryScreen() {
                   {({ pressed }) => (
                     <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
                       <Data
-                        size="small"
+                        size="bodySm"
                         style={{ color: isActive ? colors.text : colors.textMuted }}
                         numberOfLines={1}
                       >
@@ -549,13 +549,13 @@ export function InventoryScreen() {
         <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>
           <Ionicons name="alert-circle-outline" size={Sizes.avatarLg} color={colors.error} />
           <Body
-            size="medium"
+            size="body"
             style={{ color: colors.error, textAlign: 'center', marginTop: Spacing.md }}
           >
             {error}
           </Body>
           <HapticPressable onPress={handleRefresh} style={{ marginTop: Spacing.lg }}>
-            <Data size="small" tone="primary">Tap to retry</Data>
+            <Data size="bodySm" tone="primary">Tap to retry</Data>
           </HapticPressable>
         </View>
       ) : (
@@ -708,7 +708,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
+    zIndex: ZIndex.overlay,
     paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',
@@ -740,7 +740,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 10,
+    zIndex: ZIndex.raised,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

@@ -137,7 +137,7 @@ export const PartnerCard = memo(function PartnerCard({
           />
         ) : (
           <View style={[styles.imagePlaceholder, { backgroundColor: theme.imageBg }]}>
-            <Supporting size="small" style={{ color: colors.text3 }}>No Image</Supporting>
+            <Supporting size="bodySm" style={{ color: colors.text3 }}>No Image</Supporting>
           </View>
         )}
         
@@ -157,13 +157,13 @@ export const PartnerCard = memo(function PartnerCard({
       <View style={styles.content}>
         {/* Header: Name + Verified/BLK Badge */}
         <View style={styles.header}>
-          <Heading size="mini" style={{ color: theme.title }} numberOfLines={1}>
+          <Heading size="subheading" style={{ color: theme.title }} numberOfLines={1}>
             {partner.brandName}
           </Heading>
           {/* BLK partners get BLK badge, regular verified partners get checkmark */}
           {isBlkPartner ? (
             <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-              <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
+              <Label size="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
             </View>
           ) : partner.isVerified && (
             <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
@@ -174,7 +174,7 @@ export const PartnerCard = memo(function PartnerCard({
         {location && (
           <View style={styles.row}>
             <MapPin size={Sizes.iconXs} color={theme.meta} />
-            <Data size="small" style={{ color: theme.meta }}>{location}</Data>
+            <Data size="bodySm" style={{ color: theme.meta }}>{location}</Data>
           </View>
         )}
 
@@ -184,7 +184,7 @@ export const PartnerCard = memo(function PartnerCard({
           {partner.activeListingsCount > 0 && (
             <View style={styles.statItem}>
               <Car size={Sizes.iconXs} color={theme.stats} />
-              <Data size="small" style={{ color: theme.stats }}>
+              <Data size="bodySm" style={{ color: theme.stats }}>
                 {partner.activeListingsCount} cars
               </Data>
             </View>
@@ -194,10 +194,10 @@ export const PartnerCard = memo(function PartnerCard({
           {partner.googleRating && (
             <View style={styles.statItem}>
               <Star size={Sizes.iconXs} color="#FBBF24" fill="#FBBF24" />
-              <Data size="small" style={{ color: theme.stats }}>
+              <Data size="bodySm" style={{ color: theme.stats }}>
                 {partner.googleRating.toFixed(1)}
                 {partner.googleReviewCount && (
-                  <Data size="small" style={{ color: theme.meta }}>
+                  <Data size="bodySm" style={{ color: theme.meta }}>
                     {' '}({partner.googleReviewCount})
                   </Data>
                 )}
@@ -209,7 +209,7 @@ export const PartnerCard = memo(function PartnerCard({
           {partner.experienceYears && partner.experienceYears > 0 && (
             <View style={styles.statItem}>
               <Calendar size={Sizes.iconXs} color={theme.stats} />
-              <Data size="small" style={{ color: theme.stats }}>
+              <Data size="bodySm" style={{ color: theme.stats }}>
                 {partner.experienceYears}+ yrs
               </Data>
             </View>
@@ -224,11 +224,11 @@ export const PartnerCard = memo(function PartnerCard({
                 key={specialty} 
                 style={[styles.specialtyChip, { backgroundColor: isBlkPartner ? colors.blkBg : colors.fill2, borderColor: theme.border }]}
               >
-                <Label size="badge" style={{ color: theme.stats }}>{specialty}</Label>
+                <Label size="caption" style={{ color: theme.stats }}>{specialty}</Label>
               </View>
             ))}
             {partner.specialties.length > 3 && (
-              <Data size="small" style={{ color: theme.meta }}>
+              <Data size="bodySm" style={{ color: theme.meta }}>
                 +{partner.specialties.length - 3}
               </Data>
             )}

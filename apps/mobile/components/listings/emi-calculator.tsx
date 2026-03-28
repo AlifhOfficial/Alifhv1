@@ -72,15 +72,15 @@ export const EMICalculator = memo(function EMICalculator({
 
   return (
     <View style={styles.container}>
-      <Label size="small" tone="muted">ESTIMATED EMI</Label>
+      <Label size="caption" tone="muted">ESTIMATED EMI</Label>
 
       <View style={[styles.card, { backgroundColor: surfaceColor, borderColor }]}>
         <Calculator size={Sizes.iconMd} color={colors.primary} />
         <View style={styles.content}>
-          <Data size="large" style={{ color: textColor }}>
+          <Data size="title" style={{ color: textColor }}>
             {formatCurrency(emi)}/mo
           </Data>
-          <Supporting size="small" style={{ color: secondaryTextColor }}>
+          <Supporting size="bodySm" style={{ color: secondaryTextColor }}>
             {DOWN_PAYMENT_PERCENT}% down • {LOAN_TENURE} months • {INTEREST_RATE}% APR
           </Supporting>
         </View>

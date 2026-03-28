@@ -42,8 +42,8 @@ function SpecRow({ label, value }: SpecItem) {
   
   return (
     <View style={styles.specRow}>
-      <Supporting size="medium" tone="muted">{label}</Supporting>
-      <Data size="medium">{displayValue}</Data>
+      <Supporting size="body" tone="muted">{label}</Supporting>
+      <Data size="body">{displayValue}</Data>
     </View>
   );
 }
@@ -86,7 +86,7 @@ export const ListingSpecs = memo(function ListingSpecs({
 
   return (
     <View style={styles.container}>
-      <Label size="medium" tone="muted">
+      <Label size="label" tone="muted">
         SPECIFICATIONS
       </Label>
       <View style={styles.specsList}>
@@ -103,7 +103,7 @@ export const ListingSpecs = memo(function ListingSpecs({
         <HapticPressable onPress={onViewAll} style={styles.viewAllButton}>
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
-              <Data size="medium" tone="primary">
+              <Data size="body" tone="primary">
                 View All Specifications
               </Data>
               <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />

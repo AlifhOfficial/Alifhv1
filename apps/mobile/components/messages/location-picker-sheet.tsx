@@ -117,15 +117,15 @@ export function LocationPickerSheet({
       enablePanDownToClose={!isSending}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Heading size="small">Share Location</Heading>
-            <Data size="small" style={{ color: colors.text2 }}>
+            <Heading size="subheading">Share Location</Heading>
+            <Data size="bodySm" style={{ color: colors.text2 }}>
               Send your current location
             </Data>
           </View>
@@ -144,14 +144,14 @@ export function LocationPickerSheet({
           {isLoading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={colors.primary} />
-              <Data size="small" style={{ color: colors.text2, marginTop: Spacing.sm }}>
+              <Data size="bodySm" style={{ color: colors.text2, marginTop: Spacing.sm }}>
                 Getting your location...
               </Data>
             </View>
           ) : error ? (
             <View style={styles.errorContainer}>
               <MapPin size={Sizes.iconXl} color={colors.text3} />
-              <Data size="small" style={{ color: colors.text2, marginTop: Spacing.sm, textAlign: 'center' }}>
+              <Data size="bodySm" style={{ color: colors.text2, marginTop: Spacing.sm, textAlign: 'center' }}>
                 {error}
               </Data>
               <HapticPressable
@@ -159,7 +159,7 @@ export function LocationPickerSheet({
                 onPress={handleRefreshLocation}
                 style={[styles.retryButton, { backgroundColor: colors.primary }]}
               >
-                <Data size="small" style={{ color: colors.primaryFg }}>Try Again</Data>
+                <Data size="bodySm" style={{ color: colors.primaryFg }}>Try Again</Data>
               </HapticPressable>
             </View>
           ) : mapPreviewUrl ? (
@@ -182,16 +182,16 @@ export function LocationPickerSheet({
           <View style={[styles.locationInfo, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={styles.locationTextContainer}>
               {location.placeName && (
-                <Body size="medium" style={{ fontWeight: '600' }} numberOfLines={1}>
+                <Body size="body" numberOfLines={1}>
                   {location.placeName}
                 </Body>
               )}
               {location.address ? (
-                <Data size="small" style={{ color: colors.text2 }} numberOfLines={2}>
+                <Data size="bodySm" style={{ color: colors.text2 }} numberOfLines={2}>
                   {location.address}
                 </Data>
               ) : (
-                <Data size="small" style={{ color: colors.text2 }}>
+                <Data size="bodySm" style={{ color: colors.text2 }}>
                   {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
                 </Data>
               )}
@@ -219,7 +219,7 @@ export function LocationPickerSheet({
             disabled={isSending}
             style={[styles.cancelButton, { backgroundColor: colors.fill2 }]}
           >
-            <Body size="medium" style={{ color: colors.text }}>Cancel</Body>
+            <Body size="body" style={{ color: colors.text }}>Cancel</Body>
           </HapticPressable>
           <HapticPressable
             haptic="medium"
@@ -236,7 +236,7 @@ export function LocationPickerSheet({
               <>
                 <Send size={Sizes.iconSm} color={location ? colors.primaryFg : colors.textMuted} />
                 <Body
-                  size="medium"
+                  size="body"
                   style={{ color: location ? colors.primaryFg : colors.textMuted, marginLeft: Spacing.xs }}
                 >
                   Send Location
@@ -265,14 +265,14 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: Sizes.avatarSm,
+    height: Sizes.avatarSm,
+    borderRadius: Sizes.avatarSm / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   mapContainer: {
-    height: 160,
+    height: Spacing["5xl"],
     borderRadius: Radius.xl,
     overflow: 'hidden',
     marginBottom: Spacing.md,
@@ -286,11 +286,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '50%',
     left: '50%',
-    marginTop: -16,
-    marginLeft: -12,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    marginTop: -Spacing.lg,
+    marginLeft: -Spacing.md,
+    width: Spacing["2xl"],
+    height: Spacing["2xl"],
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',

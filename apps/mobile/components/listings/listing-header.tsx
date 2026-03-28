@@ -8,7 +8,7 @@ import { CheckCircle2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Text, Heading, Data, Label } from '@/components/ui';
+import { Text, Heading, Data, Label, Price } from '@/components/ui';
 import { SpecialNotes } from '@/lib/listing-api';
 import { formatPrice } from './types';
 
@@ -60,15 +60,15 @@ export const ListingHeader = memo(function ListingHeader({
     <View style={styles.container}>
       <View style={styles.topRow}>
         <View style={styles.textContainer}>
-          <Heading size="medium" style={{ color: textColor }} numberOfLines={2}>
+          <Heading size="heading" style={{ color: textColor }} numberOfLines={2}>
             {carTitle}
           </Heading>
           <View style={styles.priceRow}>
-            <Text variant="price" style={{ color: priceColor }}>
+            <Price style={{ color: priceColor }}>
               {formatPrice(price)}
-            </Text>
+            </Price>
             {isNegotiable && (
-              <Data size="mini" tone="success">
+              <Data size="bodySm" tone="success">
                 Negotiable
               </Data>
             )}
@@ -77,7 +77,7 @@ export const ListingHeader = memo(function ListingHeader({
 
         {isBlk && (
           <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
-            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
+            <Label size="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
           </View>
         )}
       </View>
@@ -88,7 +88,7 @@ export const ListingHeader = memo(function ListingHeader({
           {highlights.map((highlight, idx) => (
             <View key={idx} style={styles.highlightItem}>
               <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
-              <Data size="mini" style={{ color: textColor }}>
+              <Data size="bodySm" style={{ color: textColor }}>
                 {highlight}
               </Data>
             </View>

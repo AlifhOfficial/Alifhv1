@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Data, HapticPressable } from '@/components/ui';
 
@@ -63,7 +63,7 @@ export function BlkHeader({}: BlkHeaderProps) {
         >
           {({ pressed }) => (
             <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-              <Data size="small" style={{ color: colors.white }}>BLK</Data>
+              <Data size="bodySm" style={{ color: colors.white }}>BLK</Data>
             </View>
           )}
         </HapticPressable>
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
+    zIndex: ZIndex.overlay,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.lg,

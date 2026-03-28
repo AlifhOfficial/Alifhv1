@@ -90,7 +90,7 @@ export const LocationSection = memo(function LocationSection({
   return (
     <View style={styles.container}>
       {/* Section Label */}
-      <Label size="small" tone="muted">
+      <Label size="caption" tone="muted">
         LOCATION
       </Label>
 
@@ -99,13 +99,13 @@ export const LocationSection = memo(function LocationSection({
         <MapPin size={Spacing.xl} color={secondaryTextColor} style={styles.mapIcon} />
         <View style={styles.addressText}>
           {address && (
-            <Data size="medium" style={{ color: textColor }}>
+            <Data size="body" style={{ color: textColor }}>
               {address}
             </Data>
           )}
           {locationString && (
             <Data 
-              size="small" 
+              size="bodySm" 
               style={{ color: address ? secondaryTextColor : textColor }}
             >
               {locationString}
@@ -128,7 +128,7 @@ export const LocationSection = memo(function LocationSection({
           ]}
         >
           <ExternalLink size={Spacing.lg} color={textColor} />
-          <ButtonText size="small">View Map</ButtonText>
+          <ButtonText size="bodySm">View Map</ButtonText>
         </HapticPressable>
 
         <HapticPressable
@@ -143,7 +143,7 @@ export const LocationSection = memo(function LocationSection({
           ]}
         >
           <Navigation size={Spacing.lg} color={textColor} />
-          <ButtonText size="small">Directions</ButtonText>
+          <ButtonText size="bodySm">Directions</ButtonText>
         </HapticPressable>
       </View>
     </View>
@@ -166,7 +166,7 @@ export function LocationSectionSkeleton() {
       {/* Address */}
       <View style={styles.addressRow}>
         <Skeleton width={20} height={20} borderRadius={10} />
-        <View style={[styles.addressText, { gap: 6 }]}>
+        <View style={[styles.addressText, { gap: Spacing.sm }]}>
           <Skeleton width={180} height={16} />
           <Skeleton width={120} height={14} />
         </View>
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: Spacing.sm,
     paddingVertical: Spacing.md,
     borderRadius: Radius.full,
     borderWidth: 1,

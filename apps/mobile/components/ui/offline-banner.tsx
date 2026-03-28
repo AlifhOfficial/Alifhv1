@@ -81,11 +81,11 @@ export function OfflineBanner() {
       ]}
     >
       <WifiOff size={Sizes.iconSm} color="#fff" strokeWidth={2} />
-      <Body size="small" style={styles.text}>
+      <Body size="bodySm" style={styles.text}>
         {isReconnecting ? 'Reconnecting...' : 'No internet connection'}
       </Body>
       {offlineDuration && !isReconnecting && (
-        <Supporting size="mini" style={styles.duration}>
+        <Supporting size="bodySm" style={styles.duration}>
           Last online {offlineDuration}
         </Supporting>
       )}
@@ -114,7 +114,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#fff',
-    fontWeight: '600',
   },
   duration: {
     color: 'rgba(255,255,255,0.75)',

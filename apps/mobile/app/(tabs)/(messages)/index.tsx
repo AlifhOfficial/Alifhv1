@@ -242,7 +242,7 @@ export default function MessagesScreen() {
     if (error && conversations.length === 0) {
       return (
         <View style={styles.emptyState}>
-          <Data size="medium" style={{ textAlign: 'center', color: colors.text2 }}>{error}</Data>
+          <Data size="body" style={{ textAlign: 'center', color: colors.text2 }}>{error}</Data>
         </View>
       );
     }
@@ -252,8 +252,8 @@ export default function MessagesScreen() {
         <View style={[styles.iconCircle, { backgroundColor: colors.fill2 }]}>
           <MessageCircle size={Sizes.avatarSm} color={colors.text3} strokeWidth={1.5} />
         </View>
-        <Heading size="medium">No Messages Yet</Heading>
-        <Body size="medium" tone="secondary" style={{ textAlign: 'center' }}>
+        <Heading size="heading">No Messages Yet</Heading>
+        <Body size="body" tone="secondary" style={{ textAlign: 'center' }}>
           Your conversations will appear here
         </Body>
       </View>
@@ -285,7 +285,6 @@ export default function MessagesScreen() {
 
 const styles = StyleSheet.create({
   listContent: {
-    paddingHorizontal: Spacing.sm,
     paddingBottom: Layout.tabBarHeight + Spacing['3xl'],
   },
   centered: {

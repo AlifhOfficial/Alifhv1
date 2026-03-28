@@ -10,7 +10,7 @@ import { Sun, Moon } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Layout, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Layout, Sizes, ZIndex} from '@/constants/theme';
 
 export function HomeHeader() {
   const { colorScheme, toggleTheme } = useTheme();
@@ -28,7 +28,7 @@ export function HomeHeader() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + Layout.headerPadding }]}>
-      <Heading size="large">Home</Heading>
+      <Heading size="title">Home</Heading>
 
       <View
         style={[
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
+    zIndex: ZIndex.overlay,
     paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',

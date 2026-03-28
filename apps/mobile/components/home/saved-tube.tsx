@@ -40,7 +40,7 @@ export function SavedTube() {
       hitSlop={Layout.hitSlop}
     >
       {({ pressed }) => (
-        <Data size="small" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
+        <Data size="bodySm" tone="secondary" style={{ opacity: pressed ? 0.7 : 1 }}>
           Saved
         </Data>
       )}

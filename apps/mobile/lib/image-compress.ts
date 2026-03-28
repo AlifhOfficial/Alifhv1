@@ -83,10 +83,10 @@ const AVATAR_CONFIG: CompressionConfig = {
 
 /** Showroom configs by asset type */
 const SHOWROOM_CONFIGS: Record<ShowroomAssetType, CompressionConfig> = {
-  'hero-image': { maxWidth: 1920, maxHeight: 1080, maxSizeKB: 250, initialQuality: 0.8, minQuality: 0.55 },
-  'founder-image': { maxWidth: 800, maxHeight: 1000, maxSizeKB: 120, initialQuality: 0.8, minQuality: 0.5 },
-  'gallery': { maxWidth: 1600, maxHeight: 1200, maxSizeKB: 180, initialQuality: 0.8, minQuality: 0.5 },
-  'team-member': { maxWidth: 600, maxHeight: 600, maxSizeKB: 80, initialQuality: 0.8, minQuality: 0.5 },
+  'hero-image':    { maxWidth: 1920, maxHeight: 1080, maxSizeKB: 250, initialQuality: 0.8, minQuality: 0.55 },
+  'founder-image': { maxWidth: 800,  maxHeight: 800,  maxSizeKB: 120, initialQuality: 0.8, minQuality: 0.5  },
+  'gallery':       { maxWidth: 1200, maxHeight: 1200, maxSizeKB: 180, initialQuality: 0.8, minQuality: 0.5  },
+  'team-member':   { maxWidth: 512,  maxHeight: 512,  maxSizeKB: 80,  initialQuality: 0.8, minQuality: 0.5  },
 };
 
 // ============================================================================

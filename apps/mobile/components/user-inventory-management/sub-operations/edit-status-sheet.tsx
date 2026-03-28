@@ -252,13 +252,13 @@ export function EditStatusSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">Manage Listing</Heading>
+          <Heading size="heading">Manage Listing</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -281,10 +281,10 @@ export function EditStatusSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Body size="medium" numberOfLines={1}>{listingTitle}</Body>
+            <Body size="body" numberOfLines={1}>{listingTitle}</Body>
             <View style={styles.statusRow}>
               <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
-              <Supporting size="small" style={{ color: statusColor }}>
+              <Supporting size="bodySm" style={{ color: statusColor }}>
                 {statusLabel}
               </Supporting>
             </View>
@@ -315,7 +315,7 @@ export function EditStatusSheet({
                   <IconComponent size={Sizes.iconMd} color={iconColor} />
                 </View>
                 <Body
-                  size="medium"
+                  size="body"
                   style={{ color: isDestructive ? colors.error : colors.text, flex: 1 }}
                 >
                   {action.label}

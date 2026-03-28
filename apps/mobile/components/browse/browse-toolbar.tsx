@@ -20,7 +20,7 @@ import Animated, {
 
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { Colors, Layout, Sizes, Spacing, Shadows } from '@/constants/theme';
+import { Colors, Layout, Sizes, Spacing, Shadows, ZIndex} from '@/constants/theme';
 import { SearchSheet, SortSheet, AmnaSheet, ActiveFiltersSheet } from '@/components/sheets';
 import type { SearchSortOption } from '@/lib/search-api';
 
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
+    zIndex: ZIndex.overlay,
     paddingHorizontal: Layout.screenPadding,
     paddingTop: Spacing.sm,
   },

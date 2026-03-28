@@ -95,7 +95,7 @@ export function KycVerificationSheet({
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">Identity Verification</Heading>
+          <Heading size="heading">Identity Verification</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -107,10 +107,10 @@ export function KycVerificationSheet({
 
         {/* Body */}
         <View style={styles.body}>
-          <Body size="medium">
+          <Body size="body">
             KYC verification is only available on our website for now.
           </Body>
-          <Supporting size="medium" tone="muted">
+          <Supporting size="body" tone="muted">
             Visit revvup.ae, sign in, and complete verification from your profile settings. Takes less than 2 minutes.
           </Supporting>
         </View>
@@ -120,7 +120,7 @@ export function KycVerificationSheet({
           onPress={openWebsite}
           style={styles.linkRow}
         >
-          <Body size="medium" style={{ color: colors.primary }}>Go now</Body>
+          <Body size="body" style={{ color: colors.primary }}>Go now</Body>
           <Ionicons name="arrow-forward" size={Sizes.iconSm} color={colors.primary} />
         </HapticPressable>
 

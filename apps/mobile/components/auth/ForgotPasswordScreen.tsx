@@ -108,13 +108,13 @@ export function ForgotPasswordScreen({
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(200).duration(400)}>
-              <Heading size="large" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
+              <Heading size="title" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
                 Check your email
               </Heading>
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(300).duration(400)}>
-              <Body size="small" style={[onboardingStyles.welcomeSubtitle, { color: colors.text2 }]}>
+              <Body size="bodySm" style={[onboardingStyles.welcomeSubtitle, { color: colors.text2 }]}>
                 We've sent a reset link to
               </Body>
             </Animated.View>
@@ -123,7 +123,7 @@ export function ForgotPasswordScreen({
               entering={FadeInDown.delay(400).duration(400)}
               style={[onboardingStyles.emailHighlight, { backgroundColor: `${colors.white}08` }]}
             >
-              <Data size="small" style={{ color: colors.white }}>
+              <Data size="bodySm" style={{ color: colors.white }}>
                 {email}
               </Data>
             </Animated.View>
@@ -172,13 +172,13 @@ export function ForgotPasswordScreen({
 
           {/* Hero Section */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
+            <Supporting size="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]}>
               Forgot password?
             </Supporting>
-            <Heading size="large" style={[onboardingStyles.title, { color: colors.white }]}>
+            <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
               Reset your password
             </Heading>
-            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
+            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
               We'll send you a reset link
             </Body>
           </Animated.View>
@@ -189,7 +189,7 @@ export function ForgotPasswordScreen({
               entering={FadeIn.duration(200)}
               style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
             >
-              <Body size="small" tone="error" style={onboardingStyles.errorText}>
+              <Body size="bodySm" tone="error" style={onboardingStyles.errorText}>
                 {error}
               </Body>
             </Animated.View>
@@ -254,11 +254,11 @@ export function ForgotPasswordScreen({
 
             {/* Back to sign in */}
             <Animated.View entering={FadeIn.delay(400).duration(300)} style={onboardingStyles.footer}>
-              <Body size="small" style={{ color: colors.text2 }}>
+              <Body size="bodySm" style={{ color: colors.text2 }}>
                 Remember your password?{' '}
               </Body>
               <HapticPressable onPress={onBack}>
-                <Data size="small" style={{ color: colors.primary }}>Sign in</Data>
+                <Data size="bodySm" style={{ color: colors.primary }}>Sign in</Data>
               </HapticPressable>
             </Animated.View>
           </Animated.View>

@@ -5,6 +5,7 @@ import * as Haptics from 'expo-haptics';
 import { HapticPressable } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Sizes, Spacing } from '@/constants/theme';
+import { ProfileMenu } from '@/components/home/profile-menu';
 
 const iosOptions = {
   headerTransparent: true,
@@ -43,6 +44,9 @@ export default function HomeLayout() {
         name="index"
         options={{
           title: 'Home',
+          headerLeft: () => (
+            <ProfileMenu />
+          ),
           headerRight: () => (
             <HapticPressable
               onPress={handleToggleTheme}

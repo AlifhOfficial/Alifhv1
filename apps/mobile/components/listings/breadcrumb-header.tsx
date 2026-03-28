@@ -35,7 +35,7 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
   return (
     <View style={[styles.container, { paddingTop: topInset + 8, backgroundColor: colors.bg }]}>
       {/* Left: Title */}
-      <Heading size="medium" style={{ flex: 1 }} numberOfLines={1}>
+      <Heading size="heading" style={{ flex: 1 }} numberOfLines={1}>
         {title}
       </Heading>
 
@@ -66,8 +66,8 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 12,
-    paddingHorizontal: 16,
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

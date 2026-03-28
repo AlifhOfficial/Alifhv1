@@ -96,13 +96,13 @@ export function PasswordStep({
 
           {/* Hero Section */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
+            <Supporting size="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]}>
               Almost there, {userName}
             </Supporting>
-            <Heading size="large" style={[onboardingStyles.title, { color: colors.white }]}>
+            <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
               Create a password
             </Heading>
-            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
+            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
               Keep your account secure
             </Body>
           </Animated.View>
@@ -113,7 +113,7 @@ export function PasswordStep({
               entering={FadeIn.duration(200)}
               style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
             >
-              <Body size="small" tone="error" style={onboardingStyles.errorText}>
+              <Body size="bodySm" tone="error" style={onboardingStyles.errorText}>
                 {error}
               </Body>
             </Animated.View>
@@ -162,7 +162,7 @@ export function PasswordStep({
                 onPress={() => setShowPassword(!showPassword)}
                 style={onboardingStyles.showPasswordButton}
               >
-                <Data size="mini" style={{ color: colors.text3 }}>
+                <Data size="bodySm" style={{ color: colors.text3 }}>
                   {showPassword ? 'Hide' : 'Show'}
                 </Data>
               </HapticPressable>
@@ -221,7 +221,7 @@ function PasswordRequirement({ met, text, colors }: PasswordRequirementProps) {
           { backgroundColor: met ? colors.success : colors.text3 },
         ]}
       />
-      <Supporting size="small" style={{ color: met ? colors.success : colors.text3 }}>
+      <Supporting size="bodySm" style={{ color: met ? colors.success : colors.text3 }}>
         {text}
       </Supporting>
     </View>

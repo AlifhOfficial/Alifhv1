@@ -34,7 +34,7 @@ export function Section({
       style={styles.container}
     >
       <View style={styles.header}>
-        <Label size="small" tone="muted" style={styles.title}>{title}</Label>
+        <Label size="caption" tone="muted" style={styles.title}>{title}</Label>
         {rightElement}
       </View>
       <View

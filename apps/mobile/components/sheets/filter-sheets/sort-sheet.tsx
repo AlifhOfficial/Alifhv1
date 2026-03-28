@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, ButtonText } from '@/components/ui';
 import type { SearchSortOption } from '@/lib/search-api';
@@ -103,10 +103,10 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Body size="medium" tone="secondary">Cancel</Body>
+              <Body size="body" tone="secondary">Cancel</Body>
             </HapticPressable>
             
-            <Heading size="small">Sort By</Heading>
+            <Heading size="subheading">Sort By</Heading>
             
             <View style={styles.placeholder} />
           </View>
@@ -124,10 +124,10 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
                 style={styles.listItem}
               >
                 <Body
-                  size="medium"
+                  size="body"
                   style={{ 
                     color: selected ? colors.text : colors.text2,
-                    fontWeight: selected ? '700' : '500',
+                    fontWeight: selected ? Fonts.bold : Fonts.semiBold,
                   }}
                 >
                   {option.label}

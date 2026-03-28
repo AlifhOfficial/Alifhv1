@@ -11,15 +11,9 @@ export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from '.
 // HapticPressable - Pressable with haptic feedback
 export { HapticPressable, type HapticPressableProps, type HapticType } from './haptic-pressable';
 
-// Legacy loader exports (for backwards compatibility)
+// Loader exports
 export { Loader, SpinnerLoader, LogoLoader, RefreshLoader } from './loader';
-
-// Premium Loaders
 export {
-  // Brand logo components
-  RevvupLogo,
-  RevvupLogoAnimated,
-  // Spinner variations
   PulseLoader,
   SpinLoader,
   BreatheLoader,
@@ -28,11 +22,6 @@ export {
   InlineLoader,
   FullScreenLoader,
   SkeletonLoader,
-  // Logo-based spinners
-  LogoSpinner,
-  LogoPulse,
-  LogoOrbit,
-  // Types
   type LoaderSize,
   type LoaderVariant,
 } from './loaders';

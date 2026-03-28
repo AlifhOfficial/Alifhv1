@@ -119,7 +119,7 @@ export const onboardingStyles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   passwordInputInner: {
-    paddingRight: 70,
+    paddingRight: Spacing["5xl"],
   },
   showPasswordButton: {
     position: 'absolute',

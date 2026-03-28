@@ -33,8 +33,8 @@ function SpecRow({ label, value }: SpecItem) {
 
   return (
     <View style={styles.specRow}>
-      <Supporting size="medium">{label}</Supporting>
-      <Data size="medium">{displayValue}</Data>
+      <Supporting size="body">{label}</Supporting>
+      <Data size="body">{displayValue}</Data>
     </View>
   );
 }
@@ -100,7 +100,7 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">All Specifications</Heading>
+          <Heading size="heading">All Specifications</Heading>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 

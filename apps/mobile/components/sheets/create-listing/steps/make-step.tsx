@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -87,16 +87,16 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
         >
           <View style={styles.itemContent}>
             <Body
-              size="medium"
+              size="body"
               style={{
                 color: isSelected ? colors.text : colors.text2,
-                fontWeight: isSelected ? '600' : '400',
+                fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
               }}
             >
               {make}
             </Body>
             {isPopular && (
-              <Supporting size="small" tone="muted">Popular</Supporting>
+              <Supporting size="bodySm" tone="muted">Popular</Supporting>
             )}
           </View>
           {isSelected && (
@@ -144,7 +144,7 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Body size="medium" tone="secondary">No makes found for "{query}"</Body>
+            <Body size="body" tone="secondary">No makes found for "{query}"</Body>
           </View>
         }
       />
@@ -174,8 +174,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 15,
-    fontWeight: '400',
+    ...Typography.bodySm,
     paddingVertical: 0,
   },
   listContent: {

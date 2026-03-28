@@ -36,16 +36,16 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
               key={index}
               style={[styles.badge, { backgroundColor: colors.surface2 }]}
             >
-              <Data size="small" style={styles.badgeText}>{badge}</Data>
+              <Data size="bodySm" style={styles.badgeText}>{badge}</Data>
             </View>
           ))}
         </View>
       ) : (
         <View style={styles.emptyState}>
-          <Body size="medium" tone="secondary" style={styles.emptyTitle}>
+          <Body size="body" tone="secondary" style={styles.emptyTitle}>
             No badges yet
           </Body>
-          <Body size="medium" tone="muted" style={styles.emptySubtitle}>
+          <Body size="body" tone="muted" style={styles.emptySubtitle}>
             Complete activities to earn badges
           </Body>
           <HapticPressable
@@ -55,7 +55,7 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
               pressed && { opacity: 0.7 },
             ]}
           >
-            <ButtonText size="small" tone="primary">
+            <ButtonText size="bodySm" tone="primary">
               Learn more
             </ButtonText>
           </HapticPressable>

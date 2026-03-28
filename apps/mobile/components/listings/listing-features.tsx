@@ -99,7 +99,7 @@ export const ListingFeatures = memo(function ListingFeatures({
 
   return (
     <View style={styles.container}>
-      <Label size="medium" tone="muted">
+      <Label size="label" tone="muted">
         FEATURES
       </Label>
       <View style={styles.badgesContainer} onLayout={handleLayout}>

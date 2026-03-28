@@ -1,20 +1,18 @@
 /**
  * Chat Header - Mobile Native
- * Header for chat screen with back button, avatar, name, activity status
- * Matches home-header absolute positioning, glass styles, and horizontal scroll
+ * Clean native header bar with avatar, name and status
  */
 
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Skeleton, HapticPressable } from '@/components/ui';
+import { View, StyleSheet, Pressable } from 'react-native';
+import { Skeleton } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { Colors, Spacing, Sizes, Layout, Radius } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Layout, ZIndex} from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Data } from '@/components/ui';
-import { Moon } from 'lucide-react-native';
+import { Data, Supporting } from '@/components/ui';
 
 interface ChatHeaderProps {
   name: string;
@@ -69,136 +67,68 @@ export function ChatHeader({
   };
 
   const activityText = getActivityText();
-  const isActive = isOnline || isTyping || activityText === 'now';
 
   return (
     <View
       style={[
         styles.container,
-        { paddingTop: insets.top + Layout.headerPadding },
+        { paddingTop: insets.top, borderBottomColor: colors.border, backgroundColor: colors.bg },
       ]}
     >
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        style={styles.scrollView}
-      >
-        {/* Avatar Bubble */}
-        <View
-          style={[
-            styles.bubble,
-            styles.glass,
-            {
-              borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBg,
-            },
-          ]}
-        >
-          {isLoading ? (
-            <Skeleton circle width={Sizes.avatarSm} height={Sizes.avatarSm} />
-          ) : (
-            <UserAvatar src={avatarUrl} name={name} size="sm" />
-          )}
-        </View>
-
-        {/* Name Pill - tappable to partner search if dealer */}
-        {partnerId && partnerName ? (
-          <HapticPressable
-            onPress={() => {
-              clearSearch();
-              clearFilterParams();
-              applySearch({ partnerId, partnerName });
-              router.push('/browse' as any);
-            }}
-            style={[
-              styles.pillButton,
-              styles.glass,
-              {
-                borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBg,
-                minWidth: isLoading ? Spacing['5xl'] * 2 : undefined,
-              },
-            ]}
-          >
-            {isLoading ? (
-              <Skeleton width={Spacing['4xl'] * 2} height={Sizes.iconSm} borderRadius={Radius.sm} />
-            ) : (
-              <Data size="small">{name}</Data>
-            )}
-          </HapticPressable>
+      {/* Avatar */}
+      <View style={styles.avatarWrap}>
+        {isLoading ? (
+          <Skeleton circle width={Sizes.avatarSm} height={Sizes.avatarSm} />
         ) : (
-          <View
-            style={[
-              styles.pillButton,
-              styles.glass,
-              {
-                borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBg,
-                minWidth: isLoading ? Spacing['5xl'] * 2 : undefined,
-              },
-            ]}
-          >
-            {isLoading ? (
-              <Skeleton width={Spacing['4xl'] * 2} height={Sizes.iconSm} borderRadius={Radius.sm} />
-            ) : (
-              <Data size="small">{name}</Data>
-            )}
-          </View>
+          <UserAvatar src={avatarUrl} name={name} size="sm" />
         )}
+        {isOnline && !isLoading && (
+          <View style={[styles.onlineDot, { backgroundColor: colors.success, borderColor: colors.bg }]} />
+        )}
+      </View>
 
-        {/* Activity Pill - Moon icon + timestamp */}
-        <View
-          style={[
-            styles.activityPill,
-            styles.glass,
-            {
-              borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBg,
-            },
-          ]}
+      {/* Name + Status — tappable to partner search if dealer */}
+      {partnerId && partnerName ? (
+        <Pressable
+          onPress={() => {
+            clearSearch();
+            clearFilterParams();
+            applySearch({ partnerId, partnerName });
+            router.push('/browse' as any);
+          }}
+          style={styles.nameBlock}
         >
           {isLoading ? (
-            <Skeleton width={Spacing['3xl']} height={Sizes.iconSm} borderRadius={Radius.sm} />
+            <Skeleton width={120} height={14} />
           ) : (
             <>
-              <Moon
-                size={12}
-                color={isActive ? colors.online : colors.offline}
-                fill={isActive ? colors.online : colors.offline}
-                strokeWidth={1.5}
-              />
-              <Data size="mini" style={{ color: colors.text2 }}>
-                {activityText}
+              <Data size="body" style={{ color: colors.text }} numberOfLines={1}>
+                {name}
               </Data>
+              <Supporting size="bodySm" style={{ color: colors.text3 }} numberOfLines={1}>
+                {activityText}
+                {listingTitle ? `  ·  ${listingTitle}` : ''}
+              </Supporting>
+            </>
+          )}
+        </Pressable>
+      ) : (
+        <View style={styles.nameBlock}>
+          {isLoading ? (
+            <Skeleton width={120} height={14} />
+          ) : (
+            <>
+              <Data size="body" style={{ color: colors.text }} numberOfLines={1}>
+                {name}
+              </Data>
+              <Supporting size="bodySm" style={{ color: colors.text3 }} numberOfLines={1}>
+                {activityText}
+                {listingTitle ? `  ·  ${listingTitle}` : ''}
+              </Supporting>
             </>
           )}
         </View>
-
-        {/* Listing Title Pill - tappable to listing */}
-        {listingTitle && (
-          <HapticPressable
-            onPress={() => {
-              if (listingId) {
-                router.push({ pathname: '/listing/[id]', params: { id: listingId } } as any);
-              }
-            }}
-            disabled={!listingId}
-            style={[
-              styles.pillButton,
-              styles.glass,
-              {
-                borderColor: colors.glassBorder,
-                backgroundColor: colors.glassBg,
-              },
-            ]}
-          >
-            <Data size="small" style={{ color: colors.text2 }}>
-              Re: {listingTitle}
-            </Data>
-          </HapticPressable>
-        )}
-      </ScrollView>
+      )}
     </View>
   );
 }
@@ -209,44 +139,28 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
-    paddingBottom: Spacing.md,
+    zIndex: ZIndex.overlay,
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: Layout.screenPadding,
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingBottom: Spacing.md,
+    gap: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  scrollView: {
+  avatarWrap: {
+    position: 'relative',
+  },
+  onlineDot: {
+    position: 'absolute',
+    bottom: 1,
+    right: 1,
+    width: Spacing.md,
+    height: Spacing.md,
+    borderRadius: Spacing.md / 2,
+    borderWidth: 2,
+  },
+  nameBlock: {
     flex: 1,
-  },
-  scrollContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Layout.headerGap,
-  },
-  glass: {
-    borderWidth: 1,
-  },
-  bubble: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Sizes.bubble / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pillButton: {
-    height: Sizes.pillHeight,
-    paddingHorizontal: Spacing.md,
-    borderRadius: Sizes.pillRadius,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activityPill: {
-    height: Sizes.pillHeight,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: Sizes.pillRadius,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.xs,
+    gap: 2,
   },
 });

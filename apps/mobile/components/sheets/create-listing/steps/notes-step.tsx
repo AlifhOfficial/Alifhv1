@@ -12,7 +12,7 @@ import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { X, Plus } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -73,19 +73,19 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Label size="small">Special Notes</Label>
-          <Supporting size="small" tone="muted">
+          <Label size="caption">Special Notes</Label>
+          <Supporting size="bodySm" tone="muted">
             {notes.length}/{MAX_SPECIAL_NOTES}
           </Supporting>
         </View>
-        <Supporting size="small" tone="secondary">
+        <Supporting size="bodySm" tone="secondary">
           Add specific details buyers should know about your vehicle
         </Supporting>
       </View>
 
       {/* Quick Notes */}
       <View style={styles.section}>
-        <Supporting size="small" tone="muted">
+        <Supporting size="bodySm" tone="muted">
           Quick add
         </Supporting>
         <View style={styles.chipsWrap}>
@@ -106,7 +106,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="small"
+                  size="bodySm"
                   numberOfLines={1}
                   style={{ color: isAdded ? colors.bg : colors.text }}
                 >
@@ -121,7 +121,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
       {/* Existing Notes */}
       {notes.length > 0 && (
         <View style={styles.section}>
-          <Label size="small">Your Notes</Label>
+          <Label size="caption">Your Notes</Label>
           <View style={styles.notesList}>
             {notes.map((note, index) => (
               <View
@@ -131,7 +131,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                   { backgroundColor: colors.surface2, borderColor: colors.border },
                 ]}
               >
-                <Body size="small" style={{ flex: 1 }}>
+                <Body size="bodySm" style={{ flex: 1 }}>
                   {note}
                 </Body>
                 <HapticPressable onPress={() => removeNote(index)} hitSlop={Layout.hitSlopSmall}>
@@ -146,7 +146,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
       {/* Custom Note Input */}
       {notes.length < MAX_SPECIAL_NOTES && (
         <View style={styles.section}>
-          <Label size="small">Add Custom Note</Label>
+          <Label size="caption">Add Custom Note</Label>
           <View style={styles.inputRow}>
             <TextInput
               style={[
@@ -230,16 +230,15 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 48,
+    height: Sizes.actionButtonLg,
     borderWidth: 1,
     borderRadius: Radius.lg,
     paddingHorizontal: Spacing.md,
-    fontSize: 16,
-    fontWeight: '400',
+    ...Typography.body,
   },
   addButton: {
-    width: 48,
-    height: 48,
+    width: Spacing["5xl"],
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',

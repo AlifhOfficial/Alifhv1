@@ -97,7 +97,7 @@ export function PersonalInfoSection({
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} strokeWidth={2} />
           ) : (
             <HapticPressable onPress={() => {}}>
-              <ButtonText size="small" tone="primary">
+              <ButtonText size="bodySm" tone="primary">
                 Verify
               </ButtonText>
             </HapticPressable>

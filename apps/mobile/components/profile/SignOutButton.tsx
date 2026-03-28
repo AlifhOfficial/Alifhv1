@@ -54,7 +54,7 @@ export function SignOutButton({ colors }: SignOutButtonProps) {
       ]}
     >
       <LogOut size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-      <ButtonText size="medium" tone="error">Sign Out</ButtonText>
+      <ButtonText size="body" tone="error">Sign Out</ButtonText>
     </HapticPressable>
   );
 }

@@ -162,13 +162,13 @@ export function ListingStatsSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">Insights</Heading>
+          <Heading size="heading">Insights</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -190,24 +190,24 @@ export function ListingStatsSheet({
               <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.textMuted} />
             </View>
           )}
-          <Data size="small" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
+          <Data size="bodySm" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
             {listingTitle}
           </Data>
         </View>
 
         <View style={styles.metricsGrid}>
           <View style={[styles.metricCard, { backgroundColor: colors.fill2 }]}>
-            <Supporting size="small">Click Rate</Supporting>
+            <Supporting size="bodySm">Click Rate</Supporting>
             <View style={styles.metricValueRow}>
-              <Data size="large">{ctr}%</Data>
+              <Data size="title">{ctr}%</Data>
             </View>
           </View>
 
           <View style={[styles.metricCard, { backgroundColor: colors.fill2 }]}>
-            <Supporting size="small">Engagement</Supporting>
+            <Supporting size="bodySm">Engagement</Supporting>
             <View style={styles.metricValueRow}>
               <Flame size={Sizes.iconSm} color={hotLevel.color} />
-              <Data size="large" style={{ color: hotLevel.color }}>
+              <Data size="title" style={{ color: hotLevel.color }}>
                 {hotLevel.label}
               </Data>
             </View>
@@ -234,11 +234,11 @@ export function ListingStatsSheet({
                     fill={stat.label === 'Saves' ? stat.color : 'none'}
                     strokeWidth={1.75}
                   />
-                  <Data size="small" style={{ color: colors.text2 }}>
+                  <Data size="bodySm" style={{ color: colors.text2 }}>
                     {stat.label}
                   </Data>
                 </View>
-                <Data size="small" style={{ color: colors.text, fontWeight: '600' }}>
+                <Data size="bodySm" style={{ color: colors.text, }}>
                   {formatCount(stat.value)}
                 </Data>
               </View>

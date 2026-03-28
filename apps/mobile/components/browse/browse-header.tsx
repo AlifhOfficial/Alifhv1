@@ -96,7 +96,7 @@ export function BrowseHeader({
             {({ pressed }) => (
               <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
                 <LayoutGrid size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
-                <Data size="small">Browse</Data>
+                <Data size="bodySm">Browse</Data>
               </View>
             )}
           </HapticPressable>
@@ -116,10 +116,10 @@ export function BrowseHeader({
           <HapticPressable onPress={handleSettingsPress} style={styles.pillInner}>
             {({ pressed }) => (
               <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
-                <Data size="small">Filters</Data>
+                <Data size="bodySm">Filters</Data>
                 {settingsCount > 0 && (
                   <View style={[styles.badge, { backgroundColor: colors.text }]}>
-                    <Label size="badge" uppercase={false} style={{ color: colors.bg }}>
+                    <Label size="caption" uppercase={false} style={{ color: colors.bg }}>
                       {settingsCount > 9 ? '9+' : settingsCount}
                     </Label>
                   </View>
@@ -146,14 +146,14 @@ export function BrowseHeader({
               {({ pressed }) => (
                 <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
                   <Data
-                    size="small"
+                    size="bodySm"
                     numberOfLines={1}
                   >
                     {pill.label}
                   </Data>
                   {pill.activeCount > 0 && (
                     <View style={[styles.badge, { backgroundColor: colors.text }]}>
-                      <Label size="badge" uppercase={false} style={{ color: colors.bg }}>
+                      <Label size="caption" uppercase={false} style={{ color: colors.bg }}>
                         {pill.activeCount}
                       </Label>
                     </View>

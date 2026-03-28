@@ -35,8 +35,8 @@ import type { LocationResult } from '@/hooks/use-location';
 const PANEL_WIDTH = Spacing['5xl'] + Spacing['3xl']; // ~80
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-// Header height calculation: headerPadding + pill height + bottom padding
-const HEADER_HEIGHT = Layout.headerPadding + Sizes.pillHeight + Spacing.md;
+// Header height: avatar + bottom padding (safe area handled dynamically)
+const HEADER_HEIGHT = Sizes.avatarSm + Spacing.md + Spacing.lg;
 
 interface ChatWindowProps {
   conversationId: string;
@@ -258,7 +258,7 @@ export function ChatWindow({
             </View>
             <View style={styles.timestampSide}>
               {timestamp && (
-                <Supporting size="mini" style={{ color: colors.text3, opacity: 0.5 }}>
+                <Supporting size="bodySm" style={{ color: colors.text3, opacity: 0.5 }}>
                   {timestamp}
                 </Supporting>
               )}
@@ -266,7 +266,7 @@ export function ChatWindow({
           </View>
           {showDateSeparator && (
             <View style={styles.dateSeparator}>
-              <Data size="mini" style={{ color: colors.text3 }}>
+              <Data size="bodySm" style={{ color: colors.text3 }}>
                 {formatDateLabel(messageDate)}
               </Data>
             </View>
@@ -306,7 +306,7 @@ export function ChatWindow({
   const ListEmptyComponent = useMemo(() => {
     return (
       <View style={styles.emptyContainer}>
-        <Data size="medium" style={{ color: colors.text3 }}>No messages yet. Say hi! 👋</Data>
+        <Data size="body" style={{ color: colors.text3 }}>No messages yet. Say hi! 👋</Data>
       </View>
     );
   }, [colors]);
@@ -316,7 +316,7 @@ export function ChatWindow({
     if (!isOtherTyping) return null;
     return (
       <View style={styles.typingContainer}>
-        <Supporting size="small" style={{ color: colors.text3 }}>
+        <Supporting size="bodySm" style={{ color: colors.text3 }}>
           typing...
         </Supporting>
       </View>

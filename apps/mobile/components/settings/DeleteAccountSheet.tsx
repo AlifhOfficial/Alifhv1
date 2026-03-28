@@ -116,17 +116,17 @@ export function DeleteAccountSheet({
           <View style={[styles.iconContainer, { backgroundColor: colors.errorMuted }]}>
             <Trash2 size={Sizes.iconLg} color={colors.error} />
           </View>
-          <Heading size="small" tone="error">Delete Account?</Heading>
+          <Heading size="subheading" tone="error">Delete Account?</Heading>
         </View>
 
         {/* Description */}
-        <Body size="medium" tone="secondary" style={styles.description}>
+        <Body size="body" tone="secondary" style={styles.description}>
           Your account will be deactivated immediately and permanently deleted after 6 months. We retain your data during this period to comply with UAE regulations and resolve any potential disputes. This action cannot be undone.
         </Body>
 
         {/* Input */}
         <View style={styles.inputContainer}>
-          <Supporting size="small" tone="muted" style={styles.inputLabel}>
+          <Supporting size="bodySm" tone="muted" style={styles.inputLabel}>
             Type "DELETE" to confirm
           </Supporting>
           <TextInput
@@ -160,7 +160,7 @@ export function DeleteAccountSheet({
               },
             ]}
           >
-            <Data size="medium" style={{ color: colors.text }}>Cancel</Data>
+            <Data size="body" style={{ color: colors.text }}>Cancel</Data>
           </HapticPressable>
           <HapticPressable
             onPress={handleConfirm}
@@ -177,7 +177,7 @@ export function DeleteAccountSheet({
             {isDeleting ? (
               <Loader2 size={Sizes.iconSm} color={colors.primaryFg} strokeWidth={2} />
             ) : (
-              <Data size="medium" style={{ color: colors.primaryFg }}>Delete</Data>
+              <Data size="body" style={{ color: colors.primaryFg }}>Delete</Data>
             )}
           </HapticPressable>
         </View>

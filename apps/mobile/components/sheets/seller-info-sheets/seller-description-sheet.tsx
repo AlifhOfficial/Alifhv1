@@ -82,7 +82,7 @@ export function SellerDescriptionSheet({ visible, onClose, description, sellerNa
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">About {sellerName}</Heading>
+          <Heading size="heading">About {sellerName}</Heading>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 
@@ -116,7 +116,7 @@ export function SellerDescriptionSheet({ visible, onClose, description, sellerNa
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <Body size="medium">
+          <Body size="body">
             {description}
           </Body>
         </BottomSheetScrollView>

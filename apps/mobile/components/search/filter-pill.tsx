@@ -39,7 +39,7 @@ export function FilterPill({
       onPress={onPress}
     >
       <Data 
-        size="small" 
+        size="bodySm" 
         style={{ color: isPrimary ? colors.primaryFg : colors.text }}
       >
         {label}

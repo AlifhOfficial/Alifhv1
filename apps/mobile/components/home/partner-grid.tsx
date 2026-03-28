@@ -99,25 +99,25 @@ const ProductCard = memo(function ProductCard({ listing, colors, onPress, onFavo
         />
         {isBlkPartner && (
           <View style={[styles.priceBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-            <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
+            <Label size="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
           </View>
         )}
       </View>
 
       <View style={styles.productContent}>
         <View style={styles.productText}>
-          <Heading size="mini" style={{ color: colors.text }} numberOfLines={2}>
+          <Heading size="subheading" style={{ color: colors.text }} numberOfLines={2}>
             {title}
           </Heading>
           {listing.year ? (
-            <Supporting size="mini" style={{ color: metaColor }} numberOfLines={1}>
+            <Supporting size="bodySm" style={{ color: metaColor }} numberOfLines={1}>
               {listing.year}
             </Supporting>
           ) : null}
         </View>
 
         <View style={styles.productFooter}>
-          <Price size="mini">
+          <Price>
             AED {formatPrice(listing.price)}
           </Price>
           <View style={[styles.favBtn, { backgroundColor: actionBackground, borderColor: actionBorder }]}>
@@ -197,25 +197,25 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
           </View>
         ) : (
           <View style={[styles.avatar, { backgroundColor: avatarBg }]}>
-            <Heading size="mini" style={{ color: avatarTextColor }}>
+            <Heading size="subheading" style={{ color: avatarTextColor }}>
               {partner.name.charAt(0).toUpperCase()}
             </Heading>
           </View>
         )}
         <View style={styles.headerInfo}>
           <View style={styles.nameRow}>
-            <Heading size="mini" style={{ color: textColor }}>{partner.name}</Heading>
+            <Heading size="subheading" style={{ color: textColor }}>{partner.name}</Heading>
             {!partner.isBlk && partner.isVerified && (
               <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
             )}
             {partner.isBlk && (
               <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
+                <Label size="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
               </View>
             )}
           </View>
           {partner.rating && partner.reviewCount && (
-            <Data size="small" style={{ color: textSecondary }}>
+            <Data size="bodySm" style={{ color: textSecondary }}>
               {partner.rating} ★ ({formatReviews(partner.reviewCount)})
             </Data>
           )}
@@ -238,13 +238,13 @@ export const PartnerShowcaseCard = memo(function PartnerShowcaseCard({
         </ScrollView>
       ) : (
         <View style={styles.emptyProducts}>
-          <Supporting size="small" style={{ color: textSecondary }}>No listings</Supporting>
+          <Supporting size="bodySm" style={{ color: textSecondary }}>No listings</Supporting>
         </View>
       )}
 
       {/* Footer */}
       <HapticPressable onPress={handlePress} style={styles.footer}>
-        <Heading size="mini" style={{ color: textColor }}>Browse all</Heading>
+        <Heading size="subheading" style={{ color: textColor }}>Browse all</Heading>
         <View
           style={[
             styles.arrowBtn,

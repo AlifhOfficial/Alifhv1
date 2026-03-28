@@ -113,13 +113,13 @@ export function ExtendListingSheet({
       enablePanDownToClose={!loading}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">Extend Listing</Heading>
+          <Heading size="heading">Extend Listing</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -143,9 +143,9 @@ export function ExtendListingSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Body size="medium" numberOfLines={1}>{listingTitle}</Body>
+            <Body size="body" numberOfLines={1}>{listingTitle}</Body>
             {expiryDisplay && (
-              <Supporting size="small" tone={expiryDisplay.isUrgent ? 'error' : 'secondary'}>
+              <Supporting size="bodySm" tone={expiryDisplay.isUrgent ? 'error' : 'secondary'}>
                 {expiryDisplay.text}
               </Supporting>
             )}
@@ -173,10 +173,10 @@ export function ExtendListingSheet({
                   },
                 ]}
               >
-                <Data size="large" style={selected ? { color: colors.primary } : undefined}>
+                <Data size="title" style={selected ? { color: colors.primary } : undefined}>
                   {days}
                 </Data>
-                <Supporting size="small" tone={selected ? 'primary' : 'secondary'}>
+                <Supporting size="bodySm" tone={selected ? 'primary' : 'secondary'}>
                   days
                 </Supporting>
               </HapticPressable>
@@ -187,7 +187,7 @@ export function ExtendListingSheet({
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Body size="small" tone="error">{error}</Body>
+            <Body size="bodySm" tone="error">{error}</Body>
           </View>
         )}
 
@@ -204,7 +204,7 @@ export function ExtendListingSheet({
               },
             ]}
           >
-            <ButtonText size="medium" tone="secondary">Cancel</ButtonText>
+            <ButtonText size="body" tone="secondary">Cancel</ButtonText>
           </HapticPressable>
 
           <HapticPressable
@@ -223,7 +223,7 @@ export function ExtendListingSheet({
             ) : (
               <>
                 <CalendarPlus size={Sizes.iconSm} color="#FFF" />
-                <ButtonText size="medium" style={{ color: '#FFF' }}>
+                <ButtonText size="body" style={{ color: '#FFF' }}>
                   Extend {selectedDays} Days
                 </ButtonText>
               </>

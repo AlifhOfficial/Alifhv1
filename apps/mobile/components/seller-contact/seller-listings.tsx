@@ -30,7 +30,7 @@ export const SellerListings = memo(function SellerListings({
 
   return (
     <View style={localStyles.section}>
-      <Label size="medium" tone="muted">MORE FROM THIS SELLER</Label>
+      <Label size="label" tone="muted">MORE FROM THIS SELLER</Label>
       
       {/* Listings list */}
       <View style={localStyles.list}>
@@ -57,7 +57,7 @@ export const SellerListings = memo(function SellerListings({
           onPress={onViewAll}
           style={localStyles.viewAllRow}
         >
-          <Data size="medium" tone="primary">
+          <Data size="body" tone="primary">
             View All {totalCount} Listings
           </Data>
           <ChevronRight size={Sizes.iconXs} color={colors.primary} />

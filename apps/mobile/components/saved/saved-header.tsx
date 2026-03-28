@@ -11,7 +11,7 @@ import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
 import { Data } from '@/components/ui';
-import { Colors, Spacing, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Layout, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import type { SavedTab } from './types';
 
@@ -58,7 +58,7 @@ export function SavedHeader({
         >
           <View style={styles.pillContent}>
             <Bookmark size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
-            <Data size="small">Saved</Data>
+            <Data size="bodySm">Saved</Data>
           </View>
         </View>
       </View>
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
+    zIndex: ZIndex.overlay,
     paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',

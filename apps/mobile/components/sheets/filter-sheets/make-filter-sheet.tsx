@@ -12,7 +12,7 @@ import * as Haptics from 'expo-haptics';
 import { Search, X } from 'lucide-react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
 import { CAR_MAKES } from '@/lib/filter-constants';
@@ -155,16 +155,16 @@ export function MakeFilterSheet({
       >
         <View style={styles.labelRow}>
           <Body
-            size="medium"
+            size="body"
             style={{ 
               color: isSelected ? colors.text : colors.text2,
-              fontWeight: isSelected ? '700' : '500',
+              fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
             }}
           >
             {make}
           </Body>
           {count > 0 && (
-            <Supporting size="small" tone="muted">
+            <Supporting size="bodySm" tone="muted">
               {count.toLocaleString()}
             </Supporting>
           )}
@@ -201,10 +201,10 @@ export function MakeFilterSheet({
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Body size="medium" tone="secondary">Cancel</Body>
+              <Body size="body" tone="secondary">Cancel</Body>
             </HapticPressable>
             
-            <Heading size="small">Make</Heading>
+            <Heading size="subheading">Make</Heading>
             
             <HapticPressable
               style={[
@@ -215,7 +215,7 @@ export function MakeFilterSheet({
               disabled={!hasValue}
             >
               <ButtonText
-                size="small"
+                size="bodySm"
                 style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
               >
                 Apply
@@ -226,11 +226,11 @@ export function MakeFilterSheet({
           {/* Selection Summary */}
           {hasValue && (
             <View style={styles.selectionSummary}>
-              <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+              <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
                 {localSelected.join(', ')}
               </Body>
               <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Supporting size="small" style={{ color: colors.error }}>
+                <Supporting size="bodySm" style={{ color: colors.error }}>
                   Clear
                 </Supporting>
               </HapticPressable>
@@ -326,8 +326,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 15,
-    fontWeight: '500',
+    ...Typography.bodySm,
     paddingVertical: 0,
   },
   listContainer: {

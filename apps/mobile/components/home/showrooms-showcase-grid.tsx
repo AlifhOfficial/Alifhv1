@@ -119,10 +119,10 @@ export const ShowroomsShowcaseGrid = memo(function ShowroomsShowcaseGrid({
         {/* Footer CTA */}
         <HapticPressable onPress={handlePress} style={styles.footer}>
           <View style={styles.footerText}>
-            <Heading size="small" style={{ color: colors.white }}>
+            <Heading size="subheading" style={{ color: colors.white }}>
               {showroom.partner.brandName}
             </Heading>
-            <Supporting size="small" style={{ color: colors.text3 }}>
+            <Supporting size="bodySm" style={{ color: colors.text3 }}>
               {showroom.heroTagline || 'Visit showroom'}
             </Supporting>
           </View>

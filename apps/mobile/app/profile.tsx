@@ -192,10 +192,10 @@ export default function ProfileScreen() {
       <View style={[styles.container, styles.centered, { backgroundColor: colors.bg }]}>
         <ProfileHeader colors={colors} topInset={insets.top} />
         <View style={[styles.errorContainer, { backgroundColor: colors.bg, paddingTop: headerHeight }]}>
-          <Body size="medium" tone="error" style={styles.errorText}>
+          <Body size="body" tone="error" style={styles.errorText}>
             {error}
           </Body>
-          <Body size="medium" tone="primary" onPress={refresh}>
+          <Body size="body" tone="primary" onPress={refresh}>
             Tap to retry
           </Body>
         </View>

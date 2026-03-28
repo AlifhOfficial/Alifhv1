@@ -91,7 +91,7 @@ export function LocationBubble({
         <View style={styles.textContainer}>
           {placeName && (
             <Body
-              size="medium"
+              size="body"
               style={[
                 styles.placeName,
                 { color: isOwn ? colors.primaryFg : colors.text },
@@ -103,7 +103,7 @@ export function LocationBubble({
           )}
           {address && (
             <Data
-              size="small"
+              size="bodySm"
               style={{ color: isOwn ? 'rgba(255,255,255,0.8)' : colors.text2 }}
               numberOfLines={2}
             >
@@ -112,7 +112,7 @@ export function LocationBubble({
           )}
           {!placeName && !address && (
             <Data
-              size="small"
+              size="bodySm"
               style={{ color: isOwn ? 'rgba(255,255,255,0.8)' : colors.text2 }}
             >
               {latitude.toFixed(6)}, {longitude.toFixed(6)}
@@ -152,11 +152,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '50%',
     left: '50%',
-    marginTop: -16,
-    marginLeft: -12,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    marginTop: -Spacing.lg,
+    marginLeft: -Spacing.md,
+    width: Spacing["2xl"],
+    height: Spacing["2xl"],
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -175,7 +175,5 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
-  placeName: {
-    fontWeight: '600',
-  },
+  placeName: {},
 });

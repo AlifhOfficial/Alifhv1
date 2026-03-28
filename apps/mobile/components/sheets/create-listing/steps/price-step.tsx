@@ -11,7 +11,7 @@ import { View, StyleSheet, Switch } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Typography, Fonts, Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Data, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -72,7 +72,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
             { backgroundColor: colors.fill2, borderColor: colors.border },
           ]}
         >
-          <Body size="large" tone="secondary">
+          <Body size="bodyLg" tone="secondary">
             AED
           </Body>
           <BottomSheetTextInput
@@ -88,7 +88,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
 
         {/* Formatted display */}
         {data.price && priceNum > 0 && (
-          <Data size="large" style={{ color: colors.text, textAlign: 'center' }}>
+          <Data size="title" style={{ color: colors.text, textAlign: 'center' }}>
             AED {priceNum.toLocaleString()}
           </Data>
         )}
@@ -96,7 +96,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick presets */}
       <View style={styles.section}>
-        <Supporting size="small" tone="muted">
+        <Supporting size="bodySm" tone="muted">
           Quick select
         </Supporting>
         <View style={styles.presetsRow}>
@@ -115,7 +115,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="small"
+                  size="bodySm"
                   style={{ color: isActive ? colors.bg : colors.text }}
                 >
                   {preset.label}
@@ -129,8 +129,8 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
       {/* Negotiable toggle */}
       <View style={[styles.toggleRow, { backgroundColor: colors.surface2 }]}>
         <View style={styles.toggleText}>
-          <Label size="small">Price Negotiable?</Label>
-          <Supporting size="small" tone="muted">
+          <Label size="caption">Price Negotiable?</Label>
+          <Supporting size="bodySm" tone="muted">
             Let buyers know you're open to offers
           </Supporting>
         </View>
@@ -159,12 +159,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     borderWidth: 1,
     borderRadius: Radius.xl,
-    height: 64,
+    height: Spacing["5xl"] + Spacing.lg,
   },
   input: {
     flex: 1,
-    fontSize: 28,
-    fontWeight: '700',
+    ...Typography.title,
     paddingVertical: Spacing.sm,
     textAlign: 'left',
   },

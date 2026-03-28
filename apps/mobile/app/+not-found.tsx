@@ -9,7 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MapPinOff, Home, ArrowLeft } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, ButtonText } from '@/components/ui/text';
 
@@ -39,12 +39,12 @@ export default function NotFoundScreen() {
         </View>
 
         {/* Title */}
-        <Heading size="large" style={styles.title}>
+        <Heading size="title" style={styles.title}>
           Page not found
         </Heading>
 
         {/* Description */}
-        <Body size="medium" tone="secondary" style={styles.description}>
+        <Body size="body" tone="secondary" style={styles.description}>
           The page you're looking for doesn't exist or may have been moved.
         </Body>
 
@@ -55,7 +55,7 @@ export default function NotFoundScreen() {
             style={[styles.button, styles.primaryButton, { backgroundColor: colors.primary }]}
           >
             <Home size={18} color="#fff" strokeWidth={2} />
-            <ButtonText size="medium" style={{ color: '#fff' }}>Go Home</ButtonText>
+            <ButtonText size="body" style={{ color: '#fff' }}>Go Home</ButtonText>
           </Pressable>
 
           <Pressable
@@ -63,7 +63,7 @@ export default function NotFoundScreen() {
             style={[styles.button, styles.secondaryButton, { borderColor: colors.border }]}
           >
             <ArrowLeft size={18} color={colors.text} strokeWidth={2} />
-            <ButtonText size="medium" style={{ color: colors.text }}>Go Back</ButtonText>
+            <ButtonText size="body" style={{ color: colors.text }}>Go Back</ButtonText>
           </Pressable>
         </View>
       </View>
@@ -82,9 +82,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
   },
   iconContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: Spacing["5xl"] * 2 + Spacing.xs,
+    height: Spacing["5xl"] * 2 + Spacing.xs,
+    borderRadius: (Spacing["5xl"] * 2 + Spacing.xs) / 2,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.lg,
@@ -95,12 +95,12 @@ const styles = StyleSheet.create({
   },
   description: {
     textAlign: 'center',
-    maxWidth: 260,
+    maxWidth: Spacing["5xl"],
     marginBottom: Spacing.xl,
   },
   actions: {
     width: '100%',
-    maxWidth: 300,
+    maxWidth: Spacing["5xl"],
     gap: Spacing.sm,
   },
   button: {
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    height: 52,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
   },
   primaryButton: {

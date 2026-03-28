@@ -45,7 +45,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
         <View style={localStyles.heroInfo}>
           {/* Name + Badges */}
           <View style={localStyles.nameRow}>
-            <Heading size="medium" numberOfLines={1} style={{ flexShrink: 1 }}>
+            <Heading size="heading" numberOfLines={1} style={{ flexShrink: 1 }}>
               {seller.name}
             </Heading>
             {seller.isVerified && seller.tier?.toLowerCase() !== 'black' && (
@@ -53,7 +53,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
             )}
             {seller.tier?.toLowerCase() === 'black' && (
               <View style={[localStyles.tierBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>
+                <Label size="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>
                   BLK
                 </Label>
               </View>
@@ -61,7 +61,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           </View>
           
           {/* Seller Type */}
-          <Supporting size="small">
+          <Supporting size="bodySm">
             {seller.isDealer ? 'Verified Dealer' : 'Private Seller'}
           </Supporting>
 
@@ -69,7 +69,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           {seller.memberSince && (
             <View style={localStyles.metaRow}>
               <Clock size={Sizes.iconXs} color={colors.iconMuted} />
-              <Supporting size="mini" tone="muted">
+              <Supporting size="bodySm" tone="muted">
                 Member since {formatMemberSince(seller.memberSince)}
               </Supporting>
             </View>
@@ -79,9 +79,9 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           {seller.rating != null && (
             <View style={localStyles.ratingRow}>
               <Star size={Sizes.iconXs} color={colors.warning} fill={colors.warning} />
-              <Data size="small">{seller.rating.toFixed(1)}</Data>
+              <Data size="bodySm">{seller.rating.toFixed(1)}</Data>
               {seller.reviewCount != null && (
-                <Supporting size="small">
+                <Supporting size="bodySm">
                   ({seller.reviewCount})
                 </Supporting>
               )}
@@ -101,7 +101,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
               contentFit="cover"
             />
           ) : (
-            <Heading size="large" tone="secondary">
+            <Heading size="title" tone="secondary">
               {seller.name.charAt(0).toUpperCase()}
             </Heading>
           )}

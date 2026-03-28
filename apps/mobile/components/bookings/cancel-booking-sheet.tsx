@@ -138,13 +138,13 @@ export function CancelBookingSheet({
       enablePanDownToClose={!loading}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">Cancel Booking</Heading>
+          <Heading size="heading">Cancel Booking</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Layout.hitSlop}
@@ -165,15 +165,15 @@ export function CancelBookingSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Body size="medium" numberOfLines={1}>{listingTitle}</Body>
-            <Supporting size="small" tone="secondary">{partnerName}</Supporting>
-            <Supporting size="small" tone="secondary">{formattedDate}</Supporting>
+            <Body size="body" numberOfLines={1}>{listingTitle}</Body>
+            <Supporting size="bodySm" tone="secondary">{partnerName}</Supporting>
+            <Supporting size="bodySm" tone="secondary">{formattedDate}</Supporting>
           </View>
         </View>
 
         {/* Reason picker */}
         <View style={styles.section}>
-          <Body size="medium" style={{ marginBottom: Spacing.sm }}>
+          <Body size="body" style={{ marginBottom: Spacing.sm }}>
             Why are you cancelling?
           </Body>
           <ScrollView
@@ -206,7 +206,7 @@ export function CancelBookingSheet({
                       <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />
                     )}
                   </View>
-                  <Body size="small">{reason.label}</Body>
+                  <Body size="bodySm">{reason.label}</Body>
                 </HapticPressable>
               );
             })}
@@ -215,7 +215,7 @@ export function CancelBookingSheet({
 
         {/* Notes input */}
         <View style={styles.section}>
-          <Body size="small" tone="secondary" style={{ marginBottom: Spacing.xs }}>
+          <Body size="bodySm" tone="secondary" style={{ marginBottom: Spacing.xs }}>
             Additional notes (optional)
           </Body>
           <BottomSheetTextInput
@@ -239,7 +239,7 @@ export function CancelBookingSheet({
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Body size="small" tone="error">{error}</Body>
+            <Body size="bodySm" tone="error">{error}</Body>
           </View>
         )}
 
@@ -253,7 +253,7 @@ export function CancelBookingSheet({
               { backgroundColor: 'transparent', borderColor: colors.border },
             ]}
           >
-            <ButtonText size="medium" tone="secondary">Go Back</ButtonText>
+            <ButtonText size="body" tone="secondary">Go Back</ButtonText>
           </HapticPressable>
 
           <HapticPressable
@@ -272,7 +272,7 @@ export function CancelBookingSheet({
             ) : (
               <>
                 <XIcon size={Sizes.iconSm} color="#FFF" />
-                <ButtonText size="medium" style={{ color: '#FFF' }}>
+                <ButtonText size="body" style={{ color: '#FFF' }}>
                   Cancel Booking
                 </ButtonText>
               </>

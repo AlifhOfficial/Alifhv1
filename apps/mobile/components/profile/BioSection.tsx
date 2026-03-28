@@ -93,7 +93,7 @@ export function BioSection({
               textAlignVertical="top"
             />
             <View style={styles.footer}>
-              <Body size="small" style={{ color: charCountColor }}>
+              <Body size="bodySm" style={{ color: charCountColor }}>
                 {bio.length}/{MAX_BIO_LENGTH}
               </Body>
               <View style={styles.actions}>
@@ -102,7 +102,7 @@ export function BioSection({
                   hitSlop={Layout.hitSlopSmall}
                   style={({ pressed }) => pressed && { opacity: 0.6 }}
                 >
-                  <Body size="small" tone="secondary">
+                  <Body size="bodySm" tone="secondary">
                     Cancel
                   </Body>
                 </HapticPressable>
@@ -112,7 +112,7 @@ export function BioSection({
                   hitSlop={Layout.hitSlopSmall}
                   style={({ pressed }) => pressed && { opacity: 0.6 }}
                 >
-                  <Data size="medium" tone="primary">
+                  <Data size="body" tone="primary">
                     {saving ? 'Saving...' : 'Save'}
                   </Data>
                 </HapticPressable>
@@ -122,14 +122,14 @@ export function BioSection({
         ) : (
           <View style={styles.displayContainer}>
             <Body
-              size="medium"
+              size="body"
               tone={bio ? 'default' : 'muted'}
               style={styles.bioText}
             >
               {bio || 'Tap to add bio'}
             </Body>
             {bio && (
-              <Body size="small" tone="muted">
+              <Body size="bodySm" tone="muted">
                 {bio.length}/{MAX_BIO_LENGTH}
               </Body>
             )}
@@ -166,6 +166,6 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   bioText: {
-    // lineHeight handled by <Body size="large"> component
+    // lineHeight handled by <Body size="bodyLg"> component
   },
 });

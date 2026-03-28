@@ -98,13 +98,13 @@ export function EmailStep({
 
           {/* Hero Section - Personalized */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
+            <Supporting size="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]}>
               Nice to meet you, {userName}
             </Supporting>
-            <Heading size="large" style={[onboardingStyles.title, { color: colors.white }]}>
+            <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
               What's your email?
             </Heading>
-            <Body size="small" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
+            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.text2 }]}>
               We'll send you a code to verify
             </Body>
           </Animated.View>
@@ -115,7 +115,7 @@ export function EmailStep({
               entering={FadeIn.duration(200)}
               style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
             >
-              <Body size="small" tone="error" style={onboardingStyles.errorText}>
+              <Body size="bodySm" tone="error" style={onboardingStyles.errorText}>
                 {error}
               </Body>
             </Animated.View>

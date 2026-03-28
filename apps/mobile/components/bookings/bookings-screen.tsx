@@ -34,7 +34,7 @@ import {
   Clock,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
+import { Colors, Fonts, Spacing, Radius, Layout, Sizes, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import {
@@ -189,7 +189,7 @@ export function BookingsScreen() {
             )}
             {/* Status badge (BLK-badge style) */}
             <View style={[styles.statusBadge, { backgroundColor: statusColor + 'E6' }]}>
-              <Label size="badge" uppercase={false} style={{ color: '#FFF' }}>
+              <Label size="caption" uppercase={false} style={{ color: '#FFF' }}>
                 {statusLabel}
               </Label>
             </View>
@@ -198,19 +198,19 @@ export function BookingsScreen() {
           {/* ── Content ──────────────────────────────────────────────── */}
           <View style={styles.content}>
             {/* Title */}
-            <Data size="small" style={{ color: colors.text, fontWeight: '600' }} numberOfLines={1}>
+            <Data size="bodySm" style={{ color: colors.text, }} numberOfLines={1}>
               {item.listingTitle}
             </Data>
 
             {/* Partner */}
-            <Data size="mini" style={{ color: colors.text2 }} numberOfLines={1}>
+            <Data size="bodySm" style={{ color: colors.text2 }} numberOfLines={1}>
               {item.partnerName}
             </Data>
 
             {/* Date */}
             <View style={styles.metaRow}>
               <Calendar size={Sizes.iconXs} color={colors.text2} />
-              <Data size="mini" style={{ color: colors.text2 }}>
+              <Data size="bodySm" style={{ color: colors.text2 }}>
                 {formatBookingDate(item.scheduledDate)}
               </Data>
             </View>
@@ -218,7 +218,7 @@ export function BookingsScreen() {
             {/* Time */}
             <View style={styles.metaRow}>
               <Clock size={Sizes.iconXs} color={colors.text2} />
-              <Data size="mini" style={{ color: colors.text2 }}>
+              <Data size="bodySm" style={{ color: colors.text2 }}>
                 {formatTimeRange(item.scheduledStartTime, item.scheduledEndTime)}
               </Data>
             </View>
@@ -239,9 +239,9 @@ export function BookingsScreen() {
                   ]}
                 >
                   <Data
-                    size="mini"
+                    size="bodySm"
                     style={{
-                      fontWeight: '700',
+                      fontWeight: Fonts.bold,
                       color: countdown.isToday
                         ? colors.success
                         : countdown.isTomorrow
@@ -275,10 +275,10 @@ export function BookingsScreen() {
         <View style={[styles.emptyIcon, { backgroundColor: colors.surface2 }]}>
           <Ionicons name="calendar-outline" size={Sizes.iconXl} color={colors.textMuted} />
         </View>
-        <Heading size="small" style={{ marginTop: Spacing.lg }}>
+        <Heading size="subheading" style={{ marginTop: Spacing.lg }}>
           {isAll ? 'No bookings yet' : `No ${tabLabel.toLowerCase()} bookings`}
         </Heading>
-        <Body size="medium" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
+        <Body size="body" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
           {isAll
             ? 'When you book a test drive on a listing, it will appear here.'
             : `You don't have any ${tabLabel.toLowerCase()} bookings.`}
@@ -325,7 +325,7 @@ export function BookingsScreen() {
           >
             <View style={styles.pillContent}>
               <Calendar size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
-              <Data size="small">Bookings</Data>
+              <Data size="bodySm">Bookings</Data>
             </View>
           </View>
 
@@ -352,7 +352,7 @@ export function BookingsScreen() {
                   {({ pressed }) => (
                     <View style={[styles.pillContent, { opacity: pressed ? 0.7 : 1 }]}>
                       <Data
-                        size="small"
+                        size="bodySm"
                         style={{ color: isActive ? colors.text : colors.textMuted }}
                         numberOfLines={1}
                       >
@@ -390,13 +390,13 @@ export function BookingsScreen() {
         <View style={[styles.centerContainer, { paddingTop: headerHeight }]}>
           <Ionicons name="alert-circle-outline" size={Sizes.avatarLg} color={colors.error} />
           <Body
-            size="medium"
+            size="body"
             style={{ color: colors.error, textAlign: 'center', marginTop: Spacing.md }}
           >
             {error.message || 'Failed to load bookings'}
           </Body>
           <HapticPressable onPress={handleRefresh} style={{ marginTop: Spacing.lg }}>
-            <ButtonText size="medium" tone="primary">Try Again</ButtonText>
+            <ButtonText size="body" tone="primary">Try Again</ButtonText>
           </HapticPressable>
         </View>
       ) : (
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
+    zIndex: ZIndex.overlay,
     paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',

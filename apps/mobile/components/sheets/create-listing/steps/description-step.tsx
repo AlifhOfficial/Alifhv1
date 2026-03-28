@@ -12,7 +12,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 import { Sparkles, RefreshCw } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -122,7 +122,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
       {/* Text Input */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Label size="small">Description</Label>
+          <Label size="caption">Description</Label>
           <HapticPressable
             onPress={() => generateAIDescription(hasDescription)}
             disabled={isGenerating}
@@ -135,13 +135,13 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
             ) : (
               <Sparkles size={14} color={colors.primary} strokeWidth={2} />
             )}
-            <Body size="small" style={{ color: colors.primary, fontWeight: '600' }}>
+              <Body size="bodySm" style={{ color: colors.primary }}>
               {isGenerating ? 'Generating...' : hasDescription ? 'Regenerate' : 'AI Generate'}
             </Body>
           </HapticPressable>
         </View>
         {generateError && (
-          <Supporting size="small" style={{ color: colors.error }}>
+          <Supporting size="bodySm" style={{ color: colors.error }}>
             {generateError}
           </Supporting>
         )}
@@ -165,7 +165,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
         />
         <View style={styles.charCount}>
           <Supporting
-            size="small"
+            size="bodySm"
             style={{ color: isNearLimit ? colors.warning : colors.textMuted }}
           >
             {charCount}/{MAX_DESCRIPTION}
@@ -193,12 +193,11 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   textArea: {
-    minHeight: 400,
+    minHeight: Spacing["5xl"],
     borderWidth: 1,
     borderRadius: Radius.lg,
     padding: Spacing.md,
-    fontSize: 16,
-    fontWeight: '400',
+    ...Typography.body,
     lineHeight: 24,
     textAlignVertical: 'top',
   },

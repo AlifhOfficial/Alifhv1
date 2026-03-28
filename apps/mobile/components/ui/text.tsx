@@ -1,21 +1,23 @@
 /**
  * Custom Text Component - Revvup Design System
  * ═══════════════════════════════════════════════════════════════════════════════
- * 
- * A drop-in replacement for React Native's Text component with:
- *   • Disabled font scaling for UI consistency across devices
- *   • Pre-applied typography tokens
- *   • Cross-platform consistent rendering
- * 
+ *
+ * Typography chain:
+ *   1. theme.ts      — Apple HIG + Material Design 3 tokens
+ *   2. text.tsx      — <Text variant="[token]"> base + semantic wrappers
+ *   3. All call sites — use token names directly, no aliases
+ *
+ * Token names: hero · title · heading · subheading
+ *              bodyLg · body · bodySm
+ *              label · caption
+ *
  * USAGE:
- *   import { Text, Heading, Body, Data, Label } from '@/components/ui/text';
- * 
- *   <Text variant="bodyMedium">Regular text</Text>
- *   <Heading size="large">Screen Title</Heading>
- *   <Body size="medium">Description text</Body>
- *   <Data size="medium">15,000 km</Data>
- *   <Label size="medium">SPECIFICATIONS</Label>
- * 
+ *   <Text variant="body">Regular text</Text>
+ *   <Heading size="heading">Section Title</Heading>
+ *   <Body size="bodySm">Description text</Body>
+ *   <Label>SPECIFICATIONS</Label>
+ *   <Price>$24,500</Price>
+ *
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
@@ -29,19 +31,20 @@ import { useThemeSafe } from '@/context/theme-context';
 // TYPES
 // ═══════════════════════════════════════════════════
 
-type TypographyKey = keyof typeof Typography;
+/** All semantic typography tokens — each resolves to a TextStyle on the current platform */
+export type TypographyKey = keyof typeof Typography;
 
-/** Text color tone - mutually exclusive to avoid conflicts */
-type TextTone = 'default' | 'secondary' | 'muted' | 'primary' | 'error' | 'success';
+/** Text color tone */
+export type TextTone = 'default' | 'secondary' | 'muted' | 'primary' | 'error' | 'success';
 
 export interface TextProps extends Omit<RNTextProps, 'allowFontScaling' | 'maxFontSizeMultiplier'> {
   /** Typography variant from the design system */
   variant?: TypographyKey;
-  /** Text color tone (mutually exclusive) */
+  /** Text color tone */
   tone?: TextTone;
-  /** 
-   * Allow font scaling for accessibility (default: false)
-   * Enable for long-form content like articles, terms, guides
+  /**
+   * Allow font scaling for accessibility (default: false).
+   * Enable for long-form content like articles, terms, guides.
    */
   allowScaling?: boolean;
   children?: React.ReactNode;
@@ -62,15 +65,14 @@ export const Text = memo(function Text({
   const { colorScheme } = useThemeSafe();
   const colors = Colors[colorScheme];
 
-  // Determine text color based on tone (mutually exclusive)
   const textColor = (() => {
     switch (tone) {
       case 'secondary': return colors.text2;
-      case 'muted': return colors.textMuted;
-      case 'primary': return colors.primary;
-      case 'error': return colors.error;
-      case 'success': return colors.success;
-      default: return colors.text;
+      case 'muted':     return colors.textMuted;
+      case 'primary':   return colors.primary;
+      case 'error':     return colors.error;
+      case 'success':   return colors.success;
+      default:          return colors.text;
     }
   })();
 
@@ -79,11 +81,7 @@ export const Text = memo(function Text({
       {...props}
       allowFontScaling={allowScaling}
       maxFontSizeMultiplier={allowScaling ? 1.4 : 1}
-      style={[
-        Typography[variant],
-        { color: textColor },
-        style,
-      ]}
+      style={[Typography[variant], { color: textColor }, style]}
     >
       {children}
     </RNText>
@@ -93,104 +91,66 @@ export const Text = memo(function Text({
 // ═══════════════════════════════════════════════════
 // SEMANTIC TEXT COMPONENTS
 // ═══════════════════════════════════════════════════
-// Pre-configured variants for common use cases
 
-// DISPLAY - Hero text, large callouts
-type DisplaySize = 'large' | 'medium' | 'number';
-const displayMap: Record<DisplaySize, TypographyKey> = {
-  large: 'hero',
-  medium: 'title',
-  number: 'hero',
-};
-
-export interface DisplayProps extends Omit<TextProps, 'variant'> {
-  size?: DisplaySize;
-}
-
-// Re-export tone type for external use
-export type { TextTone };
-
-export const Display = memo(function Display({ size = 'large', ...props }: DisplayProps) {
-  return <Text variant={displayMap[size]} {...props} />;
+// DISPLAY — Hero text, large callouts
+// Large: iOS LargeTitle·E (34) / Android Headline Lg (32)
+// Title:  iOS Title2·E (22)    / Android Title Lg (22)
+export type DisplaySize = 'hero' | 'title';
+export interface DisplayProps extends Omit<TextProps, 'variant'> { size?: DisplaySize }
+export const Display = memo(function Display({ size = 'hero', ...props }: DisplayProps) {
+  return <Text variant={size} {...props} />;
 });
 
-// HEADING - Titles, section headers
-type HeadingSize = 'large' | 'medium' | 'small' | 'card' | 'mini';
-const headingMap: Record<HeadingSize, TypographyKey> = {
-  large: 'title',
-  medium: 'heading',
-  small: 'subheading',
-  card: 'subheading',
-  mini: 'subheading',
-};
-
-export interface HeadingProps extends Omit<TextProps, 'variant'> {
-  size?: HeadingSize;
-}
-
-export const Heading = memo(function Heading({ size = 'large', ...props }: HeadingProps) {
-  return <Text variant={headingMap[size]} {...props} />;
+// HEADING — Titled sections, screen headers
+// Title:      iOS Title2·E (22)   / Android Title Lg (22)
+// Heading:    iOS Title3·E (20)   / Android Title Md (20)
+// Subheading: iOS Headline (17)   / Android Title Sm (17)
+export type HeadingSize = 'title' | 'heading' | 'subheading';
+export interface HeadingProps extends Omit<TextProps, 'variant'> { size?: HeadingSize }
+export const Heading = memo(function Heading({ size = 'title', ...props }: HeadingProps) {
+  return <Text variant={size} {...props} />;
 });
 
-// BODY - Readable content, descriptions
-type BodySize = 'large' | 'medium' | 'small' | 'mini';
-const bodyMap: Record<BodySize, TypographyKey> = {
-  large: 'bodyLg',
-  medium: 'body',
-  small: 'bodySm',
-  mini: 'bodySm',
-};
-
-export interface BodyProps extends Omit<TextProps, 'variant'> {
-  size?: BodySize;
-}
-
-export const Body = memo(function Body({ size = 'medium', ...props }: BodyProps) {
-  return <Text variant={bodyMap[size]} {...props} />;
+// BODY — Readable content, descriptions
+// BodyLg: iOS Body (17)     / Android Body Lg (16)
+// Body:   iOS Callout (16)  / Android Body Md (16)
+// BodySm: iOS Subhead (15)  / Android Body Sm (14)
+export type BodySize = 'bodyLg' | 'body' | 'bodySm';
+export interface BodyProps extends Omit<TextProps, 'variant'> { size?: BodySize }
+export const Body = memo(function Body({ size = 'body', ...props }: BodyProps) {
+  return <Text variant={size} {...props} />;
 });
 
-// DATA - Stats, values, specs
-type DataSize = 'large' | 'medium' | 'small' | 'mini';
-const dataMap: Record<DataSize, TypographyKey> = {
-  large: 'bodyLg',
-  medium: 'body',
-  small: 'bodySm',
-  mini: 'bodySm',
-};
-
-export interface DataProps extends Omit<TextProps, 'variant'> {
-  size?: DataSize;
-}
-
-export const Data = memo(function Data({ size = 'medium', ...props }: DataProps) {
-  return <Text variant={dataMap[size]} {...props} />;
+// DATA — Stats, values, specs, IDs
+// Title:   iOS Title2 (22)    / Android Title Lg (22)
+// Body:    iOS Callout (16)   / Android Body Md (16)
+// BodySm:  iOS Subhead (15)   / Android Body Sm (14)
+// Caption: iOS Caption1 (12)  / Android Label Sm (12)
+export type DataSize = 'title' | 'body' | 'bodySm' | 'caption';
+export interface DataProps extends Omit<TextProps, 'variant'> { size?: DataSize }
+export const Data = memo(function Data({ size = 'body', ...props }: DataProps) {
+  return <Text variant={size} {...props} />;
 });
 
-// LABEL - Section headers, form labels (often uppercase)
-type LabelSize = 'large' | 'medium' | 'small' | 'badge';
-const labelMap: Record<LabelSize, TypographyKey> = {
-  large: 'label',
-  medium: 'label',
-  small: 'micro',
-  badge: 'micro',
-};
-
+// LABEL — Section headers, form labels (uppercase by default)
+// Label:   iOS Footnote·E (13) / Android Label Md (13)
+// Caption: iOS Caption1 (12)   / Android Label Sm (12)
+export type LabelSize = 'label' | 'caption';
 export interface LabelProps extends Omit<TextProps, 'variant'> {
   size?: LabelSize;
-  /** Auto-uppercase the text (common for labels) */
+  /** Auto-uppercase the text (default: true) */
   uppercase?: boolean;
 }
-
-export const Label = memo(function Label({ 
-  size = 'medium', 
-  uppercase = true, 
+export const Label = memo(function Label({
+  size = 'label',
+  uppercase = true,
   children,
   style,
-  ...props 
+  ...props
 }: LabelProps) {
   return (
-    <Text 
-      variant={labelMap[size]} 
+    <Text
+      variant={size}
       style={[uppercase && styles.uppercase, style]}
       {...props}
     >
@@ -199,51 +159,30 @@ export const Label = memo(function Label({
   );
 });
 
-// SUPPORTING - Helper text, captions
-type SupportingSize = 'medium' | 'small' | 'mini';
-const supportingMap: Record<SupportingSize, TypographyKey> = {
-  medium: 'body',
-  small: 'bodySm',
-  mini: 'micro',
-};
-
-export interface SupportingProps extends Omit<TextProps, 'variant'> {
-  size?: SupportingSize;
-}
-
-export const Supporting = memo(function Supporting({ size = 'small', ...props }: SupportingProps) {
-  return <Text variant={supportingMap[size]} tone="secondary" {...props} />;
+// SUPPORTING — Helper text, captions (tone defaults to secondary)
+// Body:    iOS Callout (16)   / Android Body Md (16)
+// BodySm:  iOS Subhead (15)   / Android Body Sm (14)
+// Caption: iOS Caption1 (12)  / Android Label Sm (12)
+export type SupportingSize = 'body' | 'bodySm' | 'caption';
+export interface SupportingProps extends Omit<TextProps, 'variant'> { size?: SupportingSize }
+export const Supporting = memo(function Supporting({ size = 'bodySm', ...props }: SupportingProps) {
+  return <Text variant={size} tone="secondary" {...props} />;
 });
 
-// BUTTON TEXT - For button labels
-type ButtonSize = 'large' | 'medium' | 'small';
-const buttonMap: Record<ButtonSize, TypographyKey> = {
-  large: 'subheading',
-  medium: 'body',
-  small: 'bodySm',
-};
-
-export interface ButtonTextProps extends Omit<TextProps, 'variant'> {
-  size?: ButtonSize;
-}
-
-export const ButtonText = memo(function ButtonText({ size = 'medium', ...props }: ButtonTextProps) {
-  return <Text variant={buttonMap[size]} {...props} />;
+// BUTTON TEXT — For button labels
+// Subheading: iOS Headline (17)   / Android Title Sm (17)
+// Body:       iOS Callout (16)    / Android Body Md (16)
+// BodySm:     iOS Subhead (15)    / Android Body Sm (14)
+export type ButtonSize = 'subheading' | 'body' | 'bodySm';
+export interface ButtonTextProps extends Omit<TextProps, 'variant'> { size?: ButtonSize }
+export const ButtonText = memo(function ButtonText({ size = 'body', ...props }: ButtonTextProps) {
+  return <Text variant={size} {...props} />;
 });
 
-// PRICE - For price displays
-type PriceSize = 'tag' | 'mini';
-const priceMap: Record<PriceSize, TypographyKey> = {
-  tag: 'price',
-  mini: 'price',
-};
-
-export interface PriceProps extends Omit<TextProps, 'variant'> {
-  size?: PriceSize;
-}
-
-export const Price = memo(function Price({ size = 'tag', ...props }: PriceProps) {
-  return <Text variant={priceMap[size]} tone="primary" {...props} />;
+// PRICE — Price tags (tone defaults to primary)
+export interface PriceProps extends Omit<TextProps, 'variant'> {}
+export const Price = memo(function Price(props: PriceProps) {
+  return <Text variant="heading" tone="primary" {...props} />;
 });
 
 // ═══════════════════════════════════════════════════
@@ -251,7 +190,5 @@ export const Price = memo(function Price({ size = 'tag', ...props }: PriceProps)
 // ═══════════════════════════════════════════════════
 
 const styles = StyleSheet.create({
-  uppercase: {
-    textTransform: 'uppercase',
-  },
+  uppercase: { textTransform: 'uppercase' },
 });

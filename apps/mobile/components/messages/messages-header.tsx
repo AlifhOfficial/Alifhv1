@@ -7,7 +7,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MessageCircle } from 'lucide-react-native';
-import { Colors, Spacing, Layout, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Layout, Sizes, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Data } from '@/components/ui';
 
@@ -30,7 +30,7 @@ export function MessagesHeader() {
       >
         <View style={styles.pillContent}>
           <MessageCircle size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
-          <Data size="small">Messages</Data>
+          <Data size="bodySm">Messages</Data>
         </View>
       </View>
     </View>
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
+    zIndex: ZIndex.overlay,
     paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',

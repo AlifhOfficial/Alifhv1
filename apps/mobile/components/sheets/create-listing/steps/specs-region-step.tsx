@@ -45,7 +45,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Regional Specs */}
       <View style={styles.section}>
-        <Label size="small">Regional Specs</Label>
+        <Label size="caption">Regional Specs</Label>
         <View style={styles.chipWrap}>
           {SPECS_TYPES.map((spec) => {
             const isSelected = data.specs === spec.value;
@@ -62,7 +62,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="small"
+                  size="bodySm"
                   style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {spec.label}
@@ -75,7 +75,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Steering Side */}
       <View style={styles.section}>
-        <Label size="small">Steering Side</Label>
+        <Label size="caption">Steering Side</Label>
         <View style={styles.chipWrap}>
           {STEERING_SIDES.map((side) => {
             const isSelected = data.steeringSide === side.value;
@@ -92,7 +92,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="small"
+                  size="bodySm"
                   style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {side.label}
@@ -105,7 +105,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Summary */}
       <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
-        <Supporting size="small" tone="muted">
+        <Supporting size="bodySm" tone="muted">
           {SPECS_TYPES.find((s) => s.value === data.specs)?.label ?? 'GCC'} specs
           {' · '}
           {STEERING_SIDES.find((s) => s.value === data.steeringSide)?.label ?? 'Left'}-hand drive

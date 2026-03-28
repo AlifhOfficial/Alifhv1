@@ -483,7 +483,7 @@ export default function BrowseScreen() {
 
     return (
       <View style={styles.empty}>
-        <Body size="large" tone="secondary">No cars found</Body>
+        <Body size="bodyLg" tone="secondary">No cars found</Body>
       </View>
     );
   }, [isLoading, listings.length, viewMode]);
@@ -493,7 +493,7 @@ export default function BrowseScreen() {
 
     return (
       <View style={styles.loadingMore}>
-        <Supporting size="small">Loading...</Supporting>
+        <Supporting size="bodySm">Loading...</Supporting>
       </View>
     );
   }, [hasMore, isFetchingNextPage]);

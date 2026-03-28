@@ -22,12 +22,12 @@ interface StatItemProps {
 function StatItem({ label, value, colors, showStar }: StatItemProps) {
   return (
     <View style={styles.statItem}>
-      <Label size="medium" tone="muted" style={styles.statLabel}>{label}</Label>
+      <Label size="label" tone="muted" style={styles.statLabel}>{label}</Label>
       <View style={styles.valueRow}>
         {showStar && value !== '—' && (
           <Star size={Sizes.iconXs} color="#FACC15" fill="#FACC15" strokeWidth={0} style={styles.starIcon} />
         )}
-        <Display size="number" style={styles.statValue}>{value}</Display>
+        <Display size="title" style={styles.statValue}>{value}</Display>
       </View>
     </View>
   );

@@ -33,9 +33,9 @@ export function SettingRow({
       ]}
     >
       <View style={styles.content}>
-        <Body size="small" tone="muted">{title}</Body>
+        <Body size="bodySm" tone="muted">{title}</Body>
         {description && (
-          <Body size="medium">{description}</Body>
+          <Body size="body">{description}</Body>
         )}
       </View>
       {children}

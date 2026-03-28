@@ -105,11 +105,11 @@ export const ListingTimestamp = memo(function ListingTimestamp({
     <View style={styles.container}>
       <Clock size={Sizes.iconSm} color={secondaryTextColor} />
       <View style={styles.textContainer}>
-        <Data size="medium" style={{ color: textColor }}>
+        <Data size="body" style={{ color: textColor }}>
           {postedTimeAgo}
         </Data>
         {wasUpdated && updatedTimeAgo && (
-          <Data size="mini" tone="secondary">
+          <Data size="bodySm" tone="secondary">
             • Updated {updatedTimeAgo}
           </Data>
         )}

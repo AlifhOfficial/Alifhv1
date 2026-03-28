@@ -1,62 +1,27 @@
 /**
- * Revvup Loader Component
- * Clean, minimal loaders using branded typography
+ * Native Loaders
+ * iOS: UIActivityIndicatorView  |  Android: CircularProgressIndicator
+ * Uses React Native's ActivityIndicator — platform-native on both.
  */
 
-import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  withSequence,
-  Easing,
-} from 'react-native-reanimated';
+import React from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing } from '@/constants/theme';
 import { Body } from './text';
 
-// Main Loader component - uses branded typography
+/** Full-screen or inline activity indicator with optional message */
 export function Loader({ message, fullScreen = false }: { message?: string; fullScreen?: boolean }) {
   const { colorScheme } = useTheme();
-  const isDark = colorScheme === 'dark';
   const colors = Colors[colorScheme];
-
-  const opacity = useSharedValue(1);
-
-  useEffect(() => {
-    opacity.value = withRepeat(
-      withSequence(
-        withTiming(0.4, { duration: 800, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) })
-      ),
-      -1,
-      false
-    );
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
 
   if (fullScreen) {
     return (
       <View style={[styles.container, { backgroundColor: colors.skeleton }]}>
-        <View style={styles.brandContainer}>
-          <Animated.Text 
-            style={[
-              styles.brandName, 
-              { color: colors.textMuted },
-              animatedStyle
-            ]}
-          >
-            Revvup
-          </Animated.Text>
-        </View>
+        <ActivityIndicator size="large" color={colors.primary} />
         {message && (
-          <Body size="small" tone="secondary" style={styles.message}>
+          <Body size="bodySm" tone="secondary" style={styles.message}>
             {message}
           </Body>
         )}
@@ -66,17 +31,9 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
 
   return (
     <View style={styles.inlineContainer}>
-      <Animated.Text 
-        style={[
-          styles.brandNameSmall, 
-          { color: colors.text2 },
-          animatedStyle
-        ]}
-      >
-        Revvup
-      </Animated.Text>
+      <ActivityIndicator size="small" color={colors.primary} />
       {message && (
-        <Body size="small" tone="secondary" style={styles.inlineMessage}>
+        <Body size="bodySm" tone="secondary" style={styles.inlineMessage}>
           {message}
         </Body>
       )}
@@ -84,132 +41,42 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
   );
 }
 
-/**
- * Simple spinner loader for inline use
- */
+/** Spinner with configurable size and color */
 export function SpinnerLoader({ size = 40, color }: { size?: number; color?: string }) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const spinnerColor = color || colors.primary;
-
-  const rotation = useSharedValue(0);
-
-  useEffect(() => {
-    rotation.value = withRepeat(
-      withTiming(360, { duration: 800, easing: Easing.linear }),
-      -1,
-      false
-    );
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }],
-  }));
-
-  const borderWidth = Math.max(2, size / 10);
 
   return (
-    <Animated.View
-      style={[
-        {
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          borderWidth: borderWidth,
-          borderColor: `${spinnerColor}30`,
-          borderTopColor: spinnerColor,
-          borderRightColor: spinnerColor,
-        },
-        animatedStyle,
-      ]}
+    <ActivityIndicator
+      size={size >= 36 ? 'large' : 'small'}
+      color={color ?? colors.primary}
     />
   );
 }
 
-/**
- * Logo-only loader (smaller, for inline use) - Typography based
- */
+/** Compact spinner for inline/list use */
 export function LogoLoader({ size = 32 }: { size?: number }) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  
-  const opacity = useSharedValue(1);
-
-  useEffect(() => {
-    opacity.value = withRepeat(
-      withSequence(
-        withTiming(0.4, { duration: 800, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 800, easing: Easing.inOut(Easing.ease) })
-      ),
-      -1,
-      false
-    );
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
 
   return (
-    <Animated.Text 
-      style={[
-        { 
-          fontSize: size, 
-          fontWeight: '800', 
-          letterSpacing: -1,
-          color: colors.text2,
-        }, 
-        animatedStyle
-      ]}
-    >
-      Revvup
-    </Animated.Text>
+    <ActivityIndicator
+      size={size >= 36 ? 'large' : 'small'}
+      color={colors.primary}
+    />
   );
 }
 
-/**
- * Refresh indicator (for pull-to-refresh) - Typography based
- */
-export function RefreshLoader({ size = 24, isRefreshing = false }: { size?: number; isRefreshing?: boolean }) {
+/** Spinner for pull-to-refresh footers */
+export function RefreshLoader({ isRefreshing = false }: { size?: number; isRefreshing?: boolean }) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  
-  const opacity = useSharedValue(0.4);
 
-  useEffect(() => {
-    if (isRefreshing) {
-      opacity.value = withRepeat(
-        withSequence(
-          withTiming(1, { duration: 600, easing: Easing.inOut(Easing.ease) }),
-          withTiming(0.4, { duration: 600, easing: Easing.inOut(Easing.ease) })
-        ),
-        -1,
-        false
-      );
-    } else {
-      opacity.value = withTiming(0.4, { duration: 200 });
-    }
-  }, [isRefreshing]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
+  if (!isRefreshing) return null;
 
   return (
     <View style={styles.refreshContainer}>
-      <Animated.Text 
-        style={[
-          { 
-            fontSize: size, 
-            fontWeight: '800', 
-            letterSpacing: -0.5,
-            color: colors.text2,
-          }, 
-          animatedStyle
-        ]}
-      >
-        Revvup
-      </Animated.Text>
+      <ActivityIndicator size="small" color={colors.primary} />
     </View>
   );
 }
@@ -225,20 +92,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  brandContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  brandName: {
-    fontSize: 64,
-    fontWeight: '800',
-    letterSpacing: -3,
-  },
-  brandNameSmall: {
-    fontSize: 48,
-    fontWeight: '800',
-    letterSpacing: -2,
-  },
   message: {
     marginTop: Spacing.lg,
   },
@@ -251,3 +104,4 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.lg,
   },
 });
+

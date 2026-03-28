@@ -81,19 +81,19 @@ export const SellerCard = memo(function SellerCard({
         
         <View style={styles.details}>
           <View style={styles.nameRow}>
-            <Data size="medium" style={{ color: textColor }}>{sellerName}</Data>
+            <Data size="body" style={{ color: textColor }}>{sellerName}</Data>
             {isVerified && !isBlackTier && (
               <CheckCircle2 size={Sizes.iconXs} color={colors.primary} />
             )}
             {isBlackTier && (
               <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
-                <Label size="badge" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
+                <Label size="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
               </View>
             )}
           </View>
           
           {/* Subtitle: Dealer type or member since */}
-          <Supporting size="small">
+          <Supporting size="bodySm">
             {isPartner ? 'Verified Dealer' : (memberSince || 'Private Seller')}
           </Supporting>
         </View>

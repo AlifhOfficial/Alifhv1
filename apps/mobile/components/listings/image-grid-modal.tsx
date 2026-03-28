@@ -111,7 +111,7 @@ export function ImageGridModal({
                 transition={150}
               />
               <View style={styles.indexBadge}>
-                <Data size="mini" style={styles.indexText}>{baseIndex + 1}</Data>
+                <Data size="bodySm" style={styles.indexText}>{baseIndex + 1}</Data>
               </View>
             </HapticPressable>
             <View style={[styles.stackedColumn, { width: smallWidth }]}>
@@ -131,7 +131,7 @@ export function ImageGridModal({
                       transition={150}
                     />
                     <View style={styles.indexBadge}>
-                      <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
+                      <Data size="bodySm" style={styles.indexText}>{imgIdx + 1}</Data>
                     </View>
                   </HapticPressable>
                 );
@@ -161,7 +161,7 @@ export function ImageGridModal({
                     transition={150}
                   />
                   <View style={styles.indexBadge}>
-                    <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
+                    <Data size="bodySm" style={styles.indexText}>{imgIdx + 1}</Data>
                   </View>
                 </HapticPressable>
               );
@@ -190,7 +190,7 @@ export function ImageGridModal({
                       transition={150}
                     />
                     <View style={styles.indexBadge}>
-                      <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
+                      <Data size="bodySm" style={styles.indexText}>{imgIdx + 1}</Data>
                     </View>
                   </HapticPressable>
                 );
@@ -207,7 +207,7 @@ export function ImageGridModal({
                 transition={150}
               />
               <View style={styles.indexBadge}>
-                <Data size="mini" style={styles.indexText}>{baseIndex + 3}</Data>
+                <Data size="bodySm" style={styles.indexText}>{baseIndex + 3}</Data>
               </View>
             </HapticPressable>
           </View>
@@ -233,7 +233,7 @@ export function ImageGridModal({
                     transition={150}
                   />
                   <View style={styles.indexBadge}>
-                    <Data size="mini" style={styles.indexText}>{imgIdx + 1}</Data>
+                    <Data size="bodySm" style={styles.indexText}>{imgIdx + 1}</Data>
                   </View>
                 </HapticPressable>
               );
@@ -256,7 +256,7 @@ export function ImageGridModal({
                 transition={150}
               />
               <View style={styles.indexBadge}>
-                <Data size="mini" style={styles.indexText}>{baseIndex + 1}</Data>
+                <Data size="bodySm" style={styles.indexText}>{baseIndex + 1}</Data>
               </View>
             </HapticPressable>
           </View>
@@ -298,7 +298,7 @@ export function ImageGridModal({
           <>
             {/* Header */}
             <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.bg, borderBottomColor: colors.glassBorder }]}>
-              <Supporting size="small">
+              <Supporting size="bodySm">
                 {totalImages} photos
               </Supporting>
               <HapticPressable

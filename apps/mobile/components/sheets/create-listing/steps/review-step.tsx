@@ -142,9 +142,9 @@ export function ReviewStepContent({
         )}
         
         <View style={styles.heroInfo}>
-          <Heading size="small" numberOfLines={2}>{vehicleTitle}</Heading>
-          {data.trim && <Supporting size="small" tone="muted">{data.trim}</Supporting>}
-          <Data size="large" style={{ color: colors.primary, marginTop: Spacing.xs }}>
+          <Heading size="subheading" numberOfLines={2}>{vehicleTitle}</Heading>
+          {data.trim && <Supporting size="bodySm" tone="muted">{data.trim}</Supporting>}
+          <Data size="title" style={{ color: colors.primary, marginTop: Spacing.xs }}>
             AED {priceNum.toLocaleString()}
           </Data>
         </View>
@@ -153,16 +153,16 @@ export function ReviewStepContent({
       {/* Quick Stats */}
       <View style={styles.statsRow}>
         <View style={[styles.statItem, { backgroundColor: colors.surface2 }]}>
-          <Supporting size="small" tone="muted">Mileage</Supporting>
-          <Body size="medium">{mileageNum.toLocaleString()} km</Body>
+          <Supporting size="bodySm" tone="muted">Mileage</Supporting>
+          <Body size="body">{mileageNum.toLocaleString()} km</Body>
         </View>
         <View style={[styles.statItem, { backgroundColor: colors.surface2 }]}>
-          <Supporting size="small" tone="muted">Location</Supporting>
-          <Body size="medium" numberOfLines={1}>{emirateLabel}</Body>
+          <Supporting size="bodySm" tone="muted">Location</Supporting>
+          <Body size="body" numberOfLines={1}>{emirateLabel}</Body>
         </View>
         <View style={[styles.statItem, { backgroundColor: colors.surface2 }]}>
-          <Supporting size="small" tone="muted">Photos</Supporting>
-          <Body size="medium">{data.images.length}</Body>
+          <Supporting size="bodySm" tone="muted">Photos</Supporting>
+          <Body size="body">{data.images.length}</Body>
         </View>
       </View>
 
@@ -170,7 +170,7 @@ export function ReviewStepContent({
       {!canPublish && missingItems.length > 0 && (
         <View style={[styles.warningBox, { backgroundColor: (colors.warning ?? '#F59E0B') + '15' }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.warning ?? '#F59E0B'} strokeWidth={2} />
-          <Body size="small" style={{ color: colors.warning ?? '#F59E0B', flex: 1 }}>
+          <Body size="bodySm" style={{ color: colors.warning ?? '#F59E0B', flex: 1 }}>
             Missing: {missingItems.join(', ')}
           </Body>
         </View>
@@ -180,7 +180,7 @@ export function ReviewStepContent({
       {error && (
         <View style={[styles.warningBox, { backgroundColor: (colors.error ?? '#EF4444') + '15' }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.error ?? '#EF4444'} strokeWidth={2} />
-          <Body size="small" style={{ color: colors.error ?? '#EF4444', flex: 1 }}>
+          <Body size="bodySm" style={{ color: colors.error ?? '#EF4444', flex: 1 }}>
             {error}
           </Body>
         </View>
@@ -201,7 +201,7 @@ export function ReviewStepContent({
           ) : (
             <>
               <Check size={Sizes.iconSm} color={canPublish ? colors.bg : colors.textMuted} strokeWidth={2} />
-              <Body size="medium" style={{ color: canPublish ? colors.bg : colors.textMuted, fontWeight: '600' }}>
+              <Body size="body" style={{ color: canPublish ? colors.bg : colors.textMuted, }}>
                 Publish
               </Body>
             </>
@@ -214,7 +214,7 @@ export function ReviewStepContent({
           style={[styles.draftBtn, { borderColor: colors.border }]}
         >
           <Save size={Sizes.iconSm} color={colors.text2} strokeWidth={2} />
-          <Body size="medium" tone="secondary">Draft</Body>
+          <Body size="body" tone="secondary">Draft</Body>
         </HapticPressable>
       </View>
     </StepContainer>
@@ -230,8 +230,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   heroImage: {
-    width: 120,
-    height: 100,
+    width: Spacing["5xl"],
+    height: Spacing["5xl"] * 2 + Spacing.xs,
   },
   heroInfo: {
     flex: 1,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    height: 52,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
   },
   draftBtn: {
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.xs,
-    height: 52,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
     borderWidth: 1,
   },

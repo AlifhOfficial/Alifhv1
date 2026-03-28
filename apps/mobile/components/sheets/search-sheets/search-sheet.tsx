@@ -29,7 +29,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
 import {
@@ -552,13 +552,13 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
       onPress={onPress}
     >
       <Supporting
-        size="small"
+        size="bodySm"
         style={{ color: isSelected ? colors.bg : colors.text }}
       >
         {label}
       </Supporting>
       {!isSelected && count !== undefined && (
-        <Supporting size="mini" tone="muted">
+        <Supporting size="bodySm" tone="muted">
           {count}
         </Supporting>
       )}
@@ -596,10 +596,10 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Body size="medium" tone="secondary">Cancel</Body>
+              <Body size="body" tone="secondary">Cancel</Body>
             </HapticPressable>
             
-            <Heading size="small">Search</Heading>
+            <Heading size="subheading">Search</Heading>
             
             <HapticPressable
               style={[
@@ -610,7 +610,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
               disabled={!canApply}
             >
               <ButtonText
-                size="small"
+                size="bodySm"
                 style={{ color: canApply ? colors.primaryFg : colors.textMuted }}
               >
                 Apply
@@ -646,11 +646,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
           {/* Selection Summary (breadcrumb style) */}
           {hasSelections && (
             <View style={styles.selectionSummary}>
-              <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+              <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
                 {selectionSummary}
               </Body>
               <HapticPressable onPress={clearAllSelections} hitSlop={Layout.hitSlopSmall}>
-                <Supporting size="small" style={{ color: colors.error }}>
+                <Supporting size="bodySm" style={{ color: colors.error }}>
                   Clear
                 </Supporting>
               </HapticPressable>
@@ -668,7 +668,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
           {/* Suggestions */}
           {query.trim().length > 0 && (
             <View style={styles.section}>
-              <Label size="small" tone="muted" style={styles.sectionLabel}>
+              <Label size="caption" tone="muted" style={styles.sectionLabel}>
                 SUGGESTIONS
               </Label>
 
@@ -697,11 +697,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                         {category && (
                           <View style={[styles.categoryDot, { backgroundColor: category.dot }]} />
                         )}
-                        <Body size="medium" numberOfLines={1} style={{ flex: 1 }}>
+                        <Body size="body" numberOfLines={1} style={{ flex: 1 }}>
                           {suggestion.text}
                         </Body>
                       </View>
-                      <Supporting size="small" tone="muted">
+                      <Supporting size="bodySm" tone="muted">
                         {category?.label ?? 'Search'}
                         {suggestion.count !== undefined && suggestion.count > 0 && ` · ${suggestion.count.toLocaleString()}`}
                       </Supporting>
@@ -710,7 +710,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                   })}
                 </View>
               ) : query.trim().length >= 2 ? (
-                <Body size="small" tone="muted" style={styles.emptyText}>
+                <Body size="bodySm" tone="muted" style={styles.emptyText}>
                   No suggestions found
                 </Body>
               ) : null}
@@ -721,7 +721,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
           <View style={styles.section}>
             {/* Makes */}
             <View style={styles.hierarchyLevel}>
-              <Label size="small" tone="muted" style={styles.sectionLabel}>
+              <Label size="caption" tone="muted" style={styles.sectionLabel}>
                 MAKE
               </Label>
               {isLoadingFacets ? (
@@ -762,11 +762,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
             {selectedMakes.length > 0 && (
               <View style={styles.hierarchyLevel}>
                 <View style={[styles.hierarchyConnector, { backgroundColor: colors.border }]} />
-                <Label size="small" tone="muted" style={styles.sectionLabel}>
+                <Label size="caption" tone="muted" style={styles.sectionLabel}>
                   MODEL
                 </Label>
                 {modelFacets.length === 0 ? (
-                  <Body size="small" tone="muted" style={styles.emptyText}>
+                  <Body size="bodySm" tone="muted" style={styles.emptyText}>
                     No models available
                   </Body>
                 ) : (
@@ -811,7 +811,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                         }}
                       >
                         <Supporting
-                          size="small"
+                          size="bodySm"
                           style={{ color: colors.primary }}
                         >
                           {showAllModels ? 'Show Less' : `View All (${modelFacets.length})`}
@@ -832,11 +832,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
             {selectedMakes.length > 0 && selectedModels.length > 0 && (
               <View style={styles.hierarchyLevel}>
                 <View style={[styles.hierarchyConnector, { backgroundColor: colors.border }]} />
-                <Label size="small" tone="muted" style={styles.sectionLabel}>
+                <Label size="caption" tone="muted" style={styles.sectionLabel}>
                   TRIM
                 </Label>
                 {trimFacets.length === 0 ? (
-                  <Body size="small" tone="muted" style={styles.emptyText}>
+                  <Body size="bodySm" tone="muted" style={styles.emptyText}>
                     No trims available
                   </Body>
                 ) : (
@@ -926,12 +926,11 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 15,
+    ...Typography.bodySm,
     lineHeight: 22,
-    fontWeight: '500',
     paddingTop: 0,
     paddingBottom: 0,
-    minHeight: 66,
+    minHeight: Spacing["5xl"],
     textAlignVertical: 'top',
   },
   selectionSummary: {
@@ -997,7 +996,7 @@ const styles = StyleSheet.create({
     top: -Spacing.md,
     width: 2,
     height: Spacing.md,
-    borderRadius: 1,
+    borderRadius: Radius.sm,
   },
   chipGrid: {
     flexDirection: 'row',

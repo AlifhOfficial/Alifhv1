@@ -175,20 +175,20 @@ export function PhoneVerificationField({
         style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
       >
         <View style={styles.labelRow}>
-          <Body size="small" tone="muted">
+          <Body size="bodySm" tone="muted">
             Phone Number
           </Body>
           {displayVerified ? (
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} strokeWidth={2} />
           ) : phone ? (
             <HapticPressable onPress={handleSendOTP} hitSlop={Layout.hitSlopSmall}>
-              <ButtonText size="small" tone="primary">
+              <ButtonText size="bodySm" tone="primary">
                 Verify
               </ButtonText>
             </HapticPressable>
           ) : null}
         </View>
-        <Body size="medium" tone={phone ? 'default' : 'muted'}>
+        <Body size="body" tone={phone ? 'default' : 'muted'}>
           {phone ? `+971 ${phone}` : 'Tap to add'}
         </Body>
       </HapticPressable>
@@ -202,11 +202,11 @@ export function PhoneVerificationField({
         entering={FadeIn.duration(200)}
         style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
       >
-        <Body size="small" tone="muted">
+        <Body size="bodySm" tone="muted">
           Phone Number
         </Body>
         <View style={styles.editRow}>
-          <Body size="medium" tone="secondary" style={styles.prefix}>+971</Body>
+          <Body size="body" tone="secondary" style={styles.prefix}>+971</Body>
           <TextInput
             ref={inputRef}
             value={phone}
@@ -227,21 +227,21 @@ export function PhoneVerificationField({
           />
         </View>
         {error && (
-          <Body size="small" tone="error">{error}</Body>
+          <Body size="bodySm" tone="error">{error}</Body>
         )}
         <View style={styles.actions}>
           <HapticPressable onPress={handleCancel} hitSlop={Layout.hitSlopSmall}>
-            <Body size="small" tone="secondary">
+            <Body size="bodySm" tone="secondary">
               Cancel
             </Body>
           </HapticPressable>
           <HapticPressable onPress={handleRemovePhone} hitSlop={Layout.hitSlopSmall}>
-            <Body size="small" tone="error">
+            <Body size="bodySm" tone="error">
               Remove
             </Body>
           </HapticPressable>
           <HapticPressable onPress={handleSavePhone} hitSlop={Layout.hitSlopSmall}>
-            <Data size="medium" tone="primary">
+            <Data size="body" tone="primary">
               Save
             </Data>
           </HapticPressable>
@@ -255,7 +255,7 @@ export function PhoneVerificationField({
     return (
       <View style={[styles.fieldContainer, styles.loadingContainer, { borderBottomWidth: 0 }]}>
         <PulseLoader size="sm" variant="primary" />
-        <Data size="medium" tone="secondary">
+        <Data size="body" tone="secondary">
           {step === 'sending' ? 'Sending code...' : 'Verifying...'}
         </Data>
       </View>
@@ -268,10 +268,10 @@ export function PhoneVerificationField({
       entering={FadeInDown.duration(250)}
       style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
     >
-      <Body size="small" tone="muted">
+      <Body size="bodySm" tone="muted">
         Phone Number
       </Body>
-      <Body size="small" tone="muted" style={styles.otpHint}>
+      <Body size="bodySm" tone="muted" style={styles.otpHint}>
         Enter the 6-digit code sent to +971 {phone}
       </Body>
       
@@ -296,7 +296,7 @@ export function PhoneVerificationField({
       />
       
       {error && (
-        <Body size="small" tone="error" style={styles.errorText}>{error}</Body>
+        <Body size="bodySm" tone="error" style={styles.errorText}>{error}</Body>
       )}
 
       <View style={styles.otpActions}>
@@ -305,14 +305,14 @@ export function PhoneVerificationField({
           disabled={countdown > 0}
           hitSlop={Layout.hitSlopSmall}
         >
-          <Body size="small" tone={countdown > 0 ? 'muted' : 'secondary'}>
+          <Body size="bodySm" tone={countdown > 0 ? 'muted' : 'secondary'}>
             {countdown > 0 ? `Resend in ${countdown}s` : 'Resend code'}
           </Body>
         </HapticPressable>
         
         <View style={styles.otpButtonRow}>
           <HapticPressable onPress={handleCancel} hitSlop={Layout.hitSlopSmall}>
-            <Body size="small" tone="secondary">
+            <Body size="bodySm" tone="secondary">
               Cancel
             </Body>
           </HapticPressable>
@@ -321,7 +321,7 @@ export function PhoneVerificationField({
             disabled={otp.length !== 6}
             hitSlop={Layout.hitSlopSmall}
           >
-            <ButtonText size="medium" tone={otp.length === 6 ? 'primary' : 'muted'}>
+            <ButtonText size="body" tone={otp.length === 6 ? 'primary' : 'muted'}>
               Verify
             </ButtonText>
           </HapticPressable>

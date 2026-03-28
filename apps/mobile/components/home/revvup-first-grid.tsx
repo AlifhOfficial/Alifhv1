@@ -19,7 +19,6 @@ import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { HapticPressable, Heading, Skeleton, BrandAvatar, Supporting } from '@/components/ui';
-import { RevvupLogo } from '@/components/ui/loaders';
 import { type PartnerListItem } from '@/lib/partner-api';
 
 // ============================================================================
@@ -121,7 +120,7 @@ const PartnerItem = memo(function PartnerItem({
         
         {/* Partner Name - Bottom, wraps to multiple lines */}
         <View style={styles.partnerTextContainer}>
-          <Heading size="mini" style={{ color: colors.text, textAlign: 'center' }}>
+          <Heading size="subheading" style={{ color: colors.text, textAlign: 'center' }}>
             {partner.name}
           </Heading>
         </View>
@@ -188,11 +187,15 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
             },
           ]}
         >
-          <RevvupLogo size={20} color={colors.blkBadgeFg} />
+          <Image
+            source={require('@/assets/images/revv.png')}
+            style={{ width: Spacing.xl, height: Spacing.xl, tintColor: colors.blkBadgeFg }}
+            contentFit="contain"
+          />
         </View>
         <View style={styles.headerText}>
-          <Heading size="mini" style={{ color: textColor }}>Founding Partners</Heading>
-          <Supporting size="small" style={{ color: textSecondary }}>Our Trusted Dealers</Supporting>
+          <Heading size="subheading" style={{ color: textColor }}>Founding Partners</Heading>
+          <Supporting size="bodySm" style={{ color: textSecondary }}>Our Trusted Dealers</Supporting>
         </View>
       </View>
 
@@ -218,7 +221,7 @@ export const RevvupFirstGrid = memo(function RevvupFirstGrid({
 
       {/* Footer */}
       <HapticPressable onPress={handleBrowseAllPress} style={styles.footer}>
-        <Heading size="mini" style={{ color: textColor }}>See all partners</Heading>
+        <Heading size="subheading" style={{ color: textColor }}>See all partners</Heading>
         <View
           style={[
             styles.arrowBtn,

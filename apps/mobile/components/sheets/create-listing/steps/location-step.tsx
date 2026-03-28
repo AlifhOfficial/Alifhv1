@@ -10,7 +10,7 @@ import React, { useCallback, useRef } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Typography, Fonts, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -46,7 +46,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Emirate Selection */}
       <View style={styles.section}>
-        <Label size="small">Emirate</Label>
+        <Label size="caption">Emirate</Label>
         <View style={styles.chipsWrap}>
           {UAE_EMIRATES.map((emirate) => {
             const isActive = data.emirate === emirate.value;
@@ -63,7 +63,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="small"
+                  size="bodySm"
                   style={{ color: isActive ? colors.bg : colors.text }}
                 >
                   {emirate.label}
@@ -77,8 +77,8 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {/* City Input (Optional) */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Label size="small">City / Area</Label>
-          <Supporting size="small" tone="muted">
+          <Label size="caption">City / Area</Label>
+          <Supporting size="bodySm" tone="muted">
             Optional
           </Supporting>
         </View>
@@ -104,7 +104,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {/* Selected summary */}
       {data.emirate && (
         <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
-          <Supporting size="small" tone="secondary">
+          <Supporting size="bodySm" tone="secondary">
             {data.emirate}{data.city ? `, ${data.city}` : ''}
           </Supporting>
         </View>
@@ -137,12 +137,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   input: {
-    height: 48,
+    height: Sizes.actionButtonLg,
     borderWidth: 1,
     borderRadius: Radius.lg,
     paddingHorizontal: Spacing.md,
-    fontSize: 16,
-    fontWeight: '400',
+    ...Typography.body,
   },
   summaryBox: {
     padding: Spacing.md,

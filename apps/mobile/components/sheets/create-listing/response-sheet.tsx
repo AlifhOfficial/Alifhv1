@@ -189,13 +189,13 @@ export function ResponseSheet({
         </View>
 
         {/* Title */}
-        <Heading size="medium" style={styles.title}>
+        <Heading size="heading" style={styles.title}>
           {title}
         </Heading>
 
         {/* Message */}
         {message && (
-          <Body size="medium" tone="secondary" style={styles.message}>
+          <Body size="body" tone="secondary" style={styles.message}>
             {message}
           </Body>
         )}
@@ -208,7 +208,7 @@ export function ResponseSheet({
                 onPress={handleDismiss}
                 style={[styles.secondaryButton, { backgroundColor: colors.fill2 }]}
               >
-                <ButtonText size="medium" style={{ color: colors.text }}>
+                <ButtonText size="body" style={{ color: colors.text }}>
                   Dismiss
                 </ButtonText>
               </HapticPressable>
@@ -218,7 +218,7 @@ export function ResponseSheet({
                   onPress={handleRetry}
                   style={[styles.primaryButton, { backgroundColor: colors.primary }]}
                 >
-                  <ButtonText size="medium" style={{ color: colors.primaryFg }}>
+                  <ButtonText size="body" style={{ color: colors.primaryFg }}>
                     {retryLabel}
                   </ButtonText>
                 </HapticPressable>
@@ -229,7 +229,7 @@ export function ResponseSheet({
                   onPress={handlePrimary}
                   style={[styles.primaryButton, { backgroundColor: colors.primary }]}
                 >
-                  <ButtonText size="medium" style={{ color: colors.primaryFg }}>
+                  <ButtonText size="body" style={{ color: colors.primaryFg }}>
                     {primaryLabel}
                   </ButtonText>
                 </HapticPressable>
@@ -240,7 +240,7 @@ export function ResponseSheet({
               onPress={handleDismiss}
               style={[styles.fullButton, { backgroundColor: colors.fill2 }]}
             >
-              <ButtonText size="medium" style={{ color: colors.text }}>
+              <ButtonText size="body" style={{ color: colors.text }}>
                 OK
               </ButtonText>
             </HapticPressable>
@@ -267,9 +267,9 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.lg,
   },
   iconWrapper: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: Spacing["5xl"] + Spacing.lg,
+    height: Spacing["5xl"] + Spacing.lg,
+    borderRadius: (Spacing["5xl"] + Spacing.lg) / 2,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.md,

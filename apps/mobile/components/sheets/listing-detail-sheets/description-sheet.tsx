@@ -81,7 +81,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="medium">Description</Heading>
+          <Heading size="heading">Description</Heading>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 
@@ -115,7 +115,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <Body size="medium">
+          <Body size="body">
             {description}
           </Body>
         </BottomSheetScrollView>

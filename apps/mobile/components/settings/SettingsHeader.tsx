@@ -8,7 +8,7 @@ import { StyleSheet, View } from 'react-native';
 import { Settings2 } from 'lucide-react-native';
 
 import { Data } from '@/components/ui';
-import { Spacing, Layout, Sizes } from '@/constants/theme';
+import { Spacing, Layout, Sizes, ZIndex} from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface SettingsHeaderProps {
@@ -35,7 +35,7 @@ export function SettingsHeader({
       >
         <View style={styles.pillContent}>
           <Settings2 size={Sizes.iconXs} color={colors.icon} strokeWidth={2} />
-          <Data size="small">Settings</Data>
+          <Data size="bodySm">Settings</Data>
         </View>
       </View>
     </View>
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
+    zIndex: ZIndex.overlay,
     paddingBottom: Spacing.md,
     paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',

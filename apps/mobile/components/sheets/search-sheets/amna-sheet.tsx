@@ -24,7 +24,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
 import { searchApi } from '@/lib/search-api';
@@ -236,13 +236,13 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
               <Ionicons name="flash" size={Spacing['4xl']} color="#8B5CF6" />
               <View style={{ alignItems: 'center', gap: Spacing.sm, marginTop: Spacing.lg, width: '100%', paddingHorizontal: Spacing.md }}>
                 {message ? (
-                  <Heading size="small" style={{ textAlign: 'center', flexShrink: 1 }}>
+                  <Heading size="subheading" style={{ textAlign: 'center', flexShrink: 1 }}>
                     {message}
                   </Heading>
                 ) : (
                   <>
-                    <Heading size="small" style={{ textAlign: 'center', flexShrink: 1 }}>{loadingText}</Heading>
-                    <Body size="small" tone="muted" style={{ textAlign: 'center' }}>Finding the perfect cars for you ✨</Body>
+                    <Heading size="subheading" style={{ textAlign: 'center', flexShrink: 1 }}>{loadingText}</Heading>
+                    <Body size="bodySm" tone="muted" style={{ textAlign: 'center' }}>Finding the perfect cars for you ✨</Body>
                   </>
                 )}
               </View>
@@ -258,13 +258,13 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
               onPress={() => bottomSheetRef.current?.dismiss()}
               hitSlop={Spacing.md}
             >
-              <Body size="medium" tone="secondary">Cancel</Body>
+              <Body size="body" tone="secondary">Cancel</Body>
             </HapticPressable>
             <View style={styles.headerTitle}>
               <Ionicons name="flash" size={Spacing.lg} color="#8B5CF6" />
-              <Heading size="small">Ask Amna</Heading>
+              <Heading size="subheading">Ask Amna</Heading>
             </View>
-            <View style={{ width: 50 }} />
+            <View style={{ width: Spacing["5xl"] }} />
           </View>
         </View>
 
@@ -273,7 +273,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
           <View style={styles.content}>
             {/* Amna intro */}
             <View style={styles.intro}>
-              <Body size="small" tone="muted" style={{ textAlign: 'center' }}>
+              <Body size="bodySm" tone="muted" style={{ textAlign: 'center' }}>
                 Describe what you're looking for
               </Body>
             </View>
@@ -322,7 +322,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
                     color={query.trim() ? '#fff' : colors.textMuted}
                   />
                   <ButtonText
-                    size="medium"
+                    size="body"
                     style={{ color: query.trim() ? '#fff' : colors.textMuted }}
                   >
                     Ask Amna
@@ -334,7 +334,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
             {/* Error message display */}
             {message && !isLoading && (
               <View style={styles.messageBox}>
-                <Body size="small" style={{ textAlign: 'center', color: '#8B5CF6' }}>
+                <Body size="bodySm" style={{ textAlign: 'center', color: '#8B5CF6' }}>
                   {message}
                 </Body>
               </View>
@@ -342,7 +342,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
 
             {/* Quick suggestions */}
             <View style={styles.quickSuggestions}>
-              <Label size="small" tone="muted" style={{ marginBottom: 8 }}>TRY ASKING</Label>
+              <Label size="caption" tone="muted" style={{ marginBottom: Spacing.sm }}>TRY ASKING</Label>
               <View style={styles.suggestionsGrid}>
                 {[
                   'Surprise me 🎲',
@@ -368,7 +368,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
                       },
                     ]}
                   >
-                    <Supporting size="small" style={{ color: colors.text }}>
+                    <Supporting size="bodySm" style={{ color: colors.text }}>
                       {suggestion}
                     </Supporting>
                   </HapticPressable>
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    zIndex: 10,
+    zIndex: ZIndex.raised,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -441,10 +441,9 @@ const styles = StyleSheet.create({
   textInput: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
-    fontSize: 15,
+    ...Typography.bodySm,
     lineHeight: 22,
-    fontWeight: '500',
-    minHeight: 100,
+    minHeight: Spacing["5xl"],
     textAlignVertical: 'top',
   },
   submitButton: {

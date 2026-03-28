@@ -11,14 +11,13 @@ import {
   NativeSyntheticEvent,
   TextInputContentSizeChangeEventData,
   Keyboard,
-} from 'react-native';
-import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
+} from 'react-native';import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
 import { HapticPressable } from '@/components/ui';
 import { Send, MapPin } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Typography, Sizes, Layout, Shadows } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography, Sizes, Layout } from '@/constants/theme';
 
 interface MessageInputProps {
   onSend: (text: string) => Promise<void>;
@@ -160,6 +159,7 @@ export function MessageInput({
     <Animated.View
       style={[
         styles.container,
+        { borderTopColor: colors.border, borderTopWidth: StyleSheet.hairlineWidth, backgroundColor: colors.bg },
         animatedContainerStyle,
       ]}
     >
@@ -174,16 +174,12 @@ export function MessageInput({
             disabled={disabled}
             style={[
               styles.actionButton,
-              styles.glass,
-              {
-                backgroundColor: colors.glassBg,
-                borderColor: colors.glassBorder,
-              },
+              { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: StyleSheet.hairlineWidth },
             ]}
           >
             <MapPin
               size={Sizes.iconSm}
-              color={colors.textMuted}
+              color={disabled ? colors.textMuted : colors.text3}
               strokeWidth={2}
             />
           </HapticPressable>
@@ -192,11 +188,10 @@ export function MessageInput({
         <Animated.View
           style={[
             styles.inputWrapper,
-            styles.glass,
-            styles.inputGlow,
             { 
-              backgroundColor: colors.glassBg, 
-              borderColor: colors.glassBorder,
+              backgroundColor: colors.input,
+              borderColor: colors.border,
+              borderWidth: StyleSheet.hairlineWidth,
               minHeight: Math.max(inputHeight, MIN_HEIGHT),
             },
           ]}
@@ -225,10 +220,10 @@ export function MessageInput({
           disabled={!canSend}
           style={[
             styles.sendWrapper,
-            styles.glass,
             {
-              backgroundColor: canSend ? colors.primary : colors.glassBg,
-              borderColor: canSend ? colors.primary : colors.glassBorder,
+              backgroundColor: canSend ? colors.primary : colors.surface,
+              borderColor: canSend ? colors.primary : colors.border,
+              borderWidth: StyleSheet.hairlineWidth,
             },
           ]}
         >
@@ -253,17 +248,11 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
     gap: Spacing.sm,
   },
-  glass: {
-    borderWidth: 1,
-  },
   inputWrapper: {
     flex: 1,
     borderRadius: Radius['2xl'],
     paddingHorizontal: Spacing.lg,
     justifyContent: 'center',
-  },
-  inputGlow: {
-    ...Shadows.md,
   },
   input: {
     ...Typography.bodyLg,
@@ -287,6 +276,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.xs,
-    ...Shadows.sm,
   },
 });

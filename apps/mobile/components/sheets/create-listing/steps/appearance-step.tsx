@@ -10,7 +10,7 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Label } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -55,11 +55,11 @@ function ColorChip({
         />
       )}
       <Body
-        size="small"
+        size="bodySm"
         numberOfLines={1}
         style={{
           color: isSelected ? themeColors.bg : themeColors.text,
-          fontWeight: isSelected ? '600' : '400',
+          fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
         }}
       >
         {color.label}
@@ -102,7 +102,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Body Type */}
       <View style={styles.section}>
-        <Label size="small">Body Type</Label>
+        <Label size="caption">Body Type</Label>
         <View style={styles.chipWrap}>
           {BODY_TYPES.map((type) => {
             const isSelected = data.bodyType === type.value;
@@ -119,7 +119,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Body
-                  size="small"
+                  size="bodySm"
                   style={{ color: isSelected ? colors.bg : colors.text }}
                 >
                   {type.label}
@@ -132,7 +132,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Exterior Color */}
       <View style={styles.section}>
-        <Label size="small">Exterior Color</Label>
+        <Label size="caption">Exterior Color</Label>
         <View style={styles.chipWrap}>
           {EXTERIOR_COLORS.map((color) => (
             <ColorChip
@@ -148,7 +148,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Interior Color */}
       <View style={styles.section}>
-        <Label size="small">Interior Color</Label>
+        <Label size="caption">Interior Color</Label>
         <View style={styles.chipWrap}>
           {INTERIOR_COLORS.map((color) => (
             <ColorChip
@@ -193,9 +193,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   colorSwatch: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: Spacing.lg,
+    height: Spacing.lg,
+    borderRadius: Radius.md,
     borderWidth: 1,
   },
 });

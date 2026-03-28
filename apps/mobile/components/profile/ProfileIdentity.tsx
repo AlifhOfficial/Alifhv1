@@ -58,7 +58,7 @@ export function ProfileIdentity({
       <View style={styles.info}>
         <View style={styles.nameRow}>
           <Heading
-            size="medium"
+            size="heading"
             style={styles.name}
             numberOfLines={1}
           >
@@ -76,7 +76,7 @@ export function ProfileIdentity({
 
         {email && (
           <Data
-            size="medium"
+            size="body"
             tone="secondary"
             numberOfLines={1}
             style={styles.email}
@@ -85,7 +85,7 @@ export function ProfileIdentity({
           </Data>
         )}
 
-        <Body size="small" tone="muted" style={styles.memberSince}>
+        <Body size="bodySm" tone="muted" style={styles.memberSince}>
           Member since {memberSince}
         </Body>
       </View>

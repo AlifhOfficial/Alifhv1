@@ -16,7 +16,7 @@ import DraggableFlatList, {
 import * as Haptics from 'expo-haptics';
 import { X, ImagePlus, GripVertical } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Fonts } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -185,7 +185,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             {/* Thumbnail badge — only on confirmed CDN cover */}
             {isThumbnail && (
               <View style={[styles.thumbnailBadge, { backgroundColor: colors.primary }]}>
-                <Body size="small" style={{ color: colors.primaryFg, fontSize: 8, fontWeight: '600' }}>
+                <Body size="bodySm" style={{ color: colors.primaryFg, fontSize: Spacing.sm, fontWeight: Fonts.semiBold }}>
                   COVER
                 </Body>
               </View>
@@ -241,14 +241,14 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
         {uploading && uploadProgress.total > 0 ? (
           <View style={styles.uploadingContent}>
             <ActivityIndicator size="small" color={colors.text} />
-            <Body size="medium" tone="secondary">
+            <Body size="body" tone="secondary">
               {`Uploading ${uploadProgress.done} of ${uploadProgress.total}...`}
             </Body>
           </View>
         ) : (
           <View style={styles.uploadContent}>
             <ImagePlus size={Sizes.iconLg} color={colors.textMuted} strokeWidth={1.5} />
-            <Body size="small" tone="muted">
+            <Body size="bodySm" tone="muted">
               Add Photos ({totalCount}/{MAX_IMAGES})
             </Body>
           </View>
@@ -257,7 +257,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Error */}
       {error && (
-        <Supporting size="small" style={{ color: colors.error, marginBottom: Spacing.sm }}>
+        <Supporting size="bodySm" style={{ color: colors.error, marginBottom: Spacing.sm }}>
           {error}
         </Supporting>
       )}
@@ -274,7 +274,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             columnWrapperStyle={styles.row}
             scrollEnabled={false}
           />
-          <Supporting size="small" tone="muted" style={{ marginTop: Spacing.sm }}>
+          <Supporting size="bodySm" tone="muted" style={{ marginTop: Spacing.sm }}>
             Hold and drag to reorder
           </Supporting>
         </View>
@@ -335,17 +335,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Spacing.xs,
     left: Spacing.xs,
-    paddingHorizontal: 6,
+    paddingHorizontal: Sizes.badgePaddingH,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: Radius.sm,
   },
   dragHandle: {
     position: 'absolute',
     bottom: Spacing.xs,
     left: Spacing.xs,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: Spacing["2xl"],
+    height: Spacing["2xl"],
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -353,9 +353,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Spacing.xs,
     right: Spacing.xs,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: Spacing.xl,
+    height: Spacing.xl,
+    borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },

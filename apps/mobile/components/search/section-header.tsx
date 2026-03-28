@@ -14,10 +14,10 @@ interface SectionHeaderProps {
 export function SectionHeader({ title, onClear, showClear = false }: SectionHeaderProps) {
   return (
     <View style={styles.container}>
-      <Data size="mini" tone="secondary">{title}</Data>
+      <Data size="bodySm" tone="secondary">{title}</Data>
       {showClear && onClear && (
         <HapticPressable onPress={onClear} hitSlop={Layout.hitSlopSmall}>
-          <Data size="mini" tone="primary">Clear</Data>
+          <Data size="bodySm" tone="primary">Clear</Data>
         </HapticPressable>
       )}
     </View>

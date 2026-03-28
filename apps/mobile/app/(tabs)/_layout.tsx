@@ -1,7 +1,7 @@
 /**
  * Tab Layout - Revvup Mobile App
  * 3 tabs: Home, Messages, Browse
- * Minimal flat tab bar — icons only, no labels.
+ * Floating pill tab bar — icons only, active pill highlight.
  */
 
 import React from 'react';
@@ -12,8 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home, MessageCircle, LayoutGrid } from 'lucide-react-native';
 import { HapticPressable } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Sizes, Spacing } from '@/constants/theme';
-import { ProfileMenu } from '@/components/home/profile-menu';
+import { Colors, Sizes, Spacing, Radius } from '@/constants/theme';
 
 const TAB_CONFIG = [
   { name: '(home)', icon: Home, label: 'Home' },
@@ -21,45 +20,69 @@ const TAB_CONFIG = [
   { name: '(browse)', icon: LayoutGrid, label: 'Browse' },
 ] as const;
 
+const PILL_PADDING = 4;
+const TAB_HEIGHT = 44;
+const TAB_WIDTH = 52;
+
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.bar, { backgroundColor: colors.bg, paddingBottom: insets.bottom, borderTopColor: colors.border }]}>
-      {TAB_CONFIG.map((tab, index) => {
-        const focused = state.index === index;
-        const Icon = tab.icon;
-        return (
-          <HapticPressable
-            key={tab.name}
-            onPress={() => {
-              const event = navigation.emit({
-                type: 'tabPress',
-                target: state.routes[index].key,
-                canPreventDefault: true,
-              });
-              if (!event.defaultPrevented) {
-                navigation.navigate(state.routes[index].name);
-              }
-            }}
-            style={styles.tab}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: focused }}
-            accessibilityLabel={tab.label}
-          >
-            <Icon
-              size={Sizes.iconLg}
-              color={focused ? colors.text : colors.iconMuted}
-              strokeWidth={focused ? 3 : 2}
-              fill={focused ? colors.text : colors.iconMuted}
-            />
-          </HapticPressable>
-        );
-      })}
-      <View style={styles.profileTab}>
-        <ProfileMenu />
+    <View
+      style={[
+        styles.wrapper,
+        { paddingBottom: Math.max(insets.bottom, Spacing.md) },
+      ]}
+      pointerEvents="box-none"
+    >
+      <View
+        style={[
+          styles.pill,
+          {
+            backgroundColor: colors.bg,
+            borderColor: colors.border,
+            shadowColor: colors.black,
+          },
+        ]}
+      >
+        {TAB_CONFIG.map((tab, index) => {
+          const focused = state.index === index;
+          const Icon = tab.icon;
+          return (
+            <HapticPressable
+              key={tab.name}
+              onPress={() => {
+                const event = navigation.emit({
+                  type: 'tabPress',
+                  target: state.routes[index].key,
+                  canPreventDefault: true,
+                });
+                if (!event.defaultPrevented) {
+                  navigation.navigate(state.routes[index].name);
+                }
+              }}
+              style={[
+                styles.tabBtn,
+                focused && {
+                  backgroundColor: colorScheme === 'light' ? colors.bg2 : colors.surface2,
+                  borderRadius: Radius.full,
+                },
+              ]}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: focused }}
+              accessibilityLabel={tab.label}
+            >
+              <Icon
+                size={Sizes.iconMd}
+                color={focused ? colors.text : colors.iconMuted}
+                strokeWidth={focused ? 3.2 : 3.2}
+                fill={focused ? colors.text : 'transparent'}
+              />
+            </HapticPressable>
+          );
+        })}
       </View>
     </View>
   );
@@ -81,23 +104,32 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  bar: {
+  wrapper: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingTop: Spacing.sm,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    padding: PILL_PADDING,
+    gap: PILL_PADDING,
+    // iOS shadow
+    shadowOffset: { width: 0, height: Spacing.sm },
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    // Android elevation
+    elevation: 12,
   },
-  tab: {
-    flex: 1,
+  tabBtn: {
+    width: TAB_WIDTH,
+    height: TAB_HEIGHT,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: Spacing.xs,
-  },
-  profileTab: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.xs,
   },
 });

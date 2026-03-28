@@ -45,7 +45,7 @@ export function DangerZone({
         ]}
       >
         <Trash2 size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-        <ButtonText size="medium" tone="error">Delete Account</ButtonText>
+        <ButtonText size="body" tone="error">Delete Account</ButtonText>
       </HapticPressable>
     </Animated.View>
   );

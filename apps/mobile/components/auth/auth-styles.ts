@@ -9,7 +9,7 @@
  */
 
 import { StyleSheet } from 'react-native';
-import { Spacing, Radius, Typography, Layout, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Typography, Layout, Sizes, ZIndex} from '@/constants/theme';
 
 /**
  * Common auth screen styles
@@ -38,7 +38,7 @@ export const authStyles = StyleSheet.create({
   // HEADER
   // ═══════════════════════════════════════════════════
   header: {
-    height: 52,
+    height: Sizes.actionButtonLg,
     justifyContent: 'center',
   },
   backButton: {
@@ -73,7 +73,7 @@ export const authStyles = StyleSheet.create({
     marginLeft: Spacing.xs,
   },
   inputWrapper: {
-    height: 54,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.xl,
     borderWidth: 1,
     flexDirection: 'row',
@@ -88,7 +88,7 @@ export const authStyles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   passwordInputInner: {
-    paddingRight: 60,
+    paddingRight: Spacing["5xl"],
   },
   showPasswordButton: {
     position: 'absolute',
@@ -114,14 +114,14 @@ export const authStyles = StyleSheet.create({
   // BUTTONS
   // ═══════════════════════════════════════════════════
   submitButton: {
-    height: 54,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.xl,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: Spacing.sm,
   },
   continueButton: {
-    height: 54,
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.xl,
     flexDirection: 'row',
     alignItems: 'center',
@@ -164,8 +164,8 @@ export const authStyles = StyleSheet.create({
     gap: Spacing.lg,
   },
   socialIconButton: {
-    width: 60,
-    height: 54,
+    width: Spacing["5xl"],
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.xl,
     borderWidth: 1,
     alignItems: 'center',
@@ -208,9 +208,9 @@ export const authStyles = StyleSheet.create({
     gap: Spacing.xs + 2,
   },
   requirementDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: Spacing.xs,
+    height: Spacing.xs,
+    borderRadius: Radius.sm,
   },
 
   // ═══════════════════════════════════════════════════
@@ -225,8 +225,8 @@ export const authStyles = StyleSheet.create({
     gap: Spacing.sm,
   },
   codeBox: {
-    width: 50,
-    height: 60,
+    width: Spacing["5xl"],
+    height: Spacing["5xl"],
     borderRadius: Radius.xl,
     borderWidth: 1.5,
     alignItems: 'center',
@@ -236,8 +236,8 @@ export const authStyles = StyleSheet.create({
   codeCursor: {
     position: 'absolute',
     width: 2,
-    height: 26,
-    borderRadius: 1,
+    height: Spacing["2xl"],
+    borderRadius: Radius.sm,
   },
   codeHiddenInput: {
     position: 'absolute',
@@ -285,7 +285,7 @@ export const authStyles = StyleSheet.create({
   // ═══════════════════════════════════════════════════
   confettiContainer: {
     ...StyleSheet.absoluteFillObject,
-    zIndex: 100,
+    zIndex: ZIndex.modal,
     pointerEvents: 'none',
   },
   confettiPiece: {

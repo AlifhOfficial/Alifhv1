@@ -13,7 +13,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 import { CheckCircle2, AlertCircle } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Typography, Fonts, Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting, Label } from '@/components/ui';
 import { checkVin } from '@/lib/sell-car-user-api';
@@ -166,11 +166,11 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Character count */}
       <View style={styles.countRow}>
-        <Supporting size="small" tone="muted">
+        <Supporting size="bodySm" tone="muted">
           {localVin.length}/17
         </Supporting>
         {status === 'verified' && (
-          <Supporting size="small" style={{ color: colors.success }}>
+          <Supporting size="bodySm" style={{ color: colors.success }}>
             Verified
           </Supporting>
         )}
@@ -180,7 +180,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       {errorMsg && (
         <View style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-          <Body size="small" style={{ color: colors.error, flex: 1 }}>
+          <Body size="bodySm" style={{ color: colors.error, flex: 1 }}>
             {errorMsg}
           </Body>
         </View>
@@ -189,7 +189,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       {/* VIN Visibility Toggle */}
       <View style={[styles.visibilitySection, { backgroundColor: colors.fill2 }]}>
         <View style={styles.visibilityContent}>
-          <Label size="small">Show VIN publicly</Label>
+          <Label size="caption">Show VIN publicly</Label>
         </View>
         <Switch
           value={data.vinVisibility === 'public'}
@@ -204,7 +204,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Info */}
       <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
-        <Supporting size="small" tone="muted">
+        <Supporting size="bodySm" tone="muted">
           Find your VIN on the driver's door jamb, dashboard, or vehicle registration. This setting is permanent for this listing.
         </Supporting>
       </View>
@@ -219,13 +219,12 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   vinInput: {
-    height: 56,
+    height: Sizes.actionButtonLg,
     borderWidth: 1.5,
     borderRadius: Radius.lg,
     paddingHorizontal: Spacing.md,
-    paddingRight: 48,
-    fontSize: 18,
-    fontWeight: '500',
+    paddingRight: Spacing["5xl"],
+    ...Typography.body,
     letterSpacing: 1,
   },
   statusIcon: {

@@ -21,7 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Data } from '@/components/ui';
 
@@ -118,7 +118,7 @@ export function ImageLightbox({
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
           <View style={styles.counterBadge}>
-            <Data size="small" style={styles.counterText}>
+            <Data size="bodySm" style={styles.counterText}>
               {safeIndex + 1} / {totalImages}
             </Data>
           </View>
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 10,
+    zIndex: ZIndex.raised,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

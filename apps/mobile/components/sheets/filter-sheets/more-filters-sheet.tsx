@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
 import type { SearchParams } from '@/lib/search-api';
@@ -240,17 +240,16 @@ export function MoreFiltersSheet({
         >
           <View style={styles.sectionTitleRow}>
             <Body 
-              size="medium" 
+              size="body" 
               style={{ 
                 color: colors.text,
-                fontWeight: '600',
               }}
             >
               {title}
             </Body>
             {selectedCount > 0 && (
               <View style={[styles.badge, { backgroundColor: colors.text }]}>  
-                <Label size="badge" style={{ color: colors.bg }}>{selectedCount}</Label>
+                <Label size="caption" style={{ color: colors.bg }}>{selectedCount}</Label>
               </View>
             )}
           </View>
@@ -288,7 +287,7 @@ export function MoreFiltersSheet({
             ]}
           >
             <Supporting
-              size="small"
+              size="bodySm"
               style={{ color: isSelected ? colors.bg : colors.text }}
             >
               {option.label}
@@ -310,10 +309,10 @@ export function MoreFiltersSheet({
       onPress={onToggle}
     >
       <Body 
-        size="medium" 
+        size="body" 
         style={{ 
           color: value ? colors.text : colors.text2,
-          fontWeight: value ? '700' : '500',
+          fontWeight: value ? Fonts.bold : Fonts.semiBold,
         }}
       >
         {label}
@@ -349,10 +348,10 @@ export function MoreFiltersSheet({
             hitSlop={Spacing.md}
             style={styles.cancelButton}
           >
-            <Body size="medium" tone="secondary">Cancel</Body>
+            <Body size="body" tone="secondary">Cancel</Body>
           </HapticPressable>
           
-          <Heading size="small">Filters</Heading>
+          <Heading size="subheading">Filters</Heading>
           
           <HapticPressable
             style={[
@@ -362,7 +361,7 @@ export function MoreFiltersSheet({
             onPress={handleApply}
           >
             <ButtonText
-              size="small"
+              size="bodySm"
               style={{ color: hasValue ? colors.primaryFg : colors.textMuted }}
             >
               Apply
@@ -373,11 +372,11 @@ export function MoreFiltersSheet({
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Body size="small" numberOfLines={1} style={{ flex: 1 }}>
+            <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
               {activeCount} filter{activeCount !== 1 ? 's' : ''} selected
             </Body>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Supporting size="small" style={{ color: colors.error }}>
+              <Supporting size="bodySm" style={{ color: colors.error }}>
                 Clear
               </Supporting>
             </HapticPressable>
@@ -517,7 +516,7 @@ export function MoreFiltersSheet({
                   ]}
                 >
                   <Supporting
-                    size="small"
+                    size="bodySm"
                     style={{ color: isSelected ? colors.bg : colors.text }}
                   >
                     {option.label}
@@ -549,7 +548,7 @@ export function MoreFiltersSheet({
                   ]}
                 >
                   <Supporting
-                    size="small"
+                    size="bodySm"
                     style={{ color: isSelected ? colors.bg : colors.text }}
                   >
                     {option.label}
@@ -623,7 +622,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   sectionTitle: {
-    fontWeight: '600',
+    fontWeight: Fonts.semiBold,
   },
   badge: {
     width: Spacing['2xl'],

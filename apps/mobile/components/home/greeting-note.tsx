@@ -147,17 +147,17 @@ export function GreetingNote() {
   return (
     <View style={styles.container}>
       <View style={styles.greetingRow}>
-        <Heading size="large" style={{ color: colors.text }}>
+        <Heading size="title" style={{ color: colors.text }}>
           {content.greeting}
           {content.name ? `, ` : ''}
         </Heading>
         {content.name && (
-          <Heading size="large" style={{ color: colors.primary }}>
+          <Heading size="title" style={{ color: colors.primary }}>
             {content.name}
           </Heading>
         )}
       </View>
-      <Supporting size="medium" style={{ color: colors.text3 }}>
+      <Supporting size="body" style={{ color: colors.text3 }}>
         {content.subtitle}
       </Supporting>
     </View>

@@ -62,10 +62,10 @@ const ProductItem = memo(function ProductItem({ listing, colors, onPress, onFavo
     <HapticPressable onPress={() => onPress(listing.id)} style={[styles.product, { backgroundColor: colors.surface }]}>
       {/* Car Name & Price - Top Left */}
       <View style={styles.textContainer}>
-        <Heading size="card" style={{ color: colors.text }}>
+        <Heading size="subheading" style={{ color: colors.text }}>
           {listing.make} {listing.model}
         </Heading>
-        <Heading size="large" style={{ color: colors.primary }}>
+        <Heading size="title" style={{ color: colors.primary }}>
           AED {formatPrice(listing.price)}
         </Heading>
       </View>
@@ -166,11 +166,11 @@ export const BlkGridCard = memo(function BlkGridCard({
       {/* Header */}
       <View style={styles.header}>
         <View style={[styles.avatar, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder, borderWidth: 1 }]}>
-          <Heading size="mini" style={{ color: colors.blkBadgeFg }}>BLK</Heading>
+          <Heading size="subheading" style={{ color: colors.blkBadgeFg }}>BLK</Heading>
         </View>
         <View style={styles.headerText}>
-          <Heading size="mini" style={{ color: textColor }}>BLK Collection</Heading>
-          <Supporting size="small" style={{ color: textSecondary }}>Premium Cars</Supporting>
+          <Heading size="subheading" style={{ color: textColor }}>BLK Collection</Heading>
+          <Supporting size="bodySm" style={{ color: textSecondary }}>Premium Cars</Supporting>
         </View>
       </View>
 
@@ -193,7 +193,7 @@ export const BlkGridCard = memo(function BlkGridCard({
 
       {/* Footer */}
       <HapticPressable onPress={handleShopAll} style={styles.footer}>
-        <Heading size="mini" style={{ color: textColor }}>View collection</Heading>
+        <Heading size="subheading" style={{ color: textColor }}>View collection</Heading>
         <View style={[styles.arrowBtn, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder, borderWidth: 1 }]}>
           <ChevronRight size={Sizes.iconSm} color={colors.blkBadgeFg} strokeWidth={2} />
         </View>

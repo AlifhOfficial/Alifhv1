@@ -18,7 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Layout, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Layout, Sizes, Spacing, ZIndex} from '@/constants/theme';
 import { SuperlikeConfirmationSheet, SuperlikeQuotaExhaustedSheet } from '@/components/sheets';
 
 const AnimatedView = Animated.View;
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 10,
+    zIndex: ZIndex.raised,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-end',

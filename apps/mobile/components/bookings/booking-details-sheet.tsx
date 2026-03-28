@@ -52,7 +52,7 @@ import {
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { Heading, Body, Data, Supporting, ButtonText, Label } from '@/components/ui';
+import { Heading, Body, Data, Supporting, ButtonText, Label, Price } from '@/components/ui';
 import type { UserBooking } from '@/lib/booking-api';
 import {
   formatBookingStatus,
@@ -220,8 +220,8 @@ export function BookingDetailsSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
     >
       <BottomSheetScrollView
         style={styles.scrollView}
@@ -230,7 +230,7 @@ export function BookingDetailsSheet({
       >
         {/* ── Header ──────────────────────────────────────────────────── */}
         <View style={styles.header}>
-          <Heading size="medium">Booking Details</Heading>
+          <Heading size="heading">Booking Details</Heading>
           <HapticPressable
             onPress={onClose}
             hitSlop={Layout.hitSlop}
@@ -258,16 +258,16 @@ export function BookingDetailsSheet({
             </View>
           )}
           <View style={styles.heroInfo}>
-            <Data size="small" style={{ color: colors.text, fontWeight: '600' }} numberOfLines={2}>
+            <Body size="body" numberOfLines={2}>
               {booking.listingTitle}
-            </Data>
+            </Body>
             {booking.listingPrice > 0 && (
-              <Data size="medium" style={{ color: colors.primary, fontWeight: '700' }}>
+              <Price>
                 {formatPrice(booking.listingPrice)}
-              </Data>
+              </Price>
             )}
             <View style={styles.heroAction}>
-              <Supporting size="small" style={{ color: colors.primary }}>View listing</Supporting>
+              <Supporting size="bodySm" style={{ color: colors.primary }}>View listing</Supporting>
               <ChevronRight size={Sizes.iconXs} color={colors.primary} />
             </View>
           </View>
@@ -293,7 +293,7 @@ export function BookingDetailsSheet({
             ]}
           >
             <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
-            <Label size="small" style={{ color: statusColor, fontWeight: '700' }}>
+            <Label size="caption" style={{ color: statusColor }}>
               {statusLabel}
             </Label>
           </View>
@@ -312,9 +312,8 @@ export function BookingDetailsSheet({
               ]}
             >
               <Label
-                size="small"
+                size="caption"
                 style={{
-                  fontWeight: '700',
                   color: '#FFFFFF',
                 }}
               >
@@ -329,16 +328,16 @@ export function BookingDetailsSheet({
           <View style={styles.detailRow}>
             <Calendar size={Sizes.iconSm} color={colors.text2} />
             <View style={styles.detailText}>
-              <Supporting size="small" tone="secondary">Date</Supporting>
-              <Body size="medium">{formatBookingDate(booking.scheduledDate)}</Body>
+              <Supporting size="bodySm" tone="secondary">Date</Supporting>
+              <Body size="body">{formatBookingDate(booking.scheduledDate)}</Body>
             </View>
           </View>
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
           <View style={styles.detailRow}>
             <Clock size={Sizes.iconSm} color={colors.text2} />
             <View style={styles.detailText}>
-              <Supporting size="small" tone="secondary">Time</Supporting>
-              <Body size="medium">{timeRange}</Body>
+              <Supporting size="bodySm" tone="secondary">Time</Supporting>
+              <Body size="body">{timeRange}</Body>
             </View>
           </View>
         </View>
@@ -354,8 +353,8 @@ export function BookingDetailsSheet({
               </View>
             )}
             <View style={styles.detailText}>
-              <Supporting size="small" tone="secondary">Dealer</Supporting>
-              <Body size="medium">{booking.partnerName}</Body>
+              <Supporting size="bodySm" tone="secondary">Dealer</Supporting>
+              <Body size="body">{booking.partnerName}</Body>
             </View>
           </View>
 
@@ -368,8 +367,8 @@ export function BookingDetailsSheet({
               >
                 <MapPin size={Sizes.iconSm} color={colors.text2} />
                 <View style={[styles.detailText, { flex: 1 }]}>
-                  <Supporting size="small" tone="secondary">Address</Supporting>
-                  <Body size="small" numberOfLines={2}>{booking.partnerAddress}</Body>
+                  <Supporting size="bodySm" tone="secondary">Address</Supporting>
+                  <Body size="bodySm" numberOfLines={2}>{booking.partnerAddress}</Body>
                 </View>
                 <ExternalLink size={Sizes.iconXs} color={colors.primary} />
               </HapticPressable>
@@ -385,8 +384,8 @@ export function BookingDetailsSheet({
               >
                 <Phone size={Sizes.iconSm} color={colors.text2} />
                 <View style={[styles.detailText, { flex: 1 }]}>
-                  <Supporting size="small" tone="secondary">Phone</Supporting>
-                  <Body size="medium">{booking.partnerPhone}</Body>
+                  <Supporting size="bodySm" tone="secondary">Phone</Supporting>
+                  <Body size="body">{booking.partnerPhone}</Body>
                 </View>
                 <ExternalLink size={Sizes.iconXs} color={colors.primary} />
               </HapticPressable>
@@ -399,8 +398,8 @@ export function BookingDetailsSheet({
               <View style={styles.detailRow}>
                 <User size={Sizes.iconSm} color={colors.text2} />
                 <View style={styles.detailText}>
-                  <Supporting size="small" tone="secondary">Contact Person</Supporting>
-                  <Body size="medium">
+                  <Supporting size="bodySm" tone="secondary">Contact Person</Supporting>
+                  <Body size="body">
                     {settings.contactPersonName}
                     {settings.contactPersonPhone ? ` · ${settings.contactPersonPhone}` : ''}
                   </Body>
@@ -416,8 +415,8 @@ export function BookingDetailsSheet({
             <View style={styles.detailRow}>
               <Hash size={Sizes.iconSm} color={colors.text2} />
               <View style={styles.detailText}>
-                <Supporting size="small" tone="secondary">Confirmation Code</Supporting>
-                <Data size="medium" style={{ color: colors.text, fontWeight: '700', letterSpacing: 1 }}>
+                <Supporting size="bodySm" tone="secondary">Confirmation Code</Supporting>
+                <Data size="body" style={{ color: colors.text, letterSpacing: 1 }}>
                   {booking.confirmationToken}
                 </Data>
               </View>
@@ -432,8 +431,8 @@ export function BookingDetailsSheet({
               <View style={styles.detailRow}>
                 <Users size={Sizes.iconSm} color={colors.text2} />
                 <View style={styles.detailText}>
-                  <Supporting size="small" tone="secondary">Attendees</Supporting>
-                  <Body size="medium">{booking.numberOfAttendees}</Body>
+                  <Supporting size="bodySm" tone="secondary">Attendees</Supporting>
+                  <Body size="body">{booking.numberOfAttendees}</Body>
                 </View>
               </View>
             )}
@@ -445,8 +444,8 @@ export function BookingDetailsSheet({
                 <View style={styles.detailRow}>
                   <FileText size={Sizes.iconSm} color={colors.text2} />
                   <View style={styles.detailText}>
-                    <Supporting size="small" tone="secondary">Notes</Supporting>
-                    <Body size="small">{booking.notes}</Body>
+                    <Supporting size="bodySm" tone="secondary">Notes</Supporting>
+                    <Body size="bodySm">{booking.notes}</Body>
                   </View>
                 </View>
               </>
@@ -457,8 +456,8 @@ export function BookingDetailsSheet({
                 <View style={styles.detailRow}>
                   <Star size={Sizes.iconSm} color={colors.text2} />
                   <View style={styles.detailText}>
-                    <Supporting size="small" tone="secondary">Special Requests</Supporting>
-                    <Body size="small">{booking.specialRequests}</Body>
+                    <Supporting size="bodySm" tone="secondary">Special Requests</Supporting>
+                    <Body size="bodySm">{booking.specialRequests}</Body>
                   </View>
                 </View>
               </>
@@ -471,27 +470,27 @@ export function BookingDetailsSheet({
           <View style={[styles.section, { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.primary }]}>
             <View style={styles.sectionHeader}>
               <Info size={Sizes.iconXs} color={colors.primary} />
-              <Label size="small" style={{ color: colors.primary, fontWeight: '700' }}>
+              <Label size="caption" style={{ color: colors.primary }}>
                 Visit Information
               </Label>
             </View>
 
             {settings.preparationInstructions && (
               <View style={styles.instructionRow}>
-                <Supporting size="small" tone="secondary" style={{ fontWeight: '600' }}>Preparation</Supporting>
-                <Body size="small">{settings.preparationInstructions}</Body>
+                <Supporting size="bodySm" tone="secondary">Preparation</Supporting>
+                <Body size="bodySm">{settings.preparationInstructions}</Body>
               </View>
             )}
             {settings.directions && (
               <View style={styles.instructionRow}>
-                <Supporting size="small" tone="secondary" style={{ fontWeight: '600' }}>Directions</Supporting>
-                <Body size="small">{settings.directions}</Body>
+                <Supporting size="bodySm" tone="secondary">Directions</Supporting>
+                <Body size="bodySm">{settings.directions}</Body>
               </View>
             )}
             {settings.parkingInstructions && (
               <View style={styles.instructionRow}>
-                <Supporting size="small" tone="secondary" style={{ fontWeight: '600' }}>Parking</Supporting>
-                <Body size="small">{settings.parkingInstructions}</Body>
+                <Supporting size="bodySm" tone="secondary">Parking</Supporting>
+                <Body size="bodySm">{settings.parkingInstructions}</Body>
               </View>
             )}
           </View>
@@ -502,20 +501,20 @@ export function BookingDetailsSheet({
           <View style={[styles.section, { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.error }]}>
             <View style={styles.sectionHeader}>
               <XIcon size={Sizes.iconXs} color={colors.error} />
-              <Label size="small" style={{ color: colors.error, fontWeight: '700' }}>
+              <Label size="caption" style={{ color: colors.error }}>
                 Cancelled
               </Label>
             </View>
             {(booking.cancellationNotes || booking.cancellationReason) && (
               <View style={styles.instructionRow}>
-                <Supporting size="small" tone="secondary" style={{ fontWeight: '600' }}>Reason</Supporting>
-                <Body size="small">{booking.cancellationNotes || booking.cancellationReason?.replace(/_/g, ' ')}</Body>
+                <Supporting size="bodySm" tone="secondary">Reason</Supporting>
+                <Body size="bodySm">{booking.cancellationNotes || booking.cancellationReason?.replace(/_/g, ' ')}</Body>
               </View>
             )}
             {booking.cancelledAt && (
               <View style={styles.instructionRow}>
-                <Supporting size="small" tone="secondary" style={{ fontWeight: '600' }}>Cancelled on</Supporting>
-                <Body size="small">{formatBookingDate(booking.cancelledAt)}</Body>
+                <Supporting size="bodySm" tone="secondary">Cancelled on</Supporting>
+                <Body size="bodySm">{formatBookingDate(booking.cancelledAt)}</Body>
               </View>
             )}
           </View>
@@ -526,13 +525,13 @@ export function BookingDetailsSheet({
           <View style={[styles.section, { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.error }]}>
             <View style={styles.sectionHeader}>
               <XIcon size={Sizes.iconXs} color={colors.error} />
-              <Label size="small" style={{ color: colors.error, fontWeight: '700' }}>
+              <Label size="caption" style={{ color: colors.error }}>
                 Rejected
               </Label>
             </View>
             <View style={styles.instructionRow}>
-              <Supporting size="small" tone="secondary" style={{ fontWeight: '600' }}>Reason</Supporting>
-              <Body size="small">{booking.rejectionReason}</Body>
+              <Supporting size="bodySm" tone="secondary">Reason</Supporting>
+              <Body size="bodySm">{booking.rejectionReason}</Body>
             </View>
           </View>
         )}
@@ -548,7 +547,7 @@ export function BookingDetailsSheet({
               ]}
             >
               <CalendarPlus size={Sizes.iconSm} color={colors.text} />
-              <ButtonText size="medium">Add to Calendar</ButtonText>
+              <ButtonText size="body">Add to Calendar</ButtonText>
             </HapticPressable>
           )}
 
@@ -561,12 +560,12 @@ export function BookingDetailsSheet({
               style={[styles.cancelBtn, { backgroundColor: colors.error }]}
             >
               <XIcon size={Sizes.iconSm} color="#FFF" />
-              <ButtonText size="medium" style={{ color: '#FFF' }}>Cancel Booking</ButtonText>
+              <ButtonText size="body" style={{ color: '#FFF' }}>Cancel Booking</ButtonText>
             </HapticPressable>
           ) : isActive && cancelCheck.reason ? (
             <View style={[styles.cancelDisabledRow, { backgroundColor: colors.surface2 }]}>
               <Info size={Sizes.iconXs} color={colors.textMuted} />
-              <Body size="small" style={styles.cancelDisabledText}>
+              <Body size="bodySm" style={styles.cancelDisabledText}>
                 {cancelCheck.reason}
               </Body>
             </View>
@@ -574,7 +573,7 @@ export function BookingDetailsSheet({
         </View>
 
         {/* ── Booked at ────────────────────────────────────────────────── */}
-        <Supporting size="small" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.md }}>
+        <Supporting size="bodySm" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.md }}>
           Booked on {formatBookingDate(booking.createdAt)}
         </Supporting>
       </BottomSheetScrollView>

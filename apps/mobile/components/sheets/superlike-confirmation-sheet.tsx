@@ -97,15 +97,15 @@ export function SuperlikeConfirmationSheet({
             <Zap size={Sizes.iconLg} color={colors.warning} fill={colors.warning} />
           </View>
           <View style={styles.headerText}>
-            <Heading size="small">Superlike this listing?</Heading>
+            <Heading size="subheading">Superlike this listing?</Heading>
             {listingTitle && (
-              <Supporting size="small" numberOfLines={1} style={{ marginTop: 2 }}>
+              <Supporting size="bodySm" numberOfLines={1} style={{ marginTop: 2 }}>
                 {listingTitle}
               </Supporting>
             )}
           </View>
           <View style={[styles.quotaBadge, { backgroundColor: remaining === 0 ? colors.warning + '20' : colors.bg2 }]}>
-            <Data size="small" style={{ color: remaining === 0 ? colors.warning : colors.text2 }}>
+            <Data size="bodySm" style={{ color: remaining === 0 ? colors.warning : colors.text2 }}>
               {remaining}/{total}
             </Data>
           </View>
@@ -113,7 +113,7 @@ export function SuperlikeConfirmationSheet({
 
         {/* Description */}
         <View style={[styles.descriptionBox, { backgroundColor: colors.bg2 }]}>
-          <Supporting size="small" style={{ textAlign: 'center' }}>
+          <Supporting size="bodySm" style={{ textAlign: 'center' }}>
             Superlikes notify sellers that you're highly interested. Use them wisely — you have limited superlikes each month.
           </Supporting>
         </View>
@@ -128,7 +128,7 @@ export function SuperlikeConfirmationSheet({
               { borderColor: colors.border, opacity: pressed ? 0.7 : 1 },
             ]}
           >
-            <Data size="medium" style={{ color: colors.text }}>Cancel</Data>
+            <Data size="body" style={{ color: colors.text }}>Cancel</Data>
           </HapticPressable>
           <HapticPressable
             onPress={handleConfirm}
@@ -139,7 +139,7 @@ export function SuperlikeConfirmationSheet({
             ]}
           >
             <Zap size={Spacing.lg} color="#fff" />
-            <Data size="medium" style={{ color: '#fff' }}>Confirm</Data>
+            <Data size="body" style={{ color: '#fff' }}>Confirm</Data>
           </HapticPressable>
         </View>
       </BottomSheetView>
@@ -212,10 +212,10 @@ export function SuperlikeQuotaExhaustedSheet({
           <View style={[styles.iconContainer, { backgroundColor: colors.warning + '20' }]}>
             <Zap size={Sizes.iconXl} color={colors.warning} />
           </View>
-          <Heading size="medium" style={{ marginTop: Spacing.md }}>
+          <Heading size="heading" style={{ marginTop: Spacing.md }}>
             No Superlikes Left
           </Heading>
-          <Supporting size="small" style={{ textAlign: 'center', marginTop: Spacing.xs }}>
+          <Supporting size="bodySm" style={{ textAlign: 'center', marginTop: Spacing.xs }}>
             You've used all your superlikes for this month.
             {resetDate && ` They'll reset on ${resetDate}.`}
           </Supporting>
@@ -230,7 +230,7 @@ export function SuperlikeQuotaExhaustedSheet({
             { backgroundColor: colors.primary, marginTop: Spacing.lg, opacity: pressed ? 0.8 : 1 },
           ]}
         >
-          <Data size="medium" style={{ color: '#fff' }}>Got it</Data>
+          <Data size="body" style={{ color: '#fff' }}>Got it</Data>
         </HapticPressable>
       </BottomSheetView>
     </BottomSheetModal>

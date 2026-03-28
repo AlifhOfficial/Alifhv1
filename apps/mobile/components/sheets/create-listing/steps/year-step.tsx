@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Body, Supporting } from '@/components/ui';
 import { HapticPressable } from '@/components/ui';
@@ -86,19 +86,19 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
         <HapticPressable onPress={() => handleSelect(year)} style={styles.item}>
           <View style={styles.itemContent}>
             <Body
-              size="large"
+              size="bodyLg"
               style={{
                 color: isSelected ? colors.text : colors.text2,
-                fontWeight: isSelected ? '600' : '400',
+                fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
               }}
             >
               {year}
             </Body>
             {isRecent && (
-              <Supporting size="small" tone="muted">Recent</Supporting>
+              <Supporting size="bodySm" tone="muted">Recent</Supporting>
             )}
             {isClassic && (
-              <Supporting size="small" tone="muted">Classic</Supporting>
+              <Supporting size="bodySm" tone="muted">Classic</Supporting>
             )}
           </View>
           {isSelected && (
@@ -157,7 +157,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
         }}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Body size="medium" tone="secondary">No year found for "{query}"</Body>
+            <Body size="body" tone="secondary">No year found for "{query}"</Body>
           </View>
         }
       />
@@ -187,8 +187,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
-    fontWeight: '400',
+    ...Typography.body,
     paddingVertical: Spacing.xs,
   },
   listContent: {
@@ -200,7 +199,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: Spacing.md,
-    minHeight: 56,
+    minHeight: Spacing["5xl"],
   },
   itemContent: {
     gap: 2,

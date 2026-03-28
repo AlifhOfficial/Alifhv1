@@ -61,7 +61,7 @@ export function MessageBubble({
             { backgroundColor: colors.fill2 },
           ]}
         >
-          <Data size="mini" style={{ color: colors.text3 }}>{text}</Data>
+          <Data size="bodySm" style={{ color: colors.text3 }}>{text}</Data>
         </View>
       </View>
     );
@@ -111,7 +111,7 @@ export function MessageBubble({
               />
             )}
             <View style={styles.listingInfo}>
-              <Data size="small" style={{ fontWeight: '600' }} numberOfLines={2}>
+              <Data size="bodySm" numberOfLines={2}>
                 {listing.title}
               </Data>
             </View>
@@ -161,7 +161,7 @@ export function MessageBubble({
           {/* Text */}
           {text && (
             <Body
-              size="medium"
+              size="body"
               style={{ color: isOwn ? colors.primaryFg : colors.text }}
             >
               {text}
@@ -171,7 +171,7 @@ export function MessageBubble({
           {/* Edited indicator */}
           {isEdited && (
             <Data
-              size="mini"
+              size="bodySm"
               style={{ 
                 color: isOwn ? 'rgba(255,255,255,0.6)' : colors.text3,
                 marginTop: 2,
@@ -191,7 +191,7 @@ export function MessageBubble({
         {/* Seen indicator */}
         {showSeen && isOwn && (
           <View style={styles.seenContainer}>
-            <Data size="mini" style={{ color: colors.text3 }}>Seen</Data>
+            <Data size="bodySm" style={{ color: colors.text3 }}>Seen</Data>
             <UserAvatar
               src={otherUserAvatar}
               name={otherUserName || 'User'}

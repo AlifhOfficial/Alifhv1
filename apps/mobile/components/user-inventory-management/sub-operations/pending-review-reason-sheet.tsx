@@ -87,15 +87,15 @@ export function PendingReviewReasonSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: 24 }}
-      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: 36 }}
+      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.textMuted, width: Sizes.bubble }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerTitleRow}>
             <Clock size={20} color={colors.warning} />
-            <Heading size="medium" style={{ marginLeft: Spacing.sm }}>
+            <Heading size="heading" style={{ marginLeft: Spacing.sm }}>
               Under Review
             </Heading>
           </View>
@@ -120,7 +120,7 @@ export function PendingReviewReasonSheet({
               <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.textMuted} />
             </View>
           )}
-          <Body size="small" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
+          <Body size="bodySm" style={{ color: colors.text, flex: 1 }} numberOfLines={1}>
             {listingTitle}
           </Body>
         </View>
@@ -135,7 +135,7 @@ export function PendingReviewReasonSheet({
             <View style={[styles.section, { backgroundColor: colors.fill }]}>
               {/* Reasoning */}
               {hasReasoning && (
-                <Body size="small" style={{ color: colors.text, lineHeight: 20 }}>
+                <Body size="bodySm" style={{ color: colors.text, lineHeight: 20 }}>
                   {aiModeration?.reasoning}
                 </Body>
               )}
@@ -151,7 +151,7 @@ export function PendingReviewReasonSheet({
                         key={index}
                         style={[styles.flagBadge, { backgroundColor: colors.warning + '20' }]}
                       >
-                        <Body size="small" style={{ color: colors.warning }}>
+                        <Body size="bodySm" style={{ color: colors.warning }}>
                           {label}
                         </Body>
                       </View>
@@ -162,7 +162,7 @@ export function PendingReviewReasonSheet({
             </View>
           ) : (
             <View style={[styles.section, { backgroundColor: colors.fill }]}>
-              <Body size="small" style={{ color: colors.textMuted, textAlign: 'center' }}>
+              <Body size="bodySm" style={{ color: colors.textMuted, textAlign: 'center' }}>
                 No specific details available.
               </Body>
             </View>
@@ -237,8 +237,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   thumbnail: {
-    width: 48,
-    height: 36,
+    width: Spacing["5xl"],
+    height: Spacing["3xl"],
     borderRadius: Radius.sm,
     overflow: 'hidden',
     justifyContent: 'center',

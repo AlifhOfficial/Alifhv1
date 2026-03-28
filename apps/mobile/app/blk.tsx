@@ -10,13 +10,14 @@ import {
   StyleSheet, 
   FlatList, 
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
-import { Spacing, Layout } from '@/constants/theme';
-import { Body, LogoLoader } from '@/components/ui';
+import { Colors, Spacing, Layout, ZIndex} from '@/constants/theme';
+import { Body } from '@/components/ui';
 import { BlkHeader, BLK_HEADER_HEIGHT, BlkCard, BlkCardSkeleton } from '@/components/blk';
 import { searchApi, type ListingCard } from '@/lib/search-api';
 
@@ -158,7 +159,7 @@ export default function BlkScreen() {
 
     return (
       <View style={styles.empty}>
-        <Body size="large" style={styles.emptyText}>No BLK listings available</Body>
+        <Body size="bodyLg" style={styles.emptyText}>No BLK listings available</Body>
       </View>
     );
   }, [isLoading, listings.length]);
@@ -170,7 +171,7 @@ export default function BlkScreen() {
 
     return (
       <View style={styles.loadingMore}>
-        <LogoLoader size={40} />
+        <ActivityIndicator size="large" color={Colors.dark.primary} />
       </View>
     );
   }, [hasMore]);
@@ -272,6 +273,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 10,
+    zIndex: ZIndex.raised,
   },
 });

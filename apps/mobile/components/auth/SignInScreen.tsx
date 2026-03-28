@@ -106,10 +106,10 @@ export function SignInScreen({
 
           {/* Hero Section */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Supporting size="small" style={[onboardingStyles.greeting, { color: colors.primary }]}>
+            <Supporting size="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]}>
               Welcome back
             </Supporting>
-            <Heading size="large" style={[onboardingStyles.title, { color: colors.white }]}>
+            <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
               Sign in to continue
             </Heading>
           </Animated.View>
@@ -120,7 +120,7 @@ export function SignInScreen({
               entering={FadeIn.duration(200)}
               style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
             >
-              <Body size="small" tone="error" style={onboardingStyles.errorText}>
+              <Body size="bodySm" tone="error" style={onboardingStyles.errorText}>
                 {error}
               </Body>
             </Animated.View>
@@ -196,7 +196,7 @@ export function SignInScreen({
                 onPress={() => setShowPassword(!showPassword)}
                 style={onboardingStyles.showPasswordButton}
               >
-                <Data size="mini" style={{ color: colors.text3 }}>
+                <Data size="bodySm" style={{ color: colors.text3 }}>
                   {showPassword ? 'Hide' : 'Show'}
                 </Data>
               </HapticPressable>
@@ -207,7 +207,7 @@ export function SignInScreen({
               onPress={onForgotPassword}
               style={{ alignSelf: 'flex-end', paddingVertical: Spacing.xs }}
             >
-              <Data size="mini" style={{ color: colors.text2 }}>
+              <Data size="bodySm" style={{ color: colors.text2 }}>
                 Forgot password?
               </Data>
             </HapticPressable>
@@ -223,7 +223,7 @@ export function SignInScreen({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="primary" />
               ) : (
-                <Heading size="medium" style={{ color: isValid ? colors.white : colors.text3 }}>
+                <Heading size="heading" style={{ color: isValid ? colors.white : colors.text3 }}>
                   Sign In
                 </Heading>
               )}
@@ -234,7 +234,7 @@ export function SignInScreen({
               <View style={styles.socialSection}>
                 <View style={styles.dividerRow}>
                   <View style={[styles.dividerLine, { backgroundColor: colors.glassBorderDark }]} />
-                  <Supporting size="small" style={{ color: colors.text3 }}>or</Supporting>
+                  <Supporting size="bodySm" style={{ color: colors.text3 }}>or</Supporting>
                   <View style={[styles.dividerLine, { backgroundColor: colors.glassBorderDark }]} />
                 </View>
 
@@ -275,11 +275,11 @@ export function SignInScreen({
 
             {/* Switch to Sign Up */}
             <Animated.View entering={FadeIn.delay(400).duration(300)} style={onboardingStyles.footer}>
-              <Body size="small" style={{ color: colors.text2 }}>
+              <Body size="bodySm" style={{ color: colors.text2 }}>
                 Don't have an account?{' '}
               </Body>
               <HapticPressable onPress={onSwitchToSignUp}>
-                <Data size="small" style={{ color: colors.primary }}>Sign up</Data>
+                <Data size="bodySm" style={{ color: colors.primary }}>Sign up</Data>
               </HapticPressable>
             </Animated.View>
           </Animated.View>

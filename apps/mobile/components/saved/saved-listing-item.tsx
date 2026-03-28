@@ -9,9 +9,9 @@ import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Radius, Sizes, Spacing, Typography } from '@/constants/theme';
+import { Radius, Sizes, Spacing } from '@/constants/theme';
 import { getAppThumbUrl } from '@/lib/config';
-import { Data, Supporting, Price, Label, Body } from '@/components/ui';
+import { Supporting, Price, Label, Heading, Text } from '@/components/ui';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors } from './types';
 
@@ -94,14 +94,14 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
           />
         ) : (
           <View style={[styles.imagePlaceholder, { backgroundColor: colors.surface2 }]}>
-            <Supporting size="mini" tone="muted">No Image</Supporting>
+            <Supporting size="bodySm" tone="muted">No Image</Supporting>
           </View>
         )}
         
         {/* BLK Badge */}
         {listing.isBlkListing && (
           <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-            <Label size="badge" uppercase style={{ color: colors.blkBadgeFg }}>BLK</Label>
+            <Label size="caption" uppercase style={{ color: colors.blkBadgeFg }}>BLK</Label>
           </View>
         )}
       </View>
@@ -109,28 +109,28 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
       {/* Details */}
       <View style={styles.details}>
         {/* Title */}
-        <Data size="medium" numberOfLines={1}>{carTitle}</Data>
+        <Heading size="subheading" numberOfLines={1}>{carTitle}</Heading>
         
         {/* Trim */}
         {listing.trim && (
-          <Supporting size="small" tone="secondary" numberOfLines={1} style={styles.trim}>
+          <Supporting size="bodySm" tone="secondary" numberOfLines={1} style={styles.trim}>
             {listing.trim}
           </Supporting>
         )}
 
         {/* Price */}
-        <Price size="tag" style={styles.price}>{formatPrice(listing.price || 0)}</Price>
+        <Price style={styles.price}>{formatPrice(listing.price || 0)}</Price>
 
         {/* Meta */}
         <View style={styles.meta}>
-          <Supporting size="mini" tone="muted">{formatMileage(listing.mileage || 0)}</Supporting>
-          <Body size="mini" tone="muted" style={styles.metaDot}>•</Body>
-          <Supporting size="mini" tone="muted">{displayEmirate}</Supporting>
+          <Supporting size="bodySm" tone="muted">{formatMileage(listing.mileage || 0)}</Supporting>
+          <Text variant="bodySm" tone="muted" style={{ marginHorizontal: Spacing.xs }}>•</Text>
+          <Supporting size="bodySm" tone="muted">{displayEmirate}</Supporting>
         </View>
 
         {/* Seller */}
         <View style={styles.seller}>
-          <Supporting size="mini" tone="secondary" numberOfLines={1} style={styles.sellerName}>
+          <Supporting size="bodySm" tone="secondary" numberOfLines={1} style={styles.sellerName}>
             {sellerName}
           </Supporting>
           {isVerified && (
@@ -188,10 +188,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: Spacing.xs,
-  },
-  metaDot: {
-    ...Typography.micro,
-    marginHorizontal: Spacing.xs,
   },
   seller: {
     flexDirection: 'row',

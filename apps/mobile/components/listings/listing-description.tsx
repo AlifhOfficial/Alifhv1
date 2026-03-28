@@ -8,10 +8,9 @@
 
 import React, { memo, useState, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text as RNText } from 'react-native';
 import { HapticPressable } from '@/components/ui';
 
-import { Colors, Spacing, Layout, Typography } from '@/constants/theme';
+import { Colors, Spacing, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Label, Body, Text } from '@/components/ui';
 
@@ -49,22 +48,23 @@ export const ListingDescription = memo(function ListingDescription({
 
   return (
     <View style={styles.container}>
-      <Label size="medium" tone="muted">
+      <Label size="label" tone="muted">
         DESCRIPTION
       </Label>
 
       {/* Hidden measurer — same style, no truncation, off-screen */}
       {!measured && (
-        <RNText
+        <Text
+          variant="body"
           style={[styles.hiddenText, { color: textColor }]}
           onTextLayout={onHiddenTextLayout}
         >
           {description}
-        </RNText>
+        </Text>
       )}
 
       {/* Visible text — always truncated to 3 lines */}
-      <Body size="medium" style={{ color: textColor }} numberOfLines={3}>
+      <Body size="body" style={{ color: textColor }} numberOfLines={3}>
         {description}
       </Body>
 
@@ -87,6 +87,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     opacity: 0,
     pointerEvents: 'none',
-    ...Typography.body,
   },
 });

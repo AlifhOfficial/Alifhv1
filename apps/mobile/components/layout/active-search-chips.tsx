@@ -20,7 +20,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useSearch, type SearchChip, type SearchParams, type FilterParams, type RemovableFilterKey } from '@/context/search-context';
-import { Colors, Spacing, Typography, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Typography, Fonts, Sizes, Radius, ZIndex } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 const AnimatedView = Animated.View;
@@ -119,13 +119,13 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
                   borderColor: colors.border,
                 },
               ]}
-              hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+              hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.xs, right: Spacing.xs }}
             >
               {({ pressed }) => (
                 <>
                   <View style={[styles.pillInner, { opacity: pressed ? 0.7 : 1 }]}>
                     <Body 
-                      size="small"
+                      size="bodySm"
                       tone="secondary"
                       style={styles.pillText}
                       numberOfLines={1}
@@ -158,11 +158,11 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
                   backgroundColor: colors.primary,
                 },
               ]}
-              hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+              hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.xs, right: Spacing.xs }}
             >
               {({ pressed }) => (
                 <>
-                  <ButtonText size="small" style={[styles.clearText, { color: colors.primaryFg, opacity: pressed ? 0.7 : 1 }]}>
+                  <ButtonText size="bodySm" style={[styles.clearText, { color: colors.primaryFg, opacity: pressed ? 0.7 : 1 }]}>
                     Clear all
                   </ButtonText>
                 </>
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: CHIPS_BAR_HEIGHT,
-    zIndex: 15,
+    zIndex: ZIndex.overlay,
   },
   scrollView: {
     flex: 1,
@@ -193,14 +193,14 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    gap: 6,
+    paddingHorizontal: Spacing.md,
+    gap: Spacing.sm,
     height: CHIPS_BAR_HEIGHT,
   },
   pill: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 14,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     overflow: 'visible',
     shadowColor: '#000',
@@ -212,17 +212,16 @@ const styles = StyleSheet.create({
   pillInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
   },
   pillText: {
-    fontSize: 12,
-    fontWeight: '500',
-    maxWidth: 100,
+    ...Typography.bodySm,
+    maxWidth: Spacing["5xl"],
   },
   clearPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 14,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: Radius.lg,
     overflow: 'visible',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -231,7 +230,6 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   clearText: {
-    fontSize: 12,
-    fontWeight: '500',
+    ...Typography.caption,
   },
 });

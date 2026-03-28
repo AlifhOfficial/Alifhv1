@@ -21,6 +21,7 @@ import {
   Data, 
   Label, 
   Supporting,
+  Price,
   FavoriteButton, 
   SuperlikeButton 
 } from '@/components/ui';
@@ -241,16 +242,16 @@ export const CarCardList = memo(function CarCardList({
       <View style={styles.infoSection}>
         {/* Content - Top */}
         <View style={styles.content}>
-          <Data size="medium" style={{ color: theme.text }} numberOfLines={1}>
+          <Data size="body" style={{ color: theme.text }} numberOfLines={1}>
             {make} {model}
           </Data>
-          <Supporting size="small" style={{ color: theme.meta }}>
+          <Supporting size="bodySm" style={{ color: theme.meta }}>
             {year}
           </Supporting>
-          <Text variant="price" style={{ color: theme.price }}>
+          <Price style={{ color: theme.price }}>
             {formatPrice(price)}
-          </Text>
-          <Supporting size="mini" style={{ color: theme.meta }}>
+          </Price>
+          <Supporting size="bodySm" style={{ color: theme.meta }}>
             {formatMileage(mileage)} · {displaySpecs} · {displayEmirate}
           </Supporting>
         </View>
@@ -331,7 +332,7 @@ const ListImage = memo(function ListImage({
       )}
       {isBlkListing && (
         <View style={[styles.blkBadge, { backgroundColor: blkBadgeBackground, borderColor: blkBadgeBorder }]}>
-          <Label size="badge" uppercase={false} style={{ color: blkBadgeText }}>BLK</Label>
+          <Label size="caption" uppercase={false} style={{ color: blkBadgeText }}>BLK</Label>
         </View>
       )}
     </View>
