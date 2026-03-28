@@ -89,9 +89,13 @@ export function EditableField({
     bgOpacity.value = withTiming(0, { duration: 200 });
   };
 
-  const animatedBgStyle = useAnimatedStyle(() => ({
-    backgroundColor: `rgba(0,0,0,${bgOpacity.value * 0.03})`,
-  }));
+  const animatedBgStyle = useAnimatedStyle(() => {
+    // Prevent tiny floats from serializing into scientific notation causing Reanimated crashes
+    const alpha = Math.max(0, bgOpacity.value * 0.03).toFixed(4);
+    return {
+      backgroundColor: `rgba(0,0,0,${alpha})`,
+    };
+  });
 
   if (isEditing) {
     return (

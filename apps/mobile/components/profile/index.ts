@@ -11,7 +11,6 @@ export { useProfileColors } from './hooks/useProfileColors';
 export { useProfile } from './hooks/useProfile';
 
 // Components
-export { ProfileHeader } from './ProfileHeader';
 export { ProfileAvatar } from './ProfileAvatar';
 export { ProfileIdentity } from './ProfileIdentity';
 export { StatsGrid } from './StatsGrid';

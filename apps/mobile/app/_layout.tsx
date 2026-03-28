@@ -244,8 +244,6 @@ function RootLayoutNav() {
           <Stack.Screen name="settings" options={{ title: 'Settings' }} />
           <Stack.Screen name="chat/[conversationId]" options={{ title: 'Chat' }} />
           <Stack.Screen name="inventory" options={{ title: 'Inventory' }} />
-          <Stack.Screen name="blk" options={{ title: 'BLK' }} />
-          <Stack.Screen name="partners" options={{ title: 'Partners' }} />
           <Stack.Screen name="bookings" options={{ title: 'Bookings' }} />
           <Stack.Screen name="saved" options={{ title: 'Saved' }} />
         </Stack>

@@ -4,22 +4,20 @@
  */
 
 import React, { useState, useCallback } from 'react';
+import { Stack } from 'expo-router';
 import {
   StyleSheet,
   View,
   Linking,
 } from 'react-native';
 import { Body, Skeleton, AuthRequiredEmptyState, useAlert } from '@/components/ui';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '@/components/layout';
 
-import { Layout, Spacing, Radius, Sizes } from '@/constants/theme';
-import { useTheme } from '@/context/theme-context';
+import { Layout, Spacing, Radius } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import {
   useSettingsColors,
   useSettings,
-  SettingsHeader,
   PrivacySection,
   SellingSection,
   IdentitySection,
@@ -37,9 +35,7 @@ import {
 
 export default function SettingsScreen() {
   const colors = useSettingsColors();
-  const { colorScheme, setThemeMode } = useTheme();
-  const { signOut, isAuthenticated, user } = useAuth();
-  const insets = useSafeAreaInsets();
+  const { signOut, isAuthenticated } = useAuth();
   const { showAlert } = useAlert();
 
   // Settings data from hook
@@ -49,19 +45,10 @@ export default function SettingsScreen() {
     savingField,
     isDeleting,
     showPhone,
-    useGeneratedAvatar,
     consignmentMode,
-    pushNotifications,
-    emailNotifications,
-    passkeys,
-    addingPasskey,
     loadProfile,
     saveToggle,
     deleteAccount,
-    handleAddPasskey,
-    handleDeletePasskey,
-    setPushNotifications,
-    setEmailNotifications,
     setIsDeleting,
   } = useSettings({ isAuthenticated });
 
@@ -94,49 +81,66 @@ export default function SettingsScreen() {
     Linking.openURL('https://revvup.ae/contact');
   }, []);
 
-  // Header height for content offset
-  const headerHeight = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
-
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <SettingsHeader colors={colors} topInset={insets.top} />
-        <AuthRequiredEmptyState
-          title="Sign in to settings"
-          subtitle="Manage your account preferences on Revvup"
+      <>
+        <Stack.Screen
+          options={{
+            title: 'Settings',
+            headerBackButtonDisplayMode: 'minimal',
+          }}
         />
-      </View>
+        <View style={[styles.container, { backgroundColor: colors.background }]}> 
+          <AuthRequiredEmptyState
+            title="Sign in to settings"
+            subtitle="Manage your account preferences on Revvup"
+          />
+        </View>
+      </>
     );
   }
 
   // Loading state — skeleton
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <SettingsHeader colors={colors} topInset={insets.top} />
-        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerHeight }]}>
-          {/* Section skeletons */}
-          {Array.from({ length: 4 }).map((_, i) => (
-            <View key={i} style={styles.skeletonSection}>
-              <Skeleton width={120} height={14} />
-              <Skeleton width="100%" height={48} borderRadius={Radius.md} />
-              <Skeleton width="100%" height={48} borderRadius={Radius.md} />
-            </View>
-          ))}
+      <>
+        <Stack.Screen
+          options={{
+            title: 'Settings',
+            headerBackButtonDisplayMode: 'minimal',
+          }}
+        />
+        <View style={[styles.container, { backgroundColor: colors.background }]}> 
+          <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: Spacing.lg }]}> 
+            {/* Section skeletons */}
+            {Array.from({ length: 4 }).map((_, i) => (
+              <View key={i} style={styles.skeletonSection}>
+                <Skeleton width={120} height={14} />
+                <Skeleton width="100%" height={48} borderRadius={Radius.md} />
+                <Skeleton width="100%" height={48} borderRadius={Radius.md} />
+              </View>
+            ))}
+          </View>
         </View>
-      </View>
+      </>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <SettingsHeader colors={colors} topInset={insets.top} />
-      <ScreenContainer
-        keyboardAvoiding={false}
-        verticalPadding={0}
-        contentContainerStyle={{ paddingTop: headerHeight }}
-      >
+    <>
+      <Stack.Screen
+        options={{
+          title: 'Settings',
+          headerBackButtonDisplayMode: 'minimal',
+        }}
+      />
+      <View style={[styles.container, { backgroundColor: colors.background }]}> 
+        <ScreenContainer
+          keyboardAvoiding={false}
+          verticalPadding={0}
+          contentContainerStyle={{ paddingTop: Spacing.lg }}
+        >
       {/* Privacy */}
       <PrivacySection
           showPhone={showPhone}
@@ -205,8 +209,9 @@ export default function SettingsScreen() {
         }}
         onConfirm={handleDeleteAccount}
       />
-      </ScreenContainer>
-    </View>
+        </ScreenContainer>
+      </View>
+    </>
   );
 }
 

@@ -11,7 +11,6 @@ export { useSettingsColors } from './hooks/useSettingsColors';
 export { useSettings } from './hooks/useSettings';
 
 // Components
-export { SettingsHeader } from './SettingsHeader';
 export { Section } from './Section';
 export { Toggle } from './Toggle';
 export { SettingRow } from './SettingRow';

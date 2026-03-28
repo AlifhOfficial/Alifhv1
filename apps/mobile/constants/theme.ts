@@ -349,6 +349,29 @@ export const Layout = {
   hitTarget: scale(44), hitTargetSmall: scale(36), hitSlop: scale(10), hitSlopSmall: scale(8),
 } as const;
 
+export const BorderWidths = {
+  thin: 1,
+  medium: 2,
+} as const;
+
+export const Opacity = {
+  muted: 0.4,
+} as const;
+
+export const Timing = {
+  longPress: 400,
+  imageTransition: 200,
+  avatarTransition: 150,
+} as const;
+
+export const Stroke = {
+  icon: 1.75,
+} as const;
+
+export const AspectRatio = {
+  cardImage: 16 / 9,
+} as const;
+
 export const Sizes = {
   iconXs: scale(14), iconSm: scale(18), iconMd: scale(22), iconLg: scale(24), iconXl: scale(28),
   avatarSm: scale(32), avatarMd: scale(40), avatarLg: scale(48),

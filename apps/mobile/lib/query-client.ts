@@ -65,6 +65,7 @@ export const queryKeys = {
   // User data
   favorites: () => ['favorites'] as const,
   saved: () => ['saved'] as const,
+  userDashboard: () => ['user', 'dashboard'] as const,
   
   // Booking
   bookingSlots: (listingId: string) => ['booking', 'slots', listingId] as const,

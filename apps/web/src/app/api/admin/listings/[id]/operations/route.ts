@@ -174,7 +174,7 @@ export async function POST(
         : null,
     });
 
-    const response = NextResponse.json({
+    return NextResponse.json({
       success: true,
       message,
       operation: validated.data.operation,

@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
       stats = await getAdminListingStats({ type });
     }
 
-    const response = NextResponse.json({
+    return NextResponse.json({
       success: true,
       data: listings,
       stats,

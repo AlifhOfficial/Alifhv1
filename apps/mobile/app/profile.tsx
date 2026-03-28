@@ -4,20 +4,20 @@
  */
 
 import React, { useCallback } from 'react';
+import { Stack, useRouter } from 'expo-router';
 import {
   StyleSheet,
   View,
 } from 'react-native';
-import { Body, Supporting, Skeleton, SkeletonCircle, AuthRequiredEmptyState, useAlert } from '@/components/ui';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Body, Skeleton, SkeletonCircle, AuthRequiredEmptyState, HapticPressable, useAlert } from '@/components/ui';
+import { Settings2, LogOut } from 'lucide-react-native';
 import { ScreenContainer } from '@/components/layout';
 
-import { Layout, Spacing, Radius, Sizes, Colors } from '@/constants/theme';
+import { Layout, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import {
   useProfileColors,
   useProfile,
-  ProfileHeader,
   ProfileIdentity,
   StatsGrid,
   BadgesSection,
@@ -34,8 +34,8 @@ import {
 
 export default function ProfileScreen() {
   const colors = useProfileColors();
-  const { user, isAuthenticated, refreshSession } = useAuth();
-  const insets = useSafeAreaInsets();
+  const { user, isAuthenticated, refreshSession, signOut } = useAuth();
+  const router = useRouter();
   const { showAlert } = useAlert();
 
   // Profile data from API
@@ -113,28 +113,93 @@ export default function ProfileScreen() {
     // TODO: Navigate to badges info
   }, []);
 
-  // Header height for content offset
-  const headerHeight = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
+  const handleSignOut = useCallback(() => {
+    showAlert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: () => signOut(),
+        },
+      ]
+    );
+  }, [showAlert, signOut]);
+
+  const renderHeaderActions = useCallback(() => (
+    <View style={styles.headerActions}>
+      <HapticPressable
+        onPress={() => router.push('/settings')}
+        style={[
+          styles.headerActionButton,
+          {
+            borderColor: colors.glassBorder,
+            backgroundColor: colors.glassBg,
+          },
+        ]}
+        accessibilityRole="button"
+        accessibilityLabel="Open settings"
+      >
+        <Settings2 size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
+      </HapticPressable>
+
+      {isAuthenticated && (
+        <HapticPressable
+          onPress={handleSignOut}
+          style={[
+            styles.headerActionButton,
+            {
+              borderColor: colors.glassBorder,
+              backgroundColor: colors.glassBg,
+            },
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel="Sign out"
+        >
+          <LogOut size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
+        </HapticPressable>
+      )}
+    </View>
+  ), [colors.error, colors.glassBg, colors.glassBorder, colors.label, handleSignOut, isAuthenticated, router]);
 
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <ProfileHeader colors={colors} topInset={insets.top} />
+      <>
+        <Stack.Screen
+          options={{
+            title: 'Profile',
+            headerRight: renderHeaderActions,
+            headerBackButtonDisplayMode: 'minimal',
+            headerBackTitleVisible: false,
+          }}
+        />
+        <View style={[styles.container, { backgroundColor: colors.background }]}> 
         <AuthRequiredEmptyState
           title="Sign in to view profile"
           subtitle="Manage your account and listings on Revvup"
         />
-      </View>
+        </View>
+      </>
     );
   }
 
   // Loading state — skeleton
   if (isLoading) {
     return (
-      <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}>
-        <ProfileHeader colors={colors} topInset={insets.top} />
-        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerHeight }]}>
+      <>
+        <Stack.Screen
+          options={{
+            title: 'Profile',
+            headerRight: renderHeaderActions,
+            headerBackButtonDisplayMode: 'minimal',
+            headerBackTitleVisible: false,
+          }}
+        />
+        <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}> 
+        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: Spacing.lg }]}> 
           {/* Avatar */}
           <View style={styles.skeletonIdentity}>
             <SkeletonCircle size={88} />
@@ -183,15 +248,24 @@ export default function ProfileScreen() {
           </View>
         </View>
       </View>
+      </>
     );
   }
 
   // Error state
   if (error && !profile) {
     return (
-      <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}>
-        <ProfileHeader colors={colors} topInset={insets.top} />
-        <View style={[styles.errorContainer, { backgroundColor: colors.background, paddingTop: headerHeight }]}>
+      <>
+        <Stack.Screen
+          options={{
+            title: 'Profile',
+            headerRight: renderHeaderActions,
+            headerBackButtonDisplayMode: 'minimal',
+            headerBackTitleVisible: false,
+          }}
+        />
+        <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}> 
+        <View style={[styles.errorContainer, { backgroundColor: colors.background }]}> 
           <Body size="body" tone="error" style={styles.errorText}>
             {error}
           </Body>
@@ -200,17 +274,26 @@ export default function ProfileScreen() {
           </Body>
         </View>
       </View>
+      </>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ProfileHeader colors={colors} topInset={insets.top} />
+    <>
+      <Stack.Screen
+        options={{
+          title: 'Profile',
+          headerRight: renderHeaderActions,
+          headerBackButtonDisplayMode: 'minimal',
+          headerBackTitleVisible: false,
+        }}
+      />
+    <View style={[styles.container, { backgroundColor: colors.background }]}> 
       <ScreenContainer
         refreshing={isRefreshing}
         onRefresh={refresh}
         verticalPadding={0}
-        contentContainerStyle={{ paddingTop: headerHeight }}
+        contentContainerStyle={{ paddingTop: Spacing.lg }}
       >
       {/* Profile Identity */}
       <ProfileIdentity
@@ -277,6 +360,7 @@ export default function ProfileScreen() {
       />
       </ScreenContainer>
     </View>
+    </>
   );
 }
 
@@ -287,6 +371,19 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  headerActionButton: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   centered: {
     justifyContent: 'flex-start',
