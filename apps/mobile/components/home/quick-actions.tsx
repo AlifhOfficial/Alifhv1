@@ -3,22 +3,21 @@
  * 2×2 grid below GreetingNote on the home tab.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Bookmark, Box, Calendar, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
-import { HapticPressable, Data } from '@/components/ui';
-import { Body } from '@/components/ui/text';
 import { CreateListingFlow } from '@/components/sheets';
 
 const actions = [
-  { key: 'saved',     label: 'Saved',     icon: 'bookmark-outline' as const,  route: '/saved' },
-  { key: 'inventory', label: 'Inventory', icon: 'cube-outline' as const,      route: '/inventory' },
-  { key: 'bookings',  label: 'Bookings',  icon: 'calendar-outline' as const,  route: '/bookings' },
-  { key: 'create',    label: 'Create',    icon: 'add' as const,               route: null },
+  { key: 'saved',     label: 'Saved',     icon: Bookmark, route: '/saved' },
+  { key: 'inventory', label: 'Inventory', icon: Box,      route: '/inventory' },
+  { key: 'bookings',  label: 'Bookings',  icon: Calendar, route: '/bookings' },
+  { key: 'create',    label: 'Create',    icon: Plus,     route: null },
 ] as const;
 
 export function QuickActions() {
@@ -46,9 +45,9 @@ export function QuickActions() {
             style={[styles.cell, { backgroundColor: colors.backgroundSecondary }]}
           >
             <View style={[styles.iconCircle, { backgroundColor: colors.fill3 }]}>
-              <Ionicons name={action.icon} size={Sizes.iconMd} color={colors.label} />
+              <action.icon size={Sizes.iconMd} color={colors.label} strokeWidth={2} />
             </View>
-            <Body size="bodySm">{action.label}</Body>
+            <Text variant="bodySm">{action.label}</Text>
           </HapticPressable>
         ))}
       </View>

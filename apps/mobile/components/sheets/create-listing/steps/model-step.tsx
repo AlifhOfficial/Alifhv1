@@ -6,6 +6,7 @@
  * @module components/sheets/create-listing/steps/model-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BottomSheetFlatList, BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -15,8 +16,6 @@ import { Search, X, Check, AlertCircle } from 'lucide-react-native';
 
 import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 import { getModelsForMake } from '@/lib/filter-constants';
 
 import type { StepContentProps } from '../create-listing-flow';
@@ -76,15 +75,15 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
           onPress={() => handleSelect(model)}
           style={[styles.item, { borderBottomColor: colors.border }]}
         >
-          <Body
-            size="body"
+          <Text
+            variant="body"
             style={{
               color: isSelected ? colors.label : colors.labelSecondary,
               fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
             }}
           >
             {model}
-          </Body>
+          </Text>
           {isSelected && (
             <Check size={Sizes.iconMd} color={colors.primary} strokeWidth={2.5} />
           )}
@@ -99,9 +98,9 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
     return (
       <View style={styles.noMakeState}>
         <AlertCircle size={Sizes.iconLg} color={colors.labelQuaternary} strokeWidth={1.5} />
-        <Body size="body" tone="secondary" style={{ textAlign: 'center' }}>
+        <Text variant="body" tone="secondary" style={{ textAlign: 'center' }}>
           Please select a make first
-        </Body>
+        </Text>
       </View>
     );
   }
@@ -128,9 +127,9 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
             </HapticPressable>
           )}
         </View>
-        <Supporting size="bodySm" tone="muted" style={styles.modelCount}>
+        <Text variant="bodySm" tone="muted" style={styles.modelCount}>
           {allModels.length} models
-        </Supporting>
+        </Text>
       </View>
 
       <BottomSheetFlatList
@@ -145,9 +144,9 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Body size="body" tone="secondary">
+            <Text variant="body" tone="secondary">
               {query ? `No models found for "${query}"` : 'No models available'}
-            </Body>
+            </Text>
           </View>
         }
       />

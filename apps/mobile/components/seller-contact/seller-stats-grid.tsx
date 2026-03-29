@@ -5,10 +5,10 @@
  * Follows listings component patterns for consistency.
  */
 
+import { Text } from '@/components/ui';
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Spacing, Sizes } from '@/constants/theme';
-import { Label, Data } from '@/components/ui';
 import { CheckCircle2, Circle } from 'lucide-react-native';
 import type { SellerStatsGridProps } from './types';
 
@@ -24,44 +24,44 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
     <View style={[localStyles.grid, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
       {/* Email Verified */}
       <View style={localStyles.item}>
-        <Label size="caption" tone="muted">EMAIL</Label>
+        <Text variant="caption" tone="muted" uppercase>EMAIL</Text>
         <View style={localStyles.verifiedRow}>
           {seller.emailVerified ? (
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
           ) : (
             <Circle size={Sizes.iconXs} color={colors.labelQuaternary} />
           )}
-          <Data size="bodySm" style={{ color: seller.emailVerified ? colors.success : colors.labelQuaternary }}>
+          <Text variant="bodySm" style={{ color: seller.emailVerified ? colors.success : colors.labelQuaternary }}>
             {seller.emailVerified ? 'Verified' : 'Unverified'}
-          </Data>
+          </Text>
         </View>
       </View>
 
       {/* Phone Verified */}
       <View style={localStyles.item}>
-        <Label size="caption" tone="muted">PHONE</Label>
+        <Text variant="caption" tone="muted" uppercase>PHONE</Text>
         <View style={localStyles.verifiedRow}>
           {seller.phoneVerified ? (
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
           ) : (
             <Circle size={Sizes.iconXs} color={colors.labelQuaternary} />
           )}
-          <Data size="bodySm" style={{ color: seller.phoneVerified ? colors.success : colors.labelQuaternary }}>
+          <Text variant="bodySm" style={{ color: seller.phoneVerified ? colors.success : colors.labelQuaternary }}>
             {seller.phoneVerified ? 'Verified' : 'Unverified'}
-          </Data>
+          </Text>
         </View>
       </View>
 
       {/* Listings Count */}
       <View style={localStyles.item}>
-        <Label size="caption" tone="muted">LISTINGS</Label>
-        <Data size="body">{listingsCount}</Data>
+        <Text variant="caption" tone="muted" uppercase>LISTINGS</Text>
+        <Text variant="body">{listingsCount}</Text>
       </View>
 
       {/* Response Rate placeholder */}
       <View style={localStyles.item}>
-        <Label size="caption" tone="muted">RESPONSE</Label>
-        <Data size="body" tone="muted">—</Data>
+        <Text variant="caption" tone="muted" uppercase>RESPONSE</Text>
+        <Text variant="body" tone="muted">—</Text>
       </View>
     </View>
   );

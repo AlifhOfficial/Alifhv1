@@ -6,14 +6,13 @@
  * @module components/sheets/create-listing/steps/location-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useRef } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Typography, Fonts, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting, Label } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 import { UAE_EMIRATES } from '@/lib/filter-constants';
 
 import { StepContainer } from '../step-container';
@@ -46,7 +45,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Emirate Selection */}
       <View style={styles.section}>
-        <Label size="caption">Emirate</Label>
+        <Text variant="caption" uppercase>Emirate</Text>
         <View style={styles.chipsWrap}>
           {UAE_EMIRATES.map((emirate) => {
             const isActive = data.emirate === emirate.value;
@@ -62,12 +61,12 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Body
-                  size="bodySm"
+                <Text
+                  variant="bodySm"
                   style={{ color: isActive ? colors.background : colors.label }}
                 >
                   {emirate.label}
-                </Body>
+                </Text>
               </HapticPressable>
             );
           })}
@@ -77,10 +76,10 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {/* City Input (Optional) */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Label size="caption">City / Area</Label>
-          <Supporting size="bodySm" tone="muted">
+          <Text variant="caption" uppercase>City / Area</Text>
+          <Text variant="bodySm" tone="muted">
             Optional
-          </Supporting>
+          </Text>
         </View>
         <TextInput
           ref={cityRef}
@@ -104,9 +103,9 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {/* Selected summary */}
       {data.emirate && (
         <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
-          <Supporting size="bodySm" tone="secondary">
+          <Text variant="bodySm" tone="secondary">
             {data.emirate}{data.city ? `, ${data.city}` : ''}
-          </Supporting>
+          </Text>
         </View>
       )}
     </StepContainer>

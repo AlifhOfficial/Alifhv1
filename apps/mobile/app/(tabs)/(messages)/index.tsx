@@ -7,13 +7,9 @@
  * - Multiple conversations with same partner/user render as collapsible groups
  */
 
+import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState } from '@/components/ui';
 import React, { useMemo, useCallback, useRef } from 'react';
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  RefreshControl,
-} from 'react-native';
+import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { MessageCircle } from 'lucide-react-native';
 
@@ -24,7 +20,6 @@ import {
 import { Colors, Layout, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { Heading, Body, Data, Skeleton, SkeletonCircle, AuthRequiredEmptyState } from '@/components/ui';
 import type { Conversation } from '@/lib/messaging-api';
 
 // ── List Item Type - Always grouped ─────────────────────────────
@@ -242,7 +237,7 @@ export default function MessagesScreen() {
     if (error && conversations.length === 0) {
       return (
         <View style={styles.emptyState}>
-          <Data size="body" style={{ textAlign: 'center', color: colors.labelSecondary }}>{error}</Data>
+          <Text variant="body" style={{ textAlign: 'center', color: colors.labelSecondary }}>{error}</Text>
         </View>
       );
     }
@@ -252,10 +247,10 @@ export default function MessagesScreen() {
         <View style={[styles.iconCircle, { backgroundColor: colors.fill2 }]}>
           <MessageCircle size={Sizes.avatarSm} color={colors.labelTertiary} strokeWidth={1.5} />
         </View>
-        <Heading size="heading">No Messages Yet</Heading>
-        <Body size="body" tone="secondary" style={{ textAlign: 'center' }}>
+        <Text variant="heading">No Messages Yet</Text>
+        <Text variant="body" tone="secondary" style={{ textAlign: 'center' }}>
           Your conversations will appear here
-        </Body>
+        </Text>
       </View>
     );
   }, [isAuthenticated, isLoading, isRefreshing, conversations.length, error, colors]);

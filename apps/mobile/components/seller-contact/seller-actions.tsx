@@ -5,15 +5,14 @@
  * Follows listings component patterns for consistency.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { memo, useCallback } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { MessageCircle, Calendar1 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { ButtonText, Supporting } from '@/components/ui';
 import type { SellerActionsProps } from './types';
 
 export const SellerActions = memo(function SellerActions({
@@ -58,9 +57,9 @@ export const SellerActions = memo(function SellerActions({
           ) : (
             <>
               <MessageCircle size={Sizes.iconSm} color={colors.primaryForeground} />
-              <ButtonText size="body" style={{ color: colors.primaryForeground }}>
+              <Text variant="body" style={{ color: colors.primaryForeground }}>
                 Chat
-              </ButtonText>
+              </Text>
             </>
           )}
         </HapticPressable>
@@ -79,9 +78,9 @@ export const SellerActions = memo(function SellerActions({
             ]}
           >
             <Calendar1 size={Sizes.iconSm} color={colors.label} />
-            <ButtonText size="body" style={{ color: colors.label }}>
+            <Text variant="body" style={{ color: colors.label }}>
               Book
-            </ButtonText>
+            </Text>
           </HapticPressable>
         )}
       </View>
@@ -89,9 +88,9 @@ export const SellerActions = memo(function SellerActions({
       {/* Phone Number Link */}
       {seller.phone && (
         <HapticPressable onPress={handleShowPhone} hitSlop={Layout.hitSlopSmall}>
-          <Supporting size="body" style={{ textAlign: 'center' }}>
+          <Text variant="body" style={{ textAlign: 'center' }} tone="secondary">
             Show phone number
-          </Supporting>
+          </Text>
         </HapticPressable>
       )}
     </View>

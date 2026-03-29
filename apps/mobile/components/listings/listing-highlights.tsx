@@ -3,13 +3,13 @@
  * Positioned directly below the image gallery for prominent visibility
  */
 
+import { Text } from '@/components/ui';
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Data } from '@/components/ui';
 import { SpecialNotes } from '@/lib/listing-api';
 
 interface ListingHighlightsProps {
@@ -26,8 +26,8 @@ export const ListingHighlights = memo(function ListingHighlights({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
-  const textColor = isBlk ? colors.blkText : colors.label;
-  const bgColor = isBlk ? colors.blkBg : colors.background;
+  const textColor = isBlk ? colors.label : colors.label;
+  const bgColor = isBlk ? colors.background : colors.background;
 
   // Highlights from special notes and tags
   const highlights = useMemo(() => {
@@ -51,9 +51,9 @@ export const ListingHighlights = memo(function ListingHighlights({
         {highlights.map((highlight, idx) => (
           <View key={idx} style={styles.highlightItem}>
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
-            <Data size="bodySm" style={{ color: textColor }}>
+            <Text variant="bodySm" style={{ color: textColor }}>
               {highlight}
-            </Data>
+            </Text>
           </View>
         ))}
       </ScrollView>

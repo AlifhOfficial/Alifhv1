@@ -5,16 +5,15 @@
  * Native KYC verification is not available yet.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useRef, useCallback, useEffect, useMemo } from 'react';
 import { View, StyleSheet, Linking } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { HapticPressable } from '@/components/ui';
 
 import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, Supporting } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -95,7 +94,7 @@ export function KycVerificationSheet({
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="heading">Identity Verification</Heading>
+          <Text variant="heading">Identity Verification</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -107,12 +106,12 @@ export function KycVerificationSheet({
 
         {/* Body */}
         <View style={styles.body}>
-          <Body size="body">
+          <Text variant="body">
             KYC verification is only available on our website for now.
-          </Body>
-          <Supporting size="body" tone="muted">
+          </Text>
+          <Text variant="body" tone="muted">
             Visit revvup.ae, sign in, and complete verification from your profile settings. Takes less than 2 minutes.
-          </Supporting>
+          </Text>
         </View>
 
         {/* Link */}
@@ -120,7 +119,7 @@ export function KycVerificationSheet({
           onPress={openWebsite}
           style={styles.linkRow}
         >
-          <Body size="body" style={{ color: colors.primary }}>Go now</Body>
+          <Text variant="body" style={{ color: colors.primary }}>Go now</Text>
           <Ionicons name="arrow-forward" size={Sizes.iconSm} color={colors.primary} />
         </HapticPressable>
 

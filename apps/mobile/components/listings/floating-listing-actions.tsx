@@ -3,9 +3,9 @@
  * Positioned at bottom of screen as floating bubbles
  */
 
+import { HapticPressable, ConfettiBurst, useFavoriteActions } from '@/components/ui';
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { HapticPressable, ConfettiBurst, useFavoriteActions } from '@/components/ui';
 import { Heart, Zap, Share2 } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -151,8 +151,8 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.glassBg,
-                borderColor: colors.glassBorder,
+                backgroundColor: colors.background,
+                borderColor: colors.border,
               },
             ]}
           >
@@ -173,8 +173,8 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.glassBg,
-                borderColor: colors.glassBorder,
+                backgroundColor: colors.background,
+                borderColor: colors.border,
               },
             ]}
           >
@@ -195,8 +195,8 @@ export function FloatingListingActions({
             style={[
               styles.bubble,
               {
-                backgroundColor: colors.glassBg,
-                borderColor: colors.glassBorder,
+                backgroundColor: colors.background,
+                borderColor: colors.border,
               },
             ]}
           >

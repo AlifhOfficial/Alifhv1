@@ -2,13 +2,13 @@
  * Listing Header - Title, Price, Actions, Highlights
  */
 
+import { Text } from '@/components/ui';
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Text, Heading, Data, Label, Price } from '@/components/ui';
 import { SpecialNotes } from '@/lib/listing-api';
 import { formatPrice } from './types';
 
@@ -60,24 +60,24 @@ export const ListingHeader = memo(function ListingHeader({
     <View style={styles.container}>
       <View style={styles.topRow}>
         <View style={styles.textContainer}>
-          <Heading size="heading" style={{ color: textColor }} numberOfLines={2}>
+          <Text variant="heading" style={{ color: textColor }} numberOfLines={2}>
             {carTitle}
-          </Heading>
+          </Text>
           <View style={styles.priceRow}>
-            <Price style={{ color: priceColor }}>
+            <Text style={{ color: priceColor }} variant="heading" tone="primary">
               {formatPrice(price)}
-            </Price>
+            </Text>
             {isNegotiable && (
-              <Data size="bodySm" tone="success">
+              <Text variant="bodySm" tone="success">
                 Negotiable
-              </Data>
+              </Text>
             )}
           </View>
         </View>
 
         {isBlk && (
           <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
-            <Label size="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
+            <Text variant="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
           </View>
         )}
       </View>
@@ -88,9 +88,9 @@ export const ListingHeader = memo(function ListingHeader({
           {highlights.map((highlight, idx) => (
             <View key={idx} style={styles.highlightItem}>
               <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
-              <Data size="bodySm" style={{ color: textColor }}>
+              <Text variant="bodySm" style={{ color: textColor }}>
                 {highlight}
-              </Data>
+              </Text>
             </View>
           ))}
         </View>

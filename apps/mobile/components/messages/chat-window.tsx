@@ -3,16 +3,9 @@
  * Full conversation view with messages list, input, and real-time updates
  */
 
+import { Text, Skeleton } from '@/components/ui';
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
-import {
-  View,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-  Dimensions,
-  Platform,
-  Pressable,
-} from 'react-native';
+import { View, FlatList, StyleSheet, ActivityIndicator, Dimensions, Platform, Pressable } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { Stack, useRouter } from 'expo-router';
@@ -32,7 +25,6 @@ import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { LocationPickerSheet } from './location-picker-sheet';
 import { useMessages } from './hooks/useMessages';
-import { Body, Data, Supporting, Skeleton } from '@/components/ui';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { markConversationAsRead, sendLocationMessage, type Message, type Conversation } from '@/lib/messaging-api';
 import type { LocationResult } from '@/hooks/use-location';
@@ -261,17 +253,17 @@ export function ChatWindow({
             </View>
             <View style={styles.timestampSide}>
               {timestamp && (
-                <Supporting size="bodySm" style={{ color: colors.labelTertiary, opacity: 0.5 }}>
+                <Text variant="bodySm" style={{ color: colors.labelTertiary, opacity: 0.5 }} tone="secondary">
                   {timestamp}
-                </Supporting>
+                </Text>
               )}
             </View>
           </View>
           {showDateSeparator && (
             <View style={styles.dateSeparator}>
-              <Data size="bodySm" style={{ color: colors.labelTertiary }}>
+              <Text variant="bodySm" style={{ color: colors.labelTertiary }}>
                 {formatDateLabel(messageDate)}
-              </Data>
+              </Text>
             </View>
           )}
         </>
@@ -290,8 +282,6 @@ export function ChatWindow({
     ]
   );
 
-
-
   // List header (bottom of messages - newest)
   const ListFooterComponent = useMemo(() => {
     // Only show spinner when fetching more (not initial load)
@@ -309,7 +299,7 @@ export function ChatWindow({
   const ListEmptyComponent = useMemo(() => {
     return (
       <View style={styles.emptyContainer}>
-        <Data size="body" style={{ color: colors.labelTertiary }}>No messages yet. Say hi! 👋</Data>
+        <Text variant="body" style={{ color: colors.labelTertiary }}>No messages yet. Say hi! 👋</Text>
       </View>
     );
   }, [colors]);
@@ -319,9 +309,9 @@ export function ChatWindow({
     if (!isOtherTyping) return null;
     return (
       <View style={styles.typingContainer}>
-        <Supporting size="bodySm" style={{ color: colors.labelTertiary }}>
+        <Text variant="bodySm" style={{ color: colors.labelTertiary }} tone="secondary">
           typing...
-        </Supporting>
+        </Text>
       </View>
     );
   }, [isOtherTyping, colors.labelTertiary]);
@@ -362,12 +352,12 @@ export function ChatWindow({
     }
     return (
       <View style={styles.headerTitleCenter}>
-        <Data size="body" style={{ color: colors.label }} numberOfLines={1}>
+        <Text variant="body" style={{ color: colors.label }} numberOfLines={1}>
           {displayName}
-        </Data>
-        <Supporting size="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1}>
+        </Text>
+        <Text variant="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1} tone="secondary">
           {activityText}{listingTitle ? `  ·  ${listingTitle}` : ''}
-        </Supporting>
+        </Text>
       </View>
     );
   }, [conversation, displayName, activityText, listingTitle, colors]);

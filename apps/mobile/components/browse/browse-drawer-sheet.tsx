@@ -1,10 +1,10 @@
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 import { LayoutGrid, List } from 'lucide-react-native';
 
-import { HapticPressable, Body, Heading, Label } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
 
@@ -110,27 +110,27 @@ export function BrowseDrawerSheet({
       <BottomSheetView style={styles.content}>
         <View style={[styles.header, { borderBottomColor: colors.border }]}> 
           <HapticPressable onPress={onClose} hitSlop={Spacing.md} style={styles.cancelButton}>
-            <Body size="body" tone="secondary">Close</Body>
+            <Text variant="body" tone="secondary">Close</Text>
           </HapticPressable>
-          <Heading size="subheading">Drawer</Heading>
+          <Text variant="subheading">Drawer</Text>
           <View style={styles.placeholder} />
         </View>
 
         <View style={styles.section}>
-          <Body size="bodySm" tone="secondary">Filters</Body>
+          <Text variant="bodySm" tone="secondary">Filters</Text>
           <HapticPressable
             onPress={handleSettingsPress}
             style={[styles.row, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
           >
-            <Body size="body">All Filters</Body>
+            <Text variant="body">All Filters</Text>
             {settingsCount > 0 ? (
               <View style={[styles.badge, { backgroundColor: colors.label }]}>
-                <Label size="caption" uppercase={false} style={{ color: colors.background }}>
+                <Text variant="caption" uppercase={false} style={{ color: colors.background }}>
                   {settingsCount > 9 ? '9+' : settingsCount}
-                </Label>
+                </Text>
               </View>
             ) : (
-              <Body size="bodySm" tone="secondary">Open</Body>
+              <Text variant="bodySm" tone="secondary">Open</Text>
             )}
           </HapticPressable>
 
@@ -140,22 +140,22 @@ export function BrowseDrawerSheet({
               onPress={() => handlePillPress(pill.type)}
               style={[styles.row, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
             >
-              <Body size="body">{pill.label}</Body>
+              <Text variant="body">{pill.label}</Text>
               {pill.activeCount > 0 ? (
                 <View style={[styles.badge, { backgroundColor: colors.label }]}>
-                  <Label size="caption" uppercase={false} style={{ color: colors.background }}>
+                  <Text variant="caption" uppercase={false} style={{ color: colors.background }}>
                     {pill.activeCount > 9 ? '9+' : pill.activeCount}
-                  </Label>
+                  </Text>
                 </View>
               ) : (
-                <Body size="bodySm" tone="secondary">Open</Body>
+                <Text variant="bodySm" tone="secondary">Open</Text>
               )}
             </HapticPressable>
           ))}
         </View>
 
         <View style={styles.section}>
-          <Body size="bodySm" tone="secondary">View</Body>
+          <Text variant="bodySm" tone="secondary">View</Text>
           <View style={styles.viewModeRow}>
             <HapticPressable
               onPress={() => handleViewModePress('grid')}
@@ -168,9 +168,9 @@ export function BrowseDrawerSheet({
               ]}
             >
               <LayoutGrid size={Sizes.iconSm} color={viewMode === 'grid' ? colors.primary : colors.labelSecondary} strokeWidth={2} />
-              <Body size="bodySm" style={{ color: viewMode === 'grid' ? colors.primary : colors.labelSecondary }}>
+              <Text variant="bodySm" style={{ color: viewMode === 'grid' ? colors.primary : colors.labelSecondary }}>
                 Grid
-              </Body>
+              </Text>
             </HapticPressable>
 
             <HapticPressable
@@ -184,9 +184,9 @@ export function BrowseDrawerSheet({
               ]}
             >
               <List size={Sizes.iconSm} color={viewMode === 'list' ? colors.primary : colors.labelSecondary} strokeWidth={2} />
-              <Body size="bodySm" style={{ color: viewMode === 'list' ? colors.primary : colors.labelSecondary }}>
+              <Text variant="bodySm" style={{ color: viewMode === 'list' ? colors.primary : colors.labelSecondary }}>
                 List
-              </Body>
+              </Text>
             </HapticPressable>
           </View>
         </View>

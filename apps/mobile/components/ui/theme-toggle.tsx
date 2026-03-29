@@ -19,7 +19,7 @@ export const ThemeToggle = memo(function ThemeToggle() {
         styles.button,
         { 
           backgroundColor: colors.surface,
-          borderColor: colors.glassBorder,
+          borderColor: colors.border,
           opacity: pressed ? 0.7 : 1 
         }
       ]}

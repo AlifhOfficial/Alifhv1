@@ -3,12 +3,11 @@
  * KYC status display using shared Section/SettingRow pattern
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Body } from '@/components/ui';
 import { Sizes, Spacing } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
@@ -124,13 +123,13 @@ export function IdentitySection({
     <Section title="Identity Verification" colors={colors} delay={delay}>
       <View style={styles.row}>
         <View style={styles.content}>
-          <Body size="bodySm" tone="muted">Status</Body>
-          <Body size="body" style={{ color: display.statusColor }}>
+          <Text variant="bodySm" tone="muted">Status</Text>
+          <Text variant="body" style={{ color: display.statusColor }}>
             {display.statusLabel}
-          </Body>
-          <Body size="bodySm" tone="muted" style={styles.description}>
+          </Text>
+          <Text variant="bodySm" tone="muted" style={styles.description}>
             {display.description}
-          </Body>
+          </Text>
         </View>
         {display.buttonText && (
           <HapticPressable

@@ -3,12 +3,11 @@
  * Shows earned badges or empty state
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
-import { Data, Body, Supporting, ButtonText } from '@/components/ui';
 import { Spacing, Radius } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
@@ -36,18 +35,18 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
               key={index}
               style={[styles.badge, { backgroundColor: colors.surfaceSecondary }]}
             >
-              <Data size="bodySm" style={styles.badgeText}>{badge}</Data>
+              <Text variant="bodySm" style={styles.badgeText}>{badge}</Text>
             </View>
           ))}
         </View>
       ) : (
         <View style={styles.emptyState}>
-          <Body size="body" tone="secondary" style={styles.emptyTitle}>
+          <Text variant="body" tone="secondary" style={styles.emptyTitle}>
             No badges yet
-          </Body>
-          <Body size="body" tone="muted" style={styles.emptySubtitle}>
+          </Text>
+          <Text variant="body" tone="muted" style={styles.emptySubtitle}>
             Complete activities to earn badges
-          </Body>
+          </Text>
           <HapticPressable
             onPress={handleLearnMore}
             style={({ pressed }) => [
@@ -55,9 +54,9 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
               pressed && { opacity: 0.7 },
             ]}
           >
-            <ButtonText size="bodySm" tone="primary">
+            <Text variant="bodySm" tone="primary">
               Learn more
-            </ButtonText>
+            </Text>
           </HapticPressable>
         </View>
       )}
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
   },
   badgeText: {
-    // Typography handled by <Label> component
+    // Typography handled by <Text variant="label" uppercase> component
   },
   emptyState: {
     alignItems: 'center',
@@ -87,7 +86,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   emptyTitle: {
-    // Typography handled by <Body> component
+    // Typography handled by <Text variant="body"> component
   },
   emptySubtitle: {
     textAlign: 'center',

@@ -3,12 +3,11 @@
  * Editable personal information fields with phone verification
  */
 
+import { Text, HapticPressable, useAlert } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { HapticPressable, useAlert } from '@/components/ui';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { ButtonText } from '@/components/ui';
 import { Spacing, Sizes } from '@/constants/theme';
 import { Section } from './Section';
 import { EditableField } from './EditableField';
@@ -97,9 +96,9 @@ export function PersonalInfoSection({
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} strokeWidth={2} />
           ) : (
             <HapticPressable onPress={() => {}}>
-              <ButtonText size="bodySm" tone="primary">
+              <Text variant="bodySm" tone="primary">
                 Verify
-              </ButtonText>
+              </Text>
             </HapticPressable>
           )
         }

@@ -4,16 +4,9 @@
  * Includes View All button and lightbox/grid modal integration
  */
 
+import { Text, HapticPressable, Skeleton } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  FlatList,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-} from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { StyleSheet, View, Dimensions, FlatList, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
 import { Grid3x3 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -21,7 +14,6 @@ import * as Haptics from 'expo-haptics';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppListingImageUrls } from '@/lib/config';
-import { Skeleton, Data, ButtonText } from '@/components/ui';
 import { ImageLightbox } from './image-lightbox';
 import { ImageGridModal } from './image-grid-modal';
 
@@ -117,9 +109,9 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
   if (allImages.length === 0) {
     return (
       <View style={[styles.placeholder, { backgroundColor: colors.skeleton }]}>
-        <Data size="body" tone="muted">
+        <Text variant="body" tone="muted">
           No Images
-        </Data>
+        </Text>
       </View>
     );
   }
@@ -160,9 +152,9 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         
         {/* Image Counter Overlay */}
         <View style={styles.counterOverlay} pointerEvents="none">
-          <Data size="bodySm" style={styles.counterOverlayText}>
+          <Text variant="bodySm" style={styles.counterOverlayText}>
             {currentIndex + 1}/{allImages.length}
-          </Data>
+          </Text>
         </View>
       </View>
 
@@ -190,7 +182,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
               style={[
                 styles.thumbnail,
                 { 
-                  borderColor: index === currentIndex ? colors.primary : colors.glassBorder,
+                  borderColor: index === currentIndex ? colors.primary : colors.border,
                   opacity: index === currentIndex ? 1 : 0.6,
                 },
               ]}
@@ -208,12 +200,12 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         {/* View All Button */}
         <HapticPressable
           onPress={onViewAllPress}
-          style={[styles.viewAllButton, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}
+          style={[styles.viewAllButton, { backgroundColor: colors.background, borderColor: colors.border }]}
         >
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
               <Grid3x3 size={Sizes.iconXs} color={colors.label} strokeWidth={1.75} />
-              <ButtonText size="bodySm">All</ButtonText>
+              <Text variant="bodySm">All</Text>
             </View>
           )}
         </HapticPressable>

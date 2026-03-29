@@ -3,19 +3,9 @@
  * Native mobile implementation with pinch-to-zoom and swipe navigation
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useRef, useMemo } from 'react';
-import {
-  StyleSheet,
-  View,
-  Modal,
-  Pressable,
-  Dimensions,
-  FlatList,
-  StatusBar,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-} from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { StyleSheet, View, Modal, Pressable, Dimensions, FlatList, StatusBar, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
@@ -23,7 +13,6 @@ import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes, Layout, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Data } from '@/components/ui';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const THUMBNAIL_SIZE = Sizes.cardThumbnailWidth * 0.35; // ~56
@@ -118,9 +107,9 @@ export function ImageLightbox({
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
           <View style={styles.counterBadge}>
-            <Data size="bodySm" style={styles.counterText}>
+            <Text variant="bodySm" style={styles.counterText}>
               {safeIndex + 1} / {totalImages}
-            </Data>
+            </Text>
           </View>
 
           <HapticPressable

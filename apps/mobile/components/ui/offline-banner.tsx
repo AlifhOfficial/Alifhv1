@@ -3,6 +3,7 @@
  * Slides down from top, shows reconnection state
  */
 
+import { Text } from './text';
 import React, { useEffect } from 'react';
 import { StyleSheet, Pressable } from 'react-native';
 import Animated, {
@@ -19,7 +20,6 @@ import { WifiOff, RefreshCw } from 'lucide-react-native';
 import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useNetwork } from '@/context/network-context';
-import { Body, Supporting } from '@/components/ui/text';
 
 export function OfflineBanner() {
   const { colorScheme } = useTheme();
@@ -81,13 +81,13 @@ export function OfflineBanner() {
       ]}
     >
       <WifiOff size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
-      <Body size="bodySm" style={styles.text}>
+      <Text variant="bodySm" style={styles.text}>
         {isReconnecting ? 'Reconnecting...' : 'No internet connection'}
-      </Body>
+      </Text>
       {offlineDuration && !isReconnecting && (
-        <Supporting size="bodySm" style={styles.duration}>
+        <Text variant="bodySm" style={styles.duration} tone="secondary">
           Last online {offlineDuration}
-        </Supporting>
+        </Text>
       )}
       <Pressable onPress={retry} style={styles.retryButton} hitSlop={12}>
         <Animated.View style={spinStyle}>

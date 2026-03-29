@@ -9,12 +9,12 @@
  * Boring avatars/DiceBear robots have been removed - initials only.
  */
 
+import { Text } from './text';
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Sizes, Spacing, Typography, Fonts } from '@/constants/theme';
 import { getAppImageUrl } from '@/lib/config';
-import { Body } from './text';
 
 interface UserAvatarProps {
   /** 
@@ -97,7 +97,7 @@ export function UserAvatar({
     borderRadius: pixelSize / 2,
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.glassBorderDark,
+    borderColor: colors.border,
     overflow: 'hidden' as const,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
@@ -114,9 +114,9 @@ export function UserAvatar({
         />
       )}
       {!showImage && (
-        <Body style={[styles.initials, { fontSize, color: colors.labelSecondary }]}>
+        <Text style={[styles.initials, { fontSize, color: colors.labelSecondary }]} variant="body">
           {getInitials(name)}
-        </Body>
+        </Text>
       )}
     </View>
   );

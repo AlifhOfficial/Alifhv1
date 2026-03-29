@@ -4,12 +4,12 @@
  * Uses React Native's ActivityIndicator — platform-native on both.
  */
 
+import { Text } from './text';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing } from '@/constants/theme';
-import { Body } from './text';
 
 /** Full-screen or inline activity indicator with optional message */
 export function Loader({ message, fullScreen = false }: { message?: string; fullScreen?: boolean }) {
@@ -21,9 +21,9 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
       <View style={[styles.container, { backgroundColor: colors.skeleton }]}>
         <ActivityIndicator size="large" color={colors.primary} />
         {message && (
-          <Body size="bodySm" tone="secondary" style={styles.message}>
+          <Text variant="bodySm" tone="secondary" style={styles.message}>
             {message}
-          </Body>
+          </Text>
         )}
       </View>
     );
@@ -33,9 +33,9 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
     <View style={styles.inlineContainer}>
       <ActivityIndicator size="small" color={colors.primary} />
       {message && (
-        <Body size="bodySm" tone="secondary" style={styles.inlineMessage}>
+        <Text variant="bodySm" tone="secondary" style={styles.inlineMessage}>
           {message}
-        </Body>
+        </Text>
       )}
     </View>
   );

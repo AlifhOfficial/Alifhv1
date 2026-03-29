@@ -3,11 +3,11 @@
  * Reusable section container with title and optional right element
  */
 
+import { Text } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
-import { Label } from '@/components/ui';
 import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
@@ -34,7 +34,7 @@ export function Section({
       style={styles.container}
     >
       <View style={styles.header}>
-        <Label size="caption" tone="muted" style={styles.title}>{title}</Label>
+        <Text variant="caption" tone="muted" style={styles.title} uppercase>{title}</Text>
         {rightElement}
       </View>
       <View
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   title: {
-    // textTransform and letterSpacing handled by <Label> component
+    // textTransform and letterSpacing handled by <Text variant="label" uppercase> component
   },
   content: {
     borderRadius: Radius.xl,

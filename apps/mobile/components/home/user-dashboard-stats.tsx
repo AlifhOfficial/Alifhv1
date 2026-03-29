@@ -1,8 +1,8 @@
+import { Text, Skeleton } from '@/components/ui';
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Colors, Spacing, Radius, Layout, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton } from '@/components/ui';
 import { type UserDashboardStats } from '@/lib/dashboard-api';
 
 interface UserDashboardStatsCardProps {

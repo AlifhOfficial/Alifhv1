@@ -3,9 +3,9 @@
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -13,7 +13,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, ButtonText } from '@/components/ui';
 import type { SearchSortOption } from '@/lib/search-api';
 
 const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
@@ -103,10 +102,10 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Body size="body" tone="secondary">Cancel</Body>
+              <Text variant="body" tone="secondary">Cancel</Text>
             </HapticPressable>
             
-            <Heading size="subheading">Sort By</Heading>
+            <Text variant="subheading">Sort By</Text>
             
             <View style={styles.placeholder} />
           </View>
@@ -123,15 +122,15 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
                 onPress={() => handleSelect(option.value)}
                 style={styles.listItem}
               >
-                <Body
-                  size="body"
+                <Text
+                  variant="body"
                   style={{ 
                     color: selected ? colors.label : colors.labelSecondary,
                     fontWeight: selected ? Fonts.bold : Fonts.semiBold,
                   }}
                 >
                   {option.label}
-                </Body>
+                </Text>
                 <View style={[
                   styles.radio,
                   { borderColor: selected ? colors.labelQuaternary : colors.border },

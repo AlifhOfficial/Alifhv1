@@ -3,9 +3,9 @@
  * Help and feedback links - matches Profile styling
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { HelpCircle, MessageCircle, ChevronRight } from 'lucide-react-native';
 import Animated, {
   useAnimatedStyle,
@@ -13,7 +13,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { Body } from '@/components/ui';
 import { Sizes, Spacing } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors } from './types';
@@ -72,8 +71,8 @@ function SupportItem({
         <View style={styles.itemLeft}>
           <Icon size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={1.5} />
           <View style={styles.itemContent}>
-            <Body size="bodySm" tone="muted">Navigate</Body>
-            <Body size="body">{label}</Body>
+            <Text variant="bodySm" tone="muted">Navigate</Text>
+            <Text variant="body">{label}</Text>
           </View>
         </View>
         <ChevronRight size={Sizes.iconSm} color={colors.labelTertiary} strokeWidth={2} />

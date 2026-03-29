@@ -3,12 +3,12 @@
  * Avatar + Name + Email + Member since
  */
 
+import { Text } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Heading, Data, Body } from '@/components/ui';
 import { Spacing, Sizes } from '@/constants/theme';
 import { ProfileAvatar } from './ProfileAvatar';
 import type { ThemeColors } from './types';
@@ -57,13 +57,13 @@ export function ProfileIdentity({
 
       <View style={styles.info}>
         <View style={styles.nameRow}>
-          <Heading
-            size="heading"
+          <Text
+            variant="heading"
             style={styles.name}
             numberOfLines={1}
           >
             {displayName}
-          </Heading>
+          </Text>
           {isVerified && (
             <CheckCircle2
               size={Sizes.iconXs}
@@ -75,19 +75,19 @@ export function ProfileIdentity({
         </View>
 
         {email && (
-          <Data
-            size="body"
+          <Text
+            variant="body"
             tone="secondary"
             numberOfLines={1}
             style={styles.email}
           >
             {email}
-          </Data>
+          </Text>
         )}
 
-        <Body size="bodySm" tone="muted" style={styles.memberSince}>
+        <Text variant="bodySm" tone="muted" style={styles.memberSince}>
           Member since {memberSince}
-        </Body>
+        </Text>
       </View>
     </Animated.View>
   );

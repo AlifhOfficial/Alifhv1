@@ -3,15 +3,14 @@
  * Simplified version of CarCardM for the saved listings view
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View, Alert } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { Radius, Sizes, Spacing } from '@/constants/theme';
 import { getAppThumbUrl } from '@/lib/config';
-import { Supporting, Price, Label, Heading, Text } from '@/components/ui';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors } from './types';
 
@@ -94,14 +93,14 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
           />
         ) : (
           <View style={[styles.imagePlaceholder, { backgroundColor: colors.surfaceSecondary }]}>
-            <Supporting size="bodySm" tone="muted">No Image</Supporting>
+            <Text variant="bodySm" tone="muted">No Image</Text>
           </View>
         )}
         
         {/* BLK Badge */}
         {listing.isBlkListing && (
           <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-            <Label size="caption" uppercase style={{ color: colors.blkBadgeFg }}>BLK</Label>
+            <Text variant="caption" uppercase style={{ color: colors.blkBadgeFg }}>BLK</Text>
           </View>
         )}
       </View>
@@ -109,30 +108,30 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
       {/* Details */}
       <View style={styles.details}>
         {/* Title */}
-        <Heading size="subheading" numberOfLines={1}>{carTitle}</Heading>
+        <Text variant="subheading" numberOfLines={1}>{carTitle}</Text>
         
         {/* Trim */}
         {listing.trim && (
-          <Supporting size="bodySm" tone="secondary" numberOfLines={1} style={styles.trim}>
+          <Text variant="bodySm" tone="secondary" numberOfLines={1} style={styles.trim}>
             {listing.trim}
-          </Supporting>
+          </Text>
         )}
 
         {/* Price */}
-        <Price style={styles.price}>{formatPrice(listing.price || 0)}</Price>
+        <Text style={styles.price} variant="heading" tone="primary">{formatPrice(listing.price || 0)}</Text>
 
         {/* Meta */}
         <View style={styles.meta}>
-          <Supporting size="bodySm" tone="muted">{formatMileage(listing.mileage || 0)}</Supporting>
+          <Text variant="bodySm" tone="muted">{formatMileage(listing.mileage || 0)}</Text>
           <Text variant="bodySm" tone="muted" style={{ marginHorizontal: Spacing.xs }}>•</Text>
-          <Supporting size="bodySm" tone="muted">{displayEmirate}</Supporting>
+          <Text variant="bodySm" tone="muted">{displayEmirate}</Text>
         </View>
 
         {/* Seller */}
         <View style={styles.seller}>
-          <Supporting size="bodySm" tone="secondary" numberOfLines={1} style={styles.sellerName}>
+          <Text variant="bodySm" tone="secondary" numberOfLines={1} style={styles.sellerName}>
             {sellerName}
-          </Supporting>
+          </Text>
           {isVerified && (
             <CheckCircle2 size={Sizes.iconXs - 2} color={colors.success} strokeWidth={2} />
           )}

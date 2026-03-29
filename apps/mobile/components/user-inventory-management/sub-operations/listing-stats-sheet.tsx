@@ -7,9 +7,9 @@
  * EditStatusSheet.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,7 +18,6 @@ import { Eye, Heart, Zap, MousePointerClick, Flame } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Sizes, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { Heading, Body, Data, Supporting } from '@/components/ui';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -168,7 +167,7 @@ export function ListingStatsSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="heading">Insights</Heading>
+          <Text variant="heading">Insights</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -190,26 +189,26 @@ export function ListingStatsSheet({
               <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.labelQuaternary} />
             </View>
           )}
-          <Data size="bodySm" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
+          <Text variant="bodySm" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
             {listingTitle}
-          </Data>
+          </Text>
         </View>
 
         <View style={styles.metricsGrid}>
           <View style={[styles.metricCard, { backgroundColor: colors.fill2 }]}>
-            <Supporting size="bodySm">Click Rate</Supporting>
+            <Text variant="bodySm" tone="secondary">Click Rate</Text>
             <View style={styles.metricValueRow}>
-              <Data size="title">{ctr}%</Data>
+              <Text variant="title">{ctr}%</Text>
             </View>
           </View>
 
           <View style={[styles.metricCard, { backgroundColor: colors.fill2 }]}>
-            <Supporting size="bodySm">Engagement</Supporting>
+            <Text variant="bodySm" tone="secondary">Engagement</Text>
             <View style={styles.metricValueRow}>
               <Flame size={Sizes.iconSm} color={colors[hotLevel.colorKey]} />
-              <Data size="title" style={{ color: colors[hotLevel.colorKey] }}>
+              <Text variant="title" style={{ color: colors[hotLevel.colorKey] }}>
                 {hotLevel.label}
-              </Data>
+              </Text>
             </View>
           </View>
         </View>
@@ -234,13 +233,13 @@ export function ListingStatsSheet({
                     fill={stat.label === 'Saves' ? stat.color : 'none'}
                     strokeWidth={1.75}
                   />
-                  <Data size="bodySm" style={{ color: colors.labelSecondary }}>
+                  <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
                     {stat.label}
-                  </Data>
+                  </Text>
                 </View>
-                <Data size="bodySm" style={{ color: colors.label, }}>
+                <Text variant="bodySm" style={{ color: colors.label, }}>
                   {formatCount(stat.value)}
-                </Data>
+                </Text>
               </View>
             );
           })}

@@ -4,10 +4,10 @@
  * Tappable to open in maps app
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { View, StyleSheet, Linking, Platform, Image } from 'react-native';
 import { MapPin, ExternalLink } from 'lucide-react-native';
-import { HapticPressable, Body, Data } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 
@@ -90,8 +90,8 @@ export function LocationBubble({
       >
         <View style={styles.textContainer}>
           {placeName && (
-            <Body
-              size="body"
+            <Text
+              variant="body"
               style={[
                 styles.placeName,
                 { color: isOwn ? colors.primaryForeground : colors.label },
@@ -99,24 +99,24 @@ export function LocationBubble({
               numberOfLines={1}
             >
               {placeName}
-            </Body>
+            </Text>
           )}
           {address && (
-            <Data
-              size="bodySm"
+            <Text
+              variant="bodySm"
               style={{ color: isOwn ? colors.white : colors.labelSecondary }}
               numberOfLines={2}
             >
               {address}
-            </Data>
+            </Text>
           )}
           {!placeName && !address && (
-            <Data
-              size="bodySm"
+            <Text
+              variant="bodySm"
               style={{ color: isOwn ? colors.white : colors.labelSecondary }}
             >
               {latitude.toFixed(6)}, {longitude.toFixed(6)}
-            </Data>
+            </Text>
           )}
         </View>
         <ExternalLink

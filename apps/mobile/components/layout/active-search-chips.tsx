@@ -4,12 +4,11 @@
  * Transparent container with horizontally scrollable chips
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { View, StyleSheet, ScrollView, Platform } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { X } from 'lucide-react-native';
-import { Body, ButtonText } from '@/components/ui';
 import Animated, {
   useAnimatedStyle,
   withTiming,
@@ -124,14 +123,14 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
               {({ pressed }) => (
                 <>
                   <View style={[styles.pillInner, { opacity: pressed ? 0.7 : 1 }]}>
-                    <Body 
-                      size="bodySm"
+                    <Text 
+                      variant="bodySm"
                       tone="secondary"
                       style={styles.pillText}
                       numberOfLines={1}
                     >
                       {chip.label}
-                    </Body>
+                    </Text>
                     <X 
                       size={Spacing.md} 
                       color={colors.labelTertiary} 
@@ -162,9 +161,9 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
             >
               {({ pressed }) => (
                 <>
-                  <ButtonText size="bodySm" style={[styles.clearText, { color: colors.primaryForeground, opacity: pressed ? 0.7 : 1 }]}>
+                  <Text variant="bodySm" style={[styles.clearText, { color: colors.primaryForeground, opacity: pressed ? 0.7 : 1 }]}>
                     Clear all
-                  </ButtonText>
+                  </Text>
                 </>
               )}
             </HapticPressable>

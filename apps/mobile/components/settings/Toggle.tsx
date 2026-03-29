@@ -3,9 +3,9 @@
  * iOS-style toggle switch
  */
 
+import { HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, Platform } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import Animated from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 

@@ -7,9 +7,9 @@
  * @module components/bookings/cancel-booking-sheet
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator, ScrollView } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -19,7 +19,6 @@ import { X as XIcon } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import {
   cancelBooking,
   type CancellationReason,
@@ -144,7 +143,7 @@ export function CancelBookingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="heading">Cancel Booking</Heading>
+          <Text variant="heading">Cancel Booking</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Layout.hitSlop}
@@ -165,17 +164,17 @@ export function CancelBookingSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Body size="body" numberOfLines={1}>{listingTitle}</Body>
-            <Supporting size="bodySm" tone="secondary">{partnerName}</Supporting>
-            <Supporting size="bodySm" tone="secondary">{formattedDate}</Supporting>
+            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
+            <Text variant="bodySm" tone="secondary">{partnerName}</Text>
+            <Text variant="bodySm" tone="secondary">{formattedDate}</Text>
           </View>
         </View>
 
         {/* Reason picker */}
         <View style={styles.section}>
-          <Body size="body" style={{ marginBottom: Spacing.sm }}>
+          <Text variant="body" style={{ marginBottom: Spacing.sm }}>
             Why are you cancelling?
-          </Body>
+          </Text>
           <ScrollView
             style={styles.reasonList}
             showsVerticalScrollIndicator={false}
@@ -206,7 +205,7 @@ export function CancelBookingSheet({
                       <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />
                     )}
                   </View>
-                  <Body size="bodySm">{reason.label}</Body>
+                  <Text variant="bodySm">{reason.label}</Text>
                 </HapticPressable>
               );
             })}
@@ -215,9 +214,9 @@ export function CancelBookingSheet({
 
         {/* Notes input */}
         <View style={styles.section}>
-          <Body size="bodySm" tone="secondary" style={{ marginBottom: Spacing.xs }}>
+          <Text variant="bodySm" tone="secondary" style={{ marginBottom: Spacing.xs }}>
             Additional notes (optional)
-          </Body>
+          </Text>
           <BottomSheetTextInput
             value={notes}
             onChangeText={setNotes}
@@ -239,7 +238,7 @@ export function CancelBookingSheet({
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Body size="bodySm" tone="error">{error}</Body>
+            <Text variant="bodySm" tone="error">{error}</Text>
           </View>
         )}
 
@@ -253,7 +252,7 @@ export function CancelBookingSheet({
               { backgroundColor: 'transparent', borderColor: colors.border },
             ]}
           >
-            <ButtonText size="body" tone="secondary">Go Back</ButtonText>
+            <Text variant="body" tone="secondary">Go Back</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -272,9 +271,9 @@ export function CancelBookingSheet({
             ) : (
               <>
                 <XIcon size={Sizes.iconSm} color={colors.primaryForeground} />
-                <ButtonText size="body" style={{ color: colors.primaryForeground }}>
+                <Text variant="body" style={{ color: colors.primaryForeground }}>
                   Cancel Booking
-                </ButtonText>
+                </Text>
               </>
             )}
           </HapticPressable>

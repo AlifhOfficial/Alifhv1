@@ -3,9 +3,9 @@
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput, Platform } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -13,7 +13,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Label, Body, Supporting, ButtonText } from '@/components/ui';
 
 const PRICE_PRESETS = [
   { label: 'Under 50K', min: undefined, max: 50000 },
@@ -144,10 +143,10 @@ export function PriceFilterSheet({
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Body size="body" tone="secondary">Cancel</Body>
+              <Text variant="body" tone="secondary">Cancel</Text>
             </HapticPressable>
             
-            <Heading size="subheading">Price</Heading>
+            <Text variant="subheading">Price</Text>
             
             <HapticPressable
               style={[
@@ -156,25 +155,25 @@ export function PriceFilterSheet({
               ]}
               onPress={handleApply}
             >
-              <ButtonText
-                size="bodySm"
+              <Text
+                variant="bodySm"
                 style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
               >
                 Apply
-              </ButtonText>
+              </Text>
             </HapticPressable>
           </View>
 
           {/* Selection Summary */}
           {hasValue && (
             <View style={styles.selectionSummary}>
-              <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+              <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
                 {localMin && localMax ? `AED ${parseInt(localMin).toLocaleString()} - ${parseInt(localMax).toLocaleString()}` : localMin ? `From AED ${parseInt(localMin).toLocaleString()}` : `Up to AED ${parseInt(localMax).toLocaleString()}`}
-              </Body>
+              </Text>
               <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Supporting size="bodySm" style={{ color: colors.error }}>
+                <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
                   Clear
-                </Supporting>
+                </Text>
               </HapticPressable>
             </View>
           )}
@@ -199,12 +198,12 @@ export function PriceFilterSheet({
                   },
                 ]}
               >
-                <Supporting
-                  size="bodySm"
+                <Text
+                  variant="bodySm"
                   style={{ color: isActive ? colors.background : colors.labelSecondary }}
-                >
+                 tone="secondary">
                   {preset.label}
-                </Supporting>
+                </Text>
               </HapticPressable>
             );
           })}
@@ -213,9 +212,9 @@ export function PriceFilterSheet({
         {/* Range Inputs */}
         <View style={styles.rangeRow}>
           <View style={styles.inputWrapper}>
-            <Label size="caption" style={{ color: colors.labelSecondary, marginBottom: Spacing.xs }}>
+            <Text variant="caption" style={{ color: colors.labelSecondary, marginBottom: Spacing.xs }} uppercase>
               MIN
-            </Label>
+            </Text>
             <TextInput
               style={[
                 styles.input,
@@ -232,11 +231,11 @@ export function PriceFilterSheet({
               onChangeText={setLocalMin}
             />
           </View>
-          <Body size="bodyLg" tone="muted" style={styles.rangeDash}>–</Body>
+          <Text variant="bodyLg" tone="muted" style={styles.rangeDash}>–</Text>
           <View style={styles.inputWrapper}>
-            <Label size="caption" style={{ color: colors.labelSecondary, marginBottom: Spacing.xs }}>
+            <Text variant="caption" style={{ color: colors.labelSecondary, marginBottom: Spacing.xs }} uppercase>
               MAX
-            </Label>
+            </Text>
             <TextInput
               style={[
                 styles.input,

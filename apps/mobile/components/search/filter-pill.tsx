@@ -1,11 +1,10 @@
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Data } from '@/components/ui';
 
 interface FilterPillProps {
   label: string;
@@ -38,12 +37,12 @@ export function FilterPill({
       ]}
       onPress={onPress}
     >
-      <Data 
-        size="bodySm" 
+      <Text 
+        variant="bodySm" 
         style={{ color: isPrimary ? colors.primaryForeground : colors.label }}
       >
         {label}
-      </Data>
+      </Text>
       {showRemove && (
         <Ionicons 
           name="close" 

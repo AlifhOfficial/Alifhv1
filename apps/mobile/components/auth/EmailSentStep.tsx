@@ -3,6 +3,7 @@
  * Bridge between account creation and OTP entry
  */
 
+import { Text, HapticPressable, ButtonLoader } from '@/components/ui';
 import React from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,8 +12,6 @@ import Svg, { Path, Circle } from 'react-native-svg';
 
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Sizes, Radius } from '@/constants/theme';
-import { HapticPressable, ButtonLoader } from '@/components/ui';
-import { Heading, Body, Data, ButtonText, Supporting } from '@/components/ui';
 import { onboardingStyles, ONBOARDING_LAYOUT } from './onboarding-styles';
 
 interface EmailSentStepProps {
@@ -106,7 +105,7 @@ export function EmailSentStep({
                   onboardingStyles.progressBar,
                   {
                     backgroundColor:
-                      index < currentStep ? colors.primary : colors.glassBorderDark,
+                      index < currentStep ? colors.primary : colors.border,
                   },
                 ]}
               />
@@ -132,16 +131,16 @@ export function EmailSentStep({
 
           {/* Title */}
           <Animated.View entering={FadeInDown.delay(200).duration(400)}>
-            <Heading size="title" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
+            <Text variant="title" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
               Check your inbox
-            </Heading>
+            </Text>
           </Animated.View>
 
           {/* Subtitle */}
           <Animated.View entering={FadeInDown.delay(300).duration(400)}>
-            <Body size="bodySm" style={[onboardingStyles.welcomeSubtitle, { color: colors.labelSecondary }]}>
+            <Text variant="bodySm" style={[onboardingStyles.welcomeSubtitle, { color: colors.labelSecondary }]}>
               We've sent a verification code to
-            </Body>
+            </Text>
           </Animated.View>
 
           {/* Email highlight */}
@@ -149,9 +148,9 @@ export function EmailSentStep({
             entering={FadeInDown.delay(400).duration(400)}
             style={[onboardingStyles.emailHighlight, { backgroundColor: `${colors.white}08` }]}
           >
-            <Data size="bodySm" style={{ color: colors.white }}>
+            <Text variant="bodySm" style={{ color: colors.white }}>
               {email}
-            </Data>
+            </Text>
           </Animated.View>
         </View>
 
@@ -171,19 +170,19 @@ export function EmailSentStep({
             {isLoading ? (
               <ButtonLoader size="sm" variant="white" />
             ) : (
-              <ButtonText style={{ color: colors.primaryForeground }}>Enter Code</ButtonText>
+              <Text style={{ color: colors.primaryForeground }} variant="body">Enter Code</Text>
             )}
           </HapticPressable>
 
           {/* Resend link */}
           <View style={onboardingStyles.resendSection}>
             <HapticPressable onPress={handleResend} disabled={isResending || isLoading}>
-              <Body size="bodySm" style={{ color: colors.labelSecondary }}>
+              <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
                 Didn't receive it?{' '}
-                <Body size="bodySm" style={{ color: colors.primary }}>
+                <Text variant="bodySm" style={{ color: colors.primary }}>
                   {isResending ? 'Sending...' : 'Resend'}
-                </Body>
-              </Body>
+                </Text>
+              </Text>
             </HapticPressable>
           </View>
         </Animated.View>

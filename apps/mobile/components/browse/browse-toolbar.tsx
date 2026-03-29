@@ -4,9 +4,9 @@
  * Rendered inside the browse screen, NOT globally.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { HapticPressable, Body, Label } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { Search } from 'lucide-react-native';
 
@@ -90,32 +90,32 @@ export function BrowseToolbar({
         <View style={styles.row}>
           <HapticPressable
             onPress={handleSearchPress}
-            style={[styles.control, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg }]}
+            style={[styles.control, styles.glass, { borderColor: colors.border, backgroundColor: colors.background }]}
           >
             <View style={styles.labelRow}>
               <Search size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
-              <Body size="bodySm">Search</Body>
+              <Text variant="bodySm">Search</Text>
             </View>
           </HapticPressable>
 
           <HapticPressable
             onPress={handleSortPress}
-            style={[styles.control, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg }]}
+            style={[styles.control, styles.glass, { borderColor: colors.border, backgroundColor: colors.background }]}
           >
-            <Body size="bodySm">Sort</Body>
+            <Text variant="bodySm">Sort</Text>
           </HapticPressable>
 
           <HapticPressable
             onPress={handleDrawerPress}
-            style={[styles.control, styles.glass, { borderColor: colors.glassBorder, backgroundColor: colors.glassBg }]}
+            style={[styles.control, styles.glass, { borderColor: colors.border, backgroundColor: colors.background }]}
           >
             <View style={styles.labelRow}>
-              <Body size="bodySm">Drawer</Body>
+              <Text variant="bodySm">Drawer</Text>
               {activeFilterCount > 0 && (
                 <View style={[styles.badge, { backgroundColor: colors.label }]}> 
-                  <Label size="caption" uppercase={false} style={{ color: colors.background }}>
+                  <Text variant="caption" uppercase={false} style={{ color: colors.background }}>
                     {activeFilterCount > 9 ? '9+' : activeFilterCount}
-                  </Label>
+                  </Text>
                 </View>
               )}
             </View>

@@ -3,12 +3,12 @@
  * Drop-in replacement for Alert.alert with consistent styling
  */
 
+import { Text } from './text';
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { Modal, View, StyleSheet, Pressable, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
-import { Heading, Body, ButtonText } from './text';
 import * as Haptics from 'expo-haptics';
 
 // ============================================================================
@@ -118,15 +118,15 @@ export function AlertProvider({ children }: AlertProviderProps) {
             onPress={(e) => e.stopPropagation()}
           >
             {/* Title */}
-            <Heading size="subheading" style={styles.title}>
+            <Text variant="subheading" style={styles.title}>
               {config?.title}
-            </Heading>
+            </Text>
 
             {/* Message */}
             {config?.message && (
-              <Body size="body" style={[styles.message, { color: colors.labelSecondary }]}>
+              <Text variant="body" style={[styles.message, { color: colors.labelSecondary }]}>
                 {config.message}
-              </Body>
+              </Text>
             )}
 
             {/* Buttons */}
@@ -151,8 +151,8 @@ export function AlertProvider({ children }: AlertProviderProps) {
                       },
                     ]}
                   >
-                    <ButtonText
-                      size="body"
+                    <Text
+                      variant="body"
                       style={{
                         color: isDestructive
                           ? colors.white
@@ -162,7 +162,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
                       }}
                     >
                       {button.text}
-                    </ButtonText>
+                    </Text>
                   </Pressable>
                 );
               })}

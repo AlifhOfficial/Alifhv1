@@ -13,18 +13,9 @@
  * @module components/bookings/bookings-screen
  */
 
+import { Text, HapticPressable, Skeleton } from '@/components/ui';
 import React, { useCallback, useRef, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ScrollView,
-  RefreshControl,
-  ActivityIndicator,
-  Platform,
-  TouchableWithoutFeedback,
-} from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { View, StyleSheet, FlatList, ScrollView, RefreshControl, ActivityIndicator, Platform, TouchableWithoutFeedback } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -35,15 +26,6 @@ import { Calendar1, Clock, ListFilter, Check } from 'lucide-react-native';
 import { Colors, Fonts, Spacing, Radius, Layout, Sizes, ZIndex } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import {
-  Heading,
-  Body,
-  Data,
-  Supporting,
-  ButtonText,
-  Label,
-  Skeleton,
-} from '@/components/ui';
 import { useBookings, useCancelBooking } from '@/hooks/use-booking-query';
 import { type UserBooking, type BookingFilter } from '@/lib/booking-api';
 import {
@@ -55,7 +37,6 @@ import {
 } from './utilities/booking-helpers';
 import { CancelBookingSheet } from './cancel-booking-sheet';
 import { BookingDetailsSheet } from './booking-details-sheet';
-
 
 // ─── Constants (derived from theme for responsive scaling) ──────────────────
 
@@ -202,38 +183,38 @@ export function BookingsScreen() {
             )}
             {/* Status badge (BLK-badge style) */}
             <View style={[styles.statusBadge, { backgroundColor: statusColor + 'E6' }]}>
-              <Label size="caption" uppercase={false} style={{ color: colors.primaryForeground }}>
+              <Text variant="caption" uppercase={false} style={{ color: colors.primaryForeground }}>
                 {statusLabel}
-              </Label>
+              </Text>
             </View>
           </View>
 
           {/* ── Content ──────────────────────────────────────────────── */}
           <View style={styles.content}>
             {/* Title */}
-            <Data size="bodySm" style={{ color: colors.label, }} numberOfLines={1}>
+            <Text variant="bodySm" style={{ color: colors.label, }} numberOfLines={1}>
               {item.listingTitle}
-            </Data>
+            </Text>
 
             {/* Partner */}
-            <Data size="bodySm" style={{ color: colors.labelSecondary }} numberOfLines={1}>
+            <Text variant="bodySm" style={{ color: colors.labelSecondary }} numberOfLines={1}>
               {item.partnerName}
-            </Data>
+            </Text>
 
             {/* Date */}
             <View style={styles.metaRow}>
               <Calendar1 size={Sizes.iconXs} color={colors.labelSecondary} />
-              <Data size="bodySm" style={{ color: colors.labelSecondary }}>
+              <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
                 {formatBookingDate(item.scheduledDate)}
-              </Data>
+              </Text>
             </View>
 
             {/* Time */}
             <View style={styles.metaRow}>
               <Clock size={Sizes.iconXs} color={colors.labelSecondary} />
-              <Data size="bodySm" style={{ color: colors.labelSecondary }}>
+              <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
                 {formatTimeRange(item.scheduledStartTime, item.scheduledEndTime)}
-              </Data>
+              </Text>
             </View>
 
             {/* Countdown pill */}
@@ -251,8 +232,8 @@ export function BookingsScreen() {
                     },
                   ]}
                 >
-                  <Data
-                    size="bodySm"
+                  <Text
+                    variant="bodySm"
                     style={{
                       fontWeight: Fonts.bold,
                       color: countdown.isToday
@@ -263,7 +244,7 @@ export function BookingsScreen() {
                     }}
                   >
                     {countdown.text}
-                  </Data>
+                  </Text>
                 </View>
               </View>
             )}
@@ -288,14 +269,14 @@ export function BookingsScreen() {
         <View style={[styles.emptyIcon, { backgroundColor: colors.surfaceSecondary }]}>
           <Ionicons name="calendar-outline" size={Sizes.iconXl} color={colors.labelQuaternary} />
         </View>
-        <Heading size="subheading" style={{ marginTop: Spacing.lg }}>
+        <Text variant="subheading" style={{ marginTop: Spacing.lg }}>
           {isAll ? 'No bookings yet' : `No ${tabLabel.toLowerCase()} bookings`}
-        </Heading>
-        <Body size="body" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
+        </Text>
+        <Text variant="body" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
           {isAll
             ? 'When you book a test drive on a listing, it will appear here.'
             : `You don't have any ${tabLabel.toLowerCase()} bookings.`}
-        </Body>
+        </Text>
       </View>
     );
   }, [isLoading, activeTab, colors]);
@@ -340,14 +321,14 @@ export function BookingsScreen() {
       ) : error && bookings.length === 0 ? (
         <View style={[styles.centerContainer, { paddingTop: insets.top + Spacing.lg, paddingBottom: footerHeight }]}>
           <Ionicons name="alert-circle-outline" size={Sizes.avatarLg} color={colors.error} />
-          <Body
-            size="body"
+          <Text
+            variant="body"
             style={{ color: colors.error, textAlign: 'center', marginTop: Spacing.md }}
           >
             {error.message || 'Failed to load bookings'}
-          </Body>
+          </Text>
           <HapticPressable onPress={handleRefresh} style={{ marginTop: Spacing.lg }}>
-            <ButtonText size="body" tone="primary">Try Again</ButtonText>
+            <Text variant="body" tone="primary">Try Again</Text>
           </HapticPressable>
         </View>
       ) : (
@@ -411,15 +392,15 @@ export function BookingsScreen() {
                           ) : (
                             <View style={{ width: Sizes.iconSm }} />
                           )}
-                          <Data
-                            size="body"
+                          <Text
+                            variant="body"
                             style={{
                               color: isActive ? colors.primary : colors.label,
                               fontWeight: isActive ? '600' : '400',
                             }}
                           >
                             {t.label}
-                          </Data>
+                          </Text>
                         </View>
                       </View>
                     )}
@@ -441,8 +422,8 @@ export function BookingsScreen() {
             {
               width: FAB_SIZE,
               paddingHorizontal: 0,
-              backgroundColor: showFilterDrawer ? colors.primary : colors.glassBg,
-              borderColor: showFilterDrawer ? colors.primary : colors.glassBorder,
+              backgroundColor: showFilterDrawer ? colors.primary : colors.background,
+              borderColor: showFilterDrawer ? colors.primary : colors.border,
             },
           ]}
         >

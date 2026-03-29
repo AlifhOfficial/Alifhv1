@@ -3,14 +3,13 @@
  * Account deletion section - matches Profile SignOutButton styling
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, Platform } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { Trash2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
-import { ButtonText } from '@/components/ui';
 import { Layout, Sizes, Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
@@ -45,7 +44,7 @@ export function DangerZone({
         ]}
       >
         <Trash2 size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-        <ButtonText size="body" tone="error">Delete Account</ButtonText>
+        <Text variant="body" tone="error">Delete Account</Text>
       </HapticPressable>
     </Animated.View>
   );

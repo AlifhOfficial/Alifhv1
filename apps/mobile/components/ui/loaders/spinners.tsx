@@ -4,6 +4,7 @@
  * SkeletonLoader retained for content placeholder shimmer.
  */
 
+import { Text } from '../text';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, View, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
@@ -17,7 +18,6 @@ import Animated, {
 
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, ZIndex} from '@/constants/theme';
-import { Body } from '../text';
 import { LoaderProps, LOADER_SIZES, LOADER_COLORS } from './types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -77,9 +77,9 @@ export function FullScreenLoader({ message }: FullScreenLoaderProps) {
     <View style={[styles.fullScreen, { backgroundColor: colors.skeleton }]}>
       <ActivityIndicator size="large" color={colors.primary} />
       {message && (
-        <Body size="bodySm" tone="muted" style={styles.message}>
+        <Text variant="bodySm" tone="muted" style={styles.message}>
           {message}
-        </Body>
+        </Text>
       )}
     </View>
   );

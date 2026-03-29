@@ -4,9 +4,9 @@
  * Shows filter chips grouped by category with remove buttons, clear all functionality
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -15,7 +15,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type SearchChip, type SearchParams, type RemovableFilterKey } from '@/context/search-context';
-import { Heading, Body, Label, Supporting } from '@/components/ui';
 
 // Category order and labels for grouping chips
 const CATEGORY_CONFIG: { key: string; label: string; keys: string[] }[] = [
@@ -166,10 +165,10 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
             hitSlop={Spacing.md}
             style={styles.cancelButton}
           >
-            <Body size="body" tone="secondary">Cancel</Body>
+            <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
           
-          <Heading size="subheading">Active Filters</Heading>
+          <Text variant="subheading">Active Filters</Text>
           
           <View style={styles.placeholder} />
         </View>
@@ -177,13 +176,13 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
         {/* Selection Summary */}
         {hasFilters && (
           <View style={styles.selectionSummary}>
-            <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+            <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
               {chips.length} filter{chips.length !== 1 ? 's' : ''} active
-            </Body>
+            </Text>
             <HapticPressable onPress={handleClearAll} hitSlop={Layout.hitSlopSmall}>
-              <Supporting size="bodySm" style={{ color: colors.error }}>
+              <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
                 Clear all
-              </Supporting>
+              </Text>
             </HapticPressable>
           </View>
         )}
@@ -197,14 +196,14 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
       >
         {!hasFilters ? (
           <View style={styles.emptyState}>
-            <Body tone="muted">No active filters</Body>
+            <Text tone="muted" variant="body">No active filters</Text>
           </View>
         ) : (
           groupedChips.map((group) => (
             <View key={group.category} style={styles.categorySection}>
-              <Label size="caption" tone="muted" style={styles.categoryLabel}>
+              <Text variant="caption" tone="muted" style={styles.categoryLabel} uppercase>
                 {group.label.toUpperCase()}
-              </Label>
+              </Text>
               <View style={styles.chipGrid}>
                 {group.chips.map((chip, idx) => (
                   <HapticPressable 
@@ -217,9 +216,9 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
                       chip.locked && { opacity: 0.7 },
                     ]}
                   >
-                    <Body size="bodySm" numberOfLines={1} style={styles.chipText}>
+                    <Text variant="bodySm" numberOfLines={1} style={styles.chipText}>
                       {chip.label}
-                    </Body>
+                    </Text>
                     {!chip.locked && (
                       <Ionicons name="close" size={Spacing.md} color={colors.labelTertiary} />
                     )}

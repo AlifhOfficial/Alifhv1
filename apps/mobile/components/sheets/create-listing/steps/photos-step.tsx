@@ -7,6 +7,7 @@
  * @module components/sheets/create-listing/steps/photos-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useRef } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator, Dimensions, Alert } from 'react-native';
 import DraggableFlatList, { 
@@ -18,8 +19,6 @@ import { X, ImagePlus, GripVertical } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Fonts } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 import { pickAndUploadListingImage, deleteListingImageByUrl } from '@/components/user-inventory-management/utilities/image-upload';
 import { CDN_BASE, getThumbUrl } from '@/lib/config';
 
@@ -185,9 +184,9 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             {/* Thumbnail badge — only on confirmed CDN cover */}
             {isThumbnail && (
               <View style={[styles.thumbnailBadge, { backgroundColor: colors.primary }]}>
-                <Body size="bodySm" style={{ color: colors.primaryForeground, fontSize: Spacing.sm, fontWeight: Fonts.semiBold }}>
+                <Text variant="bodySm" style={{ color: colors.primaryForeground, fontSize: Spacing.sm, fontWeight: Fonts.semiBold }}>
                   COVER
-                </Body>
+                </Text>
               </View>
             )}
 
@@ -241,25 +240,25 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
         {uploading && uploadProgress.total > 0 ? (
           <View style={styles.uploadingContent}>
             <ActivityIndicator size="small" color={colors.label} />
-            <Body size="body" tone="secondary">
+            <Text variant="body" tone="secondary">
               {`Uploading ${uploadProgress.done} of ${uploadProgress.total}...`}
-            </Body>
+            </Text>
           </View>
         ) : (
           <View style={styles.uploadContent}>
             <ImagePlus size={Sizes.iconLg} color={colors.labelQuaternary} strokeWidth={1.5} />
-            <Body size="bodySm" tone="muted">
+            <Text variant="bodySm" tone="muted">
               Add Photos ({totalCount}/{MAX_IMAGES})
-            </Body>
+            </Text>
           </View>
         )}
       </HapticPressable>
 
       {/* Error */}
       {error && (
-        <Supporting size="bodySm" style={{ color: colors.error, marginBottom: Spacing.sm }}>
+        <Text variant="bodySm" style={{ color: colors.error, marginBottom: Spacing.sm }} tone="secondary">
           {error}
-        </Supporting>
+        </Text>
       )}
 
       {/* Image Grid — shows immediately after picker, spinners on in-progress */}
@@ -274,9 +273,9 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             columnWrapperStyle={styles.row}
             scrollEnabled={false}
           />
-          <Supporting size="bodySm" tone="muted" style={{ marginTop: Spacing.sm }}>
+          <Text variant="bodySm" tone="muted" style={{ marginTop: Spacing.sm }}>
             Hold and drag to reorder
-          </Supporting>
+          </Text>
         </View>
       )}
     </StepContainer>

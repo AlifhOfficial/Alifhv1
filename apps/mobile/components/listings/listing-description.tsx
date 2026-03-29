@@ -6,13 +6,12 @@
  * Tapping "Read more" fires onReadMore so the parent can open a sheet.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { memo, useState, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 
 import { Colors, Spacing, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Label, Body, Text } from '@/components/ui';
 
 interface ListingDescriptionProps {
   description: string;
@@ -32,7 +31,7 @@ export const ListingDescription = memo(function ListingDescription({
   const [showReadMore, setShowReadMore] = useState(false);
   const [measured, setMeasured] = useState(false);
 
-  const textColor = isBlk ? colors.blkText2 : colors.labelSecondary;
+  const textColor = isBlk ? colors.labelSecondary : colors.labelSecondary;
 
   // Fired by the *hidden* full-text render (no numberOfLines).
   // Reliably reports all lines on both platforms.
@@ -48,9 +47,9 @@ export const ListingDescription = memo(function ListingDescription({
 
   return (
     <View style={styles.container}>
-      <Label size="label" tone="muted">
+      <Text variant="label" tone="muted" uppercase>
         DESCRIPTION
-      </Label>
+      </Text>
 
       {/* Hidden measurer — same style, no truncation, off-screen */}
       {!measured && (
@@ -64,9 +63,9 @@ export const ListingDescription = memo(function ListingDescription({
       )}
 
       {/* Visible text — always truncated to 3 lines */}
-      <Body size="body" style={{ color: textColor }} numberOfLines={3}>
+      <Text variant="body" style={{ color: textColor }} numberOfLines={3}>
         {description}
-      </Body>
+      </Text>
 
       {showReadMore && (
         <HapticPressable onPress={onReadMore} hitSlop={Layout.hitSlopSmall}>

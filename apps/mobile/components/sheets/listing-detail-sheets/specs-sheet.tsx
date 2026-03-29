@@ -3,9 +3,9 @@
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
@@ -14,7 +14,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Supporting, Data } from '@/components/ui';
 import { Copy } from 'lucide-react-native';
 
 interface SpecItem {
@@ -33,8 +32,8 @@ function SpecRow({ label, value }: SpecItem) {
 
   return (
     <View style={styles.specRow}>
-      <Supporting size="body">{label}</Supporting>
-      <Data size="body">{displayValue}</Data>
+      <Text variant="body" tone="secondary">{label}</Text>
+      <Text variant="body">{displayValue}</Text>
     </View>
   );
 }
@@ -100,7 +99,7 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="heading">All Specifications</Heading>
+          <Text variant="heading">All Specifications</Text>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 

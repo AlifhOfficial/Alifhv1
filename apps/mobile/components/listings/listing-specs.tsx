@@ -3,14 +3,13 @@
  * Tapping "View All" fires onViewAll so the parent can open a sheet.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { ChevronRight } from 'lucide-react-native';
 
 import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Label, Data, Supporting } from '@/components/ui';
 import { formatEnumValue } from './types';
 
 const MAX_VISIBLE_SPECS = 4;
@@ -42,8 +41,8 @@ function SpecRow({ label, value }: SpecItem) {
   
   return (
     <View style={styles.specRow}>
-      <Supporting size="body" tone="muted">{label}</Supporting>
-      <Data size="body">{displayValue}</Data>
+      <Text variant="body" tone="muted">{label}</Text>
+      <Text variant="body">{displayValue}</Text>
     </View>
   );
 }
@@ -86,9 +85,9 @@ export const ListingSpecs = memo(function ListingSpecs({
 
   return (
     <View style={styles.container}>
-      <Label size="label" tone="muted">
+      <Text variant="label" tone="muted" uppercase>
         SPECIFICATIONS
-      </Label>
+      </Text>
       <View style={styles.specsList}>
         {visibleSpecs.map((spec) => (
           <SpecRow 
@@ -103,9 +102,9 @@ export const ListingSpecs = memo(function ListingSpecs({
         <HapticPressable onPress={onViewAll} style={styles.viewAllButton}>
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
-              <Data size="body" tone="primary">
+              <Text variant="body" tone="primary">
                 View All Specifications
-              </Data>
+              </Text>
               <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />
             </View>
           )}

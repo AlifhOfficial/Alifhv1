@@ -3,6 +3,7 @@
  * Shows quota info and confirms before using a superlike
  */
 
+import { Text } from '@/components/ui';
 import React, { useRef, useCallback, useEffect, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
@@ -11,7 +12,6 @@ import { Zap } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Data, Supporting } from '@/components/ui/text';
 import { HapticPressable } from '@/components/ui/haptic-pressable';
 import type { FavoritesStatusData } from '@/lib/saved-api';
 
@@ -97,25 +97,25 @@ export function SuperlikeConfirmationSheet({
             <Zap size={Sizes.iconLg} color={colors.warning} fill={colors.warning} />
           </View>
           <View style={styles.headerText}>
-            <Heading size="subheading">Superlike this listing?</Heading>
+            <Text variant="subheading">Superlike this listing?</Text>
             {listingTitle && (
-              <Supporting size="bodySm" numberOfLines={1} style={{ marginTop: 2 }}>
+              <Text variant="bodySm" numberOfLines={1} style={{ marginTop: 2 }} tone="secondary">
                 {listingTitle}
-              </Supporting>
+              </Text>
             )}
           </View>
           <View style={[styles.quotaBadge, { backgroundColor: remaining === 0 ? colors.warning + '20' : colors.backgroundSecondary }]}>
-            <Data size="bodySm" style={{ color: remaining === 0 ? colors.warning : colors.labelSecondary }}>
+            <Text variant="bodySm" style={{ color: remaining === 0 ? colors.warning : colors.labelSecondary }}>
               {remaining}/{total}
-            </Data>
+            </Text>
           </View>
         </View>
 
         {/* Description */}
         <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundSecondary }]}>
-          <Supporting size="bodySm" style={{ textAlign: 'center' }}>
+          <Text variant="bodySm" style={{ textAlign: 'center' }} tone="secondary">
             Superlikes notify sellers that you're highly interested. Use them wisely — you have limited superlikes each month.
-          </Supporting>
+          </Text>
         </View>
 
         {/* Actions */}
@@ -128,7 +128,7 @@ export function SuperlikeConfirmationSheet({
               { borderColor: colors.border, opacity: pressed ? 0.7 : 1 },
             ]}
           >
-            <Data size="body" style={{ color: colors.label }}>Cancel</Data>
+            <Text variant="body" style={{ color: colors.label }}>Cancel</Text>
           </HapticPressable>
           <HapticPressable
             onPress={handleConfirm}
@@ -139,7 +139,7 @@ export function SuperlikeConfirmationSheet({
             ]}
           >
             <Zap size={Spacing.lg} color={colors.primaryForeground} />
-            <Data size="body" style={{ color: colors.primaryForeground }}>Confirm</Data>
+            <Text variant="body" style={{ color: colors.primaryForeground }}>Confirm</Text>
           </HapticPressable>
         </View>
       </BottomSheetView>
@@ -212,13 +212,13 @@ export function SuperlikeQuotaExhaustedSheet({
           <View style={[styles.iconContainer, { backgroundColor: colors.warning + '20' }]}>
             <Zap size={Sizes.iconXl} color={colors.warning} />
           </View>
-          <Heading size="heading" style={{ marginTop: Spacing.md }}>
+          <Text variant="heading" style={{ marginTop: Spacing.md }}>
             No Superlikes Left
-          </Heading>
-          <Supporting size="bodySm" style={{ textAlign: 'center', marginTop: Spacing.xs }}>
+          </Text>
+          <Text variant="bodySm" style={{ textAlign: 'center', marginTop: Spacing.xs }} tone="secondary">
             You've used all your superlikes for this month.
             {resetDate && ` They'll reset on ${resetDate}.`}
-          </Supporting>
+          </Text>
         </View>
 
         {/* Action */}
@@ -230,7 +230,7 @@ export function SuperlikeQuotaExhaustedSheet({
             { backgroundColor: colors.primary, marginTop: Spacing.lg, opacity: pressed ? 0.8 : 1 },
           ]}
         >
-          <Data size="body" style={{ color: colors.primaryForeground }}>Got it</Data>
+          <Text variant="body" style={{ color: colors.primaryForeground }}>Got it</Text>
         </HapticPressable>
       </BottomSheetView>
     </BottomSheetModal>

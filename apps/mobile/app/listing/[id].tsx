@@ -5,14 +5,10 @@
  * Uses React Query for data fetching (caching, dedup, prefetch support).
  */
 
+import { Text } from '@/components/ui';
 import { useEffect, useState, useCallback } from 'react';
 import { 
-  View, 
-  ScrollView, 
-  StyleSheet, 
-  RefreshControl,
-  InteractionManager,
-} from 'react-native';
+  View, ScrollView, StyleSheet, RefreshControl, InteractionManager } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -20,7 +16,6 @@ import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
 import { FloatingListingActions } from '@/components/listings';
-import { Body } from '@/components/ui';
 import { useListingDetail } from '@/hooks/use-listing-query';
 import { shareListing } from '@/lib/listing-share';
 import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
@@ -112,11 +107,11 @@ export default function ListingDetailScreen() {
           <CarCardDetailedMSkeleton />
         ) : error ? (
           <View style={styles.errorContainer}>
-            <Body size="bodySm" tone="secondary" style={{ textAlign: 'center' }}>
+            <Text variant="bodySm" tone="secondary" style={{ textAlign: 'center' }}>
               {error.message?.includes('not found') 
                 ? 'This listing is no longer available or may have expired'
                 : 'Failed to load listing. Please try again.'}
-            </Body>
+            </Text>
           </View>
         ) : listing ? (
           <CarCardDetailedM 

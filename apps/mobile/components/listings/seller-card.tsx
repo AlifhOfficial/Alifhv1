@@ -2,6 +2,7 @@
  * Seller Card - Seller info with avatar
  */
 
+import { Text } from '@/components/ui';
 import React, { memo, ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
@@ -10,7 +11,6 @@ import { CheckCircle2 } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { Text, Data, Supporting, Label } from '@/components/ui';
 import { SellerData } from '@/lib/listing-api';
 
 interface SellerCardProps {
@@ -57,7 +57,7 @@ export const SellerCard = memo(function SellerCard({
   
   const isBlackTier = isPartner && partner?.tier === 'black';
   
-  const textColor = isBlk ? colors.blkText : colors.label;
+  const textColor = isBlk ? colors.label : colors.label;
 
   // Private seller extra info
   const memberSince = !isPartner ? formatMemberSince(userProfile?.memberSince) : null;
@@ -65,7 +65,7 @@ export const SellerCard = memo(function SellerCard({
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={[styles.avatar, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}>
+        <View style={[styles.avatar, { backgroundColor: colors.background, borderColor: colors.border }]}>
           {sellerLogo ? (
             <Image
               source={{ uri: sellerLogo }}
@@ -81,21 +81,21 @@ export const SellerCard = memo(function SellerCard({
         
         <View style={styles.details}>
           <View style={styles.nameRow}>
-            <Data size="body" style={{ color: textColor }}>{sellerName}</Data>
+            <Text variant="body" style={{ color: textColor }}>{sellerName}</Text>
             {isVerified && !isBlackTier && (
               <CheckCircle2 size={Sizes.iconXs} color={colors.primary} />
             )}
             {isBlackTier && (
               <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
-                <Label size="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
+                <Text variant="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
               </View>
             )}
           </View>
           
           {/* Subtitle: Dealer type or member since */}
-          <Supporting size="bodySm">
+          <Text variant="bodySm" tone="secondary">
             {isPartner ? 'Verified Dealer' : (memberSince || 'Private Seller')}
-          </Supporting>
+          </Text>
         </View>
       </View>
       {action}

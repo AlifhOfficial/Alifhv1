@@ -3,13 +3,13 @@
  * Gracefully handles crashes with a user-friendly error screen
  */
 
+import { Text } from './text';
 import React, { Component, type ReactNode } from 'react';
 import { View, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
-import { Heading, Body, Supporting, ButtonText } from '@/components/ui/text';
 
 interface Props {
   children: ReactNode;
@@ -89,14 +89,14 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
         </View>
 
         {/* Title */}
-        <Heading size="title" style={[styles.title, { color: colors.label }]}>
+        <Text variant="title" style={[styles.title, { color: colors.label }]}>
           Something went wrong
-        </Heading>
+        </Text>
 
         {/* Description */}
-        <Body size="body" tone="secondary" style={styles.description}>
+        <Text variant="body" tone="secondary" style={styles.description}>
           The app ran into an unexpected issue. We're sorry for the inconvenience.
-        </Body>
+        </Text>
 
         {/* Primary Actions */}
         <View style={styles.actions}>
@@ -105,7 +105,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
             style={[styles.button, styles.primaryButton, { backgroundColor: colors.primary }]}
           >
             <RefreshCw size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
-            <ButtonText size="body" style={{ color: colors.primaryForeground }}>Reload App</ButtonText>
+            <Text variant="body" style={{ color: colors.primaryForeground }}>Reload App</Text>
           </Pressable>
 
           <Pressable
@@ -113,7 +113,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
             style={[styles.button, styles.secondaryButton, { borderColor: colors.border }]}
           >
             <Home size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
-            <ButtonText size="body" style={{ color: colors.label }}>Try Again</ButtonText>
+            <Text variant="body" style={{ color: colors.label }}>Try Again</Text>
           </Pressable>
         </View>
 
@@ -125,20 +125,20 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
               style={styles.detailsToggle}
             >
               <Bug size={Sizes.iconXs} color={colors.labelQuaternary} />
-              <Supporting size="bodySm" tone="muted">
+              <Text variant="bodySm" tone="muted">
                 {showDetails ? 'Hide' : 'Show'} error details
-              </Supporting>
+              </Text>
             </Pressable>
 
             {showDetails && (
               <View style={[styles.errorBox, { backgroundColor: colors.surface }]}>
-                <Supporting size="bodySm" style={{ color: colors.error, fontFamily: 'monospace' }}>
+                <Text variant="bodySm" style={{ color: colors.error, fontFamily: 'monospace' }} tone="secondary">
                   {error.name}: {error.message}
-                </Supporting>
+                </Text>
                 {error.stack && (
-                  <Supporting size="bodySm" tone="muted" style={styles.stackTrace}>
+                  <Text variant="bodySm" tone="muted" style={styles.stackTrace}>
                     {error.stack.split('\n').slice(0, 5).join('\n')}
-                  </Supporting>
+                  </Text>
                 )}
               </View>
             )}

@@ -3,13 +3,12 @@
  * Simple sign out button for profile screen
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, Platform, Alert } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { LogOut } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { ButtonText } from '@/components/ui';
 import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import type { ThemeColors } from './types';
@@ -54,7 +53,7 @@ export function SignOutButton({ colors }: SignOutButtonProps) {
       ]}
     >
       <LogOut size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-      <ButtonText size="body" tone="error">Sign Out</ButtonText>
+      <Text variant="body" tone="error">Sign Out</Text>
     </HapticPressable>
   );
 }

@@ -3,11 +3,11 @@
  * Reusable section container with title - matches Profile Section styling
  */
 
+import { Text } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
-import { Label } from '@/components/ui';
 import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
@@ -36,13 +36,13 @@ export function Section({
       style={[styles.container, isFirst && styles.firstSection]}
     >
       <View style={styles.header}>
-        <Label 
-          size="caption" 
+        <Text 
+          variant="caption" 
           tone={danger ? 'error' : 'muted'} 
           style={styles.title}
-        >
+         uppercase>
           {title}
-        </Label>
+        </Text>
         {rightElement}
       </View>
       <View
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   title: {
-    // textTransform and letterSpacing handled by <Label> component
+    // textTransform and letterSpacing handled by <Text variant="label" uppercase> component
   },
   content: {
     borderRadius: Radius.xl,

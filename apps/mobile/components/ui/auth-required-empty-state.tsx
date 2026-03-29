@@ -6,8 +6,7 @@
  * Uses bg3.png as image header with content below.
  * 
  * USAGE:
- *   import { AuthRequiredEmptyState } from '@/components/ui';
- * 
+ *    * 
  *   <AuthRequiredEmptyState
  *     title="Sign in to message"
  *     subtitle="Connect with buyers and sellers on Revvup"
@@ -16,6 +15,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+import { Text } from './text';
 import React, { memo, useCallback } from 'react';
 import { View, StyleSheet, Image, Platform, Dimensions } from 'react-native';
 import * as Haptics from 'expo-haptics';
@@ -25,7 +25,6 @@ import { ArrowRight } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { Heading, Supporting } from './text';
 import { HapticPressable } from './haptic-pressable';
 
 // ═══════════════════════════════════════════════════
@@ -79,12 +78,12 @@ export const AuthRequiredEmptyState = memo(function AuthRequiredEmptyState({
         <View style={styles.content}>
           {/* Text */}
           <Animated.View entering={FadeInUp.delay(100).duration(400)} style={styles.textContent}>
-            <Heading size="subheading">
+            <Text variant="subheading">
               {title}
-            </Heading>
-            <Supporting size="bodySm" style={styles.subtitle}>
+            </Text>
+            <Text variant="bodySm" style={styles.subtitle} tone="secondary">
               {subtitle}
-            </Supporting>
+            </Text>
           </Animated.View>
 
           {/* Image - Centered */}
@@ -104,8 +103,8 @@ export const AuthRequiredEmptyState = memo(function AuthRequiredEmptyState({
               style={styles.signInRow}
               hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
             >
-              <Heading size="subheading" style={{ color: colors.label }}>Sign In</Heading>
-              <View style={[styles.glassBubble, { backgroundColor: colors.glassBg, borderColor: colors.border }]}>
+              <Text variant="subheading" style={{ color: colors.label }}>Sign In</Text>
+              <View style={[styles.glassBubble, { backgroundColor: colors.background, borderColor: colors.border }]}>
                 <ArrowRight size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
               </View>
             </HapticPressable>

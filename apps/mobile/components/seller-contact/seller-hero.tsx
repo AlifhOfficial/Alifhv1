@@ -5,6 +5,7 @@
  * Follows listings component patterns for consistency.
  */
 
+import { Text } from '@/components/ui';
 import React, { memo } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
@@ -12,7 +13,6 @@ import { CheckCircle2, Star, Clock } from 'lucide-react-native';
 
 import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { getAppThumbUrl } from '@/lib/config';
-import { Label, Heading, Supporting, Data, Text } from '@/components/ui';
 import type { SellerHeroProps } from './types';
 import { formatMemberSince } from './utils';
 
@@ -45,33 +45,33 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
         <View style={localStyles.heroInfo}>
           {/* Name + Badges */}
           <View style={localStyles.nameRow}>
-            <Heading size="heading" numberOfLines={1} style={{ flexShrink: 1 }}>
+            <Text variant="heading" numberOfLines={1} style={{ flexShrink: 1 }}>
               {seller.name}
-            </Heading>
+            </Text>
             {seller.isVerified && seller.tier?.toLowerCase() !== 'black' && (
               <CheckCircle2 size={Sizes.iconXs} color={colors.primary} />
             )}
             {seller.tier?.toLowerCase() === 'black' && (
               <View style={[localStyles.tierBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-                <Label size="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>
+                <Text variant="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>
                   BLK
-                </Label>
+                </Text>
               </View>
             )}
           </View>
           
           {/* Seller Type */}
-          <Supporting size="bodySm">
+          <Text variant="bodySm" tone="secondary">
             {seller.isDealer ? 'Verified Dealer' : 'Private Seller'}
-          </Supporting>
+          </Text>
 
           {/* Member Since */}
           {seller.memberSince && (
             <View style={localStyles.metaRow}>
               <Clock size={Sizes.iconXs} color={colors.labelSecondary} />
-              <Supporting size="bodySm" tone="muted">
+              <Text variant="bodySm" tone="muted">
                 Member since {formatMemberSince(seller.memberSince)}
-              </Supporting>
+              </Text>
             </View>
           )}
 
@@ -79,11 +79,11 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           {seller.rating != null && (
             <View style={localStyles.ratingRow}>
               <Star size={Sizes.iconXs} color={colors.warning} fill={colors.warning} />
-              <Data size="bodySm">{seller.rating.toFixed(1)}</Data>
+              <Text variant="bodySm">{seller.rating.toFixed(1)}</Text>
               {seller.reviewCount != null && (
-                <Supporting size="bodySm">
+                <Text variant="bodySm" tone="secondary">
                   ({seller.reviewCount})
-                </Supporting>
+                </Text>
               )}
             </View>
           )}
@@ -101,9 +101,9 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
               contentFit="cover"
             />
           ) : (
-            <Heading size="title" tone="secondary">
+            <Text variant="title" tone="secondary">
               {seller.name.charAt(0).toUpperCase()}
-            </Heading>
+            </Text>
           )}
         </View>
       </View>

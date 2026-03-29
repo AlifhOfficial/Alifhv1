@@ -5,9 +5,9 @@
  * Calls sellCarUserApi.extend().
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -17,7 +17,6 @@ import { CalendarPlus } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { Heading, Body, ButtonText, Supporting, Data } from '@/components/ui';
 import { extendListing, type ExtendListingResponse } from '@/lib/sell-car-user-api';
 import { formatExpiryCountdown } from '../utilities/listing-helpers';
 
@@ -119,7 +118,7 @@ export function ExtendListingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="heading">Extend Listing</Heading>
+          <Text variant="heading">Extend Listing</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -143,11 +142,11 @@ export function ExtendListingSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Body size="body" numberOfLines={1}>{listingTitle}</Body>
+            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
             {expiryDisplay && (
-              <Supporting size="bodySm" tone={expiryDisplay.isUrgent ? 'error' : 'secondary'}>
+              <Text variant="bodySm" tone={expiryDisplay.isUrgent ? 'error' : 'secondary'}>
                 {expiryDisplay.text}
-              </Supporting>
+              </Text>
             )}
           </View>
         </View>
@@ -173,12 +172,12 @@ export function ExtendListingSheet({
                   },
                 ]}
               >
-                <Data size="title" style={selected ? { color: colors.primary } : undefined}>
+                <Text variant="title" style={selected ? { color: colors.primary } : undefined}>
                   {days}
-                </Data>
-                <Supporting size="bodySm" tone={selected ? 'primary' : 'secondary'}>
+                </Text>
+                <Text variant="bodySm" tone={selected ? 'primary' : 'secondary'}>
                   days
-                </Supporting>
+                </Text>
               </HapticPressable>
             );
           })}
@@ -187,7 +186,7 @@ export function ExtendListingSheet({
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Body size="bodySm" tone="error">{error}</Body>
+            <Text variant="bodySm" tone="error">{error}</Text>
           </View>
         )}
 
@@ -204,7 +203,7 @@ export function ExtendListingSheet({
               },
             ]}
           >
-            <ButtonText size="body" tone="secondary">Cancel</ButtonText>
+            <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -223,9 +222,9 @@ export function ExtendListingSheet({
             ) : (
               <>
                 <CalendarPlus size={Sizes.iconSm} color={colors.primaryForeground} />
-                <ButtonText size="body" style={{ color: colors.primaryForeground }}>
+                <Text variant="body" style={{ color: colors.primaryForeground }}>
                   Extend {selectedDays} Days
-                </ButtonText>
+                </Text>
               </>
             )}
           </HapticPressable>

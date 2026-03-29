@@ -7,6 +7,7 @@
  * @module components/sheets/create-listing/steps/vin-step
  */
 
+import { Text } from '@/components/ui';
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, Switch } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -15,7 +16,6 @@ import { CheckCircle2, AlertCircle } from 'lucide-react-native';
 
 import { Typography, Fonts, Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting, Label } from '@/components/ui';
 import { checkVin } from '@/lib/sell-car-user-api';
 import { validateVin } from '../types';
 
@@ -169,13 +169,13 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Character count */}
       <View style={styles.countRow}>
-        <Supporting size="bodySm" tone="muted">
+        <Text variant="bodySm" tone="muted">
           {localVin.length}/17
-        </Supporting>
+        </Text>
         {status === 'verified' && (
-          <Supporting size="bodySm" style={{ color: colors.success }}>
+          <Text variant="bodySm" style={{ color: colors.success }} tone="secondary">
             Verified
-          </Supporting>
+          </Text>
         )}
       </View>
 
@@ -183,16 +183,16 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       {errorMsg && (
         <View style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-          <Body size="bodySm" style={{ color: colors.error, flex: 1 }}>
+          <Text variant="bodySm" style={{ color: colors.error, flex: 1 }}>
             {errorMsg}
-          </Body>
+          </Text>
         </View>
       )}
 
       {/* VIN Visibility Toggle */}
       <View style={[styles.visibilitySection, { backgroundColor: colors.fill2 }]}>
         <View style={styles.visibilityContent}>
-          <Label size="caption">Show VIN publicly</Label>
+          <Text variant="caption" uppercase>Show VIN publicly</Text>
         </View>
         <Switch
           value={data.vinVisibility === 'public'}
@@ -207,9 +207,9 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Info */}
       <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
-        <Supporting size="bodySm" tone="muted">
+        <Text variant="bodySm" tone="muted">
           Find your VIN on the driver's door jamb, dashboard, or vehicle registration. This setting is permanent for this listing.
-        </Supporting>
+        </Text>
       </View>
     </StepContainer>
   );

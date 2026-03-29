@@ -15,20 +15,10 @@
  * @module components/user-inventory-management/inventory-screen
  */
 
+import { Text, HapticPressable, Skeleton } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  Pressable,
-  ScrollView,
-  RefreshControl,
-  ActivityIndicator,
-  Platform,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { View, StyleSheet, FlatList, Pressable, ScrollView, RefreshControl, ActivityIndicator, Platform, TouchableWithoutFeedback } from 'react-native';
 
-import { HapticPressable } from '@/components/ui';
 import { Image } from 'expo-image';
 import { getAppThumbUrl } from '@/lib/config';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -46,16 +36,6 @@ import {
 
 import { Colors, Spacing, Radius, Layout, Sizes, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import {
-  Heading,
-  Body,
-  Data,
-  Supporting,
-  ButtonText,
-  Label,
-  Price,
-  Skeleton,
-} from '@/components/ui';
 import {
   getListingForEdit,
   type MyListingCard,
@@ -361,9 +341,9 @@ export function InventoryScreen() {
             )}
             {/* Status badge overlaid on image */}
             <View style={[styles.statusOverlay, { backgroundColor: statusColor + 'E6' }]}>
-              <Label size="caption" uppercase={false} style={{ color: colors.primaryForeground }}>
+              <Text variant="caption" uppercase={false} style={{ color: colors.primaryForeground }}>
                 {statusLabel}
-              </Label>
+              </Text>
             </View>
           </View>
 
@@ -371,9 +351,9 @@ export function InventoryScreen() {
           <View style={styles.content}>
             {/* Row 1: Title + action */}
             <View style={styles.titleRow}>
-              <Data size="bodySm" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
+              <Text variant="bodySm" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
                 {title}
-              </Data>
+              </Text>
               <HapticPressable
                 onPress={() => openActions(item)}
                 hitSlop={Layout.hitSlop}
@@ -384,14 +364,14 @@ export function InventoryScreen() {
             </View>
 
             {/* Row 2: Price */}
-            <Price>
+            <Text variant="heading" tone="primary">
               {price}
-            </Price>
+            </Text>
 
             {/* Row 3: Meta line — specs · emirate */}
-            <Data size="bodySm" style={{ color: colors.labelSecondary }}>
+            <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
               {displaySpecs} · {displayEmirate}
-            </Data>
+            </Text>
 
             {/* Row 4: Expiry (if applicable) */}
             {expiry && (
@@ -402,8 +382,8 @@ export function InventoryScreen() {
                     expiry.isExpired ? colors.error : expiry.isUrgent ? colors.warning : colors.labelQuaternary
                   }
                 />
-                <Data
-                  size="bodySm"
+                <Text
+                  variant="bodySm"
                   style={{
                     color: expiry.isExpired
                       ? colors.error
@@ -413,7 +393,7 @@ export function InventoryScreen() {
                   }}
                 >
                   {expiry.text}
-                </Data>
+                </Text>
               </View>
             )}
           </View>
@@ -437,23 +417,23 @@ export function InventoryScreen() {
         <View style={[styles.emptyIcon, { backgroundColor: colors.surfaceSecondary }]}>
           <Ionicons name="image-outline" size={Sizes.iconXl} color={colors.labelQuaternary} />
         </View>
-        <Heading size="subheading" style={{ marginTop: Spacing.lg }}>
+        <Text variant="subheading" style={{ marginTop: Spacing.lg }}>
           {isAll ? 'No listings yet' : `No ${tabLabel.toLowerCase()} listings`}
-        </Heading>
-        <Body size="body" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
+        </Text>
+        <Text variant="body" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
           {isAll
             ? 'Create your first listing to start selling'
             : `Listings matching "${tabLabel}" will appear here`}
-        </Body>
+        </Text>
         {isAll && (
           <HapticPressable
             onPress={openCreateFlow}
             style={[styles.emptyBtn, { backgroundColor: colors.primary }]}
           >
             <Plus size={Sizes.iconSm} color={colors.primaryForeground} />
-            <ButtonText size="body" style={{ color: colors.primaryForeground }}>
+            <Text variant="body" style={{ color: colors.primaryForeground }}>
               Create Listing
-            </ButtonText>
+            </Text>
           </HapticPressable>
         )}
       </View>
@@ -501,14 +481,14 @@ export function InventoryScreen() {
       ) : error && listings.length === 0 ? (
         <View style={[styles.centerContainer, { paddingTop: insets.top + Spacing.lg, paddingBottom: footerHeight }]}>
           <Ionicons name="alert-circle-outline" size={Sizes.avatarLg} color={colors.error} />
-          <Body
-            size="body"
+          <Text
+            variant="body"
             style={{ color: colors.error, textAlign: 'center', marginTop: Spacing.md }}
           >
             {error}
-          </Body>
+          </Text>
           <HapticPressable onPress={handleRefresh} style={{ marginTop: Spacing.lg }}>
-            <Data size="bodySm" tone="primary">Tap to retry</Data>
+            <Text variant="bodySm" tone="primary">Tap to retry</Text>
           </HapticPressable>
         </View>
       ) : (
@@ -665,15 +645,15 @@ export function InventoryScreen() {
                           ) : (
                             <View style={{ width: Sizes.iconSm }} />
                           )}
-                          <Data
-                            size="body"
+                          <Text
+                            variant="body"
                             style={{
                               color: isActive ? colors.primary : colors.label,
                               fontWeight: isActive ? '600' : '400',
                             }}
                           >
                             {t.label}
-                          </Data>
+                          </Text>
                         </View>
                       </View>
                     )}
@@ -697,8 +677,8 @@ export function InventoryScreen() {
               {
                 width: FAB_SIZE,
                 paddingHorizontal: 0,
-                backgroundColor: showFilterDrawer ? colors.primary : colors.glassBg,
-                borderColor: showFilterDrawer ? colors.primary : colors.glassBorder,
+                backgroundColor: showFilterDrawer ? colors.primary : colors.background,
+                borderColor: showFilterDrawer ? colors.primary : colors.border,
               },
             ]}
           >
@@ -720,8 +700,8 @@ export function InventoryScreen() {
               {
                 width: FAB_SIZE,
                 paddingHorizontal: 0,
-                backgroundColor: colors.glassBg,
-                borderColor: colors.glassBorder,
+                backgroundColor: colors.background,
+                borderColor: colors.border,
               },
             ]}
           >

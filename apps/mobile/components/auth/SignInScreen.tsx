@@ -3,6 +3,7 @@
  * Matches the onboarding aesthetic
  */
 
+import { Text, HapticPressable, ButtonLoader } from '@/components/ui';
 import React, { useState, useRef } from 'react';
 import { View, TextInput, Platform, StyleSheet, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,8 +12,6 @@ import Svg, { Path, G, Rect, ClipPath, Defs } from 'react-native-svg';
 
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
-import { HapticPressable, ButtonLoader } from '@/components/ui';
-import { Heading, Body, Data, ButtonText, Supporting } from '@/components/ui';
 import { onboardingStyles, ONBOARDING_LAYOUT } from './onboarding-styles';
 
 interface SignInScreenProps {
@@ -106,12 +105,12 @@ export function SignInScreen({
 
           {/* Hero Section */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Supporting size="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]}>
+            <Text variant="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]} tone="secondary">
               Welcome back
-            </Supporting>
-            <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
+            </Text>
+            <Text variant="title" style={[onboardingStyles.title, { color: colors.white }]}>
               Sign in to continue
-            </Heading>
+            </Text>
           </Animated.View>
 
           {/* Error */}
@@ -120,9 +119,9 @@ export function SignInScreen({
               entering={FadeIn.duration(200)}
               style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
             >
-              <Body size="bodySm" tone="error" style={onboardingStyles.errorText}>
+              <Text variant="bodySm" tone="error" style={onboardingStyles.errorText}>
                 {error}
-              </Body>
+              </Text>
             </Animated.View>
           )}
 
@@ -196,9 +195,9 @@ export function SignInScreen({
                 onPress={() => setShowPassword(!showPassword)}
                 style={onboardingStyles.showPasswordButton}
               >
-                <Data size="bodySm" style={{ color: colors.labelTertiary }}>
+                <Text variant="bodySm" style={{ color: colors.labelTertiary }}>
                   {showPassword ? 'Hide' : 'Show'}
-                </Data>
+                </Text>
               </HapticPressable>
             </View>
 
@@ -207,9 +206,9 @@ export function SignInScreen({
               onPress={onForgotPassword}
               style={{ alignSelf: 'flex-end', paddingVertical: Spacing.xs }}
             >
-              <Data size="bodySm" style={{ color: colors.labelSecondary }}>
+              <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
                 Forgot password?
-              </Data>
+              </Text>
             </HapticPressable>
           </Animated.View>
 
@@ -223,9 +222,9 @@ export function SignInScreen({
               {isLoading ? (
                 <ButtonLoader size="sm" variant="primary" />
               ) : (
-                <Heading size="heading" style={{ color: isValid ? colors.white : colors.labelTertiary }}>
+                <Text variant="heading" style={{ color: isValid ? colors.white : colors.labelTertiary }}>
                   Sign In
-                </Heading>
+                </Text>
               )}
             </HapticPressable>
 
@@ -233,9 +232,9 @@ export function SignInScreen({
             {(onGoogleSignIn || onAppleSignIn) && (
               <View style={styles.socialSection}>
                 <View style={styles.dividerRow}>
-                  <View style={[styles.dividerLine, { backgroundColor: colors.glassBorderDark }]} />
-                  <Supporting size="bodySm" style={{ color: colors.labelTertiary }}>or</Supporting>
-                  <View style={[styles.dividerLine, { backgroundColor: colors.glassBorderDark }]} />
+                  <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+                  <Text variant="bodySm" style={{ color: colors.labelTertiary }} tone="secondary">or</Text>
+                  <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
                 </View>
 
                 <View style={styles.socialButtonsRow}>
@@ -275,11 +274,11 @@ export function SignInScreen({
 
             {/* Switch to Sign Up */}
             <Animated.View entering={FadeIn.delay(400).duration(300)} style={onboardingStyles.footer}>
-              <Body size="bodySm" style={{ color: colors.labelSecondary }}>
+              <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
                 Don't have an account?{' '}
-              </Body>
+              </Text>
               <HapticPressable onPress={onSwitchToSignUp}>
-                <Data size="bodySm" style={{ color: colors.primary }}>Sign up</Data>
+                <Text variant="bodySm" style={{ color: colors.primary }}>Sign up</Text>
               </HapticPressable>
             </Animated.View>
           </Animated.View>

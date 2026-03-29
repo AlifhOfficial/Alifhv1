@@ -3,19 +3,12 @@
  * Editable bio with character counter
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useRef, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  TextInput,
-  Pressable,
-  Platform,
-} from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { StyleSheet, View, TextInput, Pressable, Platform } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { Body, Data } from '@/components/ui';
 import { Typography, Spacing, Radius, Layout } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors, EditingField, ProfileFormData } from './types';
@@ -93,18 +86,18 @@ export function BioSection({
               textAlignVertical="top"
             />
             <View style={styles.footer}>
-              <Body size="bodySm" style={{ color: charCountColor }}>
+              <Text variant="bodySm" style={{ color: charCountColor }}>
                 {bio.length}/{MAX_BIO_LENGTH}
-              </Body>
+              </Text>
               <View style={styles.actions}>
                 <HapticPressable
                   onPress={onCancel}
                   hitSlop={Layout.hitSlopSmall}
                   style={({ pressed }) => pressed && { opacity: 0.6 }}
                 >
-                  <Body size="bodySm" tone="secondary">
+                  <Text variant="bodySm" tone="secondary">
                     Cancel
-                  </Body>
+                  </Text>
                 </HapticPressable>
                 <HapticPressable
                   onPress={onSave}
@@ -112,26 +105,26 @@ export function BioSection({
                   hitSlop={Layout.hitSlopSmall}
                   style={({ pressed }) => pressed && { opacity: 0.6 }}
                 >
-                  <Data size="body" tone="primary">
+                  <Text variant="body" tone="primary">
                     {saving ? 'Saving...' : 'Save'}
-                  </Data>
+                  </Text>
                 </HapticPressable>
               </View>
             </View>
           </Animated.View>
         ) : (
           <View style={styles.displayContainer}>
-            <Body
-              size="body"
+            <Text
+              variant="body"
               tone={bio ? 'default' : 'muted'}
               style={styles.bioText}
             >
               {bio || 'Tap to add bio'}
-            </Body>
+            </Text>
             {bio && (
-              <Body size="bodySm" tone="muted">
+              <Text variant="bodySm" tone="muted">
                 {bio.length}/{MAX_BIO_LENGTH}
-              </Body>
+              </Text>
             )}
           </View>
         )}
@@ -166,6 +159,6 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   bioText: {
-    // lineHeight handled by <Body size="bodyLg"> component
+    // lineHeight handled by <Text variant="bodyLg"> component
   },
 });

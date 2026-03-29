@@ -3,9 +3,9 @@
  * Simple modal with Call, WhatsApp, Copy options
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, StyleSheet, Platform, Linking, Alert } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -15,7 +15,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, ButtonText } from '@/components/ui';
 
 interface PhoneActionSheetProps {
   visible: boolean;
@@ -106,7 +105,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
       <BottomSheetView style={styles.content}>
         {/* Header with close */}
         <View style={styles.header}>
-          <Heading size="heading">{phoneNumber}</Heading>
+          <Text variant="heading">{phoneNumber}</Text>
           <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
@@ -131,7 +130,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
               <Phone size={Sizes.iconMd} color={colors.primaryForeground} />
             </View>
-            <ButtonText size="bodySm" style={styles.actionLabel}>Call</ButtonText>
+            <Text variant="bodySm" style={styles.actionLabel}>Call</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -144,7 +143,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.whatsapp }]}>
               <Ionicons name="logo-whatsapp" size={Sizes.iconLg} color={colors.primaryForeground} />
             </View>
-            <ButtonText size="bodySm" style={styles.actionLabel}>WhatsApp</ButtonText>
+            <Text variant="bodySm" style={styles.actionLabel}>WhatsApp</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -157,7 +156,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.surfaceSecondary }]}>
               <Copy size={Sizes.iconMd} color={colors.label} />
             </View>
-            <ButtonText size="bodySm" style={styles.actionLabel}>Copy</ButtonText>
+            <Text variant="bodySm" style={styles.actionLabel}>Copy</Text>
           </HapticPressable>
         </View>
       </BottomSheetView>

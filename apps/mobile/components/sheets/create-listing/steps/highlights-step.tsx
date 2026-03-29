@@ -7,14 +7,13 @@
  * @module components/sheets/create-listing/steps/highlights-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting, Label } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 import { LISTING_TAGS } from '@/lib/filter-constants';
 
 import { StepContainer } from '../step-container';
@@ -49,14 +48,14 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Label size="caption">Highlight Tags</Label>
-          <Supporting size="bodySm" tone="muted">
+          <Text variant="caption" uppercase>Highlight Tags</Text>
+          <Text variant="bodySm" tone="muted">
             Select up to {MAX_TAGS}
-          </Supporting>
+          </Text>
         </View>
-        <Supporting size="bodySm" tone="secondary" style={styles.description}>
+        <Text variant="bodySm" tone="secondary" style={styles.description}>
           Help buyers find your listing with relevant highlights
-        </Supporting>
+        </Text>
         
         <View style={styles.chipWrap}>
           {LISTING_TAGS.map((tag) => {
@@ -76,30 +75,30 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Body
-                  size="bodySm"
+                <Text
+                  variant="bodySm"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {tag.label}
-                </Body>
+                </Text>
               </HapticPressable>
             );
           })}
         </View>
 
         {tags.length >= MAX_TAGS && (
-          <Supporting size="bodySm" tone="muted" style={styles.hint}>
+          <Text variant="bodySm" tone="muted" style={styles.hint}>
             Remove a tag to add another
-          </Supporting>
+          </Text>
         )}
       </View>
 
       {/* Summary */}
       {tags.length > 0 && (
         <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
-          <Supporting size="bodySm" tone="secondary">
+          <Text variant="bodySm" tone="secondary">
             {tags.length} highlight{tags.length !== 1 ? 's' : ''} selected
-          </Supporting>
+          </Text>
         </View>
       )}
     </StepContainer>

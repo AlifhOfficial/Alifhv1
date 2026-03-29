@@ -2,12 +2,12 @@
  * Seller Contact Screen Skeleton
  */
 
+import { Skeleton } from '@/components/ui';
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
-import { Skeleton } from '@/components/ui';
 import { ScreenContainer } from '@/components/layout/ScreenContainer';
 
 import type { SellerContactColors } from './types';

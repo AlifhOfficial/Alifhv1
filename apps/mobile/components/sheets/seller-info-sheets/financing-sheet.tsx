@@ -3,16 +3,15 @@
  * Allows users to input custom down payment percentage and loan term
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius, Sizes, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Supporting, Data, Label } from '@/components/ui';
 import { formatPrice, calculateEMI } from '@/components/seller-contact/utils';
 
 interface FinancingSheetProps {
@@ -107,7 +106,7 @@ export function FinancingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="heading">Custom Financing</Heading>
+          <Text variant="heading">Custom Financing</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -119,20 +118,20 @@ export function FinancingSheet({
 
         {/* Live Output */}
         <View style={[styles.outputContainer, { backgroundColor: colors.fill2 }]}>
-          <Label size="label" tone="muted">ESTIMATED MONTHLY PAYMENT</Label>
-          <Data size="title" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Data>
+          <Text variant="label" tone="muted" uppercase>ESTIMATED MONTHLY PAYMENT</Text>
+          <Text variant="title" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Text>
           <View style={[styles.outputDetails, { borderTopColor: colors.border }]}>
             <View style={styles.outputItem}>
-              <Supporting size="bodySm" tone="muted">Down Payment</Supporting>
-              <Data size="bodySm">{formatPrice(downPaymentAmount)}</Data>
+              <Text variant="bodySm" tone="muted">Down Payment</Text>
+              <Text variant="bodySm">{formatPrice(downPaymentAmount)}</Text>
             </View>
             <View style={styles.outputItem}>
-              <Supporting size="bodySm" tone="muted">Loan Amount</Supporting>
-              <Data size="bodySm">{formatPrice(loanAmount)}</Data>
+              <Text variant="bodySm" tone="muted">Loan Amount</Text>
+              <Text variant="bodySm">{formatPrice(loanAmount)}</Text>
             </View>
             <View style={styles.outputItem}>
-              <Supporting size="bodySm" tone="muted">Interest Rate</Supporting>
-              <Data size="bodySm">{interestRate}% APR</Data>
+              <Text variant="bodySm" tone="muted">Interest Rate</Text>
+              <Text variant="bodySm">{interestRate}% APR</Text>
             </View>
           </View>
         </View>
@@ -141,7 +140,7 @@ export function FinancingSheet({
         <View style={styles.inputsContainer}>
           {/* Down Payment */}
           <View style={styles.inputRow}>
-            <Supporting size="body" style={styles.inputLabel}>Down Payment</Supporting>
+            <Text variant="body" style={styles.inputLabel} tone="secondary">Down Payment</Text>
             <View style={[styles.inputWrapper, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
               <TextInput
                 style={[styles.input, { color: colors.label }]}
@@ -152,13 +151,13 @@ export function FinancingSheet({
                 placeholder="20"
                 placeholderTextColor={colors.labelQuaternary}
               />
-              <Data size="body" tone="secondary">%</Data>
+              <Text variant="body" tone="secondary">%</Text>
             </View>
           </View>
 
           {/* Loan Term */}
           <View style={styles.inputRow}>
-            <Supporting size="body" style={styles.inputLabel}>Loan Term</Supporting>
+            <Text variant="body" style={styles.inputLabel} tone="secondary">Loan Term</Text>
             <View style={[styles.inputWrapper, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
               <TextInput
                 style={[styles.input, { color: colors.label }]}
@@ -169,7 +168,7 @@ export function FinancingSheet({
                 placeholder="48"
                 placeholderTextColor={colors.labelQuaternary}
               />
-              <Data size="body" tone="secondary">months</Data>
+              <Text variant="body" tone="secondary">months</Text>
             </View>
           </View>
         </View>
@@ -177,9 +176,9 @@ export function FinancingSheet({
         {/* Disclaimer */}
         <View style={[styles.disclaimer, { backgroundColor: colors.fill2 }]}>
           <Ionicons name="information-circle-outline" size={Sizes.iconSm} color={colors.labelSecondary} />
-          <Supporting size="bodySm" style={styles.disclaimerText}>
+          <Text variant="bodySm" style={styles.disclaimerText} tone="secondary">
             This is an estimate only. Actual rates and terms may vary based on your bank, credit profile, and other factors.
-          </Supporting>
+          </Text>
         </View>
 
         <View style={{ height: insets.bottom + Spacing.md }} />

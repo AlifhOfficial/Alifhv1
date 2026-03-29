@@ -13,15 +13,14 @@
  * and a thin divider keeps the rhythm.
  */
 
+import { Text, HapticPressable, Skeleton } from '@/components/ui';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, StyleSheet, View } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton, Data } from '@/components/ui';
 import { DescriptionSheet, FeaturesSheet, SpecsSheet } from '@/components/sheets';
 import { ListingDetailedData, SellerData } from '@/lib/listing-api';
 import {
@@ -225,9 +224,9 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
                   sellerData={sellerData}
                   action={
                     <View style={styles.contactAction}>
-                      <Data size="body" tone="primary">
+                      <Text variant="body" tone="primary">
                         Contact
-                      </Data>
+                      </Text>
                       <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />
                     </View>
                   }
@@ -313,8 +312,6 @@ export function CarCardDetailedMSkeleton() {
     </View>
   );
 }
-
-
 
 // ============================================================================
 // STYLES

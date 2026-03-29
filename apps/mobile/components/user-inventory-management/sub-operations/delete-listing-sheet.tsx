@@ -8,9 +8,9 @@
  * Calls sellCarUserApi.delete() or sellCarUserApi.hardDelete().
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -20,7 +20,6 @@ import { Trash2 } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import {
   deleteListing,
   hardDeleteListing,
@@ -131,7 +130,7 @@ export function DeleteListingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="heading">{title}</Heading>
+          <Text variant="heading">{title}</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -149,9 +148,9 @@ export function DeleteListingSheet({
         {hardDelete && (
           <View style={[styles.warningBanner, { backgroundColor: colors.errorMuted }]}>
             <Ionicons name="warning" size={Sizes.iconSm} color={colors.error} />
-            <Body size="bodySm" tone="error" style={{ flex: 1 }}>
+            <Text variant="bodySm" tone="error" style={{ flex: 1 }}>
               This cannot be undone. All photos will be permanently deleted.
-            </Body>
+            </Text>
           </View>
         )}
 
@@ -165,15 +164,15 @@ export function DeleteListingSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Body size="body" numberOfLines={1}>{listingTitle}</Body>
-            <Supporting size="bodySm" tone="secondary">{description}</Supporting>
+            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
+            <Text variant="bodySm" tone="secondary">{description}</Text>
           </View>
         </View>
 
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Body size="bodySm" tone="error">{error}</Body>
+            <Text variant="bodySm" tone="error">{error}</Text>
           </View>
         )}
 
@@ -190,7 +189,7 @@ export function DeleteListingSheet({
               },
             ]}
           >
-            <ButtonText size="body" tone="secondary">Cancel</ButtonText>
+            <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -209,9 +208,9 @@ export function DeleteListingSheet({
             ) : (
               <>
                 <Trash2 size={Sizes.iconSm} color={colors.primaryForeground} />
-                <ButtonText size="body" style={{ color: colors.primaryForeground }}>
+                <Text variant="body" style={{ color: colors.primaryForeground }}>
                   {hardDelete ? 'Delete Forever' : 'Delete'}
-                </ButtonText>
+                </Text>
               </>
             )}
           </HapticPressable>

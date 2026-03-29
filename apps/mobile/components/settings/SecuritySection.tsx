@@ -3,12 +3,11 @@
  * Passkeys and security settings - matches Profile styling
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { ScanFace, Fingerprint, Key, Trash2, Loader2 } from 'lucide-react-native';
 
-import { Supporting, Body } from '@/components/ui';
 import { Layout, Sizes, Spacing, Radius } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors, Passkey } from './types';
@@ -35,8 +34,8 @@ export function SecuritySection({
       {/* Header with Add button */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View style={styles.info}>
-          <Body size="bodySm" tone="muted">Passkeys</Body>
-          <Body size="body">Sign in with biometrics</Body>
+          <Text variant="bodySm" tone="muted">Passkeys</Text>
+          <Text variant="body">Sign in with biometrics</Text>
         </View>
         <HapticPressable
           onPress={onAddPasskey}
@@ -56,8 +55,8 @@ export function SecuritySection({
       {/* Passkeys List or Empty State */}
       {passkeys.length === 0 ? (
         <View style={styles.empty}>
-          <Body size="bodySm" tone="muted">No passkeys registered</Body>
-          <Supporting size="bodySm" tone="muted">Add a passkey for passwordless sign-in</Supporting>
+          <Text variant="bodySm" tone="muted">No passkeys registered</Text>
+          <Text variant="bodySm" tone="muted">Add a passkey for passwordless sign-in</Text>
         </View>
       ) : (
         <View style={styles.list}>
@@ -68,8 +67,8 @@ export function SecuritySection({
             >
               <Key size={Sizes.iconXs} color={colors.labelSecondary} strokeWidth={1.5} />
               <View style={styles.itemInfo}>
-                <Body size="bodySm">{pk.name || 'Passkey'}</Body>
-                <Supporting size="bodySm" tone="muted">Added {pk.createdAt}</Supporting>
+                <Text variant="bodySm">{pk.name || 'Passkey'}</Text>
+                <Text variant="bodySm" tone="muted">Added {pk.createdAt}</Text>
               </View>
               <HapticPressable
                 onPress={() => onDeletePasskey?.(pk.id)}

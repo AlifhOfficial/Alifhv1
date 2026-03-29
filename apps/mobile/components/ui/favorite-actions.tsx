@@ -265,7 +265,7 @@ export const FavoriteButton = memo(function FavoriteButton({
 
   const iconColor = isFavorite
     ? colors.favorite
-    : inactiveColor ?? (isBlkListing ? colors.blkText2 : colors.label);
+    : inactiveColor ?? (isBlkListing ? colors.labelSecondary : colors.label);
 
   return (
     <View style={styles.wrapper}>
@@ -316,7 +316,7 @@ export const SuperlikeButton = memo(function SuperlikeButton({
 
   const iconColor = isSuperliked
     ? colors.warning
-    : inactiveColor ?? (isBlkListing ? colors.blkText2 : colors.label);
+    : inactiveColor ?? (isBlkListing ? colors.labelSecondary : colors.label);
 
   return (
     <View style={styles.wrapper}>

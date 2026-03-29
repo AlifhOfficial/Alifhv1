@@ -8,6 +8,7 @@
  * - Multiple sizes
  */
 
+import { Text } from './text';
 import React, { memo, useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
@@ -15,7 +16,6 @@ import { Image } from 'expo-image';
 import { Sizes, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { Heading } from './text';
 
 // ============================================================================
 // TYPES
@@ -81,8 +81,8 @@ export const BrandAvatar = memo(function BrandAvatar({
   const borderRadius = shape === 'round' ? pixelSize / 2 : Radius.sm;
   
   // Glass styling or custom background
-  const bgColor = glass ? colors.glassBg : (backgroundColor ?? colors.surfaceSecondary);
-  const borderColor = glass ? colors.glassBorderDark : (ringColor ?? colors.glassBorderDark);
+  const bgColor = glass ? colors.background : (backgroundColor ?? colors.surfaceSecondary);
+  const borderColor = glass ? colors.border : (ringColor ?? colors.border);
   const shouldShowBorder = glass || showRing;
   
   // Convert to CDN URL if needed
@@ -106,9 +106,9 @@ export const BrandAvatar = memo(function BrandAvatar({
       ]}
     >
       {showFallback ? (
-        <Heading size="subheading" tone="secondary">
+        <Text variant="subheading" tone="secondary">
           {name.charAt(0).toUpperCase()}
-        </Heading>
+        </Text>
       ) : (
         <Image
           source={{ uri: imageUri! }}

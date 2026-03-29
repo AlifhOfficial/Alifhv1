@@ -5,15 +5,14 @@
  * Opens Google Maps for directions and location viewing.
  */
 
+import { Text, HapticPressable, Skeleton } from '@/components/ui';
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View, Linking } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { MapPin, ExternalLink, Navigation } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton, Label, Data, ButtonText } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -52,10 +51,10 @@ export const LocationSection = memo(function LocationSection({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
-  const textColor = isBlk ? colors.blkText : colors.label;
-  const secondaryTextColor = isBlk ? colors.blkText2 : colors.labelSecondary;
-  const borderColor = isBlk ? colors.blkBorder : colors.glassBorder;
-  const bgColor = isBlk ? colors.blkBg : colors.glassBg;
+  const textColor = isBlk ? colors.label : colors.label;
+  const secondaryTextColor = isBlk ? colors.labelSecondary : colors.labelSecondary;
+  const borderColor = isBlk ? colors.border : colors.border;
+  const bgColor = isBlk ? colors.background : colors.background;
 
   const hasCoordinates = lat != null && lng != null;
   const hasLocation = city || emirate || address;
@@ -90,26 +89,26 @@ export const LocationSection = memo(function LocationSection({
   return (
     <View style={styles.container}>
       {/* Section Label */}
-      <Label size="caption" tone="muted">
+      <Text variant="caption" tone="muted" uppercase>
         LOCATION
-      </Label>
+      </Text>
 
       {/* Address Display */}
       <View style={styles.addressRow}>
         <MapPin size={Spacing.xl} color={secondaryTextColor} style={styles.mapIcon} />
         <View style={styles.addressText}>
           {address && (
-            <Data size="body" style={{ color: textColor }}>
+            <Text variant="body" style={{ color: textColor }}>
               {address}
-            </Data>
+            </Text>
           )}
           {locationString && (
-            <Data 
-              size="bodySm" 
+            <Text 
+              variant="bodySm" 
               style={{ color: address ? secondaryTextColor : textColor }}
             >
               {locationString}
-            </Data>
+            </Text>
           )}
         </View>
       </View>
@@ -128,7 +127,7 @@ export const LocationSection = memo(function LocationSection({
           ]}
         >
           <ExternalLink size={Spacing.lg} color={textColor} />
-          <ButtonText size="bodySm">View Map</ButtonText>
+          <Text variant="bodySm">View Map</Text>
         </HapticPressable>
 
         <HapticPressable
@@ -143,7 +142,7 @@ export const LocationSection = memo(function LocationSection({
           ]}
         >
           <Navigation size={Spacing.lg} color={textColor} />
-          <ButtonText size="bodySm">Directions</ButtonText>
+          <Text variant="bodySm">Directions</Text>
         </HapticPressable>
       </View>
     </View>

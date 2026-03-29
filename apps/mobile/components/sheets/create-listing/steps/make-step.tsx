@@ -6,6 +6,7 @@
  * @module components/sheets/create-listing/steps/make-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BottomSheetFlatList, BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -15,8 +16,6 @@ import { Search, X, Check } from 'lucide-react-native';
 
 import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 import { CAR_MAKES } from '@/lib/filter-constants';
 
 import type { StepContentProps } from '../create-listing-flow';
@@ -86,17 +85,17 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
           style={[styles.item, { borderBottomColor: colors.border }]}
         >
           <View style={styles.itemContent}>
-            <Body
-              size="body"
+            <Text
+              variant="body"
               style={{
                 color: isSelected ? colors.label : colors.labelSecondary,
                 fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
               }}
             >
               {make}
-            </Body>
+            </Text>
             {isPopular && (
-              <Supporting size="bodySm" tone="muted">Popular</Supporting>
+              <Text variant="bodySm" tone="muted">Popular</Text>
             )}
           </View>
           {isSelected && (
@@ -144,7 +143,7 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Body size="body" tone="secondary">No makes found for "{query}"</Body>
+            <Text variant="body" tone="secondary">No makes found for "{query}"</Text>
           </View>
         }
       />

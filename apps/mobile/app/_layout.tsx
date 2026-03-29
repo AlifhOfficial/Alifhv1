@@ -222,8 +222,6 @@ function RootLayoutNav() {
     );
   }
 
-
-
   return (
     <NavigationThemeProvider value={navTheme}>
       <View style={{ flex: 1, backgroundColor: colors.background }}>

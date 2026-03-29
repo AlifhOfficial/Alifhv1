@@ -6,6 +6,7 @@
  * @module components/sheets/create-listing/steps/trim-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -13,8 +14,6 @@ import * as Haptics from 'expo-haptics';
 
 import { Typography, Fonts, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 
 import { StepContainer } from '../step-container';
 import type { StepContentProps } from '../create-listing-flow';
@@ -74,7 +73,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick picks */}
       <View style={styles.section}>
-        <Supporting size="bodySm" tone="muted">Quick picks</Supporting>
+        <Text variant="bodySm" tone="muted">Quick picks</Text>
         <View style={styles.chipWrap}>
           {TRIM_EXAMPLES.map((trim) => {
             const isSelected = trim.toLowerCase() === localTrim.toLowerCase();
@@ -90,12 +89,12 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Body
-                  size="bodySm"
+                <Text
+                  variant="bodySm"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {trim}
-                </Body>
+                </Text>
               </HapticPressable>
             );
           })}
@@ -104,9 +103,9 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Hint */}
       <View style={[styles.hintBox, { backgroundColor: colors.fill2 }]}>
-        <Supporting size="bodySm" tone="muted">
+        <Text variant="bodySm" tone="muted">
           Trim is optional but helps buyers identify your exact variant.
-        </Supporting>
+        </Text>
       </View>
     </StepContainer>
   );

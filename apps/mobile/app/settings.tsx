@@ -3,15 +3,11 @@
  * Native-feeling, modular settings screen connected to API
  */
 
+import { Skeleton, AuthRequiredEmptyState, useAlert } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
 import { Stack } from 'expo-router';
 import {
-  StyleSheet,
-  View,
-  Linking,
-  Platform,
-} from 'react-native';
-import { Body, Skeleton, AuthRequiredEmptyState, useAlert } from '@/components/ui';
+  StyleSheet, View, Linking, Platform } from 'react-native';
 import { ScreenContainer } from '@/components/layout';
 
 import { Layout, Spacing, Radius } from '@/constants/theme';

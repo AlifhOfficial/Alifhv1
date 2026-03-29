@@ -148,19 +148,10 @@ export interface ColorPalette {
   skeleton: string;
   favorite: string;
   
-  // BLK tier
-  blkBg: string;
-  blkBorder: string;
-  blkText: string;
-  blkText2: string;
+  // BLK tier (badge only)
   blkBadgeBg: string;
   blkBadgeBorder: string;
   blkBadgeFg: string;
-  
-  // Glass/translucency
-  glassBg: string;
-  glassBorder: string;
-  glassBorderDark: string;
   
   // Status
   online: string;
@@ -230,19 +221,10 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     // ── App-specific ──────────────────────────────────────────────────────
     favorite: iosSystemColors.pink,  // Favorite/like indicator
     
-    // ── BLK tier (premium listing/partner branding) ───────────────────────
-    blkBg:           iosSystemColors.systemBackground,   // Same as background
-    blkBorder:       iosSystemColors.separator,          // Same as border
-    blkText:         iosSystemColors.label,              // Same as label
-    blkText2:        iosSystemColors.secondaryLabel,     // Same as labelSecondary
+    // ── BLK tier badge (premium badge branding) ───────────────────────────
     blkBadgeBg:      'rgba(0,0,0,0.85)',                 // Dark badge background
     blkBadgeBorder:  'rgba(255,255,255,0.12)',           // Subtle light border
     blkBadgeFg:      '#FAFAFA',                          // Light text on dark badge
-    
-    // ── Glass/translucency (Liquid Glass) ─────────────────────────────────
-    glassBg:          iosSystemColors.systemBackground,   // Same as background
-    glassBorder:      'rgba(0,0,0,0.22)',                 // Translucent border
-    glassBorderDark:  'rgba(0,0,0,0.22)',                 // Same in light mode
     
     // ── Status indicators (online/presence) ───────────────────────────────
     online:  iosSystemColors.red,     // Online indicator (red per brand)
@@ -309,19 +291,10 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     // ── App-specific ──────────────────────────────────────────────────────
     favorite: iosSystemColors.pinkDark,
     
-    // ── BLK tier (premium listing/partner branding) ───────────────────────
-    blkBg:           iosSystemColors.systemBackgroundDark,  // Pure black
-    blkBorder:       iosSystemColors.separatorDark,         // Separator
-    blkText:         iosSystemColors.labelDark,             // White text
-    blkText2:        iosSystemColors.secondaryLabelDark,    // Secondary text
+    // ── BLK tier badge (premium badge branding) ───────────────────────────
     blkBadgeBg:      'rgba(0,0,0,0.9)',                     // Slightly darker badge
     blkBadgeBorder:  'rgba(255,255,255,0.14)',              // Slightly more visible border
     blkBadgeFg:      '#FAFAFA',                             // Same light text
-    
-    // ── Glass/translucency (Liquid Glass) ─────────────────────────────────
-    glassBg:          iosSystemColors.systemBackgroundDark,
-    glassBorder:      'rgba(255,255,255,0.22)',            // Light translucent border
-    glassBorderDark:  'rgba(255,255,255,0.22)',            // Same in dark mode
     
     // ── Status indicators (online/presence) ───────────────────────────────
     online:  iosSystemColors.redDark,
@@ -396,17 +369,41 @@ export const ZIndex = {
 
 // ── TYPOGRAPHY ──────────────────────────────────────────────────────────────
 // iOS     → Apple HIG Dynamic Type, "Large" (default) sizes
-// Android → Material Design 3, remapped to exactly mirror HIG Large sizes
-// All semantic tokens produce the same pt values on both platforms.
-// The only per-platform difference is weight: iOS emphasized tokens use 700
-// while MD3 base tokens use 600 (MD3 doesn't separate regular/emphasized tiers).
+// Android → Material Design 3, remapped to the same semantic size tiers
+// while preserving platform-typical weight behavior.
 
 const b:  TextStyle = { includeFontPadding: false };
 const bc: TextStyle = { includeFontPadding: false, textAlignVertical: 'center' };
-const t  = (fs: number, lh: number, fw: TextStyle['fontWeight'], x?: Partial<TextStyle>): TextStyle =>
-  ({ ...b,  fontSize: fontScale(fs), lineHeight: fontScale(lh), fontWeight: fw, ...x });
-const tc = (fs: number, lh: number, fw: TextStyle['fontWeight'], x?: Partial<TextStyle>): TextStyle =>
-  ({ ...bc, fontSize: fontScale(fs), lineHeight: fontScale(lh), fontWeight: fw, ...x });
+const androidLineHeight = (fontSize: number, lineHeight: number) =>
+  Math.max(lineHeight - 3, fontSize + 2);
+const t  = (
+  fs: number,
+  lh: number,
+  fw: TextStyle['fontWeight'],
+  x?: Partial<TextStyle>,
+  androidLh = lh,
+): TextStyle =>
+  ({
+    ...b,
+    fontSize: fontScale(fs),
+    lineHeight: fontScale(Platform.OS === 'android' ? androidLh : lh),
+    fontWeight: fw,
+    ...x,
+  });
+const tc = (
+  fs: number,
+  lh: number,
+  fw: TextStyle['fontWeight'],
+  x?: Partial<TextStyle>,
+  androidLh = lh,
+): TextStyle =>
+  ({
+    ...bc,
+    fontSize: fontScale(fs),
+    lineHeight: fontScale(Platform.OS === 'android' ? androidLh : lh),
+    fontWeight: fw,
+    ...x,
+  });
 
 const R6: TextStyle['fontWeight'] = '600';
 const R7: TextStyle['fontWeight'] = '700';
@@ -432,29 +429,29 @@ const ios = {
 //   display* → title tier  |  headline* → heading tier
 //   title*  → subheading/body tier  |  label* → caption/label tier  |  body* → body tier
 const md3 = {
-  displayLg:  t(34, 41, '600'),  // = ios.largeTitle  (was 57/64)
-  displayMd:  t(28, 34, '600'),  // = ios.title1      (was 45/52)
-  displaySm:  t(22, 28, '600'),  // = ios.title2      (was 36/44)
-  headlineLg: t(20, 25, '600'),  // = ios.title3      (was 32/40)
-  headlineMd: t(17, 22, '600'),  // = ios.headline    (was 28/36)
-  headlineSm: t(16, 21, '600'),  // = ios.callout     (was 24/32)
-  titleLg:    t(15, 20, '600'),  // = ios.subhead     (was 22/28)
-  titleMd:    t(13, 18, '600'),  // = ios.footnote    (was 16/24)
-  titleSm:    t(12, 16, '600'),  // = ios.caption1    (was 14/20)
-  labelLg:    t(13, 18, '600'),  // = ios.footnote    (was 14/20)
-  labelMd:    t(12, 16, '600'),  // = ios.caption1    (unchanged)
-  labelSm:    t(11, 13, '600'),  // = ios.caption2    (was 11/16 — fixed leading)
-  bodyLg:     t(17, 22, '600'),  // = ios.body        (was 16/24)
-  bodyMd:     t(16, 21, '600'),  // = ios.callout     (was 14/20)
-  bodySm:     t(15, 20, '600'),  // = ios.subhead     (was 12/16)
+  displayLg:  t(34, 41, '600', undefined, 37),                              // = ios.largeTitle
+  displayMd:  t(28, 34, '600', undefined, 31),                              // = ios.title1
+  displaySm:  t(22, 28, '600', undefined, 25),                              // = ios.title2
+  headlineLg: t(20, 25, '600', undefined, androidLineHeight(20, 25)),       // = ios.title3
+  headlineMd: t(17, 22, '600', undefined, androidLineHeight(17, 22)),       // = ios.headline
+  headlineSm: t(16, 21, '600', undefined, androidLineHeight(16, 21)),       // = ios.callout
+  titleLg:    t(15, 20, '600', undefined, androidLineHeight(15, 20)),       // = ios.subhead
+  titleMd:    t(13, 18, '600', undefined, androidLineHeight(13, 18)),       // = ios.footnote
+  titleSm:    t(12, 16, '600', undefined, androidLineHeight(12, 16)),       // = ios.caption1
+  labelLg:    t(13, 18, '600', undefined, androidLineHeight(13, 18)),       // = ios.footnote
+  labelMd:    t(12, 16, '600', undefined, androidLineHeight(12, 16)),       // = ios.caption1
+  labelSm:    t(11, 13, '600', undefined, androidLineHeight(11, 13)),       // = ios.caption2
+  bodyLg:     t(17, 22, '600', undefined, androidLineHeight(17, 22)),       // = ios.body
+  bodyMd:     t(16, 21, '600', undefined, androidLineHeight(16, 21)),       // = ios.callout
+  bodySm:     t(15, 20, '600', undefined, androidLineHeight(15, 20)),       // = ios.subhead
 } as const;
 
 const p = <T extends TextStyle>(iosVal: T, androidVal: T): T =>
   (Platform.select({ ios: iosVal, android: androidVal }) ?? iosVal) as T;
 
 // ── Semantic tokens ───────────────────────────────────────────────────────────
-//   iOS uses emphasized variants (700) for display/heading tiers; Android uses
-//   the base (600) at the same point size. All sizes are now identical cross-platform.
+//   iOS uses emphasized variants for display/heading tiers; Android maps to the
+//   equivalent MD3 role with tighter leading to offset larger font metrics.
 //
 //                        iOS                   Android (md3 equivalent)     pt
 export const Typography = {
@@ -470,11 +467,11 @@ export const Typography = {
   // Caption tier — same value on both platforms
   label: p(
     tc(13, 18, R7, { letterSpacing: 0.8 }),  // Footnote (13pt) — uppercase labels
-    tc(13, 18, R7, { letterSpacing: 0.8 }),  // md3.labelLg     — same
+    tc(13, 18, R6, { letterSpacing: 0.8 }, androidLineHeight(13, 18)),  // md3.labelLg
   ),
   caption: p(
     tc(12, 16, R7, { letterSpacing: 0.5 }),  // Caption 1 (12pt) — badges, timestamps
-    tc(12, 16, R7, { letterSpacing: 0.5 }),  // md3.labelMd      — same
+    tc(12, 16, R6, { letterSpacing: 0.5 }, androidLineHeight(12, 16)),  // md3.labelMd
   ),
 } as const;
 

@@ -5,9 +5,9 @@
  * Calls sellCarUserApi.toggleArchive().
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -17,7 +17,6 @@ import { Archive, ArchiveRestore } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import { toggleArchiveListing, type UpdateListingResponse } from '@/lib/sell-car-user-api';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -120,7 +119,7 @@ export function ArchiveListingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="heading">{actionLabel} Listing</Heading>
+          <Text variant="heading">{actionLabel} Listing</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -144,15 +143,15 @@ export function ArchiveListingSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Body size="body" numberOfLines={1}>{listingTitle}</Body>
-            <Supporting size="bodySm" tone="secondary">{description}</Supporting>
+            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
+            <Text variant="bodySm" tone="secondary">{description}</Text>
           </View>
         </View>
 
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Body size="bodySm" tone="error">{error}</Body>
+            <Text variant="bodySm" tone="error">{error}</Text>
           </View>
         )}
 
@@ -169,7 +168,7 @@ export function ArchiveListingSheet({
               },
             ]}
           >
-            <ButtonText size="body" tone="secondary">Cancel</ButtonText>
+            <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -188,9 +187,9 @@ export function ArchiveListingSheet({
             ) : (
               <>
                 <Icon size={Sizes.iconSm} color={colors.primaryForeground} />
-                <ButtonText size="body" style={{ color: colors.primaryForeground }}>
+                <Text variant="body" style={{ color: colors.primaryForeground }}>
                   {actionLabel}
-                </ButtonText>
+                </Text>
               </>
             )}
           </HapticPressable>

@@ -6,6 +6,7 @@
  * @module components/sheets/create-listing/steps/price-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { View, StyleSheet, Switch } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -13,8 +14,6 @@ import * as Haptics from 'expo-haptics';
 
 import { Typography, Fonts, Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting, Data, Label } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 
 import { StepContainer } from '../step-container';
 import type { StepContentProps } from '../create-listing-flow';
@@ -72,9 +71,9 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
             { backgroundColor: colors.fill2, borderColor: colors.border },
           ]}
         >
-          <Body size="bodyLg" tone="secondary">
+          <Text variant="bodyLg" tone="secondary">
             AED
-          </Body>
+          </Text>
           <BottomSheetTextInput
             style={[styles.input, { color: colors.label }]}
             placeholder="0"
@@ -88,17 +87,17 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
 
         {/* Formatted display */}
         {data.price && priceNum > 0 && (
-          <Data size="title" style={{ color: colors.label, textAlign: 'center' }}>
+          <Text variant="title" style={{ color: colors.label, textAlign: 'center' }}>
             AED {priceNum.toLocaleString()}
-          </Data>
+          </Text>
         )}
       </View>
 
       {/* Quick presets */}
       <View style={styles.section}>
-        <Supporting size="bodySm" tone="muted">
+        <Text variant="bodySm" tone="muted">
           Quick select
-        </Supporting>
+        </Text>
         <View style={styles.presetsRow}>
           {PRICE_PRESETS.map((preset) => {
             const isActive = preset.value === data.price;
@@ -114,12 +113,12 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Body
-                  size="bodySm"
+                <Text
+                  variant="bodySm"
                   style={{ color: isActive ? colors.background : colors.label }}
                 >
                   {preset.label}
-                </Body>
+                </Text>
               </HapticPressable>
             );
           })}
@@ -129,10 +128,10 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
       {/* Negotiable toggle */}
       <View style={[styles.toggleRow, { backgroundColor: colors.surfaceSecondary }]}>
         <View style={styles.toggleText}>
-          <Label size="caption">Price Negotiable?</Label>
-          <Supporting size="bodySm" tone="muted">
+          <Text variant="caption" uppercase>Price Negotiable?</Text>
+          <Text variant="bodySm" tone="muted">
             Let buyers know you're open to offers
-          </Supporting>
+          </Text>
         </View>
         <Switch
           value={data.isNegotiable || false}

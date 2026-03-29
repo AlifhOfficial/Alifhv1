@@ -3,16 +3,15 @@
  * Clean native header bar with avatar, name and status
  */
 
+import { Text, Skeleton } from '@/components/ui';
 import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
-import { Skeleton } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { Colors, Spacing, Sizes, Layout, ZIndex} from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Data, Supporting } from '@/components/ui';
 
 interface ChatHeaderProps {
   name: string;
@@ -102,13 +101,13 @@ export function ChatHeader({
             <Skeleton width={120} height={14} />
           ) : (
             <>
-              <Data size="body" style={{ color: colors.label }} numberOfLines={1}>
+              <Text variant="body" style={{ color: colors.label }} numberOfLines={1}>
                 {name}
-              </Data>
-              <Supporting size="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1}>
+              </Text>
+              <Text variant="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1} tone="secondary">
                 {activityText}
                 {listingTitle ? `  ·  ${listingTitle}` : ''}
-              </Supporting>
+              </Text>
             </>
           )}
         </Pressable>
@@ -118,13 +117,13 @@ export function ChatHeader({
             <Skeleton width={120} height={14} />
           ) : (
             <>
-              <Data size="body" style={{ color: colors.label }} numberOfLines={1}>
+              <Text variant="body" style={{ color: colors.label }} numberOfLines={1}>
                 {name}
-              </Data>
-              <Supporting size="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1}>
+              </Text>
+              <Text variant="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1} tone="secondary">
                 {activityText}
                 {listingTitle ? `  ·  ${listingTitle}` : ''}
-              </Supporting>
+              </Text>
             </>
           )}
         </View>

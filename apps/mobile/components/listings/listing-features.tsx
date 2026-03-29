@@ -4,13 +4,12 @@
  * Features are arranged to fill rows efficiently (bin-packing)
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { memo, useState, useCallback, useMemo } from 'react';
 import { StyleSheet, View, LayoutChangeEvent } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Label, Text } from '@/components/ui';
 import { formatEnumValue } from './types';
 
 const MAX_VISIBLE_FEATURES = 8;
@@ -80,7 +79,7 @@ export const ListingFeatures = memo(function ListingFeatures({
   const colors = Colors[colorScheme];
   const [containerWidth, setContainerWidth] = useState(0);
 
-  const textColor = isBlk ? colors.blkText : colors.label;
+  const textColor = isBlk ? colors.label : colors.label;
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
     setContainerWidth(event.nativeEvent.layout.width);
@@ -99,9 +98,9 @@ export const ListingFeatures = memo(function ListingFeatures({
 
   return (
     <View style={styles.container}>
-      <Label size="label" tone="muted">
+      <Text variant="label" tone="muted" uppercase>
         FEATURES
-      </Label>
+      </Text>
       <View style={styles.badgesContainer} onLayout={handleLayout}>
         {visibleExtras.map((extra, idx) => (
           <View 

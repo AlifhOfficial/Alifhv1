@@ -6,6 +6,7 @@
  * @module components/sheets/create-listing/steps/description-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -14,8 +15,6 @@ import { Sparkles, RefreshCw } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting, Label } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 import { API_BASE } from '@/lib/config';
 import { getSession } from '@/lib/auth-api';
 
@@ -122,7 +121,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
       {/* Text Input */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Label size="caption">Description</Label>
+          <Text variant="caption" uppercase>Description</Text>
           <HapticPressable
             onPress={() => generateAIDescription(hasDescription)}
             disabled={isGenerating}
@@ -135,15 +134,15 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
             ) : (
               <Sparkles size={14} color={colors.primary} strokeWidth={2} />
             )}
-              <Body size="bodySm" style={{ color: colors.primary }}>
+              <Text variant="bodySm" style={{ color: colors.primary }}>
               {isGenerating ? 'Generating...' : hasDescription ? 'Regenerate' : 'AI Generate'}
-            </Body>
+            </Text>
           </HapticPressable>
         </View>
         {generateError && (
-          <Supporting size="bodySm" style={{ color: colors.error }}>
+          <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
             {generateError}
-          </Supporting>
+          </Text>
         )}
         <BottomSheetTextInput
           style={[
@@ -164,12 +163,12 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
           maxLength={MAX_DESCRIPTION}
         />
         <View style={styles.charCount}>
-          <Supporting
-            size="bodySm"
+          <Text
+            variant="bodySm"
             style={{ color: isNearLimit ? colors.warning : colors.labelQuaternary }}
-          >
+           tone="secondary">
             {charCount}/{MAX_DESCRIPTION}
-          </Supporting>
+          </Text>
         </View>
       </View>
     </StepContainer>

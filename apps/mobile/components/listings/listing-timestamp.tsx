@@ -5,13 +5,13 @@
  * Shows relative time (e.g., "2h ago") with optional update indicator.
  */
 
+import { Text, Skeleton } from '@/components/ui';
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Clock } from 'lucide-react-native';
 
 import { Colors, Spacing, Sizes, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton, Data } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -76,8 +76,8 @@ export const ListingTimestamp = memo(function ListingTimestamp({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
-  const textColor = isBlk ? colors.blkText : colors.label;
-  const secondaryTextColor = isBlk ? colors.blkText2 : colors.labelSecondary;
+  const textColor = isBlk ? colors.label : colors.label;
+  const secondaryTextColor = isBlk ? colors.labelSecondary : colors.labelSecondary;
 
   // Compute display values
   const { postedTimeAgo, wasUpdated, updatedTimeAgo } = useMemo(() => {
@@ -105,13 +105,13 @@ export const ListingTimestamp = memo(function ListingTimestamp({
     <View style={styles.container}>
       <Clock size={Sizes.iconSm} color={secondaryTextColor} />
       <View style={styles.textContainer}>
-        <Data size="body" style={{ color: textColor }}>
+        <Text variant="body" style={{ color: textColor }}>
           {postedTimeAgo}
-        </Data>
+        </Text>
         {wasUpdated && updatedTimeAgo && (
-          <Data size="bodySm" tone="secondary">
+          <Text variant="bodySm" tone="secondary">
             • Updated {updatedTimeAgo}
-          </Data>
+          </Text>
         )}
       </View>
     </View>

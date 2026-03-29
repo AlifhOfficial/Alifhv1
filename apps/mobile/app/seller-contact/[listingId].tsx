@@ -6,23 +6,15 @@
  * UI follows listing detail patterns: unapologetic, content-first, minimal cards.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useMemo } from 'react';
-import {
-  StyleSheet,
-  View,
-  Pressable,
-  Alert,
-  FlatList,
-  RefreshControl,
-} from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { StyleSheet, View, Pressable, Alert, FlatList, RefreshControl } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Spacing, Colors, Sizes, Layout } from '@/constants/theme';
-import { Label, Body, Supporting } from '@/components/ui/text';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { useSearch } from '@/context/search-context';
@@ -286,9 +278,9 @@ export default function SellerContactScreen() {
         <Stack.Screen options={{ headerShown: false }} />
         <Header colors={colors} insets={insets} onBack={handleBack} />
         <View style={styles.errorContainer}>
-          <Supporting size="body">
+          <Text variant="body" tone="secondary">
             This listing is no longer available or may have expired
-          </Supporting>
+          </Text>
         </View>
       </View>
     );
@@ -309,12 +301,12 @@ export default function SellerContactScreen() {
           style={styles.section}
           onPress={() => setDescriptionSheetVisible(true)}
         >
-          <Label size="label" tone="muted">ABOUT</Label>
-          <Body size="body" tone="secondary" numberOfLines={3}>
+          <Text variant="label" tone="muted" uppercase>ABOUT</Text>
+          <Text variant="body" tone="secondary" numberOfLines={3}>
             {seller.description}
-          </Body>
+          </Text>
           {seller.description.length > 120 && (
-            <Body size="bodySm" tone="primary">Read more</Body>
+            <Text variant="bodySm" tone="primary">Read more</Text>
           )}
         </Pressable>
       )}

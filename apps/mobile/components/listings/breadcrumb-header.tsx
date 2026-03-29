@@ -3,14 +3,13 @@
  * Matches ProfileHeader/HomeHeader style for consistency
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { Share2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Sizes, Radius, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading } from '@/components/ui';
 
 interface BreadcrumbHeaderProps {
   make: string;
@@ -35,9 +34,9 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
   return (
     <View style={[styles.container, { paddingTop: topInset + 8, backgroundColor: colors.background }]}>
       {/* Left: Title */}
-      <Heading size="heading" style={{ flex: 1 }} numberOfLines={1}>
+      <Text variant="heading" style={{ flex: 1 }} numberOfLines={1}>
         {title}
-      </Heading>
+      </Text>
 
       {/* Right: Share Button */}
       <HapticPressable
@@ -46,8 +45,8 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
         style={[
           styles.iconButton,
           {
-            borderColor: colors.glassBorder,
-            backgroundColor: colors.glassBg,
+            borderColor: colors.border,
+            backgroundColor: colors.background,
           },
         ]}
       >

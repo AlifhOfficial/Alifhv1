@@ -5,17 +5,9 @@
  * User types natural language → GPT-4o-mini → structured filters → browse results.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Pressable,
-  Platform,
-  ActivityIndicator,
-  Keyboard,
-  TextInput,
-} from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { View, StyleSheet, Pressable, Platform, ActivityIndicator, Keyboard, TextInput } from 'react-native';
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
@@ -26,7 +18,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
 import { searchApi } from '@/lib/search-api';
 
 // ============================================================================
@@ -236,13 +227,13 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
               <Ionicons name="flash" size={Spacing['4xl']} color={colors.amna} />
               <View style={{ alignItems: 'center', gap: Spacing.sm, marginTop: Spacing.lg, width: '100%', paddingHorizontal: Spacing.md }}>
                 {message ? (
-                  <Heading size="subheading" style={{ textAlign: 'center', flexShrink: 1 }}>
+                  <Text variant="subheading" style={{ textAlign: 'center', flexShrink: 1 }}>
                     {message}
-                  </Heading>
+                  </Text>
                 ) : (
                   <>
-                    <Heading size="subheading" style={{ textAlign: 'center', flexShrink: 1 }}>{loadingText}</Heading>
-                    <Body size="bodySm" tone="muted" style={{ textAlign: 'center' }}>Finding the perfect cars for you ✨</Body>
+                    <Text variant="subheading" style={{ textAlign: 'center', flexShrink: 1 }}>{loadingText}</Text>
+                    <Text variant="bodySm" tone="muted" style={{ textAlign: 'center' }}>Finding the perfect cars for you ✨</Text>
                   </>
                 )}
               </View>
@@ -258,11 +249,11 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
               onPress={() => bottomSheetRef.current?.dismiss()}
               hitSlop={Spacing.md}
             >
-              <Body size="body" tone="secondary">Cancel</Body>
+              <Text variant="body" tone="secondary">Cancel</Text>
             </HapticPressable>
             <View style={styles.headerTitle}>
               <Ionicons name="flash" size={Spacing.lg} color={colors.amna} />
-              <Heading size="subheading">Ask Amna</Heading>
+              <Text variant="subheading">Ask Amna</Text>
             </View>
             <View style={{ width: Spacing["5xl"] }} />
           </View>
@@ -273,9 +264,9 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
           <View style={styles.content}>
             {/* Amna intro */}
             <View style={styles.intro}>
-              <Body size="bodySm" tone="muted" style={{ textAlign: 'center' }}>
+              <Text variant="bodySm" tone="muted" style={{ textAlign: 'center' }}>
                 Describe what you're looking for
-              </Body>
+              </Text>
             </View>
 
             {/* Text input */}
@@ -321,12 +312,12 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
                     size={Spacing.lg}
                     color={query.trim() ? colors.primaryForeground : colors.labelQuaternary}
                   />
-                  <ButtonText
-                    size="body"
+                  <Text
+                    variant="body"
                     style={{ color: query.trim() ? colors.primaryForeground : colors.labelQuaternary }}
                   >
                     Ask Amna
-                  </ButtonText>
+                  </Text>
                 </View>
               )}
             </HapticPressable>
@@ -334,15 +325,15 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
             {/* Error message display */}
             {message && !isLoading && (
               <View style={styles.messageBox}>
-                <Body size="bodySm" style={{ textAlign: 'center', color: colors.amna }}>
+                <Text variant="bodySm" style={{ textAlign: 'center', color: colors.amna }}>
                   {message}
-                </Body>
+                </Text>
               </View>
             )}
 
             {/* Quick suggestions */}
             <View style={styles.quickSuggestions}>
-              <Label size="caption" tone="muted" style={{ marginBottom: Spacing.sm }}>TRY ASKING</Label>
+              <Text variant="caption" tone="muted" style={{ marginBottom: Spacing.sm }} uppercase>TRY ASKING</Text>
               <View style={styles.suggestionsGrid}>
                 {[
                   'Surprise me 🎲',
@@ -368,9 +359,9 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
                       },
                     ]}
                   >
-                    <Supporting size="bodySm" style={{ color: colors.label }}>
+                    <Text variant="bodySm" style={{ color: colors.label }} tone="secondary">
                       {suggestion}
-                    </Supporting>
+                    </Text>
                   </HapticPressable>
                 ))}
               </View>

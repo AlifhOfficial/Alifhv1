@@ -7,6 +7,7 @@
  * @module components/sheets/create-listing/steps/extras-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -15,8 +16,6 @@ import { Plus, X } from 'lucide-react-native';
 
 import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting, Label } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 import { VEHICLE_EXTRAS } from '@/lib/filter-constants';
 
 import { StepContainer } from '../step-container';
@@ -60,11 +59,11 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Label size="caption">Vehicle Extras</Label>
+          <Text variant="caption" uppercase>Vehicle Extras</Text>
           {extras.length > 0 && (
-            <Supporting size="bodySm" tone="secondary">
+            <Text variant="bodySm" tone="secondary">
               {extras.length} selected
-            </Supporting>
+            </Text>
           )}
         </View>
 
@@ -83,12 +82,12 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Body
-                  size="bodySm"
+                <Text
+                  variant="bodySm"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {extra.label}
-                </Body>
+                </Text>
               </HapticPressable>
             );
           })}
@@ -97,7 +96,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Custom extras input */}
       <View style={styles.section}>
-        <Label size="caption">Add Custom Extra</Label>
+        <Text variant="caption" uppercase>Add Custom Extra</Text>
         <View style={[styles.inputRow, { backgroundColor: colors.fill2 }]}>
           <BottomSheetTextInput
             style={[styles.input, { color: colors.label }]}
@@ -130,9 +129,9 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                   key={extra}
                   style={[styles.customChip, { backgroundColor: colors.label }]}
                 >
-                  <Body size="bodySm" style={{ color: colors.background }}>
+                  <Text variant="bodySm" style={{ color: colors.background }}>
                     {extra}
-                  </Body>
+                  </Text>
                   <HapticPressable onPress={() => toggleExtra(extra)} hitSlop={Layout.hitSlopSmall}>
                     <X size={14} color={colors.background} strokeWidth={2} />
                   </HapticPressable>

@@ -4,6 +4,7 @@
  * Chat-style rounded rectangles with directional tail corners
  */
 
+import { Text } from '@/components/ui';
 import React from 'react';
 import { View, Image, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -11,7 +12,6 @@ import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { getAppThumbUrl } from '@/lib/config';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Body, Data, Supporting } from '@/components/ui';
 import { LocationBubble } from './location-bubble';
 import type { Message } from '@/lib/messaging-api';
 
@@ -61,7 +61,7 @@ export function MessageBubble({
             { backgroundColor: colors.fill2 },
           ]}
         >
-          <Data size="bodySm" style={{ color: colors.labelTertiary }}>{text}</Data>
+          <Text variant="bodySm" style={{ color: colors.labelTertiary }}>{text}</Text>
         </View>
       </View>
     );
@@ -111,9 +111,9 @@ export function MessageBubble({
               />
             )}
             <View style={styles.listingInfo}>
-              <Data size="bodySm" numberOfLines={2}>
+              <Text variant="bodySm" numberOfLines={2}>
                 {listing.title}
-              </Data>
+              </Text>
             </View>
           </Pressable>
         )}
@@ -160,25 +160,25 @@ export function MessageBubble({
 
           {/* Text */}
           {text && (
-            <Body
-              size="body"
+            <Text
+              variant="body"
               style={{ color: isOwn ? colors.primaryForeground : colors.label }}
             >
               {text}
-            </Body>
+            </Text>
           )}
 
           {/* Edited indicator */}
           {isEdited && (
-            <Data
-              size="bodySm"
+            <Text
+              variant="bodySm"
               style={{ 
                 color: isOwn ? colors.white : colors.labelTertiary,
                 marginTop: 2,
               }}
             >
               edited
-            </Data>
+            </Text>
           )}
         </View>
           
@@ -191,7 +191,7 @@ export function MessageBubble({
         {/* Seen indicator */}
         {showSeen && isOwn && (
           <View style={styles.seenContainer}>
-            <Data size="bodySm" style={{ color: colors.labelTertiary }}>Seen</Data>
+            <Text variant="bodySm" style={{ color: colors.labelTertiary }}>Seen</Text>
             <UserAvatar
               src={otherUserAvatar}
               name={otherUserName || 'User'}

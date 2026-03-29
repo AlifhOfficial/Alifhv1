@@ -6,14 +6,13 @@
  * @module components/sheets/create-listing/steps/appearance-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Fonts, Typography, Colors, Spacing, Radius, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Label } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 import { BODY_TYPES, EXTERIOR_COLORS, INTERIOR_COLORS } from '@/lib/filter-constants';
 
 import type { StepContentProps } from '../create-listing-flow';
@@ -54,8 +53,8 @@ function ColorChip({
           ]}
         />
       )}
-      <Body
-        size="bodySm"
+      <Text
+        variant="bodySm"
         numberOfLines={1}
         style={{
           color: isSelected ? themeColors.background : themeColors.label,
@@ -63,7 +62,7 @@ function ColorChip({
         }}
       >
         {color.label}
-      </Body>
+      </Text>
     </HapticPressable>
   );
 }
@@ -102,7 +101,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Body Type */}
       <View style={styles.section}>
-        <Label size="caption">Body Type</Label>
+        <Text variant="caption" uppercase>Body Type</Text>
         <View style={styles.chipWrap}>
           {BODY_TYPES.map((type) => {
             const isSelected = data.bodyType === type.value;
@@ -118,12 +117,12 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Body
-                  size="bodySm"
+                <Text
+                  variant="bodySm"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {type.label}
-                </Body>
+                </Text>
               </HapticPressable>
             );
           })}
@@ -132,7 +131,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Exterior Color */}
       <View style={styles.section}>
-        <Label size="caption">Exterior Color</Label>
+        <Text variant="caption" uppercase>Exterior Color</Text>
         <View style={styles.chipWrap}>
           {EXTERIOR_COLORS.map((color) => (
             <ColorChip
@@ -148,7 +147,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Interior Color */}
       <View style={styles.section}>
-        <Label size="caption">Interior Color</Label>
+        <Text variant="caption" uppercase>Interior Color</Text>
         <View style={styles.chipWrap}>
           {INTERIOR_COLORS.map((color) => (
             <ColorChip

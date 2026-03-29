@@ -6,6 +6,7 @@
  * @module components/sheets/create-listing/steps/review-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
@@ -13,8 +14,6 @@ import { Check, AlertCircle, Save } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting, Data, Heading } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 import { UAE_EMIRATES } from '@/lib/filter-constants';
 import { createListing, updateListing } from '@/lib/sell-car-user-api';
 import { CDN_BASE } from '@/lib/config';
@@ -142,27 +141,27 @@ export function ReviewStepContent({
         )}
         
         <View style={styles.heroInfo}>
-          <Heading size="subheading" numberOfLines={2}>{vehicleTitle}</Heading>
-          {data.trim && <Supporting size="bodySm" tone="muted">{data.trim}</Supporting>}
-          <Data size="title" style={{ color: colors.primary, marginTop: Spacing.xs }}>
+          <Text variant="subheading" numberOfLines={2}>{vehicleTitle}</Text>
+          {data.trim && <Text variant="bodySm" tone="muted">{data.trim}</Text>}
+          <Text variant="title" style={{ color: colors.primary, marginTop: Spacing.xs }}>
             AED {priceNum.toLocaleString()}
-          </Data>
+          </Text>
         </View>
       </View>
 
       {/* Quick Stats */}
       <View style={styles.statsRow}>
         <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-          <Supporting size="bodySm" tone="muted">Mileage</Supporting>
-          <Body size="body">{mileageNum.toLocaleString()} km</Body>
+          <Text variant="bodySm" tone="muted">Mileage</Text>
+          <Text variant="body">{mileageNum.toLocaleString()} km</Text>
         </View>
         <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-          <Supporting size="bodySm" tone="muted">Location</Supporting>
-          <Body size="body" numberOfLines={1}>{emirateLabel}</Body>
+          <Text variant="bodySm" tone="muted">Location</Text>
+          <Text variant="body" numberOfLines={1}>{emirateLabel}</Text>
         </View>
         <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-          <Supporting size="bodySm" tone="muted">Photos</Supporting>
-          <Body size="body">{data.images.length}</Body>
+          <Text variant="bodySm" tone="muted">Photos</Text>
+          <Text variant="body">{data.images.length}</Text>
         </View>
       </View>
 
@@ -170,9 +169,9 @@ export function ReviewStepContent({
       {!canPublish && missingItems.length > 0 && (
         <View style={[styles.warningBox, { backgroundColor: colors.warningMuted }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.warning} strokeWidth={2} />
-          <Body size="bodySm" style={{ color: colors.warning, flex: 1 }}>
+          <Text variant="bodySm" style={{ color: colors.warning, flex: 1 }}>
             Missing: {missingItems.join(', ')}
-          </Body>
+          </Text>
         </View>
       )}
 
@@ -180,9 +179,9 @@ export function ReviewStepContent({
       {error && (
         <View style={[styles.warningBox, { backgroundColor: colors.errorMuted }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-          <Body size="bodySm" style={{ color: colors.error, flex: 1 }}>
+          <Text variant="bodySm" style={{ color: colors.error, flex: 1 }}>
             {error}
-          </Body>
+          </Text>
         </View>
       )}
 
@@ -201,9 +200,9 @@ export function ReviewStepContent({
           ) : (
             <>
               <Check size={Sizes.iconSm} color={canPublish ? colors.background : colors.labelQuaternary} strokeWidth={2} />
-              <Body size="body" style={{ color: canPublish ? colors.background : colors.labelQuaternary, }}>
+              <Text variant="body" style={{ color: canPublish ? colors.background : colors.labelQuaternary, }}>
                 Publish
-              </Body>
+              </Text>
             </>
           )}
         </HapticPressable>
@@ -214,7 +213,7 @@ export function ReviewStepContent({
           style={[styles.draftBtn, { borderColor: colors.border }]}
         >
           <Save size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
-          <Body size="body" tone="secondary">Draft</Body>
+          <Text variant="body" tone="secondary">Draft</Text>
         </HapticPressable>
       </View>
     </StepContainer>

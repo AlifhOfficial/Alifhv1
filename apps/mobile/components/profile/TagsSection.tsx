@@ -3,12 +3,11 @@
  * Selectable profile tags with limit
  */
 
+import { Text, HapticPressable, useAlert } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import { HapticPressable, useAlert } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
-import { Body, Supporting } from '@/components/ui';
 import { Spacing, Radius } from '@/constants/theme';
 import { Section } from './Section';
 import { PROFILE_TAGS } from './types';
@@ -35,12 +34,12 @@ function TagItem({ tag, isSelected, colors, onPress }: TagItemProps) {
         },
       ]}
     >
-      <Body
-        size="bodySm"
+      <Text
+        variant="bodySm"
         tone={isSelected ? 'default' : 'secondary'}
       >
         {tag}
-      </Body>
+      </Text>
     </HapticPressable>
   );
 }
@@ -77,9 +76,9 @@ export function TagsSection({ selectedTags, colors, onToggle }: TagsSectionProps
       colors={colors}
       delay={275}
       rightElement={
-        <Supporting size="body" tone="muted">
+        <Text variant="body" tone="muted">
           {selectedTags.length}/{MAX_TAGS}
-        </Supporting>
+        </Text>
       }
     >
       <View style={styles.container}>

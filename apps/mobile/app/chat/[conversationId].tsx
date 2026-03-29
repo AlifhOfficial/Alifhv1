@@ -5,13 +5,13 @@
  * Conversation data can be passed via nav params to avoid fetch.
  */
 
+import { Text } from '@/components/ui';
 import React, { useEffect, useRef, useMemo } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { ChatWindow } from '@/components/messages';
 import { Colors, Spacing } from '@/constants/theme';
-import { Supporting, ButtonText } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { useConversation, useMarkAsRead } from '@/hooks/use-messaging-query';
@@ -88,16 +88,16 @@ export default function ChatScreen() {
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.label, title: '' }} />
         <View style={styles.centered}>
-          <Supporting size="body" tone="secondary" style={styles.errorText}>
+          <Text variant="body" tone="secondary" style={styles.errorText}>
             Conversation not found
-          </Supporting>
-          <ButtonText
+          </Text>
+          <Text
             tone="primary"
             style={styles.backLink}
             onPress={handleBack}
-          >
+           variant="body">
             ← Go Back
-          </ButtonText>
+          </Text>
         </View>
       </View>
     );
@@ -109,16 +109,16 @@ export default function ChatScreen() {
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.label, title: '' }} />
         <View style={styles.centered}>
-          <Supporting size="body" tone="secondary" style={styles.errorText}>
+          <Text variant="body" tone="secondary" style={styles.errorText}>
             {error.message}
-          </Supporting>
-          <ButtonText
+          </Text>
+          <Text
             tone="primary"
             style={styles.backLink}
             onPress={handleBack}
-          >
+           variant="body">
             ← Go Back
-          </ButtonText>
+          </Text>
         </View>
       </View>
     );

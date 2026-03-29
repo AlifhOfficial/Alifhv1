@@ -6,14 +6,13 @@
  * @module components/sheets/create-listing/steps/specs-region-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting, Label } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 import { SPECS_TYPES, STEERING_SIDES } from '@/lib/filter-constants';
 
 import { StepContainer } from '../step-container';
@@ -45,7 +44,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Regional Specs */}
       <View style={styles.section}>
-        <Label size="caption">Regional Specs</Label>
+        <Text variant="caption" uppercase>Regional Specs</Text>
         <View style={styles.chipWrap}>
           {SPECS_TYPES.map((spec) => {
             const isSelected = data.specs === spec.value;
@@ -61,12 +60,12 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Body
-                  size="bodySm"
+                <Text
+                  variant="bodySm"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {spec.label}
-                </Body>
+                </Text>
               </HapticPressable>
             );
           })}
@@ -75,7 +74,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Steering Side */}
       <View style={styles.section}>
-        <Label size="caption">Steering Side</Label>
+        <Text variant="caption" uppercase>Steering Side</Text>
         <View style={styles.chipWrap}>
           {STEERING_SIDES.map((side) => {
             const isSelected = data.steeringSide === side.value;
@@ -91,12 +90,12 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Body
-                  size="bodySm"
+                <Text
+                  variant="bodySm"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {side.label}
-                </Body>
+                </Text>
               </HapticPressable>
             );
           })}
@@ -105,11 +104,11 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Summary */}
       <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
-        <Supporting size="bodySm" tone="muted">
+        <Text variant="bodySm" tone="muted">
           {SPECS_TYPES.find((s) => s.value === data.specs)?.label ?? 'GCC'} specs
           {' · '}
           {STEERING_SIDES.find((s) => s.value === data.steeringSide)?.label ?? 'Left'}-hand drive
-        </Supporting>
+        </Text>
       </View>
     </StepContainer>
   );

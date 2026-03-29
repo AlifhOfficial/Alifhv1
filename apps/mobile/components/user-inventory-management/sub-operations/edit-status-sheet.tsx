@@ -14,9 +14,9 @@
  *   • Delete Forever → if already soft-deleted
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -36,7 +36,6 @@ import {
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import type { ModerationStatus, LifecycleStatus } from '@/lib/sell-car-user-api';
 import { formatListingStatus, getStatusColor } from '../utilities/listing-helpers';
 
@@ -258,7 +257,7 @@ export function EditStatusSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="heading">Manage Listing</Heading>
+          <Text variant="heading">Manage Listing</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -281,12 +280,12 @@ export function EditStatusSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Body size="body" numberOfLines={1}>{listingTitle}</Body>
+            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
             <View style={styles.statusRow}>
               <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
-              <Supporting size="bodySm" style={{ color: statusColor }}>
+              <Text variant="bodySm" style={{ color: statusColor }} tone="secondary">
                 {statusLabel}
-              </Supporting>
+              </Text>
             </View>
           </View>
         </View>
@@ -314,12 +313,12 @@ export function EditStatusSheet({
                 <View style={[styles.actionIcon, { backgroundColor: isDestructive ? colors.errorMuted : colors.fill2 }]}>
                   <IconComponent size={Sizes.iconMd} color={iconColor} />
                 </View>
-                <Body
-                  size="body"
+                <Text
+                  variant="body"
                   style={{ color: isDestructive ? colors.error : colors.label, flex: 1 }}
                 >
                   {action.label}
-                </Body>
+                </Text>
                 <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.labelQuaternary} />
               </HapticPressable>
             );

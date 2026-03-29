@@ -5,11 +5,11 @@
  * Follows listings component patterns for consistency.
  */
 
+import { Text } from '@/components/ui';
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { Spacing, Radius, Sizes } from '@/constants/theme';
-import { Label, Text } from '@/components/ui';
 import type { SellerTagsProps } from './types';
 
 export const SellerTags = memo(function SellerTags({ tags, label, colors }: SellerTagsProps) {
@@ -17,7 +17,7 @@ export const SellerTags = memo(function SellerTags({ tags, label, colors }: Sell
 
   return (
     <View style={localStyles.section}>
-      <Label size="label" tone="muted">{label}</Label>
+      <Text variant="label" tone="muted" uppercase>{label}</Text>
       <View style={localStyles.tagsRow}>
         {tags.map((tag, i) => (
           <View key={`tag-${i}`} style={[localStyles.tag, { backgroundColor: colors.backgroundSecondary }]}>

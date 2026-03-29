@@ -1,9 +1,8 @@
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 
 import { Layout, Spacing } from '@/constants/theme';
-import { Data } from '@/components/ui';
 
 interface SectionHeaderProps {
   title: string;
@@ -14,10 +13,10 @@ interface SectionHeaderProps {
 export function SectionHeader({ title, onClear, showClear = false }: SectionHeaderProps) {
   return (
     <View style={styles.container}>
-      <Data size="bodySm" tone="secondary">{title}</Data>
+      <Text variant="bodySm" tone="secondary">{title}</Text>
       {showClear && onClear && (
         <HapticPressable onPress={onClear} hitSlop={Layout.hitSlopSmall}>
-          <Data size="bodySm" tone="primary">Clear</Data>
+          <Text variant="bodySm" tone="primary">Clear</Text>
         </HapticPressable>
       )}
     </View>

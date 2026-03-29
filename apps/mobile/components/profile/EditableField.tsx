@@ -3,16 +3,9 @@
  * Tap-to-edit field with native feel
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useRef, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  TextInput,
-  Pressable,
-  Platform,
-  KeyboardTypeOptions,
-} from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { StyleSheet, View, TextInput, Pressable, Platform, KeyboardTypeOptions } from 'react-native';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -23,7 +16,6 @@ import Animated, {
 import { ChevronRight } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Body, Data } from '@/components/ui';
 import { Typography, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
@@ -103,13 +95,13 @@ export function EditableField({
         entering={FadeIn.duration(200)}
         style={[styles.container, !isLast && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }]}
       >
-        <Body size="bodySm" tone="muted">{label}</Body>
+        <Text variant="bodySm" tone="muted">{label}</Text>
         <View style={styles.editContainer}>
           <View style={styles.inputWrapper}>
             {prefix && (
-              <Body size="body" tone="secondary" style={styles.prefix}>
+              <Text variant="body" tone="secondary" style={styles.prefix}>
                 {prefix}
-              </Body>
+              </Text>
             )}
             <TextInput
               ref={inputRef}
@@ -137,9 +129,9 @@ export function EditableField({
                 pressed && { opacity: 0.6 },
               ]}
             >
-              <Body size="bodySm" tone="secondary">
+              <Text variant="bodySm" tone="secondary">
                 Cancel
-              </Body>
+              </Text>
             </HapticPressable>
             <HapticPressable
               onPress={onSave}
@@ -150,9 +142,9 @@ export function EditableField({
                 pressed && { opacity: 0.6 },
               ]}
             >
-              <Data size="body" tone="primary">
+              <Text variant="body" tone="primary">
                 {saving ? 'Saving...' : 'Save'}
-              </Data>
+              </Text>
             </HapticPressable>
           </View>
         </View>
@@ -176,14 +168,14 @@ export function EditableField({
       >
         <View style={styles.row}>
           <View style={styles.labelValueContainer}>
-            <Body size="bodySm" tone="muted">{label}</Body>
-            <Body
-              size="body"
+            <Text variant="bodySm" tone="muted">{label}</Text>
+            <Text
+              variant="body"
               tone={value ? 'default' : 'muted'}
               numberOfLines={1}
             >
               {value || (disabled ? '—' : 'Add')}
-            </Body>
+            </Text>
           </View>
           <View style={styles.rightContainer}>
             {suffix}
@@ -234,7 +226,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   prefix: {
-    // Typography handled by <Body> component
+    // Typography handled by <Text variant="body"> component
   },
   input: {
     flex: 1,

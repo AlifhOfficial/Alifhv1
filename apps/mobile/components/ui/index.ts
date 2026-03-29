@@ -47,27 +47,8 @@ export {
   type SuperlikeButtonProps,
 } from './favorite-actions';
 
-// Typography components (with font scaling disabled)
-export {
-  Text,
-  Display,
-  Heading,
-  Body,
-  Data,
-  Label,
-  Supporting,
-  ButtonText,
-  Price,
-  type TextProps,
-  type DisplayProps,
-  type HeadingProps,
-  type BodyProps,
-  type DataProps,
-  type LabelProps,
-  type SupportingProps,
-  type ButtonTextProps,
-  type PriceProps,
-} from './text';
+// Typography component (with font scaling disabled)
+export { Text, type TextProps } from './text';
 
 // Error handling
 export { ErrorBoundary } from './error-boundary';

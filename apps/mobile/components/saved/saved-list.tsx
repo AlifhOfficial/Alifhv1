@@ -2,6 +2,7 @@
  * Saved List - Displays saved listings (favorites or superlikes)
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -10,7 +11,6 @@ import { useRouter } from 'expo-router';
 import { Heart, Zap, ArrowRight } from 'lucide-react-native';
 
 import { Layout, Sizes, Spacing, Radius } from '@/constants/theme';
-import { Heading, Supporting, HapticPressable } from '@/components/ui';
 import { CarCardList } from '@/components/cards/car-card-list';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors, SavedTab } from './types';
@@ -50,21 +50,21 @@ function EmptyState({
         style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
       >
         <IconComponent size={Sizes.iconXl} color={iconColor} fill={iconColor} strokeWidth={1.5} />
-        <Heading size="subheading" style={styles.emptyTitle}>
+        <Text variant="subheading" style={styles.emptyTitle}>
           {isFavorites ? 'No favorites yet' : 'No superlikes yet'}
-        </Heading>
-        <Supporting size="bodySm" tone="secondary" style={styles.emptySubtitle}>
+        </Text>
+        <Text variant="bodySm" tone="secondary" style={styles.emptySubtitle}>
           {isFavorites 
             ? 'Tap the heart on any listing to save it here'
             : 'Long press the heart to superlike a listing'}
-        </Supporting>
+        </Text>
         <HapticPressable
           haptic="medium"
           onPress={onBrowse}
           style={styles.ctaRow}
         >
-          <Heading size="subheading" style={{ color: colors.label }}>Browse</Heading>
-          <View style={[styles.ctaBubble, { backgroundColor: colors.glassBg, borderColor: colors.border }]}>
+          <Text variant="subheading" style={{ color: colors.label }}>Browse</Text>
+          <View style={[styles.ctaBubble, { backgroundColor: colors.background, borderColor: colors.border }]}>
             <ArrowRight size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
           </View>
         </HapticPressable>
@@ -140,9 +140,9 @@ export function SavedList({
         activeTab === 'superlikes' && quota ? (
           <View style={[styles.quotaBadge, { backgroundColor: colors.surface }]}>
             <Zap size={Sizes.iconXs} color={colors.primary} strokeWidth={2} />
-            <Supporting size="bodySm" tone="secondary">
+            <Text variant="bodySm" tone="secondary">
               {quota.remaining}/{quota.maxSuperlikesPerMonth} remaining this month
-            </Supporting>
+            </Text>
           </View>
         ) : null
       }

@@ -4,9 +4,9 @@
  * Shown when user tries to access features requiring authentication
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useRef, useEffect } from 'react';
 import { StyleSheet, Platform, Image } from 'react-native';
-import { HapticPressable, Data, Heading, Supporting } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -123,8 +123,8 @@ export function AuthSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.blkBg, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.blkText2, width: Sizes.bubble }}
+      backgroundStyle={{ backgroundColor: colors.background, borderRadius: Radius['3xl'] }}
+      handleIndicatorStyle={{ backgroundColor: colors.labelSecondary, width: Sizes.bubble }}
       containerStyle={{ zIndex: ZIndex.modal }}
     >
       <BottomSheetView style={styles.content}>
@@ -135,7 +135,7 @@ export function AuthSheet({
         >
           <Image
             source={require('@/assets/images/revv.png')}
-            style={{ width: Sizes.iconXl, height: Sizes.iconXl, tintColor: colors.blkText }}
+            style={{ width: Sizes.iconXl, height: Sizes.iconXl, tintColor: colors.label }}
             resizeMode="contain"
           />
         </Animated.View>
@@ -145,12 +145,12 @@ export function AuthSheet({
           entering={FadeInUp.delay(200).duration(400)}
           style={styles.textContent}
         >
-          <Heading size="heading" style={[styles.title, { color: colors.blkText }]}>
+          <Text variant="heading" style={[styles.title, { color: colors.label }]}>
             {displayTitle}
-          </Heading>
-          <Supporting size="bodySm" style={[styles.subtitle, { color: colors.blkText2 }]}>
+          </Text>
+          <Text variant="bodySm" style={[styles.subtitle, { color: colors.labelSecondary }]} tone="secondary">
             {displaySubtitle}
-          </Supporting>
+          </Text>
         </Animated.View>
 
         {/* Actions */}
@@ -169,9 +169,9 @@ export function AuthSheet({
               opacity: pressed ? 0.8 : 1,
             }]}
           >
-            <Data size="body" style={{ color: colors.primaryForeground }}>
+            <Text variant="body" style={{ color: colors.primaryForeground }}>
               Sign In
-            </Data>
+            </Text>
           </HapticPressable>
 
           <HapticPressable
@@ -182,13 +182,13 @@ export function AuthSheet({
               alignItems: 'center' as const,
               justifyContent: 'center' as const,
               borderWidth: 1,
-              borderColor: colors.blkBorder,
+              borderColor: colors.border,
               opacity: pressed ? 0.7 : 1,
             }]}
           >
-            <Data size="body" style={{ color: colors.blkText2 }}>
+            <Text variant="body" style={{ color: colors.labelSecondary }}>
               Maybe Later
-            </Data>
+            </Text>
           </HapticPressable>
         </Animated.View>
       </BottomSheetView>

@@ -1,8 +1,8 @@
+import { HapticPressable } from '@/components/ui';
 import { Stack } from 'expo-router/stack';
 import { Platform } from 'react-native';
 import { Sun, Moon } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import { HapticPressable } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Sizes, Spacing } from '@/constants/theme';
 import { ProfileMenu } from '@/components/home/profile-menu';

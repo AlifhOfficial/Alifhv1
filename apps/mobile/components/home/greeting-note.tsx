@@ -6,12 +6,12 @@
  * Uses theme tokens for all styling.
  */
 
+import { Text } from '@/components/ui';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { Spacing, Layout } from '@/constants/theme';
-import { Display, Supporting } from '@/components/ui';
 
 /**
  * Time periods for contextual greetings
@@ -160,20 +160,20 @@ export function GreetingNote() {
   return (
     <View style={styles.container}>
       <View style={styles.greetingRow}>
-        <Display size="hero" style={{ color: colors.label }}>
+        <Text variant="hero" style={{ color: colors.label }}>
           {content.greeting}
           {content.name ? ', ' : ''}
-        </Display>
+        </Text>
         {content.name && (
-          <Display size="hero" style={{ color: tone.color }}>
+          <Text variant="hero" style={{ color: tone.color }}>
             {content.name}
-          </Display>
+          </Text>
         )}
       </View>
 
-      <Supporting size="body" style={{ color: colors.labelSecondary }}>
+      <Text variant="body" style={{ color: colors.labelSecondary }} tone="secondary">
         {content.subtitle}
-      </Supporting>
+      </Text>
     </View>
   );
 }

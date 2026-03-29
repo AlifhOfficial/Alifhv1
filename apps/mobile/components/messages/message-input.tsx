@@ -4,16 +4,10 @@
  * Inline component - parent handles keyboard avoidance
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import {
-  TextInput,
-  StyleSheet,
-  NativeSyntheticEvent,
-  TextInputContentSizeChangeEventData,
-  Keyboard,
-} from 'react-native';import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import { TextInput, StyleSheet, NativeSyntheticEvent, TextInputContentSizeChangeEventData, Keyboard } from 'react-native';import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
-import { HapticPressable } from '@/components/ui';
 import { Send, MapPin } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
@@ -174,7 +168,7 @@ export function MessageInput({
             disabled={disabled}
             style={[
               styles.actionButton,
-              { backgroundColor: colors.fill, borderColor: colors.glassBorder, borderWidth: StyleSheet.hairlineWidth },
+              { backgroundColor: colors.fill, borderColor: colors.border, borderWidth: StyleSheet.hairlineWidth },
             ]}
           >
             <MapPin
@@ -190,7 +184,7 @@ export function MessageInput({
             styles.inputWrapper,
             { 
               backgroundColor: colors.fill,
-              borderColor: colors.glassBorder,
+              borderColor: colors.border,
               borderWidth: StyleSheet.hairlineWidth,
               minHeight: Math.max(inputHeight, MIN_HEIGHT),
             },
@@ -222,7 +216,7 @@ export function MessageInput({
             styles.sendWrapper,
             {
               backgroundColor: canSend ? colors.primary : colors.fill,
-              borderColor: canSend ? colors.primary : colors.glassBorder,
+              borderColor: canSend ? colors.primary : colors.border,
               borderWidth: StyleSheet.hairlineWidth,
             },
           ]}

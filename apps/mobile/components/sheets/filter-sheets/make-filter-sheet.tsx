@@ -3,9 +3,9 @@
  * Uses @gorhom/bottom-sheet modal with search input
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, TextInput } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -14,7 +14,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, Supporting, ButtonText } from '@/components/ui';
 import { CAR_MAKES } from '@/lib/filter-constants';
 import { searchApi, type FacetBucket, type SearchParams } from '@/lib/search-api';
 
@@ -154,19 +153,19 @@ export function MakeFilterSheet({
         style={styles.listItem}
       >
         <View style={styles.labelRow}>
-          <Body
-            size="body"
+          <Text
+            variant="body"
             style={{ 
               color: isSelected ? colors.label : colors.labelSecondary,
               fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
             }}
           >
             {make}
-          </Body>
+          </Text>
           {count > 0 && (
-            <Supporting size="bodySm" tone="muted">
+            <Text variant="bodySm" tone="muted">
               {count.toLocaleString()}
-            </Supporting>
+            </Text>
           )}
         </View>
         <View style={[
@@ -201,10 +200,10 @@ export function MakeFilterSheet({
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Body size="body" tone="secondary">Cancel</Body>
+              <Text variant="body" tone="secondary">Cancel</Text>
             </HapticPressable>
             
-            <Heading size="subheading">Make</Heading>
+            <Text variant="subheading">Make</Text>
             
             <HapticPressable
               style={[
@@ -214,25 +213,25 @@ export function MakeFilterSheet({
               onPress={handleApply}
               disabled={!hasValue}
             >
-              <ButtonText
-                size="bodySm"
+              <Text
+                variant="bodySm"
                 style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
               >
                 Apply
-              </ButtonText>
+              </Text>
             </HapticPressable>
           </View>
 
           {/* Selection Summary */}
           {hasValue && (
             <View style={styles.selectionSummary}>
-              <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+              <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
                 {localSelected.join(', ')}
-              </Body>
+              </Text>
               <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Supporting size="bodySm" style={{ color: colors.error }}>
+                <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
                   Clear
-                </Supporting>
+                </Text>
               </HapticPressable>
             </View>
           )}

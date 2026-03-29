@@ -5,9 +5,9 @@
  * Displays the AI reasoning and any flags that were raised.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, Image, ScrollView } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,7 +16,6 @@ import { Clock } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { Heading, Body, Supporting } from '@/components/ui';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -95,9 +94,9 @@ export function PendingReviewReasonSheet({
         <View style={styles.header}>
           <View style={styles.headerTitleRow}>
             <Clock size={20} color={colors.warning} />
-            <Heading size="heading" style={{ marginLeft: Spacing.sm }}>
+            <Text variant="heading" style={{ marginLeft: Spacing.sm }}>
               Under Review
-            </Heading>
+            </Text>
           </View>
           <HapticPressable
             onPress={onClose}
@@ -120,9 +119,9 @@ export function PendingReviewReasonSheet({
               <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.labelQuaternary} />
             </View>
           )}
-          <Body size="bodySm" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
+          <Text variant="bodySm" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
             {listingTitle}
-          </Body>
+          </Text>
         </View>
 
         <ScrollView 
@@ -135,9 +134,9 @@ export function PendingReviewReasonSheet({
             <View style={[styles.section, { backgroundColor: colors.fill }]}>
               {/* Reasoning */}
               {hasReasoning && (
-                <Body size="bodySm" style={{ color: colors.label, lineHeight: 20 }}>
+                <Text variant="bodySm" style={{ color: colors.label, lineHeight: 20 }}>
                   {aiModeration?.reasoning}
-                </Body>
+                </Text>
               )}
               
               {/* Flags */}
@@ -151,9 +150,9 @@ export function PendingReviewReasonSheet({
                         key={index}
                         style={[styles.flagBadge, { backgroundColor: colors.warning + '20' }]}
                       >
-                        <Body size="bodySm" style={{ color: colors.warning }}>
+                        <Text variant="bodySm" style={{ color: colors.warning }}>
                           {label}
-                        </Body>
+                        </Text>
                       </View>
                     );
                   })}
@@ -162,17 +161,17 @@ export function PendingReviewReasonSheet({
             </View>
           ) : (
             <View style={[styles.section, { backgroundColor: colors.fill }]}>
-              <Body size="bodySm" style={{ color: colors.labelQuaternary, textAlign: 'center' }}>
+              <Text variant="bodySm" style={{ color: colors.labelQuaternary, textAlign: 'center' }}>
                 No specific details available.
-              </Body>
+              </Text>
             </View>
           )}
 
           {/* Footer Note */}
           <View style={styles.footerNote}>
-            <Supporting style={{ color: colors.labelQuaternary, textAlign: 'center', lineHeight: 18 }}>
+            <Text style={{ color: colors.labelQuaternary, textAlign: 'center', lineHeight: 18 }} variant="bodySm" tone="secondary">
               Our team will review within 24 hours. This assessment is automated — your listing will be reviewed by a human.
-            </Supporting>
+            </Text>
           </View>
         </ScrollView>
       </BottomSheetView>

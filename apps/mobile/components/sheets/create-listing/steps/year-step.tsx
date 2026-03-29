@@ -6,6 +6,7 @@
  * @module components/sheets/create-listing/steps/year-step
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BottomSheetFlatList, BottomSheetFlatListMethods, BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -15,8 +16,6 @@ import { Search, X, Check } from 'lucide-react-native';
 
 import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Supporting } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 
 import type { StepContentProps } from '../create-listing-flow';
 
@@ -85,20 +84,20 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
       return (
         <HapticPressable onPress={() => handleSelect(year)} style={styles.item}>
           <View style={styles.itemContent}>
-            <Body
-              size="bodyLg"
+            <Text
+              variant="bodyLg"
               style={{
                 color: isSelected ? colors.label : colors.labelSecondary,
                 fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
               }}
             >
               {year}
-            </Body>
+            </Text>
             {isRecent && (
-              <Supporting size="bodySm" tone="muted">Recent</Supporting>
+              <Text variant="bodySm" tone="muted">Recent</Text>
             )}
             {isClassic && (
-              <Supporting size="bodySm" tone="muted">Classic</Supporting>
+              <Text variant="bodySm" tone="muted">Classic</Text>
             )}
           </View>
           {isSelected && (
@@ -157,7 +156,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
         }}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Body size="body" tone="secondary">No year found for "{query}"</Body>
+            <Text variant="body" tone="secondary">No year found for "{query}"</Text>
           </View>
         }
       />

@@ -6,6 +6,7 @@
  * No local filter state - all updates go through context.
  */
 
+import { Text } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -25,7 +26,6 @@ import {
 } from '@/components/sheets';
 import { CarInfoSheet } from '@/components/sheets';
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
-import { Body, Supporting } from '@/components/ui';
 import { searchApi, type ListingCard, type SearchParams } from '@/lib/search-api';
 import { queryKeys } from '@/lib/query-client';
 import { consumeDataReady, markInteractionStart, scheduleRenderPerf } from '@/lib/config';
@@ -488,7 +488,7 @@ export default function BrowseScreen() {
 
     return (
       <View style={styles.empty}>
-        <Body size="bodyLg" tone="secondary">No cars found</Body>
+        <Text variant="bodyLg" tone="secondary">No cars found</Text>
       </View>
     );
   }, [isLoading, listings.length, viewMode]);
@@ -498,7 +498,7 @@ export default function BrowseScreen() {
 
     return (
       <View style={styles.loadingMore}>
-        <Supporting size="bodySm">Loading...</Supporting>
+        <Text variant="bodySm" tone="secondary">Loading...</Text>
       </View>
     );
   }, [hasMore, isFetchingNextPage]);

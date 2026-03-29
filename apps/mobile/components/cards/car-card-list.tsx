@@ -4,6 +4,7 @@
  * Fully adaptive - all values from theme constants
  */
 
+import { HapticPressable, Skeleton, SkeletonCircle, Text, FavoriteButton, SuperlikeButton } from '@/components/ui';
 import React, { useCallback, memo, useMemo } from 'react';
 import { StyleSheet, View, ImageSourcePropType } from 'react-native';
 import { Image, ImageSource } from 'expo-image';
@@ -13,18 +14,6 @@ import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { shareListing } from '@/lib/listing-share';
-import { 
-  HapticPressable, 
-  Skeleton, 
-  SkeletonCircle,
-  Text,
-  Data, 
-  Label, 
-  Supporting,
-  Price,
-  FavoriteButton, 
-  SuperlikeButton 
-} from '@/components/ui';
 
 // ============================================================================
 // CONSTANTS (Adaptive)
@@ -91,8 +80,6 @@ interface CardTheme {
   meta: string;
   icon: string;
   imageBg: string;
-  glassBg: string;
-  glassBorder: string;
 }
 
 export interface CarCardListProps {
@@ -135,15 +122,13 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean): CardT
   return useMemo(() => {
     if (isBlkListing) {
       return {
-        bg: colors.blkBg,
-        border: colors.blkBorder,
-        text: colors.blkText,
-        price: colors.blkText,
-        meta: colors.blkText2,
-        icon: colors.blkText2,
-        imageBg: colors.blkBg,
-        glassBg: colors.blkBg,
-        glassBorder: colors.blkBorder,
+        bg: colors.background,
+        border: colors.border,
+        text: colors.label,
+        price: colors.label,
+        meta: colors.labelSecondary,
+        icon: colors.labelSecondary,
+        imageBg: colors.background,
       };
     }
     // Surface aesthetic - standard card styling (matches car-card-m)
@@ -155,8 +140,6 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean): CardT
       meta: colors.labelSecondary,
       icon: colors.label,
       imageBg: colors.surfaceSecondary,
-      glassBg: colors.glassBg,
-      glassBorder: colors.glassBorder,
     };
   }, [colors, isBlkListing]);
 }
@@ -242,23 +225,23 @@ export const CarCardList = memo(function CarCardList({
       <View style={styles.infoSection}>
         {/* Content - Top */}
         <View style={styles.content}>
-          <Data size="body" style={{ color: theme.text }} numberOfLines={1}>
+          <Text variant="body" style={{ color: theme.text }} numberOfLines={1}>
             {make} {model}
-          </Data>
-          <Supporting size="bodySm" style={{ color: theme.meta }}>
+          </Text>
+          <Text variant="bodySm" style={{ color: theme.meta }} tone="secondary">
             {year}
-          </Supporting>
-          <Price style={{ color: theme.price }}>
+          </Text>
+          <Text style={{ color: theme.price }} variant="heading" tone="primary">
             {formatPrice(price)}
-          </Price>
-          <Supporting size="bodySm" style={{ color: theme.meta }}>
+          </Text>
+          <Text variant="bodySm" style={{ color: theme.meta }} tone="secondary">
             {formatMileage(mileage)} · {displaySpecs} · {displayEmirate}
-          </Supporting>
+          </Text>
         </View>
 
         {/* Actions - Bottom Row */}
         <View style={styles.bottomActions}>
-          <View style={[styles.actionBubble, { backgroundColor: theme.glassBg, borderColor: theme.glassBorder }]}>
+          <View style={[styles.actionBubble, { backgroundColor: theme.bg, borderColor: theme.border }]}>
             <FavoriteButton
               listingId={id}
               size={Sizes.iconXs}
@@ -268,7 +251,7 @@ export const CarCardList = memo(function CarCardList({
             />
           </View>
           {showSuperlike && (
-            <View style={[styles.actionBubble, { backgroundColor: theme.glassBg, borderColor: theme.glassBorder }]}>
+            <View style={[styles.actionBubble, { backgroundColor: theme.bg, borderColor: theme.border }]}>
               <SuperlikeButton
                 listingId={id}
                 size={Sizes.iconXs}
@@ -282,7 +265,7 @@ export const CarCardList = memo(function CarCardList({
             <HapticPressable 
               onPress={handleSharePress} 
               hitSlop={Layout.hitSlopSmall}
-              style={[styles.actionBubble, { backgroundColor: theme.glassBg, borderColor: theme.glassBorder }]}
+              style={[styles.actionBubble, { backgroundColor: theme.bg, borderColor: theme.border }]}
             >
               <Share2 size={Sizes.iconXs} color={theme.icon} strokeWidth={ICON_STROKE_WIDTH} />
             </HapticPressable>
@@ -332,7 +315,7 @@ const ListImage = memo(function ListImage({
       )}
       {isBlkListing && (
         <View style={[styles.blkBadge, { backgroundColor: blkBadgeBackground, borderColor: blkBadgeBorder }]}>
-          <Label size="caption" uppercase={false} style={{ color: blkBadgeText }}>BLK</Label>
+          <Text variant="caption" uppercase={false} style={{ color: blkBadgeText }}>BLK</Text>
         </View>
       )}
     </View>

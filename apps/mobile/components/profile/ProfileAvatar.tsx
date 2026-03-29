@@ -4,14 +4,9 @@
  * Uses expo-image-picker for photo selection
  */
 
+import { Text, useAlert } from '@/components/ui';
 import React, { useEffect } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Pressable, 
-  Platform, 
-  ActionSheetIOS,
-} from 'react-native';
+import { StyleSheet, View, Pressable, Platform, ActionSheetIOS } from 'react-native';
 import Animated, { 
   FadeIn, 
   useAnimatedStyle, 
@@ -27,7 +22,6 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Body, useAlert } from '@/components/ui';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
@@ -231,9 +225,9 @@ export function ProfileAvatar({
       {/* Loading overlay */}
       {isUploading && (
         <Animated.View entering={FadeIn.duration(200)} style={styles.overlay}>
-          <Body size="bodySm" style={[styles.loadingText, loadingTextStyle]}>
+          <Text variant="bodySm" style={[styles.loadingText, loadingTextStyle]}>
             Uploading
-          </Body>
+          </Text>
         </Animated.View>
       )}
       

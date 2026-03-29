@@ -2,15 +2,14 @@
  * Quick Stats - Mileage, Specs, Location, VIN
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet, View, Platform, Clipboard } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 import { MapPin, Copy, Check } from 'lucide-react-native';
 
 import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Data, Supporting } from '@/components/ui';
 import { formatMileage, formatSpecs, formatEmirate } from './types';
 
 interface QuickStatsProps {
@@ -39,7 +38,7 @@ export const QuickStats = memo(function QuickStats({
   const displaySpecs = formatSpecs(specs);
   const displayEmirate = city ? `${city}, ${formatEmirate(emirate)}` : formatEmirate(emirate);
   
-  const secondaryTextColor = isBlk ? colors.blkText2 : colors.labelSecondary;
+  const secondaryTextColor = isBlk ? colors.labelSecondary : colors.labelSecondary;
 
   const handleCopyVin = useCallback(async () => {
     if (!vin) return;
@@ -59,23 +58,23 @@ export const QuickStats = memo(function QuickStats({
     <View style={styles.container}>
       {/* Quick Details Row */}
       <View style={styles.statsRow}>
-        <Data size="body" style={{ color: secondaryTextColor }}>
+        <Text variant="body" style={{ color: secondaryTextColor }}>
           {formatMileage(mileage)} km
-        </Data>
-        <Supporting size="bodySm" tone="muted" style={styles.separator}>
+        </Text>
+        <Text variant="bodySm" tone="muted" style={styles.separator}>
           •
-        </Supporting>
-        <Data size="body" style={{ color: secondaryTextColor }}>
+        </Text>
+        <Text variant="body" style={{ color: secondaryTextColor }}>
           {displaySpecs} Specs
-        </Data>
-        <Supporting size="bodySm" tone="muted" style={styles.separator}>
+        </Text>
+        <Text variant="bodySm" tone="muted" style={styles.separator}>
           •
-        </Supporting>
+        </Text>
         <View style={styles.locationRow}>
           <MapPin size={Sizes.iconXs} color={secondaryTextColor} />
-          <Data size="body" style={{ color: secondaryTextColor }}>
+          <Text variant="body" style={{ color: secondaryTextColor }}>
             {displayEmirate}
-          </Data>
+          </Text>
         </View>
       </View>
 
@@ -84,10 +83,10 @@ export const QuickStats = memo(function QuickStats({
         <HapticPressable onPress={handleCopyVin} style={styles.vinRow}>
           {({ pressed }) => (
             <>
-              <Data size="bodySm" tone="muted">VIN</Data>
-              <Data size="body" style={[styles.vinValue, { opacity: pressed ? 0.7 : 1 }]}>
+              <Text variant="bodySm" tone="muted">VIN</Text>
+              <Text variant="body" style={[styles.vinValue, { opacity: pressed ? 0.7 : 1 }]}>
                 {vin}
-              </Data>
+              </Text>
               {copied ? (
                 <Check size={Sizes.iconXs} color={colors.success} strokeWidth={2.5} />
               ) : (
@@ -98,8 +97,8 @@ export const QuickStats = memo(function QuickStats({
         </HapticPressable>
       ) : vinVisibility === 'private' ? (
         <View style={styles.vinRow}>
-          <Data size="bodySm" tone="muted">VIN</Data>
-          <Data size="body" style={{ color: colors.success }}>Verified</Data>
+          <Text variant="bodySm" tone="muted">VIN</Text>
+          <Text variant="body" style={{ color: colors.success }}>Verified</Text>
         </View>
       ) : null}
     </View>

@@ -7,6 +7,7 @@
  * @module components/sheets/create-listing/create-listing-flow
  */
 
+import { Text, useAlert, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, StyleSheet, BackHandler, Keyboard } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -20,8 +21,6 @@ import { ChevronLeft, X } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, ButtonText, useAlert } from '@/components/ui';
-import { HapticPressable } from '@/components/ui';
 
 import {
   EMPTY_DATA,
@@ -341,7 +340,7 @@ export function CreateListingFlow({
             </View>
 
             <View style={styles.headerCenter}>
-              <Heading size="subheading">{currentStep?.label || 'Create Listing'}</Heading>
+              <Text variant="subheading">{currentStep?.label || 'Create Listing'}</Text>
             </View>
 
             {!isReviewStep ? (
@@ -350,9 +349,9 @@ export function CreateListingFlow({
                 disabled={!canProceed && !isOptionalStep}
                 style={[styles.nextButton, { backgroundColor: canProceed ? colors.primary : colors.fill2 }]}
               >
-                <ButtonText size="bodySm" style={{ color: canProceed ? colors.primaryForeground : colors.labelQuaternary }}>
+                <Text variant="bodySm" style={{ color: canProceed ? colors.primaryForeground : colors.labelQuaternary }}>
                   {primaryLabel}
-                </ButtonText>
+                </Text>
               </HapticPressable>
             ) : (
               <View style={styles.headerRight} />

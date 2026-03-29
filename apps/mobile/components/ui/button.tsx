@@ -6,8 +6,7 @@
  * Uses theme colors and follows the design system patterns.
  * 
  * USAGE:
- *   import { Button } from '@/components/ui';
- * 
+ *    * 
  *   <Button onPress={handlePress}>Primary Button</Button>
  *   <Button variant="secondary" onPress={handlePress}>Secondary</Button>
  *   <Button variant="ghost" onPress={handlePress}>Ghost</Button>
@@ -17,20 +16,12 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+import { Text } from './text';
 import React, { memo } from 'react';
-import {
-  Pressable,
-  PressableProps,
-  StyleSheet,
-  View,
-  ActivityIndicator,
-  ViewStyle,
-  StyleProp,
-} from 'react-native';
+import { Pressable, PressableProps, StyleSheet, View, ActivityIndicator, ViewStyle, StyleProp } from 'react-native';
 
 import { Spacing, Radius, Colors, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { ButtonText } from './text';
 
 // ═══════════════════════════════════════════════════
 // TYPES
@@ -170,9 +161,9 @@ export const Button = memo(function Button({
         ) : (
           <>
             {icon && <View style={styles.iconLeft}>{icon}</View>}
-            <ButtonText size={config.textSize} style={{ color: variantStyles.textColor }}>
+            <Text variant={config.textSize} style={{ color: variantStyles.textColor }}>
               {children}
-            </ButtonText>
+            </Text>
             {iconAfter && <View style={styles.iconRight}>{iconAfter}</View>}
           </>
         )}

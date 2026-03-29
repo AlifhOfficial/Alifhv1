@@ -3,13 +3,13 @@
  * Matches home-header style with absolute positioning
  */
 
+import { Text } from '@/components/ui';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MessageCircle } from 'lucide-react-native';
 import { Colors, Spacing, Layout, Sizes, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Data } from '@/components/ui';
 
 export function MessagesHeader() {
   const { colorScheme } = useTheme();
@@ -23,14 +23,14 @@ export function MessagesHeader() {
           styles.pillButton,
           styles.glass,
           {
-            borderColor: colors.glassBorder,
-            backgroundColor: colors.glassBg,
+            borderColor: colors.border,
+            backgroundColor: colors.background,
           },
         ]}
       >
         <View style={styles.pillContent}>
           <MessageCircle size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
-          <Data size="bodySm">Messages</Data>
+          <Text variant="bodySm">Messages</Text>
         </View>
       </View>
     </View>

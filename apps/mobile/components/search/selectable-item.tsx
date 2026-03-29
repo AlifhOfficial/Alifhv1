@@ -1,11 +1,10 @@
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Fonts, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Body, Data } from '@/components/ui';
 
 interface SelectableItemProps {
   label: string;
@@ -52,17 +51,17 @@ export function SelectableItem({
             )}
           </View>
         )}
-        <Body 
-          size="body" 
+        <Text 
+          variant="body" 
           style={isSelected ? styles.labelSelected : undefined}
         >
           {label}
-        </Body>
+        </Text>
       </View>
       
       <View style={styles.rightContent}>
         {count !== undefined && count > 0 && (
-          <Data size="bodySm" tone="muted">{count.toLocaleString()}</Data>
+          <Text variant="bodySm" tone="muted">{count.toLocaleString()}</Text>
         )}
         {showChevron && (
           <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.labelTertiary} />

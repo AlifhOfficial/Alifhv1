@@ -9,10 +9,10 @@
  *   <Heart fill={isFavorite(listingId) ? 'red' : 'none'} />
  */
 
+import { useAlert } from '@/components/ui';
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode, useMemo, useRef } from 'react';
 import { savedApi, FavoritesStatusData } from '@/lib/saved-api';
 import { useAuth } from '@/context/auth-context';
-import { useAlert } from '@/components/ui';
 
 // ============================================================================
 // TYPES

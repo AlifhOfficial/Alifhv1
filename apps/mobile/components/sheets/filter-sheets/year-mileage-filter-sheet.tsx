@@ -3,9 +3,9 @@
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput, Platform } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -13,7 +13,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Label, Body, Supporting, ButtonText } from '@/components/ui';
 
 const MILEAGE_PRESETS = [
   { label: 'Under 20K', max: 20000 },
@@ -159,10 +158,10 @@ export function YearMileageFilterSheet({
             hitSlop={Spacing.md}
             style={styles.cancelButton}
           >
-            <Body size="body" tone="secondary">Cancel</Body>
+            <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
           
-          <Heading size="subheading">Year & Mileage</Heading>
+          <Text variant="subheading">Year & Mileage</Text>
           
           <HapticPressable
             style={[
@@ -171,25 +170,25 @@ export function YearMileageFilterSheet({
             ]}
             onPress={handleApply}
           >
-            <ButtonText
-              size="bodySm"
+            <Text
+              variant="bodySm"
               style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
             >
               Apply
-            </ButtonText>
+            </Text>
           </HapticPressable>
         </View>
 
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+            <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
               {[localYearMin && `From ${localYearMin}`, localYearMax && `To ${localYearMax}`, localMileageMax && `Under ${parseInt(localMileageMax).toLocaleString()} km`].filter(Boolean).join(' · ')}
-            </Body>
+            </Text>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Supporting size="bodySm" style={{ color: colors.error }}>
+              <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
                 Clear
-              </Supporting>
+              </Text>
             </HapticPressable>
           </View>
         )}
@@ -198,9 +197,9 @@ export function YearMileageFilterSheet({
       <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Year Section */}
         <View style={styles.section}>
-          <Label size="caption" tone="muted" style={{ marginBottom: Spacing.md }}>
+          <Text variant="caption" tone="muted" style={{ marginBottom: Spacing.md }} uppercase>
             YEAR
-          </Label>
+          </Text>
           <View style={styles.rangeRow}>
             <View style={styles.inputWrapper}>
               <TextInput
@@ -220,7 +219,7 @@ export function YearMileageFilterSheet({
                 maxLength={4}
               />
             </View>
-            <Body size="bodyLg" tone="muted" style={styles.rangeDash}>–</Body>
+            <Text variant="bodyLg" tone="muted" style={styles.rangeDash}>–</Text>
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[
@@ -244,9 +243,9 @@ export function YearMileageFilterSheet({
 
         {/* Mileage Section */}
         <View style={styles.section}>
-          <Label size="caption" tone="muted" style={{ marginBottom: Spacing.md }}>
+          <Text variant="caption" tone="muted" style={{ marginBottom: Spacing.md }} uppercase>
             MILEAGE
-          </Label>
+          </Text>
           
           {/* Presets */}
           <View style={styles.presetsRow}>
@@ -266,12 +265,12 @@ export function YearMileageFilterSheet({
                     },
                   ]}
                 >
-                  <Supporting
-                    size="bodySm"
+                  <Text
+                    variant="bodySm"
                     style={{ color: isActive ? colors.background : colors.labelSecondary }}
-                  >
+                   tone="secondary">
                     {preset.label}
-                  </Supporting>
+                  </Text>
                 </HapticPressable>
               );
             })}
@@ -296,7 +295,7 @@ export function YearMileageFilterSheet({
                 onChangeText={setLocalMileageMin}
               />
             </View>
-            <Body size="bodyLg" tone="muted" style={styles.rangeDash}>–</Body>
+            <Text variant="bodyLg" tone="muted" style={styles.rangeDash}>–</Text>
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[

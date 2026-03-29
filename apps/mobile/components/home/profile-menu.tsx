@@ -2,9 +2,9 @@
  * Profile Button - Opens auth flow or shows user profile
  */
 
+import { HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/context/theme-context';
@@ -30,7 +30,7 @@ export function ProfileMenu() {
           styles.bubble,
           styles.glass,
           {
-            borderColor: colors.glassBorder,
+            borderColor: colors.border,
             backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
           },
         ]}
@@ -56,7 +56,7 @@ export function ProfileMenu() {
         styles.bubble,
         styles.glass,
         { 
-          borderColor: colors.glassBorder,
+          borderColor: colors.border,
           backgroundColor: colorScheme === 'light' ? colors.white : colors.black,
         }
       ]}

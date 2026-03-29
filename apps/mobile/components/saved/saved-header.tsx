@@ -3,14 +3,13 @@
  * Absolute positioning with glass UI pills
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Bookmark, Heart, Sparkles } from 'lucide-react-native';
-import { HapticPressable } from '@/components/ui';
 import * as Haptics from 'expo-haptics';
 
-import { Data } from '@/components/ui';
 import { Colors, Spacing, Sizes, Layout, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import type { SavedTab } from './types';
@@ -51,14 +50,14 @@ export function SavedHeader({
             styles.pillButton,
             styles.glass,
             {
-              borderColor: colors.glassBorder,
-              backgroundColor: colors.glassBg,
+              borderColor: colors.border,
+              backgroundColor: colors.background,
             },
           ]}
         >
           <View style={styles.pillContent}>
             <Bookmark size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
-            <Data size="bodySm">Saved</Data>
+            <Text variant="bodySm">Saved</Text>
           </View>
         </View>
       </View>
@@ -74,8 +73,8 @@ export function SavedHeader({
                 styles.iconButton,
                 styles.glass,
                 {
-                  backgroundColor: colors.glassBg,
-                  borderColor: colors.glassBorder,
+                  backgroundColor: colors.background,
+                  borderColor: colors.border,
                 },
               ]}
             >

@@ -3,13 +3,13 @@
  * Shows estimated EMI with default financing assumptions
  */
 
+import { Text, Skeleton } from '@/components/ui';
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Calculator } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Skeleton, Data, Supporting, Label } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -57,10 +57,10 @@ export const EMICalculator = memo(function EMICalculator({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
 
-  const textColor = isBlk ? colors.blkText : colors.label;
-  const secondaryTextColor = isBlk ? colors.blkText2 : colors.labelSecondary;
-  const borderColor = isBlk ? colors.blkBorder : colors.glassBorder;
-  const surfaceColor = isBlk ? colors.blkBg : colors.glassBg;
+  const textColor = isBlk ? colors.label : colors.label;
+  const secondaryTextColor = isBlk ? colors.labelSecondary : colors.labelSecondary;
+  const borderColor = isBlk ? colors.border : colors.border;
+  const surfaceColor = isBlk ? colors.background : colors.background;
 
   const emi = useMemo(() => {
     const downPayment = Math.round(price * (DOWN_PAYMENT_PERCENT / 100));
@@ -72,17 +72,17 @@ export const EMICalculator = memo(function EMICalculator({
 
   return (
     <View style={styles.container}>
-      <Label size="caption" tone="muted">ESTIMATED EMI</Label>
+      <Text variant="caption" tone="muted" uppercase>ESTIMATED EMI</Text>
 
       <View style={[styles.card, { backgroundColor: surfaceColor, borderColor }]}>
         <Calculator size={Sizes.iconMd} color={colors.primary} />
         <View style={styles.content}>
-          <Data size="title" style={{ color: textColor }}>
+          <Text variant="title" style={{ color: textColor }}>
             {formatCurrency(emi)}/mo
-          </Data>
-          <Supporting size="bodySm" style={{ color: secondaryTextColor }}>
+          </Text>
+          <Text variant="bodySm" style={{ color: secondaryTextColor }} tone="secondary">
             {DOWN_PAYMENT_PERCENT}% down • {LOAN_TENURE} months • {INTEREST_RATE}% APR
-          </Supporting>
+          </Text>
         </View>
       </View>
     </View>
@@ -100,7 +100,7 @@ export function EMICalculatorSkeleton() {
   return (
     <View style={styles.container}>
       <Skeleton width="25%" height={Spacing.md} />
-      <View style={[styles.card, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}>
+      <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
         <Skeleton width={Sizes.iconMd} height={Sizes.iconMd} borderRadius={Radius.full} />
         <View style={{ gap: Spacing.sm, flex: 1 }}>
           <Skeleton width="40%" height={Spacing.lg} />

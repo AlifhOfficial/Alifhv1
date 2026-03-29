@@ -5,9 +5,9 @@
  * Shows car thumbnail + title so the user is sure they picked the right one.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -17,7 +17,6 @@ import { CheckCircle2 } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import { markListingSold, type MarkSoldResponse } from '@/lib/sell-car-user-api';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -114,7 +113,7 @@ export function MarkSoldSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="heading">Mark as Sold</Heading>
+          <Text variant="heading">Mark as Sold</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -138,17 +137,17 @@ export function MarkSoldSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Body size="body" numberOfLines={1}>{listingTitle}</Body>
-            <Supporting size="bodySm" tone="secondary">
+            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
+            <Text variant="bodySm" tone="secondary">
               This listing will be marked as sold and removed from public search.
-            </Supporting>
+            </Text>
           </View>
         </View>
 
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Body size="bodySm" tone="error">{error}</Body>
+            <Text variant="bodySm" tone="error">{error}</Text>
           </View>
         )}
 
@@ -165,7 +164,7 @@ export function MarkSoldSheet({
               },
             ]}
           >
-            <ButtonText size="body" tone="secondary">Cancel</ButtonText>
+            <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -184,9 +183,9 @@ export function MarkSoldSheet({
             ) : (
               <>
                 <CheckCircle2 size={Sizes.iconSm} color={colors.primaryForeground} />
-                <ButtonText size="body" style={{ color: colors.primaryForeground }}>
+                <Text variant="body" style={{ color: colors.primaryForeground }}>
                   Confirm Sold
-                </ButtonText>
+                </Text>
               </>
             )}
           </HapticPressable>

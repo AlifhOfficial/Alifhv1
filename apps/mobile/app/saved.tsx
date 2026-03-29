@@ -3,20 +3,23 @@
  * Native-feeling, modular saved screen connected to API
  */
 
+import { Skeleton, AuthRequiredEmptyState, Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  Platform,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { StyleSheet, View, Platform, Pressable } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  interpolate,
+  Easing,
+  runOnJS,
+} from 'react-native-reanimated';
 import { Stack } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Heart, Sparkles, ListFilter, Check } from 'lucide-react-native';
-import { Skeleton, AuthRequiredEmptyState, Body, Text, HapticPressable } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Colors, Sizes, Spacing, Radius, Layout, ZIndex } from '@/constants/theme';
+import { Colors, Sizes, Spacing, Radius, Layout, ZIndex, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { SavedList } from '@/components/saved';
@@ -36,13 +39,32 @@ export default function SavedScreen() {
 
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
 
+  const drawerProgress = useSharedValue(0);
+
+  const drawerAnimStyle = useAnimatedStyle(() => ({
+    opacity: drawerProgress.value,
+    transform: [
+      { scale: interpolate(drawerProgress.value, [0, 1], [0.96, 1]) },
+      { translateY: interpolate(drawerProgress.value, [0, 1], [6, 0]) },
+    ],
+    pointerEvents: drawerProgress.value > 0.01 ? 'box-none' : 'none',
+  }));
+
+  const backdropAnimStyle = useAnimatedStyle(() => ({
+    opacity: drawerProgress.value,
+    pointerEvents: drawerProgress.value > 0.01 ? 'box-none' : 'none',
+  }));
+
   const openFilterDrawer = useCallback(() => {
     if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setShowFilterDrawer(true);
+    drawerProgress.value = withTiming(1, { duration: 180, easing: Easing.out(Easing.quad) });
   }, []);
 
   const closeFilterDrawer = useCallback(() => {
-    setShowFilterDrawer(false);
+    drawerProgress.value = withTiming(0, { duration: 140, easing: Easing.in(Easing.quad) }, (finished) => {
+      if (finished) runOnJS(setShowFilterDrawer)(false);
+    });
   }, []);
 
   // Saved data from hook (pass isAuthenticated like profile does)
@@ -92,12 +114,12 @@ export default function SavedScreen() {
     {
       key: 'favorites',
       label: 'Favorites',
-      icon: <Heart size={Sizes.iconSm} color={activeTab === 'favorites' ? colors.primary : colors.label} strokeWidth={2} />,
+      icon: <Heart size={Sizes.iconSm} color={activeTab === 'favorites' ? colors.primary : colors.labelSecondary} strokeWidth={Stroke.icon} />,
     },
     {
       key: 'superlikes',
       label: 'Superlikes',
-      icon: <Sparkles size={Sizes.iconSm} color={activeTab === 'superlikes' ? colors.primary : colors.label} strokeWidth={2} />,
+      icon: <Sparkles size={Sizes.iconSm} color={activeTab === 'superlikes' ? colors.primary : colors.labelSecondary} strokeWidth={Stroke.icon} />,
     },
   ];
 
@@ -136,7 +158,7 @@ export default function SavedScreen() {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
         <View style={styles.emptyContainer}>
-          <Body size="bodySm" tone="secondary">Something went wrong</Body>
+          <Text variant="bodySm" tone="secondary">Something went wrong</Text>
           <Text variant="bodySm" tone="primary" onPress={refresh}>Tap to retry</Text>
         </View>
       </View>
@@ -162,14 +184,22 @@ export default function SavedScreen() {
         style={[styles.fabCluster, { bottom: insets.bottom + Spacing.xl }]}
         pointerEvents="box-none"
       >
-        {showFilterDrawer && (
-          <TouchableWithoutFeedback onPress={closeFilterDrawer}>
-            <View style={StyleSheet.absoluteFillObject} />
-          </TouchableWithoutFeedback>
-        )}
+        {/* Backdrop tap-away */}
+        <Animated.View style={[StyleSheet.absoluteFillObject, backdropAnimStyle]}>
+          <Pressable style={StyleSheet.absoluteFillObject} onPress={closeFilterDrawer} />
+        </Animated.View>
 
-        {showFilterDrawer && (
-          <View style={[styles.drawerContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        {/* Drawer menu */}
+        <Animated.View
+          style={[
+            styles.drawerContainer,
+            drawerAnimStyle,
+            {
+              backgroundColor: colors.surfaceSecondary,
+              borderColor: colors.border,
+            },
+          ]}
+        >
             {SAVED_TABS.map((t, index) => {
               const isActive = t.key === activeTab;
               const isLast = index === SAVED_TABS.length - 1;
@@ -183,23 +213,21 @@ export default function SavedScreen() {
                     style={styles.drawerItem}
                   >
                     {({ pressed }) => (
-                      <View style={[styles.drawerItemInner, { opacity: pressed ? 0.6 : 1 }]}>
+                      <View style={[styles.drawerItemInner, { opacity: pressed ? 0.55 : 1 }]}>
                         <View style={styles.drawerItemLeft}>
                           {isActive ? (
-                            <Check size={Sizes.iconSm} color={colors.primary} strokeWidth={2.5} />
+                            <Check size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
                           ) : (
                             <View style={{ width: Sizes.iconSm }} />
                           )}
                           {t.icon}
-                          <Body
-                            size="body"
-                            style={{
-                              color: isActive ? colors.primary : colors.label,
-                              fontWeight: isActive ? '600' : '400',
-                            }}
+                          <Text
+                            variant="body"
+                            tone={isActive ? 'primary' : 'secondary'}
+                            style={{ fontWeight: isActive ? '600' : '400' }}
                           >
                             {t.label}
-                          </Body>
+                          </Text>
                         </View>
                       </View>
                     )}
@@ -210,9 +238,9 @@ export default function SavedScreen() {
                 </View>
               );
             })}
-          </View>
-        )}
+          </Animated.View>
 
+        {/* FAB button */}
         <HapticPressable
           onPress={showFilterDrawer ? closeFilterDrawer : openFilterDrawer}
           style={[
@@ -220,8 +248,8 @@ export default function SavedScreen() {
             {
               width: FAB_SIZE,
               height: FAB_SIZE,
-              backgroundColor: showFilterDrawer ? colors.primary : colors.glassBg,
-              borderColor: showFilterDrawer ? colors.primary : colors.glassBorder,
+              backgroundColor: showFilterDrawer ? colors.primary : colors.surfaceSecondary,
+              borderColor: showFilterDrawer ? colors.primary : colors.border,
             },
           ]}
         >
@@ -229,8 +257,8 @@ export default function SavedScreen() {
             <ListFilter
               size={Sizes.iconSm}
               color={showFilterDrawer ? colors.primaryForeground : colors.label}
-              strokeWidth={2}
-              style={{ opacity: pressed ? 0.7 : 1 }}
+              strokeWidth={Stroke.icon}
+              style={{ opacity: pressed ? 0.6 : 1 }}
             />
           )}
         </HapticPressable>
@@ -257,20 +285,22 @@ const styles = StyleSheet.create({
   },
   fab: {
     borderRadius: Sizes.bubbleMd,
+    borderCurve: 'continuous',
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
   } as any,
 
   // ── Filter Drawer ───────────────────────────────────────────────────
   drawerContainer: {
     marginBottom: Spacing.sm,
-    borderRadius: Radius.xl,
-    borderWidth: 1,
+    borderRadius: Radius['2xl'],
+    borderCurve: 'continuous',
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
     minWidth: 200,
-    boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
   } as any,
   drawerItem: {
     paddingHorizontal: Spacing.lg,

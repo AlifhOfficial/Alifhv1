@@ -3,14 +3,11 @@
  * Native-feeling, modular profile screen connected to API
  */
 
+import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState, HapticPressable, useAlert } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import {
-  StyleSheet,
-  View,
-  Platform,
-} from 'react-native';
-import { Body, Skeleton, SkeletonCircle, AuthRequiredEmptyState, HapticPressable, useAlert } from '@/components/ui';
+  StyleSheet, View, Platform } from 'react-native';
 import { Settings2, LogOut } from 'lucide-react-native';
 import { ScreenContainer } from '@/components/layout';
 
@@ -269,12 +266,12 @@ export default function ProfileScreen() {
         />
         <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}> 
         <View style={[styles.errorContainer, { backgroundColor: colors.background }]}> 
-          <Body size="body" tone="error" style={styles.errorText}>
+          <Text variant="body" tone="error" style={styles.errorText}>
             {error}
-          </Body>
-          <Body size="body" tone="primary" onPress={refresh}>
+          </Text>
+          <Text variant="body" tone="primary" onPress={refresh}>
             Tap to retry
-          </Body>
+          </Text>
         </View>
       </View>
       </>

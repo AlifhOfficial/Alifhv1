@@ -5,12 +5,11 @@
  * Uses CarCardList for consistent card design.
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { memo, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { ChevronRight } from 'lucide-react-native';
 
-import { Label, Data } from '@/components/ui';
 import { Spacing, Sizes } from '@/constants/theme';
 import { CarCardList } from '@/components/cards/car-card-list';
 import type { SellerListingsProps } from './types';
@@ -30,7 +29,7 @@ export const SellerListings = memo(function SellerListings({
 
   return (
     <View style={localStyles.section}>
-      <Label size="label" tone="muted">MORE FROM THIS SELLER</Label>
+      <Text variant="label" tone="muted" uppercase>MORE FROM THIS SELLER</Text>
       
       {/* Listings list */}
       <View style={localStyles.list}>
@@ -57,9 +56,9 @@ export const SellerListings = memo(function SellerListings({
           onPress={onViewAll}
           style={localStyles.viewAllRow}
         >
-          <Data size="body" tone="primary">
+          <Text variant="body" tone="primary">
             View All {totalCount} Listings
-          </Data>
+          </Text>
           <ChevronRight size={Sizes.iconXs} color={colors.primary} />
         </HapticPressable>
       )}

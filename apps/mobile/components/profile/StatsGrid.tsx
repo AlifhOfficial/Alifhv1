@@ -3,12 +3,12 @@
  * 2x2 grid showing profile statistics
  */
 
+import { Text } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Star } from 'lucide-react-native';
 
-import { Label, Display } from '@/components/ui';
 import { Spacing, Radius, Sizes } from '@/constants/theme';
 import type { ThemeColors, ProfileStats } from './types';
 
@@ -22,12 +22,12 @@ interface StatItemProps {
 function StatItem({ label, value, colors, showStar }: StatItemProps) {
   return (
     <View style={styles.statItem}>
-      <Label size="label" tone="muted" style={styles.statLabel}>{label}</Label>
+      <Text variant="label" tone="muted" style={styles.statLabel} uppercase>{label}</Text>
       <View style={styles.valueRow}>
         {showStar && value !== '—' && (
           <Star size={Sizes.iconXs} color={colors.star} fill={colors.star} strokeWidth={0} style={styles.starIcon} />
         )}
-        <Display size="title" style={styles.statValue}>{value}</Display>
+        <Text variant="title" style={styles.statValue}>{value}</Text>
       </View>
     </View>
   );
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   statLabel: {
-    // textTransform handled by <Label> component
+    // textTransform handled by <Text variant="label" uppercase> component
   },
   valueRow: {
     flexDirection: 'row',
@@ -177,6 +177,6 @@ const styles = StyleSheet.create({
     marginRight: Spacing.xs,
   },
   statValue: {
-    // Typography handled by <Heading> component
+    // Typography handled by <Text variant="title"> component
   },
 });

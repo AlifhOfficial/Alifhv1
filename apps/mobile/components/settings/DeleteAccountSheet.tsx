@@ -3,17 +3,16 @@
  * Confirmation sheet for account deletion
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useRef, useCallback, useEffect, useState, useMemo } from 'react';
 import { View, StyleSheet, TextInput, Platform } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { HapticPressable } from '@/components/ui';
 import { Trash2, Loader2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Typography, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, Supporting, Data, ButtonText } from '@/components/ui';
 
 // ============================================================================
 // TYPES
@@ -116,19 +115,19 @@ export function DeleteAccountSheet({
           <View style={[styles.iconContainer, { backgroundColor: colors.errorMuted }]}>
             <Trash2 size={Sizes.iconLg} color={colors.error} />
           </View>
-          <Heading size="subheading" tone="error">Delete Account?</Heading>
+          <Text variant="subheading" tone="error">Delete Account?</Text>
         </View>
 
         {/* Description */}
-        <Body size="body" tone="secondary" style={styles.description}>
+        <Text variant="body" tone="secondary" style={styles.description}>
           Your account will be deactivated immediately and permanently deleted after 6 months. We retain your data during this period to comply with UAE regulations and resolve any potential disputes. This action cannot be undone.
-        </Body>
+        </Text>
 
         {/* Input */}
         <View style={styles.inputContainer}>
-          <Supporting size="bodySm" tone="muted" style={styles.inputLabel}>
+          <Text variant="bodySm" tone="muted" style={styles.inputLabel}>
             Type "DELETE" to confirm
-          </Supporting>
+          </Text>
           <TextInput
             value={deleteText}
             onChangeText={setDeleteText}
@@ -160,7 +159,7 @@ export function DeleteAccountSheet({
               },
             ]}
           >
-            <Data size="body" style={{ color: colors.label }}>Cancel</Data>
+            <Text variant="body" style={{ color: colors.label }}>Cancel</Text>
           </HapticPressable>
           <HapticPressable
             onPress={handleConfirm}
@@ -177,7 +176,7 @@ export function DeleteAccountSheet({
             {isDeleting ? (
               <Loader2 size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
             ) : (
-              <Data size="body" style={{ color: colors.primaryForeground }}>Delete</Data>
+              <Text variant="body" style={{ color: colors.primaryForeground }}>Delete</Text>
             )}
           </HapticPressable>
         </View>

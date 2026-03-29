@@ -3,9 +3,9 @@
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
@@ -14,7 +14,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body } from '@/components/ui';
 import { Copy } from 'lucide-react-native';
 
 interface DescriptionSheetProps {
@@ -81,7 +80,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Heading size="heading">Description</Heading>
+          <Text variant="heading">Description</Text>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 
@@ -115,9 +114,9 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <Body size="body">
+          <Text variant="body">
             {description}
-          </Body>
+          </Text>
         </BottomSheetScrollView>
 
         <View style={{ height: insets.bottom + Spacing.md }} />

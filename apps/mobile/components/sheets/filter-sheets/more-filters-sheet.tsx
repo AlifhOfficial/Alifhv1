@@ -4,9 +4,9 @@
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, Switch } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -14,7 +14,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
 import type { SearchParams } from '@/lib/search-api';
 import { 
   BODY_TYPES, 
@@ -239,17 +238,17 @@ export function MoreFiltersSheet({
           onPress={() => toggleSection(key)}
         >
           <View style={styles.sectionTitleRow}>
-            <Body 
-              size="body" 
+            <Text 
+              variant="body" 
               style={{ 
                 color: colors.label,
               }}
             >
               {title}
-            </Body>
+            </Text>
             {selectedCount > 0 && (
               <View style={[styles.badge, { backgroundColor: colors.label }]}>  
-                <Label size="caption" style={{ color: colors.background }}>{selectedCount}</Label>
+                <Text variant="caption" style={{ color: colors.background }} uppercase>{selectedCount}</Text>
               </View>
             )}
           </View>
@@ -286,12 +285,12 @@ export function MoreFiltersSheet({
               },
             ]}
           >
-            <Supporting
-              size="bodySm"
+            <Text
+              variant="bodySm"
               style={{ color: isSelected ? colors.background : colors.label }}
-            >
+             tone="secondary">
               {option.label}
-            </Supporting>
+            </Text>
           </HapticPressable>
         );
       })}
@@ -308,15 +307,15 @@ export function MoreFiltersSheet({
       style={styles.toggleRow}
       onPress={onToggle}
     >
-      <Body 
-        size="body" 
+      <Text 
+        variant="body" 
         style={{ 
           color: value ? colors.label : colors.labelSecondary,
           fontWeight: value ? Fonts.bold : Fonts.semiBold,
         }}
       >
         {label}
-      </Body>
+      </Text>
       <View style={[
         styles.radio,
         { borderColor: value ? colors.labelQuaternary : colors.border },
@@ -348,10 +347,10 @@ export function MoreFiltersSheet({
             hitSlop={Spacing.md}
             style={styles.cancelButton}
           >
-            <Body size="body" tone="secondary">Cancel</Body>
+            <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
           
-          <Heading size="subheading">Filters</Heading>
+          <Text variant="subheading">Filters</Text>
           
           <HapticPressable
             style={[
@@ -360,25 +359,25 @@ export function MoreFiltersSheet({
             ]}
             onPress={handleApply}
           >
-            <ButtonText
-              size="bodySm"
+            <Text
+              variant="bodySm"
               style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
             >
               Apply
-            </ButtonText>
+            </Text>
           </HapticPressable>
         </View>
 
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+            <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
               {activeCount} filter{activeCount !== 1 ? 's' : ''} selected
-            </Body>
+            </Text>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Supporting size="bodySm" style={{ color: colors.error }}>
+              <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
                 Clear
-              </Supporting>
+              </Text>
             </HapticPressable>
           </View>
         )}
@@ -515,12 +514,12 @@ export function MoreFiltersSheet({
                     },
                   ]}
                 >
-                  <Supporting
-                    size="bodySm"
+                  <Text
+                    variant="bodySm"
                     style={{ color: isSelected ? colors.background : colors.label }}
-                  >
+                   tone="secondary">
                     {option.label}
-                  </Supporting>
+                  </Text>
                 </HapticPressable>
               );
             })}
@@ -547,12 +546,12 @@ export function MoreFiltersSheet({
                     },
                   ]}
                 >
-                  <Supporting
-                    size="bodySm"
+                  <Text
+                    variant="bodySm"
                     style={{ color: isSelected ? colors.background : colors.label }}
-                  >
+                   tone="secondary">
                     {option.label}
-                  </Supporting>
+                  </Text>
                 </HapticPressable>
               );
             })}

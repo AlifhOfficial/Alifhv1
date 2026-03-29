@@ -6,6 +6,7 @@
  * Uses semantic Text components for cross-platform consistency
  */
 
+import { HapticPressable, Skeleton, SkeletonCircle, Text, FavoriteButton, SuperlikeButton } from '@/components/ui';
 import React, { useCallback, memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
@@ -16,19 +17,6 @@ import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { shareListing } from '@/lib/listing-share';
-import { 
-  HapticPressable,
-  Skeleton, 
-  SkeletonCircle,
-  Text,
-  Heading,
-  Data,
-  Label,
-  Supporting,
-  Price,
-  FavoriteButton,
-  SuperlikeButton,
-} from '@/components/ui';
 
 // ============================================================================
 // CONSTANTS
@@ -148,17 +136,17 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlac
   return useMemo(() => {
     if (isBlkListing) {
       return {
-        bg: colors.blkBg,
-        border: colors.blkBorder,
-        title: colors.blkText,
-        price: colors.blkText,
-        stats: colors.blkText2,
-        meta: colors.blkText2,
-        sellerText: colors.blkText2,
-        actionIcon: colors.blkText2,
-        imageBg: colors.blkBg,
-        avatarBg: colors.blkBg,
-        avatarBorder: colors.blkBorder,
+        bg: colors.background,
+        border: colors.border,
+        title: colors.label,
+        price: colors.label,
+        stats: colors.labelSecondary,
+        meta: colors.labelSecondary,
+        sellerText: colors.labelSecondary,
+        actionIcon: colors.labelSecondary,
+        imageBg: colors.background,
+        avatarBg: colors.background,
+        avatarBorder: colors.border,
       };
     }
     // Surface aesthetic - standard card styling for normal listings
@@ -288,9 +276,9 @@ export const CarCardM = memo(function CarCardM({
         />
 
         {/* Price */}
-        <Price style={{ color: theme.price }}>
+        <Text style={{ color: theme.price }} variant="heading" tone="primary">
           {formatPrice(price)}
-        </Price>
+        </Text>
 
         {/* Stats: Mileage · Specs · Location */}
         <CardStats
@@ -316,8 +304,8 @@ export const CarCardM = memo(function CarCardM({
             isSuperliked={isSuperlikedProp}
             isBlkListing={isBlkListing}
             actionIconColor={theme.actionIcon}
-            glassBackground={colors.glassBg}
-            glassBorder={colors.glassBorder}
+            glassBackground={colors.background}
+            glassBorder={colors.border}
             onFavoritePress={onFavoritePress}
             onSuperlikePress={onSuperlikePress}
             onSharePress={handleSharePress}
@@ -352,7 +340,7 @@ const CardImage = memo(function CardImage({ uri, backgroundColor, placeholderCol
         />
       ) : (
         <View style={[styles.imagePlaceholder, { backgroundColor: skeletonColor }]}>
-          <Supporting size="bodySm" style={{ color: placeholderColor }}>No Image</Supporting>
+          <Text variant="bodySm" style={{ color: placeholderColor }} tone="secondary">No Image</Text>
         </View>
       )}
     </View>
@@ -370,10 +358,10 @@ interface CardHeaderProps {
 const CardHeader = memo(function CardHeader({ make, model, year, titleColor, metaColor }: CardHeaderProps) {
   return (
     <View style={styles.header}>
-      <Heading size="subheading" style={[styles.title, { color: titleColor }]} numberOfLines={1}>
+      <Text variant="subheading" style={[styles.title, { color: titleColor }]} numberOfLines={1}>
         {make} {model}
-      </Heading>
-      <Data size="bodySm" style={{ color: metaColor }}>{year}</Data>
+      </Text>
+      <Text variant="bodySm" style={{ color: metaColor }}>{year}</Text>
     </View>
   );
 });
@@ -388,11 +376,11 @@ interface CardStatsProps {
 const CardStats = memo(function CardStats({ mileage, specs, emirate, statsColor }: CardStatsProps) {
   return (
     <View style={styles.statsRow}>
-      <Data size="bodySm" style={{ color: statsColor }}>{formatMileage(mileage)} km</Data>
-      <Data size="bodySm" style={{ color: statsColor, opacity: 0.4 }}>·</Data>
-      <Data size="bodySm" style={{ color: statsColor }}>{specs}</Data>
-      <Data size="bodySm" style={{ color: statsColor, opacity: 0.4 }}>·</Data>
-      <Data size="bodySm" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Data>
+      <Text variant="bodySm" style={{ color: statsColor }}>{formatMileage(mileage)} km</Text>
+      <Text variant="bodySm" style={{ color: statsColor, opacity: 0.4 }}>·</Text>
+      <Text variant="bodySm" style={{ color: statsColor }}>{specs}</Text>
+      <Text variant="bodySm" style={{ color: statsColor, opacity: 0.4 }}>·</Text>
+      <Text variant="bodySm" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Text>
     </View>
   );
 });
@@ -410,7 +398,7 @@ const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartn
   return (
     <View style={styles.sellerInfo}>
       {isBlackTierPartner && (
-        <View style={[styles.avatarRing, { borderColor: colors.blkBorder }]} />
+        <View style={[styles.avatarRing, { borderColor: colors.border }]} />
       )}
       <View style={[styles.avatar, { backgroundColor: theme.avatarBg, borderColor: theme.avatarBorder }]}>
         {avatarUri ? (
@@ -427,15 +415,15 @@ const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartn
         )}
       </View>
       <View style={styles.sellerMeta}>
-        <Supporting size="bodySm" style={[styles.sellerName, { color: theme.sellerText }]} numberOfLines={1}>
+        <Text variant="bodySm" style={[styles.sellerName, { color: theme.sellerText }]} numberOfLines={1} tone="secondary">
           {name}
-        </Supporting>
+        </Text>
         {!isBlackTierPartner && isVerified && (
           <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
         )}
         {isBlackTierPartner && (
           <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-            <Label size="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Label>
+            <Text variant="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
           </View>
         )}
       </View>
@@ -602,7 +590,6 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
   },
-
 
   // Stats Section
   statsRow: {

@@ -6,12 +6,12 @@
  * Requires authentication — shows auth empty state if not signed in.
  */
 
+import { AuthRequiredEmptyState } from '@/components/ui';
 import { View, StyleSheet, Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/context/theme-context';
 import { InventoryScreen } from '@/components/user-inventory-management/inventory-screen';
-import { AuthRequiredEmptyState } from '@/components/ui';
 import { Colors } from '@/constants/theme';
 
 export default function InventoryRoute() {

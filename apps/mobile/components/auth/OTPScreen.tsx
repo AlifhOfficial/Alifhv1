@@ -3,17 +3,16 @@
  * OLED black themed OTP input for sign-in verification
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useRef, useEffect } from 'react';
 import { View, TextInput } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import { HapticPressable } from '@/components/ui';
 import { InlineLoader } from '@/components/ui/loaders';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Sizes } from '@/constants/theme';
-import { Heading, Body, Data, Supporting } from '@/components/ui';
 import { onboardingStyles } from './onboarding-styles';
 
 interface OTPScreenProps {
@@ -106,15 +105,15 @@ export function OTPScreen({
 
           {/* Hero Section */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Supporting size="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]}>
+            <Text variant="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]} tone="secondary">
               Verify your email
-            </Supporting>
-            <Heading size="title" style={[onboardingStyles.title, { color: colors.white }]}>
+            </Text>
+            <Text variant="title" style={[onboardingStyles.title, { color: colors.white }]}>
               Enter the code
-            </Heading>
-            <Body size="bodySm" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
+            </Text>
+            <Text variant="bodySm" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
               Sent to {email}
-            </Body>
+            </Text>
           </Animated.View>
 
           {/* Error */}
@@ -123,9 +122,9 @@ export function OTPScreen({
               entering={FadeIn.duration(200)}
               style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
             >
-              <Body size="bodySm" tone="error" style={onboardingStyles.errorText}>
+              <Text variant="bodySm" tone="error" style={onboardingStyles.errorText}>
                 {error}
-              </Body>
+              </Text>
             </Animated.View>
           )}
 
@@ -156,9 +155,9 @@ export function OTPScreen({
                       },
                     ]}
                   >
-                    <Heading size="heading" style={{ color: colors.white }}>
+                    <Text variant="heading" style={{ color: colors.white }}>
                       {digit}
-                    </Heading>
+                    </Text>
                     {isActive && !isLoading && (
                       <Animated.View
                         entering={FadeIn.duration(150)}
@@ -200,22 +199,22 @@ export function OTPScreen({
             <Animated.View entering={FadeIn.delay(300).duration(300)} style={onboardingStyles.resendSection}>
               {canResend ? (
                 <HapticPressable onPress={handleResend} disabled={isLoading}>
-                  <Data size="bodySm" style={{ color: colors.primary }}>
+                  <Text variant="bodySm" style={{ color: colors.primary }}>
                     Resend code
-                  </Data>
+                  </Text>
                 </HapticPressable>
               ) : (
-                <Supporting size="bodySm" style={{ color: colors.labelTertiary }}>
+                <Text variant="bodySm" style={{ color: colors.labelTertiary }} tone="secondary">
                   Resend in {resendTimer}s
-                </Supporting>
+                </Text>
               )}
             </Animated.View>
 
             {/* Help text */}
             <Animated.View entering={FadeIn.delay(400).duration(300)}>
-              <Supporting size="bodySm" style={[onboardingStyles.helpText, { color: colors.labelTertiary }]}>
+              <Text variant="bodySm" style={[onboardingStyles.helpText, { color: colors.labelTertiary }]} tone="secondary">
                 Check your spam folder if you don't see it
-              </Supporting>
+              </Text>
             </Animated.View>
           </View>
         </View>

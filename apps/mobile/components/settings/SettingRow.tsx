@@ -3,10 +3,10 @@
  * A single setting item with title, description, and action - matches Profile EditableField styling
  */
 
+import { Text } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Body } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
@@ -33,9 +33,9 @@ export function SettingRow({
       ]}
     >
       <View style={styles.content}>
-        <Body size="bodySm" tone="muted">{title}</Body>
+        <Text variant="bodySm" tone="muted">{title}</Text>
         {description && (
-          <Body size="body">{description}</Body>
+          <Text variant="body">{description}</Text>
         )}
       </View>
       {children}

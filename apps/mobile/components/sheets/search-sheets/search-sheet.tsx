@@ -9,16 +9,9 @@
  * - Clean, native UI using theme semantics
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { 
-  View, 
-  StyleSheet, 
-  
-  Platform, 
-  ActivityIndicator,
-  Keyboard,
-} from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { View, StyleSheet, Platform, ActivityIndicator, Keyboard } from 'react-native';
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
@@ -31,7 +24,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body, Label, ButtonText, Supporting } from '@/components/ui';
 import {
   searchApi,
   type Suggestion,
@@ -551,16 +543,16 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
       ]}
       onPress={onPress}
     >
-      <Supporting
-        size="bodySm"
+      <Text
+        variant="bodySm"
         style={{ color: isSelected ? colors.background : colors.label }}
-      >
+       tone="secondary">
         {label}
-      </Supporting>
+      </Text>
       {!isSelected && count !== undefined && (
-        <Supporting size="bodySm" tone="muted">
+        <Text variant="bodySm" tone="muted">
           {count}
-        </Supporting>
+        </Text>
       )}
       {isSelected && (
         <Ionicons name="close" size={Spacing.md} color={colors.background} />
@@ -596,10 +588,10 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Body size="body" tone="secondary">Cancel</Body>
+              <Text variant="body" tone="secondary">Cancel</Text>
             </HapticPressable>
             
-            <Heading size="subheading">Search</Heading>
+            <Text variant="subheading">Search</Text>
             
             <HapticPressable
               style={[
@@ -609,12 +601,12 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
               onPress={handleApply}
               disabled={!canApply}
             >
-              <ButtonText
-                size="bodySm"
+              <Text
+                variant="bodySm"
                 style={{ color: canApply ? colors.primaryForeground : colors.labelQuaternary }}
               >
                 Apply
-              </ButtonText>
+              </Text>
             </HapticPressable>
           </View>
 
@@ -646,13 +638,13 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
           {/* Selection Summary (breadcrumb style) */}
           {hasSelections && (
             <View style={styles.selectionSummary}>
-              <Body size="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+              <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
                 {selectionSummary}
-              </Body>
+              </Text>
               <HapticPressable onPress={clearAllSelections} hitSlop={Layout.hitSlopSmall}>
-                <Supporting size="bodySm" style={{ color: colors.error }}>
+                <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
                   Clear
-                </Supporting>
+                </Text>
               </HapticPressable>
             </View>
           )}
@@ -668,9 +660,9 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
           {/* Suggestions */}
           {query.trim().length > 0 && (
             <View style={styles.section}>
-              <Label size="caption" tone="muted" style={styles.sectionLabel}>
+              <Text variant="caption" tone="muted" style={styles.sectionLabel} uppercase>
                 SUGGESTIONS
-              </Label>
+              </Text>
 
               {isLoadingSuggestions ? (
                 <View style={styles.loadingRow}>
@@ -697,22 +689,22 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                         {category && (
                           <View style={[styles.categoryDot, { backgroundColor: colors[category.dotKey] }]} />
                         )}
-                        <Body size="body" numberOfLines={1} style={{ flex: 1 }}>
+                        <Text variant="body" numberOfLines={1} style={{ flex: 1 }}>
                           {suggestion.text}
-                        </Body>
+                        </Text>
                       </View>
-                      <Supporting size="bodySm" tone="muted">
+                      <Text variant="bodySm" tone="muted">
                         {category?.label ?? 'Search'}
                         {suggestion.count !== undefined && suggestion.count > 0 && ` · ${suggestion.count.toLocaleString()}`}
-                      </Supporting>
+                      </Text>
                     </HapticPressable>
                     );
                   })}
                 </View>
               ) : query.trim().length >= 2 ? (
-                <Body size="bodySm" tone="muted" style={styles.emptyText}>
+                <Text variant="bodySm" tone="muted" style={styles.emptyText}>
                   No suggestions found
-                </Body>
+                </Text>
               ) : null}
             </View>
           )}
@@ -721,9 +713,9 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
           <View style={styles.section}>
             {/* Makes */}
             <View style={styles.hierarchyLevel}>
-              <Label size="caption" tone="muted" style={styles.sectionLabel}>
+              <Text variant="caption" tone="muted" style={styles.sectionLabel} uppercase>
                 MAKE
-              </Label>
+              </Text>
               {isLoadingFacets ? (
                 <View style={styles.loadingRow}>
                   <ActivityIndicator size="small" color={colors.labelQuaternary} />
@@ -762,13 +754,13 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
             {selectedMakes.length > 0 && (
               <View style={styles.hierarchyLevel}>
                 <View style={[styles.hierarchyConnector, { backgroundColor: colors.border }]} />
-                <Label size="caption" tone="muted" style={styles.sectionLabel}>
+                <Text variant="caption" tone="muted" style={styles.sectionLabel} uppercase>
                   MODEL
-                </Label>
+                </Text>
                 {modelFacets.length === 0 ? (
-                  <Body size="bodySm" tone="muted" style={styles.emptyText}>
+                  <Text variant="bodySm" tone="muted" style={styles.emptyText}>
                     No models available
-                  </Body>
+                  </Text>
                 ) : (
                   <View style={styles.chipGrid}>
                     {/* Selected models first */}
@@ -810,12 +802,12 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                           setShowAllModels((prev) => !prev);
                         }}
                       >
-                        <Supporting
-                          size="bodySm"
+                        <Text
+                          variant="bodySm"
                           style={{ color: colors.primary }}
-                        >
+                         tone="secondary">
                           {showAllModels ? 'Show Less' : `View All (${modelFacets.length})`}
-                        </Supporting>
+                        </Text>
                         <Ionicons
                           name={showAllModels ? 'chevron-up' : 'chevron-down'}
                           size={Spacing.md}
@@ -832,13 +824,13 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
             {selectedMakes.length > 0 && selectedModels.length > 0 && (
               <View style={styles.hierarchyLevel}>
                 <View style={[styles.hierarchyConnector, { backgroundColor: colors.border }]} />
-                <Label size="caption" tone="muted" style={styles.sectionLabel}>
+                <Text variant="caption" tone="muted" style={styles.sectionLabel} uppercase>
                   TRIM
-                </Label>
+                </Text>
                 {trimFacets.length === 0 ? (
-                  <Body size="bodySm" tone="muted" style={styles.emptyText}>
+                  <Text variant="bodySm" tone="muted" style={styles.emptyText}>
                     No trims available
-                  </Body>
+                  </Text>
                 ) : (
                   <View style={styles.chipGrid}>
                     {/* Selected trims first */}

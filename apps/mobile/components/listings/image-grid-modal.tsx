@@ -3,17 +3,9 @@
  * Native mobile implementation
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import {
-  StyleSheet,
-  View,
-  Modal,
-  Pressable,
-  ScrollView,
-  Dimensions,
-  StatusBar,
-} from 'react-native';
-import { HapticPressable } from '@/components/ui';
+import { StyleSheet, View, Modal, Pressable, ScrollView, Dimensions, StatusBar } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
@@ -21,7 +13,6 @@ import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Supporting, Data } from '@/components/ui';
 import { ImageLightbox } from './image-lightbox';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -111,7 +102,7 @@ export function ImageGridModal({
                 transition={150}
               />
               <View style={styles.indexBadge}>
-                <Data size="bodySm" style={styles.indexText}>{baseIndex + 1}</Data>
+                <Text variant="bodySm" style={styles.indexText}>{baseIndex + 1}</Text>
               </View>
             </HapticPressable>
             <View style={[styles.stackedColumn, { width: smallWidth }]}>
@@ -131,7 +122,7 @@ export function ImageGridModal({
                       transition={150}
                     />
                     <View style={styles.indexBadge}>
-                      <Data size="bodySm" style={styles.indexText}>{imgIdx + 1}</Data>
+                      <Text variant="bodySm" style={styles.indexText}>{imgIdx + 1}</Text>
                     </View>
                   </HapticPressable>
                 );
@@ -161,7 +152,7 @@ export function ImageGridModal({
                     transition={150}
                   />
                   <View style={styles.indexBadge}>
-                    <Data size="bodySm" style={styles.indexText}>{imgIdx + 1}</Data>
+                    <Text variant="bodySm" style={styles.indexText}>{imgIdx + 1}</Text>
                   </View>
                 </HapticPressable>
               );
@@ -190,7 +181,7 @@ export function ImageGridModal({
                       transition={150}
                     />
                     <View style={styles.indexBadge}>
-                      <Data size="bodySm" style={styles.indexText}>{imgIdx + 1}</Data>
+                      <Text variant="bodySm" style={styles.indexText}>{imgIdx + 1}</Text>
                     </View>
                   </HapticPressable>
                 );
@@ -207,7 +198,7 @@ export function ImageGridModal({
                 transition={150}
               />
               <View style={styles.indexBadge}>
-                <Data size="bodySm" style={styles.indexText}>{baseIndex + 3}</Data>
+                <Text variant="bodySm" style={styles.indexText}>{baseIndex + 3}</Text>
               </View>
             </HapticPressable>
           </View>
@@ -233,7 +224,7 @@ export function ImageGridModal({
                     transition={150}
                   />
                   <View style={styles.indexBadge}>
-                    <Data size="bodySm" style={styles.indexText}>{imgIdx + 1}</Data>
+                    <Text variant="bodySm" style={styles.indexText}>{imgIdx + 1}</Text>
                   </View>
                 </HapticPressable>
               );
@@ -256,7 +247,7 @@ export function ImageGridModal({
                 transition={150}
               />
               <View style={styles.indexBadge}>
-                <Data size="bodySm" style={styles.indexText}>{baseIndex + 1}</Data>
+                <Text variant="bodySm" style={styles.indexText}>{baseIndex + 1}</Text>
               </View>
             </HapticPressable>
           </View>
@@ -297,13 +288,13 @@ export function ImageGridModal({
         ) : (
           <>
             {/* Header */}
-            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.background, borderBottomColor: colors.glassBorder }]}>
-              <Supporting size="bodySm">
+            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+              <Text variant="bodySm" tone="secondary">
                 {totalImages} photos
-              </Supporting>
+              </Text>
               <HapticPressable
                 onPress={onClose}
-                style={[styles.closeButton, { backgroundColor: colors.glassBg, borderColor: colors.glassBorder }]}
+                style={[styles.closeButton, { backgroundColor: colors.background, borderColor: colors.border }]}
                 hitSlop={Layout.hitSlop}
               >
                 {({ pressed }) => (

@@ -3,6 +3,7 @@
  * Premium OLED black design with Apple-style logo reveal
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,7 +11,6 @@ import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { ArrowRight } from 'lucide-react-native';
 
 import { Colors, Spacing, Sizes, Radius } from '@/constants/theme';
-import { HapticPressable, Heading, Supporting } from '@/components/ui';
 
 interface WelcomeScreenProps {
   onGetStarted: () => void;
@@ -50,8 +50,8 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
               style={styles.getStartedRow}
               hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
             >
-              <Heading size="heading" style={{ color: colors.white }}>Get Started</Heading>
-              <View style={[styles.glassBubble, { backgroundColor: colors.glassBg, borderColor: colors.glassBorderDark }]}>
+              <Text variant="heading" style={{ color: colors.white }}>Get Started</Text>
+              <View style={[styles.glassBubble, { backgroundColor: colors.background, borderColor: colors.border }]}>
                 <ArrowRight size={Sizes.iconXs} color={colors.white} strokeWidth={2} />
               </View>
             </HapticPressable>
@@ -63,7 +63,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
               onPress={onSignIn}
               hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
             >
-              <Heading size="heading" tone="secondary">Sign In</Heading>
+              <Text variant="heading" tone="secondary">Sign In</Text>
             </HapticPressable>
           </Animated.View>
         </View>
@@ -79,7 +79,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
             onPress={onSkip}
             hitSlop={{ top: Spacing.md, bottom: Spacing.md, left: Spacing.xl, right: Spacing.xl }}
           >
-            <Supporting size="body" tone="muted">Skip</Supporting>
+            <Text variant="body" tone="muted">Skip</Text>
           </HapticPressable>
         </Animated.View>
       )}

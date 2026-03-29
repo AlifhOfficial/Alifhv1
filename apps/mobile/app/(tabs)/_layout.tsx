@@ -4,13 +4,13 @@
  * Floating pill tab bar — icons only, active pill highlight.
  */
 
+import { HapticPressable } from '@/components/ui';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router/tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home, MessageCircle, LayoutGrid } from 'lucide-react-native';
-import { HapticPressable } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Sizes, Spacing, Radius } from '@/constants/theme';
 
@@ -41,7 +41,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         style={[
           styles.pill,
           {
-            backgroundColor: colors.background,
+            backgroundColor: colors.background + 'CC',
             borderColor: colors.border,
             shadowColor: colors.black,
           },
@@ -66,7 +66,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
               style={[
                 styles.tabBtn,
                 focused && {
-                  backgroundColor: colorScheme === 'light' ? colors.backgroundSecondary : colors.surfaceSecondary,
+                  backgroundColor: colors.fill,
                   borderRadius: Radius.full,
                 },
               ]}
@@ -77,8 +77,8 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
               <Icon
                 size={Sizes.iconMd}
                 color={focused ? colors.label : colors.labelSecondary}
-                strokeWidth={focused ? 3.2 : 3.2}
-                fill={focused ? colors.label : 'transparent'}
+                strokeWidth={3.2}
+                fill={tab.name === '(home)' || focused ? (focused ? colors.label : colors.labelSecondary) : 'transparent'}
               />
             </HapticPressable>
           );

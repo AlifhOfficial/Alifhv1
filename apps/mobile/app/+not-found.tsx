@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui';
 import React from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -5,7 +6,6 @@ import { Image } from 'expo-image';
 
 import { Colors, Spacing, Layout, Sizes, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body } from '@/components/ui/text';
 
 export default function NotFoundScreen() {
   const { colorScheme } = useTheme();
@@ -29,19 +29,19 @@ export default function NotFoundScreen() {
           tintColor={colors.labelTertiary}
         />
 
-        <Heading size="title" style={styles.title}>
+        <Text variant="title" style={styles.title}>
           Page Not Found
-        </Heading>
+        </Text>
 
-        <Body tone="secondary" style={styles.body}>
+        <Text tone="secondary" style={styles.body} variant="body">
           This page doesn't exist or was moved.
-        </Body>
+        </Text>
 
         <Pressable
           onPress={handleGoBack}
           style={[styles.button, { backgroundColor: colors.fill }]}
         >
-          <Body tone="primary">Go Back</Body>
+          <Text tone="primary" variant="body">Go Back</Text>
         </Pressable>
       </View>
     </View>

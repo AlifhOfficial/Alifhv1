@@ -3,9 +3,9 @@
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling
  */
 
+import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { HapticPressable } from '@/components/ui';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
@@ -14,7 +14,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { Heading, Body } from '@/components/ui';
 import { Copy } from 'lucide-react-native';
 
 interface FeaturesSheetProps {
@@ -87,7 +86,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
     >
       <View style={styles.content}>
         <View style={styles.header}>
-          <Heading size="heading">All Features</Heading>
+          <Text variant="heading">All Features</Text>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 
@@ -130,9 +129,9 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
                   { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
                 ]}
               >
-                <Body size="bodySm" tone="secondary">
+                <Text variant="bodySm" tone="secondary">
                   {formatEnumValue(feature)}
-                </Body>
+                </Text>
               </View>
             ))}
           </View>

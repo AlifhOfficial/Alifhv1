@@ -3,6 +3,7 @@
  * OLED black themed success confirmation with confetti
  */
 
+import { Text, HapticPressable, ConfettiBurst, type ConfettiBurstRef } from '@/components/ui';
 import React, { useEffect, useRef } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,8 +21,6 @@ import Animated, {
 import Svg, { Path, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 
 import { Colors, Spacing, Sizes } from '@/constants/theme';
-import { HapticPressable, ConfettiBurst, type ConfettiBurstRef } from '@/components/ui';
-import { Heading, Body, ButtonText, Supporting } from '@/components/ui';
 import { onboardingStyles, ONBOARDING_LAYOUT } from './onboarding-styles';
 
 interface AuthSuccessScreenProps {
@@ -136,29 +135,29 @@ export function AuthSuccessScreen({
 
           {/* Greeting */}
           <Animated.View entering={FadeInDown.delay(300).duration(400)}>
-            <Supporting
-              size="bodySm"
+            <Text
+              variant="bodySm"
               style={{ color: colors.primary, textAlign: 'center', marginBottom: Spacing.sm }}
-            >
+             tone="secondary">
               {getGreeting()}
-            </Supporting>
+            </Text>
           </Animated.View>
 
           {/* Welcome message */}
           <Animated.View entering={FadeInDown.delay(400).duration(400)}>
-            <Heading size="title" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
+            <Text variant="title" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
               {firstName ? `Welcome back, ${firstName}!` : "You're in!"}
-            </Heading>
+            </Text>
           </Animated.View>
 
           {/* Subtitle */}
           <Animated.View entering={FadeInDown.delay(500).duration(400)}>
-            <Body
-              size="bodySm"
+            <Text
+              variant="bodySm"
               style={[onboardingStyles.welcomeSubtitle, { color: colors.labelSecondary }]}
             >
               Ready to find your next ride?
-            </Body>
+            </Text>
           </Animated.View>
         </View>
 
@@ -174,7 +173,7 @@ export function AuthSuccessScreen({
               },
             ]}
           >
-            <ButtonText style={{ color: colors.primaryForeground }}>Let's Go</ButtonText>
+            <Text style={{ color: colors.primaryForeground }} variant="body">Let's Go</Text>
           </HapticPressable>
         </Animated.View>
       </View>

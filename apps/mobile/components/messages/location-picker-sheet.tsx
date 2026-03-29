@@ -4,6 +4,7 @@
  * Option to refresh location if not accurate
  */
 
+import { Text, HapticPressable, useAlert } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { MapPin, RefreshCw, X, Send } from 'lucide-react-native';
@@ -12,7 +13,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
-import { HapticPressable, Body, Data, Heading, useAlert } from '@/components/ui';
 import { useLocation, type LocationResult } from '@/hooks/use-location';
 
 interface LocationPickerSheetProps {
@@ -124,10 +124,10 @@ export function LocationPickerSheet({
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Heading size="subheading">Share Location</Heading>
-            <Data size="bodySm" style={{ color: colors.labelSecondary }}>
+            <Text variant="subheading">Share Location</Text>
+            <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
               Send your current location
-            </Data>
+            </Text>
           </View>
           <HapticPressable 
             haptic="light" 
@@ -144,22 +144,22 @@ export function LocationPickerSheet({
           {isLoading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={colors.primary} />
-              <Data size="bodySm" style={{ color: colors.labelSecondary, marginTop: Spacing.sm }}>
+              <Text variant="bodySm" style={{ color: colors.labelSecondary, marginTop: Spacing.sm }}>
                 Getting your location...
-              </Data>
+              </Text>
             </View>
           ) : error ? (
             <View style={styles.errorContainer}>
               <MapPin size={Sizes.iconXl} color={colors.labelTertiary} />
-              <Data size="bodySm" style={{ color: colors.labelSecondary, marginTop: Spacing.sm, textAlign: 'center' }}>
+              <Text variant="bodySm" style={{ color: colors.labelSecondary, marginTop: Spacing.sm, textAlign: 'center' }}>
                 {error}
-              </Data>
+              </Text>
               <HapticPressable
                 haptic="medium"
                 onPress={handleRefreshLocation}
                 style={[styles.retryButton, { backgroundColor: colors.primary }]}
               >
-                <Data size="bodySm" style={{ color: colors.primaryForeground }}>Try Again</Data>
+                <Text variant="bodySm" style={{ color: colors.primaryForeground }}>Try Again</Text>
               </HapticPressable>
             </View>
           ) : mapPreviewUrl ? (
@@ -182,18 +182,18 @@ export function LocationPickerSheet({
           <View style={[styles.locationInfo, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={styles.locationTextContainer}>
               {location.placeName && (
-                <Body size="body" numberOfLines={1}>
+                <Text variant="body" numberOfLines={1}>
                   {location.placeName}
-                </Body>
+                </Text>
               )}
               {location.address ? (
-                <Data size="bodySm" style={{ color: colors.labelSecondary }} numberOfLines={2}>
+                <Text variant="bodySm" style={{ color: colors.labelSecondary }} numberOfLines={2}>
                   {location.address}
-                </Data>
+                </Text>
               ) : (
-                <Data size="bodySm" style={{ color: colors.labelSecondary }}>
+                <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
                   {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
-                </Data>
+                </Text>
               )}
             </View>
             <HapticPressable
@@ -219,7 +219,7 @@ export function LocationPickerSheet({
             disabled={isSending}
             style={[styles.cancelButton, { backgroundColor: colors.fill2 }]}
           >
-            <Body size="body" style={{ color: colors.label }}>Cancel</Body>
+            <Text variant="body" style={{ color: colors.label }}>Cancel</Text>
           </HapticPressable>
           <HapticPressable
             haptic="medium"
@@ -235,12 +235,12 @@ export function LocationPickerSheet({
             ) : (
               <>
                 <Send size={Sizes.iconSm} color={location ? colors.primaryForeground : colors.labelQuaternary} />
-                <Body
-                  size="body"
+                <Text
+                  variant="body"
                   style={{ color: location ? colors.primaryForeground : colors.labelQuaternary, marginLeft: Spacing.xs }}
                 >
                   Send Location
-                </Body>
+                </Text>
               </>
             )}
           </HapticPressable>
