@@ -1,28 +1,29 @@
 /**
- * Image Gallery Component - Swipeable image viewer with thumbnails
+ * Image Gallery Component - Swipeable image viewer
  * Takes up ~40% of viewport height with gesture-based navigation
- * Includes View All button and lightbox/grid modal integration
+ * Includes grid modal and lightbox integration
  */
 
 import { Text, HapticPressable, Skeleton } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View, Dimensions, FlatList, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
-import { Grid3x3 } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Grid3x3 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppListingImageUrls } from '@/lib/config';
 import { ImageLightbox } from './image-lightbox';
 import { ImageGridModal } from './image-grid-modal';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-// 4:3 aspect ratio for main image + thumbnail strip
-const MAIN_IMAGE_HEIGHT = SCREEN_WIDTH * (3 / 4);
-const THUMBNAIL_SIZE = Sizes.cardThumbnailWidth * 0.35; // ~56
-const THUMBNAIL_STRIP_HEIGHT = THUMBNAIL_SIZE + Spacing.lg;
-const GALLERY_HEIGHT = MAIN_IMAGE_HEIGHT + THUMBNAIL_STRIP_HEIGHT;
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const GALLERY_SIDE_INSET = Spacing.lg;
+const MAIN_IMAGE_WIDTH = SCREEN_WIDTH - GALLERY_SIDE_INSET * 2;
+const MAIN_IMAGE_RADIUS = Radius['3xl'];
+// 4:3 aspect ratio for main image
+const MAIN_IMAGE_HEIGHT = MAIN_IMAGE_WIDTH * (3 / 4);
+const GALLERY_HEIGHT = MAIN_IMAGE_HEIGHT;
 
 interface ImageGalleryProps {
   images: string[];
@@ -36,7 +37,6 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [gridModalOpen, setGridModalOpen] = useState(false);
   const flatListRef = useRef<FlatList>(null);
-  const thumbnailListRef = useRef<FlatList>(null);
   
   const validImages = useMemo(() => 
     images.filter(img => img && typeof img === 'string' && img.trim().length > 0),
@@ -84,7 +84,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
 
   const onMomentumScrollEnd = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = e.nativeEvent.contentOffset.x;
-    const index = Math.round(offsetX / SCREEN_WIDTH);
+    const index = Math.round(offsetX / MAIN_IMAGE_WIDTH);
     if (index !== currentIndex && index >= 0 && index < allImages.length) {
       setCurrentIndex(index);
     }
@@ -93,12 +93,6 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
   const onMainImagePress = useCallback(() => {
     Haptics.selectionAsync();
     setLightboxOpen(true);
-  }, []);
-
-  const onThumbnailPress = useCallback((index: number) => {
-    Haptics.selectionAsync();
-    setCurrentIndex(index);
-    flatListRef.current?.scrollToIndex({ index, animated: true });
   }, []);
 
   const onViewAllPress = useCallback(() => {
@@ -123,6 +117,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         <FlatList
           ref={flatListRef}
           data={allImages}
+          style={styles.mainImageList}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
@@ -133,8 +128,8 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           windowSize={3}
           removeClippedSubviews
           getItemLayout={(_, index) => ({
-            length: SCREEN_WIDTH,
-            offset: SCREEN_WIDTH * index,
+            length: MAIN_IMAGE_WIDTH,
+            offset: MAIN_IMAGE_WIDTH * index,
             index,
           })}
           renderItem={({ item }) => (
@@ -150,65 +145,31 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           )}
         />
         
-        {/* Image Counter Overlay */}
-        <View style={styles.counterOverlay} pointerEvents="none">
-          <Text variant="subhead" style={styles.counterOverlayText}>
-            {currentIndex + 1}/{allImages.length}
-          </Text>
+        <View style={styles.swipeCueLeft} pointerEvents="none">
+          <ChevronLeft size={Sizes.iconMd} color={Colors.dark.white} strokeWidth={2.2} />
         </View>
-      </View>
+        <View style={styles.swipeCueRight} pointerEvents="none">
+          <ChevronRight size={Sizes.iconMd} color={Colors.dark.white} strokeWidth={2.2} />
+        </View>
+        <View style={styles.bottomOverlayRow} pointerEvents="box-none">
+          <View style={[styles.counterPill, { backgroundColor: colors.overlay }]}>
+            <Text variant="subhead" style={styles.overlayText}>
+              {currentIndex + 1}/{allImages.length}
+            </Text>
+          </View>
 
-      {/* Thumbnail Strip with View All */}
-      <View style={[styles.thumbnailStrip, { backgroundColor: colors.background }]}>
-        <FlatList
-          ref={thumbnailListRef}
-          data={allImages}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.thumbnailList}
-          keyExtractor={(_, idx) => `thumb-${idx}`}
-          initialNumToRender={6}
-          maxToRenderPerBatch={6}
-          windowSize={4}
-          removeClippedSubviews
-          getItemLayout={(_, index) => ({
-            length: THUMBNAIL_SIZE + Spacing.xs,
-            offset: (THUMBNAIL_SIZE + Spacing.xs) * index,
-            index,
-          })}
-          renderItem={({ item, index }) => (
-            <HapticPressable
-              onPress={() => onThumbnailPress(index)}
-              style={[
-                styles.thumbnail,
-                { 
-                  borderColor: index === currentIndex ? colors.primary : colors.border,
-                  opacity: index === currentIndex ? 1 : 0.6,
-                },
-              ]}
-            >
-              <Image
-                source={{ uri: item }}
-                style={styles.thumbnailImage}
-                contentFit="cover"
-                transition={100}
-              />
-            </HapticPressable>
-          )}
-        />
-
-        {/* View All Button */}
-        <HapticPressable
-          onPress={onViewAllPress}
-          style={[styles.viewAllButton, { backgroundColor: colors.background, borderColor: colors.border }]}
-        >
-          {({ pressed }) => (
-            <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
-              <Grid3x3 size={Sizes.iconXs} color={colors.label} strokeWidth={1.75} />
-              <Text variant="subhead">All</Text>
-            </View>
-          )}
-        </HapticPressable>
+          <HapticPressable
+            onPress={onViewAllPress}
+            style={[styles.viewAllButton, { backgroundColor: colors.overlay }]}
+          >
+            {({ pressed }) => (
+              <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
+                <Grid3x3 size={Sizes.iconXs} color={Colors.dark.white} strokeWidth={1.75} />
+                <Text variant="subhead" style={styles.overlayText}>All</Text>
+              </View>
+            )}
+          </HapticPressable>
+        </View>
       </View>
 
       {/* Grid Modal - uses thumbs for grid, lightbox opens full-res */}
@@ -241,26 +202,10 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
 
 // Skeleton for loading state
 export function ImageGallerySkeleton() {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
-
   return (
     <View style={styles.container}>
-      {/* Main image skeleton */}
-      <Skeleton width="100%" height={MAIN_IMAGE_HEIGHT} borderRadius={0} />
-      
-      {/* Thumbnails skeleton */}
-      <View style={[styles.thumbnailStrip, { backgroundColor: colors.background }]}>
-        <View style={styles.thumbnailList}>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Skeleton 
-              key={i} 
-              width={THUMBNAIL_SIZE}
-              height={THUMBNAIL_SIZE * 0.75}
-              borderRadius={Radius.sm}
-            />
-          ))}
-        </View>
+      <View style={styles.mainImageWrapper}>
+        <Skeleton width="100%" height={MAIN_IMAGE_HEIGHT} borderRadius={MAIN_IMAGE_RADIUS} />
       </View>
     </View>
   );
@@ -272,76 +217,78 @@ const styles = StyleSheet.create({
     height: GALLERY_HEIGHT,
   },
   placeholder: {
+    marginHorizontal: GALLERY_SIDE_INSET,
     height: GALLERY_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: MAIN_IMAGE_RADIUS,
   },
   
   // Main Image
   mainImageWrapper: {
+    width: MAIN_IMAGE_WIDTH,
+    alignSelf: 'center',
     flex: 1,
+    borderRadius: MAIN_IMAGE_RADIUS,
+    overflow: 'hidden',
+  },
+  mainImageList: {
+    width: '100%',
   },
   mainImageContainer: {
-    width: SCREEN_WIDTH,
+    width: MAIN_IMAGE_WIDTH,
     flex: 1,
   },
   mainImage: {
     width: '100%',
     height: '100%',
   },
-  counterOverlay: {
+  swipeCueLeft: {
     position: 'absolute',
-    bottom: Spacing.md,
+    left: Spacing.md,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+  },
+  swipeCueRight: {
+    position: 'absolute',
     right: Spacing.md,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.lg,
-    backgroundColor: Colors.dark.overlay,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
   },
-  counterOverlayText: {
-    color: Colors.dark.white,
-  },
-  
-  // Thumbnails
-  thumbnailStrip: {
+  bottomOverlayRow: {
+    position: 'absolute',
+    left: Spacing.md,
+    right: Spacing.md,
+    bottom: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.sm,
+    justifyContent: 'space-between',
     gap: Spacing.sm,
   },
-  thumbnailList: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
+  counterPill: {
+    minWidth: Sizes.actionButtonMd,
+    height: Sizes.actionButtonMd,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: Radius.circle,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  thumbnail: {
-    width: THUMBNAIL_SIZE,
-    height: THUMBNAIL_SIZE * 0.75,
-    borderRadius: Radius.sm,
-    overflow: 'hidden',
-    borderWidth: 1.5,
-  },
-  thumbnailImage: {
-    width: '100%',
-    height: '100%',
-  },
-  thumbnailSkeleton: {
-    width: THUMBNAIL_SIZE,
-    height: THUMBNAIL_SIZE * 0.75,
-    borderRadius: Radius.sm,
-  },
-  
-  // View All Button
   viewAllButton: {
-    marginLeft: 'auto',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.md,
-    borderWidth: 1,
+    minWidth: Sizes.actionButtonMd,
+    height: Sizes.actionButtonMd,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: Radius.circle,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   viewAllContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
+  },
+  overlayText: {
+    color: Colors.dark.white,
   },
 });

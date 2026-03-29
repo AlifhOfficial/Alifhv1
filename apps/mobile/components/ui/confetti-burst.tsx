@@ -29,6 +29,7 @@ import Animated, {
   runOnJS,
   Easing,
 } from 'react-native-reanimated';
+import { ConfettiPalettes } from '@/constants/theme';
 
 // ============================================================================
 // TYPES
@@ -64,23 +65,8 @@ interface Particle {
 // PALETTES
 // ============================================================================
 
-export const FAVORITE_COLORS = [
-  '#F43F5E', // rose-500
-  '#FB7185', // rose-400
-  '#FF8FA3', // light rose
-  '#FF2D55', // vibrant red-pink
-  '#FCA5A5', // light red
-  '#FE6D73', // coral
-];
-
-export const SUPERLIKE_COLORS = [
-  '#F59E0B', // amber-500
-  '#FBBF24', // amber-400
-  '#FCD34D', // amber-300
-  '#FDE68A', // amber-200
-  '#F97316', // orange-500
-  '#FB923C', // orange-400
-];
+export const FAVORITE_COLORS = ConfettiPalettes.favorite;
+export const SUPERLIKE_COLORS = ConfettiPalettes.superlike;
 
 // ============================================================================
 // SINGLE PARTICLE COMPONENT

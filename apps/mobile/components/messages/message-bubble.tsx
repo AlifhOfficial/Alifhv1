@@ -6,7 +6,7 @@
 
 import { Text } from '@/components/ui';
 import React from 'react';
-import { View, Image, StyleSheet, Pressable } from 'react-native';
+import { View, Image, StyleSheet, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
@@ -42,6 +42,7 @@ export function MessageBubble({
 
   // Check if optimistic message (sending state)
   const isOptimistic = message.id.startsWith('temp-');
+  const isLongTextMessage = !!text && text.length > 90;
 
   // Extract location data if present
   const locationData = mediaType === 'location' && mediaMetadata ? {
@@ -71,6 +72,7 @@ export function MessageBubble({
     <View
       style={[
         styles.container,
+        Platform.OS === 'android' && isLongTextMessage ? styles.containerLongTextAndroid : null,
         isOwn ? styles.containerOwn : styles.containerOther,
       ]}
     >
@@ -211,7 +213,7 @@ const BUBBLE_TAIL = Radius.sm;
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    marginBottom: Spacing.xs / 2,
+    marginBottom: Platform.OS === 'android' ? Spacing.xs : Spacing.xs / 2,
     paddingHorizontal: Spacing.md,
     gap: Spacing.sm,
     alignItems: 'flex-end',
@@ -221,6 +223,9 @@ const styles = StyleSheet.create({
   },
   containerOther: {
     justifyContent: 'flex-start',
+  },
+  containerLongTextAndroid: {
+    marginBottom: Spacing.sm,
   },
   avatarPlaceholder: {
     width: Sizes.iconXl,

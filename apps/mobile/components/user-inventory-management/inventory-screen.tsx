@@ -678,7 +678,7 @@ export function InventoryScreen() {
               styles.glass,
               {
                 width: FAB_SIZE,
-                paddingHorizontal: 0,
+                paddingHorizontal: Spacing.none,
                 backgroundColor: showFilterDrawer ? colors.primary : colors.background,
                 borderColor: showFilterDrawer ? colors.primary : colors.border,
               },
@@ -701,7 +701,7 @@ export function InventoryScreen() {
               styles.glass,
               {
                 width: FAB_SIZE,
-                paddingHorizontal: 0,
+                paddingHorizontal: Spacing.none,
                 backgroundColor: colors.background,
                 borderColor: colors.border,
               },
@@ -765,7 +765,7 @@ const styles = StyleSheet.create({
   } as any,
   drawerItem: {
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md + 2,
+    paddingVertical: Spacing.lg,
   },
   drawerItemInner: {
     flexDirection: 'row',
@@ -844,7 +844,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
-    marginTop: 2,
+    marginTop: Spacing.xs,
   },
 
   // ── Empty State ────────────────────────────────────────────────────────

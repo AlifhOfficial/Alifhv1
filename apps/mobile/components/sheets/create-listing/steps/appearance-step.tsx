@@ -11,7 +11,7 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Fonts, Typography, Colors, Spacing, Radius, type ColorPalette } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, VehicleColorSwatches, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { BODY_TYPES, EXTERIOR_COLORS, INTERIOR_COLORS } from '@/lib/filter-constants';
 
@@ -48,7 +48,7 @@ function ColorChip({
             styles.colorSwatch,
             {
               backgroundColor: color.hex,
-              borderColor: color.hex === '#FFFFFF' ? themeColors.border : 'transparent',
+              borderColor: color.hex === VehicleColorSwatches.exterior.white ? themeColors.border : 'transparent',
             },
           ]}
         />

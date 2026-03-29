@@ -612,7 +612,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
 
           {/* Search Input */}
           <View style={[styles.searchInputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Ionicons name="search" size={Spacing.xl} color={colors.labelQuaternary} style={{ marginTop: 2 }} />
+            <Ionicons name="search" size={Spacing.xl} color={colors.labelQuaternary} style={{ marginTop: Spacing.xs }} />
             <BottomSheetTextInput
               style={[styles.searchInput, { color: colors.label }]}
               placeholder={'Search by keyword, make, model, dealer...\ne.g. "Audi RS5", "accident free", "sunroof"'}
@@ -919,9 +919,9 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     ...Typography.subhead,
-    lineHeight: 22,
-    paddingTop: 0,
-    paddingBottom: 0,
+    lineHeight: Typography.subhead.lineHeight,
+    paddingTop: Spacing.none,
+    paddingBottom: Spacing.none,
     minHeight: Spacing["5xl"],
     textAlignVertical: 'top',
   },

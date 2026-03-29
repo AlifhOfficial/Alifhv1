@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   listContainer: {
-    gap: 0,
+    gap: Spacing.none,
   },
   specRow: {
     flexDirection: 'row',

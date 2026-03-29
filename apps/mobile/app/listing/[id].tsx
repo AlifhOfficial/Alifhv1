@@ -13,6 +13,7 @@ import { useLocalSearchParams, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors, Spacing, Sizes } from '@/constants/theme';
+import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { useTheme } from '@/context/theme-context';
 import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
 import { FloatingListingActions } from '@/components/listings';
@@ -25,6 +26,7 @@ export default function ListingDetailScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+  const headerInset = getMobileHeaderContentInset(insets.top);
   
   // Data fetching via React Query (caching, dedup, view tracking)
   const { listing, isLoading, isRefreshing, error, refresh } = useListingDetail({
@@ -86,12 +88,16 @@ export default function ListingDetailScreen() {
           headerShown: false,
         }}
       />
+      <MobileHeader title="" showBackButton />
 
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: insets.bottom + Spacing['3xl'] + Sizes.actionButtonLg + Spacing['3xl'] },
+          {
+            paddingTop: headerInset,
+            paddingBottom: insets.bottom + Spacing['3xl'] + Sizes.actionButtonLg + Spacing['3xl'],
+          },
         ]}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={32}
@@ -149,7 +155,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: Spacing['5xl'] * 2,
+    paddingTop: Spacing['5xl'],
     paddingHorizontal: Spacing.lg,
   },
 });

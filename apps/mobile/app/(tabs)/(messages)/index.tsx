@@ -263,7 +263,7 @@ export default function MessagesScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <MobileHeader title="Chats" />
+      <MobileHeader title="Chats" fadeHeight={insets.top + Spacing['5xl']} />
       <FlatList
         data={listItems}
         renderItem={renderItem}

@@ -7,8 +7,8 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { memo, useCallback } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { MessageCircle, Calendar1 } from 'lucide-react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Calendar1, MessageCircle, Phone } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
@@ -41,57 +41,70 @@ export const SellerActions = memo(function SellerActions({
   
   return (
     <View style={styles.container}>
-      {/* CTA Row */}
-      <View style={styles.ctaRow}>
-        {/* Primary CTA - Chat */}
-        <HapticPressable
-          onPress={handleChat}
-          disabled={isChatLoading}
-          style={[
-            styles.button,
-            { backgroundColor: colors.primary },
-          ]}
-        >
-          {isChatLoading ? (
-            <ActivityIndicator size="small" color={colors.primaryForeground} />
+      <HapticPressable
+        onPress={handleChat}
+        disabled={isChatLoading}
+        style={[
+          styles.button,
+          styles.primaryButton,
+          { backgroundColor: colors.primary, borderColor: colors.primary },
+        ]}
+      >
+        {({ pressed }) =>
+          isChatLoading ? (
+            <ActivityIndicator size="small" color={colors.background} />
           ) : (
-            <>
-              <MessageCircle size={Sizes.iconSm} color={colors.primaryForeground} />
-              <Text variant="body" style={{ color: colors.primaryForeground }}>
+            <View style={[styles.buttonInner, { opacity: pressed ? 0.78 : 1 }]}>
+              <MessageCircle size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
+              <Text variant="bodyEmphasized" style={{ color: colors.primaryForeground }}>
                 Chat
               </Text>
-            </>
+            </View>
+          )
+        }
+      </HapticPressable>
+
+      {(seller.isDealer || seller.phone) && (
+        <View style={styles.supportingRow}>
+          {seller.isDealer && (
+            <HapticPressable
+              onPress={handleBookViewing}
+              style={[
+                styles.supportingAction,
+                { backgroundColor: colors.surfaceSecondary, borderColor: colors.outline },
+              ]}
+            >
+              {({ pressed }) => (
+                <View style={[styles.supportingInner, { opacity: pressed ? 0.72 : 1 }]}>
+                  <Calendar1 size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
+                  <Text variant="subhead" style={{ color: colors.label }}>
+                    Book
+                  </Text>
+                </View>
+              )}
+            </HapticPressable>
           )}
-        </HapticPressable>
 
-        {/* Secondary CTA - Book Viewing (dealers only) */}
-        {seller.isDealer && (
-          <HapticPressable
-            onPress={handleBookViewing}
-            style={[
-              styles.button,
-              {
-                backgroundColor: colors.surfaceSecondary,
-                borderWidth: 1,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <Calendar1 size={Sizes.iconSm} color={colors.label} />
-            <Text variant="body" style={{ color: colors.label }}>
-              Book
-            </Text>
-          </HapticPressable>
-        )}
-      </View>
-
-      {/* Phone Number Link */}
-      {seller.phone && (
-        <HapticPressable onPress={handleShowPhone} hitSlop={Layout.hitSlopSmall}>
-          <Text variant="body" style={{ textAlign: 'center' }} tone="secondary">
-            Show phone number
-          </Text>
-        </HapticPressable>
+          {seller.phone && (
+            <HapticPressable
+              onPress={handleShowPhone}
+              hitSlop={Layout.hitSlopSmall}
+              style={[
+                styles.supportingAction,
+                { backgroundColor: colors.surfaceSecondary, borderColor: colors.outline },
+              ]}
+            >
+              {({ pressed }) => (
+                <View style={[styles.supportingInner, { opacity: pressed ? 0.72 : 1 }]}>
+                  <Phone size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
+                  <Text variant="subhead" style={{ color: colors.label }}>
+                    Phone
+                  </Text>
+                </View>
+              )}
+            </HapticPressable>
+          )}
+        </View>
       )}
     </View>
   );
@@ -99,19 +112,40 @@ export const SellerActions = memo(function SellerActions({
 
 const styles = StyleSheet.create({
   container: {
-    gap: Spacing.md,
-  },
-  ctaRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
+    gap: Spacing.lg,
   },
   button: {
-    flex: 1,
+    minHeight: Sizes.actionButtonLg,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.lg,
+  },
+  primaryButton: {
+    width: '100%',
+  },
+  buttonInner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    height: Sizes.actionButtonLg,
-    borderRadius: Radius.lg,
+  },
+  supportingRow: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  supportingAction: {
+    flex: 1,
+    minHeight: Sizes.actionButtonLg,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.md,
+  },
+  supportingInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
   },
 });

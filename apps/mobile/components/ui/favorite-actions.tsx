@@ -130,7 +130,7 @@ export function useFavoriteActions(
       options.onFavoritePress(listingId);
       // Still fire effects when toggling ON
       if (!isFavorite) {
-        favConfetti.fire({ colors: FAVORITE_COLORS, count: 10 });
+        favConfetti.fire({ colors: [...FAVORITE_COLORS], count: 10 });
       }
       return;
     }
@@ -143,7 +143,7 @@ export function useFavoriteActions(
 
     // Fire effects before toggle (for turning ON)
     if (!isFavorite) {
-      favConfetti.fire({ colors: FAVORITE_COLORS, count: 10 });
+      favConfetti.fire({ colors: [...FAVORITE_COLORS], count: 10 });
     }
 
     favoriteState.toggleFavorite().catch((err) => {
@@ -169,7 +169,7 @@ export function useFavoriteActions(
     if (options.onSuperlikePress) {
       options.onSuperlikePress(listingId);
       if (!isSuperliked) {
-        superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
+        superConfetti.fire({ colors: [...SUPERLIKE_COLORS], count: 14 });
       }
       return;
     }
@@ -214,7 +214,7 @@ export function useFavoriteActions(
 
   const handleConfirmSuperlike = useCallback(() => {
     setShowConfirmSheet(false);
-    superConfetti.fire({ colors: SUPERLIKE_COLORS, count: 14 });
+    superConfetti.fire({ colors: [...SUPERLIKE_COLORS], count: 14 });
     favoriteState.toggleSuperlike().catch((err) => {
       if (err?.message === 'AUTH_REQUIRED') {
         showAuthSheet('saved');

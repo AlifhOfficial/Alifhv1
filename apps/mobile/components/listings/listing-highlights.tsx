@@ -68,7 +68,8 @@ export const ListingHighlights = memo(function ListingHighlights({
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.sm,
   },
   scrollContent: {
     flexDirection: 'row',

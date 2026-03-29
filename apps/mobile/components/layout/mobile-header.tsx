@@ -10,20 +10,29 @@ import { useTheme } from '@/context/theme-context';
 
 export const MOBILE_HEADER_BAR_HEIGHT = Sizes.actionButtonLg;
 
-export const getMobileHeaderHeight = (topInset: number) =>
-  topInset + Spacing.xs + MOBILE_HEADER_BAR_HEIGHT + Spacing.sm;
+export const getMobileHeaderHeight = (
+  topInset: number,
+  barHeight: number = MOBILE_HEADER_BAR_HEIGHT,
+) =>
+  topInset + barHeight + Spacing.xs;
 
-export const getMobileHeaderContentInset = (topInset: number) =>
-  getMobileHeaderHeight(topInset);
+export const getMobileHeaderContentInset = (
+  topInset: number,
+  barHeight: number = MOBILE_HEADER_BAR_HEIGHT,
+) =>
+  getMobileHeaderHeight(topInset, barHeight);
 
 interface MobileHeaderProps {
-  title: string;
-  subtitle?: string;
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
   left?: React.ReactNode;
   right?: React.ReactNode;
+  barHeight?: number;
+  sideSlotWidth?: number;
   showBackButton?: boolean;
   onBackPress?: () => void;
   border?: boolean;
+  fadeHeight?: number;
 }
 
 export function MobileHeader({
@@ -31,9 +40,12 @@ export function MobileHeader({
   subtitle,
   left,
   right,
+  barHeight = MOBILE_HEADER_BAR_HEIGHT,
+  sideSlotWidth = Sizes.actionButtonLg + Spacing.lg,
   showBackButton = false,
   onBackPress,
   border = false,
+  fadeHeight,
 }: MobileHeaderProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -62,13 +74,13 @@ export function MobileHeader({
         {
           borderBottomColor: colors.border,
           borderBottomWidth: border ? StyleSheet.hairlineWidth : 0,
-          paddingTop: insets.top + Spacing.xs,
+          paddingTop: insets.top,
         },
       ]}
     >
-      <EdgeFade edge="top" height={getMobileHeaderHeight(insets.top) + Layout.topGradientExtension} />
-      <View style={styles.row}>
-        <View style={styles.leftSlot}>
+      <EdgeFade edge="top" height={fadeHeight ?? insets.top + barHeight} />
+      <View style={[styles.row, { minHeight: barHeight }]}>
+        <View style={[styles.leftSlot, { width: sideSlotWidth }]}>
           {showBackButton ? (
             <Bubble
               onPress={handleBack}
@@ -80,18 +92,26 @@ export function MobileHeader({
           ) : left}
         </View>
 
-        <View pointerEvents="none" style={styles.titleSlot}>
-          <Text variant="title3Emphasized" numberOfLines={1} style={{ color: colors.label }}>
-            {title}
-          </Text>
-          {subtitle ? (
-            <Text variant="subhead" tone="secondary" numberOfLines={1}>
-              {subtitle}
+        <View pointerEvents="none" style={[styles.titleSlot, { left: sideSlotWidth, right: sideSlotWidth }]}>
+          {typeof title === 'string' ? (
+            <Text variant="title3Emphasized" numberOfLines={1} style={{ color: colors.label }}>
+              {title}
             </Text>
+          ) : (
+            title
+          )}
+          {subtitle ? (
+            typeof subtitle === 'string' ? (
+              <Text variant="subhead" tone="secondary" numberOfLines={1}>
+                {subtitle}
+              </Text>
+            ) : (
+              subtitle
+            )
           ) : null}
         </View>
 
-        <View style={styles.rightSlot}>{right}</View>
+        <View style={[styles.rightSlot, { width: sideSlotWidth }]}>{right}</View>
       </View>
     </View>
   );
@@ -108,20 +128,16 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.sm,
   },
   row: {
-    minHeight: MOBILE_HEADER_BAR_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
   },
   leftSlot: {
-    width: Sizes.actionButtonLg + Spacing.lg,
     alignItems: 'flex-start',
     justifyContent: 'center',
     zIndex: 2,
   },
   titleSlot: {
     position: 'absolute',
-    left: Sizes.actionButtonLg + Spacing.lg,
-    right: Sizes.actionButtonLg + Spacing.lg,
     top: 0,
     bottom: 0,
     gap: Spacing.xs,
@@ -130,7 +146,6 @@ const styles = StyleSheet.create({
   },
   rightSlot: {
     marginLeft: 'auto',
-    width: Sizes.actionButtonLg + Spacing.lg,
     alignItems: 'flex-end',
     justifyContent: 'center',
     zIndex: 2,

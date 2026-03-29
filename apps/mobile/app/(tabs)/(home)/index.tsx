@@ -36,7 +36,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
   const { stats, isLoading, refresh } = useUserDashboardStats();
-  const topSpacerHeight = getMobileHeaderContentInset(insets.top) + Spacing['3xl'];
+  const topSpacerHeight = getMobileHeaderContentInset(insets.top) + Spacing['5xl'] * 2 + Spacing['3xl'] * 2;
   const bottomInset = getTabBarContentInset(insets.bottom, Spacing['3xl']);
 
   const handleRefresh = useCallback(async () => {

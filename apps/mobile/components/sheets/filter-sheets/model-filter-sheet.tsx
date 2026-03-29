@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     ...Typography.subhead,
-    paddingVertical: 0,
+    paddingVertical: Spacing.none,
   },
   listContainer: {
     flex: 1,

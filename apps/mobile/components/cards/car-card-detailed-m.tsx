@@ -145,6 +145,14 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
+      {sellerData && (
+        <View style={styles.topSeller}>
+          <HapticPressable onPress={handleTalkToSeller}>
+            <SellerCard sellerData={sellerData} />
+          </HapticPressable>
+        </View>
+      )}
+
       {/* ── Image Gallery — 40 % of viewport ── */}
       <ImageGallery images={listing.images} title={carTitle} />
 
@@ -181,15 +189,21 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
 
         {showDeferredSections ? (
           <>
-            {/* 3. Description (optional) */}
-            {listing.description && (
-              <ListingDescription
-                description={listing.description}
-                onReadMore={openDescSheet}
-              />
-            )}
+            <HapticPressable
+              onPress={handleTalkToSeller}
+              style={styles.contactRow}
+            >
+              {({ pressed }) => (
+                <View style={[styles.contactRowInner, { opacity: pressed ? 0.72 : 1 }]}>
+                  <Text variant="body" tone="primary">
+                    Talk to seller
+                  </Text>
+                  <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />
+                </View>
+              )}
+            </HapticPressable>
 
-            {/* 4. Specifications */}
+            {/* 3. Specifications */}
             <ListingSpecs
               condition={listing.condition}
               bodyType={listing.bodyType}
@@ -206,6 +220,14 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
               onViewAll={openSpecsSheet}
             />
 
+            {/* 4. Description (optional) */}
+            {listing.description && (
+              <ListingDescription
+                description={listing.description}
+                onReadMore={openDescSheet}
+              />
+            )}
+
             {/* 5. Features / Extras */}
             <ListingFeatures extras={listing.extras} onViewAll={openFeaturesSheet} />
 
@@ -216,23 +238,6 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
               publishedAt={listing.publishedAt}
               originalPublishedAt={listing.originalPublishedAt}
             />
-
-            {/* 7. Seller Section — merged profile + contact action */}
-            {sellerData && (
-              <HapticPressable onPress={handleTalkToSeller}>
-                <SellerCard
-                  sellerData={sellerData}
-                  action={
-                    <View style={styles.contactAction}>
-                      <Text variant="body" tone="primary">
-                        Contact
-                      </Text>
-                      <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />
-                    </View>
-                  }
-                />
-              </HapticPressable>
-            )}
           </>
         ) : null}
       </View>
@@ -328,12 +333,19 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing['3xl'],
     gap: Spacing['2xl'],
   },
-
-  /* Contact action */
-  contactAction: {
+  topSeller: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.lg,
+  },
+  contactRow: {
+    paddingVertical: Spacing.sm,
+  },
+  contactRowInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs / 2, // 2
+    justifyContent: 'space-between',
+    gap: Spacing.md,
   },
 
   /* Skeleton helpers */

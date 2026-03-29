@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     top: Spacing.xs,
     left: Spacing.xs,
     paddingHorizontal: Sizes.badgePaddingH,
-    paddingVertical: 2,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.sm,
   },
   dragHandle: {

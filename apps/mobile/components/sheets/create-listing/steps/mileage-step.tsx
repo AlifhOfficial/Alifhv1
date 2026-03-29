@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     ...Typography.body,
-    paddingVertical: 0,
+    paddingVertical: Spacing.none,
   },
   formattedRow: {
     flexDirection: 'row',

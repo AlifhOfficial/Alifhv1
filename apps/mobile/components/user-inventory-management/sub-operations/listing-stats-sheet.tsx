@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   statsList: {
-    gap: 0,
+    gap: Spacing.none,
   },
   metricsGrid: {
     flexDirection: 'row',

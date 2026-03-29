@@ -423,7 +423,7 @@ export function BookingsScreen() {
             styles.glass,
             {
               width: FAB_SIZE,
-              paddingHorizontal: 0,
+              paddingHorizontal: Spacing.none,
               backgroundColor: showFilterDrawer ? colors.primary : colors.background,
               borderColor: showFilterDrawer ? colors.primary : colors.border,
             },

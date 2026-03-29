@@ -4,7 +4,7 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -47,8 +47,6 @@ function formatTime(dateStr: string): string {
 const AVATAR_SIZE = Sizes.avatarMd;
 const ROW_H_PAD = Layout.screenPadding;
 const ROW_GAP = Spacing.md;
-const INDENT = ROW_H_PAD + AVATAR_SIZE + ROW_GAP;
-
 export function ConversationGroup({
   name,
   avatarUrl,
@@ -187,16 +185,6 @@ export function ConversationGroup({
           </View>
         )}
       </HapticPressable>
-
-      {/* Hairline separator indented past avatar */}
-      <View
-        style={{
-          height: StyleSheet.hairlineWidth,
-          marginLeft: INDENT,
-          backgroundColor: colors.border,
-        }}
-      />
-
       {/* Sub-items for multi-conversation groups */}
       {isMulti && isExpanded && (
         <Animated.View
@@ -204,9 +192,9 @@ export function ConversationGroup({
           exiting={FadeOut.duration(Timing.avatarTransition)}
           layout={LinearTransition}
           style={{
-            marginLeft: INDENT,
-            borderLeftWidth: StyleSheet.hairlineWidth,
-            borderLeftColor: colors.border,
+            marginLeft: ROW_H_PAD + AVATAR_SIZE / 2,
+            borderLeftWidth: 1,
+            borderLeftColor: colors.separator,
           }}
         >
           {conversations.map((c, i) => {
@@ -220,7 +208,7 @@ export function ConversationGroup({
                 <HapticPressable
                   onPress={() => onSelect(c)}
                   android_ripple={{ color: colors.surfaceSecondary }}
-                  style={{ paddingLeft: Spacing.md, paddingRight: ROW_H_PAD }}
+                  style={{ paddingLeft: AVATAR_SIZE / 2 + ROW_GAP, paddingRight: ROW_H_PAD }}
                 >
                   {({ pressed }) => (
                     <View
@@ -283,7 +271,6 @@ export function ConversationGroup({
               </Animated.View>
             );
           })}
-          <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border }} />
         </Animated.View>
       )}
     </View>

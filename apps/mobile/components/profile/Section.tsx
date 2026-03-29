@@ -69,6 +69,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   noPadding: {
-    padding: 0,
+    padding: Spacing.none,
   },
 });

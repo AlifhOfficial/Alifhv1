@@ -7,6 +7,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 
 import { Colors, Radius, Shadows, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -29,6 +30,8 @@ interface PillProps {
 interface EdgeFadeProps {
   edge: 'top' | 'bottom';
   height: number;
+  blur?: boolean;
+  blurIntensity?: number;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -96,35 +99,44 @@ export function Pill({ children, style }: PillProps) {
   );
 }
 
-export function EdgeFade({ edge, height, style }: EdgeFadeProps) {
+export function EdgeFade({ edge, height, blur = false, blurIntensity = 60, style }: EdgeFadeProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const isTop = edge === 'top';
+  const transparentBackground =
+    colors.background.startsWith('#') && colors.background.length === 7
+      ? `${colors.background}00`
+      : colors.background;
 
   return (
-    <LinearGradient
+    <View
       pointerEvents="none"
-      colors={
-        isTop
-          ? [
-              colors.background,
-              'transparent',
-            ]
-          : [
-              colors.background,
-              'transparent',
-            ]
-      }
-      locations={[0, 1]}
-      start={{ x: 0, y: isTop ? 0 : 1 }}
-      end={{ x: 0, y: isTop ? 1 : 0 }}
       style={[
         styles.fade,
         isTop ? styles.fadeTop : styles.fadeBottom,
         { height },
         style,
       ]}
-    />
+    >
+      {blur && (
+        <BlurView
+          tint={colorScheme === 'dark' ? 'systemUltraThinMaterialDark' : 'systemUltraThinMaterialLight'}
+          intensity={blurIntensity}
+          style={StyleSheet.absoluteFill}
+        />
+      )}
+      <LinearGradient
+        colors={
+          isTop
+            ? [colors.background, transparentBackground]
+            : [colors.background, transparentBackground]
+        }
+        locations={[0, 1]}
+        start={{ x: 0, y: isTop ? 0 : 1 }}
+        end={{ x: 0, y: isTop ? 1 : 0 }}
+        style={StyleSheet.absoluteFill}
+      />
+    </View>
   );
 }
 

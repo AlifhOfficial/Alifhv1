@@ -11,7 +11,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { Spacing, Layout } from '@/constants/theme';
+import { Layout, SCREEN_WIDTH, Spacing } from '@/constants/theme';
 
 /**
  * Time periods for contextual greetings
@@ -120,6 +120,7 @@ function getDailyIndex(options: unknown[]): number {
 export function GreetingNote() {
   const { colors } = useTheme();
   const { user, isAuthenticated } = useAuth();
+  const greetingVariant = SCREEN_WIDTH <= 390 ? 'title1Emphasized' : 'largeTitleEmphasized';
   
   const timePeriod = getTimePeriod();
   const firstName = getFirstName(user);
@@ -160,12 +161,12 @@ export function GreetingNote() {
   return (
     <View style={styles.container}>
       <View style={styles.greetingRow}>
-        <Text variant="largeTitleEmphasized" style={{ color: colors.label }}>
+        <Text variant={greetingVariant} style={{ color: colors.label }}>
           {content.greeting}
           {content.name ? ', ' : ''}
         </Text>
         {content.name && (
-          <Text variant="largeTitleEmphasized" style={{ color: tone.color }}>
+          <Text variant={greetingVariant} style={{ color: tone.color }}>
             {content.name}
           </Text>
         )}

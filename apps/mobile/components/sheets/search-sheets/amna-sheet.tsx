@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     ...Typography.subhead,
-    lineHeight: 22,
+    lineHeight: Typography.subhead.lineHeight,
     minHeight: Spacing["5xl"],
     textAlignVertical: 'top',
   },

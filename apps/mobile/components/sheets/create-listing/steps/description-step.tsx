@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     padding: Spacing.md,
     ...Typography.body,
-    lineHeight: 24,
+    lineHeight: Typography.body.lineHeight,
     textAlignVertical: 'top',
   },
   charCount: {

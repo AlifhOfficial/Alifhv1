@@ -501,7 +501,7 @@ export function CarCardMSkeleton() {
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {/* Image */}
       <View style={styles.imageContainer}>
-        <Skeleton width="100%" height={Spacing['5xl'] * 4} borderRadius={0} />
+        <Skeleton width="100%" height={Spacing['5xl'] * 4} borderRadius={Radius['2xl']} />
       </View>
 
       {/* Content */}
@@ -563,16 +563,14 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     aspectRatio: IMAGE_ASPECT_RATIO,
-    borderTopLeftRadius: Radius['2xl'],
-    borderTopRightRadius: Radius['2xl'],
+    borderRadius: Radius['2xl'],
     borderCurve: 'continuous',
     overflow: 'hidden',
   },
   image: {
     width: '100%',
     height: '100%',
-    borderTopLeftRadius: Radius['2xl'],
-    borderTopRightRadius: Radius['2xl'],
+    borderRadius: Radius['2xl'],
   },
   imagePlaceholder: {
     flex: 1,

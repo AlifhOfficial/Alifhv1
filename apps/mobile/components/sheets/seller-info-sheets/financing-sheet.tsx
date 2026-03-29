@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     ...Typography.headline,
-    padding: 0,
+    padding: Spacing.none,
   },
   disclaimer: {
     flexDirection: 'row',
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   },
   disclaimerText: {
     flex: 1,
-    lineHeight: 18,
+    lineHeight: Typography.subhead.lineHeight,
   },
   outputContainer: {
     padding: Spacing.lg,

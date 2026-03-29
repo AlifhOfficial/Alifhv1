@@ -19,7 +19,7 @@ import { format, isToday, isYesterday, isThisWeek, isSameDay } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { MobileHeader, getMobileHeaderHeight } from '@/components/layout';
+import { MobileHeader } from '@/components/layout';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
@@ -383,18 +383,19 @@ export function ChatWindow({
           ...nativeHeaderOptions,
         }}
       />
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      behavior="padding"
+      keyboardVerticalOffset={0}
+    >
     <MobileHeader
       title={displayName}
       subtitle={listingTitle ? `${activityText}  ·  ${listingTitle}` : activityText}
       showBackButton
       onBackPress={onBack}
       right={renderHeaderRight()}
+      fadeHeight={insets.top + Sizes.actionButtonLg + Spacing['5xl']}
     />
-    <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: colors.background }]}
-      behavior="padding"
-      keyboardVerticalOffset={getMobileHeaderHeight(insets.top)}
-    >
       {/* Messages List with horizontal swipe for timestamps */}
       <GestureDetector gesture={swipeGesture}>
         <View style={styles.messagesArea}>
@@ -456,6 +457,7 @@ export function ChatWindow({
                 onEndReached={handleEndReached}
                 onEndReachedThreshold={0.3}
                 showsVerticalScrollIndicator={false}
+                alwaysBounceVertical
                 keyboardDismissMode="interactive"
                 keyboardShouldPersistTaps="handled"
               />
@@ -485,7 +487,7 @@ export function ChatWindow({
         onConfirm={handleConfirmLocation}
       />
     </KeyboardAvoidingView>
-    </>
+  </>
   );
 }
 
@@ -502,7 +504,6 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH + PANEL_WIDTH,
   },
   messagesContent: {
-    flexGrow: 1,
     paddingBottom: Spacing.md,
     paddingTop: Spacing.md,
   },

@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
   },
   actionList: {
-    gap: 0,
+    gap: Spacing.none,
   },
   actionRow: {
     flexDirection: 'row',

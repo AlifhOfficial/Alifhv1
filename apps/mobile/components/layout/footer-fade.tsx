@@ -1,18 +1,32 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useSegments } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EdgeFade } from '@/components/ui';
 import { Layout, ZIndex } from '@/constants/theme';
 
-export function FooterFade() {
+interface FooterFadeProps {
+  height?: number;
+}
+
+export function FooterFade({ height }: FooterFadeProps) {
   const insets = useSafeAreaInsets();
+  const segments = useSegments();
+  const hideForMessages =
+    segments.includes('(messages)') ||
+    segments.includes('chat') ||
+    segments.some((segment) => segment.startsWith('[conversationId]'));
+
+  if (hideForMessages) {
+    return null;
+  }
 
   return (
     <View pointerEvents="none" style={styles.container}>
       <EdgeFade
         edge="bottom"
-        height={insets.bottom + Layout.bottomGradientExtension}
+        height={height ?? insets.bottom + Layout.bottomGradientExtension}
       />
     </View>
   );

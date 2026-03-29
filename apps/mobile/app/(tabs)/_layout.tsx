@@ -10,8 +10,9 @@ import { View, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router/tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, MessageCircle, LayoutGrid } from 'lucide-react-native';
+import { ArrowUpDown, Home, LayoutGrid, Menu, MessageCircle } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
+import { useSearch } from '@/context/search-context';
 import { Colors, Shadows, Sizes, Spacing, Radius, ZIndex } from '@/constants/theme';
 
 const TAB_CONFIG = [
@@ -26,8 +27,11 @@ const TAB_WIDTH = Sizes.actionButtonLg + Spacing.md;
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const { colorScheme } = useTheme();
+  const { getActiveFilterCount, sortBy, triggerBrowseDrawer, triggerBrowseSort } = useSearch();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+  const isBrowseTabActive = state.routes[state.index]?.name === '(browse)';
+  const activeFilterCount = getActiveFilterCount();
 
   return (
     <View
@@ -37,52 +41,105 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
       ]}
       pointerEvents="box-none"
     >
-      <View
-        style={[
-          styles.pill,
-          {
-            backgroundColor: colors.background,
-            borderColor: colors.border,
-            shadowColor: colors.black,
-          },
-        ]}
-      >
-        {TAB_CONFIG.map((tab, index) => {
-          const focused = state.index === index;
-          const Icon = tab.icon;
-          return (
-            <HapticPressable
-              key={tab.name}
-              onPress={() => {
-                const event = navigation.emit({
-                  type: 'tabPress',
-                  target: state.routes[index].key,
-                  canPreventDefault: true,
-                });
-                if (!event.defaultPrevented) {
-                  navigation.navigate(state.routes[index].name);
-                }
-              }}
-              style={[
-                styles.tabBtn,
-                focused && {
-                  backgroundColor: colors.fill,
-                  borderRadius: Radius.full,
-                },
-              ]}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: focused }}
-              accessibilityLabel={tab.label}
-            >
-              <Icon
-                size={Sizes.iconMd}
-                color={focused ? colors.label : colors.labelSecondary}
-                strokeWidth={3.2}
-                fill={tab.name === '(home)' || focused ? (focused ? colors.label : colors.labelSecondary) : 'transparent'}
-              />
-            </HapticPressable>
-          );
-        })}
+      <View style={styles.barRow}>
+        {isBrowseTabActive ? (
+          <HapticPressable
+            onPress={triggerBrowseDrawer}
+            style={[
+              styles.sideBtn,
+              styles.shell,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+                shadowColor: colors.black,
+              },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel="Open browse drawer"
+          >
+            <Menu size={Sizes.iconMd} color={colors.label} strokeWidth={2.8} />
+            {activeFilterCount > 0 ? (
+              <View style={[styles.statusDot, { backgroundColor: colors.labelQuaternary, borderColor: colors.surface }]} />
+            ) : null}
+          </HapticPressable>
+        ) : (
+          <View style={styles.sidePlaceholder} />
+        )}
+
+        <View
+          style={[
+            styles.pill,
+            styles.shell,
+            {
+              backgroundColor: colors.background,
+              borderColor: colors.border,
+              shadowColor: colors.black,
+            },
+          ]}
+        >
+          {TAB_CONFIG.map((tab, index) => {
+            const focused = state.index === index;
+            const Icon = tab.icon;
+            return (
+              <HapticPressable
+                key={tab.name}
+                onPress={() => {
+                  const event = navigation.emit({
+                    type: 'tabPress',
+                    target: state.routes[index].key,
+                    canPreventDefault: true,
+                  });
+                  if (!event.defaultPrevented) {
+                    navigation.navigate(state.routes[index].name);
+                  }
+                }}
+                style={[
+                  styles.tabBtn,
+                  focused && {
+                    backgroundColor: colors.fill,
+                    borderRadius: Radius.full,
+                  },
+                ]}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: focused }}
+                accessibilityLabel={tab.label}
+              >
+                <Icon
+                  size={Sizes.iconMd}
+                  color={focused ? colors.label : colors.labelSecondary}
+                  strokeWidth={3.2}
+                  fill={tab.name === '(home)' || focused ? (focused ? colors.label : colors.labelSecondary) : 'transparent'}
+                />
+              </HapticPressable>
+            );
+          })}
+        </View>
+
+        {isBrowseTabActive ? (
+          <HapticPressable
+            onPress={triggerBrowseSort}
+            style={[
+              styles.sideBtn,
+              styles.shell,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+                shadowColor: colors.black,
+              },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel="Open browse sort"
+          >
+            <View style={styles.sideIconWrap}>
+              <ArrowUpDown size={Sizes.iconMd} color={colors.label} strokeWidth={2.8} />
+              {sortBy !== 'relevance' ? (
+                <View style={[styles.statusDot, { backgroundColor: colors.labelQuaternary, borderColor: colors.surface }]} />
+              ) : null}
+            </View>
+          </HapticPressable>
+        ) : (
+          <View style={styles.sidePlaceholder} />
+        )}
       </View>
     </View>
   );
@@ -112,14 +169,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: ZIndex.overlay + 1,
   },
+  barRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  shell: {
+    borderWidth: 1,
+    ...Shadows.lg,
+  },
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: Radius.full,
-    borderWidth: 1,
     padding: PILL_PADDING,
     gap: PILL_PADDING,
-    ...Shadows.lg,
   },
   tabBtn: {
     width: TAB_WIDTH,
@@ -127,5 +191,32 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  sideBtn: {
+    width: TAB_WIDTH,
+    height: TAB_HEIGHT,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  sidePlaceholder: {
+    width: TAB_WIDTH,
+    height: TAB_HEIGHT,
+  },
+  sideIconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Sizes.iconMd,
+    height: Sizes.iconMd,
+  },
+  statusDot: {
+    position: 'absolute',
+    top: -3,
+    right: -3,
+    width: 9,
+    height: 9,
+    borderRadius: 4.5,
+    borderWidth: 1.5,
   },
 });

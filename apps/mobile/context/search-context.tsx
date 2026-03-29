@@ -116,6 +116,14 @@ interface SearchContextValue {
   triggerScrollToTop: () => void;
   /** Subscribe to scroll to top events (for browse screen) */
   subscribeToScrollToTop: (callback: () => void) => () => void;
+  /** Trigger opening the browse drawer from shared UI like the tab bar */
+  triggerBrowseDrawer: () => void;
+  /** Subscribe to browse drawer open events */
+  subscribeToBrowseDrawer: (callback: () => void) => () => void;
+  /** Trigger opening the browse sort sheet from shared UI like the tab bar */
+  triggerBrowseSort: () => void;
+  /** Subscribe to browse sort open events */
+  subscribeToBrowseSort: (callback: () => void) => () => void;
 }
 
 const SearchContext = createContext<SearchContextValue | undefined>(undefined);
@@ -129,6 +137,8 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const sortListenersRef = useRef<Set<(sort: SearchSortOption) => void>>(new Set());
   const filterListenersRef = useRef<Set<(params: FilterParams) => void>>(new Set());
   const scrollToTopListenersRef = useRef<Set<() => void>>(new Set());
+  const browseDrawerListenersRef = useRef<Set<() => void>>(new Set());
+  const browseSortListenersRef = useRef<Set<() => void>>(new Set());
 
   const applySearch = useCallback((params: SearchParams) => {
     setSearchParams(params);
@@ -471,6 +481,28 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const triggerBrowseDrawer = useCallback(() => {
+    browseDrawerListenersRef.current.forEach((listener) => listener());
+  }, []);
+
+  const subscribeToBrowseDrawer = useCallback((callback: () => void) => {
+    browseDrawerListenersRef.current.add(callback);
+    return () => {
+      browseDrawerListenersRef.current.delete(callback);
+    };
+  }, []);
+
+  const triggerBrowseSort = useCallback(() => {
+    browseSortListenersRef.current.forEach((listener) => listener());
+  }, []);
+
+  const subscribeToBrowseSort = useCallback((callback: () => void) => {
+    browseSortListenersRef.current.add(callback);
+    return () => {
+      browseSortListenersRef.current.delete(callback);
+    };
+  }, []);
+
   // Lock/unlock filters (for dedicated screens like BLK)
   const lockFilter = useCallback((key: keyof FilterParams) => {
     lockedFiltersRef.current.add(key);
@@ -508,6 +540,10 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         isFilterLocked,
         triggerScrollToTop,
         subscribeToScrollToTop,
+        triggerBrowseDrawer,
+        subscribeToBrowseDrawer,
+        triggerBrowseSort,
+        subscribeToBrowseSort,
       }}
     >
       {children}

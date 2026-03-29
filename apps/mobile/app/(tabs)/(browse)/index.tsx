@@ -8,7 +8,7 @@
 
 import { Text } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl, Platform } from 'react-native';
+import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,7 +36,7 @@ import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/
 import { searchApi, type ListingCard, type SearchParams } from '@/lib/search-api';
 import { queryKeys } from '@/lib/query-client';
 import { consumeDataReady, markInteractionStart, scheduleRenderPerf } from '@/lib/config';
-import { Colors, Spacing, Layout } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type FilterParams } from '@/context/search-context';
 import { getModelsForMake } from '@/lib/filter-constants';
@@ -289,11 +289,6 @@ export default function BrowseScreen() {
   // Stable callbacks for FilterPills (prevents ScrollView scroll-reset)
   const handleSettingsPress = useCallback(() => setSettingsSheetVisible(true), []);
 
-  // Handle Browse pill press - scroll to top
-  const handleBrowsePress = useCallback(() => {
-    scrollRef.current?.scrollToOffset({ offset: 0, animated: true });
-  }, []);
-
   // Handle make filter apply — updates searchParams in context
   const handleMakeApply = useCallback((makes: string[]) => {
     const current = searchParams ?? {};
@@ -414,7 +409,7 @@ export default function BrowseScreen() {
   // ──────────────────────────────────────────────────────────────────────────
 
   const tabBarInset = getTabBarContentInset(insets.bottom);
-  const toolbarBottomOffset = getTabBarOverlayHeight(insets.bottom) + (hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0);
+  const toolbarBottomOffset = getTabBarOverlayHeight(insets.bottom);
 
   const bottomPadding =
     tabBarInset +

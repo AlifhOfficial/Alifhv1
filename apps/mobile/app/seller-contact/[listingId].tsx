@@ -6,15 +6,15 @@
  * UI follows listing detail patterns: unapologetic, content-first, minimal cards.
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text } from '@/components/ui';
 import React, { useState, useCallback, useMemo } from 'react';
 import { StyleSheet, View, Pressable, Alert, FlatList, RefreshControl } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChevronLeft } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Spacing, Colors, Sizes, Layout } from '@/constants/theme';
+import { Spacing, Colors, Layout } from '@/constants/theme';
+import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { useSearch } from '@/context/search-context';
@@ -47,6 +47,7 @@ export default function SellerContactScreen() {
   const { isAuthenticated, user } = useAuth();
   const { applySearch, clearSearch, clearFilterParams } = useSearch();
   const insets = useSafeAreaInsets();
+  const headerInset = getMobileHeaderContentInset(insets.top);
 
   // Data fetching via React Query (shares cache with listing detail screen!)
   const { listing, isLoading, isRefreshing, refresh } = useListingDetail({
@@ -265,7 +266,7 @@ export default function SellerContactScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
-        <Header colors={colors} insets={insets} onBack={handleBack} />
+        <MobileHeader title="Seller" showBackButton onBackPress={handleBack} />
         <SellerContactSkeleton colors={colors} />
       </View>
     );
@@ -276,7 +277,7 @@ export default function SellerContactScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
-        <Header colors={colors} insets={insets} onBack={handleBack} />
+        <MobileHeader title="Seller" showBackButton onBackPress={handleBack} />
         <View style={styles.errorContainer}>
           <Text variant="body" tone="secondary">
             This listing is no longer available or may have expired
@@ -302,10 +303,10 @@ export default function SellerContactScreen() {
           onPress={() => setDescriptionSheetVisible(true)}
         >
           <Text variant="footnoteEmphasized" tone="muted" uppercase>ABOUT</Text>
-          <Text variant="body" tone="secondary" numberOfLines={3}>
+          <Text variant="subhead" tone="secondary" numberOfLines={5}>
             {seller.description}
           </Text>
-          {seller.description.length > 120 && (
+          {seller.description.length > 180 && (
             <Text variant="subhead" tone="primary">Read more</Text>
           )}
         </Pressable>
@@ -395,6 +396,11 @@ export default function SellerContactScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen options={{ headerShown: false }} />
+      <MobileHeader
+        title=""
+        showBackButton
+        onBackPress={handleBack}
+      />
       
       <FlatList
         data={flatListData}
@@ -404,7 +410,7 @@ export default function SellerContactScreen() {
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: sellerContentPaddingTop,
+            paddingTop: headerInset + Spacing.lg,
             paddingBottom: sellerContentPaddingBottom,
             paddingHorizontal: Spacing.lg,
           },
@@ -468,46 +474,12 @@ export default function SellerContactScreen() {
 }
 
 // ============================================================================
-// HEADER COMPONENT
-// ============================================================================
-
-function Header({
-  colors,
-  insets,
-  onBack,
-}: {
-  colors: typeof Colors.light;
-  insets: { top: number };
-  onBack: () => void;
-}) {
-  return (
-    <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
-      <HapticPressable style={styles.backBtn} onPress={onBack} hitSlop={Layout.hitSlop}>
-        <ChevronLeft size={Sizes.iconLg} color={colors.label} />
-      </HapticPressable>
-    </View>
-  );
-}
-
-// ============================================================================
 // STYLES
 // ============================================================================
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.sm,
-    paddingBottom: Spacing.md,
-  },
-  backBtn: {
-    width: Layout.hitTarget,
-    height: Layout.hitTarget,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   content: {
   },

@@ -7,6 +7,7 @@ export const SCREEN_HEIGHT = Dimensions.get('window').height;
 export const BASE_WIDTH = 430;
 export const BASE_HEIGHT = 932;
 const MIN_DEVICE_SCALE = 0.82;
+const MIN_FONT_SCALE = 0.74;
 const MAX_DEVICE_SCALE = 1;
 
 const clamp = (value: number, min: number, max: number) =>
@@ -19,13 +20,19 @@ const getDeviceScale = () => {
   return clamp(blendedRatio, MIN_DEVICE_SCALE, MAX_DEVICE_SCALE);
 };
 
+const getFontDeviceScale = () =>
+  clamp(SCREEN_WIDTH / BASE_WIDTH, MIN_FONT_SCALE, MAX_DEVICE_SCALE);
+
 export const scale = (size: number, factor = 0.86): number => {
   const ratio = getDeviceScale();
   const scaled = size * (1 + (ratio - 1) * factor);
   return Math.round(PixelRatio.roundToNearestPixel(scaled));
 };
 
-export const fontScale = (size: number) => scale(size, 0.62);
+export const fontScale = (size: number): number => {
+  const scaled = size * getFontDeviceScale();
+  return Math.round(PixelRatio.roundToNearestPixel(scaled));
+};
 
 export const Fonts = {
   regular:   '400' as const,
@@ -159,31 +166,31 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     white: '#FFFFFF',
     
     // ── Backgrounds (3-tier hierarchy) ────────────────────────────────────
-    background:          '#FFFFFF',   // Pure white (mirrors dark #000000)
-    backgroundSecondary: '#FAFAFA',   // Near-white step (mirrors dark #1A1A1A)
-    backgroundTertiary:  '#F5F5F5',   // Subtle grey step (mirrors dark #262626)
+    background:          '#FFFFFF',   // Opposite of dark #000000
+    backgroundSecondary: '#F7F7F7',   // Softer light step from dark truth
+    backgroundTertiary:  '#F1F1F1',   // Softer third tier
     
     // ── Surfaces (for elevated/grouped content) ───────────────────────────
-    surface:          '#FFFFFF',   // Pure white surface (mirrors dark #1A1A1A)
-    surfaceSecondary: '#FAFAFA',   // Near-white elevated (mirrors dark #262626)
-    surfaceTertiary:  '#F5F5F5',   // Subtle grey elevated (mirrors dark #333333)
+    surface:          '#FFFFFF',   // Primary elevated light surface
+    surfaceSecondary: '#F7F7F7',   // Softer elevated tier
+    surfaceTertiary:  '#F1F1F1',   // Soft tertiary surface
     
     // ── Text/Labels (4-tier semantic hierarchy) ───────────────────────────
-    label:           palette.label,           // Primary text
-    labelSecondary:  palette.secondaryLabel,  // Secondary text (60% opacity equivalent)
-    labelTertiary:   palette.tertiaryLabel,   // Tertiary text (30% opacity equivalent)
-    labelQuaternary: palette.quaternaryLabel, // Quaternary text (18% opacity equivalent)
-    placeholder:     palette.tertiaryLabel,   // Placeholder text in inputs
+    label:           '#050505',               // Opposite of dark #FAFAFA
+    labelSecondary:  '#525252',              // Opposite of dark #ADADAD
+    labelTertiary:   '#737373',              // Opposite of dark #8C8C8C
+    labelQuaternary: '#949494',              // Opposite of dark #6B6B6B
+    placeholder:     '#737373',              // Mirrors light tertiary label
     
     // ── Borders & Separators ──────────────────────────────────────────────
-    border:    palette.separator,       // Standard separator (translucent)
-    separator: palette.opaqueSeparator, // Opaque separator
-    outline:   palette.gray2,           // Shared outline tone
+    border:    'rgba(0,0,0,0.10)',     // Opposite of dark border
+    separator: '#E1E1E1',              // Softer light separator
+    outline:   '#D2D2D2',              // Softer light outline
     
     // ── Fills (translucent overlays) ──────────────────────────────────────
-    fill:  palette.fill,  // Primary fill
-    fill2: palette.fill2, // Secondary fill
-    fill3: palette.fill3, // Tertiary fill
+    fill:  'rgba(127,127,127,0.18)',
+    fill2: 'rgba(127,127,127,0.14)',
+    fill3: 'rgba(127,127,127,0.10)',
     
     // ── Accent/Primary (brand color) ──────────────────────────────────────
     primary:          palette.blue,           // Primary accent
@@ -200,8 +207,8 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     
     // ── Additional semantic colors ────────────────────────────────────────
     link:     palette.blue,  // Hyperlinks
-    overlay:  'rgba(0,0,0,0.4)',     // Modal/sheet overlay
-    skeleton: palette.gray3, // Skeleton loader
+    overlay:  'rgba(0,0,0,0.4)',
+    skeleton: '#E6E6E6',
     
     // ── App-specific ──────────────────────────────────────────────────────
     favorite: palette.pink,  // Favorite/like indicator
@@ -296,14 +303,14 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
 };
 
 export const Spacing = {
-  xs: scale(4), sm: scale(8), md: scale(12), lg: scale(16),
+  none: 0, xs: scale(4), sm: scale(8), md: scale(12), lg: scale(16),
   xl: scale(20), '2xl': scale(24), '3xl': scale(32), '4xl': scale(40), '5xl': scale(48),
 } as const;
 
 export const Layout = {
   screenPadding: scale(16), tabBarHeight: scale(85),
   headerPadding: scale(8),  headerGap: scale(8),
-  topGradientExtension: scale(60), bottomGradientExtension: scale(30),
+  topGradientExtension: scale(24), bottomGradientExtension: scale(30),
   hitTarget: scale(44), hitTargetSmall: scale(36), hitSlop: scale(10), hitSlopSmall: scale(8),
 } as const;
 
@@ -350,6 +357,10 @@ export const Radius = {
   '3xl': scale(24),
   circle: Sizes.avatarMd / 2,
   full: 9999,
+} as const;
+
+export const Tracking = {
+  tight: 0.3,
 } as const;
 
 /** Stacking layers — use instead of raw zIndex values */
@@ -463,6 +474,62 @@ export const Shadows = {
     shadowOpacity: 0.12,
     shadowRadius: scale(8, 0.45),
     elevation: scale(4, 0.35),
+  },
+} as const;
+
+export const BrandColors = {
+  googleBlue: '#4285F4',
+  googleGreen: '#34A853',
+  googleYellow: '#FBBC05',
+  googleRed: '#EA4335',
+} as const;
+
+export const ConfettiPalettes = {
+  favorite: [
+    '#F43F5E',
+    '#FB7185',
+    '#FF8FA3',
+    '#FF2D55',
+    '#FCA5A5',
+    '#FE6D73',
+  ],
+  superlike: [
+    '#F59E0B',
+    '#FBBF24',
+    '#FCD34D',
+    '#FDE68A',
+    '#F97316',
+    '#FB923C',
+  ],
+} as const;
+
+export const VehicleColorSwatches = {
+  exterior: {
+    white: '#FFFFFF',
+    black: '#000000',
+    silver: '#C0C0C0',
+    grey: '#808080',
+    blue: '#0066CC',
+    red: '#CC0000',
+    green: '#228B22',
+    brown: '#8B4513',
+    beige: '#F5F5DC',
+    gold: '#FFD700',
+    orange: '#FF8C00',
+    yellow: '#FFD700',
+    purple: '#800080',
+    other: '#CCCCCC',
+  },
+  interior: {
+    black: '#1A1A1A',
+    beige: '#F5F5DC',
+    brown: '#8B4513',
+    tan: '#D2B48C',
+    grey: '#808080',
+    white: '#F5F5F5',
+    red: '#8B0000',
+    burgundy: '#800020',
+    other: '#CCCCCC',
   },
 } as const;
 
