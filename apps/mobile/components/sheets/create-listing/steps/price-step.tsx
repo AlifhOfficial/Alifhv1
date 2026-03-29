@@ -71,7 +71,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
             { backgroundColor: colors.fill2, borderColor: colors.border },
           ]}
         >
-          <Text variant="bodyLg" tone="secondary">
+          <Text variant="body" tone="secondary">
             AED
           </Text>
           <BottomSheetTextInput
@@ -87,7 +87,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
 
         {/* Formatted display */}
         {data.price && priceNum > 0 && (
-          <Text variant="title" style={{ color: colors.label, textAlign: 'center' }}>
+          <Text variant="title2Emphasized" style={{ color: colors.label, textAlign: 'center' }}>
             AED {priceNum.toLocaleString()}
           </Text>
         )}
@@ -95,7 +95,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick presets */}
       <View style={styles.section}>
-        <Text variant="bodySm" tone="muted">
+        <Text variant="subhead" tone="muted">
           Quick select
         </Text>
         <View style={styles.presetsRow}>
@@ -114,7 +114,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{ color: isActive ? colors.background : colors.label }}
                 >
                   {preset.label}
@@ -128,8 +128,8 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
       {/* Negotiable toggle */}
       <View style={[styles.toggleRow, { backgroundColor: colors.surfaceSecondary }]}>
         <View style={styles.toggleText}>
-          <Text variant="caption" uppercase>Price Negotiable?</Text>
-          <Text variant="bodySm" tone="muted">
+          <Text variant="caption1Emphasized" uppercase>Price Negotiable?</Text>
+          <Text variant="subhead" tone="muted">
             Let buyers know you're open to offers
           </Text>
         </View>
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    ...Typography.title,
+    ...Typography.title2Emphasized,
     paddingVertical: Spacing.sm,
     textAlign: 'left',
   },
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   },
   toggleText: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs,
   },
 });
 

@@ -8,6 +8,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { HelpCircle, MessageCircle, ChevronRight } from 'lucide-react-native';
 import Animated, {
+  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -48,10 +49,8 @@ function SupportItem({
   };
 
   const animatedBgStyle = useAnimatedStyle(() => {
-    // Prevent tiny floats from serializing into scientific notation causing Reanimated crashes
-    const alpha = Math.max(0, bgOpacity.value * 0.03).toFixed(4);
     return {
-      backgroundColor: `rgba(0,0,0,${alpha})`,
+      backgroundColor: interpolateColor(bgOpacity.value, [0, 1], ['transparent', colors.fill]),
     };
   });
 
@@ -71,7 +70,7 @@ function SupportItem({
         <View style={styles.itemLeft}>
           <Icon size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={1.5} />
           <View style={styles.itemContent}>
-            <Text variant="bodySm" tone="muted">Navigate</Text>
+            <Text variant="subhead" tone="muted">Navigate</Text>
             <Text variant="body">{label}</Text>
           </View>
         </View>

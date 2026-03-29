@@ -49,12 +49,12 @@ const sizes = {
 // Font sizes for initials - proportional to avatar size
 const fontSizes = {
   xxs: 8,                                     // tiny
-  xs: Typography.bodySm.fontSize,
-  sm: Typography.label.fontSize,
-  md: Typography.bodySm.fontSize,
+  xs: Typography.subhead.fontSize,
+  sm: Typography.footnoteEmphasized.fontSize,
+  md: Typography.subhead.fontSize,
   lg: Typography.body.fontSize,
-  xl: Typography.heading.fontSize,
-  xxl: Typography.hero.fontSize,
+  xl: Typography.title3Emphasized.fontSize,
+  xxl: Typography.largeTitleEmphasized.fontSize,
 };
 
 /** Generate initials from a name */

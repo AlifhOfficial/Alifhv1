@@ -35,7 +35,7 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
               key={index}
               style={[styles.badge, { backgroundColor: colors.surfaceSecondary }]}
             >
-              <Text variant="bodySm" style={styles.badgeText}>{badge}</Text>
+              <Text variant="subhead" style={styles.badgeText}>{badge}</Text>
             </View>
           ))}
         </View>
@@ -54,7 +54,7 @@ export function BadgesSection({ badges, colors, onLearnMore }: BadgesSectionProp
               pressed && { opacity: 0.7 },
             ]}
           >
-            <Text variant="bodySm" tone="primary">
+            <Text variant="subhead" tone="primary">
               Learn more
             </Text>
           </HapticPressable>
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
   },
   badgeText: {
-    // Typography handled by <Text variant="label" uppercase> component
+    // Typography handled by <Text variant="footnoteEmphasized" uppercase> component
   },
   emptyState: {
     alignItems: 'center',

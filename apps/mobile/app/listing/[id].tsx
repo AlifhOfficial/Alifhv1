@@ -107,7 +107,7 @@ export default function ListingDetailScreen() {
           <CarCardDetailedMSkeleton />
         ) : error ? (
           <View style={styles.errorContainer}>
-            <Text variant="bodySm" tone="secondary" style={{ textAlign: 'center' }}>
+            <Text variant="subhead" tone="secondary" style={{ textAlign: 'center' }}>
               {error.message?.includes('not found') 
                 ? 'This listing is no longer available or may have expired'
                 : 'Failed to load listing. Please try again.'}

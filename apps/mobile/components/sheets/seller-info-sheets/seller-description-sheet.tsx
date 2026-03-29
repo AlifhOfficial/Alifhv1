@@ -81,7 +81,7 @@ export function SellerDescriptionSheet({ visible, onClose, description, sellerNa
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">About {sellerName}</Text>
+          <Text variant="title3Emphasized">About {sellerName}</Text>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 

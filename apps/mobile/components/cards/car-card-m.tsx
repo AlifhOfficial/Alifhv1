@@ -276,7 +276,7 @@ export const CarCardM = memo(function CarCardM({
         />
 
         {/* Price */}
-        <Text style={{ color: theme.price }} variant="heading" tone="primary">
+        <Text style={{ color: theme.price }} variant="title3Emphasized" tone="primary">
           {formatPrice(price)}
         </Text>
 
@@ -340,7 +340,7 @@ const CardImage = memo(function CardImage({ uri, backgroundColor, placeholderCol
         />
       ) : (
         <View style={[styles.imagePlaceholder, { backgroundColor: skeletonColor }]}>
-          <Text variant="bodySm" style={{ color: placeholderColor }} tone="secondary">No Image</Text>
+          <Text variant="subhead" style={{ color: placeholderColor }} tone="secondary">No Image</Text>
         </View>
       )}
     </View>
@@ -358,10 +358,10 @@ interface CardHeaderProps {
 const CardHeader = memo(function CardHeader({ make, model, year, titleColor, metaColor }: CardHeaderProps) {
   return (
     <View style={styles.header}>
-      <Text variant="subheading" style={[styles.title, { color: titleColor }]} numberOfLines={1}>
+      <Text variant="headline" style={[styles.title, { color: titleColor }]} numberOfLines={1}>
         {make} {model}
       </Text>
-      <Text variant="bodySm" style={{ color: metaColor }}>{year}</Text>
+      <Text variant="subhead" style={{ color: metaColor }}>{year}</Text>
     </View>
   );
 });
@@ -376,11 +376,11 @@ interface CardStatsProps {
 const CardStats = memo(function CardStats({ mileage, specs, emirate, statsColor }: CardStatsProps) {
   return (
     <View style={styles.statsRow}>
-      <Text variant="bodySm" style={{ color: statsColor }}>{formatMileage(mileage)} km</Text>
-      <Text variant="bodySm" style={{ color: statsColor, opacity: 0.4 }}>·</Text>
-      <Text variant="bodySm" style={{ color: statsColor }}>{specs}</Text>
-      <Text variant="bodySm" style={{ color: statsColor, opacity: 0.4 }}>·</Text>
-      <Text variant="bodySm" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Text>
+      <Text variant="subhead" style={{ color: statsColor }}>{formatMileage(mileage)} km</Text>
+      <Text variant="subhead" style={{ color: statsColor, opacity: 0.4 }}>·</Text>
+      <Text variant="subhead" style={{ color: statsColor }}>{specs}</Text>
+      <Text variant="subhead" style={{ color: statsColor, opacity: 0.4 }}>·</Text>
+      <Text variant="subhead" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Text>
     </View>
   );
 });
@@ -409,13 +409,13 @@ const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartn
             transition={150}
           />
         ) : (
-          <Text variant="heading" style={{ color: theme.meta }}>
+          <Text variant="title3Emphasized" style={{ color: theme.meta }}>
             {name.charAt(0).toUpperCase()}
           </Text>
         )}
       </View>
       <View style={styles.sellerMeta}>
-        <Text variant="bodySm" style={[styles.sellerName, { color: theme.sellerText }]} numberOfLines={1} tone="secondary">
+        <Text variant="subhead" style={[styles.sellerName, { color: theme.sellerText }]} numberOfLines={1} tone="secondary">
           {name}
         </Text>
         {!isBlackTierPartner && isVerified && (
@@ -423,7 +423,7 @@ const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartn
         )}
         {isBlackTierPartner && (
           <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-            <Text variant="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
+            <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
           </View>
         )}
       </View>

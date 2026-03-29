@@ -29,7 +29,7 @@ export default function NotFoundScreen() {
           tintColor={colors.labelTertiary}
         />
 
-        <Text variant="title" style={styles.title}>
+        <Text variant="title2Emphasized" style={styles.title}>
           Page Not Found
         </Text>
 

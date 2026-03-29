@@ -34,7 +34,7 @@ export const BreadcrumbHeader = memo(function BreadcrumbHeader({
   return (
     <View style={[styles.container, { paddingTop: topInset + 8, backgroundColor: colors.background }]}>
       {/* Left: Title */}
-      <Text variant="heading" style={{ flex: 1 }} numberOfLines={1}>
+      <Text variant="title3Emphasized" style={{ flex: 1 }} numberOfLines={1}>
         {title}
       </Text>
 

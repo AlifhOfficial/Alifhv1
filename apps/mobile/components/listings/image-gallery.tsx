@@ -152,7 +152,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         
         {/* Image Counter Overlay */}
         <View style={styles.counterOverlay} pointerEvents="none">
-          <Text variant="bodySm" style={styles.counterOverlayText}>
+          <Text variant="subhead" style={styles.counterOverlayText}>
             {currentIndex + 1}/{allImages.length}
           </Text>
         </View>
@@ -205,7 +205,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           {({ pressed }) => (
             <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
               <Grid3x3 size={Sizes.iconXs} color={colors.label} strokeWidth={1.75} />
-              <Text variant="bodySm">All</Text>
+              <Text variant="subhead">All</Text>
             </View>
           )}
         </HapticPressable>

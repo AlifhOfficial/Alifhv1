@@ -340,7 +340,7 @@ export function CreateListingFlow({
             </View>
 
             <View style={styles.headerCenter}>
-              <Text variant="subheading">{currentStep?.label || 'Create Listing'}</Text>
+              <Text variant="headline">{currentStep?.label || 'Create Listing'}</Text>
             </View>
 
             {!isReviewStep ? (
@@ -349,7 +349,7 @@ export function CreateListingFlow({
                 disabled={!canProceed && !isOptionalStep}
                 style={[styles.nextButton, { backgroundColor: canProceed ? colors.primary : colors.fill2 }]}
               >
-                <Text variant="bodySm" style={{ color: canProceed ? colors.primaryForeground : colors.labelQuaternary }}>
+                <Text variant="subhead" style={{ color: canProceed ? colors.primaryForeground : colors.labelQuaternary }}>
                   {primaryLabel}
                 </Text>
               </HapticPressable>

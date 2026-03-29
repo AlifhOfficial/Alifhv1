@@ -200,13 +200,13 @@ export function ModelFilterSheet({
               {item.model}
             </Text>
             {count > 0 && (
-              <Text variant="bodySm" tone="muted">
+              <Text variant="subhead" tone="muted">
                 {count.toLocaleString()}
               </Text>
             )}
           </View>
           {showMakeLabel && (
-            <Text variant="bodySm" tone="muted">{item.make}</Text>
+            <Text variant="subhead" tone="muted">{item.make}</Text>
           )}
         </View>
         <View style={[
@@ -246,7 +246,7 @@ export function ModelFilterSheet({
               <Text variant="body" tone="secondary">Cancel</Text>
             </HapticPressable>
             
-            <Text variant="subheading">Model</Text>
+            <Text variant="headline">Model</Text>
             
             <HapticPressable
               style={[
@@ -257,7 +257,7 @@ export function ModelFilterSheet({
               disabled={!hasValue}
             >
               <Text
-                variant="bodySm"
+                variant="subhead"
                 style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
               >
                 Apply
@@ -268,11 +268,11 @@ export function ModelFilterSheet({
           {/* Selection Summary */}
           {hasValue && (
             <View style={styles.selectionSummary}>
-              <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+              <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
                 {localSelected.join(', ')}
               </Text>
               <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
+                <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
                   Clear
                 </Text>
               </HapticPressable>
@@ -309,7 +309,7 @@ export function ModelFilterSheet({
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyState}>
-              <Text variant="bodyLg" tone="secondary">No models found</Text>
+              <Text variant="body" tone="secondary">No models found</Text>
             </View>
           }
         />
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    ...Typography.bodySm,
+    ...Typography.subhead,
     paddingVertical: 0,
   },
   listContainer: {
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
   },
   labelColumn: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs,
   },
   labelRow: {
     flexDirection: 'row',

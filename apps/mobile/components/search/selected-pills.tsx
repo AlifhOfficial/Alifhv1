@@ -19,10 +19,10 @@ export function SelectedPills({ items, onRemove, onClearAll, label }: SelectedPi
     <View style={styles.container}>
       {label && (
         <View style={styles.header}>
-          <Text variant="bodySm" tone="secondary">{label}</Text>
+          <Text variant="subhead" tone="secondary">{label}</Text>
           {onClearAll && items.length > 1 && (
             <HapticPressable onPress={onClearAll} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="bodySm" tone="primary">Clear all</Text>
+              <Text variant="subhead" tone="primary">Clear all</Text>
             </HapticPressable>
           )}
         </View>

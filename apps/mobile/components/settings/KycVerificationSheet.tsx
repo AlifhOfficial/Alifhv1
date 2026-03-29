@@ -94,7 +94,7 @@ export function KycVerificationSheet({
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">Identity Verification</Text>
+          <Text variant="title3Emphasized">Identity Verification</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}

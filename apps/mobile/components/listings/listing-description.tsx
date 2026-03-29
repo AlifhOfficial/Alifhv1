@@ -47,7 +47,7 @@ export const ListingDescription = memo(function ListingDescription({
 
   return (
     <View style={styles.container}>
-      <Text variant="label" tone="muted" uppercase>
+      <Text variant="footnoteEmphasized" tone="muted" uppercase>
         DESCRIPTION
       </Text>
 
@@ -69,7 +69,7 @@ export const ListingDescription = memo(function ListingDescription({
 
       {showReadMore && (
         <HapticPressable onPress={onReadMore} hitSlop={Layout.hitSlopSmall}>
-          <Text variant="bodySm" tone="primary">
+          <Text variant="subhead" tone="primary">
             Read more
           </Text>
         </HapticPressable>

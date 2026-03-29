@@ -72,19 +72,19 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Text variant="caption" uppercase>Special Notes</Text>
-          <Text variant="bodySm" tone="muted">
+          <Text variant="caption1Emphasized" uppercase>Special Notes</Text>
+          <Text variant="subhead" tone="muted">
             {notes.length}/{MAX_SPECIAL_NOTES}
           </Text>
         </View>
-        <Text variant="bodySm" tone="secondary">
+        <Text variant="subhead" tone="secondary">
           Add specific details buyers should know about your vehicle
         </Text>
       </View>
 
       {/* Quick Notes */}
       <View style={styles.section}>
-        <Text variant="bodySm" tone="muted">
+        <Text variant="subhead" tone="muted">
           Quick add
         </Text>
         <View style={styles.chipsWrap}>
@@ -105,7 +105,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   numberOfLines={1}
                   style={{ color: isAdded ? colors.background : colors.label }}
                 >
@@ -120,7 +120,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
       {/* Existing Notes */}
       {notes.length > 0 && (
         <View style={styles.section}>
-          <Text variant="caption" uppercase>Your Notes</Text>
+          <Text variant="caption1Emphasized" uppercase>Your Notes</Text>
           <View style={styles.notesList}>
             {notes.map((note, index) => (
               <View
@@ -130,7 +130,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
                   { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
                 ]}
               >
-                <Text variant="bodySm" style={{ flex: 1 }}>
+                <Text variant="subhead" style={{ flex: 1 }}>
                   {note}
                 </Text>
                 <HapticPressable onPress={() => removeNote(index)} hitSlop={Layout.hitSlopSmall}>
@@ -145,7 +145,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
       {/* Custom Note Input */}
       {notes.length < MAX_SPECIAL_NOTES && (
         <View style={styles.section}>
-          <Text variant="caption" uppercase>Add Custom Note</Text>
+          <Text variant="caption1Emphasized" uppercase>Add Custom Note</Text>
           <View style={styles.inputRow}>
             <TextInput
               style={[

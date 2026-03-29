@@ -168,7 +168,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
             <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
           
-          <Text variant="subheading">Active Filters</Text>
+          <Text variant="headline">Active Filters</Text>
           
           <View style={styles.placeholder} />
         </View>
@@ -176,11 +176,11 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
         {/* Selection Summary */}
         {hasFilters && (
           <View style={styles.selectionSummary}>
-            <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+            <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
               {chips.length} filter{chips.length !== 1 ? 's' : ''} active
             </Text>
             <HapticPressable onPress={handleClearAll} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
+              <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
                 Clear all
               </Text>
             </HapticPressable>
@@ -201,7 +201,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
         ) : (
           groupedChips.map((group) => (
             <View key={group.category} style={styles.categorySection}>
-              <Text variant="caption" tone="muted" style={styles.categoryLabel} uppercase>
+              <Text variant="caption1Emphasized" tone="muted" style={styles.categoryLabel} uppercase>
                 {group.label.toUpperCase()}
               </Text>
               <View style={styles.chipGrid}>
@@ -216,7 +216,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
                       chip.locked && { opacity: 0.7 },
                     ]}
                   >
-                    <Text variant="bodySm" numberOfLines={1} style={styles.chipText}>
+                    <Text variant="subhead" numberOfLines={1} style={styles.chipText}>
                       {chip.label}
                     </Text>
                     {!chip.locked && (

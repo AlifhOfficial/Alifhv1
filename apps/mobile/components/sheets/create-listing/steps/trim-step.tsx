@@ -73,7 +73,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick picks */}
       <View style={styles.section}>
-        <Text variant="bodySm" tone="muted">Quick picks</Text>
+        <Text variant="subhead" tone="muted">Quick picks</Text>
         <View style={styles.chipWrap}>
           {TRIM_EXAMPLES.map((trim) => {
             const isSelected = trim.toLowerCase() === localTrim.toLowerCase();
@@ -90,7 +90,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {trim}
@@ -103,7 +103,7 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Hint */}
       <View style={[styles.hintBox, { backgroundColor: colors.fill2 }]}>
-        <Text variant="bodySm" tone="muted">
+        <Text variant="subhead" tone="muted">
           Trim is optional but helps buyers identify your exact variant.
         </Text>
       </View>

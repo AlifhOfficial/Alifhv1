@@ -61,7 +61,7 @@ export function MessageBubble({
             { backgroundColor: colors.fill2 },
           ]}
         >
-          <Text variant="bodySm" style={{ color: colors.labelTertiary }}>{text}</Text>
+          <Text variant="subhead" style={{ color: colors.labelTertiary }}>{text}</Text>
         </View>
       </View>
     );
@@ -111,7 +111,7 @@ export function MessageBubble({
               />
             )}
             <View style={styles.listingInfo}>
-              <Text variant="bodySm" numberOfLines={2}>
+              <Text variant="subhead" numberOfLines={2}>
                 {listing.title}
               </Text>
             </View>
@@ -171,10 +171,10 @@ export function MessageBubble({
           {/* Edited indicator */}
           {isEdited && (
             <Text
-              variant="bodySm"
+              variant="subhead"
               style={{ 
                 color: isOwn ? colors.white : colors.labelTertiary,
-                marginTop: 2,
+                marginTop: Spacing.xs,
               }}
             >
               edited
@@ -191,7 +191,7 @@ export function MessageBubble({
         {/* Seen indicator */}
         {showSeen && isOwn && (
           <View style={styles.seenContainer}>
-            <Text variant="bodySm" style={{ color: colors.labelTertiary }}>Seen</Text>
+            <Text variant="subhead" style={{ color: colors.labelTertiary }}>Seen</Text>
             <UserAvatar
               src={otherUserAvatar}
               name={otherUserName || 'User'}

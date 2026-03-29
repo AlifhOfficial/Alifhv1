@@ -105,13 +105,13 @@ export function OTPScreen({
 
           {/* Hero Section */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Text variant="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]} tone="secondary">
+            <Text variant="subhead" style={[onboardingStyles.greeting, { color: colors.primary }]} tone="secondary">
               Verify your email
             </Text>
-            <Text variant="title" style={[onboardingStyles.title, { color: colors.white }]}>
+            <Text variant="title2Emphasized" style={[onboardingStyles.title, { color: colors.white }]}>
               Enter the code
             </Text>
-            <Text variant="bodySm" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
+            <Text variant="subhead" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
               Sent to {email}
             </Text>
           </Animated.View>
@@ -122,7 +122,7 @@ export function OTPScreen({
               entering={FadeIn.duration(200)}
               style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
             >
-              <Text variant="bodySm" tone="error" style={onboardingStyles.errorText}>
+              <Text variant="subhead" tone="error" style={onboardingStyles.errorText}>
                 {error}
               </Text>
             </Animated.View>
@@ -155,7 +155,7 @@ export function OTPScreen({
                       },
                     ]}
                   >
-                    <Text variant="heading" style={{ color: colors.white }}>
+                    <Text variant="title3Emphasized" style={{ color: colors.white }}>
                       {digit}
                     </Text>
                     {isActive && !isLoading && (
@@ -199,12 +199,12 @@ export function OTPScreen({
             <Animated.View entering={FadeIn.delay(300).duration(300)} style={onboardingStyles.resendSection}>
               {canResend ? (
                 <HapticPressable onPress={handleResend} disabled={isLoading}>
-                  <Text variant="bodySm" style={{ color: colors.primary }}>
+                  <Text variant="subhead" style={{ color: colors.primary }}>
                     Resend code
                   </Text>
                 </HapticPressable>
               ) : (
-                <Text variant="bodySm" style={{ color: colors.labelTertiary }} tone="secondary">
+                <Text variant="subhead" style={{ color: colors.labelTertiary }} tone="secondary">
                   Resend in {resendTimer}s
                 </Text>
               )}
@@ -212,7 +212,7 @@ export function OTPScreen({
 
             {/* Help text */}
             <Animated.View entering={FadeIn.delay(400).duration(300)}>
-              <Text variant="bodySm" style={[onboardingStyles.helpText, { color: colors.labelTertiary }]} tone="secondary">
+              <Text variant="subhead" style={[onboardingStyles.helpText, { color: colors.labelTertiary }]} tone="secondary">
                 Check your spam folder if you don't see it
               </Text>
             </Animated.View>

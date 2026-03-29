@@ -123,11 +123,11 @@ export function IdentitySection({
     <Section title="Identity Verification" colors={colors} delay={delay}>
       <View style={styles.row}>
         <View style={styles.content}>
-          <Text variant="bodySm" tone="muted">Status</Text>
+          <Text variant="subhead" tone="muted">Status</Text>
           <Text variant="body" style={{ color: display.statusColor }}>
             {display.statusLabel}
           </Text>
-          <Text variant="bodySm" tone="muted" style={styles.description}>
+          <Text variant="subhead" tone="muted" style={styles.description}>
             {display.description}
           </Text>
         </View>

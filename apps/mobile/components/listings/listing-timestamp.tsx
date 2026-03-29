@@ -109,7 +109,7 @@ export const ListingTimestamp = memo(function ListingTimestamp({
           {postedTimeAgo}
         </Text>
         {wasUpdated && updatedTimeAgo && (
-          <Text variant="bodySm" tone="secondary">
+          <Text variant="subhead" tone="secondary">
             • Updated {updatedTimeAgo}
           </Text>
         )}

@@ -50,7 +50,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
               style={styles.getStartedRow}
               hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
             >
-              <Text variant="heading" style={{ color: colors.white }}>Get Started</Text>
+              <Text variant="title3Emphasized" style={{ color: colors.white }}>Get Started</Text>
               <View style={[styles.glassBubble, { backgroundColor: colors.background, borderColor: colors.border }]}>
                 <ArrowRight size={Sizes.iconXs} color={colors.white} strokeWidth={2} />
               </View>
@@ -63,7 +63,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
               onPress={onSignIn}
               hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
             >
-              <Text variant="heading" tone="secondary">Sign In</Text>
+              <Text variant="title3Emphasized" tone="secondary">Sign In</Text>
             </HapticPressable>
           </Animated.View>
         </View>

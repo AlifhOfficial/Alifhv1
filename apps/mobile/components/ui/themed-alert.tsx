@@ -8,7 +8,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode } fr
 import { Modal, View, StyleSheet, Pressable, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Shadows, Spacing, Radius, Sizes } from '@/constants/theme';
 import * as Haptics from 'expo-haptics';
 
 // ============================================================================
@@ -118,7 +118,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
             onPress={(e) => e.stopPropagation()}
           >
             {/* Title */}
-            <Text variant="subheading" style={styles.title}>
+            <Text variant="headline" style={styles.title}>
               {config?.title}
             </Text>
 
@@ -194,11 +194,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius['2xl'],
     borderWidth: 1,
     padding: Spacing.xl,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: Spacing.sm },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 8,
+    ...Shadows.lg,
   },
   title: {
     textAlign: 'center',

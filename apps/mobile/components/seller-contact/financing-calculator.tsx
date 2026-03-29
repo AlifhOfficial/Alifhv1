@@ -39,26 +39,26 @@ export const FinancingCalculator = memo(function FinancingCalculator({
   return (
     <View style={localStyles.section}>
       <View style={localStyles.headerRow}>
-        <Text variant="label" tone="muted" uppercase>FINANCING ESTIMATE</Text>
+        <Text variant="footnoteEmphasized" tone="muted" uppercase>FINANCING ESTIMATE</Text>
         {onCustomize && (
           <HapticPressable onPress={onCustomize} hitSlop={Layout.hitSlopSmall} style={localStyles.customizeBtn}>
             <Settings2 size={Sizes.iconXs} color={colors.labelSecondary} />
-            <Text variant="bodySm" tone="secondary">Customize</Text>
+            <Text variant="subhead" tone="secondary">Customize</Text>
           </HapticPressable>
         )}
       </View>
       
       {/* Monthly Payment */}
       <View style={localStyles.emiRow}>
-        <Text variant="title">{formatPrice(emi)}/mo</Text>
-        <Text variant="bodySm" tone="secondary">
+        <Text variant="title2Emphasized">{formatPrice(emi)}/mo</Text>
+        <Text variant="subhead" tone="secondary">
           {downPaymentPercent}% down · {loanTermMonths}mo · {interestRate}% APR
         </Text>
       </View>
       
       {/* Down Payment Options */}
       <View style={localStyles.row}>
-        <Text variant="bodySm" style={localStyles.label} tone="secondary">Down</Text>
+        <Text variant="subhead" style={localStyles.label} tone="secondary">Down</Text>
         <View style={localStyles.options}>
           {DOWN_PAYMENT_OPTIONS.map((dp) => {
             const isSelected = downPaymentPercent === dp;
@@ -75,7 +75,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
                 onPress={() => onDownPaymentChange(dp)}
               >
                 <Text 
-                  variant="bodySm" 
+                  variant="subhead" 
                   style={{ color: isSelected ? colors.primaryForeground : colors.labelSecondary }}
                 >
                   {dp}%
@@ -88,7 +88,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
       
       {/* Loan Term Options */}
       <View style={localStyles.row}>
-        <Text variant="bodySm" style={localStyles.label} tone="secondary">Term</Text>
+        <Text variant="subhead" style={localStyles.label} tone="secondary">Term</Text>
         <View style={localStyles.options}>
           {TERM_OPTIONS.map((term) => {
             const isSelected = loanTermMonths === term;
@@ -105,7 +105,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
                 onPress={() => onTermChange(term)}
               >
                 <Text 
-                  variant="bodySm" 
+                  variant="subhead" 
                   style={{ color: isSelected ? colors.primaryForeground : colors.labelSecondary }}
                 >
                   {term}mo
@@ -117,7 +117,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
       </View>
 
       {/* Disclaimer */}
-      <Text variant="bodySm" tone="muted" style={localStyles.disclaimer}>
+      <Text variant="subhead" tone="muted" style={localStyles.disclaimer}>
         Estimate only. Actual rates may vary based on bank and credit profile.
       </Text>
     </View>

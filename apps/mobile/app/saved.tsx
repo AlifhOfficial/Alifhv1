@@ -18,8 +18,9 @@ import { Stack } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Heart, Sparkles, ListFilter, Check } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 
-import { Colors, Sizes, Spacing, Radius, Layout, ZIndex, Stroke } from '@/constants/theme';
+import { Colors, Shadows, Sizes, Spacing, Radius, Layout, ZIndex, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { SavedList } from '@/components/saved';
@@ -36,6 +37,7 @@ export default function SavedScreen() {
   const colors = Colors[colorScheme];
   const { isAuthenticated } = useAuth();
   const insets = useSafeAreaInsets();
+  const headerInset = getMobileHeaderContentInset(insets.top);
 
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
 
@@ -99,16 +101,9 @@ export default function SavedScreen() {
     });
   }, [isAuthenticated, isLoading, currentListings.length, activeTab]);
 
-  const nativeHeaderOptions = Platform.OS === 'ios'
-    ? {
-        headerTransparent: true,
-        headerShadowVisible: false,
-        headerBackButtonDisplayMode: 'minimal' as const,
-        headerBackTitle: '',
-      }
-    : {
-        headerStyle: { backgroundColor: colors.background },
-      };
+  const nativeHeaderOptions = {
+    headerShown: false,
+  };
 
   const SAVED_TABS: { key: SavedTab; label: string; icon: React.ReactNode }[] = [
     {
@@ -130,10 +125,13 @@ export default function SavedScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
+        <MobileHeader title="Saved" showBackButton />
+        <View style={{ flex: 1, paddingTop: headerInset }}>
         <AuthRequiredEmptyState
           title="Sign in to save"
           subtitle="Keep track of your favorite cars on Revvup"
         />
+        </View>
       </View>
     );
   }
@@ -143,7 +141,8 @@ export default function SavedScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
-        <View style={[styles.skeletonContainer, { paddingTop: insets.top + Spacing.lg }]}>
+        <MobileHeader title="Saved" showBackButton />
+        <View style={[styles.skeletonContainer, { paddingTop: headerInset }]}>
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} width="100%" height={100} borderRadius={12} />
           ))}
@@ -157,9 +156,10 @@ export default function SavedScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
-        <View style={styles.emptyContainer}>
-          <Text variant="bodySm" tone="secondary">Something went wrong</Text>
-          <Text variant="bodySm" tone="primary" onPress={refresh}>Tap to retry</Text>
+        <MobileHeader title="Saved" showBackButton />
+        <View style={[styles.emptyContainer, { paddingTop: headerInset }]}>
+          <Text variant="subhead" tone="secondary">Something went wrong</Text>
+          <Text variant="subhead" tone="primary" onPress={refresh}>Tap to retry</Text>
         </View>
       </View>
     );
@@ -168,6 +168,7 @@ export default function SavedScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
+      <MobileHeader title="Saved" showBackButton />
 
       {/* List */}
       <SavedList
@@ -289,7 +290,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
+    ...Shadows.md,
   } as any,
 
   // ── Filter Drawer ───────────────────────────────────────────────────
@@ -300,11 +301,11 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
     minWidth: 200,
-    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+    ...Shadows.lg,
   } as any,
   drawerItem: {
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md + 2,
+    paddingVertical: Spacing.lg,
   },
   drawerItemInner: {
     flexDirection: 'row',

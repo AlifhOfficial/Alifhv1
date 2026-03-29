@@ -544,13 +544,13 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
       onPress={onPress}
     >
       <Text
-        variant="bodySm"
+        variant="subhead"
         style={{ color: isSelected ? colors.background : colors.label }}
        tone="secondary">
         {label}
       </Text>
       {!isSelected && count !== undefined && (
-        <Text variant="bodySm" tone="muted">
+        <Text variant="subhead" tone="muted">
           {count}
         </Text>
       )}
@@ -591,7 +591,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
               <Text variant="body" tone="secondary">Cancel</Text>
             </HapticPressable>
             
-            <Text variant="subheading">Search</Text>
+            <Text variant="headline">Search</Text>
             
             <HapticPressable
               style={[
@@ -602,7 +602,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
               disabled={!canApply}
             >
               <Text
-                variant="bodySm"
+                variant="subhead"
                 style={{ color: canApply ? colors.primaryForeground : colors.labelQuaternary }}
               >
                 Apply
@@ -638,11 +638,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
           {/* Selection Summary (breadcrumb style) */}
           {hasSelections && (
             <View style={styles.selectionSummary}>
-              <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+              <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
                 {selectionSummary}
               </Text>
               <HapticPressable onPress={clearAllSelections} hitSlop={Layout.hitSlopSmall}>
-                <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
+                <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
                   Clear
                 </Text>
               </HapticPressable>
@@ -660,7 +660,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
           {/* Suggestions */}
           {query.trim().length > 0 && (
             <View style={styles.section}>
-              <Text variant="caption" tone="muted" style={styles.sectionLabel} uppercase>
+              <Text variant="caption1Emphasized" tone="muted" style={styles.sectionLabel} uppercase>
                 SUGGESTIONS
               </Text>
 
@@ -693,7 +693,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                           {suggestion.text}
                         </Text>
                       </View>
-                      <Text variant="bodySm" tone="muted">
+                      <Text variant="subhead" tone="muted">
                         {category?.label ?? 'Search'}
                         {suggestion.count !== undefined && suggestion.count > 0 && ` · ${suggestion.count.toLocaleString()}`}
                       </Text>
@@ -702,7 +702,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                   })}
                 </View>
               ) : query.trim().length >= 2 ? (
-                <Text variant="bodySm" tone="muted" style={styles.emptyText}>
+                <Text variant="subhead" tone="muted" style={styles.emptyText}>
                   No suggestions found
                 </Text>
               ) : null}
@@ -713,7 +713,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
           <View style={styles.section}>
             {/* Makes */}
             <View style={styles.hierarchyLevel}>
-              <Text variant="caption" tone="muted" style={styles.sectionLabel} uppercase>
+              <Text variant="caption1Emphasized" tone="muted" style={styles.sectionLabel} uppercase>
                 MAKE
               </Text>
               {isLoadingFacets ? (
@@ -754,11 +754,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
             {selectedMakes.length > 0 && (
               <View style={styles.hierarchyLevel}>
                 <View style={[styles.hierarchyConnector, { backgroundColor: colors.border }]} />
-                <Text variant="caption" tone="muted" style={styles.sectionLabel} uppercase>
+                <Text variant="caption1Emphasized" tone="muted" style={styles.sectionLabel} uppercase>
                   MODEL
                 </Text>
                 {modelFacets.length === 0 ? (
-                  <Text variant="bodySm" tone="muted" style={styles.emptyText}>
+                  <Text variant="subhead" tone="muted" style={styles.emptyText}>
                     No models available
                   </Text>
                 ) : (
@@ -803,7 +803,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                         }}
                       >
                         <Text
-                          variant="bodySm"
+                          variant="subhead"
                           style={{ color: colors.primary }}
                          tone="secondary">
                           {showAllModels ? 'Show Less' : `View All (${modelFacets.length})`}
@@ -824,11 +824,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
             {selectedMakes.length > 0 && selectedModels.length > 0 && (
               <View style={styles.hierarchyLevel}>
                 <View style={[styles.hierarchyConnector, { backgroundColor: colors.border }]} />
-                <Text variant="caption" tone="muted" style={styles.sectionLabel} uppercase>
+                <Text variant="caption1Emphasized" tone="muted" style={styles.sectionLabel} uppercase>
                   TRIM
                 </Text>
                 {trimFacets.length === 0 ? (
-                  <Text variant="bodySm" tone="muted" style={styles.emptyText}>
+                  <Text variant="subhead" tone="muted" style={styles.emptyText}>
                     No trims available
                   </Text>
                 ) : (
@@ -918,7 +918,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    ...Typography.bodySm,
+    ...Typography.subhead,
     lineHeight: 22,
     paddingTop: 0,
     paddingBottom: 0,

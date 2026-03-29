@@ -21,7 +21,7 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
       <View style={[styles.container, { backgroundColor: colors.skeleton }]}>
         <ActivityIndicator size="large" color={colors.primary} />
         {message && (
-          <Text variant="bodySm" tone="secondary" style={styles.message}>
+          <Text variant="subhead" tone="secondary" style={styles.message}>
             {message}
           </Text>
         )}
@@ -33,7 +33,7 @@ export function Loader({ message, fullScreen = false }: { message?: string; full
     <View style={styles.inlineContainer}>
       <ActivityIndicator size="small" color={colors.primary} />
       {message && (
-        <Text variant="bodySm" tone="secondary" style={styles.inlineMessage}>
+        <Text variant="subhead" tone="secondary" style={styles.inlineMessage}>
           {message}
         </Text>
       )}

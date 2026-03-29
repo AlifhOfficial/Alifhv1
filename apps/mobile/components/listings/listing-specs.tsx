@@ -85,7 +85,7 @@ export const ListingSpecs = memo(function ListingSpecs({
 
   return (
     <View style={styles.container}>
-      <Text variant="label" tone="muted" uppercase>
+      <Text variant="footnoteEmphasized" tone="muted" uppercase>
         SPECIFICATIONS
       </Text>
       <View style={styles.specsList}>

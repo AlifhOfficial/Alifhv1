@@ -167,7 +167,7 @@ export function ListingStatsSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">Insights</Text>
+          <Text variant="title3Emphasized">Insights</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -189,24 +189,24 @@ export function ListingStatsSheet({
               <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.labelQuaternary} />
             </View>
           )}
-          <Text variant="bodySm" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
+          <Text variant="subhead" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
             {listingTitle}
           </Text>
         </View>
 
         <View style={styles.metricsGrid}>
           <View style={[styles.metricCard, { backgroundColor: colors.fill2 }]}>
-            <Text variant="bodySm" tone="secondary">Click Rate</Text>
+            <Text variant="subhead" tone="secondary">Click Rate</Text>
             <View style={styles.metricValueRow}>
-              <Text variant="title">{ctr}%</Text>
+              <Text variant="title2Emphasized">{ctr}%</Text>
             </View>
           </View>
 
           <View style={[styles.metricCard, { backgroundColor: colors.fill2 }]}>
-            <Text variant="bodySm" tone="secondary">Engagement</Text>
+            <Text variant="subhead" tone="secondary">Engagement</Text>
             <View style={styles.metricValueRow}>
               <Flame size={Sizes.iconSm} color={colors[hotLevel.colorKey]} />
-              <Text variant="title" style={{ color: colors[hotLevel.colorKey] }}>
+              <Text variant="title2Emphasized" style={{ color: colors[hotLevel.colorKey] }}>
                 {hotLevel.label}
               </Text>
             </View>
@@ -233,11 +233,11 @@ export function ListingStatsSheet({
                     fill={stat.label === 'Saves' ? stat.color : 'none'}
                     strokeWidth={1.75}
                   />
-                  <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
+                  <Text variant="subhead" style={{ color: colors.labelSecondary }}>
                     {stat.label}
                   </Text>
                 </View>
-                <Text variant="bodySm" style={{ color: colors.label, }}>
+                <Text variant="subhead" style={{ color: colors.label, }}>
                   {formatCount(stat.value)}
                 </Text>
               </View>

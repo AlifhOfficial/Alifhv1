@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    ...Typography.bodyLg,
+    ...Typography.body,
     lineHeight: undefined,
     paddingVertical: Spacing.md,
     textAlignVertical: 'center',

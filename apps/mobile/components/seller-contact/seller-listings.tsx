@@ -29,7 +29,7 @@ export const SellerListings = memo(function SellerListings({
 
   return (
     <View style={localStyles.section}>
-      <Text variant="label" tone="muted" uppercase>MORE FROM THIS SELLER</Text>
+      <Text variant="footnoteEmphasized" tone="muted" uppercase>MORE FROM THIS SELLER</Text>
       
       {/* Listings list */}
       <View style={localStyles.list}>

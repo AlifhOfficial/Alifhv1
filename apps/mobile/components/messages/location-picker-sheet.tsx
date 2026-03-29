@@ -12,7 +12,7 @@ import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Shadows, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useLocation, type LocationResult } from '@/hooks/use-location';
 
 interface LocationPickerSheetProps {
@@ -124,8 +124,8 @@ export function LocationPickerSheet({
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text variant="subheading">Share Location</Text>
-            <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
+            <Text variant="headline">Share Location</Text>
+            <Text variant="subhead" style={{ color: colors.labelSecondary }}>
               Send your current location
             </Text>
           </View>
@@ -144,14 +144,14 @@ export function LocationPickerSheet({
           {isLoading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={colors.primary} />
-              <Text variant="bodySm" style={{ color: colors.labelSecondary, marginTop: Spacing.sm }}>
+              <Text variant="subhead" style={{ color: colors.labelSecondary, marginTop: Spacing.sm }}>
                 Getting your location...
               </Text>
             </View>
           ) : error ? (
             <View style={styles.errorContainer}>
               <MapPin size={Sizes.iconXl} color={colors.labelTertiary} />
-              <Text variant="bodySm" style={{ color: colors.labelSecondary, marginTop: Spacing.sm, textAlign: 'center' }}>
+              <Text variant="subhead" style={{ color: colors.labelSecondary, marginTop: Spacing.sm, textAlign: 'center' }}>
                 {error}
               </Text>
               <HapticPressable
@@ -159,7 +159,7 @@ export function LocationPickerSheet({
                 onPress={handleRefreshLocation}
                 style={[styles.retryButton, { backgroundColor: colors.primary }]}
               >
-                <Text variant="bodySm" style={{ color: colors.primaryForeground }}>Try Again</Text>
+                <Text variant="subhead" style={{ color: colors.primaryForeground }}>Try Again</Text>
               </HapticPressable>
             </View>
           ) : mapPreviewUrl ? (
@@ -187,11 +187,11 @@ export function LocationPickerSheet({
                 </Text>
               )}
               {location.address ? (
-                <Text variant="bodySm" style={{ color: colors.labelSecondary }} numberOfLines={2}>
+                <Text variant="subhead" style={{ color: colors.labelSecondary }} numberOfLines={2}>
                   {location.address}
                 </Text>
               ) : (
-                <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
+                <Text variant="subhead" style={{ color: colors.labelSecondary }}>
                   {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
                 </Text>
               )}
@@ -293,11 +293,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4,
+    ...Shadows.md,
   },
   loadingContainer: {
     flex: 1,
@@ -327,7 +323,7 @@ const styles = StyleSheet.create({
   },
   locationTextContainer: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs,
   },
   refreshButton: {
     width: Sizes.bubbleMd,

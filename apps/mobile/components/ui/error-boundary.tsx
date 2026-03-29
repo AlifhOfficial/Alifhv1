@@ -89,7 +89,7 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
         </View>
 
         {/* Title */}
-        <Text variant="title" style={[styles.title, { color: colors.label }]}>
+        <Text variant="title2Emphasized" style={[styles.title, { color: colors.label }]}>
           Something went wrong
         </Text>
 
@@ -125,18 +125,18 @@ function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
               style={styles.detailsToggle}
             >
               <Bug size={Sizes.iconXs} color={colors.labelQuaternary} />
-              <Text variant="bodySm" tone="muted">
+              <Text variant="subhead" tone="muted">
                 {showDetails ? 'Hide' : 'Show'} error details
               </Text>
             </Pressable>
 
             {showDetails && (
               <View style={[styles.errorBox, { backgroundColor: colors.surface }]}>
-                <Text variant="bodySm" style={{ color: colors.error, fontFamily: 'monospace' }} tone="secondary">
+                <Text variant="subhead" style={{ color: colors.error, fontFamily: 'monospace' }} tone="secondary">
                   {error.name}: {error.message}
                 </Text>
                 {error.stack && (
-                  <Text variant="bodySm" tone="muted" style={styles.stackTrace}>
+                  <Text variant="subhead" tone="muted" style={styles.stackTrace}>
                     {error.stack.split('\n').slice(0, 5).join('\n')}
                   </Text>
                 )}

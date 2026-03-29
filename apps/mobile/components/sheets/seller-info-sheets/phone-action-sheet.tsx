@@ -105,7 +105,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
       <BottomSheetView style={styles.content}>
         {/* Header with close */}
         <View style={styles.header}>
-          <Text variant="heading">{phoneNumber}</Text>
+          <Text variant="title3Emphasized">{phoneNumber}</Text>
           <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
@@ -130,7 +130,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.primary }]}>
               <Phone size={Sizes.iconMd} color={colors.primaryForeground} />
             </View>
-            <Text variant="bodySm" style={styles.actionLabel}>Call</Text>
+            <Text variant="subhead" style={styles.actionLabel}>Call</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -143,7 +143,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.whatsapp }]}>
               <Ionicons name="logo-whatsapp" size={Sizes.iconLg} color={colors.primaryForeground} />
             </View>
-            <Text variant="bodySm" style={styles.actionLabel}>WhatsApp</Text>
+            <Text variant="subhead" style={styles.actionLabel}>WhatsApp</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -156,7 +156,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
             <View style={[styles.iconCircle, { backgroundColor: colors.surfaceSecondary }]}>
               <Copy size={Sizes.iconMd} color={colors.label} />
             </View>
-            <Text variant="bodySm" style={styles.actionLabel}>Copy</Text>
+            <Text variant="subhead" style={styles.actionLabel}>Copy</Text>
           </HapticPressable>
         </View>
       </BottomSheetView>

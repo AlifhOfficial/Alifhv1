@@ -149,7 +149,7 @@ export const authStyles = StyleSheet.create({
   },
   dividerText: {
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: Typography.caption1Emphasized.letterSpacing,
   },
 
   // ═══════════════════════════════════════════════════

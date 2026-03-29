@@ -95,13 +95,13 @@ export function PasswordStep({
 
           {/* Hero Section */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Text variant="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]} tone="secondary">
+            <Text variant="subhead" style={[onboardingStyles.greeting, { color: colors.primary }]} tone="secondary">
               Almost there, {userName}
             </Text>
-            <Text variant="title" style={[onboardingStyles.title, { color: colors.white }]}>
+            <Text variant="title2Emphasized" style={[onboardingStyles.title, { color: colors.white }]}>
               Create a password
             </Text>
-            <Text variant="bodySm" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
+            <Text variant="subhead" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
               Keep your account secure
             </Text>
           </Animated.View>
@@ -112,7 +112,7 @@ export function PasswordStep({
               entering={FadeIn.duration(200)}
               style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
             >
-              <Text variant="bodySm" tone="error" style={onboardingStyles.errorText}>
+              <Text variant="subhead" tone="error" style={onboardingStyles.errorText}>
                 {error}
               </Text>
             </Animated.View>
@@ -161,7 +161,7 @@ export function PasswordStep({
                 onPress={() => setShowPassword(!showPassword)}
                 style={onboardingStyles.showPasswordButton}
               >
-                <Text variant="bodySm" style={{ color: colors.labelTertiary }}>
+                <Text variant="subhead" style={{ color: colors.labelTertiary }}>
                   {showPassword ? 'Hide' : 'Show'}
                 </Text>
               </HapticPressable>
@@ -220,7 +220,7 @@ function PasswordRequirement({ met, text, colors }: PasswordRequirementProps) {
           { backgroundColor: met ? colors.success : colors.labelTertiary },
         ]}
       />
-      <Text variant="bodySm" style={{ color: met ? colors.success : colors.labelTertiary }} tone="secondary">
+      <Text variant="subhead" style={{ color: met ? colors.success : colors.labelTertiary }} tone="secondary">
         {text}
       </Text>
     </View>

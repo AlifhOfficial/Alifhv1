@@ -52,7 +52,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Transmission */}
       <View style={styles.section}>
-        <Text variant="caption" uppercase>Transmission</Text>
+        <Text variant="caption1Emphasized" uppercase>Transmission</Text>
         <View style={styles.chipWrap}>
           {TRANSMISSION_TYPES.map((type) => {
             const isSelected = data.transmission === type.value;
@@ -69,7 +69,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {type.label}
@@ -82,7 +82,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Fuel Type */}
       <View style={styles.section}>
-        <Text variant="caption" uppercase>Fuel Type</Text>
+        <Text variant="caption1Emphasized" uppercase>Fuel Type</Text>
         <View style={styles.chipWrap}>
           {FUEL_TYPES.map((fuel) => {
             const isSelected = data.fuelType === fuel.value;
@@ -99,7 +99,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {fuel.label}
@@ -112,7 +112,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Engine Size */}
       <View style={styles.section}>
-        <Text variant="caption" uppercase>Engine Size</Text>
+        <Text variant="caption1Emphasized" uppercase>Engine Size</Text>
         <View style={styles.chipWrap}>
           {ENGINE_SIZES.map((size) => {
             const isSelected = data.engineSize === size.value;
@@ -129,7 +129,7 @@ export function PowertrainStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {size.label}

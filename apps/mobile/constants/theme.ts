@@ -3,13 +3,29 @@
 import { Dimensions, PixelRatio, Platform, TextStyle } from 'react-native';
 
 export const SCREEN_WIDTH = Dimensions.get('window').width;
-export const BASE_WIDTH   = 430;
+export const SCREEN_HEIGHT = Dimensions.get('window').height;
+export const BASE_WIDTH = 430;
+export const BASE_HEIGHT = 932;
+const MIN_DEVICE_SCALE = 0.82;
+const MAX_DEVICE_SCALE = 1;
 
-export const scale = (size: number, factor = 0.5): number => {
-  const ratio = SCREEN_WIDTH / BASE_WIDTH;
-  return Math.round(PixelRatio.roundToNearestPixel(size + size * (ratio - 1) * factor));
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+const getDeviceScale = () => {
+  const widthRatio = SCREEN_WIDTH / BASE_WIDTH;
+  const heightRatio = SCREEN_HEIGHT / BASE_HEIGHT;
+  const blendedRatio = widthRatio * 0.68 + heightRatio * 0.32;
+  return clamp(blendedRatio, MIN_DEVICE_SCALE, MAX_DEVICE_SCALE);
 };
-export const fontScale = (size: number) => scale(size, 0.3);
+
+export const scale = (size: number, factor = 0.86): number => {
+  const ratio = getDeviceScale();
+  const scaled = size * (1 + (ratio - 1) * factor);
+  return Math.round(PixelRatio.roundToNearestPixel(scaled));
+};
+
+export const fontScale = (size: number) => scale(size, 0.62);
 
 export const Fonts = {
   regular:   '400' as const,
@@ -19,18 +35,15 @@ export const Fonts = {
   extraBold: '800' as const,
 } as const;
 
-// ── SYSTEM COLORS (Apple HIG + Material Design 3) ──────────────────────────
-// All color values are from official platform specifications.
-// iOS: Apple Human Interface Guidelines system colors
-// Android: Material Design 3 dynamic color equivalents
+// ── APP PALETTE ─────────────────────────────────────────────────────────────
+// Shared design palette used directly by the app on both iOS and Android.
 
-/** Apple HIG system colors — official specifications */
-const iosSystemColors = {
-  // System grays (neutral — 0% saturation)
+const palette = {
+  // Neutrals
   gray:  '#8C8C8C',  gray2: '#ADADAD',  gray3: '#C7C7C7',
   gray4: '#D1D1D1',  gray5: '#E5E5E5',  gray6: '#F2F2F2',
   
-  // Semantic labels (neutral greys)
+  // Semantic labels
   label:           '#000000',  // Primary text (light mode)
   labelDark:       '#FAFAFA',  // Primary text (dark mode) - hsl(0,0%,98%)
   secondaryLabel:  '#3C3C3C',  secondaryLabelDark:  '#ADADAD',  // hsl(0,0%,68%) - matches web muted-foreground
@@ -42,21 +55,21 @@ const iosSystemColors = {
   secondarySystemBackground: '#F5F5F5',  secondarySystemBackgroundDark: '#1A1A1A',  // hsl(0,0%,10%) - matches web card
   tertiarySystemBackground:  '#FFFFFF',  tertiarySystemBackgroundDark:  '#262626',  // hsl(0,0%,15%) - matches web muted
   
-  // Grouped backgrounds (for grouped lists/tables)
+  // Grouped backgrounds
   groupedBackground:          '#F5F5F5',  groupedBackgroundDark:          '#000000',
   secondaryGroupedBackground: '#FFFFFF',  secondaryGroupedBackgroundDark: '#1A1A1A',
   tertiaryGroupedBackground:  '#F5F5F5',  tertiaryGroupedBackgroundDark:  '#262626',
   
-  // Fills (translucent overlays — neutral)
+  // Fills
   fill:  'rgba(128,128,128,0.20)',  fillDark:  'rgba(128,128,128,0.36)',
   fill2: 'rgba(128,128,128,0.16)',  fill2Dark: 'rgba(128,128,128,0.32)',
   fill3: 'rgba(128,128,128,0.12)',  fill3Dark: 'rgba(128,128,128,0.24)',
   
-  // Separators (neutral greys)
+  // Borders & separators
   separator:       'rgba(0,0,0,0.10)',     separatorDark:       'rgba(255,255,255,0.10)',
   opaqueSeparator: '#E0E0E0',              opaqueSeparatorDark: '#383838',  // hsl(0,0%,22%) - matches web border
   
-  // System accent colors (official HIG values)
+  // Accent colors
   blue:   '#007AFF',  blueDark:   '#0A84FF',
   green:  '#34C759',  greenDark:  '#30D158',
   indigo: '#5856D6',  indigoDark: '#5E5CE6',
@@ -66,34 +79,6 @@ const iosSystemColors = {
   red:    '#FF3B30',  redDark:    '#FF453A',
   teal:   '#5AC8FA',  tealDark:   '#64D2FF',
   yellow: '#FFCC00',  yellowDark: '#FFD60A',
-} as const;
-
-/** Material Design 3 equivalent mappings */
-const md3Colors = {
-  // Surface tiers (neutral greys to match web, no purple tint)
-  surfaceContainerLowest:  '#FFFFFF',  surfaceContainerLowestDark:  '#0D0D0D',  // hsl(0,0%,5%)
-  surfaceContainerLow:     '#F5F5F5',  surfaceContainerLowDark:     '#141414',  // hsl(0,0%,8%)
-  surfaceContainer:        '#F0F0F0',  surfaceContainerDark:        '#1A1A1A',  // hsl(0,0%,10%) - web card
-  surfaceContainerHigh:    '#EBEBEB',  surfaceContainerHighDark:    '#262626',  // hsl(0,0%,15%) - web muted
-  surfaceContainerHighest: '#E6E6E6',  surfaceContainerHighestDark: '#333333',  // hsl(0,0%,20%)
-  
-  // On-surface text (neutral)
-  onSurface:          '#1A1A1A',  onSurfaceDark:          '#E6E6E6',
-  onSurfaceVariant:   '#474747',  onSurfaceVariantDark:   '#C7C7C7',
-  
-  // Outline (borders/separators — neutral)
-  outline:        '#787878',  outlineDark:        '#939393',
-  outlineVariant: '#C7C7C7',  outlineVariantDark: '#474747',
-  
-  // Primary (brand/accent color — using HIG blue as default)
-  primary:         '#0066FF',  primaryDark:         '#0A84FF',
-  onPrimary:       '#FFFFFF',  onPrimaryDark:       '#FFFFFF',
-  primaryContainer:'#E6F0FF',  primaryContainerDark:'#0D2847',
-  
-  // Semantic states
-  error:         '#BA1A1A',  errorDark:         '#FF5449',
-  onError:       '#FFFFFF',  onErrorDark:       '#690005',
-  errorContainer:'#FFDAD6',  errorContainerDark:'#93000A',
 } as const;
 
 /** Color palette type — ensures light/dark compatibility */
@@ -166,7 +151,7 @@ export interface ColorPalette {
   infoMuted: string;      // Info background
 }
 
-/** Semantic color system — platform-adaptive */
+/** Semantic color system — unified across iOS and Android */
 export const Colors: { light: ColorPalette; dark: ColorPalette } = {
   light: {
     // ── Base ──────────────────────────────────────────────────────────────
@@ -184,42 +169,42 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     surfaceTertiary:  '#F5F5F5',   // Subtle grey elevated (mirrors dark #333333)
     
     // ── Text/Labels (4-tier semantic hierarchy) ───────────────────────────
-    label:           iosSystemColors.label,           // Primary text
-    labelSecondary:  iosSystemColors.secondaryLabel,  // Secondary text (60% opacity equivalent)
-    labelTertiary:   iosSystemColors.tertiaryLabel,   // Tertiary text (30% opacity equivalent)
-    labelQuaternary: iosSystemColors.quaternaryLabel, // Quaternary text (18% opacity equivalent)
-    placeholder:     iosSystemColors.tertiaryLabel,   // Placeholder text in inputs
+    label:           palette.label,           // Primary text
+    labelSecondary:  palette.secondaryLabel,  // Secondary text (60% opacity equivalent)
+    labelTertiary:   palette.tertiaryLabel,   // Tertiary text (30% opacity equivalent)
+    labelQuaternary: palette.quaternaryLabel, // Quaternary text (18% opacity equivalent)
+    placeholder:     palette.tertiaryLabel,   // Placeholder text in inputs
     
     // ── Borders & Separators ──────────────────────────────────────────────
-    border:    iosSystemColors.separator,       // Standard separator (translucent)
-    separator: iosSystemColors.opaqueSeparator, // Opaque separator
-    outline:   md3Colors.outline,               // MD3 outline (for borders)
+    border:    palette.separator,       // Standard separator (translucent)
+    separator: palette.opaqueSeparator, // Opaque separator
+    outline:   palette.gray2,           // Shared outline tone
     
     // ── Fills (translucent overlays) ──────────────────────────────────────
-    fill:  iosSystemColors.fill,  // Primary fill
-    fill2: iosSystemColors.fill2, // Secondary fill
-    fill3: iosSystemColors.fill3, // Tertiary fill
+    fill:  palette.fill,  // Primary fill
+    fill2: palette.fill2, // Secondary fill
+    fill3: palette.fill3, // Tertiary fill
     
     // ── Accent/Primary (brand color) ──────────────────────────────────────
-    primary:          iosSystemColors.blue,           // Primary accent
-    primaryForeground:md3Colors.onPrimary,            // Text on primary
-    primaryMuted:     md3Colors.primaryContainer,     // Subtle primary background
+    primary:          palette.blue,           // Primary accent
+    primaryForeground:'#FFFFFF',                       // Text on primary
+    primaryMuted:     'rgba(0,122,255,0.12)',         // Subtle primary background
     
     // ── Semantic states ───────────────────────────────────────────────────
-    success:      iosSystemColors.green,           // Success state
+    success:      palette.green,           // Success state
     successMuted: 'rgba(52,199,89,0.15)',          // Success background
-    warning:      iosSystemColors.orange,          // Warning state
+    warning:      palette.orange,          // Warning state
     warningMuted: 'rgba(255,149,0,0.15)',          // Warning background
-    error:        iosSystemColors.red,             // Error state
-    errorMuted:   md3Colors.errorContainer,        // Error background
+    error:        palette.red,             // Error state
+    errorMuted:   'rgba(255,59,48,0.14)',          // Error background
     
     // ── Additional semantic colors ────────────────────────────────────────
-    link:     iosSystemColors.blue,  // Hyperlinks
+    link:     palette.blue,  // Hyperlinks
     overlay:  'rgba(0,0,0,0.4)',     // Modal/sheet overlay
-    skeleton: iosSystemColors.gray3, // Skeleton loader
+    skeleton: palette.gray3, // Skeleton loader
     
     // ── App-specific ──────────────────────────────────────────────────────
-    favorite: iosSystemColors.pink,  // Favorite/like indicator
+    favorite: palette.pink,  // Favorite/like indicator
     
     // ── BLK tier badge (premium badge branding) ───────────────────────────
     blkBadgeBg:      'rgba(0,0,0,0.85)',                 // Dark badge background
@@ -227,8 +212,8 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     blkBadgeFg:      '#FAFAFA',                          // Light text on dark badge
     
     // ── Status indicators (online/presence) ───────────────────────────────
-    online:  iosSystemColors.red,     // Online indicator (red per brand)
-    offline: iosSystemColors.purple,  // Offline/away indicator
+    online:  palette.red,     // Online indicator (red per brand)
+    offline: palette.purple,  // Offline/away indicator
     
     // ── Semantic accent colors ────────────────────────────────────────────
     star:      '#FACC15',                  // Rating stars (amber)
@@ -244,52 +229,52 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     white: '#FFFFFF',
     
     // ── Backgrounds (3-tier hierarchy) ────────────────────────────────────
-    background:          iosSystemColors.systemBackgroundDark,           // Pure black (OLED)
-    backgroundSecondary: iosSystemColors.secondarySystemBackgroundDark,  // Slightly elevated
-    backgroundTertiary:  iosSystemColors.tertiarySystemBackgroundDark,   // Third-level
+    background:          palette.systemBackgroundDark,           // Pure black (OLED)
+    backgroundSecondary: palette.secondarySystemBackgroundDark,  // Slightly elevated
+    backgroundTertiary:  palette.tertiarySystemBackgroundDark,   // Third-level
     
     // ── Surfaces (for elevated/grouped content) ───────────────────────────
-    surface:          md3Colors.surfaceContainerDark,     // Default surface
-    surfaceSecondary: md3Colors.surfaceContainerHighDark, // Elevated
-    surfaceTertiary:  md3Colors.surfaceContainerHighestDark, // Highest
+    surface:          palette.secondarySystemBackgroundDark, // Default surface
+    surfaceSecondary: palette.tertiarySystemBackgroundDark,  // Elevated
+    surfaceTertiary:  '#333333',                                     // Highest
     
     // ── Text/Labels (4-tier semantic hierarchy) ───────────────────────────
-    label:           iosSystemColors.labelDark,           // Primary text (white)
-    labelSecondary:  iosSystemColors.secondaryLabelDark,  // Secondary
-    labelTertiary:   iosSystemColors.tertiaryLabelDark,   // Tertiary
-    labelQuaternary: iosSystemColors.quaternaryLabelDark, // Quaternary
-    placeholder:     iosSystemColors.tertiaryLabelDark,   // Placeholder
+    label:           palette.labelDark,           // Primary text (white)
+    labelSecondary:  palette.secondaryLabelDark,  // Secondary
+    labelTertiary:   palette.tertiaryLabelDark,   // Tertiary
+    labelQuaternary: palette.quaternaryLabelDark, // Quaternary
+    placeholder:     palette.tertiaryLabelDark,   // Placeholder
     
     // ── Borders & Separators ──────────────────────────────────────────────
-    border:    iosSystemColors.separatorDark,
-    separator: iosSystemColors.opaqueSeparatorDark,
-    outline:   md3Colors.outlineDark,
+    border:    palette.separatorDark,
+    separator: palette.opaqueSeparatorDark,
+    outline:   '#474747',
     
     // ── Fills (translucent overlays) ──────────────────────────────────────
-    fill:  iosSystemColors.fillDark,
-    fill2: iosSystemColors.fill2Dark,
-    fill3: iosSystemColors.fill3Dark,
+    fill:  palette.fillDark,
+    fill2: palette.fill2Dark,
+    fill3: palette.fill3Dark,
     
     // ── Accent/Primary (brand color) ──────────────────────────────────────
-    primary:          iosSystemColors.blueDark,
-    primaryForeground:md3Colors.onPrimaryDark,
-    primaryMuted:     md3Colors.primaryContainerDark,
+    primary:          palette.blueDark,
+    primaryForeground:'#FFFFFF',
+    primaryMuted:     'rgba(10,132,255,0.18)',
     
     // ── Semantic states ───────────────────────────────────────────────────
-    success:      iosSystemColors.greenDark,
+    success:      palette.greenDark,
     successMuted: 'rgba(48,209,88,0.20)',
-    warning:      iosSystemColors.orangeDark,
+    warning:      palette.orangeDark,
     warningMuted: 'rgba(255,159,10,0.20)',
-    error:        iosSystemColors.redDark,
-    errorMuted:   md3Colors.errorContainerDark,
+    error:        palette.redDark,
+    errorMuted:   'rgba(255,69,58,0.22)',
     
     // ── Additional semantic colors ────────────────────────────────────────
-    link:     iosSystemColors.blueDark,
+    link:     palette.blueDark,
     overlay:  'rgba(0,0,0,0.7)',
-    skeleton: md3Colors.surfaceContainerHighestDark, // #333333 — subtle neutral on dark surfaces
+    skeleton: '#333333', // subtle neutral on dark surfaces
     
     // ── App-specific ──────────────────────────────────────────────────────
-    favorite: iosSystemColors.pinkDark,
+    favorite: palette.pinkDark,
     
     // ── BLK tier badge (premium badge branding) ───────────────────────────
     blkBadgeBg:      'rgba(0,0,0,0.9)',                     // Slightly darker badge
@@ -297,8 +282,8 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     blkBadgeFg:      '#FAFAFA',                             // Same light text
     
     // ── Status indicators (online/presence) ───────────────────────────────
-    online:  iosSystemColors.redDark,
-    offline: iosSystemColors.purpleDark,
+    online:  palette.redDark,
+    offline: palette.purpleDark,
     
     // ── Semantic accent colors ────────────────────────────────────────────
     star:      '#FBBF24',                  // Rating stars (amber, slightly brighter for dark)
@@ -349,14 +334,22 @@ export const Sizes = {
   iconXs: scale(14), iconSm: scale(18), iconMd: scale(22), iconLg: scale(24), iconXl: scale(28),
   avatarSm: scale(32), avatarMd: scale(40), avatarLg: scale(48),
   bubbleXs: scale(28), bubble: scale(36), bubbleMd: scale(42),
-  pillHeight: scale(36), pillHeightMd: scale(42), pillRadius: 18, pillRadiusMd: 21,
+  pillHeight: scale(36), pillHeightMd: scale(42), pillRadius: scale(18), pillRadiusMd: scale(21),
   actionButtonSm: scale(36), actionButtonMd: scale(40), actionButtonLg: scale(48),
   cardThumbnailWidth: scale(160), cardThumbnailHeight: scale(140),
   badgePaddingH: scale(6), badgePaddingV: scale(3),
 } as const;
 
 export const Radius = {
-  none: 0, sm: 4, md: 8, lg: 12, xl: 16, '2xl': 20, '3xl': 24, full: 9999,
+  none: 0,
+  sm: scale(4),
+  md: scale(8),
+  lg: scale(12),
+  xl: scale(16),
+  '2xl': scale(20),
+  '3xl': scale(24),
+  circle: Sizes.avatarMd / 2,
+  full: 9999,
 } as const;
 
 /** Stacking layers — use instead of raw zIndex values */
@@ -368,9 +361,7 @@ export const ZIndex = {
 } as const;
 
 // ── TYPOGRAPHY ──────────────────────────────────────────────────────────────
-// iOS     → Apple HIG Dynamic Type, "Large" (default) sizes
-// Android → Material Design 3, remapped to the same semantic size tiers
-// while preserving platform-typical weight behavior.
+// Unified Apple HIG-based typography for both iOS and Android.
 
 const b:  TextStyle = { includeFontPadding: false };
 const bc: TextStyle = { includeFontPadding: false, textAlignVertical: 'center' };
@@ -424,79 +415,69 @@ const ios = {
   caption2:    t(11, 13, '600'),  caption2E:    t(11, 13, '700'),  // 11pt  Semibold / Bold
 } as const;
 
-// ── Material Design 3 — remapped to Apple HIG Large equivalents ──────────────
-//   Token names preserved for semantic clarity; sizes now mirror HIG exactly.
-//   display* → title tier  |  headline* → heading tier
-//   title*  → subheading/body tier  |  label* → caption/label tier  |  body* → body tier
-const md3 = {
-  displayLg:  t(34, 41, '600', undefined, 37),                              // = ios.largeTitle
-  displayMd:  t(28, 34, '600', undefined, 31),                              // = ios.title1
-  displaySm:  t(22, 28, '600', undefined, 25),                              // = ios.title2
-  headlineLg: t(20, 25, '600', undefined, androidLineHeight(20, 25)),       // = ios.title3
-  headlineMd: t(17, 22, '600', undefined, androidLineHeight(17, 22)),       // = ios.headline
-  headlineSm: t(16, 21, '600', undefined, androidLineHeight(16, 21)),       // = ios.callout
-  titleLg:    t(15, 20, '600', undefined, androidLineHeight(15, 20)),       // = ios.subhead
-  titleMd:    t(13, 18, '600', undefined, androidLineHeight(13, 18)),       // = ios.footnote
-  titleSm:    t(12, 16, '600', undefined, androidLineHeight(12, 16)),       // = ios.caption1
-  labelLg:    t(13, 18, '600', undefined, androidLineHeight(13, 18)),       // = ios.footnote
-  labelMd:    t(12, 16, '600', undefined, androidLineHeight(12, 16)),       // = ios.caption1
-  labelSm:    t(11, 13, '600', undefined, androidLineHeight(11, 13)),       // = ios.caption2
-  bodyLg:     t(17, 22, '600', undefined, androidLineHeight(17, 22)),       // = ios.body
-  bodyMd:     t(16, 21, '600', undefined, androidLineHeight(16, 21)),       // = ios.callout
-  bodySm:     t(15, 20, '600', undefined, androidLineHeight(15, 20)),       // = ios.subhead
-} as const;
-
-const p = <T extends TextStyle>(iosVal: T, androidVal: T): T =>
-  (Platform.select({ ios: iosVal, android: androidVal }) ?? iosVal) as T;
-
-// ── Semantic tokens ───────────────────────────────────────────────────────────
-//   iOS uses emphasized variants for display/heading tiers; Android maps to the
-//   equivalent MD3 role with tighter leading to offset larger font metrics.
-//
-//                        iOS                   Android (md3 equivalent)     pt
 export const Typography = {
-  hero:       p(ios.largeTitleE,  md3.displayLg  ),  // Display      — 34pt 700/600
-  title:      p(ios.title2E,      md3.displaySm  ),  // Title 2      — 22pt 700/600
-  heading:    p(ios.title3E,      md3.headlineLg ),  // Title 3      — 20pt 700/600
-  subheading: p(ios.headline,     md3.headlineMd ),  // Headline     — 17pt 600/600
-
-  bodyLg:     p(ios.body,         md3.bodyLg     ),  // Body         — 17pt 600/600
-  body:       p(ios.callout,      md3.bodyMd     ),  // Callout      — 16pt 600/600
-  bodySm:     p(ios.subhead,      md3.bodySm     ),  // Subhead      — 15pt 600/600
-
-  // Caption tier — same value on both platforms
-  label: p(
-    tc(13, 18, R7, { letterSpacing: 0.8 }),  // Footnote (13pt) — uppercase labels
-    tc(13, 18, R6, { letterSpacing: 0.8 }, androidLineHeight(13, 18)),  // md3.labelLg
-  ),
-  caption: p(
-    tc(12, 16, R7, { letterSpacing: 0.5 }),  // Caption 1 (12pt) — badges, timestamps
-    tc(12, 16, R6, { letterSpacing: 0.5 }, androidLineHeight(12, 16)),  // md3.labelMd
-  ),
+  largeTitle:             ios.largeTitle,
+  largeTitleEmphasized:   ios.largeTitleE,
+  title1:                 ios.title1,
+  title1Emphasized:       ios.title1E,
+  title2:                 ios.title2,
+  title2Emphasized:       ios.title2E,
+  title3:                 ios.title3,
+  title3Emphasized:       ios.title3E,
+  headline:               ios.headline,
+  body:                   ios.body,
+  bodyEmphasized:         ios.bodyE,
+  callout:                ios.callout,
+  calloutEmphasized:      ios.calloutE,
+  subhead:                ios.subhead,
+  subheadEmphasized:      ios.subheadE,
+  footnote:               ios.footnote,
+  footnoteEmphasized:     tc(13, 18, R7, { letterSpacing: 0.8 }),
+  caption1:               ios.caption1,
+  caption1Emphasized:     tc(12, 16, R7, { letterSpacing: 0.5 }),
+  caption2:               ios.caption2,
+  caption2Emphasized:     ios.caption2E,
 } as const;
 
-// ── Raw platform type scales (for direct platform-specific use) ─────────────
+// ── Raw type scales (for direct use) ────────────────────────────────────────
 export const IosTypeScale = ios;
-export const Md3TypeScale = md3;
 
 export const Shadows = {
-  sm: { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 },
-  md: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4, elevation: 2 },
-  lg: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4 },
+  sm: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: scale(1, 0.45) },
+    shadowOpacity: 0.05,
+    shadowRadius: scale(2, 0.45),
+    elevation: scale(1, 0.35),
+  },
+  md: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: scale(2, 0.45) },
+    shadowOpacity: 0.08,
+    shadowRadius: scale(4, 0.45),
+    elevation: scale(2, 0.35),
+  },
+  lg: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: scale(4, 0.45) },
+    shadowOpacity: 0.12,
+    shadowRadius: scale(8, 0.45),
+    elevation: scale(4, 0.35),
+  },
 } as const;
 
 // ── Type exports ────────────────────────────────────────────────────────────
 export type ColorScheme = keyof typeof Colors;
 export type ThemeColors = ColorPalette;
 
-/** iOS system grays — neutral scale aligned with md3 surface tiers
+/** iOS system grays — neutral scale aligned with our shared surface tiers
  *  Light values: original HIG, all hsl(0,0%,N%)
  *  Dark values:  inverted to match our established neutral dark scale */
 export const SystemGrays = {
-  gray:  iosSystemColors.gray,   grayDark:  iosSystemColors.quaternaryLabelDark,  // #595959 — hsl(0,0%,35%)
-  gray2: iosSystemColors.gray2,  gray2Dark: md3Colors.outlineVariantDark,         // #474747 — hsl(0,0%,28%)
-  gray3: iosSystemColors.gray3,  gray3Dark: iosSystemColors.opaqueSeparatorDark,  // #383838 — hsl(0,0%,22%)
-  gray4: iosSystemColors.gray4,  gray4Dark: md3Colors.surfaceContainerHighestDark,// #333333 — hsl(0,0%,20%)
-  gray5: iosSystemColors.gray5,  gray5Dark: iosSystemColors.tertiarySystemBackgroundDark, // #262626 — hsl(0,0%,15%)
-  gray6: iosSystemColors.gray6,  gray6Dark: iosSystemColors.secondarySystemBackgroundDark,// #1A1A1A — hsl(0,0%,10%)
+  gray:  palette.gray,   grayDark:  palette.quaternaryLabelDark,  // #595959 — hsl(0,0%,35%)
+  gray2: palette.gray2,  gray2Dark: '#474747',                            // hsl(0,0%,28%)
+  gray3: palette.gray3,  gray3Dark: palette.opaqueSeparatorDark,  // #383838 — hsl(0,0%,22%)
+  gray4: palette.gray4,  gray4Dark: '#333333',                            // hsl(0,0%,20%)
+  gray5: palette.gray5,  gray5Dark: palette.tertiarySystemBackgroundDark, // #262626 — hsl(0,0%,15%)
+  gray6: palette.gray6,  gray6Dark: palette.secondarySystemBackgroundDark,// #1A1A1A — hsl(0,0%,10%)
 } as const;

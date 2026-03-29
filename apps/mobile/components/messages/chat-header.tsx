@@ -104,7 +104,7 @@ export function ChatHeader({
               <Text variant="body" style={{ color: colors.label }} numberOfLines={1}>
                 {name}
               </Text>
-              <Text variant="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1} tone="secondary">
+              <Text variant="subhead" style={{ color: colors.labelTertiary }} numberOfLines={1} tone="secondary">
                 {activityText}
                 {listingTitle ? `  ·  ${listingTitle}` : ''}
               </Text>
@@ -120,7 +120,7 @@ export function ChatHeader({
               <Text variant="body" style={{ color: colors.label }} numberOfLines={1}>
                 {name}
               </Text>
-              <Text variant="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1} tone="secondary">
+              <Text variant="subhead" style={{ color: colors.labelTertiary }} numberOfLines={1} tone="secondary">
                 {activityText}
                 {listingTitle ? `  ·  ${listingTitle}` : ''}
               </Text>
@@ -160,6 +160,6 @@ const styles = StyleSheet.create({
   },
   nameBlock: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs,
   },
 });

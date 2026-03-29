@@ -22,7 +22,7 @@ import * as Haptics from 'expo-haptics';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { ArrowRight } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Shadows, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { HapticPressable } from './haptic-pressable';
@@ -78,10 +78,10 @@ export const AuthRequiredEmptyState = memo(function AuthRequiredEmptyState({
         <View style={styles.content}>
           {/* Text */}
           <Animated.View entering={FadeInUp.delay(100).duration(400)} style={styles.textContent}>
-            <Text variant="subheading">
+            <Text variant="headline">
               {title}
             </Text>
-            <Text variant="bodySm" style={styles.subtitle} tone="secondary">
+            <Text variant="subhead" style={styles.subtitle} tone="secondary">
               {subtitle}
             </Text>
           </Animated.View>
@@ -103,7 +103,7 @@ export const AuthRequiredEmptyState = memo(function AuthRequiredEmptyState({
               style={styles.signInRow}
               hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
             >
-              <Text variant="subheading" style={{ color: colors.label }}>Sign In</Text>
+              <Text variant="headline" style={{ color: colors.label }}>Sign In</Text>
               <View style={[styles.glassBubble, { backgroundColor: colors.background, borderColor: colors.border }]}>
                 <ArrowRight size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
               </View>
@@ -131,12 +131,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius['2xl'],
     borderWidth: 1,
     overflow: 'hidden',
-    // Shadow
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: Spacing.xs },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    ...Shadows.md,
   },
   imageContainer: {
     width: '100%',

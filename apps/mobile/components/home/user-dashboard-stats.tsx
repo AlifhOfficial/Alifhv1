@@ -1,7 +1,7 @@
 import { Text, Skeleton } from '@/components/ui';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Colors, Spacing, Radius, Layout, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Typography, Sizes, scale } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { type UserDashboardStats } from '@/lib/dashboard-api';
 
@@ -9,6 +9,11 @@ interface UserDashboardStatsCardProps {
   stats?: UserDashboardStats | null;
   isLoading?: boolean;
 }
+
+const STATS_RING_SIZE = Sizes.bubbleMd + Spacing.md;
+const STATS_RING_STROKE = scale(5, 0.45);
+const STATS_CARD_SKELETON_HEIGHT = scale(130, 0.7);
+const TREND_ROW_HEIGHT = scale(56, 0.7);
 
 const formatCompact = (value: number) => {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
@@ -52,8 +57,8 @@ function PercentRing({ value, color, trackColor }: {
   value: number; color: string; trackColor: string;
 }) {
   const clamped = Math.min(Math.max(value, 0), 100);
-  const size = 56;
-  const stroke = 5;
+  const size = STATS_RING_SIZE;
+  const stroke = STATS_RING_STROKE;
   const r = (size - stroke) / 2;
   const circ = 2 * Math.PI * r;
   const offset = circ - (clamped / 100) * circ;
@@ -75,7 +80,7 @@ function PercentRing({ value, color, trackColor }: {
         position: 'absolute',
         transform: [{ rotate: '-90deg' }],
       }} />
-      <Text style={[Typography.caption, { color }]}>{clamped}%</Text>
+      <Text style={[Typography.caption1Emphasized, { color }]}>{clamped}%</Text>
     </View>
   );
 }
@@ -84,20 +89,20 @@ function PercentRing({ value, color, trackColor }: {
 function ListingsCard({ stats, colors }: { stats: UserDashboardStats; colors: typeof Colors.light }) {
   return (
     <View style={[styles.card, { backgroundColor: colors.backgroundSecondary }]}>
-      <Text style={[Typography.subheading, { color: colors.labelSecondary }]}>Listings</Text>
+      <Text style={[Typography.headline, { color: colors.labelSecondary }]}>Listings</Text>
 
       <View style={styles.row}>
         <View style={{ flex: 1 }}>
-          <Text style={[Typography.hero, { color: colors.primary }]}>
+          <Text style={[Typography.largeTitleEmphasized, { color: colors.primary }]}>
             {formatCompact(stats.activeListings)}
           </Text>
-          <Text style={[Typography.bodySm, { color: colors.labelTertiary }]}>
+          <Text style={[Typography.subhead, { color: colors.labelTertiary }]}>
             of {formatCompact(stats.totalListings)} active
           </Text>
         </View>
         {stats.expiringSoon > 0 && (
           <View style={[styles.alertPill, { backgroundColor: colors.warningMuted }]}>
-            <Text style={[Typography.caption, { color: colors.warning }]}>
+            <Text style={[Typography.caption1Emphasized, { color: colors.warning }]}>
               {stats.expiringSoon} expiring
             </Text>
           </View>
@@ -123,15 +128,15 @@ function ViewsTrendCard({ stats, colors }: { stats: UserDashboardStats; colors: 
   return (
     <View style={[styles.card, { backgroundColor: colors.backgroundSecondary }]}>
       <View style={styles.row}>
-        <Text style={[Typography.subheading, { color: colors.labelSecondary }]}>Views</Text>
-        <Text style={[Typography.caption, { color: colors.labelTertiary }]}>Last 7 days</Text>
+        <Text style={[Typography.headline, { color: colors.labelSecondary }]}>Views</Text>
+        <Text style={[Typography.caption1Emphasized, { color: colors.labelTertiary }]}>Last 7 days</Text>
       </View>
 
       <View style={styles.row}>
-        <Text style={[Typography.hero, { color: colors.info }]}>
+        <Text style={[Typography.largeTitleEmphasized, { color: colors.info }]}>
           {formatCompact(stats.totalViews)}
         </Text>
-        <Text style={[Typography.bodySm, { color: colors.labelTertiary }]}>
+        <Text style={[Typography.subhead, { color: colors.labelTertiary }]}>
           ~{formatCompact(stats.avgViewsPerListing)} per listing
         </Text>
       </View>
@@ -139,7 +144,7 @@ function ViewsTrendCard({ stats, colors }: { stats: UserDashboardStats; colors: 
       {hasData ? (
         <TrendChart data={trendData} color={colors.info} />
       ) : (
-        <Text style={[Typography.bodySm, { color: colors.labelTertiary, textAlign: 'center', paddingVertical: Spacing.lg }]}>
+        <Text style={[Typography.subhead, { color: colors.labelTertiary, textAlign: 'center', paddingVertical: Spacing.lg }]}>
           No trend data yet
         </Text>
       )}
@@ -151,14 +156,14 @@ function ViewsTrendCard({ stats, colors }: { stats: UserDashboardStats; colors: 
 function EngagementCard({ stats, colors }: { stats: UserDashboardStats; colors: typeof Colors.light }) {
   return (
     <View style={[styles.card, { backgroundColor: colors.backgroundSecondary }]}>
-      <Text style={[Typography.subheading, { color: colors.labelSecondary }]}>Engagement</Text>
+      <Text style={[Typography.headline, { color: colors.labelSecondary }]}>Engagement</Text>
 
       <View style={styles.row}>
         <View style={{ flex: 1, gap: Spacing.xs }}>
-          <Text style={[Typography.hero, { color: colors.success }]}>
+          <Text style={[Typography.largeTitleEmphasized, { color: colors.success }]}>
             {formatCompact(stats.totalSaves)}
           </Text>
-          <Text style={[Typography.bodySm, { color: colors.labelTertiary }]}>
+          <Text style={[Typography.subhead, { color: colors.labelTertiary }]}>
             saves from {formatCompact(stats.totalViews)} views
           </Text>
         </View>
@@ -176,14 +181,14 @@ function SalesCard({ stats, colors }: { stats: UserDashboardStats; colors: typeo
 
   return (
     <View style={[styles.card, { backgroundColor: colors.backgroundSecondary }]}>
-      <Text style={[Typography.subheading, { color: colors.labelSecondary }]}>Sales</Text>
+      <Text style={[Typography.headline, { color: colors.labelSecondary }]}>Sales</Text>
 
       <View style={styles.row}>
         <View style={{ flex: 1 }}>
-          <Text style={[Typography.hero, { color: colors.success }]}>
+          <Text style={[Typography.largeTitleEmphasized, { color: colors.success }]}>
             {formatCompact(stats.soldCount)}
           </Text>
-          <Text style={[Typography.bodySm, { color: colors.labelTertiary }]}>
+          <Text style={[Typography.subhead, { color: colors.labelTertiary }]}>
             sold ({conversionRate}% of listings)
           </Text>
         </View>
@@ -205,28 +210,28 @@ function ActivityCard({ stats, colors }: { stats: UserDashboardStats; colors: ty
 
   return (
     <View style={[styles.card, { backgroundColor: colors.backgroundSecondary }]}>
-      <Text style={[Typography.subheading, { color: colors.labelSecondary }]}>Your Activity</Text>
+      <Text style={[Typography.headline, { color: colors.labelSecondary }]}>Your Activity</Text>
 
       <View style={styles.pairRow}>
         <View style={[styles.pairCell, { backgroundColor: colors.surface }]}>
-          <Text style={[Typography.title, { color: colors.favorite }]}>
+          <Text style={[Typography.title2Emphasized, { color: colors.favorite }]}>
             {formatCompact(stats.mySaves)}
           </Text>
-          <Text style={[Typography.caption, { color: colors.labelTertiary }]}>Saved</Text>
+          <Text style={[Typography.caption1Emphasized, { color: colors.labelTertiary }]}>Saved</Text>
         </View>
         <View style={[styles.pairCell, { backgroundColor: colors.surface }]}>
-          <Text style={[Typography.title, { color: colors.amna }]}>
+          <Text style={[Typography.title2Emphasized, { color: colors.amna }]}>
             {stats.superlikesRemaining}
           </Text>
-          <Text style={[Typography.caption, { color: colors.labelTertiary }]}>Superlikes left</Text>
+          <Text style={[Typography.caption1Emphasized, { color: colors.labelTertiary }]}>Superlikes left</Text>
         </View>
       </View>
 
       {totalSuperlikes > 0 && (
         <View style={{ gap: Spacing.xs }}>
           <View style={styles.row}>
-            <Text style={[Typography.caption, { color: colors.labelTertiary }]}>Superlikes</Text>
-            <Text style={[Typography.caption, { color: colors.labelTertiary }]}>
+            <Text style={[Typography.caption1Emphasized, { color: colors.labelTertiary }]}>Superlikes</Text>
+            <Text style={[Typography.caption1Emphasized, { color: colors.labelTertiary }]}>
               {stats.superlikesUsed}/{totalSuperlikes} used
             </Text>
           </View>
@@ -251,7 +256,7 @@ export function UserDashboardStatsCard({ stats, isLoading = false }: UserDashboa
     return (
       <View style={styles.root}>
         {[1, 2, 3, 4, 5].map(i => (
-          <Skeleton key={i} width="100%" height={130} borderRadius={Radius['2xl']} />
+          <Skeleton key={i} width="100%" height={STATS_CARD_SKELETON_HEIGHT} borderRadius={Radius['2xl']} />
         ))}
       </View>
     );
@@ -315,7 +320,7 @@ const styles = StyleSheet.create({
   trendRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    height: 56,
+    height: TREND_ROW_HEIGHT,
     gap: Spacing.xs,
   },
   trendBarWrap: {

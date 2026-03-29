@@ -89,7 +89,7 @@ export const LocationSection = memo(function LocationSection({
   return (
     <View style={styles.container}>
       {/* Section Label */}
-      <Text variant="caption" tone="muted" uppercase>
+      <Text variant="caption1Emphasized" tone="muted" uppercase>
         LOCATION
       </Text>
 
@@ -104,7 +104,7 @@ export const LocationSection = memo(function LocationSection({
           )}
           {locationString && (
             <Text 
-              variant="bodySm" 
+              variant="subhead" 
               style={{ color: address ? secondaryTextColor : textColor }}
             >
               {locationString}
@@ -127,7 +127,7 @@ export const LocationSection = memo(function LocationSection({
           ]}
         >
           <ExternalLink size={Spacing.lg} color={textColor} />
-          <Text variant="bodySm">View Map</Text>
+          <Text variant="subhead">View Map</Text>
         </HapticPressable>
 
         <HapticPressable
@@ -142,7 +142,7 @@ export const LocationSection = memo(function LocationSection({
           ]}
         >
           <Navigation size={Spacing.lg} color={textColor} />
-          <Text variant="bodySm">Directions</Text>
+          <Text variant="subhead">Directions</Text>
         </HapticPressable>
       </View>
     </View>
@@ -194,11 +194,11 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   mapIcon: {
-    marginTop: 2,
+    marginTop: Spacing.xs,
   },
   addressText: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs,
   },
   actionsRow: {
     flexDirection: 'row',

@@ -161,7 +161,7 @@ export function YearMileageFilterSheet({
             <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
           
-          <Text variant="subheading">Year & Mileage</Text>
+          <Text variant="headline">Year & Mileage</Text>
           
           <HapticPressable
             style={[
@@ -171,7 +171,7 @@ export function YearMileageFilterSheet({
             onPress={handleApply}
           >
             <Text
-              variant="bodySm"
+              variant="subhead"
               style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
             >
               Apply
@@ -182,11 +182,11 @@ export function YearMileageFilterSheet({
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+            <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
               {[localYearMin && `From ${localYearMin}`, localYearMax && `To ${localYearMax}`, localMileageMax && `Under ${parseInt(localMileageMax).toLocaleString()} km`].filter(Boolean).join(' · ')}
             </Text>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
+              <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
                 Clear
               </Text>
             </HapticPressable>
@@ -197,7 +197,7 @@ export function YearMileageFilterSheet({
       <BottomSheetScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Year Section */}
         <View style={styles.section}>
-          <Text variant="caption" tone="muted" style={{ marginBottom: Spacing.md }} uppercase>
+          <Text variant="caption1Emphasized" tone="muted" style={{ marginBottom: Spacing.md }} uppercase>
             YEAR
           </Text>
           <View style={styles.rangeRow}>
@@ -219,7 +219,7 @@ export function YearMileageFilterSheet({
                 maxLength={4}
               />
             </View>
-            <Text variant="bodyLg" tone="muted" style={styles.rangeDash}>–</Text>
+            <Text variant="body" tone="muted" style={styles.rangeDash}>–</Text>
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[
@@ -243,7 +243,7 @@ export function YearMileageFilterSheet({
 
         {/* Mileage Section */}
         <View style={styles.section}>
-          <Text variant="caption" tone="muted" style={{ marginBottom: Spacing.md }} uppercase>
+          <Text variant="caption1Emphasized" tone="muted" style={{ marginBottom: Spacing.md }} uppercase>
             MILEAGE
           </Text>
           
@@ -266,7 +266,7 @@ export function YearMileageFilterSheet({
                   ]}
                 >
                   <Text
-                    variant="bodySm"
+                    variant="subhead"
                     style={{ color: isActive ? colors.background : colors.labelSecondary }}
                    tone="secondary">
                     {preset.label}
@@ -295,7 +295,7 @@ export function YearMileageFilterSheet({
                 onChangeText={setLocalMileageMin}
               />
             </View>
-            <Text variant="bodyLg" tone="muted" style={styles.rangeDash}>–</Text>
+            <Text variant="body" tone="muted" style={styles.rangeDash}>–</Text>
             <View style={styles.inputWrapper}>
               <TextInput
                 style={[

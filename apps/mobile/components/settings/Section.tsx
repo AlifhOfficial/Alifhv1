@@ -37,7 +37,7 @@ export function Section({
     >
       <View style={styles.header}>
         <Text 
-          variant="caption" 
+          variant="caption1Emphasized" 
           tone={danger ? 'error' : 'muted'} 
           style={styles.title}
          uppercase>
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   title: {
-    // textTransform and letterSpacing handled by <Text variant="label" uppercase> component
+    // textTransform and letterSpacing handled by <Text variant="footnoteEmphasized" uppercase> component
   },
   content: {
     borderRadius: Radius.xl,

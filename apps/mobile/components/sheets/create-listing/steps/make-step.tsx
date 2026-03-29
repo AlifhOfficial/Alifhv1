@@ -95,7 +95,7 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
               {make}
             </Text>
             {isPopular && (
-              <Text variant="bodySm" tone="muted">Popular</Text>
+              <Text variant="subhead" tone="muted">Popular</Text>
             )}
           </View>
           {isSelected && (
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    ...Typography.bodySm,
+    ...Typography.subhead,
     paddingVertical: 0,
   },
   listContent: {
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   },
   itemContent: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs,
   },
   emptyState: {
     alignItems: 'center',

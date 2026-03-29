@@ -85,7 +85,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
         <HapticPressable onPress={() => handleSelect(year)} style={styles.item}>
           <View style={styles.itemContent}>
             <Text
-              variant="bodyLg"
+              variant="body"
               style={{
                 color: isSelected ? colors.label : colors.labelSecondary,
                 fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
@@ -94,10 +94,10 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
               {year}
             </Text>
             {isRecent && (
-              <Text variant="bodySm" tone="muted">Recent</Text>
+              <Text variant="subhead" tone="muted">Recent</Text>
             )}
             {isClassic && (
-              <Text variant="bodySm" tone="muted">Classic</Text>
+              <Text variant="subhead" tone="muted">Classic</Text>
             )}
           </View>
           {isSelected && (
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     minHeight: Spacing["5xl"],
   },
   itemContent: {
-    gap: 2,
+    gap: Spacing.xs,
   },
   emptyState: {
     paddingVertical: Spacing['2xl'],

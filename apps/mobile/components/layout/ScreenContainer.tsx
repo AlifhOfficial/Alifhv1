@@ -10,7 +10,8 @@ import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Layout } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
+import { getTabBarContentInset } from './tab-bar-metrics';
 
 interface ScreenContainerProps {
   children: ReactNode;
@@ -44,6 +45,8 @@ interface ScreenContainerProps {
   contentContainerStyle?: object;
   /** Scroll event callback */
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  /** Native content inset adjustment behavior */
+  contentInsetAdjustmentBehavior?: 'automatic' | 'scrollableAxes' | 'never' | 'always';
 }
 
 export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
@@ -65,6 +68,7 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
       style,
       contentContainerStyle,
       onScroll: externalOnScroll,
+      contentInsetAdjustmentBehavior = 'automatic',
     },
     ref
   ) {
@@ -84,7 +88,7 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
 
     // Tab bar height + bottom safe area
     const bottomClearance = tabBarClearance
-      ? Layout.tabBarHeight + insets.bottom + extraBottomPadding
+      ? getTabBarContentInset(insets.bottom, extraBottomPadding)
       : insets.bottom + extraBottomPadding;
 
     const containerStyle = [styles.container, style];
@@ -119,7 +123,7 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
         ref={ref}
         style={styles.scrollView}
         contentContainerStyle={contentStyle}
-        contentInsetAdjustmentBehavior="automatic"
+        contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
         showsVerticalScrollIndicator={showScrollIndicator}
         keyboardShouldPersistTaps="handled"
         onScroll={handleScroll}

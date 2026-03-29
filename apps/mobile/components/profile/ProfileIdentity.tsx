@@ -58,7 +58,7 @@ export function ProfileIdentity({
       <View style={styles.info}>
         <View style={styles.nameRow}>
           <Text
-            variant="heading"
+            variant="title3Emphasized"
             style={styles.name}
             numberOfLines={1}
           >
@@ -85,7 +85,7 @@ export function ProfileIdentity({
           </Text>
         )}
 
-        <Text variant="bodySm" tone="muted" style={styles.memberSince}>
+        <Text variant="subhead" tone="muted" style={styles.memberSince}>
           Member since {memberSince}
         </Text>
       </View>

@@ -11,16 +11,20 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { ChatWindow } from '@/components/messages';
+import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { useConversation, useMarkAsRead } from '@/hooks/use-messaging-query';
 import type { Conversation } from '@/lib/messaging-api';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ChatScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const headerInset = getMobileHeaderContentInset(insets.top);
   
   // Get conversationId and optional conversation data from nav params
   const params = useLocalSearchParams<{ 
@@ -71,23 +75,17 @@ export default function ChatScreen() {
     router.back();
   };
 
-  const nativeHeaderOptions = Platform.OS === 'ios'
-    ? {
-        headerTransparent: false,
-        headerShadowVisible: false,
-        headerBackButtonDisplayMode: 'minimal' as const,
-        headerBackTitle: '',
-      }
-    : {
-        headerStyle: { backgroundColor: colors.background },
-      };
+  const nativeHeaderOptions = {
+    headerShown: false,
+  };
 
   // No conversation ID
   if (!conversationId) {
     return (
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.label, title: '' }} />
-        <View style={styles.centered}>
+        <MobileHeader title="Chat" showBackButton onBackPress={handleBack} />
+        <View style={[styles.centered, { paddingTop: headerInset }]}>
           <Text variant="body" tone="secondary" style={styles.errorText}>
             Conversation not found
           </Text>
@@ -108,7 +106,8 @@ export default function ChatScreen() {
     return (
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.label, title: '' }} />
-        <View style={styles.centered}>
+        <MobileHeader title="Chat" showBackButton onBackPress={handleBack} />
+        <View style={[styles.centered, { paddingTop: headerInset }]}>
           <Text variant="body" tone="secondary" style={styles.errorText}>
             {error.message}
           </Text>

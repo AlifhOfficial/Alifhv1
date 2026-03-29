@@ -163,7 +163,7 @@ export function MakeFilterSheet({
             {make}
           </Text>
           {count > 0 && (
-            <Text variant="bodySm" tone="muted">
+            <Text variant="subhead" tone="muted">
               {count.toLocaleString()}
             </Text>
           )}
@@ -203,7 +203,7 @@ export function MakeFilterSheet({
               <Text variant="body" tone="secondary">Cancel</Text>
             </HapticPressable>
             
-            <Text variant="subheading">Make</Text>
+            <Text variant="headline">Make</Text>
             
             <HapticPressable
               style={[
@@ -214,7 +214,7 @@ export function MakeFilterSheet({
               disabled={!hasValue}
             >
               <Text
-                variant="bodySm"
+                variant="subhead"
                 style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
               >
                 Apply
@@ -225,11 +225,11 @@ export function MakeFilterSheet({
           {/* Selection Summary */}
           {hasValue && (
             <View style={styles.selectionSummary}>
-              <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+              <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
                 {localSelected.join(', ')}
               </Text>
               <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
+                <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
                   Clear
                 </Text>
               </HapticPressable>
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    ...Typography.bodySm,
+    ...Typography.subhead,
     paddingVertical: 0,
   },
   listContainer: {

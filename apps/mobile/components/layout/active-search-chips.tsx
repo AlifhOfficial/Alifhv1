@@ -19,13 +19,13 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useSearch, type SearchChip, type SearchParams, type FilterParams, type RemovableFilterKey } from '@/context/search-context';
-import { Colors, Spacing, Typography, Fonts, Sizes, Radius, ZIndex } from '@/constants/theme';
+import { Colors, Shadows, Spacing, Typography, Fonts, Sizes, Radius, ZIndex } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 const AnimatedView = Animated.View;
 
 // Height of the chips bar
-const CHIPS_BAR_HEIGHT = 36;
+const CHIPS_BAR_HEIGHT = Sizes.pillHeight;
 
 interface ActiveSearchChipsProps {
   /** Whether the chips bar should be visible (on browse tab) */
@@ -124,7 +124,7 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
                 <>
                   <View style={[styles.pillInner, { opacity: pressed ? 0.7 : 1 }]}>
                     <Text 
-                      variant="bodySm"
+                      variant="subhead"
                       tone="secondary"
                       style={styles.pillText}
                       numberOfLines={1}
@@ -161,7 +161,7 @@ export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
             >
               {({ pressed }) => (
                 <>
-                  <Text variant="bodySm" style={[styles.clearText, { color: colors.primaryForeground, opacity: pressed ? 0.7 : 1 }]}>
+                  <Text variant="subhead" style={[styles.clearText, { color: colors.primaryForeground, opacity: pressed ? 0.7 : 1 }]}>
                     Clear all
                   </Text>
                 </>
@@ -202,11 +202,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     borderWidth: 1,
     overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    ...Shadows.md,
   },
   pillInner: {
     flexDirection: 'row',
@@ -214,7 +210,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   pillText: {
-    ...Typography.bodySm,
+    ...Typography.subhead,
     maxWidth: Spacing["5xl"],
   },
   clearPill: {
@@ -222,13 +218,9 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
     borderRadius: Radius.lg,
     overflow: 'visible',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    ...Shadows.md,
   },
   clearText: {
-    ...Typography.caption,
+    ...Typography.caption1Emphasized,
   },
 });

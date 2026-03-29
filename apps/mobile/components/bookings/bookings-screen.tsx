@@ -23,7 +23,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Calendar1, Clock, ListFilter, Check } from 'lucide-react-native';
 
-import { Colors, Fonts, Spacing, Radius, Layout, Sizes, ZIndex } from '@/constants/theme';
+import { Colors, Fonts, Shadows, Spacing, Radius, Layout, Sizes, ZIndex } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { useBookings, useCancelBooking } from '@/hooks/use-booking-query';
@@ -37,6 +37,7 @@ import {
 } from './utilities/booking-helpers';
 import { CancelBookingSheet } from './cancel-booking-sheet';
 import { BookingDetailsSheet } from './booking-details-sheet';
+import { getMobileHeaderContentInset } from '@/components/layout';
 
 // ─── Constants (derived from theme for responsive scaling) ──────────────────
 
@@ -72,6 +73,7 @@ export function BookingsScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+  const headerInset = getMobileHeaderContentInset(insets.top);
   const router = useRouter();
 
   // ── Data State (via React Query) ─────────────────────────────────────────
@@ -183,7 +185,7 @@ export function BookingsScreen() {
             )}
             {/* Status badge (BLK-badge style) */}
             <View style={[styles.statusBadge, { backgroundColor: statusColor + 'E6' }]}>
-              <Text variant="caption" uppercase={false} style={{ color: colors.primaryForeground }}>
+              <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.primaryForeground }}>
                 {statusLabel}
               </Text>
             </View>
@@ -192,19 +194,19 @@ export function BookingsScreen() {
           {/* ── Content ──────────────────────────────────────────────── */}
           <View style={styles.content}>
             {/* Title */}
-            <Text variant="bodySm" style={{ color: colors.label, }} numberOfLines={1}>
+            <Text variant="subhead" style={{ color: colors.label, }} numberOfLines={1}>
               {item.listingTitle}
             </Text>
 
             {/* Partner */}
-            <Text variant="bodySm" style={{ color: colors.labelSecondary }} numberOfLines={1}>
+            <Text variant="subhead" style={{ color: colors.labelSecondary }} numberOfLines={1}>
               {item.partnerName}
             </Text>
 
             {/* Date */}
             <View style={styles.metaRow}>
               <Calendar1 size={Sizes.iconXs} color={colors.labelSecondary} />
-              <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
+              <Text variant="subhead" style={{ color: colors.labelSecondary }}>
                 {formatBookingDate(item.scheduledDate)}
               </Text>
             </View>
@@ -212,7 +214,7 @@ export function BookingsScreen() {
             {/* Time */}
             <View style={styles.metaRow}>
               <Clock size={Sizes.iconXs} color={colors.labelSecondary} />
-              <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
+              <Text variant="subhead" style={{ color: colors.labelSecondary }}>
                 {formatTimeRange(item.scheduledStartTime, item.scheduledEndTime)}
               </Text>
             </View>
@@ -233,7 +235,7 @@ export function BookingsScreen() {
                   ]}
                 >
                   <Text
-                    variant="bodySm"
+                    variant="subhead"
                     style={{
                       fontWeight: Fonts.bold,
                       color: countdown.isToday
@@ -269,7 +271,7 @@ export function BookingsScreen() {
         <View style={[styles.emptyIcon, { backgroundColor: colors.surfaceSecondary }]}>
           <Ionicons name="calendar-outline" size={Sizes.iconXl} color={colors.labelQuaternary} />
         </View>
-        <Text variant="subheading" style={{ marginTop: Spacing.lg }}>
+        <Text variant="headline" style={{ marginTop: Spacing.lg }}>
           {isAll ? 'No bookings yet' : `No ${tabLabel.toLowerCase()} bookings`}
         </Text>
         <Text variant="body" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
@@ -301,7 +303,7 @@ export function BookingsScreen() {
 
       {/* ─────────────────────── Content ────────────────────────────────── */}
       {isLoading && bookings.length === 0 ? (
-        <View style={[styles.listContent, { paddingTop: insets.top + Spacing.lg, paddingBottom: footerHeight }]}>
+        <View style={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }]}>
           {Array.from({ length: 5 }).map((_, i) => (
             <View
               key={i}
@@ -319,7 +321,7 @@ export function BookingsScreen() {
           ))}
         </View>
       ) : error && bookings.length === 0 ? (
-        <View style={[styles.centerContainer, { paddingTop: insets.top + Spacing.lg, paddingBottom: footerHeight }]}>
+        <View style={[styles.centerContainer, { paddingTop: headerInset, paddingBottom: footerHeight }]}>
           <Ionicons name="alert-circle-outline" size={Sizes.avatarLg} color={colors.error} />
           <Text
             variant="body"
@@ -337,8 +339,8 @@ export function BookingsScreen() {
           data={bookings}
           keyExtractor={(item) => item.id}
           renderItem={renderCard}
-          contentInsetAdjustmentBehavior="automatic"
-          contentContainerStyle={[styles.listContent, { paddingBottom: footerHeight }]}
+          contentInsetAdjustmentBehavior="never"
+          contentContainerStyle={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }]}
           ListEmptyComponent={renderEmptyState}
           ListFooterComponent={renderFooter}
           refreshControl={
@@ -486,7 +488,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.md,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+    ...Shadows.md,
   } as any,
   glass: {
     borderWidth: 1,
@@ -499,7 +501,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     overflow: 'hidden',
     minWidth: 200,
-    boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+    ...Shadows.lg,
   } as any,
   drawerItem: {
     paddingHorizontal: Spacing.lg,
@@ -557,7 +559,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs,
   },
 
   // ── Meta rows ──────────────────────────────────────────────────────────
@@ -565,7 +567,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
-    marginTop: 1,
+    marginTop: Spacing.xs,
   },
 
   // ── Countdown ──────────────────────────────────────────────────────────

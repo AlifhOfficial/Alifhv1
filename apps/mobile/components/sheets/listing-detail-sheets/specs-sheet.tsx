@@ -99,7 +99,7 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">All Specifications</Text>
+          <Text variant="title3Emphasized">All Specifications</Text>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 

@@ -106,7 +106,7 @@ export function FinancingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">Custom Financing</Text>
+          <Text variant="title3Emphasized">Custom Financing</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -118,20 +118,20 @@ export function FinancingSheet({
 
         {/* Live Output */}
         <View style={[styles.outputContainer, { backgroundColor: colors.fill2 }]}>
-          <Text variant="label" tone="muted" uppercase>ESTIMATED MONTHLY PAYMENT</Text>
-          <Text variant="title" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Text>
+          <Text variant="footnoteEmphasized" tone="muted" uppercase>ESTIMATED MONTHLY PAYMENT</Text>
+          <Text variant="title2Emphasized" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Text>
           <View style={[styles.outputDetails, { borderTopColor: colors.border }]}>
             <View style={styles.outputItem}>
-              <Text variant="bodySm" tone="muted">Down Payment</Text>
-              <Text variant="bodySm">{formatPrice(downPaymentAmount)}</Text>
+              <Text variant="subhead" tone="muted">Down Payment</Text>
+              <Text variant="subhead">{formatPrice(downPaymentAmount)}</Text>
             </View>
             <View style={styles.outputItem}>
-              <Text variant="bodySm" tone="muted">Loan Amount</Text>
-              <Text variant="bodySm">{formatPrice(loanAmount)}</Text>
+              <Text variant="subhead" tone="muted">Loan Amount</Text>
+              <Text variant="subhead">{formatPrice(loanAmount)}</Text>
             </View>
             <View style={styles.outputItem}>
-              <Text variant="bodySm" tone="muted">Interest Rate</Text>
-              <Text variant="bodySm">{interestRate}% APR</Text>
+              <Text variant="subhead" tone="muted">Interest Rate</Text>
+              <Text variant="subhead">{interestRate}% APR</Text>
             </View>
           </View>
         </View>
@@ -176,7 +176,7 @@ export function FinancingSheet({
         {/* Disclaimer */}
         <View style={[styles.disclaimer, { backgroundColor: colors.fill2 }]}>
           <Ionicons name="information-circle-outline" size={Sizes.iconSm} color={colors.labelSecondary} />
-          <Text variant="bodySm" style={styles.disclaimerText} tone="secondary">
+          <Text variant="subhead" style={styles.disclaimerText} tone="secondary">
             This is an estimate only. Actual rates and terms may vary based on your bank, credit profile, and other factors.
           </Text>
         </View>
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    ...Typography.subheading,
+    ...Typography.headline,
     padding: 0,
   },
   disclaimer: {

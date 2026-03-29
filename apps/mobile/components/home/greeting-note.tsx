@@ -160,12 +160,12 @@ export function GreetingNote() {
   return (
     <View style={styles.container}>
       <View style={styles.greetingRow}>
-        <Text variant="hero" style={{ color: colors.label }}>
+        <Text variant="largeTitleEmphasized" style={{ color: colors.label }}>
           {content.greeting}
           {content.name ? ', ' : ''}
         </Text>
         {content.name && (
-          <Text variant="hero" style={{ color: tone.color }}>
+          <Text variant="largeTitleEmphasized" style={{ color: tone.color }}>
             {content.name}
           </Text>
         )}

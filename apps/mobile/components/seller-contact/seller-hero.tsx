@@ -45,7 +45,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
         <View style={localStyles.heroInfo}>
           {/* Name + Badges */}
           <View style={localStyles.nameRow}>
-            <Text variant="heading" numberOfLines={1} style={{ flexShrink: 1 }}>
+            <Text variant="title3Emphasized" numberOfLines={1} style={{ flexShrink: 1 }}>
               {seller.name}
             </Text>
             {seller.isVerified && seller.tier?.toLowerCase() !== 'black' && (
@@ -53,7 +53,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
             )}
             {seller.tier?.toLowerCase() === 'black' && (
               <View style={[localStyles.tierBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-                <Text variant="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>
+                <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.blkBadgeFg }}>
                   BLK
                 </Text>
               </View>
@@ -61,7 +61,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           </View>
           
           {/* Seller Type */}
-          <Text variant="bodySm" tone="secondary">
+          <Text variant="subhead" tone="secondary">
             {seller.isDealer ? 'Verified Dealer' : 'Private Seller'}
           </Text>
 
@@ -69,7 +69,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           {seller.memberSince && (
             <View style={localStyles.metaRow}>
               <Clock size={Sizes.iconXs} color={colors.labelSecondary} />
-              <Text variant="bodySm" tone="muted">
+              <Text variant="subhead" tone="muted">
                 Member since {formatMemberSince(seller.memberSince)}
               </Text>
             </View>
@@ -79,9 +79,9 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
           {seller.rating != null && (
             <View style={localStyles.ratingRow}>
               <Star size={Sizes.iconXs} color={colors.warning} fill={colors.warning} />
-              <Text variant="bodySm">{seller.rating.toFixed(1)}</Text>
+              <Text variant="subhead">{seller.rating.toFixed(1)}</Text>
               {seller.reviewCount != null && (
-                <Text variant="bodySm" tone="secondary">
+                <Text variant="subhead" tone="secondary">
                   ({seller.reviewCount})
                 </Text>
               )}
@@ -101,7 +101,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors, topInset }:
               contentFit="cover"
             />
           ) : (
-            <Text variant="title" tone="secondary">
+            <Text variant="title2Emphasized" tone="secondary">
               {seller.name.charAt(0).toUpperCase()}
             </Text>
           )}
@@ -140,7 +140,7 @@ const localStyles = StyleSheet.create({
   },
   tierBadge: {
     paddingHorizontal: Spacing.xs,
-    paddingVertical: 2,
+    paddingVertical: Spacing.xs,
     borderRadius: Radius.none,
     borderWidth: 1,
   },

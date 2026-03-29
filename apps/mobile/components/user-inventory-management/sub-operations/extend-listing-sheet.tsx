@@ -118,7 +118,7 @@ export function ExtendListingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">Extend Listing</Text>
+          <Text variant="title3Emphasized">Extend Listing</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -144,7 +144,7 @@ export function ExtendListingSheet({
           <View style={styles.previewInfo}>
             <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
             {expiryDisplay && (
-              <Text variant="bodySm" tone={expiryDisplay.isUrgent ? 'error' : 'secondary'}>
+              <Text variant="subhead" tone={expiryDisplay.isUrgent ? 'error' : 'secondary'}>
                 {expiryDisplay.text}
               </Text>
             )}
@@ -172,10 +172,10 @@ export function ExtendListingSheet({
                   },
                 ]}
               >
-                <Text variant="title" style={selected ? { color: colors.primary } : undefined}>
+                <Text variant="title2Emphasized" style={selected ? { color: colors.primary } : undefined}>
                   {days}
                 </Text>
-                <Text variant="bodySm" tone={selected ? 'primary' : 'secondary'}>
+                <Text variant="subhead" tone={selected ? 'primary' : 'secondary'}>
                   days
                 </Text>
               </HapticPressable>
@@ -186,7 +186,7 @@ export function ExtendListingSheet({
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Text variant="bodySm" tone="error">{error}</Text>
+            <Text variant="subhead" tone="error">{error}</Text>
           </View>
         )}
 

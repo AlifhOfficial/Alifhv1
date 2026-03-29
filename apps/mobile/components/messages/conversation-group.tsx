@@ -130,20 +130,20 @@ export function ConversationGroup({
             <View style={{ flex: 1, gap: Spacing.xs }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
                 <Text
-                  variant="subheading"
+                  variant="headline"
                   tone="default"
                   style={{ flex: 1 }}
                   numberOfLines={1}
                 >
                   {name}
                 </Text>
-                <Text variant="bodySm" tone="muted">
+                <Text variant="subhead" tone="muted">
                   {formatTime(latest.lastMessageAt)}
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   tone={hasUnread ? 'secondary' : 'muted'}
                   style={{ flex: 1 }}
                   numberOfLines={1}
@@ -164,7 +164,7 @@ export function ConversationGroup({
                     }}
                   >
                     <Text
-                      variant="bodySm"
+                      variant="subhead"
                       style={{
                         color: colors.primaryForeground,
                         fontVariant: ['tabular-nums'],
@@ -239,13 +239,13 @@ export function ConversationGroup({
                         >
                           {c.listing?.title || 'General Inquiry'}
                         </Text>
-                        <Text variant="bodySm" tone="muted">
+                        <Text variant="subhead" tone="muted">
                           {formatTime(c.lastMessageAt)}
                         </Text>
                       </View>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
                         <Text
-                          variant="bodySm"
+                          variant="subhead"
                           tone={cUnread ? 'secondary' : 'muted'}
                           style={{ flex: 1 }}
                           numberOfLines={1}
@@ -266,7 +266,7 @@ export function ConversationGroup({
                             }}
                           >
                             <Text
-                              variant="bodySm"
+                              variant="subhead"
                               style={{
                                 color: colors.primaryForeground,
                                 fontVariant: ['tabular-nums'],

@@ -228,13 +228,13 @@ export const CarCardList = memo(function CarCardList({
           <Text variant="body" style={{ color: theme.text }} numberOfLines={1}>
             {make} {model}
           </Text>
-          <Text variant="bodySm" style={{ color: theme.meta }} tone="secondary">
+          <Text variant="subhead" style={{ color: theme.meta }} tone="secondary">
             {year}
           </Text>
-          <Text style={{ color: theme.price }} variant="heading" tone="primary">
+          <Text style={{ color: theme.price }} variant="title3Emphasized" tone="primary">
             {formatPrice(price)}
           </Text>
-          <Text variant="bodySm" style={{ color: theme.meta }} tone="secondary">
+          <Text variant="subhead" style={{ color: theme.meta }} tone="secondary">
             {formatMileage(mileage)} · {displaySpecs} · {displayEmirate}
           </Text>
         </View>
@@ -315,7 +315,7 @@ const ListImage = memo(function ListImage({
       )}
       {isBlkListing && (
         <View style={[styles.blkBadge, { backgroundColor: blkBadgeBackground, borderColor: blkBadgeBorder }]}>
-          <Text variant="caption" uppercase={false} style={{ color: blkBadgeText }}>BLK</Text>
+          <Text variant="caption1Emphasized" uppercase={false} style={{ color: blkBadgeText }}>BLK</Text>
         </View>
       )}
     </View>

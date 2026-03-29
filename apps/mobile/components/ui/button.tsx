@@ -57,19 +57,19 @@ const sizeConfig = {
   small: {
     height: Sizes.actionButtonSm,
     paddingHorizontal: Spacing.md,
-    textSize: 'bodySm' as const,
+    textSize: 'subhead' as const,
     iconSize: Spacing.lg,
   },
   medium: {
     height: Sizes.actionButtonMd + Spacing.xs,
     paddingHorizontal: Spacing.lg,
-    textSize: 'body' as const,
+    textSize: 'callout' as const,
     iconSize: Sizes.iconSm,
   },
   large: {
     height: Spacing['5xl'] + Spacing.xs,
     paddingHorizontal: Spacing.xl,
-    textSize: 'subheading' as const,
+    textSize: 'headline' as const,
     iconSize: Spacing.xl,
   },
 };

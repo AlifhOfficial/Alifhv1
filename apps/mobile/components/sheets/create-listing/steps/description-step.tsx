@@ -121,7 +121,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
       {/* Text Input */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Text variant="caption" uppercase>Description</Text>
+          <Text variant="caption1Emphasized" uppercase>Description</Text>
           <HapticPressable
             onPress={() => generateAIDescription(hasDescription)}
             disabled={isGenerating}
@@ -134,13 +134,13 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
             ) : (
               <Sparkles size={14} color={colors.primary} strokeWidth={2} />
             )}
-              <Text variant="bodySm" style={{ color: colors.primary }}>
+              <Text variant="subhead" style={{ color: colors.primary }}>
               {isGenerating ? 'Generating...' : hasDescription ? 'Regenerate' : 'AI Generate'}
             </Text>
           </HapticPressable>
         </View>
         {generateError && (
-          <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
+          <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
             {generateError}
           </Text>
         )}
@@ -164,7 +164,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
         />
         <View style={styles.charCount}>
           <Text
-            variant="bodySm"
+            variant="subhead"
             style={{ color: isNearLimit ? colors.warning : colors.labelQuaternary }}
            tone="secondary">
             {charCount}/{MAX_DESCRIPTION}

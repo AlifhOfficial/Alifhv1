@@ -13,10 +13,10 @@ interface SectionHeaderProps {
 export function SectionHeader({ title, onClear, showClear = false }: SectionHeaderProps) {
   return (
     <View style={styles.container}>
-      <Text variant="bodySm" tone="secondary">{title}</Text>
+      <Text variant="subhead" tone="secondary">{title}</Text>
       {showClear && onClear && (
         <HapticPressable onPress={onClear} hitSlop={Layout.hitSlopSmall}>
-          <Text variant="bodySm" tone="primary">Clear</Text>
+          <Text variant="subhead" tone="primary">Clear</Text>
         </HapticPressable>
       )}
     </View>

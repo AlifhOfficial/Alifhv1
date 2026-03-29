@@ -130,7 +130,7 @@ export function DeleteListingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">{title}</Text>
+          <Text variant="title3Emphasized">{title}</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -148,7 +148,7 @@ export function DeleteListingSheet({
         {hardDelete && (
           <View style={[styles.warningBanner, { backgroundColor: colors.errorMuted }]}>
             <Ionicons name="warning" size={Sizes.iconSm} color={colors.error} />
-            <Text variant="bodySm" tone="error" style={{ flex: 1 }}>
+            <Text variant="subhead" tone="error" style={{ flex: 1 }}>
               This cannot be undone. All photos will be permanently deleted.
             </Text>
           </View>
@@ -165,14 +165,14 @@ export function DeleteListingSheet({
           )}
           <View style={styles.previewInfo}>
             <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
-            <Text variant="bodySm" tone="secondary">{description}</Text>
+            <Text variant="subhead" tone="secondary">{description}</Text>
           </View>
         </View>
 
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Text variant="bodySm" tone="error">{error}</Text>
+            <Text variant="subhead" tone="error">{error}</Text>
           </View>
         )}
 

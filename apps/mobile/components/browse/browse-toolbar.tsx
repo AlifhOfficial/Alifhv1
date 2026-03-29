@@ -94,7 +94,7 @@ export function BrowseToolbar({
           >
             <View style={styles.labelRow}>
               <Search size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
-              <Text variant="bodySm">Search</Text>
+              <Text variant="subhead">Search</Text>
             </View>
           </HapticPressable>
 
@@ -102,7 +102,7 @@ export function BrowseToolbar({
             onPress={handleSortPress}
             style={[styles.control, styles.glass, { borderColor: colors.border, backgroundColor: colors.background }]}
           >
-            <Text variant="bodySm">Sort</Text>
+            <Text variant="subhead">Sort</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -110,10 +110,10 @@ export function BrowseToolbar({
             style={[styles.control, styles.glass, { borderColor: colors.border, backgroundColor: colors.background }]}
           >
             <View style={styles.labelRow}>
-              <Text variant="bodySm">Drawer</Text>
+              <Text variant="subhead">Drawer</Text>
               {activeFilterCount > 0 && (
                 <View style={[styles.badge, { backgroundColor: colors.label }]}> 
-                  <Text variant="caption" uppercase={false} style={{ color: colors.background }}>
+                  <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.background }}>
                     {activeFilterCount > 9 ? '9+' : activeFilterCount}
                   </Text>
                 </View>

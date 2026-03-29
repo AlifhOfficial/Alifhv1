@@ -115,7 +115,7 @@ export function DeleteAccountSheet({
           <View style={[styles.iconContainer, { backgroundColor: colors.errorMuted }]}>
             <Trash2 size={Sizes.iconLg} color={colors.error} />
           </View>
-          <Text variant="subheading" tone="error">Delete Account?</Text>
+          <Text variant="headline" tone="error">Delete Account?</Text>
         </View>
 
         {/* Description */}
@@ -125,7 +125,7 @@ export function DeleteAccountSheet({
 
         {/* Input */}
         <View style={styles.inputContainer}>
-          <Text variant="bodySm" tone="muted" style={styles.inputLabel}>
+          <Text variant="subhead" tone="muted" style={styles.inputLabel}>
             Type "DELETE" to confirm
           </Text>
           <TextInput

@@ -34,7 +34,7 @@ export function SecuritySection({
       {/* Header with Add button */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View style={styles.info}>
-          <Text variant="bodySm" tone="muted">Passkeys</Text>
+          <Text variant="subhead" tone="muted">Passkeys</Text>
           <Text variant="body">Sign in with biometrics</Text>
         </View>
         <HapticPressable
@@ -55,8 +55,8 @@ export function SecuritySection({
       {/* Passkeys List or Empty State */}
       {passkeys.length === 0 ? (
         <View style={styles.empty}>
-          <Text variant="bodySm" tone="muted">No passkeys registered</Text>
-          <Text variant="bodySm" tone="muted">Add a passkey for passwordless sign-in</Text>
+          <Text variant="subhead" tone="muted">No passkeys registered</Text>
+          <Text variant="subhead" tone="muted">Add a passkey for passwordless sign-in</Text>
         </View>
       ) : (
         <View style={styles.list}>
@@ -67,8 +67,8 @@ export function SecuritySection({
             >
               <Key size={Sizes.iconXs} color={colors.labelSecondary} strokeWidth={1.5} />
               <View style={styles.itemInfo}>
-                <Text variant="bodySm">{pk.name || 'Passkey'}</Text>
-                <Text variant="bodySm" tone="muted">Added {pk.createdAt}</Text>
+                <Text variant="subhead">{pk.name || 'Passkey'}</Text>
+                <Text variant="subhead" tone="muted">Added {pk.createdAt}</Text>
               </View>
               <HapticPressable
                 onPress={() => onDeletePasskey?.(pk.id)}

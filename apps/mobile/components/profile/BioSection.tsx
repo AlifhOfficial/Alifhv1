@@ -86,7 +86,7 @@ export function BioSection({
               textAlignVertical="top"
             />
             <View style={styles.footer}>
-              <Text variant="bodySm" style={{ color: charCountColor }}>
+              <Text variant="subhead" style={{ color: charCountColor }}>
                 {bio.length}/{MAX_BIO_LENGTH}
               </Text>
               <View style={styles.actions}>
@@ -95,7 +95,7 @@ export function BioSection({
                   hitSlop={Layout.hitSlopSmall}
                   style={({ pressed }) => pressed && { opacity: 0.6 }}
                 >
-                  <Text variant="bodySm" tone="secondary">
+                  <Text variant="subhead" tone="secondary">
                     Cancel
                   </Text>
                 </HapticPressable>
@@ -122,7 +122,7 @@ export function BioSection({
               {bio || 'Tap to add bio'}
             </Text>
             {bio && (
-              <Text variant="bodySm" tone="muted">
+              <Text variant="subhead" tone="muted">
                 {bio.length}/{MAX_BIO_LENGTH}
               </Text>
             )}
@@ -159,6 +159,6 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   bioText: {
-    // lineHeight handled by <Text variant="bodyLg"> component
+    // lineHeight handled by <Text variant="body"> component
   },
 });

@@ -48,12 +48,12 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Text variant="caption" uppercase>Highlight Tags</Text>
-          <Text variant="bodySm" tone="muted">
+          <Text variant="caption1Emphasized" uppercase>Highlight Tags</Text>
+          <Text variant="subhead" tone="muted">
             Select up to {MAX_TAGS}
           </Text>
         </View>
-        <Text variant="bodySm" tone="secondary" style={styles.description}>
+        <Text variant="subhead" tone="secondary" style={styles.description}>
           Help buyers find your listing with relevant highlights
         </Text>
         
@@ -76,7 +76,7 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {tag.label}
@@ -87,7 +87,7 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
         </View>
 
         {tags.length >= MAX_TAGS && (
-          <Text variant="bodySm" tone="muted" style={styles.hint}>
+          <Text variant="subhead" tone="muted" style={styles.hint}>
             Remove a tag to add another
           </Text>
         )}
@@ -96,7 +96,7 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
       {/* Summary */}
       {tags.length > 0 && (
         <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
-          <Text variant="bodySm" tone="secondary">
+          <Text variant="subhead" tone="secondary">
             {tags.length} highlight{tags.length !== 1 ? 's' : ''} selected
           </Text>
         </View>

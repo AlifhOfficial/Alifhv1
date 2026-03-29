@@ -3,13 +3,13 @@
  * Native-feeling, modular profile screen connected to API
  */
 
-import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState, HapticPressable, useAlert } from '@/components/ui';
+import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState, Bubble, useAlert } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import {
   StyleSheet, View, Platform } from 'react-native';
 import { Settings2, LogOut } from 'lucide-react-native';
-import { ScreenContainer } from '@/components/layout';
+import { ScreenContainer, MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 
 import { Layout, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -37,6 +37,7 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { showAlert } = useAlert();
+  const headerInset = getMobileHeaderContentInset(insets.top);
 
   // Profile data from API
   const {
@@ -128,37 +129,30 @@ export default function ProfileScreen() {
     );
   }, [showAlert, signOut]);
 
-  const nativeHeaderOptions = Platform.OS === 'ios'
-    ? {
-        headerTransparent: true,
-        headerShadowVisible: false,
-        headerBackButtonDisplayMode: 'minimal' as const,
-        headerBackTitle: '',
-      }
-    : {
-        headerStyle: { backgroundColor: colors.background },
-      };
+  const nativeHeaderOptions = {
+    headerShown: false,
+  };
 
   const renderHeaderRight = useCallback(() => (
     <View style={styles.headerRight}>
-      <HapticPressable
+      <Bubble
         onPress={() => router.push('/settings')}
         accessibilityRole="button"
         accessibilityLabel="Open settings"
       >
         <Settings2 size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
-      </HapticPressable>
+      </Bubble>
 
       {isAuthenticated && (
         <>
-          <View style={styles.headerDivider} />
-          <HapticPressable
+          <View style={[styles.headerDivider, { backgroundColor: colors.border }]} />
+          <Bubble
             onPress={handleSignOut}
             accessibilityRole="button"
             accessibilityLabel="Sign out"
           >
             <LogOut size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-          </HapticPressable>
+          </Bubble>
         </>
       )}
     </View>
@@ -176,7 +170,8 @@ export default function ProfileScreen() {
             headerRight: renderHeaderRight,
           }}
         />
-        <View style={[styles.container, { backgroundColor: colors.background }]}> 
+        <View style={[styles.container, styles.centered, { backgroundColor: colors.background, paddingTop: headerInset }]}> 
+        <MobileHeader title="Profile" showBackButton right={renderHeaderRight()} />
         <AuthRequiredEmptyState
           title="Sign in to view profile"
           subtitle="Manage your account and listings on Revvup"
@@ -198,8 +193,9 @@ export default function ProfileScreen() {
             headerRight: renderHeaderRight,
           }}
         />
-        <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}> 
-        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: insets.top + Spacing.lg }]}> 
+        <View style={[styles.container, { backgroundColor: colors.background }]}> 
+        <MobileHeader title="Profile" showBackButton right={renderHeaderRight()} />
+        <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerInset }]}> 
           {/* Avatar */}
           <View style={styles.skeletonIdentity}>
             <SkeletonCircle size={88} />
@@ -264,8 +260,9 @@ export default function ProfileScreen() {
             headerRight: renderHeaderRight,
           }}
         />
-        <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}> 
-        <View style={[styles.errorContainer, { backgroundColor: colors.background }]}> 
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <MobileHeader title="Profile" showBackButton right={renderHeaderRight()} />
+        <View style={[styles.errorContainer, styles.centered, { backgroundColor: colors.background, paddingTop: headerInset }]}> 
           <Text variant="body" tone="error" style={styles.errorText}>
             {error}
           </Text>
@@ -288,13 +285,15 @@ export default function ProfileScreen() {
           headerRight: renderHeaderRight,
         }}
       />
-    <View style={[styles.container, { backgroundColor: colors.background }]}> 
-      <ScreenContainer
-        refreshing={isRefreshing}
-        onRefresh={refresh}
-        verticalPadding={0}
-        contentContainerStyle={{ paddingTop: Spacing.lg }}
-      >
+      <MobileHeader title="Profile" showBackButton right={renderHeaderRight()} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <ScreenContainer
+          refreshing={isRefreshing}
+          onRefresh={refresh}
+          verticalPadding={0}
+          contentInsetAdjustmentBehavior="never"
+          contentContainerStyle={{ paddingTop: headerInset }}
+        >
       {/* Profile Identity */}
       <ProfileIdentity
         displayName={displayName}
@@ -378,11 +377,10 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   headerDivider: {
-    width: 1,
+    width: StyleSheet.hairlineWidth,
     height: Sizes.iconSm,
-    borderRadius: 1,
+    borderRadius: Radius.sm,
     opacity: 0.25,
-    backgroundColor: 'gray',
   },
   centered: {
     justifyContent: 'flex-start',

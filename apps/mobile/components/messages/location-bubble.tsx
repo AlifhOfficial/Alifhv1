@@ -9,7 +9,7 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet, Linking, Platform, Image } from 'react-native';
 import { MapPin, ExternalLink } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Shadows, Spacing, Radius, Sizes } from '@/constants/theme';
 
 interface LocationBubbleProps {
   latitude: number;
@@ -103,7 +103,7 @@ export function LocationBubble({
           )}
           {address && (
             <Text
-              variant="bodySm"
+              variant="subhead"
               style={{ color: isOwn ? colors.white : colors.labelSecondary }}
               numberOfLines={2}
             >
@@ -112,7 +112,7 @@ export function LocationBubble({
           )}
           {!placeName && !address && (
             <Text
-              variant="bodySm"
+              variant="subhead"
               style={{ color: isOwn ? colors.white : colors.labelSecondary }}
             >
               {latitude.toFixed(6)}, {longitude.toFixed(6)}
@@ -158,11 +158,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4,
+    ...Shadows.md,
   },
   infoContainer: {
     flexDirection: 'row',
@@ -172,7 +168,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs,
   },
   placeName: {},
 });

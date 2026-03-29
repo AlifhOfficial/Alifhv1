@@ -61,7 +61,7 @@ export function SelectableItem({
       
       <View style={styles.rightContent}>
         {count !== undefined && count > 0 && (
-          <Text variant="bodySm" tone="muted">{count.toLocaleString()}</Text>
+          <Text variant="subhead" tone="muted">{count.toLocaleString()}</Text>
         )}
         {showChevron && (
           <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.labelTertiary} />

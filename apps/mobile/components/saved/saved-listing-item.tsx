@@ -93,14 +93,14 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
           />
         ) : (
           <View style={[styles.imagePlaceholder, { backgroundColor: colors.surfaceSecondary }]}>
-            <Text variant="bodySm" tone="muted">No Image</Text>
+            <Text variant="subhead" tone="muted">No Image</Text>
           </View>
         )}
         
         {/* BLK Badge */}
         {listing.isBlkListing && (
           <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-            <Text variant="caption" uppercase style={{ color: colors.blkBadgeFg }}>BLK</Text>
+            <Text variant="caption1Emphasized" uppercase style={{ color: colors.blkBadgeFg }}>BLK</Text>
           </View>
         )}
       </View>
@@ -108,28 +108,28 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
       {/* Details */}
       <View style={styles.details}>
         {/* Title */}
-        <Text variant="subheading" numberOfLines={1}>{carTitle}</Text>
+        <Text variant="headline" numberOfLines={1}>{carTitle}</Text>
         
         {/* Trim */}
         {listing.trim && (
-          <Text variant="bodySm" tone="secondary" numberOfLines={1} style={styles.trim}>
+          <Text variant="subhead" tone="secondary" numberOfLines={1} style={styles.trim}>
             {listing.trim}
           </Text>
         )}
 
         {/* Price */}
-        <Text style={styles.price} variant="heading" tone="primary">{formatPrice(listing.price || 0)}</Text>
+        <Text style={styles.price} variant="title3Emphasized" tone="primary">{formatPrice(listing.price || 0)}</Text>
 
         {/* Meta */}
         <View style={styles.meta}>
-          <Text variant="bodySm" tone="muted">{formatMileage(listing.mileage || 0)}</Text>
-          <Text variant="bodySm" tone="muted" style={{ marginHorizontal: Spacing.xs }}>•</Text>
-          <Text variant="bodySm" tone="muted">{displayEmirate}</Text>
+          <Text variant="subhead" tone="muted">{formatMileage(listing.mileage || 0)}</Text>
+          <Text variant="subhead" tone="muted" style={{ marginHorizontal: Spacing.xs }}>•</Text>
+          <Text variant="subhead" tone="muted">{displayEmirate}</Text>
         </View>
 
         {/* Seller */}
         <View style={styles.seller}>
-          <Text variant="bodySm" tone="secondary" numberOfLines={1} style={styles.sellerName}>
+          <Text variant="subhead" tone="secondary" numberOfLines={1} style={styles.sellerName}>
             {sellerName}
           </Text>
           {isVerified && (
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     top: Spacing.xs,
     left: Spacing.xs,
     paddingHorizontal: Spacing.xs,
-    paddingVertical: 2,
+    paddingVertical: Spacing.xs,
     borderRadius: Radius.none,
     borderWidth: 1,
   },

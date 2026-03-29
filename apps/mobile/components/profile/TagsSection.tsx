@@ -35,7 +35,7 @@ function TagItem({ tag, isSelected, colors, onPress }: TagItemProps) {
       ]}
     >
       <Text
-        variant="bodySm"
+        variant="subhead"
         tone={isSelected ? 'default' : 'secondary'}
       >
         {tag}

@@ -45,7 +45,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Emirate Selection */}
       <View style={styles.section}>
-        <Text variant="caption" uppercase>Emirate</Text>
+        <Text variant="caption1Emphasized" uppercase>Emirate</Text>
         <View style={styles.chipsWrap}>
           {UAE_EMIRATES.map((emirate) => {
             const isActive = data.emirate === emirate.value;
@@ -62,7 +62,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{ color: isActive ? colors.background : colors.label }}
                 >
                   {emirate.label}
@@ -76,8 +76,8 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {/* City Input (Optional) */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Text variant="caption" uppercase>City / Area</Text>
-          <Text variant="bodySm" tone="muted">
+          <Text variant="caption1Emphasized" uppercase>City / Area</Text>
+          <Text variant="subhead" tone="muted">
             Optional
           </Text>
         </View>
@@ -103,7 +103,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {/* Selected summary */}
       {data.emirate && (
         <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
-          <Text variant="bodySm" tone="secondary">
+          <Text variant="subhead" tone="secondary">
             {data.emirate}{data.city ? `, ${data.city}` : ''}
           </Text>
         </View>

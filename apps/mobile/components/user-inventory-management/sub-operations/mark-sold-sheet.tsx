@@ -113,7 +113,7 @@ export function MarkSoldSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">Mark as Sold</Text>
+          <Text variant="title3Emphasized">Mark as Sold</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -138,7 +138,7 @@ export function MarkSoldSheet({
           )}
           <View style={styles.previewInfo}>
             <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
-            <Text variant="bodySm" tone="secondary">
+            <Text variant="subhead" tone="secondary">
               This listing will be marked as sold and removed from public search.
             </Text>
           </View>
@@ -147,7 +147,7 @@ export function MarkSoldSheet({
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Text variant="bodySm" tone="error">{error}</Text>
+            <Text variant="subhead" tone="error">{error}</Text>
           </View>
         )}
 

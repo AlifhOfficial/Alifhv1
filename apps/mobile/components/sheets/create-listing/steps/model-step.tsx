@@ -127,7 +127,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
             </HapticPressable>
           )}
         </View>
-        <Text variant="bodySm" tone="muted" style={styles.modelCount}>
+        <Text variant="subhead" tone="muted" style={styles.modelCount}>
           {allModels.length} models
         </Text>
       </View>
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    ...Typography.bodySm,
+    ...Typography.subhead,
     paddingVertical: 0,
   },
   modelCount: {

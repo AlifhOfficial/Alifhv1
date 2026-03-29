@@ -7,7 +7,6 @@ import { Text, Skeleton } from '@/components/ui';
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, ActivityIndicator, Dimensions, Platform, Pressable } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Stack, useRouter } from 'expo-router';
 import Animated, {
   useSharedValue,
@@ -20,6 +19,7 @@ import { format, isToday, isYesterday, isThisWeek, isSameDay } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
+import { MobileHeader, getMobileHeaderHeight } from '@/components/layout';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
@@ -50,7 +50,6 @@ export function ChatWindow({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const headerHeight = useHeaderHeight();
   const listRef = useRef<FlatList<Message>>(null);
 
   // Timestamp panel state
@@ -253,7 +252,7 @@ export function ChatWindow({
             </View>
             <View style={styles.timestampSide}>
               {timestamp && (
-                <Text variant="bodySm" style={{ color: colors.labelTertiary, opacity: 0.5 }} tone="secondary">
+                <Text variant="subhead" style={{ color: colors.labelTertiary, opacity: 0.5 }} tone="secondary">
                   {timestamp}
                 </Text>
               )}
@@ -261,7 +260,7 @@ export function ChatWindow({
           </View>
           {showDateSeparator && (
             <View style={styles.dateSeparator}>
-              <Text variant="bodySm" style={{ color: colors.labelTertiary }}>
+              <Text variant="subhead" style={{ color: colors.labelTertiary }}>
                 {formatDateLabel(messageDate)}
               </Text>
             </View>
@@ -309,7 +308,7 @@ export function ChatWindow({
     if (!isOtherTyping) return null;
     return (
       <View style={styles.typingContainer}>
-        <Text variant="bodySm" style={{ color: colors.labelTertiary }} tone="secondary">
+        <Text variant="subhead" style={{ color: colors.labelTertiary }} tone="secondary">
           typing...
         </Text>
       </View>
@@ -340,34 +339,12 @@ export function ChatWindow({
   const router = useRouter();
   const { applySearch, clearSearch, clearFilterParams } = useSearch();
 
-  // Centered title: name + status — iMessage/native style
-  const renderHeaderTitle = useCallback(() => {
-    if (!conversation) {
-      return (
-        <View style={styles.headerTitleCenter}>
-          <Skeleton width={100} height={14} />
-          <Skeleton width={60} height={11} style={{ marginTop: 2 }} />
-        </View>
-      );
-    }
-    return (
-      <View style={styles.headerTitleCenter}>
-        <Text variant="body" style={{ color: colors.label }} numberOfLines={1}>
-          {displayName}
-        </Text>
-        <Text variant="bodySm" style={{ color: colors.labelTertiary }} numberOfLines={1} tone="secondary">
-          {activityText}{listingTitle ? `  ·  ${listingTitle}` : ''}
-        </Text>
-      </View>
-    );
-  }, [conversation, displayName, activityText, listingTitle, colors]);
-
   // Avatar in headerRight with online dot — press navigates to partner if dealer
   const renderHeaderRight = useCallback(() => {
     const partnerId = conversation?.partner?.id ?? conversation?.partnerId ?? null;
     const partnerName = conversation?.partner?.name ?? null;
     const avatar = (
-      <View style={[styles.headerAvatarWrap, { marginRight: Spacing.sm }]}>
+      <View style={[styles.headerAvatarWrap, Platform.OS === 'ios' ? { marginRight: Spacing.sm } : null]}>
         {!conversation ? (
           <Skeleton circle width={Sizes.avatarSm} height={Sizes.avatarSm} />
         ) : (
@@ -395,32 +372,28 @@ export function ChatWindow({
     return avatar;
   }, [conversation, avatarUrl, displayName, isOnline, colors, router, applySearch, clearSearch, clearFilterParams]);
 
-  const nativeHeaderOptions = Platform.OS === 'ios'
-    ? {
-        headerTransparent: false,
-        headerShadowVisible: false,
-        headerBackButtonDisplayMode: 'minimal' as const,
-        headerBackTitle: '',
-      }
-    : {
-        headerStyle: { backgroundColor: colors.background },
-      };
+  const nativeHeaderOptions = {
+    headerShown: false,
+  };
 
   return (
     <>
       <Stack.Screen
         options={{
           ...nativeHeaderOptions,
-          headerStyle: { backgroundColor: colors.background },
-          headerTintColor: colors.label,
-          headerTitle: renderHeaderTitle,
-          headerRight: renderHeaderRight,
         }}
       />
+    <MobileHeader
+      title={displayName}
+      subtitle={listingTitle ? `${activityText}  ·  ${listingTitle}` : activityText}
+      showBackButton
+      onBackPress={onBack}
+      right={renderHeaderRight()}
+    />
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
       behavior="padding"
-      keyboardVerticalOffset={headerHeight}
+      keyboardVerticalOffset={getMobileHeaderHeight(insets.top)}
     >
       {/* Messages List with horizontal swipe for timestamps */}
       <GestureDetector gesture={swipeGesture}>
@@ -580,11 +553,6 @@ const styles = StyleSheet.create({
   typingContainer: {
     paddingHorizontal: Layout.screenPadding + Sizes.iconXl + Spacing.sm,
     paddingVertical: Spacing.xs,
-  },
-  // Native header title (centered)
-  headerTitleCenter: {
-    alignItems: 'center',
-    gap: 1,
   },
   headerAvatarWrap: {
     position: 'relative',

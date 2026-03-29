@@ -12,7 +12,7 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home, MessageCircle, LayoutGrid } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Sizes, Spacing, Radius } from '@/constants/theme';
+import { Colors, Shadows, Sizes, Spacing, Radius, ZIndex } from '@/constants/theme';
 
 const TAB_CONFIG = [
   { name: '(home)', icon: Home, label: 'Home' },
@@ -20,9 +20,9 @@ const TAB_CONFIG = [
   { name: '(browse)', icon: LayoutGrid, label: 'Browse' },
 ] as const;
 
-const PILL_PADDING = 4;
-const TAB_HEIGHT = 44;
-const TAB_WIDTH = 52;
+const PILL_PADDING = Spacing.xs;
+const TAB_HEIGHT = Sizes.actionButtonLg;
+const TAB_WIDTH = Sizes.actionButtonLg + Spacing.md;
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const { colorScheme } = useTheme();
@@ -41,7 +41,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         style={[
           styles.pill,
           {
-            backgroundColor: colors.background + 'CC',
+            backgroundColor: colors.background,
             borderColor: colors.border,
             shadowColor: colors.black,
           },
@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
+    zIndex: ZIndex.overlay + 1,
   },
   pill: {
     flexDirection: 'row',
@@ -118,12 +119,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: PILL_PADDING,
     gap: PILL_PADDING,
-    // iOS shadow
-    shadowOffset: { width: 0, height: Spacing.sm },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
-    // Android elevation
-    elevation: 12,
+    ...Shadows.lg,
   },
   tabBtn: {
     width: TAB_WIDTH,

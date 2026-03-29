@@ -22,12 +22,12 @@ interface StatItemProps {
 function StatItem({ label, value, colors, showStar }: StatItemProps) {
   return (
     <View style={styles.statItem}>
-      <Text variant="label" tone="muted" style={styles.statLabel} uppercase>{label}</Text>
+      <Text variant="footnoteEmphasized" tone="muted" style={styles.statLabel} uppercase>{label}</Text>
       <View style={styles.valueRow}>
         {showStar && value !== '—' && (
           <Star size={Sizes.iconXs} color={colors.star} fill={colors.star} strokeWidth={0} style={styles.starIcon} />
         )}
-        <Text variant="title" style={styles.statValue}>{value}</Text>
+        <Text variant="title2Emphasized" style={styles.statValue}>{value}</Text>
       </View>
     </View>
   );
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   statLabel: {
-    // textTransform handled by <Text variant="label" uppercase> component
+    // textTransform handled by <Text variant="footnoteEmphasized" uppercase> component
   },
   valueRow: {
     flexDirection: 'row',
@@ -177,6 +177,6 @@ const styles = StyleSheet.create({
     marginRight: Spacing.xs,
   },
   statValue: {
-    // Typography handled by <Text variant="title"> component
+    // Typography handled by <Text variant="title2Emphasized"> component
   },
 });

@@ -5,33 +5,39 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, View, ScrollView, RefreshControl, Dimensions } from 'react-native';
+import { StyleSheet, View, ScrollView, RefreshControl, Platform } from 'react-native';
+import { Sun, Moon } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   GreetingNote,
   QuickActions,
   UserDashboardStatsCard,
+  ProfileMenu,
 } from '@/components/home';
+import { Bubble } from '@/components/ui';
+import { MobileHeader, getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Layout } from '@/constants/theme';
+import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { useUserDashboardStats } from '@/hooks/use-user-dashboard';
 
 // ============================================================================
 // CONSTANTS
 // ============================================================================
 
-// Ghost spacer height — breathing room above the greeting
-const GHOST_SPACER_HEIGHT = Dimensions.get('window').height * 0.15;
-
 // ============================================================================
 // HOME SCREEN
 // ============================================================================
 
 export default function HomeScreen() {
-  const { colorScheme } = useTheme();
+  const { colorScheme, toggleTheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
   const { stats, isLoading, refresh } = useUserDashboardStats();
+  const topSpacerHeight = getMobileHeaderContentInset(insets.top) + Spacing['3xl'];
+  const bottomInset = getTabBarContentInset(insets.bottom, Spacing['3xl']);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -39,28 +45,53 @@ export default function HomeScreen() {
     setRefreshing(false);
   }, [refresh]);
 
-  return (
-    <ScrollView
-      contentContainerStyle={styles.scrollContent}
-      contentInsetAdjustmentBehavior="automatic"
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-          tintColor={colors.label}
-        />
-      }
-    >
-      <View style={styles.ghostSpacer} />
-      <View style={styles.greetingContainer}>
-        <GreetingNote />
-      </View>
-      <QuickActions />
-      <UserDashboardStatsCard stats={stats} isLoading={isLoading} />
+  const handleToggleTheme = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    toggleTheme();
+  }, [toggleTheme]);
 
-      <View style={styles.bottomSpacer} />
-    </ScrollView>
+  const ThemeIcon = colorScheme === 'dark' ? Moon : Sun;
+
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <MobileHeader
+        title="Home"
+        left={<ProfileMenu />}
+        right={
+          <Bubble
+            onPress={handleToggleTheme}
+            accessibilityRole="button"
+            accessibilityLabel="Toggle theme"
+          >
+            <ThemeIcon size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
+          </Bubble>
+        }
+      />
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        contentInsetAdjustmentBehavior="never"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.label}
+          />
+        }
+      >
+        <View style={[styles.ghostSpacer, { height: topSpacerHeight }]} />
+        <View style={styles.greetingContainer}>
+          <GreetingNote />
+        </View>
+        <QuickActions />
+        <UserDashboardStatsCard stats={stats} isLoading={isLoading} />
+
+        <View style={[styles.bottomSpacer, { height: bottomInset }]} />
+      </ScrollView>
+    </View>
   );
 }
 
@@ -69,16 +100,17 @@ export default function HomeScreen() {
 // ============================================================================
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   scrollContent: {
     gap: Spacing.lg,
   },
-  ghostSpacer: {
-    height: GHOST_SPACER_HEIGHT,
-  },
+  ghostSpacer: {},
   greetingContainer: {
     marginBottom: Spacing.md,
   },
   bottomSpacer: {
-    height: Layout.tabBarHeight + Spacing['3xl'],
+    height: 0,
   },
 });

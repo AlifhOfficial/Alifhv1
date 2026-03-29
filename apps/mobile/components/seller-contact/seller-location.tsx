@@ -24,7 +24,7 @@ export const SellerLocation = memo(function SellerLocation({
 
   return (
     <View style={localStyles.section}>
-      <Text variant="label" tone="muted" uppercase>LOCATION</Text>
+      <Text variant="footnoteEmphasized" tone="muted" uppercase>LOCATION</Text>
       
       {seller.location && (
         <View style={localStyles.locationRow}>
@@ -47,7 +47,7 @@ export const SellerLocation = memo(function SellerLocation({
               onPress={onViewMap}
             >
               <ExternalLink size={Sizes.iconXs} color={colors.label} />
-              <Text variant="bodySm">View Map</Text>
+              <Text variant="subhead">View Map</Text>
             </HapticPressable>
             <HapticPressable
               style={[
@@ -57,7 +57,7 @@ export const SellerLocation = memo(function SellerLocation({
               onPress={onGetDirections}
             >
               <Navigation size={Sizes.iconXs} color={colors.label} />
-              <Text variant="bodySm">Directions</Text>
+              <Text variant="subhead">Directions</Text>
             </HapticPressable>
           </>
         )}
@@ -70,7 +70,7 @@ export const SellerLocation = memo(function SellerLocation({
             onPress={onWebsite}
           >
             <Globe size={Sizes.iconXs} color={colors.label} />
-            <Text variant="bodySm">Website</Text>
+            <Text variant="subhead">Website</Text>
           </HapticPressable>
         )}
       </View>

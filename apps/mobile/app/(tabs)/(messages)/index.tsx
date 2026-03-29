@@ -12,11 +12,13 @@ import React, { useMemo, useCallback, useRef } from 'react';
 import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { MessageCircle } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   ConversationGroup,
   useConversations,
 } from '@/components/messages';
+import { MobileHeader, getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
 import { Colors, Layout, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -38,6 +40,7 @@ export default function MessagesScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { isAuthenticated, user } = useAuth();
 
   const {
@@ -247,7 +250,7 @@ export default function MessagesScreen() {
         <View style={[styles.iconCircle, { backgroundColor: colors.fill2 }]}>
           <MessageCircle size={Sizes.avatarSm} color={colors.labelTertiary} strokeWidth={1.5} />
         </View>
-        <Text variant="heading">No Messages Yet</Text>
+        <Text variant="title3Emphasized">No Messages Yet</Text>
         <Text variant="body" tone="secondary" style={{ textAlign: 'center' }}>
           Your conversations will appear here
         </Text>
@@ -255,33 +258,41 @@ export default function MessagesScreen() {
     );
   }, [isAuthenticated, isLoading, isRefreshing, conversations.length, error, colors]);
 
+  const headerInset = getMobileHeaderContentInset(insets.top);
+  const tabBarInset = getTabBarContentInset(insets.bottom);
+
   return (
-    <FlatList
-      data={listItems}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.key}
-      contentContainerStyle={[
-        styles.listContent,
-        listItems.length === 0 && { flexGrow: 1 },
-      ]}
-      contentInsetAdjustmentBehavior="automatic"
-      ListEmptyComponent={renderEmpty}
-      refreshControl={
-        <RefreshControl
-          refreshing={isRefreshing}
-          onRefresh={pullToRefresh}
-          tintColor={colors.primary}
-        />
-      }
-      showsVerticalScrollIndicator={false}
-    />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <MobileHeader title="Chats" />
+      <FlatList
+        data={listItems}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.key}
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingTop: headerInset, paddingBottom: tabBarInset + Spacing.lg },
+          listItems.length === 0 && { flexGrow: 1 },
+        ]}
+        contentInsetAdjustmentBehavior="never"
+        ListEmptyComponent={renderEmpty}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={pullToRefresh}
+            tintColor={colors.primary}
+          />
+        }
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  listContent: {
-    paddingBottom: Layout.tabBarHeight + Spacing['3xl'],
+  container: {
+    flex: 1,
   },
+  listContent: {},
   centered: {
     flex: 1,
     alignItems: 'center',

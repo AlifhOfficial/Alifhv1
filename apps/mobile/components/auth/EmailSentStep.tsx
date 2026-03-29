@@ -131,14 +131,14 @@ export function EmailSentStep({
 
           {/* Title */}
           <Animated.View entering={FadeInDown.delay(200).duration(400)}>
-            <Text variant="title" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
+            <Text variant="title2Emphasized" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
               Check your inbox
             </Text>
           </Animated.View>
 
           {/* Subtitle */}
           <Animated.View entering={FadeInDown.delay(300).duration(400)}>
-            <Text variant="bodySm" style={[onboardingStyles.welcomeSubtitle, { color: colors.labelSecondary }]}>
+            <Text variant="subhead" style={[onboardingStyles.welcomeSubtitle, { color: colors.labelSecondary }]}>
               We've sent a verification code to
             </Text>
           </Animated.View>
@@ -148,7 +148,7 @@ export function EmailSentStep({
             entering={FadeInDown.delay(400).duration(400)}
             style={[onboardingStyles.emailHighlight, { backgroundColor: `${colors.white}08` }]}
           >
-            <Text variant="bodySm" style={{ color: colors.white }}>
+            <Text variant="subhead" style={{ color: colors.white }}>
               {email}
             </Text>
           </Animated.View>
@@ -177,9 +177,9 @@ export function EmailSentStep({
           {/* Resend link */}
           <View style={onboardingStyles.resendSection}>
             <HapticPressable onPress={handleResend} disabled={isResending || isLoading}>
-              <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
+              <Text variant="subhead" style={{ color: colors.labelSecondary }}>
                 Didn't receive it?{' '}
-                <Text variant="bodySm" style={{ color: colors.primary }}>
+                <Text variant="subhead" style={{ color: colors.primary }}>
                   {isResending ? 'Sending...' : 'Resend'}
                 </Text>
               </Text>

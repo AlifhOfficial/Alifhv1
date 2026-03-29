@@ -85,12 +85,12 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
       {/* Formatted display */}
       {localMileage && (
         <View style={styles.formattedRow}>
-          <Text variant="title" style={{ color: colors.label }}>
+          <Text variant="title2Emphasized" style={{ color: colors.label }}>
             {mileageNum.toLocaleString()} km
           </Text>
           {isLowMileage && (
             <View style={[styles.badge, { backgroundColor: colors.successMuted }]}>
-              <Text variant="bodySm" style={{ color: colors.success }} tone="secondary">
+              <Text variant="subhead" style={{ color: colors.success }} tone="secondary">
                 Low mileage
               </Text>
             </View>
@@ -100,7 +100,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Quick presets */}
       <View style={styles.section}>
-        <Text variant="bodySm" tone="muted">Quick select</Text>
+        <Text variant="subhead" tone="muted">Quick select</Text>
         <View style={styles.presetsRow}>
           {MILEAGE_PRESETS.map((preset) => {
             const isActive = preset.value === localMileage;
@@ -116,7 +116,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
                   },
                 ]}
               >
-                <Text variant="bodySm" style={{ color: isActive ? colors.background : colors.label }}>
+                <Text variant="subhead" style={{ color: isActive ? colors.background : colors.label }}>
                   {preset.label}
                 </Text>
               </HapticPressable>
@@ -127,7 +127,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Info */}
       <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
-        <Text variant="bodySm" tone="muted">
+        <Text variant="subhead" tone="muted">
           Odometer reading in kilometers. Vehicles under 5,000 km are marked as "new condition".
         </Text>
       </View>

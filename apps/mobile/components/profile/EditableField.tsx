@@ -9,6 +9,7 @@ import { StyleSheet, View, TextInput, Pressable, Platform, KeyboardTypeOptions }
 import Animated, {
   FadeIn,
   FadeOut,
+  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -82,10 +83,8 @@ export function EditableField({
   };
 
   const animatedBgStyle = useAnimatedStyle(() => {
-    // Prevent tiny floats from serializing into scientific notation causing Reanimated crashes
-    const alpha = Math.max(0, bgOpacity.value * 0.03).toFixed(4);
     return {
-      backgroundColor: `rgba(0,0,0,${alpha})`,
+      backgroundColor: interpolateColor(bgOpacity.value, [0, 1], ['transparent', colors.fill]),
     };
   });
 
@@ -95,7 +94,7 @@ export function EditableField({
         entering={FadeIn.duration(200)}
         style={[styles.container, !isLast && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }]}
       >
-        <Text variant="bodySm" tone="muted">{label}</Text>
+        <Text variant="subhead" tone="muted">{label}</Text>
         <View style={styles.editContainer}>
           <View style={styles.inputWrapper}>
             {prefix && (
@@ -111,7 +110,7 @@ export function EditableField({
               placeholderTextColor={colors.labelTertiary}
               style={[
                 styles.input,
-                Typography.bodyLg,
+                Typography.body,
                 { backgroundColor: colors.surface, color: colors.label },
               ]}
               keyboardType={keyboardType}
@@ -129,7 +128,7 @@ export function EditableField({
                 pressed && { opacity: 0.6 },
               ]}
             >
-              <Text variant="bodySm" tone="secondary">
+              <Text variant="subhead" tone="secondary">
                 Cancel
               </Text>
             </HapticPressable>
@@ -168,7 +167,7 @@ export function EditableField({
       >
         <View style={styles.row}>
           <View style={styles.labelValueContainer}>
-            <Text variant="bodySm" tone="muted">{label}</Text>
+            <Text variant="subhead" tone="muted">{label}</Text>
             <Text
               variant="body"
               tone={value ? 'default' : 'muted'}

@@ -141,9 +141,9 @@ export function ReviewStepContent({
         )}
         
         <View style={styles.heroInfo}>
-          <Text variant="subheading" numberOfLines={2}>{vehicleTitle}</Text>
-          {data.trim && <Text variant="bodySm" tone="muted">{data.trim}</Text>}
-          <Text variant="title" style={{ color: colors.primary, marginTop: Spacing.xs }}>
+          <Text variant="headline" numberOfLines={2}>{vehicleTitle}</Text>
+          {data.trim && <Text variant="subhead" tone="muted">{data.trim}</Text>}
+          <Text variant="title2Emphasized" style={{ color: colors.primary, marginTop: Spacing.xs }}>
             AED {priceNum.toLocaleString()}
           </Text>
         </View>
@@ -152,15 +152,15 @@ export function ReviewStepContent({
       {/* Quick Stats */}
       <View style={styles.statsRow}>
         <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-          <Text variant="bodySm" tone="muted">Mileage</Text>
+          <Text variant="subhead" tone="muted">Mileage</Text>
           <Text variant="body">{mileageNum.toLocaleString()} km</Text>
         </View>
         <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-          <Text variant="bodySm" tone="muted">Location</Text>
+          <Text variant="subhead" tone="muted">Location</Text>
           <Text variant="body" numberOfLines={1}>{emirateLabel}</Text>
         </View>
         <View style={[styles.statItem, { backgroundColor: colors.surfaceSecondary }]}>
-          <Text variant="bodySm" tone="muted">Photos</Text>
+          <Text variant="subhead" tone="muted">Photos</Text>
           <Text variant="body">{data.images.length}</Text>
         </View>
       </View>
@@ -169,7 +169,7 @@ export function ReviewStepContent({
       {!canPublish && missingItems.length > 0 && (
         <View style={[styles.warningBox, { backgroundColor: colors.warningMuted }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.warning} strokeWidth={2} />
-          <Text variant="bodySm" style={{ color: colors.warning, flex: 1 }}>
+          <Text variant="subhead" style={{ color: colors.warning, flex: 1 }}>
             Missing: {missingItems.join(', ')}
           </Text>
         </View>
@@ -179,7 +179,7 @@ export function ReviewStepContent({
       {error && (
         <View style={[styles.warningBox, { backgroundColor: colors.errorMuted }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-          <Text variant="bodySm" style={{ color: colors.error, flex: 1 }}>
+          <Text variant="subhead" style={{ color: colors.error, flex: 1 }}>
             {error}
           </Text>
         </View>
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: Spacing.md,
     borderRadius: Radius.md,
-    gap: 2,
+    gap: Spacing.xs,
   },
   warningBox: {
     flexDirection: 'row',

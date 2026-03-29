@@ -136,7 +136,7 @@ export function AuthSuccessScreen({
           {/* Greeting */}
           <Animated.View entering={FadeInDown.delay(300).duration(400)}>
             <Text
-              variant="bodySm"
+              variant="subhead"
               style={{ color: colors.primary, textAlign: 'center', marginBottom: Spacing.sm }}
              tone="secondary">
               {getGreeting()}
@@ -145,7 +145,7 @@ export function AuthSuccessScreen({
 
           {/* Welcome message */}
           <Animated.View entering={FadeInDown.delay(400).duration(400)}>
-            <Text variant="title" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
+            <Text variant="title2Emphasized" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
               {firstName ? `Welcome back, ${firstName}!` : "You're in!"}
             </Text>
           </Animated.View>
@@ -153,7 +153,7 @@ export function AuthSuccessScreen({
           {/* Subtitle */}
           <Animated.View entering={FadeInDown.delay(500).duration(400)}>
             <Text
-              variant="bodySm"
+              variant="subhead"
               style={[onboardingStyles.welcomeSubtitle, { color: colors.labelSecondary }]}
             >
               Ready to find your next ride?

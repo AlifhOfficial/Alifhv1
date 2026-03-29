@@ -47,7 +47,7 @@ export function QuickActions() {
             <View style={[styles.iconCircle, { backgroundColor: colors.fill3 }]}>
               <action.icon size={Sizes.iconMd} color={colors.label} strokeWidth={2} />
             </View>
-            <Text variant="bodySm">{action.label}</Text>
+            <Text variant="subhead">{action.label}</Text>
           </HapticPressable>
         ))}
       </View>

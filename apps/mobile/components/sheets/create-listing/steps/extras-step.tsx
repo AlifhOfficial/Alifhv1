@@ -59,9 +59,9 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Text variant="caption" uppercase>Vehicle Extras</Text>
+          <Text variant="caption1Emphasized" uppercase>Vehicle Extras</Text>
           {extras.length > 0 && (
-            <Text variant="bodySm" tone="secondary">
+            <Text variant="subhead" tone="secondary">
               {extras.length} selected
             </Text>
           )}
@@ -83,7 +83,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {extra.label}
@@ -96,7 +96,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Custom extras input */}
       <View style={styles.section}>
-        <Text variant="caption" uppercase>Add Custom Extra</Text>
+        <Text variant="caption1Emphasized" uppercase>Add Custom Extra</Text>
         <View style={[styles.inputRow, { backgroundColor: colors.fill2 }]}>
           <BottomSheetTextInput
             style={[styles.input, { color: colors.label }]}
@@ -129,7 +129,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
                   key={extra}
                   style={[styles.customChip, { backgroundColor: colors.label }]}
                 >
-                  <Text variant="bodySm" style={{ color: colors.background }}>
+                  <Text variant="subhead" style={{ color: colors.background }}>
                     {extra}
                   </Text>
                   <HapticPressable onPress={() => toggleExtra(extra)} hitSlop={Layout.hitSlopSmall}>
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    ...Typography.bodySm,
+    ...Typography.subhead,
     paddingVertical: Spacing.md,
   },
   addButton: {

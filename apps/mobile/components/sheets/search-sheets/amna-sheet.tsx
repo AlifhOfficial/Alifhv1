@@ -227,13 +227,13 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
               <Ionicons name="flash" size={Spacing['4xl']} color={colors.amna} />
               <View style={{ alignItems: 'center', gap: Spacing.sm, marginTop: Spacing.lg, width: '100%', paddingHorizontal: Spacing.md }}>
                 {message ? (
-                  <Text variant="subheading" style={{ textAlign: 'center', flexShrink: 1 }}>
+                  <Text variant="headline" style={{ textAlign: 'center', flexShrink: 1 }}>
                     {message}
                   </Text>
                 ) : (
                   <>
-                    <Text variant="subheading" style={{ textAlign: 'center', flexShrink: 1 }}>{loadingText}</Text>
-                    <Text variant="bodySm" tone="muted" style={{ textAlign: 'center' }}>Finding the perfect cars for you ✨</Text>
+                    <Text variant="headline" style={{ textAlign: 'center', flexShrink: 1 }}>{loadingText}</Text>
+                    <Text variant="subhead" tone="muted" style={{ textAlign: 'center' }}>Finding the perfect cars for you ✨</Text>
                   </>
                 )}
               </View>
@@ -253,7 +253,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
             </HapticPressable>
             <View style={styles.headerTitle}>
               <Ionicons name="flash" size={Spacing.lg} color={colors.amna} />
-              <Text variant="subheading">Ask Amna</Text>
+              <Text variant="headline">Ask Amna</Text>
             </View>
             <View style={{ width: Spacing["5xl"] }} />
           </View>
@@ -264,7 +264,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
           <View style={styles.content}>
             {/* Amna intro */}
             <View style={styles.intro}>
-              <Text variant="bodySm" tone="muted" style={{ textAlign: 'center' }}>
+              <Text variant="subhead" tone="muted" style={{ textAlign: 'center' }}>
                 Describe what you're looking for
               </Text>
             </View>
@@ -325,7 +325,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
             {/* Error message display */}
             {message && !isLoading && (
               <View style={styles.messageBox}>
-                <Text variant="bodySm" style={{ textAlign: 'center', color: colors.amna }}>
+                <Text variant="subhead" style={{ textAlign: 'center', color: colors.amna }}>
                   {message}
                 </Text>
               </View>
@@ -333,7 +333,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
 
             {/* Quick suggestions */}
             <View style={styles.quickSuggestions}>
-              <Text variant="caption" tone="muted" style={{ marginBottom: Spacing.sm }} uppercase>TRY ASKING</Text>
+              <Text variant="caption1Emphasized" tone="muted" style={{ marginBottom: Spacing.sm }} uppercase>TRY ASKING</Text>
               <View style={styles.suggestionsGrid}>
                 {[
                   'Surprise me 🎲',
@@ -359,7 +359,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
                       },
                     ]}
                   >
-                    <Text variant="bodySm" style={{ color: colors.label }} tone="secondary">
+                    <Text variant="subhead" style={{ color: colors.label }} tone="secondary">
                       {suggestion}
                     </Text>
                   </HapticPressable>
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
   textInput: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
-    ...Typography.bodySm,
+    ...Typography.subhead,
     lineHeight: 22,
     minHeight: Spacing["5xl"],
     textAlignVertical: 'top',

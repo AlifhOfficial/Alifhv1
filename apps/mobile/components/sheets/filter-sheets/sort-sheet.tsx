@@ -105,7 +105,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
               <Text variant="body" tone="secondary">Cancel</Text>
             </HapticPressable>
             
-            <Text variant="subheading">Sort By</Text>
+            <Text variant="headline">Sort By</Text>
             
             <View style={styles.placeholder} />
           </View>

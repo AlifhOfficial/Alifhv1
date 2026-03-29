@@ -169,11 +169,11 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Character count */}
       <View style={styles.countRow}>
-        <Text variant="bodySm" tone="muted">
+        <Text variant="subhead" tone="muted">
           {localVin.length}/17
         </Text>
         {status === 'verified' && (
-          <Text variant="bodySm" style={{ color: colors.success }} tone="secondary">
+          <Text variant="subhead" style={{ color: colors.success }} tone="secondary">
             Verified
           </Text>
         )}
@@ -183,7 +183,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       {errorMsg && (
         <View style={[styles.errorBox, { backgroundColor: colors.errorMuted }]}>
           <AlertCircle size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-          <Text variant="bodySm" style={{ color: colors.error, flex: 1 }}>
+          <Text variant="subhead" style={{ color: colors.error, flex: 1 }}>
             {errorMsg}
           </Text>
         </View>
@@ -192,7 +192,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       {/* VIN Visibility Toggle */}
       <View style={[styles.visibilitySection, { backgroundColor: colors.fill2 }]}>
         <View style={styles.visibilityContent}>
-          <Text variant="caption" uppercase>Show VIN publicly</Text>
+          <Text variant="caption1Emphasized" uppercase>Show VIN publicly</Text>
         </View>
         <Switch
           value={data.vinVisibility === 'public'}
@@ -207,7 +207,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Info */}
       <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
-        <Text variant="bodySm" tone="muted">
+        <Text variant="subhead" tone="muted">
           Find your VIN on the driver's door jamb, dashboard, or vehicle registration. This setting is permanent for this listing.
         </Text>
       </View>
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingRight: Spacing["5xl"],
     ...Typography.body,
-    letterSpacing: 1,
+    letterSpacing: Typography.footnoteEmphasized.letterSpacing,
   },
   statusIcon: {
     position: 'absolute',
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   },
   visibilityContent: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs,
     marginRight: Spacing.md,
   },
   infoBox: {

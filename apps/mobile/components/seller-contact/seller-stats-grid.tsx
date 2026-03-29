@@ -24,14 +24,14 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
     <View style={[localStyles.grid, { borderTopColor: colors.border, borderBottomColor: colors.border }]}>
       {/* Email Verified */}
       <View style={localStyles.item}>
-        <Text variant="caption" tone="muted" uppercase>EMAIL</Text>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>EMAIL</Text>
         <View style={localStyles.verifiedRow}>
           {seller.emailVerified ? (
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
           ) : (
             <Circle size={Sizes.iconXs} color={colors.labelQuaternary} />
           )}
-          <Text variant="bodySm" style={{ color: seller.emailVerified ? colors.success : colors.labelQuaternary }}>
+          <Text variant="subhead" style={{ color: seller.emailVerified ? colors.success : colors.labelQuaternary }}>
             {seller.emailVerified ? 'Verified' : 'Unverified'}
           </Text>
         </View>
@@ -39,14 +39,14 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
 
       {/* Phone Verified */}
       <View style={localStyles.item}>
-        <Text variant="caption" tone="muted" uppercase>PHONE</Text>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>PHONE</Text>
         <View style={localStyles.verifiedRow}>
           {seller.phoneVerified ? (
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
           ) : (
             <Circle size={Sizes.iconXs} color={colors.labelQuaternary} />
           )}
-          <Text variant="bodySm" style={{ color: seller.phoneVerified ? colors.success : colors.labelQuaternary }}>
+          <Text variant="subhead" style={{ color: seller.phoneVerified ? colors.success : colors.labelQuaternary }}>
             {seller.phoneVerified ? 'Verified' : 'Unverified'}
           </Text>
         </View>
@@ -54,13 +54,13 @@ export const SellerStatsGrid = memo(function SellerStatsGrid({
 
       {/* Listings Count */}
       <View style={localStyles.item}>
-        <Text variant="caption" tone="muted" uppercase>LISTINGS</Text>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>LISTINGS</Text>
         <Text variant="body">{listingsCount}</Text>
       </View>
 
       {/* Response Rate placeholder */}
       <View style={localStyles.item}>
-        <Text variant="caption" tone="muted" uppercase>RESPONSE</Text>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>RESPONSE</Text>
         <Text variant="body" tone="muted">—</Text>
       </View>
     </View>

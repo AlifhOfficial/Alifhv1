@@ -17,11 +17,11 @@ export const SellerTags = memo(function SellerTags({ tags, label, colors }: Sell
 
   return (
     <View style={localStyles.section}>
-      <Text variant="label" tone="muted" uppercase>{label}</Text>
+      <Text variant="footnoteEmphasized" tone="muted" uppercase>{label}</Text>
       <View style={localStyles.tagsRow}>
         {tags.map((tag, i) => (
           <View key={`tag-${i}`} style={[localStyles.tag, { backgroundColor: colors.backgroundSecondary }]}>
-            <Text variant="bodySm">{tag}</Text>
+            <Text variant="subhead">{tag}</Text>
           </View>
         ))}
       </View>

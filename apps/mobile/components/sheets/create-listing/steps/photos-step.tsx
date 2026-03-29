@@ -184,7 +184,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             {/* Thumbnail badge — only on confirmed CDN cover */}
             {isThumbnail && (
               <View style={[styles.thumbnailBadge, { backgroundColor: colors.primary }]}>
-                <Text variant="bodySm" style={{ color: colors.primaryForeground, fontSize: Spacing.sm, fontWeight: Fonts.semiBold }}>
+                <Text variant="subhead" style={{ color: colors.primaryForeground, fontSize: Spacing.sm, fontWeight: Fonts.semiBold }}>
                   COVER
                 </Text>
               </View>
@@ -247,7 +247,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
         ) : (
           <View style={styles.uploadContent}>
             <ImagePlus size={Sizes.iconLg} color={colors.labelQuaternary} strokeWidth={1.5} />
-            <Text variant="bodySm" tone="muted">
+            <Text variant="subhead" tone="muted">
               Add Photos ({totalCount}/{MAX_IMAGES})
             </Text>
           </View>
@@ -256,7 +256,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Error */}
       {error && (
-        <Text variant="bodySm" style={{ color: colors.error, marginBottom: Spacing.sm }} tone="secondary">
+        <Text variant="subhead" style={{ color: colors.error, marginBottom: Spacing.sm }} tone="secondary">
           {error}
         </Text>
       )}
@@ -273,7 +273,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             columnWrapperStyle={styles.row}
             scrollEnabled={false}
           />
-          <Text variant="bodySm" tone="muted" style={{ marginTop: Spacing.sm }}>
+          <Text variant="subhead" tone="muted" style={{ marginTop: Spacing.sm }}>
             Hold and drag to reorder
           </Text>
         </View>

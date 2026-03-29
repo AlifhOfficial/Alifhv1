@@ -98,7 +98,7 @@ export const ListingFeatures = memo(function ListingFeatures({
 
   return (
     <View style={styles.container}>
-      <Text variant="label" tone="muted" uppercase>
+      <Text variant="footnoteEmphasized" tone="muted" uppercase>
         FEATURES
       </Text>
       <View style={styles.badgesContainer} onLayout={handleLayout}>
@@ -107,7 +107,7 @@ export const ListingFeatures = memo(function ListingFeatures({
             key={idx} 
             style={[styles.badge, { backgroundColor: colors.backgroundSecondary }]}
           >
-            <Text variant="bodySm" style={{ color: textColor }}>
+            <Text variant="subhead" style={{ color: textColor }}>
               {formatEnumValue(extra)}
             </Text>
           </View>
@@ -117,7 +117,7 @@ export const ListingFeatures = memo(function ListingFeatures({
             onPress={onViewAll}
             style={[styles.badge, { backgroundColor: colors.primary + '15' }]}
           >
-            <Text variant="bodySm" tone="primary">
+            <Text variant="subhead" tone="primary">
               +{remainingCount} more
             </Text>
           </HapticPressable>

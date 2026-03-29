@@ -38,7 +38,7 @@ export function FilterPill({
       onPress={onPress}
     >
       <Text 
-        variant="bodySm" 
+        variant="subhead" 
         style={{ color: isPrimary ? colors.primaryForeground : colors.label }}
       >
         {label}

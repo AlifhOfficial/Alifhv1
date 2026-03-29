@@ -146,7 +146,7 @@ export function PriceFilterSheet({
               <Text variant="body" tone="secondary">Cancel</Text>
             </HapticPressable>
             
-            <Text variant="subheading">Price</Text>
+            <Text variant="headline">Price</Text>
             
             <HapticPressable
               style={[
@@ -156,7 +156,7 @@ export function PriceFilterSheet({
               onPress={handleApply}
             >
               <Text
-                variant="bodySm"
+                variant="subhead"
                 style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
               >
                 Apply
@@ -167,11 +167,11 @@ export function PriceFilterSheet({
           {/* Selection Summary */}
           {hasValue && (
             <View style={styles.selectionSummary}>
-              <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+              <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
                 {localMin && localMax ? `AED ${parseInt(localMin).toLocaleString()} - ${parseInt(localMax).toLocaleString()}` : localMin ? `From AED ${parseInt(localMin).toLocaleString()}` : `Up to AED ${parseInt(localMax).toLocaleString()}`}
               </Text>
               <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
+                <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
                   Clear
                 </Text>
               </HapticPressable>
@@ -199,7 +199,7 @@ export function PriceFilterSheet({
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{ color: isActive ? colors.background : colors.labelSecondary }}
                  tone="secondary">
                   {preset.label}
@@ -212,7 +212,7 @@ export function PriceFilterSheet({
         {/* Range Inputs */}
         <View style={styles.rangeRow}>
           <View style={styles.inputWrapper}>
-            <Text variant="caption" style={{ color: colors.labelSecondary, marginBottom: Spacing.xs }} uppercase>
+            <Text variant="caption1Emphasized" style={{ color: colors.labelSecondary, marginBottom: Spacing.xs }} uppercase>
               MIN
             </Text>
             <TextInput
@@ -231,9 +231,9 @@ export function PriceFilterSheet({
               onChangeText={setLocalMin}
             />
           </View>
-          <Text variant="bodyLg" tone="muted" style={styles.rangeDash}>–</Text>
+          <Text variant="body" tone="muted" style={styles.rangeDash}>–</Text>
           <View style={styles.inputWrapper}>
-            <Text variant="caption" style={{ color: colors.labelSecondary, marginBottom: Spacing.xs }} uppercase>
+            <Text variant="caption1Emphasized" style={{ color: colors.labelSecondary, marginBottom: Spacing.xs }} uppercase>
               MAX
             </Text>
             <TextInput

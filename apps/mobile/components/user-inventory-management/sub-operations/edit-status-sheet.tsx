@@ -257,7 +257,7 @@ export function EditStatusSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">Manage Listing</Text>
+          <Text variant="title3Emphasized">Manage Listing</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -283,7 +283,7 @@ export function EditStatusSheet({
             <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
             <View style={styles.statusRow}>
               <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
-              <Text variant="bodySm" style={{ color: statusColor }} tone="secondary">
+              <Text variant="subhead" style={{ color: statusColor }} tone="secondary">
                 {statusLabel}
               </Text>
             </View>

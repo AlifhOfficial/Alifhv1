@@ -88,13 +88,13 @@ export function NameStep({
 
           {/* Hero Section */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Text variant="bodySm" style={[onboardingStyles.greeting, { color: colors.primary }]} tone="secondary">
+            <Text variant="subhead" style={[onboardingStyles.greeting, { color: colors.primary }]} tone="secondary">
               Let's get started
             </Text>
-            <Text variant="title" style={[onboardingStyles.title, { color: colors.white }]}>
+            <Text variant="title2Emphasized" style={[onboardingStyles.title, { color: colors.white }]}>
               What's your name?
             </Text>
-            <Text variant="bodySm" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
+            <Text variant="subhead" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
               We'd love to know what to call you
             </Text>
           </Animated.View>

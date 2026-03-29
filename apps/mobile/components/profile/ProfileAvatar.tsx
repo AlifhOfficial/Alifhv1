@@ -225,7 +225,7 @@ export function ProfileAvatar({
       {/* Loading overlay */}
       {isUploading && (
         <Animated.View entering={FadeIn.duration(200)} style={styles.overlay}>
-          <Text variant="bodySm" style={[styles.loadingText, loadingTextStyle]}>
+          <Text variant="subhead" style={[styles.loadingText, loadingTextStyle]}>
             Uploading
           </Text>
         </Animated.View>

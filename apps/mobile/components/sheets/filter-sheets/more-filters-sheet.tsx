@@ -248,7 +248,7 @@ export function MoreFiltersSheet({
             </Text>
             {selectedCount > 0 && (
               <View style={[styles.badge, { backgroundColor: colors.label }]}>  
-                <Text variant="caption" style={{ color: colors.background }} uppercase>{selectedCount}</Text>
+                <Text variant="caption1Emphasized" style={{ color: colors.background }} uppercase>{selectedCount}</Text>
               </View>
             )}
           </View>
@@ -286,7 +286,7 @@ export function MoreFiltersSheet({
             ]}
           >
             <Text
-              variant="bodySm"
+              variant="subhead"
               style={{ color: isSelected ? colors.background : colors.label }}
              tone="secondary">
               {option.label}
@@ -350,7 +350,7 @@ export function MoreFiltersSheet({
             <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
           
-          <Text variant="subheading">Filters</Text>
+          <Text variant="headline">Filters</Text>
           
           <HapticPressable
             style={[
@@ -360,7 +360,7 @@ export function MoreFiltersSheet({
             onPress={handleApply}
           >
             <Text
-              variant="bodySm"
+              variant="subhead"
               style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
             >
               Apply
@@ -371,11 +371,11 @@ export function MoreFiltersSheet({
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+            <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
               {activeCount} filter{activeCount !== 1 ? 's' : ''} selected
             </Text>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
+              <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
                 Clear
               </Text>
             </HapticPressable>
@@ -515,7 +515,7 @@ export function MoreFiltersSheet({
                   ]}
                 >
                   <Text
-                    variant="bodySm"
+                    variant="subhead"
                     style={{ color: isSelected ? colors.background : colors.label }}
                    tone="secondary">
                     {option.label}
@@ -547,7 +547,7 @@ export function MoreFiltersSheet({
                   ]}
                 >
                   <Text
-                    variant="bodySm"
+                    variant="subhead"
                     style={{ color: isSelected ? colors.background : colors.label }}
                    tone="secondary">
                     {option.label}

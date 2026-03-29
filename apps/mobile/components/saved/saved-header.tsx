@@ -57,7 +57,7 @@ export function SavedHeader({
         >
           <View style={styles.pillContent}>
             <Bookmark size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
-            <Text variant="bodySm">Saved</Text>
+            <Text variant="subhead">Saved</Text>
           </View>
         </View>
       </View>

@@ -60,15 +60,15 @@ export const ListingHeader = memo(function ListingHeader({
     <View style={styles.container}>
       <View style={styles.topRow}>
         <View style={styles.textContainer}>
-          <Text variant="heading" style={{ color: textColor }} numberOfLines={2}>
+          <Text variant="title3Emphasized" style={{ color: textColor }} numberOfLines={2}>
             {carTitle}
           </Text>
           <View style={styles.priceRow}>
-            <Text style={{ color: priceColor }} variant="heading" tone="primary">
+            <Text style={{ color: priceColor }} variant="title3Emphasized" tone="primary">
               {formatPrice(price)}
             </Text>
             {isNegotiable && (
-              <Text variant="bodySm" tone="success">
+              <Text variant="subhead" tone="success">
                 Negotiable
               </Text>
             )}
@@ -77,7 +77,7 @@ export const ListingHeader = memo(function ListingHeader({
 
         {isBlk && (
           <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
-            <Text variant="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
+            <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
           </View>
         )}
       </View>
@@ -88,7 +88,7 @@ export const ListingHeader = memo(function ListingHeader({
           {highlights.map((highlight, idx) => (
             <View key={idx} style={styles.highlightItem}>
               <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
-              <Text variant="bodySm" style={{ color: textColor }}>
+              <Text variant="subhead" style={{ color: textColor }}>
                 {highlight}
               </Text>
             </View>

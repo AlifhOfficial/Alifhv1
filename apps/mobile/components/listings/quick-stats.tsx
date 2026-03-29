@@ -8,7 +8,7 @@ import { StyleSheet, View, Platform, Clipboard } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { MapPin, Copy, Check } from 'lucide-react-native';
 
-import { Colors, Spacing, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { formatMileage, formatSpecs, formatEmirate } from './types';
 
@@ -61,13 +61,13 @@ export const QuickStats = memo(function QuickStats({
         <Text variant="body" style={{ color: secondaryTextColor }}>
           {formatMileage(mileage)} km
         </Text>
-        <Text variant="bodySm" tone="muted" style={styles.separator}>
+        <Text variant="subhead" tone="muted" style={styles.separator}>
           •
         </Text>
         <Text variant="body" style={{ color: secondaryTextColor }}>
           {displaySpecs} Specs
         </Text>
-        <Text variant="bodySm" tone="muted" style={styles.separator}>
+        <Text variant="subhead" tone="muted" style={styles.separator}>
           •
         </Text>
         <View style={styles.locationRow}>
@@ -83,7 +83,7 @@ export const QuickStats = memo(function QuickStats({
         <HapticPressable onPress={handleCopyVin} style={styles.vinRow}>
           {({ pressed }) => (
             <>
-              <Text variant="bodySm" tone="muted">VIN</Text>
+              <Text variant="subhead" tone="muted">VIN</Text>
               <Text variant="body" style={[styles.vinValue, { opacity: pressed ? 0.7 : 1 }]}>
                 {vin}
               </Text>
@@ -97,7 +97,7 @@ export const QuickStats = memo(function QuickStats({
         </HapticPressable>
       ) : vinVisibility === 'private' ? (
         <View style={styles.vinRow}>
-          <Text variant="bodySm" tone="muted">VIN</Text>
+          <Text variant="subhead" tone="muted">VIN</Text>
           <Text variant="body" style={{ color: colors.success }}>Verified</Text>
         </View>
       ) : null}
@@ -134,6 +134,6 @@ const styles = StyleSheet.create({
   },
   vinValue: {
     fontVariant: ['tabular-nums'],
-    letterSpacing: 0.5,
+    letterSpacing: Typography.caption1Emphasized.letterSpacing,
   },
 });

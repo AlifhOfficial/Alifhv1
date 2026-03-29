@@ -8,12 +8,19 @@
 
 import { Text } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, View, FlatList, RefreshControl, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BROWSE_TOOLBAR_HEIGHT, BrowseToolbar, type FilterPillType } from '@/components/browse';
 import { ACTIVE_CHIPS_HEIGHT } from '@/components/layout/active-search-chips';
+import {
+  MobileHeader,
+  getMobileHeaderContentInset,
+  getTabBarContentInset,
+  getTabBarOverlayHeight,
+} from '@/components/layout';
 import { 
   MakeFilterSheet,
   ModelFilterSheet,
@@ -95,6 +102,7 @@ export default function BrowseScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   // ─────────────────────────────────────────────────────────────────────────
   // CONTEXT - Single Source of Truth
@@ -405,10 +413,12 @@ export default function BrowseScreen() {
   // RENDER
   // ──────────────────────────────────────────────────────────────────────────
 
-  const toolbarBottomOffset = Layout.tabBarHeight + (hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0);
+  const tabBarInset = getTabBarContentInset(insets.bottom);
+  const toolbarBottomOffset = getTabBarOverlayHeight(insets.bottom) + (hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0);
 
   const bottomPadding =
-    toolbarBottomOffset +
+    tabBarInset +
+    (hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0) +
     BROWSE_TOOLBAR_HEIGHT +
     Spacing['3xl'];
 
@@ -488,7 +498,7 @@ export default function BrowseScreen() {
 
     return (
       <View style={styles.empty}>
-        <Text variant="bodyLg" tone="secondary">No cars found</Text>
+        <Text variant="body" tone="secondary">No cars found</Text>
       </View>
     );
   }, [isLoading, listings.length, viewMode]);
@@ -498,13 +508,16 @@ export default function BrowseScreen() {
 
     return (
       <View style={styles.loadingMore}>
-        <Text variant="bodySm" tone="secondary">Loading...</Text>
+        <Text variant="subhead" tone="secondary">Loading...</Text>
       </View>
     );
   }, [hasMore, isFetchingNextPage]);
 
+  const headerInset = getMobileHeaderContentInset(insets.top);
+
   return (
-    <>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <MobileHeader title="Browse" />
       <FlatList
         ref={scrollRef}
         data={listings}
@@ -516,11 +529,12 @@ export default function BrowseScreen() {
         ListEmptyComponent={renderEmptyState}
         ListFooterComponent={renderFooter}
         contentContainerStyle={{
+          paddingTop: headerInset,
           paddingBottom: bottomPadding,
           paddingHorizontal: Spacing.sm,
           flexGrow: listings.length === 0 ? 1 : undefined,
         }}
-        contentInsetAdjustmentBehavior="automatic"
+        contentInsetAdjustmentBehavior="never"
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         removeClippedSubviews
@@ -607,13 +621,16 @@ export default function BrowseScreen() {
         onViewModeChange={setViewMode}
         bottomOffset={toolbarBottomOffset}
       />
-    </>
+    </View>
   );
 }
 // STYLES
 // ============================================================================
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   empty: {
     alignItems: 'center',
     paddingVertical: Spacing['3xl'],

@@ -13,6 +13,7 @@ import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
+import { Colors } from '@/constants/theme';
 import { useAuth } from './auth-context';
 import { API_BASE } from '@/lib/config';
 import { getSession } from '@/lib/auth-api';
@@ -278,7 +279,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         name: 'Messages',
         importance: Notifications.AndroidImportance.HIGH,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
+        lightColor: Colors.light.error,
       });
     }
 

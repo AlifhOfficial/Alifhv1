@@ -30,7 +30,7 @@ export function MessagesHeader() {
       >
         <View style={styles.pillContent}>
           <MessageCircle size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
-          <Text variant="bodySm">Messages</Text>
+          <Text variant="subhead">Messages</Text>
         </View>
       </View>
     </View>

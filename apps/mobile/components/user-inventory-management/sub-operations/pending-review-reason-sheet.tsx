@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Clock } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 
@@ -94,7 +94,7 @@ export function PendingReviewReasonSheet({
         <View style={styles.header}>
           <View style={styles.headerTitleRow}>
             <Clock size={20} color={colors.warning} />
-            <Text variant="heading" style={{ marginLeft: Spacing.sm }}>
+            <Text variant="title3Emphasized" style={{ marginLeft: Spacing.sm }}>
               Under Review
             </Text>
           </View>
@@ -119,7 +119,7 @@ export function PendingReviewReasonSheet({
               <Ionicons name="image-outline" size={Sizes.iconSm} color={colors.labelQuaternary} />
             </View>
           )}
-          <Text variant="bodySm" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
+          <Text variant="subhead" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
             {listingTitle}
           </Text>
         </View>
@@ -134,7 +134,10 @@ export function PendingReviewReasonSheet({
             <View style={[styles.section, { backgroundColor: colors.fill }]}>
               {/* Reasoning */}
               {hasReasoning && (
-                <Text variant="bodySm" style={{ color: colors.label, lineHeight: 20 }}>
+                <Text
+                  variant="subhead"
+                  style={{ color: colors.label, lineHeight: Typography.subhead.lineHeight }}
+                >
                   {aiModeration?.reasoning}
                 </Text>
               )}
@@ -150,7 +153,7 @@ export function PendingReviewReasonSheet({
                         key={index}
                         style={[styles.flagBadge, { backgroundColor: colors.warning + '20' }]}
                       >
-                        <Text variant="bodySm" style={{ color: colors.warning }}>
+                        <Text variant="subhead" style={{ color: colors.warning }}>
                           {label}
                         </Text>
                       </View>
@@ -161,7 +164,7 @@ export function PendingReviewReasonSheet({
             </View>
           ) : (
             <View style={[styles.section, { backgroundColor: colors.fill }]}>
-              <Text variant="bodySm" style={{ color: colors.labelQuaternary, textAlign: 'center' }}>
+              <Text variant="subhead" style={{ color: colors.labelQuaternary, textAlign: 'center' }}>
                 No specific details available.
               </Text>
             </View>
@@ -169,7 +172,15 @@ export function PendingReviewReasonSheet({
 
           {/* Footer Note */}
           <View style={styles.footerNote}>
-            <Text style={{ color: colors.labelQuaternary, textAlign: 'center', lineHeight: 18 }} variant="bodySm" tone="secondary">
+            <Text
+              style={{
+                color: colors.labelQuaternary,
+                textAlign: 'center',
+                lineHeight: Typography.caption1Emphasized.lineHeight,
+              }}
+              variant="subhead"
+              tone="secondary"
+            >
               Our team will review within 24 hours. This assessment is automated — your listing will be reviewed by a human.
             </Text>
           </View>

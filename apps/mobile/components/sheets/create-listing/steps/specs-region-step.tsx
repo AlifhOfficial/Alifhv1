@@ -44,7 +44,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Regional Specs */}
       <View style={styles.section}>
-        <Text variant="caption" uppercase>Regional Specs</Text>
+        <Text variant="caption1Emphasized" uppercase>Regional Specs</Text>
         <View style={styles.chipWrap}>
           {SPECS_TYPES.map((spec) => {
             const isSelected = data.specs === spec.value;
@@ -61,7 +61,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {spec.label}
@@ -74,7 +74,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Steering Side */}
       <View style={styles.section}>
-        <Text variant="caption" uppercase>Steering Side</Text>
+        <Text variant="caption1Emphasized" uppercase>Steering Side</Text>
         <View style={styles.chipWrap}>
           {STEERING_SIDES.map((side) => {
             const isSelected = data.steeringSide === side.value;
@@ -91,7 +91,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
                 ]}
               >
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{ color: isSelected ? colors.background : colors.label }}
                 >
                   {side.label}
@@ -104,7 +104,7 @@ export function SpecsRegionStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Summary */}
       <View style={[styles.summaryBox, { backgroundColor: colors.fill2 }]}>
-        <Text variant="bodySm" tone="muted">
+        <Text variant="subhead" tone="muted">
           {SPECS_TYPES.find((s) => s.value === data.specs)?.label ?? 'GCC'} specs
           {' · '}
           {STEERING_SIDES.find((s) => s.value === data.steeringSide)?.label ?? 'Left'}-hand drive

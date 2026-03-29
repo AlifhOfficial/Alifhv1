@@ -86,7 +86,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
     >
       <View style={styles.content}>
         <View style={styles.header}>
-          <Text variant="heading">All Features</Text>
+          <Text variant="title3Emphasized">All Features</Text>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 
@@ -129,7 +129,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
                   { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
                 ]}
               >
-                <Text variant="bodySm" tone="secondary">
+                <Text variant="subhead" tone="secondary">
                   {formatEnumValue(feature)}
                 </Text>
               </View>

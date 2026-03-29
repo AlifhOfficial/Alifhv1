@@ -73,7 +73,7 @@ export const SellerCard = memo(function SellerCard({
               contentFit="cover"
             />
           ) : (
-            <Text variant="heading" tone="secondary">
+            <Text variant="title3Emphasized" tone="secondary">
               {sellerName.charAt(0).toUpperCase()}
             </Text>
           )}
@@ -87,13 +87,13 @@ export const SellerCard = memo(function SellerCard({
             )}
             {isBlackTier && (
               <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
-                <Text variant="caption" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
+                <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
               </View>
             )}
           </View>
           
           {/* Subtitle: Dealer type or member since */}
-          <Text variant="bodySm" tone="secondary">
+          <Text variant="subhead" tone="secondary">
             {isPartner ? 'Verified Dealer' : (memberSince || 'Private Seller')}
           </Text>
         </View>

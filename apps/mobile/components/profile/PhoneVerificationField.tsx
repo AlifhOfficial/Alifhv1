@@ -167,14 +167,14 @@ export function PhoneVerificationField({
         style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
       >
         <View style={styles.labelRow}>
-          <Text variant="bodySm" tone="muted">
+          <Text variant="subhead" tone="muted">
             Phone Number
           </Text>
           {displayVerified ? (
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} strokeWidth={2} />
           ) : phone ? (
             <HapticPressable onPress={handleSendOTP} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="bodySm" tone="primary">
+              <Text variant="subhead" tone="primary">
                 Verify
               </Text>
             </HapticPressable>
@@ -194,7 +194,7 @@ export function PhoneVerificationField({
         entering={FadeIn.duration(200)}
         style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
       >
-        <Text variant="bodySm" tone="muted">
+        <Text variant="subhead" tone="muted">
           Phone Number
         </Text>
         <View style={styles.editRow}>
@@ -209,7 +209,7 @@ export function PhoneVerificationField({
             maxLength={9}
             style={[
               styles.input,
-              Typography.bodyLg,
+              Typography.body,
               {
                 backgroundColor: colors.surface,
                 color: colors.label,
@@ -219,16 +219,16 @@ export function PhoneVerificationField({
           />
         </View>
         {error && (
-          <Text variant="bodySm" tone="error">{error}</Text>
+          <Text variant="subhead" tone="error">{error}</Text>
         )}
         <View style={styles.actions}>
           <HapticPressable onPress={handleCancel} hitSlop={Layout.hitSlopSmall}>
-            <Text variant="bodySm" tone="secondary">
+            <Text variant="subhead" tone="secondary">
               Cancel
             </Text>
           </HapticPressable>
           <HapticPressable onPress={handleRemovePhone} hitSlop={Layout.hitSlopSmall}>
-            <Text variant="bodySm" tone="error">
+            <Text variant="subhead" tone="error">
               Remove
             </Text>
           </HapticPressable>
@@ -260,10 +260,10 @@ export function PhoneVerificationField({
       entering={FadeInDown.duration(250)}
       style={[styles.fieldContainer, { borderBottomWidth: 0 }]}
     >
-      <Text variant="bodySm" tone="muted">
+      <Text variant="subhead" tone="muted">
         Phone Number
       </Text>
-      <Text variant="bodySm" tone="muted" style={styles.otpHint}>
+      <Text variant="subhead" tone="muted" style={styles.otpHint}>
         Enter the 6-digit code sent to +971 {phone}
       </Text>
       
@@ -277,18 +277,18 @@ export function PhoneVerificationField({
         maxLength={6}
         style={[
           styles.otpInput,
-          Typography.heading,
+          Typography.title3Emphasized,
           {
             backgroundColor: colors.surface,
             color: colors.label,
             borderColor: error ? colors.error : colors.border,
-            letterSpacing: 8,
+            letterSpacing: Typography.footnoteEmphasized.letterSpacing,
           },
         ]}
       />
       
       {error && (
-        <Text variant="bodySm" tone="error" style={styles.errorText}>{error}</Text>
+        <Text variant="subhead" tone="error" style={styles.errorText}>{error}</Text>
       )}
 
       <View style={styles.otpActions}>
@@ -297,14 +297,14 @@ export function PhoneVerificationField({
           disabled={countdown > 0}
           hitSlop={Layout.hitSlopSmall}
         >
-          <Text variant="bodySm" tone={countdown > 0 ? 'muted' : 'secondary'}>
+          <Text variant="subhead" tone={countdown > 0 ? 'muted' : 'secondary'}>
             {countdown > 0 ? `Resend in ${countdown}s` : 'Resend code'}
           </Text>
         </HapticPressable>
         
         <View style={styles.otpButtonRow}>
           <HapticPressable onPress={handleCancel} hitSlop={Layout.hitSlopSmall}>
-            <Text variant="bodySm" tone="secondary">
+            <Text variant="subhead" tone="secondary">
               Cancel
             </Text>
           </HapticPressable>

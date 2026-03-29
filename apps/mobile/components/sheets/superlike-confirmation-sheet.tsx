@@ -97,15 +97,15 @@ export function SuperlikeConfirmationSheet({
             <Zap size={Sizes.iconLg} color={colors.warning} fill={colors.warning} />
           </View>
           <View style={styles.headerText}>
-            <Text variant="subheading">Superlike this listing?</Text>
+            <Text variant="headline">Superlike this listing?</Text>
             {listingTitle && (
-              <Text variant="bodySm" numberOfLines={1} style={{ marginTop: 2 }} tone="secondary">
+              <Text variant="subhead" numberOfLines={1} style={{ marginTop: Spacing.xs }} tone="secondary">
                 {listingTitle}
               </Text>
             )}
           </View>
           <View style={[styles.quotaBadge, { backgroundColor: remaining === 0 ? colors.warning + '20' : colors.backgroundSecondary }]}>
-            <Text variant="bodySm" style={{ color: remaining === 0 ? colors.warning : colors.labelSecondary }}>
+            <Text variant="subhead" style={{ color: remaining === 0 ? colors.warning : colors.labelSecondary }}>
               {remaining}/{total}
             </Text>
           </View>
@@ -113,7 +113,7 @@ export function SuperlikeConfirmationSheet({
 
         {/* Description */}
         <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundSecondary }]}>
-          <Text variant="bodySm" style={{ textAlign: 'center' }} tone="secondary">
+          <Text variant="subhead" style={{ textAlign: 'center' }} tone="secondary">
             Superlikes notify sellers that you're highly interested. Use them wisely — you have limited superlikes each month.
           </Text>
         </View>
@@ -212,10 +212,10 @@ export function SuperlikeQuotaExhaustedSheet({
           <View style={[styles.iconContainer, { backgroundColor: colors.warning + '20' }]}>
             <Zap size={Sizes.iconXl} color={colors.warning} />
           </View>
-          <Text variant="heading" style={{ marginTop: Spacing.md }}>
+          <Text variant="title3Emphasized" style={{ marginTop: Spacing.md }}>
             No Superlikes Left
           </Text>
-          <Text variant="bodySm" style={{ textAlign: 'center', marginTop: Spacing.xs }} tone="secondary">
+          <Text variant="subhead" style={{ textAlign: 'center', marginTop: Spacing.xs }} tone="secondary">
             You've used all your superlikes for this month.
             {resetDate && ` They'll reset on ${resetDate}.`}
           </Text>

@@ -143,7 +143,7 @@ export function CancelBookingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">Cancel Booking</Text>
+          <Text variant="title3Emphasized">Cancel Booking</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Layout.hitSlop}
@@ -165,8 +165,8 @@ export function CancelBookingSheet({
           )}
           <View style={styles.previewInfo}>
             <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
-            <Text variant="bodySm" tone="secondary">{partnerName}</Text>
-            <Text variant="bodySm" tone="secondary">{formattedDate}</Text>
+            <Text variant="subhead" tone="secondary">{partnerName}</Text>
+            <Text variant="subhead" tone="secondary">{formattedDate}</Text>
           </View>
         </View>
 
@@ -205,7 +205,7 @@ export function CancelBookingSheet({
                       <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />
                     )}
                   </View>
-                  <Text variant="bodySm">{reason.label}</Text>
+                  <Text variant="subhead">{reason.label}</Text>
                 </HapticPressable>
               );
             })}
@@ -214,7 +214,7 @@ export function CancelBookingSheet({
 
         {/* Notes input */}
         <View style={styles.section}>
-          <Text variant="bodySm" tone="secondary" style={{ marginBottom: Spacing.xs }}>
+          <Text variant="subhead" tone="secondary" style={{ marginBottom: Spacing.xs }}>
             Additional notes (optional)
           </Text>
           <BottomSheetTextInput
@@ -238,7 +238,7 @@ export function CancelBookingSheet({
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Text variant="bodySm" tone="error">{error}</Text>
+            <Text variant="subhead" tone="error">{error}</Text>
           </View>
         )}
 
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
   },
   previewInfo: {
     flex: 1,
-    gap: 2,
+    gap: Spacing.xs,
   },
   section: {
     marginBottom: Spacing.md,

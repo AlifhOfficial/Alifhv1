@@ -34,7 +34,7 @@ import {
   Check,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Layout, Sizes, ZIndex} from '@/constants/theme';
+import { Colors, Shadows, Spacing, Radius, Layout, Sizes, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import {
   getListingForEdit,
@@ -65,6 +65,7 @@ import { PendingReviewReasonSheet } from './sub-operations/pending-review-reason
 import { CreateListingFlow } from '@/components/sheets/create-listing/create-listing-flow';
 import type { CreateListingData } from '@/components/sheets/create-listing/types';
 import { useInventory } from '@/hooks/use-inventory-query';
+import { getMobileHeaderContentInset } from '@/components/layout';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -114,6 +115,7 @@ export function InventoryScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+  const headerInset = getMobileHeaderContentInset(insets.top);
   const router = useRouter();
   const { tab } = useLocalSearchParams<{ tab?: string }>();
 
@@ -341,7 +343,7 @@ export function InventoryScreen() {
             )}
             {/* Status badge overlaid on image */}
             <View style={[styles.statusOverlay, { backgroundColor: statusColor + 'E6' }]}>
-              <Text variant="caption" uppercase={false} style={{ color: colors.primaryForeground }}>
+              <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.primaryForeground }}>
                 {statusLabel}
               </Text>
             </View>
@@ -351,7 +353,7 @@ export function InventoryScreen() {
           <View style={styles.content}>
             {/* Row 1: Title + action */}
             <View style={styles.titleRow}>
-              <Text variant="bodySm" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
+              <Text variant="subhead" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
                 {title}
               </Text>
               <HapticPressable
@@ -364,12 +366,12 @@ export function InventoryScreen() {
             </View>
 
             {/* Row 2: Price */}
-            <Text variant="heading" tone="primary">
+            <Text variant="title3Emphasized" tone="primary">
               {price}
             </Text>
 
             {/* Row 3: Meta line — specs · emirate */}
-            <Text variant="bodySm" style={{ color: colors.labelSecondary }}>
+            <Text variant="subhead" style={{ color: colors.labelSecondary }}>
               {displaySpecs} · {displayEmirate}
             </Text>
 
@@ -383,7 +385,7 @@ export function InventoryScreen() {
                   }
                 />
                 <Text
-                  variant="bodySm"
+                  variant="subhead"
                   style={{
                     color: expiry.isExpired
                       ? colors.error
@@ -417,7 +419,7 @@ export function InventoryScreen() {
         <View style={[styles.emptyIcon, { backgroundColor: colors.surfaceSecondary }]}>
           <Ionicons name="image-outline" size={Sizes.iconXl} color={colors.labelQuaternary} />
         </View>
-        <Text variant="subheading" style={{ marginTop: Spacing.lg }}>
+        <Text variant="headline" style={{ marginTop: Spacing.lg }}>
           {isAll ? 'No listings yet' : `No ${tabLabel.toLowerCase()} listings`}
         </Text>
         <Text variant="body" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
@@ -460,7 +462,7 @@ export function InventoryScreen() {
 
       {/* ─────────────────────── Content ─────────────────────────────────── */}
       {isLoading && listings.length === 0 ? (
-        <View style={[styles.listContent, { paddingTop: insets.top + Spacing.lg, paddingBottom: footerHeight }]}>
+        <View style={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }]}>
           {Array.from({ length: 5 }).map((_, i) => (
             <View
               key={i}
@@ -479,7 +481,7 @@ export function InventoryScreen() {
           ))}
         </View>
       ) : error && listings.length === 0 ? (
-        <View style={[styles.centerContainer, { paddingTop: insets.top + Spacing.lg, paddingBottom: footerHeight }]}>
+        <View style={[styles.centerContainer, { paddingTop: headerInset, paddingBottom: footerHeight }]}>
           <Ionicons name="alert-circle-outline" size={Sizes.avatarLg} color={colors.error} />
           <Text
             variant="body"
@@ -488,7 +490,7 @@ export function InventoryScreen() {
             {error}
           </Text>
           <HapticPressable onPress={handleRefresh} style={{ marginTop: Spacing.lg }}>
-            <Text variant="bodySm" tone="primary">Tap to retry</Text>
+            <Text variant="subhead" tone="primary">Tap to retry</Text>
           </HapticPressable>
         </View>
       ) : (
@@ -497,8 +499,8 @@ export function InventoryScreen() {
           data={listings}
           keyExtractor={(item) => item.id}
           renderItem={renderCard}
-          contentInsetAdjustmentBehavior="automatic"
-          contentContainerStyle={[styles.listContent, { paddingBottom: footerHeight }]}
+          contentInsetAdjustmentBehavior="never"
+          contentContainerStyle={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }]}
           ListEmptyComponent={renderEmptyState}
           ListFooterComponent={renderFooter}
           refreshControl={
@@ -741,7 +743,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.md,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+    ...Shadows.md,
   } as any,
   fabInner: {
     flexDirection: 'row',
@@ -759,7 +761,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     overflow: 'hidden',
     minWidth: 220,
-    boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+    ...Shadows.lg,
   } as any,
   drawerItem: {
     paddingHorizontal: Spacing.lg,
@@ -777,9 +779,9 @@ const styles = StyleSheet.create({
   },
   drawerBadge: {
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: Spacing.xs,
     borderRadius: Radius.lg,
-    minWidth: Sizes.iconSm + 4,
+    minWidth: Sizes.iconSm + Spacing.xs,
     alignItems: 'center',
   },
   drawerDivider: {

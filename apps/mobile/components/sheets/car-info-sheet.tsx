@@ -25,7 +25,7 @@ import {
   Lightbulb,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout, type ColorPalette } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, Typography, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getListingSummary, type ListingSummary } from '@/lib/summary-api';
 
@@ -167,7 +167,7 @@ export function CarInfoSheet({
         <View style={styles.header}>
           <View style={styles.headerTitle}>
             <Zap size={Sizes.iconSm} color={colors.label} fill={colors.label} />
-            <Text variant="heading">DarkWeave</Text>
+            <Text variant="title3Emphasized">DarkWeave</Text>
           </View>
           <HapticPressable 
             onPress={onClose} 
@@ -180,14 +180,14 @@ export function CarInfoSheet({
 
         {/* Car Title + Price + Deal Badge */}
         <View style={styles.carHeader}>
-          {carTitle ? <Text variant="subheading">{carTitle}</Text> : null}
+          {carTitle ? <Text variant="headline">{carTitle}</Text> : null}
           <View style={styles.priceRow}>
             {formattedPrice && (
-              <Text variant="title" style={{ color: colors.primary }}>{formattedPrice}</Text>
+              <Text variant="title2Emphasized" style={{ color: colors.primary }}>{formattedPrice}</Text>
             )}
             {dealConfig && (
               <View style={[styles.dealBadge, { borderColor: colors[dealConfig.colorKey] }]}>
-                <Text variant="caption" style={{ color: colors[dealConfig.colorKey], letterSpacing: 1 }} uppercase>
+                <Text variant="caption1Emphasized" style={{ color: colors[dealConfig.colorKey], letterSpacing: Typography.footnoteEmphasized.letterSpacing }} uppercase>
                   {dealConfig.label}
                 </Text>
               </View>
@@ -199,7 +199,7 @@ export function CarInfoSheet({
         {isLoading && (
           <View style={styles.centeredState}>
             <ActivityIndicator size="small" color={colors.primary} />
-            <Text variant="bodySm" style={{ color: colors.labelSecondary }} tone="secondary">
+            <Text variant="subhead" style={{ color: colors.labelSecondary }} tone="secondary">
               Weaving the thread...
             </Text>
           </View>
@@ -209,7 +209,7 @@ export function CarInfoSheet({
         {error && !isLoading && (
           <View style={styles.centeredState}>
             <Zap size={Sizes.iconLg} color={colors.labelTertiary} />
-            <Text variant="bodySm" style={{ color: colors.labelSecondary }} tone="secondary">
+            <Text variant="subhead" style={{ color: colors.labelSecondary }} tone="secondary">
               {error}
             </Text>
           </View>
@@ -226,7 +226,7 @@ export function CarInfoSheet({
                   <View style={[styles.flowIcon, { backgroundColor: colors.fill2 }]}>
                     <Info size={Sizes.iconXs} color={colors.labelSecondary} />
                   </View>
-                  <Text variant="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }} uppercase>
+                  <Text variant="caption1Emphasized" style={{ color: colors.labelTertiary, letterSpacing: Typography.caption1Emphasized.letterSpacing }} uppercase>
                     DATA CONSIDERED
                   </Text>
                 </View>
@@ -234,7 +234,7 @@ export function CarInfoSheet({
                   <View style={styles.metricsWrap}>
                     {contextMetrics.map((metric, i) => (
                       <View key={i} style={[styles.metricChip, { backgroundColor: colors.fill2 }]}>
-                        <Text variant="caption" style={{ color: colors.labelSecondary }} uppercase>{metric}</Text>
+                        <Text variant="caption1Emphasized" style={{ color: colors.labelSecondary }} uppercase>{metric}</Text>
                       </View>
                     ))}
                   </View>
@@ -249,7 +249,7 @@ export function CarInfoSheet({
                   <View style={[styles.flowIcon, { backgroundColor: colors.warningMuted }]}>
                     <Flame size={Sizes.iconXs} color={colors.warning} />
                   </View>
-                  <Text variant="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }} uppercase>
+                  <Text variant="caption1Emphasized" style={{ color: colors.labelTertiary, letterSpacing: Typography.caption1Emphasized.letterSpacing }} uppercase>
                     THE TAKE
                   </Text>
                 </View>
@@ -268,7 +268,7 @@ export function CarInfoSheet({
                   <View style={[styles.flowIcon, { backgroundColor: colors.fill2 }]}>
                     <Crosshair size={Sizes.iconXs} color={colors.labelSecondary} />
                   </View>
-                  <Text variant="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }} uppercase>
+                  <Text variant="caption1Emphasized" style={{ color: colors.labelTertiary, letterSpacing: Typography.caption1Emphasized.letterSpacing }} uppercase>
                     THE READ
                   </Text>
                 </View>
@@ -276,7 +276,7 @@ export function CarInfoSheet({
                   {(summary.machineNotes ?? []).map((note, i) => (
                     <View key={i} style={styles.bulletRow}>
                       <View style={[styles.bulletDot, { backgroundColor: colors.primary }]} />
-                      <Text variant="bodySm" style={{ flex: 1, color: colors.label }}>
+                      <Text variant="subhead" style={{ flex: 1, color: colors.label }}>
                         {note}
                       </Text>
                     </View>
@@ -292,7 +292,7 @@ export function CarInfoSheet({
                   <View style={[styles.flowIcon, { backgroundColor: colors.warningMuted }]}>
                     <AlertTriangle size={Sizes.iconXs} color={colors.warning} />
                   </View>
-                  <Text variant="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }} uppercase>
+                  <Text variant="caption1Emphasized" style={{ color: colors.labelTertiary, letterSpacing: Typography.caption1Emphasized.letterSpacing }} uppercase>
                     WORTH NOTING
                   </Text>
                 </View>
@@ -301,7 +301,7 @@ export function CarInfoSheet({
                     const flagColor = flag.type === 'red' ? colors.warning : colors.success;
                     return (
                       <View key={i} style={[styles.flagItem, { borderLeftColor: flagColor }]}>
-                        <Text variant="bodySm" style={{ color: colors.label }}>
+                        <Text variant="subhead" style={{ color: colors.label }}>
                           {flag.text}
                         </Text>
                       </View>
@@ -318,16 +318,16 @@ export function CarInfoSheet({
                   <View style={[styles.flowIcon, { backgroundColor: colors.fill2 }]}>
                     <User size={Sizes.iconXs} color={colors.labelSecondary} />
                   </View>
-                  <Text variant="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }} uppercase>
+                  <Text variant="caption1Emphasized" style={{ color: colors.labelTertiary, letterSpacing: Typography.caption1Emphasized.letterSpacing }} uppercase>
                     {sellerName ? sellerName.toUpperCase() : 'SELLER'}
                   </Text>
                   {summary.context?.sellerRating && (
                     <View style={[styles.ratingBadge, { backgroundColor: colors.fill2 }]}>
-                      <Text variant="caption" style={{ color: colors.label }} uppercase>
+                      <Text variant="caption1Emphasized" style={{ color: colors.label }} uppercase>
                         {summary.context.sellerRating.toFixed(1)}
                       </Text>
                       {summary.context.sellerReviewCount && (
-                        <Text variant="caption" style={{ color: colors.labelTertiary }} uppercase>
+                        <Text variant="caption1Emphasized" style={{ color: colors.labelTertiary }} uppercase>
                           · {summary.context.sellerReviewCount}
                         </Text>
                       )}
@@ -335,7 +335,7 @@ export function CarInfoSheet({
                   )}
                 </View>
                 <View style={[styles.flowContent, { borderLeftColor: colors.border }]}>
-                  <Text variant="bodySm" style={{ color: colors.label }}>
+                  <Text variant="subhead" style={{ color: colors.label }}>
                     {summary.sellerVibe}
                   </Text>
                 </View>
@@ -349,12 +349,12 @@ export function CarInfoSheet({
                   <View style={[styles.flowIcon, { backgroundColor: colors.successMuted }]}>
                     <Lightbulb size={Sizes.iconXs} color={colors.success} />
                   </View>
-                  <Text variant="caption" style={{ color: colors.labelTertiary, letterSpacing: 0.5 }} uppercase>
+                  <Text variant="caption1Emphasized" style={{ color: colors.labelTertiary, letterSpacing: Typography.caption1Emphasized.letterSpacing }} uppercase>
                     GOOD TO KNOW
                   </Text>
                 </View>
                 <View style={[styles.flowContent, styles.flowContentLast]}>
-                  <Text variant="bodySm" style={{ color: colors.label }}>
+                  <Text variant="subhead" style={{ color: colors.label }}>
                     {summary.negotiationTip}
                   </Text>
                 </View>
@@ -363,7 +363,7 @@ export function CarInfoSheet({
 
             {/* ─── Disclaimer ─── */}
             <View style={styles.disclaimer}>
-              <Text variant="bodySm" style={{ color: colors.labelTertiary, textAlign: 'center' }} tone="secondary">
+              <Text variant="subhead" style={{ color: colors.labelTertiary, textAlign: 'center' }} tone="secondary">
                 AI-generated · may not be accurate · do your own check
               </Text>
             </View>

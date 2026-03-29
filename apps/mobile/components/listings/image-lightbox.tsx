@@ -107,7 +107,7 @@ export function ImageLightbox({
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
           <View style={styles.counterBadge}>
-            <Text variant="bodySm" style={styles.counterText}>
+            <Text variant="subhead" style={styles.counterText}>
               {safeIndex + 1} / {totalImages}
             </Text>
           </View>

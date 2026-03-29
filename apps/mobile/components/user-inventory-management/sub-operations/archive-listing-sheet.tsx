@@ -119,7 +119,7 @@ export function ArchiveListingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">{actionLabel} Listing</Text>
+          <Text variant="title3Emphasized">{actionLabel} Listing</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
@@ -144,14 +144,14 @@ export function ArchiveListingSheet({
           )}
           <View style={styles.previewInfo}>
             <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
-            <Text variant="bodySm" tone="secondary">{description}</Text>
+            <Text variant="subhead" tone="secondary">{description}</Text>
           </View>
         </View>
 
         {/* Error */}
         {error && (
           <View style={[styles.errorBanner, { backgroundColor: colors.errorMuted }]}>
-            <Text variant="bodySm" tone="error">{error}</Text>
+            <Text variant="subhead" tone="error">{error}</Text>
           </View>
         )}
 

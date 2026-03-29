@@ -38,6 +38,7 @@ import { NetworkProvider } from '@/context/network-context';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { AlertProvider } from '@/components/ui/themed-alert';
+import { FooterFade } from '@/components/layout';
 import { AuthFlow } from '@/components/auth';
 import { AuthSheet } from '@/components/sheets';
 
@@ -227,7 +228,7 @@ function RootLayoutNav() {
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         <Stack
           screenOptions={{
-            headerShown: true,
+            headerShown: false,
             headerBackTitle: 'Back',
             gestureEnabled: true,
             gestureDirection: 'horizontal',
@@ -245,6 +246,7 @@ function RootLayoutNav() {
           <Stack.Screen name="bookings" options={{ title: 'Bookings' }} />
           <Stack.Screen name="saved" options={{ title: 'Saved' }} />
         </Stack>
+        <FooterFade />
       </View>
       
       {/* Auth Sheet - renders above tab bar */}

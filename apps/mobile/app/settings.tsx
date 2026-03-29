@@ -7,8 +7,9 @@ import { Skeleton, AuthRequiredEmptyState, useAlert } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
 import { Stack } from 'expo-router';
 import {
-  StyleSheet, View, Linking, Platform } from 'react-native';
-import { ScreenContainer } from '@/components/layout';
+  StyleSheet, View, Linking } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenContainer, MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 
 import { Layout, Spacing, Radius } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
@@ -34,6 +35,8 @@ export default function SettingsScreen() {
   const colors = useSettingsColors();
   const { signOut, isAuthenticated } = useAuth();
   const { showAlert } = useAlert();
+  const insets = useSafeAreaInsets();
+  const headerInset = getMobileHeaderContentInset(insets.top);
 
   // Settings data from hook
   const {
@@ -78,16 +81,9 @@ export default function SettingsScreen() {
     Linking.openURL('https://revvup.ae/contact');
   }, []);
 
-  const nativeHeaderOptions = Platform.OS === 'ios'
-    ? {
-        headerTransparent: true,
-        headerShadowVisible: false,
-        headerBackButtonDisplayMode: 'minimal' as const,
-        headerBackTitle: '',
-      }
-    : {
-        headerStyle: { backgroundColor: colors.background },
-      };
+  const nativeHeaderOptions = {
+    headerShown: false,
+  };
 
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
@@ -100,7 +96,8 @@ export default function SettingsScreen() {
             headerTintColor: colors.label,
           }}
         />
-        <View style={[styles.container, { backgroundColor: colors.background }]}> 
+        <MobileHeader title="Settings" showBackButton />
+        <View style={[styles.container, { backgroundColor: colors.background, paddingTop: headerInset }]}> 
           <AuthRequiredEmptyState
             title="Sign in to settings"
             subtitle="Manage your account preferences on Revvup"
@@ -122,7 +119,8 @@ export default function SettingsScreen() {
           }}
         />
         <View style={[styles.container, { backgroundColor: colors.background }]}> 
-          <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: Spacing.lg }]}> 
+          <MobileHeader title="Settings" showBackButton />
+          <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerInset }]}> 
             {/* Section skeletons */}
             {Array.from({ length: 4 }).map((_, i) => (
               <View key={i} style={styles.skeletonSection}>
@@ -147,10 +145,12 @@ export default function SettingsScreen() {
         }}
       />
       <View style={[styles.container, { backgroundColor: colors.background }]}> 
+        <MobileHeader title="Settings" showBackButton />
         <ScreenContainer
           keyboardAvoiding={false}
           verticalPadding={0}
-          contentContainerStyle={{ paddingTop: Spacing.lg }}
+          contentInsetAdjustmentBehavior="never"
+          contentContainerStyle={{ paddingTop: headerInset }}
         >
       {/* Privacy */}
       <PrivacySection

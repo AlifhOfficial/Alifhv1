@@ -51,7 +51,7 @@ export const ListingHighlights = memo(function ListingHighlights({
         {highlights.map((highlight, idx) => (
           <View key={idx} style={styles.highlightItem}>
             <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
-            <Text variant="bodySm" style={{ color: textColor }}>
+            <Text variant="subhead" style={{ color: textColor }}>
               {highlight}
             </Text>
           </View>

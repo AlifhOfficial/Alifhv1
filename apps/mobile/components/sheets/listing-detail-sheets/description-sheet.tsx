@@ -80,7 +80,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="heading">Description</Text>
+          <Text variant="title3Emphasized">Description</Text>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 

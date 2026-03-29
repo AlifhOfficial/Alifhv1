@@ -77,7 +77,7 @@ export function FullScreenLoader({ message }: FullScreenLoaderProps) {
     <View style={[styles.fullScreen, { backgroundColor: colors.skeleton }]}>
       <ActivityIndicator size="large" color={colors.primary} />
       {message && (
-        <Text variant="bodySm" tone="muted" style={styles.message}>
+        <Text variant="subhead" tone="muted" style={styles.message}>
           {message}
         </Text>
       )}

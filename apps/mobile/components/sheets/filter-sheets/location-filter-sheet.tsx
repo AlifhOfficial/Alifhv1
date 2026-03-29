@@ -142,7 +142,7 @@ export function LocationFilterSheet({
             <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
           
-          <Text variant="subheading">Location</Text>
+          <Text variant="headline">Location</Text>
           
           <HapticPressable
             style={[
@@ -152,7 +152,7 @@ export function LocationFilterSheet({
             onPress={handleApply}
           >
             <Text
-              variant="bodySm"
+              variant="subhead"
               style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
             >
               Apply
@@ -163,11 +163,11 @@ export function LocationFilterSheet({
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Text variant="bodySm" numberOfLines={1} style={{ flex: 1 }}>
+            <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
               {localSelected.join(', ')}
             </Text>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="bodySm" style={{ color: colors.error }} tone="secondary">
+              <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
                 Clear
               </Text>
             </HapticPressable>
@@ -197,7 +197,7 @@ export function LocationFilterSheet({
                   >
                     {option.label}
                   </Text>
-                  <Text variant="bodySm" tone="muted">
+                  <Text variant="subhead" tone="muted">
                     {option.count.toLocaleString()}
                   </Text>
                 </View>

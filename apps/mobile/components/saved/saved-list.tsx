@@ -10,7 +10,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Heart, Zap, ArrowRight } from 'lucide-react-native';
 
-import { Layout, Sizes, Spacing, Radius } from '@/constants/theme';
+import { Shadows, Sizes, Spacing, Radius } from '@/constants/theme';
+import { getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
 import { CarCardList } from '@/components/cards/car-card-list';
 import { SavedListingCard } from '@/lib/saved-api';
 import type { ThemeColors, SavedTab } from './types';
@@ -50,10 +51,10 @@ function EmptyState({
         style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
       >
         <IconComponent size={Sizes.iconXl} color={iconColor} fill={iconColor} strokeWidth={1.5} />
-        <Text variant="subheading" style={styles.emptyTitle}>
+        <Text variant="headline" style={styles.emptyTitle}>
           {isFavorites ? 'No favorites yet' : 'No superlikes yet'}
         </Text>
-        <Text variant="bodySm" tone="secondary" style={styles.emptySubtitle}>
+        <Text variant="subhead" tone="secondary" style={styles.emptySubtitle}>
           {isFavorites 
             ? 'Tap the heart on any listing to save it here'
             : 'Long press the heart to superlike a listing'}
@@ -63,7 +64,7 @@ function EmptyState({
           onPress={onBrowse}
           style={styles.ctaRow}
         >
-          <Text variant="subheading" style={{ color: colors.label }}>Browse</Text>
+          <Text variant="headline" style={{ color: colors.label }}>Browse</Text>
           <View style={[styles.ctaBubble, { backgroundColor: colors.background, borderColor: colors.border }]}>
             <ArrowRight size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
           </View>
@@ -83,9 +84,8 @@ export function SavedList({
 }: SavedListProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const bottomPadding = insets.bottom + Layout.tabBarHeight;
-  // Account for absolute header: safe area + headerPadding + pill height + bottom padding
-  const topPadding = insets.top + Layout.headerPadding + Sizes.pillHeight + Spacing.md;
+  const bottomPadding = getTabBarContentInset(insets.bottom);
+  const topPadding = getMobileHeaderContentInset(insets.top);
 
   const handleCardPress = useCallback((id: string) => {
     router.push(`/listing/${id}`);
@@ -128,6 +128,7 @@ export function SavedList({
         />
       )}
       contentContainerStyle={[styles.listContent, { paddingTop: topPadding, paddingBottom: bottomPadding }]}
+      contentInsetAdjustmentBehavior="never"
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
@@ -140,7 +141,7 @@ export function SavedList({
         activeTab === 'superlikes' && quota ? (
           <View style={[styles.quotaBadge, { backgroundColor: colors.surface }]}>
             <Zap size={Sizes.iconXs} color={colors.primary} strokeWidth={2} />
-            <Text variant="bodySm" tone="secondary">
+            <Text variant="subhead" tone="secondary">
               {quota.remaining}/{quota.maxSuperlikesPerMonth} remaining this month
             </Text>
           </View>
@@ -164,11 +165,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius['2xl'],
     borderWidth: 1,
     gap: Spacing.sm,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: Spacing.xs },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
+    ...Shadows.md,
   },
   emptyTitle: {
     textAlign: 'center',

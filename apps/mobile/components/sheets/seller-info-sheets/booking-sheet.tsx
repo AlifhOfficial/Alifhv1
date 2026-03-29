@@ -401,7 +401,7 @@ export const BookingSheet = memo(function BookingSheet({
           <View style={styles.successContainer}>
             <CheckCircle2 size={Spacing['5xl']} color={colors.success} strokeWidth={1.5} />
 
-            <Text variant="heading" style={styles.centerText}>
+            <Text variant="title3Emphasized" style={styles.centerText}>
               You're all set!
             </Text>
             <Text variant="body" tone="secondary" style={styles.centerText}>
@@ -410,7 +410,7 @@ export const BookingSheet = memo(function BookingSheet({
 
             {/* Booking summary */}
             <View style={[styles.successCard, { backgroundColor: colors.fill2 }]}>
-              <Text variant="bodySm" style={{ color: colors.label }}>{listingTitle}</Text>
+              <Text variant="subhead" style={{ color: colors.label }}>{listingTitle}</Text>
               {selectedDate && selectedSlot && (
                 <View style={styles.successCardRow}>
                   <Calendar1 size={Spacing.md} color={colors.labelSecondary} />
@@ -420,14 +420,14 @@ export const BookingSheet = memo(function BookingSheet({
                 </View>
               )}
               <View style={[styles.tokenContainer, { borderColor: colors.border + '40' }]}>
-                <Text variant="bodySm" tone="muted">Confirmation</Text>
+                <Text variant="subhead" tone="muted">Confirmation</Text>
                 <Text variant="body" style={styles.tokenText}>
                   {bookingResult.confirmationToken}
                 </Text>
               </View>
             </View>
 
-            <Text variant="bodySm" tone="muted" style={styles.centerText}>
+            <Text variant="subhead" tone="muted" style={styles.centerText}>
               Check your Bookings to track your request
             </Text>
 
@@ -455,8 +455,8 @@ export const BookingSheet = memo(function BookingSheet({
                   </HapticPressable>
                 )}
                 <View>
-                  <Text variant="heading">Schedule Test Drive</Text>
-                  <Text variant="bodySm" tone="muted">{listingTitle}</Text>
+                  <Text variant="title3Emphasized">Schedule Test Drive</Text>
+                  <Text variant="subhead" tone="muted">{listingTitle}</Text>
                 </View>
               </View>
               <HapticPressable
@@ -490,7 +490,7 @@ export const BookingSheet = memo(function BookingSheet({
             {error && (
               <View style={[styles.errorBanner, { backgroundColor: colors.error + '10' }]}>
                 <Ionicons name="alert-circle" size={Spacing.md + 2} color={colors.error} />
-                <Text variant="bodySm" style={{ color: colors.error, flex: 1 }} tone="secondary">
+                <Text variant="subhead" style={{ color: colors.error, flex: 1 }} tone="secondary">
                   {error}
                 </Text>
               </View>
@@ -536,7 +536,7 @@ export const BookingSheet = memo(function BookingSheet({
                 <View style={styles.dayHeaders}>
                   {DAY_NAMES.map((day, i) => (
                     <View key={`${day}-${i}`} style={styles.dayHeaderCell}>
-                      <Text variant="bodySm" tone="muted" style={styles.dayHeaderText}>{day}</Text>
+                      <Text variant="subhead" tone="muted" style={styles.dayHeaderText}>{day}</Text>
                     </View>
                   ))}
                 </View>
@@ -565,7 +565,7 @@ export const BookingSheet = memo(function BookingSheet({
                           ]}
                         >
                           <Text
-                            variant="bodySm"
+                            variant="subhead"
                             style={[
                               isSelected && { color: colors.background },
                               !isSelected && available && { color: colors.label },
@@ -592,7 +592,7 @@ export const BookingSheet = memo(function BookingSheet({
                 {/* Selected date display */}
                 <View style={[styles.selectedDateBar, { backgroundColor: colors.fill2 }]}>
                   <Calendar1 size={Sizes.iconXs} color={colors.labelSecondary} />
-                  <Text variant="bodySm" style={{ color: colors.label }}>
+                  <Text variant="subhead" style={{ color: colors.label }}>
                     {formatDate(selectedDate)}
                   </Text>
                 </View>
@@ -606,7 +606,7 @@ export const BookingSheet = memo(function BookingSheet({
                   </View>
                 ) : (
                   <>
-                    <Text variant="caption" tone="muted" style={styles.sectionLabel} uppercase>AVAILABLE TIMES</Text>
+                    <Text variant="caption1Emphasized" tone="muted" style={styles.sectionLabel} uppercase>AVAILABLE TIMES</Text>
                     <View style={styles.slotsGrid}>
                       {timeSlots.map(slot => {
                         const isSelected = selectedSlot?.id === slot.id;
@@ -625,7 +625,7 @@ export const BookingSheet = memo(function BookingSheet({
                             ]}
                           >
                             <Text
-                              variant="bodySm"
+                              variant="subhead"
                               style={[
                                 isSelected && { color: colors.background },
                                 !isSelected && slot.isAvailable && { color: colors.label },
@@ -635,7 +635,7 @@ export const BookingSheet = memo(function BookingSheet({
                               {formatTime(slot.startTime)}
                             </Text>
                             {slot.isAvailable && (
-                              <Text variant="bodySm" style={isSelected ? { color: colors.background + 'AA' } : undefined} tone={isSelected ? undefined : 'muted'}>{slot.duration}m</Text>
+                              <Text variant="subhead" style={isSelected ? { color: colors.background + 'AA' } : undefined} tone={isSelected ? undefined : 'muted'}>{slot.duration}m</Text>
                             )}
                           </HapticPressable>
                         );
@@ -668,8 +668,8 @@ export const BookingSheet = memo(function BookingSheet({
                       <Calendar1 size={Spacing.lg} color={colors.labelSecondary} />
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text variant="bodySm" tone="muted">Date</Text>
-                      <Text variant="bodySm">{formatDate(selectedDate)}</Text>
+                      <Text variant="subhead" tone="muted">Date</Text>
+                      <Text variant="subhead">{formatDate(selectedDate)}</Text>
                     </View>
                   </View>
                   <View style={[styles.confirmDivider, { backgroundColor: colors.border + '30' }]} />
@@ -678,13 +678,13 @@ export const BookingSheet = memo(function BookingSheet({
                       <Clock size={Spacing.lg} color={colors.labelSecondary} />
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text variant="bodySm" tone="muted">Time</Text>
-                      <Text variant="bodySm">
+                      <Text variant="subhead" tone="muted">Time</Text>
+                      <Text variant="subhead">
                         {formatTime(selectedSlot.startTime)} – {formatTime(selectedSlot.endTime)}
                       </Text>
                     </View>
                     <View style={[styles.durationBadge, { backgroundColor: colors.fill2 }]}>
-                      <Text variant="bodySm" style={{ color: colors.labelSecondary }} tone="secondary">{selectedSlot.duration}m</Text>
+                      <Text variant="subhead" style={{ color: colors.labelSecondary }} tone="secondary">{selectedSlot.duration}m</Text>
                     </View>
                   </View>
                 </View>
@@ -693,7 +693,7 @@ export const BookingSheet = memo(function BookingSheet({
                 <View style={styles.fieldGroup}>
                   <View style={styles.fieldHeader}>
                     <Users size={Sizes.iconXs} color={colors.labelSecondary} />
-                    <Text variant="caption" tone="muted" uppercase>ATTENDEES</Text>
+                    <Text variant="caption1Emphasized" tone="muted" uppercase>ATTENDEES</Text>
                   </View>
                   <View style={[styles.attendeePicker, { backgroundColor: colors.fill2 }]}>
                     <HapticPressable
@@ -726,8 +726,8 @@ export const BookingSheet = memo(function BookingSheet({
                 <View style={styles.fieldGroup}>
                   <View style={styles.fieldHeader}>
                     <FileText size={Sizes.iconXs} color={colors.labelSecondary} />
-                    <Text variant="caption" tone="muted" uppercase>NOTES</Text>
-                    <Text variant="bodySm" tone="muted">(optional)</Text>
+                    <Text variant="caption1Emphasized" tone="muted" uppercase>NOTES</Text>
+                    <Text variant="subhead" tone="muted">(optional)</Text>
                   </View>
                   <BottomSheetTextInput
                     value={notes}
@@ -900,7 +900,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
   },
   dayHeaderText: {
-    letterSpacing: 0.3,
+    letterSpacing: Typography.caption1Emphasized.letterSpacing,
   },
   calendarGrid: {
     flexDirection: 'row',
@@ -910,7 +910,7 @@ const styles = StyleSheet.create({
     width: '14.28%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 2,
+    paddingVertical: Spacing.xs,
   },
   calendarDayInner: {
     width: Sizes.bubble,
@@ -923,7 +923,7 @@ const styles = StyleSheet.create({
     width: Spacing.xs,
     height: Spacing.xs,
     borderRadius: Spacing.xs / 2,
-    marginTop: 1,
+    marginTop: Spacing.xs,
   },
 
   // ── Time slots ───────────────────────────────────────────────────────
@@ -979,7 +979,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   confirmDivider: {
-    height: 1,
+    height: StyleSheet.hairlineWidth,
     marginHorizontal: Spacing.xs,
   },
   durationBadge: {
@@ -1075,6 +1075,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   tokenText: {
-    letterSpacing: 3,
+    letterSpacing: Typography.footnoteEmphasized.letterSpacing,
   },
 });

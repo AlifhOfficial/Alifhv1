@@ -301,12 +301,12 @@ export default function SellerContactScreen() {
           style={styles.section}
           onPress={() => setDescriptionSheetVisible(true)}
         >
-          <Text variant="label" tone="muted" uppercase>ABOUT</Text>
+          <Text variant="footnoteEmphasized" tone="muted" uppercase>ABOUT</Text>
           <Text variant="body" tone="secondary" numberOfLines={3}>
             {seller.description}
           </Text>
           {seller.description.length > 120 && (
-            <Text variant="bodySm" tone="primary">Read more</Text>
+            <Text variant="subhead" tone="primary">Read more</Text>
           )}
         </Pressable>
       )}
