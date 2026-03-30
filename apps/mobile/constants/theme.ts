@@ -42,6 +42,34 @@ export const Fonts = {
   extraBold: '800' as const,
 } as const;
 
+export const AppFontFamilies = {
+  regular: 'Inter_400Regular',
+  medium: 'Inter_500Medium',
+  semiBold: 'Inter_600SemiBold',
+  bold: 'Inter_700Bold',
+  extraBold: 'Inter_800ExtraBold',
+} as const;
+
+const getAppFontStyle = (fontWeight: TextStyle['fontWeight']): TextStyle => {
+  if (fontWeight === '800' || fontWeight === '900') {
+    return { fontFamily: AppFontFamilies.extraBold };
+  }
+
+  if (fontWeight === '700' || fontWeight === 'bold') {
+    return { fontFamily: AppFontFamilies.bold };
+  }
+
+  if (fontWeight === '500' || fontWeight === 'medium') {
+    return { fontFamily: AppFontFamilies.medium };
+  }
+
+  if (fontWeight === '600' || fontWeight === 'semibold') {
+    return { fontFamily: AppFontFamilies.semiBold };
+  }
+
+  return { fontFamily: AppFontFamilies.regular };
+};
+
 // ── APP PALETTE ─────────────────────────────────────────────────────────────
 // Shared design palette used directly by the app on both iOS and Android.
 
@@ -389,7 +417,7 @@ const t  = (
     ...b,
     fontSize: fontScale(fs),
     lineHeight: fontScale(Platform.OS === 'android' ? androidLh : lh),
-    fontWeight: fw,
+    ...getAppFontStyle(fw),
     ...x,
   });
 const tc = (
@@ -403,7 +431,7 @@ const tc = (
     ...bc,
     fontSize: fontScale(fs),
     lineHeight: fontScale(Platform.OS === 'android' ? androidLh : lh),
-    fontWeight: fw,
+    ...getAppFontStyle(fw),
     ...x,
   });
 
@@ -449,6 +477,11 @@ export const Typography = {
   caption2:               ios.caption2,
   caption2Emphasized:     ios.caption2E,
 } as const;
+
+export const InputTypography: TextStyle = {
+  ...Typography.body,
+  fontFamily: AppFontFamilies.regular,
+};
 
 // ── Raw type scales (for direct use) ────────────────────────────────────────
 export const IosTypeScale = ios;

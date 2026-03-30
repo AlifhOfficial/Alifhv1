@@ -231,7 +231,7 @@ export const CarCardList = memo(function CarCardList({
           <Text variant="subhead" style={{ color: theme.meta }} tone="secondary">
             {year}
           </Text>
-          <Text style={{ color: theme.price }} variant="title3Emphasized" tone="primary">
+          <Text style={{ color: theme.price }} variant="headline" tone="primary">
             {formatPrice(price)}
           </Text>
           <Text variant="subhead" style={{ color: theme.meta }} tone="secondary">
@@ -241,7 +241,7 @@ export const CarCardList = memo(function CarCardList({
 
         {/* Actions - Bottom Row */}
         <View style={styles.bottomActions}>
-          <View style={[styles.actionBubble, { backgroundColor: theme.bg, borderColor: theme.border }]}>
+          <View style={[styles.actionBubble, { backgroundColor: theme.imageBg, borderColor: theme.border }]}>
             <FavoriteButton
               listingId={id}
               size={Sizes.iconXs}
@@ -251,7 +251,7 @@ export const CarCardList = memo(function CarCardList({
             />
           </View>
           {showSuperlike && (
-            <View style={[styles.actionBubble, { backgroundColor: theme.bg, borderColor: theme.border }]}>
+            <View style={[styles.actionBubble, { backgroundColor: theme.imageBg, borderColor: theme.border }]}>
               <SuperlikeButton
                 listingId={id}
                 size={Sizes.iconXs}
@@ -265,7 +265,7 @@ export const CarCardList = memo(function CarCardList({
             <HapticPressable 
               onPress={handleSharePress} 
               hitSlop={Layout.hitSlopSmall}
-              style={[styles.actionBubble, { backgroundColor: theme.bg, borderColor: theme.border }]}
+              style={[styles.actionBubble, { backgroundColor: theme.imageBg, borderColor: theme.border }]}
             >
               <Share2 size={Sizes.iconXs} color={theme.icon} strokeWidth={ICON_STROKE_WIDTH} />
             </HapticPressable>
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     borderRadius: Radius['2xl'],
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     padding: Spacing.lg,
     marginBottom: Spacing.md,
     gap: Spacing.xl,
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
     height: Sizes.cardThumbnailHeight,
   },
   content: {
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   bottomActions: {
     flexDirection: 'row',
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Sizes.bubbleXs / 2,
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   blkBadge: {
     position: 'absolute',
@@ -402,6 +402,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xs,
     paddingVertical: Spacing.xs / 2,
     borderRadius: Radius.none,
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
   },
 });

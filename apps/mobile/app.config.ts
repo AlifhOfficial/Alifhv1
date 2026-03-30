@@ -119,7 +119,19 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       'expo-audio',
       'expo-asset',
       'expo-apple-authentication',
-      'expo-font',
+      [
+        'expo-font',
+        {
+          fonts: [
+            './assets/fonts/Inter/Inter_400Regular.ttf',
+            './assets/fonts/Inter/Inter_500Medium.ttf',
+            './assets/fonts/Inter/Inter_600SemiBold.ttf',
+            './assets/fonts/Inter/Inter_700Bold.ttf',
+            './assets/fonts/Inter/Inter_800ExtraBold.ttf',
+            './assets/fonts/Geom/static/Geom-Black.ttf',
+          ],
+        },
+      ],
       'expo-web-browser',
       'expo-updates',
     ],

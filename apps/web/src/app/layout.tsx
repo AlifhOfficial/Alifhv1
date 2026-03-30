@@ -3,7 +3,7 @@ import localFont from 'next/font/local'
 
 const inter = localFont({
   src: './fonts/inter-variable.woff2',
-  display: 'optional',
+  display: 'swap',
   variable: '--font-inter',
   preload: true,
 })
@@ -105,7 +105,7 @@ export default function RootLayout({
         <meta key="color-scheme" name="color-scheme" content="dark" />
         <meta key="apple-status-bar" name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={`${inter.variable} ${geomFont.variable}`} suppressHydrationWarning>
+      <body className={`${inter.className} ${inter.variable} ${geomFont.variable}`} suppressHydrationWarning>
         <ThemeProvider>
           <AuthProvider>
             <QueryProvider>

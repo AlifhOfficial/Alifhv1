@@ -132,7 +132,7 @@ export interface CarCardMProps {
 // ============================================================================
 
 /** Derives card theme colors based on listing type */
-function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlackTierPartner: boolean): CardTheme {
+function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean): CardTheme {
   return useMemo(() => {
     if (isBlkListing) {
       return {
@@ -163,7 +163,7 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean, isBlac
       avatarBg: colors.surface,
       avatarBorder: colors.border,
     };
-  }, [colors, isBlkListing, isBlackTierPartner]);
+  }, [colors, isBlkListing]);
 }
 
 export const CarCardM = memo(function CarCardM({
@@ -197,7 +197,7 @@ export const CarCardM = memo(function CarCardM({
 }: CarCardMProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const theme = useCardTheme(colors, isBlkListing, isBlackTierPartner);
+  const theme = useCardTheme(colors, isBlkListing);
 
   // Derived display values - use thumb URL for optimized card display
   const rawImage = thumbnail || images?.[0];
@@ -276,7 +276,7 @@ export const CarCardM = memo(function CarCardM({
         />
 
         {/* Price */}
-        <Text style={{ color: theme.price }} variant="title3Emphasized" tone="primary">
+        <Text style={{ color: theme.price }} variant="headline" tone="primary">
           {formatPrice(price)}
         </Text>
 
@@ -304,7 +304,7 @@ export const CarCardM = memo(function CarCardM({
             isSuperliked={isSuperlikedProp}
             isBlkListing={isBlkListing}
             actionIconColor={theme.actionIcon}
-            glassBackground={colors.background}
+            glassBackground={colors.surfaceSecondary}
             glassBorder={colors.border}
             onFavoritePress={onFavoritePress}
             onSuperlikePress={onSuperlikePress}
@@ -358,10 +358,10 @@ interface CardHeaderProps {
 const CardHeader = memo(function CardHeader({ make, model, year, titleColor, metaColor }: CardHeaderProps) {
   return (
     <View style={styles.header}>
-      <Text variant="headline" style={[styles.title, { color: titleColor }]} numberOfLines={1}>
+      <Text variant="body" style={[styles.title, { color: titleColor }]} numberOfLines={1}>
         {make} {model}
       </Text>
-      <Text variant="subhead" style={{ color: metaColor }}>{year}</Text>
+      <Text variant="subhead" style={{ color: metaColor }} tone="secondary">{year}</Text>
     </View>
   );
 });
@@ -376,11 +376,11 @@ interface CardStatsProps {
 const CardStats = memo(function CardStats({ mileage, specs, emirate, statsColor }: CardStatsProps) {
   return (
     <View style={styles.statsRow}>
-      <Text variant="subhead" style={{ color: statsColor }}>{formatMileage(mileage)} km</Text>
-      <Text variant="subhead" style={{ color: statsColor, opacity: 0.4 }}>·</Text>
-      <Text variant="subhead" style={{ color: statsColor }}>{specs}</Text>
-      <Text variant="subhead" style={{ color: statsColor, opacity: 0.4 }}>·</Text>
-      <Text variant="subhead" style={{ color: statsColor }} numberOfLines={1}>{emirate}</Text>
+      <Text variant="subhead" style={{ color: statsColor }} tone="secondary">{formatMileage(mileage)} km</Text>
+      <Text variant="subhead" style={{ color: statsColor, opacity: 0.4 }} tone="secondary">·</Text>
+      <Text variant="subhead" style={{ color: statsColor }} tone="secondary">{specs}</Text>
+      <Text variant="subhead" style={{ color: statsColor, opacity: 0.4 }} tone="secondary">·</Text>
+      <Text variant="subhead" style={{ color: statsColor }} numberOfLines={1} tone="secondary">{emirate}</Text>
     </View>
   );
 });
@@ -409,7 +409,7 @@ const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartn
             transition={150}
           />
         ) : (
-          <Text variant="title3Emphasized" style={{ color: theme.meta }}>
+          <Text variant="bodyEmphasized" style={{ color: theme.meta }}>
             {name.charAt(0).toUpperCase()}
           </Text>
         )}
@@ -542,7 +542,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: Radius['2xl'],
     borderCurve: 'continuous',
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
     marginBottom: Spacing.md,
   },
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: Spacing.md,
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
 
   // Image Section
@@ -602,6 +602,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingTop: Spacing.sm,
+    marginTop: Spacing.xs,
   },
 
   // Seller Info
@@ -616,7 +617,7 @@ const styles = StyleSheet.create({
     width: Sizes.bubble,
     height: Sizes.bubble,
     borderRadius: Sizes.bubble / 2,
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -664,6 +665,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Sizes.bubbleXs / 2,
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
   },
 });

@@ -17,7 +17,7 @@ import Animated, {
 import { ChevronRight } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
+import { InputTypography, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface EditableFieldProps {
@@ -110,7 +110,7 @@ export function EditableField({
               placeholderTextColor={colors.labelTertiary}
               style={[
                 styles.input,
-                Typography.body,
+                InputTypography,
                 { backgroundColor: colors.surface, color: colors.label },
               ]}
               keyboardType={keyboardType}

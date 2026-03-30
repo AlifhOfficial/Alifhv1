@@ -9,7 +9,7 @@
  */
 
 import { StyleSheet } from 'react-native';
-import { Spacing, Radius, Typography, Layout, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Typography, Layout, Sizes, InputTypography } from '@/constants/theme';
 
 /**
  * Onboarding layout constants - derived from theme tokens
@@ -115,7 +115,7 @@ export const onboardingStyles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: Spacing.xl,
-    ...Typography.body,
+    ...InputTypography,
     backgroundColor: 'transparent',
   },
   passwordInputInner: {

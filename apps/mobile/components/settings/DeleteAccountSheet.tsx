@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Trash2, Loader2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Typography, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Typography, InputTypography, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 // ============================================================================
@@ -135,7 +135,7 @@ export function DeleteAccountSheet({
             placeholderTextColor={colors.labelQuaternary}
             style={[
               styles.input,
-              Typography.body,
+              InputTypography,
               {
                 backgroundColor: colors.surface,
                 borderColor: colors.border,

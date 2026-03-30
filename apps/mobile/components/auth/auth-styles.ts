@@ -9,7 +9,7 @@
  */
 
 import { StyleSheet } from 'react-native';
-import { Spacing, Radius, Typography, Layout, Sizes, ZIndex} from '@/constants/theme';
+import { Spacing, Radius, Typography, Layout, Sizes, ZIndex, InputTypography } from '@/constants/theme';
 
 /**
  * Common auth screen styles
@@ -84,7 +84,7 @@ export const authStyles = StyleSheet.create({
     flex: 1,
     height: '100%',
     paddingHorizontal: Spacing.lg,
-    ...Typography.body,
+    ...InputTypography,
     backgroundColor: 'transparent',
   },
   passwordInputInner: {

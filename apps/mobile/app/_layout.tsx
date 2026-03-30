@@ -8,11 +8,12 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState, useMemo } from 'react';
-import { Modal, View, LogBox, Platform, InteractionManager } from 'react-native';
+import { Modal, View, LogBox, Platform, InteractionManager, Text as RNText, TextInput as RNTextInput } from 'react-native';
 import 'react-native-reanimated';
 
 // Suppress warnings from third-party dependencies that can't be fixed in user code
@@ -23,10 +24,33 @@ LogBox.ignoreLogs([
   '`expo-notifications` functionality is not fully supported in Expo Go',
 ]);
 
+type NativeTextDefaults = {
+  allowFontScaling?: boolean;
+  maxFontSizeMultiplier?: number;
+  style?: unknown;
+};
+
+const textWithDefaults = RNText as typeof RNText & { defaultProps?: NativeTextDefaults };
+const textInputWithDefaults = RNTextInput as typeof RNTextInput & { defaultProps?: NativeTextDefaults };
+
+textWithDefaults.defaultProps = {
+  ...textWithDefaults.defaultProps,
+  allowFontScaling: false,
+  maxFontSizeMultiplier: 1,
+  style: [{ fontFamily: AppFontFamilies.regular }, textWithDefaults.defaultProps?.style].filter(Boolean),
+};
+
+textInputWithDefaults.defaultProps = {
+  ...textInputWithDefaults.defaultProps,
+  allowFontScaling: false,
+  maxFontSizeMultiplier: 1,
+  style: [{ fontFamily: AppFontFamilies.regular }, textInputWithDefaults.defaultProps?.style].filter(Boolean),
+};
+
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
-import { Colors } from '@/constants/theme';
+import { AppFontFamilies, Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { FavoritesProvider } from '@/context/favorites-context';
@@ -57,10 +81,10 @@ const LightTheme: NavTheme = {
     notification: Colors.light.primary,
   },
   fonts: {
-    regular: { fontFamily: 'System', fontWeight: '600' },
-    medium: { fontFamily: 'System', fontWeight: '600' },
-    bold: { fontFamily: 'System', fontWeight: '700' },
-    heavy: { fontFamily: 'System', fontWeight: '800' },
+    regular: { fontFamily: AppFontFamilies.semiBold, fontWeight: '600' },
+    medium: { fontFamily: AppFontFamilies.semiBold, fontWeight: '600' },
+    bold: { fontFamily: AppFontFamilies.bold, fontWeight: '700' },
+    heavy: { fontFamily: AppFontFamilies.extraBold, fontWeight: '800' },
   },
 };
 
@@ -75,10 +99,10 @@ const CustomDarkTheme: NavTheme = {
     notification: Colors.dark.primary,
   },
   fonts: {
-    regular: { fontFamily: 'System', fontWeight: '600' },
-    medium: { fontFamily: 'System', fontWeight: '600' },
-    bold: { fontFamily: 'System', fontWeight: '700' },
-    heavy: { fontFamily: 'System', fontWeight: '800' },
+    regular: { fontFamily: AppFontFamilies.semiBold, fontWeight: '600' },
+    medium: { fontFamily: AppFontFamilies.semiBold, fontWeight: '600' },
+    bold: { fontFamily: AppFontFamilies.bold, fontWeight: '700' },
+    heavy: { fontFamily: AppFontFamilies.extraBold, fontWeight: '800' },
   },
 };
 
@@ -273,19 +297,27 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
-  const [appReady, setAppReady] = useState(false);
+  const [fontsLoaded, fontError] = useFonts({
+    [AppFontFamilies.regular]: require('../assets/fonts/Inter/Inter_400Regular.ttf'),
+    [AppFontFamilies.medium]: require('../assets/fonts/Inter/Inter_500Medium.ttf'),
+    [AppFontFamilies.semiBold]: require('../assets/fonts/Inter/Inter_600SemiBold.ttf'),
+    [AppFontFamilies.bold]: require('../assets/fonts/Inter/Inter_700Bold.ttf'),
+    [AppFontFamilies.extraBold]: require('../assets/fonts/Inter/Inter_800ExtraBold.ttf'),
+  });
 
-  // Hide splash screen after mount
   useEffect(() => {
-    if (!appReady) {
-      requestAnimationFrame(() => {
-        setAppReady(true);
-        setTimeout(() => {
-          SplashScreen.hideAsync().catch(() => {});
-        }, 50);
-      });
+    if (!fontsLoaded && !fontError) {
+      return;
     }
-  }, [appReady]);
+
+    requestAnimationFrame(() => {
+      SplashScreen.hideAsync().catch(() => {});
+    });
+  }, [fontError, fontsLoaded]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
 
   // Always render with full provider stack - onboarding is handled inside RootLayoutNav
   return (

@@ -242,15 +242,14 @@
     /* Prevent iOS text size adjustment */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    font-family: var(--font-inter), sans-serif;
   }
   
   body {
     @apply bg-background text-foreground;
-    /* Inter with proper Windows fallbacks - Segoe UI is Windows' native UI font */
-    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: inherit;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     font-optical-sizing: auto;
-    font-weight: 500;
     /* Improve Windows text rendering */
     font-synthesis: none;
   }

@@ -10,7 +10,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
+import { Typography, Spacing, Radius, Layout, Sizes, InputTypography } from '@/constants/theme';
 import { sendPhoneOTP, verifyPhoneOTP } from '@/lib/profile-api';
 import type { ThemeColors } from './types';
 
@@ -209,7 +209,7 @@ export function PhoneVerificationField({
             maxLength={9}
             style={[
               styles.input,
-              Typography.body,
+              InputTypography,
               {
                 backgroundColor: colors.surface,
                 color: colors.label,

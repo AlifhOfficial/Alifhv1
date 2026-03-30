@@ -52,11 +52,6 @@ export interface TextProps extends Omit<RNTextProps, 'allowFontScaling' | 'maxFo
   tone?: TextTone;
   /** Optional text transform helper for label-like content */
   uppercase?: boolean;
-  /**
-   * Allow font scaling for accessibility (default: false).
-   * Enable for long-form content like articles, terms, guides.
-   */
-  allowScaling?: boolean;
   children?: React.ReactNode;
 }
 
@@ -68,7 +63,6 @@ export const Text = memo(function Text({
   variant = 'callout',
   tone = 'default',
   uppercase = false,
-  allowScaling = false,
   style,
   children,
   ...props
@@ -90,8 +84,8 @@ export const Text = memo(function Text({
   return (
     <RNText
       {...props}
-      allowFontScaling={allowScaling}
-      maxFontSizeMultiplier={allowScaling ? 1.4 : 1}
+      allowFontScaling={false}
+      maxFontSizeMultiplier={1}
       style={[
         Typography[variant],
         { color: textColor },

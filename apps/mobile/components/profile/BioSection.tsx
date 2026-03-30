@@ -9,7 +9,7 @@ import { StyleSheet, View, TextInput, Pressable, Platform } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Spacing, Radius, Layout } from '@/constants/theme';
+import { InputTypography, Spacing, Radius, Layout } from '@/constants/theme';
 import { Section } from './Section';
 import type { ThemeColors, EditingField, ProfileFormData } from './types';
 
@@ -75,7 +75,7 @@ export function BioSection({
               placeholderTextColor={colors.labelTertiary}
               style={[
                 styles.input,
-                Typography.body,
+                InputTypography,
                 {
                   backgroundColor: colors.surface,
                   color: colors.label,
