@@ -32,8 +32,8 @@ function SpecRow({ label, value }: SpecItem) {
 
   return (
     <View style={styles.specRow}>
-      <Text variant="body" tone="secondary">{label}</Text>
-      <Text variant="body">{displayValue}</Text>
+      <Text variant="subhead" tone="secondary">{label}</Text>
+      <Text variant="subhead">{displayValue}</Text>
     </View>
   );
 }
@@ -104,7 +104,7 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="title3Emphasized">All Specifications</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Specifications</Text>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 
@@ -125,10 +125,10 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
               hitSlop={Spacing.md}
               style={[
                 styles.iconButton,
-                { backgroundColor: colors.error }
+                { backgroundColor: colors.fill2 }
               ]}
             >
-              <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
+              <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
             </HapticPressable>
           </View>
         </View>
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.xl,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   headerActions: {
     flexDirection: 'row',

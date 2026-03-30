@@ -67,19 +67,19 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
       <View
         style={[
           styles.inputBox,
-          { backgroundColor: colors.fill2, borderColor: colors.border },
+          { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
         ]}
       >
         <BottomSheetTextInput
           style={[styles.input, { color: colors.label }]}
           placeholder="Enter mileage"
-          placeholderTextColor={colors.labelQuaternary}
+          placeholderTextColor={colors.placeholder}
           value={localMileage}
           onChangeText={handleChange}
           keyboardType="number-pad"
           returnKeyType="done"
         />
-        <Text variant="body" tone="secondary">km</Text>
+        <Text variant="body" tone="muted">km</Text>
       </View>
 
       {/* Formatted display */}
@@ -128,7 +128,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
       {/* Info */}
       <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
         <Text variant="subhead" tone="muted">
-          Odometer reading in kilometers. Vehicles under 5,000 km are marked as "new condition".
+          Odometer reading in kilometers. Vehicles under 5,000 km are marked as &quot;new condition&quot;.
         </Text>
       </View>
     </StepContainer>

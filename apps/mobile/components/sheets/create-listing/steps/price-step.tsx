@@ -68,16 +68,16 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
         <View
           style={[
             styles.inputBox,
-            { backgroundColor: colors.fill2, borderColor: colors.border },
+            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
           ]}
         >
-          <Text variant="body" tone="secondary">
+          <Text variant="body" tone="muted">
             AED
           </Text>
           <BottomSheetTextInput
             style={[styles.input, { color: colors.label }]}
             placeholder="0"
-            placeholderTextColor={colors.labelQuaternary}
+            placeholderTextColor={colors.placeholder}
             value={data.price || ''}
             onChangeText={handleChange}
             keyboardType="number-pad"

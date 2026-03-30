@@ -234,13 +234,13 @@ export function BookingDetailsSheet({
       >
         {/* ── Header ──────────────────────────────────────────────────── */}
         <View style={styles.header}>
-          <Text variant="title3Emphasized">Booking Details</Text>
+          <Text variant="subheadEmphasized">Booking Details</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Layout.hitSlop}
-            style={[styles.closeButton, { backgroundColor: colors.error }]}
+            style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
           </HapticPressable>
         </View>
 
@@ -262,16 +262,16 @@ export function BookingDetailsSheet({
             </View>
           )}
           <View style={styles.heroInfo}>
-            <Text variant="body" numberOfLines={2}>
+            <Text variant="subheadEmphasized" numberOfLines={2}>
               {booking.listingTitle}
             </Text>
             {booking.listingPrice > 0 && (
-              <Text variant="title3Emphasized" tone="primary">
+              <Text variant="headline" tone="primary">
                 {formatPrice(booking.listingPrice)}
               </Text>
             )}
             <View style={styles.heroAction}>
-              <Text variant="subhead" style={{ color: colors.primary }} tone="secondary">View listing</Text>
+              <Text variant="caption1Emphasized" style={{ color: colors.primary }} uppercase>View listing</Text>
               <ChevronRight size={Sizes.iconXs} color={colors.primary} />
             </View>
           </View>
@@ -332,16 +332,16 @@ export function BookingDetailsSheet({
           <View style={styles.detailRow}>
             <Calendar1 size={Sizes.iconSm} color={colors.labelSecondary} />
             <View style={styles.detailText}>
-              <Text variant="subhead" tone="secondary">Date</Text>
-              <Text variant="body">{formatBookingDate(booking.scheduledDate)}</Text>
+              <Text variant="caption1Emphasized" tone="muted" uppercase>Date</Text>
+              <Text variant="subhead">{formatBookingDate(booking.scheduledDate)}</Text>
             </View>
           </View>
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
           <View style={styles.detailRow}>
             <Clock size={Sizes.iconSm} color={colors.labelSecondary} />
             <View style={styles.detailText}>
-              <Text variant="subhead" tone="secondary">Time</Text>
-              <Text variant="body">{timeRange}</Text>
+              <Text variant="caption1Emphasized" tone="muted" uppercase>Time</Text>
+              <Text variant="subhead">{timeRange}</Text>
             </View>
           </View>
         </View>
@@ -357,8 +357,8 @@ export function BookingDetailsSheet({
               </View>
             )}
             <View style={styles.detailText}>
-              <Text variant="subhead" tone="secondary">Dealer</Text>
-              <Text variant="body">{booking.partnerName}</Text>
+              <Text variant="caption1Emphasized" tone="muted" uppercase>Dealer</Text>
+              <Text variant="subhead">{booking.partnerName}</Text>
             </View>
           </View>
 
@@ -603,7 +603,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.lg,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   closeButton: {
     width: Sizes.avatarSm,

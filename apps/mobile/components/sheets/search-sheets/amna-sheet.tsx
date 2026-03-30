@@ -232,12 +232,12 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
               <Ionicons name="flash" size={Spacing['4xl']} color={colors.amna} />
               <View style={{ alignItems: 'center', gap: Spacing.sm, marginTop: Spacing.lg, width: '100%', paddingHorizontal: Spacing.md }}>
                 {message ? (
-                  <Text variant="headline" style={{ textAlign: 'center', flexShrink: 1 }}>
+                  <Text variant="subheadEmphasized" style={{ textAlign: 'center', flexShrink: 1 }}>
                     {message}
                   </Text>
                 ) : (
                   <>
-                    <Text variant="headline" style={{ textAlign: 'center', flexShrink: 1 }}>{loadingText}</Text>
+                    <Text variant="subheadEmphasized" style={{ textAlign: 'center', flexShrink: 1 }}>{loadingText}</Text>
                     <Text variant="subhead" tone="muted" style={{ textAlign: 'center' }}>Finding the perfect cars for you ✨</Text>
                   </>
                 )}
@@ -254,11 +254,11 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
               onPress={() => bottomSheetRef.current?.dismiss()}
               hitSlop={Spacing.md}
             >
-              <Text variant="body" tone="secondary">Cancel</Text>
+              <Text variant="subhead" tone="muted">Cancel</Text>
             </HapticPressable>
             <View style={styles.headerTitle}>
               <Ionicons name="flash" size={Spacing.lg} color={colors.amna} />
-              <Text variant="headline">Ask Amna</Text>
+              <Text variant="subheadEmphasized">Ask Amna</Text>
             </View>
             <View style={{ width: Spacing["5xl"] }} />
           </View>
@@ -318,7 +318,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
                     color={query.trim() ? colors.primaryForeground : colors.labelQuaternary}
                   />
                   <Text
-                    variant="body"
+                    variant="subheadEmphasized"
                     style={{ color: query.trim() ? colors.primaryForeground : colors.labelQuaternary }}
                   >
                     Ask Amna

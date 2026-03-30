@@ -106,12 +106,12 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
     <View style={styles.container}>
       {/* Search - outside FlatList to prevent focus loss */}
       <View style={[styles.searchWrapper, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <View style={[styles.searchBox, { backgroundColor: colors.fill2 }]}>
-          <Search size={Sizes.iconSm} color={colors.labelQuaternary} strokeWidth={2} />
+        <View style={[styles.searchBox, { backgroundColor: colors.surfaceSecondary }]}>
+          <Search size={Sizes.iconSm} color={colors.placeholder} strokeWidth={2} />
           <BottomSheetTextInput
             style={[styles.searchInput, { color: colors.label }]}
             placeholder={`Search ${data.make} models...`}
-            placeholderTextColor={colors.labelQuaternary}
+            placeholderTextColor={colors.placeholder}
             value={query}
             onChangeText={setQuery}
             autoCorrect={false}
@@ -120,7 +120,7 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
           />
           {query.length > 0 && (
             <HapticPressable onPress={() => setQuery('')} hitSlop={Layout.hitSlopSmall}>
-              <X size={Spacing.lg} color={colors.labelQuaternary} strokeWidth={2} />
+              <X size={Spacing.lg} color={colors.placeholder} strokeWidth={2} />
             </HapticPressable>
           )}
         </View>

@@ -401,7 +401,7 @@ export const BookingSheet = memo(function BookingSheet({
           <View style={styles.successContainer}>
             <CheckCircle2 size={Spacing['5xl']} color={colors.success} strokeWidth={1.5} />
 
-            <Text variant="title3Emphasized" style={styles.centerText}>
+            <Text variant="subheadEmphasized" style={styles.centerText}>
               You&apos;re all set!
             </Text>
             <Text variant="body" tone="secondary" style={styles.centerText}>
@@ -455,7 +455,7 @@ export const BookingSheet = memo(function BookingSheet({
                   </HapticPressable>
                 )}
                 <View>
-                  <Text variant="title3Emphasized">Schedule Test Drive</Text>
+                  <Text variant="subheadEmphasized">Schedule Test Drive</Text>
                   <Text variant="subhead" tone="muted">{listingTitle}</Text>
                 </View>
               </View>
@@ -733,14 +733,14 @@ export const BookingSheet = memo(function BookingSheet({
                     value={notes}
                     onChangeText={setNotes}
                     placeholder="Any questions or special requests..."
-                    placeholderTextColor={colors.labelQuaternary}
+                    placeholderTextColor={colors.placeholder}
                     multiline
                     numberOfLines={2}
                     style={[
                       styles.notesInput,
                       {
                         color: colors.label,
-                        backgroundColor: colors.fill2,
+                        backgroundColor: colors.surfaceSecondary,
                         borderColor: colors.border + '30',
                       },
                     ]}

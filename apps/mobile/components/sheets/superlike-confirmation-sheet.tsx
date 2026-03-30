@@ -102,7 +102,7 @@ export function SuperlikeConfirmationSheet({
             <Zap size={Sizes.iconLg} color={colors.warning} fill={colors.warning} />
           </View>
           <View style={styles.headerText}>
-            <Text variant="headline">Superlike this listing?</Text>
+            <Text variant="subheadEmphasized">Superlike this listing?</Text>
             {listingTitle && (
               <Text variant="subhead" numberOfLines={1} style={{ marginTop: Spacing.xs }} tone="secondary">
                 {listingTitle}
@@ -222,7 +222,7 @@ export function SuperlikeQuotaExhaustedSheet({
           <View style={[styles.iconContainer, { backgroundColor: colors.warning + '20' }]}>
             <Zap size={Sizes.iconXl} color={colors.warning} />
           </View>
-          <Text variant="title3Emphasized" style={{ marginTop: Spacing.md }}>
+          <Text variant="subheadEmphasized" style={{ marginTop: Spacing.md }}>
             No Superlikes Left
           </Text>
           <Text variant="subhead" style={{ textAlign: 'center', marginTop: Spacing.xs }} tone="secondary">

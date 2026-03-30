@@ -139,13 +139,13 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
           style={[
             styles.vinInput,
             {
-              backgroundColor: colors.fill2,
+              backgroundColor: colors.surfaceSecondary,
               color: colors.label,
               borderColor,
             },
           ]}
           placeholder="e.g. WVWZZZ3CZWE123456"
-          placeholderTextColor={colors.labelQuaternary}
+          placeholderTextColor={colors.placeholder}
           value={localVin}
           onChangeText={handleVinChange}
           autoCapitalize="characters"

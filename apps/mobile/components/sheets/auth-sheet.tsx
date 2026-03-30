@@ -150,7 +150,7 @@ export function AuthSheet({
           entering={FadeInUp.delay(200).duration(400)}
           style={styles.textContent}
         >
-          <Text variant="title3Emphasized" style={[styles.title, { color: colors.label }]}>
+          <Text variant="subheadEmphasized" style={[styles.title, { color: colors.label }]}>
             {displayTitle}
           </Text>
           <Text variant="subhead" style={[styles.subtitle, { color: colors.labelSecondary }]} tone="secondary">

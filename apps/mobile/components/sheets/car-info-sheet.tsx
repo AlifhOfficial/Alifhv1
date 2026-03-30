@@ -172,20 +172,20 @@ export function CarInfoSheet({
         <View style={styles.header}>
           <View style={styles.headerTitle}>
             <Zap size={Sizes.iconSm} color={colors.label} fill={colors.label} />
-            <Text variant="title3Emphasized">DarkWeave</Text>
+            <Text variant="subheadEmphasized">DarkWeave</Text>
           </View>
           <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
-            style={[styles.closeButton, { backgroundColor: colors.error }]}
+            style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
           </HapticPressable>
         </View>
 
         {/* Car Title + Price + Deal Badge */}
         <View style={styles.carHeader}>
-          {carTitle ? <Text variant="headline">{carTitle}</Text> : null}
+          {carTitle ? <Text variant="subheadEmphasized">{carTitle}</Text> : null}
           <View style={styles.priceRow}>
             {formattedPrice && (
               <Text variant="title2Emphasized" style={{ color: colors.primary }}>{formattedPrice}</Text>

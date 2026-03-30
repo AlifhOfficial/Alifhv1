@@ -329,9 +329,9 @@ export function CreateListingFlow({
               <HapticPressable
                 onPress={handleClose}
                 hitSlop={Spacing.md}
-                style={[styles.circleButton, { backgroundColor: colors.error }]}
+                style={[styles.circleButton, { backgroundColor: colors.fill2 }]}
               >
-                <X size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
+                <X size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
               </HapticPressable>
               {currentStepIndex > initialStepIndex && (
                 <HapticPressable
@@ -345,7 +345,7 @@ export function CreateListingFlow({
             </View>
 
             <View style={styles.headerCenter}>
-              <Text variant="headline">{currentStep?.label || 'Create Listing'}</Text>
+              <Text variant="subheadEmphasized">{currentStep?.label || 'Create Listing'}</Text>
             </View>
 
             {!isReviewStep ? (

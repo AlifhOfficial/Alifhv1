@@ -105,16 +105,16 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
       <BottomSheetView style={styles.content}>
         {/* Header with close */}
         <View style={styles.header}>
-          <Text variant="title3Emphasized">{phoneNumber}</Text>
+          <Text variant="headline">{phoneNumber}</Text>
           <HapticPressable 
             onPress={onClose} 
             hitSlop={Spacing.md}
             style={[
               styles.closeButton,
-              { backgroundColor: colors.error }
+              { backgroundColor: colors.fill2 }
             ]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
           </HapticPressable>
         </View>
 
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.xl,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   closeButton: {
     width: Spacing['3xl'],

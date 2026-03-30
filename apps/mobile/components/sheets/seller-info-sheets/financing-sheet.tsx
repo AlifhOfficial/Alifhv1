@@ -106,20 +106,20 @@ export function FinancingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="title3Emphasized">Custom Financing</Text>
+          <Text variant="subheadEmphasized">Custom Financing</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Spacing.md}
-            style={[styles.closeButton, { backgroundColor: colors.error }]}
+            style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
           </HapticPressable>
         </View>
 
         {/* Live Output */}
         <View style={[styles.outputContainer, { backgroundColor: colors.fill2 }]}>
           <Text variant="footnoteEmphasized" tone="muted" uppercase>ESTIMATED MONTHLY PAYMENT</Text>
-          <Text variant="title2Emphasized" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Text>
+          <Text variant="headline" style={{ marginTop: Spacing.xs }}>{formatPrice(emi)}/mo</Text>
           <View style={[styles.outputDetails, { borderTopColor: colors.border }]}>
             <View style={styles.outputItem}>
               <Text variant="subhead" tone="muted">Down Payment</Text>
@@ -140,8 +140,8 @@ export function FinancingSheet({
         <View style={styles.inputsContainer}>
           {/* Down Payment */}
           <View style={styles.inputRow}>
-            <Text variant="body" style={styles.inputLabel} tone="secondary">Down Payment</Text>
-            <View style={[styles.inputWrapper, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
+            <Text variant="body" style={styles.inputLabel} tone="muted">Down Payment</Text>
+            <View style={[styles.inputWrapper, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
               <TextInput
                 style={[styles.input, { color: colors.label }]}
                 value={downPayment}
@@ -149,16 +149,16 @@ export function FinancingSheet({
                 keyboardType="number-pad"
                 maxLength={2}
                 placeholder="20"
-                placeholderTextColor={colors.labelQuaternary}
+                placeholderTextColor={colors.placeholder}
               />
-              <Text variant="body" tone="secondary">%</Text>
+              <Text variant="body" tone="muted">%</Text>
             </View>
           </View>
 
           {/* Loan Term */}
           <View style={styles.inputRow}>
-            <Text variant="body" style={styles.inputLabel} tone="secondary">Loan Term</Text>
-            <View style={[styles.inputWrapper, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
+            <Text variant="body" style={styles.inputLabel} tone="muted">Loan Term</Text>
+            <View style={[styles.inputWrapper, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
               <TextInput
                 style={[styles.input, { color: colors.label }]}
                 value={term}
@@ -166,9 +166,9 @@ export function FinancingSheet({
                 keyboardType="number-pad"
                 maxLength={2}
                 placeholder="48"
-                placeholderTextColor={colors.labelQuaternary}
+                placeholderTextColor={colors.placeholder}
               />
-              <Text variant="body" tone="secondary">months</Text>
+              <Text variant="body" tone="muted">months</Text>
             </View>
           </View>
         </View>
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.xl,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   closeButton: {
     width: Spacing['3xl'],

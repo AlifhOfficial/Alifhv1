@@ -158,10 +158,10 @@ export function YearMileageFilterSheet({
             hitSlop={Spacing.md}
             style={styles.cancelButton}
           >
-            <Text variant="body" tone="secondary">Cancel</Text>
+            <Text variant="subhead" tone="muted">Cancel</Text>
           </HapticPressable>
           
-          <Text variant="headline">Year & Mileage</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Year & Mileage</Text>
           
           <HapticPressable
             style={[
@@ -171,8 +171,9 @@ export function YearMileageFilterSheet({
             onPress={handleApply}
           >
             <Text
-              variant="subhead"
+              variant="caption1Emphasized"
               style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
+              uppercase
             >
               Apply
             </Text>
@@ -182,11 +183,11 @@ export function YearMileageFilterSheet({
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
+            <Text variant="caption1Emphasized" numberOfLines={1} style={{ flex: 1 }} tone="muted">
               {[localYearMin && `From ${localYearMin}`, localYearMax && `To ${localYearMax}`, localMileageMax && `Under ${parseInt(localMileageMax).toLocaleString()} km`].filter(Boolean).join(' · ')}
             </Text>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
+              <Text variant="caption1Emphasized" style={{ color: colors.error }} tone="muted" uppercase>
                 Clear
               </Text>
             </HapticPressable>
@@ -355,13 +356,13 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   selectionSummary: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
     gap: Spacing['2xl'],
     marginTop: Spacing.md,
   },

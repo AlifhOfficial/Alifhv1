@@ -86,13 +86,13 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
           style={[
             styles.input,
             {
-              backgroundColor: colors.fill2,
+              backgroundColor: colors.surfaceSecondary,
               borderColor: colors.border,
               color: colors.label,
             },
           ]}
           placeholder="e.g. Downtown, JBR, Al Ain..."
-          placeholderTextColor={colors.labelQuaternary}
+          placeholderTextColor={colors.placeholder}
           value={data.city || ''}
           onChangeText={handleCityChange}
           autoCapitalize="words"

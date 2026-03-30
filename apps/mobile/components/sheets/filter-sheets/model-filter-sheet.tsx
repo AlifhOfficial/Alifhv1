@@ -191,16 +191,15 @@ export function ModelFilterSheet({
         <View style={styles.labelColumn}>
           <View style={styles.labelRow}>
             <Text
-              variant="body"
+              variant={isSelected ? 'subheadEmphasized' : 'subhead'}
               style={{ 
                 color: isSelected ? colors.label : colors.labelSecondary,
-                fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
               }}
             >
               {item.model}
             </Text>
             {count > 0 && (
-              <Text variant="subhead" tone="muted">
+              <Text variant="caption1Emphasized" tone="muted">
                 {count.toLocaleString()}
               </Text>
             )}
@@ -243,10 +242,10 @@ export function ModelFilterSheet({
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Text variant="body" tone="secondary">Cancel</Text>
+              <Text variant="subhead" tone="muted">Cancel</Text>
             </HapticPressable>
             
-            <Text variant="headline">Model</Text>
+            <Text variant="caption1Emphasized" tone="muted" uppercase>Model</Text>
             
             <HapticPressable
               style={[
@@ -257,8 +256,9 @@ export function ModelFilterSheet({
               disabled={!hasValue}
             >
               <Text
-                variant="subhead"
+                variant="caption1Emphasized"
                 style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
+                uppercase
               >
                 Apply
               </Text>
@@ -268,11 +268,11 @@ export function ModelFilterSheet({
           {/* Selection Summary */}
           {hasValue && (
             <View style={styles.selectionSummary}>
-              <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
+              <Text variant="caption1Emphasized" numberOfLines={1} style={{ flex: 1 }} tone="muted">
                 {localSelected.join(', ')}
               </Text>
               <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
+                <Text variant="caption1Emphasized" style={{ color: colors.error }} tone="muted" uppercase>
                   Clear
                 </Text>
               </HapticPressable>
@@ -281,12 +281,12 @@ export function ModelFilterSheet({
         </View>
 
         {/* Search Input */}
-        <View style={[styles.searchContainer, { backgroundColor: colors.fill2, borderColor: colors.border }]}>
-          <Search size={Sizes.iconSm} color={colors.labelQuaternary} strokeWidth={2} />
+        <View style={[styles.searchContainer, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+          <Search size={Sizes.iconSm} color={colors.placeholder} strokeWidth={2} />
           <TextInput
             style={[styles.searchInput, { color: colors.label }]}
             placeholder="Search models..."
-            placeholderTextColor={colors.labelQuaternary}
+            placeholderTextColor={colors.placeholder}
             value={searchQuery}
             onChangeText={setSearchQuery}
             autoCorrect={false}
@@ -294,7 +294,7 @@ export function ModelFilterSheet({
           />
           {searchQuery.length > 0 && (
             <HapticPressable onPress={() => setSearchQuery('')} hitSlop={Layout.hitSlopSmall}>
-              <X size={Spacing.lg} color={colors.labelQuaternary} strokeWidth={2} />
+              <X size={Spacing.lg} color={colors.placeholder} strokeWidth={2} />
             </HapticPressable>
           )}
         </View>
@@ -309,7 +309,7 @@ export function ModelFilterSheet({
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyState}>
-              <Text variant="body" tone="secondary">No models found</Text>
+              <Text variant="subhead" tone="muted">No models found</Text>
             </View>
           }
         />
@@ -352,13 +352,13 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   selectionSummary: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
     gap: Spacing['2xl'],
     marginTop: Spacing.md,
   },
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: Spacing.md,
   },
   labelColumn: {
     flex: 1,

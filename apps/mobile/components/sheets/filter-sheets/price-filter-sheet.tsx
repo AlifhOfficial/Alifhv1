@@ -143,10 +143,10 @@ export function PriceFilterSheet({
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Text variant="body" tone="secondary">Cancel</Text>
+              <Text variant="subhead" tone="muted">Cancel</Text>
             </HapticPressable>
             
-            <Text variant="headline">Price</Text>
+            <Text variant="caption1Emphasized" tone="muted" uppercase>Price</Text>
             
             <HapticPressable
               style={[
@@ -156,8 +156,9 @@ export function PriceFilterSheet({
               onPress={handleApply}
             >
               <Text
-                variant="subhead"
+                variant="caption1Emphasized"
                 style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
+                uppercase
               >
                 Apply
               </Text>
@@ -167,11 +168,11 @@ export function PriceFilterSheet({
           {/* Selection Summary */}
           {hasValue && (
             <View style={styles.selectionSummary}>
-              <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
+              <Text variant="caption1Emphasized" numberOfLines={1} style={{ flex: 1 }} tone="muted">
                 {localMin && localMax ? `AED ${parseInt(localMin).toLocaleString()} - ${parseInt(localMax).toLocaleString()}` : localMin ? `From AED ${parseInt(localMin).toLocaleString()}` : `Up to AED ${parseInt(localMax).toLocaleString()}`}
               </Text>
               <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-                <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
+                <Text variant="caption1Emphasized" style={{ color: colors.error }} tone="muted" uppercase>
                   Clear
                 </Text>
               </HapticPressable>
@@ -199,9 +200,10 @@ export function PriceFilterSheet({
                 ]}
               >
                 <Text
-                  variant="subhead"
+                  variant="caption1Emphasized"
                   style={{ color: isActive ? colors.background : colors.labelSecondary }}
-                 tone="secondary">
+                  tone="muted"
+                  uppercase>
                   {preset.label}
                 </Text>
               </HapticPressable>
@@ -299,7 +301,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
     gap: Spacing['2xl'],
     marginTop: Spacing.md,
   },

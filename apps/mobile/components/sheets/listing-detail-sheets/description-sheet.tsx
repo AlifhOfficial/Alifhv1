@@ -85,7 +85,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="title3Emphasized">Description</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Description</Text>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 
@@ -106,10 +106,10 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
               hitSlop={Spacing.md}
               style={[
                 styles.iconButton,
-                { backgroundColor: colors.error }
+                { backgroundColor: colors.fill2 }
               ]}
             >
-              <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
+              <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
             </HapticPressable>
           </View>
         </View>
@@ -119,7 +119,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <Text variant="body">
+          <Text variant="subhead" tone="secondary">
             {description}
           </Text>
         </BottomSheetScrollView>
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.xl,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   headerActions: {
     flexDirection: 'row',

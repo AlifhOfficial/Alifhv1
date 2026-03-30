@@ -139,10 +139,10 @@ export function LocationFilterSheet({
             hitSlop={Spacing.md}
             style={styles.cancelButton}
           >
-            <Text variant="body" tone="secondary">Cancel</Text>
+            <Text variant="subhead" tone="muted">Cancel</Text>
           </HapticPressable>
           
-          <Text variant="headline">Location</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Location</Text>
           
           <HapticPressable
             style={[
@@ -152,8 +152,9 @@ export function LocationFilterSheet({
             onPress={handleApply}
           >
             <Text
-              variant="subhead"
+              variant="caption1Emphasized"
               style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
+              uppercase
             >
               Apply
             </Text>
@@ -163,11 +164,11 @@ export function LocationFilterSheet({
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
+            <Text variant="caption1Emphasized" numberOfLines={1} style={{ flex: 1 }} tone="muted">
               {localSelected.join(', ')}
             </Text>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
+              <Text variant="caption1Emphasized" style={{ color: colors.error }} tone="muted" uppercase>
                 Clear
               </Text>
             </HapticPressable>
@@ -189,15 +190,14 @@ export function LocationFilterSheet({
               >
                 <View style={styles.labelRow}>
                   <Text
-                    variant="body"
+                    variant={isSelected ? 'subheadEmphasized' : 'subhead'}
                     style={{ 
                       color: isSelected ? colors.label : colors.labelSecondary,
-                      fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
                     }}
                   >
                     {option.label}
                   </Text>
-                  <Text variant="subhead" tone="muted">
+                  <Text variant="caption1Emphasized" tone="muted">
                     {option.count.toLocaleString()}
                   </Text>
                 </View>
@@ -253,13 +253,13 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   selectionSummary: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
     gap: Spacing['2xl'],
     marginTop: Spacing.md,
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: Spacing.md,
   },
   labelRow: {
     flexDirection: 'row',

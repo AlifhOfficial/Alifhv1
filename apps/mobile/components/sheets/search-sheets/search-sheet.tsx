@@ -593,10 +593,10 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Text variant="body" tone="secondary">Cancel</Text>
+              <Text variant="subhead" tone="muted">Cancel</Text>
             </HapticPressable>
             
-            <Text variant="headline">Search</Text>
+            <Text variant="caption1Emphasized" tone="muted" uppercase>Search</Text>
             
             <HapticPressable
               style={[
@@ -607,8 +607,9 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
               disabled={!canApply}
             >
               <Text
-                variant="subhead"
+                variant="caption1Emphasized"
                 style={{ color: canApply ? colors.primaryForeground : colors.labelQuaternary }}
+                uppercase
               >
                 Apply
               </Text>
@@ -643,11 +644,11 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
           {/* Selection Summary (breadcrumb style) */}
           {hasSelections && (
             <View style={styles.selectionSummary}>
-              <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
+              <Text variant="caption1Emphasized" numberOfLines={1} style={{ flex: 1 }} tone="muted">
                 {selectionSummary}
               </Text>
               <HapticPressable onPress={clearAllSelections} hitSlop={Layout.hitSlopSmall}>
-                <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
+                <Text variant="caption1Emphasized" style={{ color: colors.error }} tone="muted" uppercase>
                   Clear
                 </Text>
               </HapticPressable>
@@ -694,7 +695,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
                         {category && (
                           <View style={[styles.categoryDot, { backgroundColor: colors[category.dotKey] }]} />
                         )}
-                        <Text variant="body" numberOfLines={1} style={{ flex: 1 }}>
+                        <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
                           {suggestion.text}
                         </Text>
                       </View>

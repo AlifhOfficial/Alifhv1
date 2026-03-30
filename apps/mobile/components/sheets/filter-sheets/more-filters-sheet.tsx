@@ -239,7 +239,7 @@ export function MoreFiltersSheet({
         >
           <View style={styles.sectionTitleRow}>
             <Text 
-              variant="body" 
+              variant="subhead" 
               style={{ 
                 color: colors.label,
               }}
@@ -308,10 +308,9 @@ export function MoreFiltersSheet({
       onPress={onToggle}
     >
       <Text 
-        variant="body" 
+        variant={value ? 'subheadEmphasized' : 'subhead'} 
         style={{ 
           color: value ? colors.label : colors.labelSecondary,
-          fontWeight: value ? Fonts.bold : Fonts.semiBold,
         }}
       >
         {label}
@@ -347,10 +346,10 @@ export function MoreFiltersSheet({
             hitSlop={Spacing.md}
             style={styles.cancelButton}
           >
-            <Text variant="body" tone="secondary">Cancel</Text>
+            <Text variant="subhead" tone="muted">Cancel</Text>
           </HapticPressable>
           
-          <Text variant="headline">Filters</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Filters</Text>
           
           <HapticPressable
             style={[
@@ -360,8 +359,9 @@ export function MoreFiltersSheet({
             onPress={handleApply}
           >
             <Text
-              variant="subhead"
+              variant="caption1Emphasized"
               style={{ color: hasValue ? colors.primaryForeground : colors.labelQuaternary }}
+              uppercase
             >
               Apply
             </Text>
@@ -371,11 +371,11 @@ export function MoreFiltersSheet({
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
+            <Text variant="caption1Emphasized" numberOfLines={1} style={{ flex: 1 }} tone="muted">
               {activeCount} filter{activeCount !== 1 ? 's' : ''} selected
             </Text>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
+              <Text variant="caption1Emphasized" style={{ color: colors.error }} tone="muted" uppercase>
                 Clear
               </Text>
             </HapticPressable>
@@ -598,13 +598,13 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   selectionSummary: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
     gap: Spacing['2xl'],
     marginTop: Spacing.md,
   },
@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: Spacing.md,
   },
   radio: {
     width: Sizes.iconMd,

@@ -151,13 +151,13 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
               style={[
                 styles.input,
                 {
-                  backgroundColor: colors.surface,
+                  backgroundColor: colors.surfaceSecondary,
                   color: colors.label,
                   borderColor: colors.border,
                 },
               ]}
               placeholder="e.g. New exhaust system installed"
-              placeholderTextColor={colors.labelQuaternary}
+              placeholderTextColor={colors.placeholder}
               value={noteInput}
               onChangeText={setNoteInput}
               onSubmitEditing={addNote}

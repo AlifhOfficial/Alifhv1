@@ -194,7 +194,7 @@ export function ResponseSheet({
         </View>
 
         {/* Title */}
-        <Text variant="title3Emphasized" style={styles.title}>
+        <Text variant="subheadEmphasized" style={styles.title}>
           {title}
         </Text>
 

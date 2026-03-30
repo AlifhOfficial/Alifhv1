@@ -86,7 +86,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
     >
       <View style={styles.content}>
         <View style={styles.header}>
-          <Text variant="title3Emphasized">All Features</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Features</Text>
           <View style={styles.headerActions}>
             <HapticPressable 
               onPress={handleCopy} 
@@ -107,10 +107,10 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
               hitSlop={Spacing.md}
               style={[
                 styles.iconButton,
-                { backgroundColor: colors.error },
+                { backgroundColor: colors.fill2 },
               ]}
             >
-              <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
+              <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
             </HapticPressable>
           </View>
         </View>
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.xl,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   headerActions: {
     flexDirection: 'row',

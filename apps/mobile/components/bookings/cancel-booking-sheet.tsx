@@ -148,14 +148,14 @@ export function CancelBookingSheet({
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="title3Emphasized">Cancel Booking</Text>
+          <Text variant="subheadEmphasized">Cancel Booking</Text>
           <HapticPressable
             onPress={onClose}
             hitSlop={Layout.hitSlop}
             disabled={loading}
-            style={[styles.closeButton, { backgroundColor: colors.error }]}
+            style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
           >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
+            <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
           </HapticPressable>
         </View>
 
@@ -169,15 +169,15 @@ export function CancelBookingSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
-            <Text variant="subhead" tone="secondary">{partnerName}</Text>
+            <Text variant="subheadEmphasized" numberOfLines={1}>{listingTitle}</Text>
+            <Text variant="caption1Emphasized" tone="muted" uppercase>{partnerName}</Text>
             <Text variant="subhead" tone="secondary">{formattedDate}</Text>
           </View>
         </View>
 
         {/* Reason picker */}
         <View style={styles.section}>
-          <Text variant="body" style={{ marginBottom: Spacing.sm }}>
+          <Text variant="subhead" tone="secondary" style={{ marginBottom: Spacing.sm }}>
             Why are you cancelling?
           </Text>
           <ScrollView
@@ -226,7 +226,7 @@ export function CancelBookingSheet({
             value={notes}
             onChangeText={setNotes}
             placeholder="Any additional details…"
-            placeholderTextColor={colors.labelQuaternary}
+            placeholderTextColor={colors.placeholder}
             multiline
             numberOfLines={2}
             style={[
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.xl,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   closeButton: {
     width: Sizes.avatarSm,

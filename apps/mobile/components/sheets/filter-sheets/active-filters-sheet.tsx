@@ -165,10 +165,10 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
             hitSlop={Spacing.md}
             style={styles.cancelButton}
           >
-            <Text variant="body" tone="secondary">Cancel</Text>
+            <Text variant="subhead" tone="muted">Cancel</Text>
           </HapticPressable>
           
-          <Text variant="headline">Active Filters</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Active Filters</Text>
           
           <View style={styles.placeholder} />
         </View>
@@ -176,11 +176,11 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
         {/* Selection Summary */}
         {hasFilters && (
           <View style={styles.selectionSummary}>
-            <Text variant="subhead" numberOfLines={1} style={{ flex: 1 }}>
+            <Text variant="caption1Emphasized" numberOfLines={1} style={{ flex: 1 }} tone="muted">
               {chips.length} filter{chips.length !== 1 ? 's' : ''} active
             </Text>
             <HapticPressable onPress={handleClearAll} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="subhead" style={{ color: colors.error }} tone="secondary">
+              <Text variant="caption1Emphasized" style={{ color: colors.error }} tone="muted" uppercase>
                 Clear all
               </Text>
             </HapticPressable>
@@ -196,7 +196,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
       >
         {!hasFilters ? (
           <View style={styles.emptyState}>
-            <Text tone="muted" variant="body">No active filters</Text>
+            <Text tone="muted" variant="subhead">No active filters</Text>
           </View>
         ) : (
           groupedChips.map((group) => (
@@ -216,7 +216,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
                       chip.locked && { opacity: 0.7 },
                     ]}
                   >
-                    <Text variant="subhead" numberOfLines={1} style={styles.chipText}>
+                    <Text variant="caption1Emphasized" numberOfLines={1} style={styles.chipText}>
                       {chip.label}
                     </Text>
                     {!chip.locked && (
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   placeholder: {
     width: Spacing.xl * 3,
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
     gap: Spacing['2xl'],
     marginTop: Spacing.md,
   },

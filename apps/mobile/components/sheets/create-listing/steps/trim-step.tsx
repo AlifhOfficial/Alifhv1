@@ -57,13 +57,13 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
         style={[
           styles.input,
           {
-            backgroundColor: colors.fill2,
+            backgroundColor: colors.surfaceSecondary,
             color: colors.label,
             borderColor: colors.border,
           },
         ]}
         placeholder="e.g. Sport, AMG, M-Sport..."
-        placeholderTextColor={colors.labelQuaternary}
+        placeholderTextColor={colors.placeholder}
         value={localTrim}
         onChangeText={handleChange}
         autoCapitalize="words"

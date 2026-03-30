@@ -148,13 +148,13 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
           style={[
             styles.textArea,
             {
-              backgroundColor: colors.fill2,
+              backgroundColor: colors.surfaceSecondary,
               color: colors.label,
               borderColor: colors.border,
             },
           ]}
           placeholder="Describe your vehicle's condition, history, notable features..."
-          placeholderTextColor={colors.labelQuaternary}
+          placeholderTextColor={colors.placeholder}
           value={description}
           onChangeText={handleChange}
           multiline

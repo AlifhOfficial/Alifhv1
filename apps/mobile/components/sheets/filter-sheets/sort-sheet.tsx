@@ -102,10 +102,10 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
               hitSlop={Spacing.md}
               style={styles.cancelButton}
             >
-              <Text variant="body" tone="secondary">Cancel</Text>
+              <Text variant="subhead" tone="muted">Cancel</Text>
             </HapticPressable>
             
-            <Text variant="headline">Sort By</Text>
+            <Text variant="caption1Emphasized" tone="muted" uppercase>Sort By</Text>
             
             <View style={styles.placeholder} />
           </View>
@@ -123,10 +123,9 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
                 style={styles.listItem}
               >
                 <Text
-                  variant="body"
+                  variant={selected ? 'subheadEmphasized' : 'subhead'}
                   style={{ 
                     color: selected ? colors.label : colors.labelSecondary,
-                    fontWeight: selected ? Fonts.bold : Fonts.semiBold,
                   }}
                 >
                   {option.label}
@@ -182,7 +181,7 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
   placeholder: {
     width: Spacing.xl * 3,
@@ -195,7 +194,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: Spacing.md,
   },
   radio: {
     width: Sizes.iconMd,

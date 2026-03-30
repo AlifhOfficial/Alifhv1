@@ -97,11 +97,11 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
       {/* Custom extras input */}
       <View style={styles.section}>
         <Text variant="caption1Emphasized" tone="muted" uppercase>Add Custom Extra</Text>
-        <View style={[styles.inputRow, { backgroundColor: colors.fill2 }]}>
+        <View style={[styles.inputRow, { backgroundColor: colors.surfaceSecondary }]}>
           <BottomSheetTextInput
             style={[styles.input, { color: colors.label }]}
             placeholder="e.g. Custom exhaust..."
-            placeholderTextColor={colors.labelQuaternary}
+            placeholderTextColor={colors.placeholder}
             value={customExtra}
             onChangeText={setCustomExtra}
             onSubmitEditing={addCustomExtra}

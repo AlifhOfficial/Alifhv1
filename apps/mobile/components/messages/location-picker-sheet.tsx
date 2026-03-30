@@ -128,7 +128,7 @@ export function LocationPickerSheet({
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text variant="headline">Share Location</Text>
+            <Text variant="subheadEmphasized">Share Location</Text>
             <Text variant="subhead" style={{ color: colors.labelSecondary }}>
               Send your current location
             </Text>
@@ -137,9 +137,9 @@ export function LocationPickerSheet({
             haptic="light" 
             onPress={onClose} 
             disabled={isSending}
-            style={[styles.closeButton, { backgroundColor: colors.error }]}
+            style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
           >
-            <X size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={Stroke.icon} />
+            <X size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
           </HapticPressable>
         </View>
 
