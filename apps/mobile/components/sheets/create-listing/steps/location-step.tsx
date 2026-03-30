@@ -11,7 +11,7 @@ import React, { useCallback, useRef } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Fonts, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { UAE_EMIRATES } from '@/lib/filter-constants';
 
@@ -45,7 +45,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Emirate Selection */}
       <View style={styles.section}>
-        <Text variant="caption1Emphasized" uppercase>Emirate</Text>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Emirate</Text>
         <View style={styles.chipsWrap}>
           {UAE_EMIRATES.map((emirate) => {
             const isActive = data.emirate === emirate.value;
@@ -76,7 +76,7 @@ export function LocationStepContent({ data, onUpdate }: StepContentProps) {
       {/* City Input (Optional) */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Text variant="caption1Emphasized" uppercase>City / Area</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>City / Area</Text>
           <Text variant="subhead" tone="muted">
             Optional
           </Text>

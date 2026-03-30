@@ -21,12 +21,21 @@ interface ListingDescriptionProps {
   onReadMore?: () => void;
 }
 
+const DISPLAY_WORD_LIMIT = 120;
+
+const truncateByWords = (text: string, wordLimit: number) => {
+  const words = text.trim().split(/\s+/);
+  if (words.length <= wordLimit) return text;
+  return `${words.slice(0, wordLimit).join(' ')}…`;
+};
+
 export const ListingDescription = memo(function ListingDescription({
   description,
   isBlk = false,
   onReadMore,
 }: ListingDescriptionProps) {
   const { colors } = useTheme();
+  const preview = truncateByWords(description, DISPLAY_WORD_LIMIT);
 
   return (
     <Animated.View entering={FadeInDown.delay(0).duration(350)}>
@@ -40,8 +49,8 @@ export const ListingDescription = memo(function ListingDescription({
         <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         <View style={styles.body}>
-          <Text variant="subhead" tone="secondary" numberOfLines={3}>
-            {description}
+          <Text variant="subhead" tone="secondary" numberOfLines={6} selectable>
+            {preview}
           </Text>
         </View>
       </View>

@@ -7,13 +7,14 @@
  */
 
 import { AuthRequiredEmptyState } from '@/components/ui';
-import { View, StyleSheet, Platform } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, StyleSheet, Platform, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { Stack } from 'expo-router';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/context/theme-context';
 import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { BookingsScreen } from '@/components/bookings/bookings-screen';
-import { Colors } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function BookingsRoute() {
@@ -22,6 +23,11 @@ export default function BookingsRoute() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
+  const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
+  }, []);
 
   const nativeHeaderOptions = {
     headerShown: false,
@@ -32,7 +38,7 @@ export default function BookingsRoute() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Bookings', headerTintColor: colors.label }} />
-        <MobileHeader title="Bookings" showBackButton />
+        <MobileHeader title="Bookings" showBackButton titleHidden={isHeaderTitleHidden} />
         <View style={{ flex: 1, paddingTop: headerInset }}>
         <AuthRequiredEmptyState
           title="Sign in to view bookings"
@@ -46,8 +52,8 @@ export default function BookingsRoute() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Bookings', headerTintColor: colors.label }} />
-      <MobileHeader title="Bookings" showBackButton />
-      <BookingsScreen />
+      <MobileHeader title="Bookings" showBackButton titleHidden={isHeaderTitleHidden} />
+      <BookingsScreen onScroll={handleScroll} />
     </View>
   );
 }

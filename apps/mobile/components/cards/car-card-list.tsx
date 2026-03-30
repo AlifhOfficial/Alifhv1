@@ -1,16 +1,16 @@
 /**
- * Car Card List View - Revvup Design System
- * Clean, minimal horizontal list item
- * Fully adaptive - all values from theme constants
+ * Car Card Compact - Revvup Design System
+ * Compact vertical card — lighter than CarCardM, same visual language.
+ * No seller info row; suitable for grids, feeds, and tight layouts.
  */
 
 import { HapticPressable, Skeleton, SkeletonCircle, Text, FavoriteButton, SuperlikeButton } from '@/components/ui';
 import React, { useCallback, memo, useMemo } from 'react';
-import { StyleSheet, View, ImageSourcePropType } from 'react-native';
-import { Image, ImageSource } from 'expo-image';
+import { StyleSheet, View } from 'react-native';
+import { Image } from 'expo-image';
 import { Share2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Layout, Sizes, Timing, Stroke } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Sizes, AspectRatio, Timing, Stroke, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { shareListing } from '@/lib/listing-share';
@@ -31,28 +31,24 @@ function formatPrice(amount: number): string {
 }
 
 function formatMileage(km: number): string {
-  return km >= 1000 ? `${(km / 1000).toFixed(0)}k km` : `${km} km`;
+  return km >= 1000 ? `${(km / 1000).toFixed(0)}k` : km.toString();
 }
 
-const EMIRATE_SHORT: Record<string, string> = {
-  'dubai': 'DXB',
-  'abu_dhabi': 'AUH',
-  'abu dhabi': 'AUH',
-  'abudhabi': 'AUH',
-  'sharjah': 'SHJ',
-  'ajman': 'AJM',
+const EMIRATE_MAP: Record<string, string> = {
+  'dubai': 'Dubai',
+  'abu_dhabi': 'Abu Dhabi',
+  'sharjah': 'Sharjah',
+  'ajman': 'Ajman',
   'ras_al_khaimah': 'RAK',
-  'ras al khaimah': 'RAK',
-  'ras al-khaimah': 'RAK',
-  'rasalkhaimah': 'RAK',
-  'fujairah': 'FUJ',
+  'fujairah': 'Fujairah',
   'umm_al_quwain': 'UAQ',
-  'umm al quwain': 'UAQ',
-  'umm al-quwain': 'UAQ',
-  'ummalquwain': 'UAQ',
 };
 
-const SPECS_SHORT: Record<string, string> = {
+function formatEmirate(emirate: string): string {
+  return EMIRATE_MAP[emirate.toLowerCase()] || emirate;
+}
+
+const SPECS_MAP: Record<string, string> = {
   'gcc': 'GCC',
   'us': 'US',
   'european': 'EU',
@@ -61,6 +57,10 @@ const SPECS_SHORT: Record<string, string> = {
   'american': 'US',
 };
 
+function formatSpecs(specs: string): string {
+  return SPECS_MAP[specs.toLowerCase()] || specs;
+}
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -68,10 +68,11 @@ const SPECS_SHORT: Record<string, string> = {
 interface CardTheme {
   bg: string;
   border: string;
-  text: string;
+  borderWidth: number;
+  title: string;
   price: string;
   meta: string;
-  icon: string;
+  actionIcon: string;
   imageBg: string;
 }
 
@@ -85,8 +86,8 @@ export interface CarCardListProps {
   mileage: number;
   emirate: string;
   specs?: string | null;
-  thumbnail?: ImageSourcePropType | string | null;
-  images?: (ImageSourcePropType | string)[];
+  thumbnail?: string | null;
+  images?: string[];
   isBlkListing?: boolean;
   partnerName?: string | null;
   partnerLogo?: string | null;
@@ -110,28 +111,28 @@ export interface CarCardListProps {
 // COMPONENT
 // ============================================================================
 
-/** Derives card theme colors based on listing type */
 function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean): CardTheme {
   return useMemo(() => {
     if (isBlkListing) {
       return {
         bg: colors.background,
         border: colors.border,
-        text: colors.label,
+        borderWidth: BorderWidths.medium,
+        title: colors.label,
         price: colors.label,
         meta: colors.labelSecondary,
-        icon: colors.labelSecondary,
+        actionIcon: colors.labelSecondary,
         imageBg: colors.background,
       };
     }
-    // Surface aesthetic - standard card styling (matches car-card-m)
     return {
       bg: colors.surface,
       border: colors.border,
-      text: colors.label,
+      borderWidth: StyleSheet.hairlineWidth,
+      title: colors.label,
       price: colors.primary,
       meta: colors.labelSecondary,
-      icon: colors.label,
+      actionIcon: colors.label,
       imageBg: colors.surfaceSecondary,
     };
   }, [colors, isBlkListing]);
@@ -164,14 +165,11 @@ export const CarCardList = memo(function CarCardList({
   const colors = Colors[colorScheme];
   const theme = useCardTheme(colors, isBlkListing);
 
-  // Derived values - use thumb URL for optimized card display
   const rawImage = thumbnail || images?.[0];
-  // Only apply thumb URL conversion for string URLs (not local require() assets)
-  const displayImage = typeof rawImage === 'string' ? getAppThumbUrl(rawImage) : rawImage;
-  const displayEmirate = emirate ? (EMIRATE_SHORT[emirate.toLowerCase()] || emirate) : '';
-  const displaySpecs = specs ? (SPECS_SHORT[specs.toLowerCase()] || specs) : 'GCC';
+  const displayImage = getAppThumbUrl(rawImage);
+  const displayEmirate = formatEmirate(emirate);
+  const displaySpecs = formatSpecs(specs || 'GCC');
 
-  // Handlers
   const handlePress = useCallback(() => onPress?.(id), [id, onPress]);
   const handlePressIn = useCallback(() => onPressIn?.(id), [id, onPressIn]);
   const handleSharePress = useCallback(async () => {
@@ -179,19 +177,8 @@ export const CarCardList = memo(function CarCardList({
       onSharePress(id);
       return;
     }
-
     try {
-      await shareListing({
-        listingId: id,
-        year,
-        make,
-        model,
-        trim,
-        price,
-        mileage,
-        emirate,
-        specs,
-      });
+      await shareListing({ listingId: id, year, make, model, trim, price, mileage, emirate, specs });
     } catch {
       // Share cancelled or failed
     }
@@ -201,63 +188,71 @@ export const CarCardList = memo(function CarCardList({
     <HapticPressable
       onPress={handlePress}
       onPressIn={onPressIn ? handlePressIn : undefined}
-      style={[styles.container, { backgroundColor: theme.bg }]}
+      style={[styles.container, { backgroundColor: theme.bg, borderColor: theme.border, borderWidth: theme.borderWidth }]}
     >
-      {/* === IMAGE SECTION === */}
-      <ListImage
-        imageSource={displayImage}
+      {/* BLK Accent Line */}
+      {isBlkListing && <View style={[styles.blkAccent, { backgroundColor: theme.border }]} />}
+
+      {/* === IMAGE === */}
+      <CompactImage
+        uri={displayImage}
         backgroundColor={theme.imageBg}
         skeletonColor={colors.skeleton}
-        isBlkListing={isBlkListing}
-        blkBadgeBackground={colors.blkBadgeBg}
-        blkBadgeBorder={colors.blkBadgeBorder}
-        blkBadgeText={colors.blkBadgeFg}
       />
 
-      {/* === INFO SECTION === */}
-      <View style={styles.infoSection}>
-        {/* Content - Top */}
-        <View style={styles.content}>
-          <Text variant="subheadEmphasized" style={{ color: theme.text }} numberOfLines={1}>
+      {/* === CONTENT === */}
+      <View style={styles.content}>
+        {/* Title row: make+model left, year right */}
+        <View style={styles.titleRow}>
+          <Text variant="subheadEmphasized" style={[styles.titleText, { color: theme.title }]} numberOfLines={1}>
             {make} {model}
           </Text>
-          <Text variant="footnote" style={{ color: theme.meta }}>
-            {year}{displayEmirate ? ` · ${displayEmirate}` : ''} · {displaySpecs}
-          </Text>
+          <Text variant="footnote" style={{ color: theme.meta }}>{year}</Text>
+        </View>
+
+        {/* Meta: mileage · specs · location */}
+        <Text variant="footnote" style={{ color: theme.meta }}>
+          {formatMileage(mileage)} km · {displaySpecs} · {displayEmirate}
+        </Text>
+
+        {/* Price + Actions */}
+        <View style={styles.footer}>
           <Text variant="callout" style={{ color: theme.price }}>
             {formatPrice(price)}
           </Text>
-          <Text variant="footnote" style={{ color: theme.meta }}>
-            {formatMileage(mileage)}
-          </Text>
-        </View>
-
-        {/* Actions - Bottom Row */}
-        <View style={styles.bottomActions}>
-          <FavoriteButton
-            listingId={id}
-            size={Sizes.iconSm}
-            onPress={onFavoritePress}
-            isFavorite={isFavoriteProp}
-            isBlkListing={isBlkListing}
-          />
-          {showSuperlike && (
-            <SuperlikeButton
-              listingId={id}
-              size={Sizes.iconSm}
-              onPress={onSuperlikePress}
-              isSuperliked={isSuperlikedProp}
-              isBlkListing={isBlkListing}
-            />
-          )}
-          {showShare && (
-            <HapticPressable
-              onPress={handleSharePress}
-              hitSlop={Layout.hitSlopSmall}
-            >
-              <Share2 size={Sizes.iconSm} color={theme.icon} strokeWidth={Stroke.icon} />
-            </HapticPressable>
-          )}
+          <View style={styles.actions}>
+            <View style={[styles.actionBubble, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+              <FavoriteButton
+                listingId={id}
+                size={Sizes.iconXs}
+                onPress={onFavoritePress}
+                isFavorite={isFavoriteProp}
+                isBlkListing={isBlkListing}
+                hitSlop={Layout.hitSlop}
+              />
+            </View>
+            {showSuperlike && (
+              <View style={[styles.actionBubble, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+                <SuperlikeButton
+                  listingId={id}
+                  size={Sizes.iconXs}
+                  onPress={onSuperlikePress}
+                  isSuperliked={isSuperlikedProp}
+                  isBlkListing={isBlkListing}
+                  hitSlop={Layout.hitSlop}
+                />
+              </View>
+            )}
+            {showShare && (
+              <HapticPressable
+                onPress={handleSharePress}
+                hitSlop={Layout.hitSlop}
+                style={[styles.actionBubble, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
+              >
+                <Share2 size={Sizes.iconXs} color={theme.actionIcon} strokeWidth={Stroke.icon} />
+              </HapticPressable>
+            )}
+          </View>
         </View>
       </View>
     </HapticPressable>
@@ -268,43 +263,28 @@ export const CarCardList = memo(function CarCardList({
 // SUB-COMPONENTS
 // ============================================================================
 
-interface ListImageProps {
-  imageSource?: ImageSourcePropType | string | null;
+interface CompactImageProps {
+  uri?: string | null;
   backgroundColor: string;
   skeletonColor: string;
-  isBlkListing: boolean;
-  blkBadgeBackground: string;
-  blkBadgeBorder: string;
-  blkBadgeText: string;
 }
 
-const ListImage = memo(function ListImage({
-  imageSource,
+const CompactImage = memo(function CompactImage({
+  uri,
   backgroundColor,
   skeletonColor,
-  isBlkListing,
-  blkBadgeBackground,
-  blkBadgeBorder,
-  blkBadgeText,
-}: ListImageProps) {
-  // Handle both local require() assets (number) and URL strings
-  const source: ImageSource | undefined = imageSource
-    ? typeof imageSource === 'string'
-      ? { uri: imageSource }
-      : (imageSource as ImageSource)
-    : undefined;
-
+}: CompactImageProps) {
   return (
     <View style={[styles.imageContainer, { backgroundColor }]}>
-      {source ? (
-        <Image source={source} style={styles.image} contentFit="cover" transition={Timing.avatarTransition} />
+      {uri ? (
+        <Image
+          source={{ uri }}
+          style={styles.image}
+          contentFit="cover"
+          transition={Timing.imageTransition}
+        />
       ) : (
         <View style={[styles.image, { backgroundColor: skeletonColor }]} />
-      )}
-      {isBlkListing && (
-        <View style={[styles.blkBadge, { backgroundColor: blkBadgeBackground, borderColor: blkBadgeBorder }]}>
-          <Text variant="caption1Emphasized" uppercase={false} style={{ color: blkBadgeText }}>BLK</Text>
-        </View>
       )}
     </View>
   );
@@ -319,19 +299,18 @@ export function CarCardListSkeleton() {
   const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface }]}>
-      <Skeleton width={Sizes.cardThumbnailWidth} height={Sizes.cardThumbnailHeight} borderRadius={Radius.lg} />
-      <View style={styles.infoSection}>
-        <View style={styles.content}>
-          <Skeleton width="80%" height={Spacing.lg} />
-          <Skeleton width="40%" height={Spacing.md} />
-          <Skeleton width="50%" height={Spacing.md} />
-          <Skeleton width="30%" height={Spacing.sm} />
-        </View>
-        <View style={styles.bottomActions}>
-          <SkeletonCircle size={Sizes.iconSm} />
-          <SkeletonCircle size={Sizes.iconSm} />
-          <SkeletonCircle size={Sizes.iconSm} />
+    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <View style={[styles.imageContainer, { backgroundColor: colors.skeleton }]} />
+      <View style={styles.content}>
+        <Skeleton width="70%" height={Spacing.lg} />
+        <Skeleton width="55%" height={Spacing.md} />
+        <View style={styles.footer}>
+          <Skeleton width="35%" height={Spacing.md} />
+          <View style={styles.actions}>
+            <SkeletonCircle size={Sizes.iconXs} />
+            <SkeletonCircle size={Sizes.iconXs} />
+            <SkeletonCircle size={Sizes.iconXs} />
+          </View>
         </View>
       </View>
     </View>
@@ -339,49 +318,69 @@ export function CarCardListSkeleton() {
 }
 
 // ============================================================================
-// STYLES (All values from theme constants)
+// STYLES
 // ============================================================================
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    borderRadius: Radius.xl,
-    padding: Spacing.lg,
+    width: '100%',
+    borderRadius: Radius['2xl'],
+    borderCurve: 'continuous',
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
     marginBottom: Spacing.md,
-    gap: Spacing.md,
+  },
+  blkAccent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: BorderWidths.medium,
+    zIndex: 1,
   },
   imageContainer: {
-    width: Sizes.cardThumbnailWidth,
-    height: Sizes.cardThumbnailHeight,
-    borderRadius: Radius.lg,
+    marginHorizontal: Spacing.sm,
+    marginTop: Spacing.sm,
+    aspectRatio: AspectRatio.cardImage,
+    borderRadius: Radius['2xl'],
+    borderCurve: 'continuous',
     overflow: 'hidden',
-    position: 'relative',
   },
   image: {
     width: '100%',
     height: '100%',
   },
-  infoSection: {
-    flex: 1,
-    justifyContent: 'space-between',
-    height: Sizes.cardThumbnailHeight,
-  },
   content: {
+    padding: Spacing.md,
     gap: Spacing.xs,
   },
-  bottomActions: {
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    gap: Spacing.xs,
+  },
+  titleText: {
+    flex: 1,
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: Spacing.xs,
+  },
+  actions: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
   },
-  blkBadge: {
-    position: 'absolute',
-    top: Spacing.sm,
-    left: Spacing.sm,
-    paddingHorizontal: Sizes.badgePaddingH,
-    paddingVertical: Sizes.badgePaddingV,
-    borderRadius: Radius.none,
+  actionBubble: {
+    width: Sizes.bubbleXs,
+    height: Sizes.bubbleXs,
+    borderRadius: Sizes.bubbleXs / 2,
     borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+
 });

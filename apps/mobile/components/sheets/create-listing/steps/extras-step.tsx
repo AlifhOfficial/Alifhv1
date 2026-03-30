@@ -14,7 +14,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 import { Plus, X } from 'lucide-react-native';
 
-import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { VEHICLE_EXTRAS } from '@/lib/filter-constants';
 
@@ -59,7 +59,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Text variant="caption1Emphasized" uppercase>Vehicle Extras</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Vehicle Extras</Text>
           {extras.length > 0 && (
             <Text variant="subhead" tone="secondary">
               {extras.length} selected
@@ -96,7 +96,7 @@ export function ExtrasStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Custom extras input */}
       <View style={styles.section}>
-        <Text variant="caption1Emphasized" uppercase>Add Custom Extra</Text>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Add Custom Extra</Text>
         <View style={[styles.inputRow, { backgroundColor: colors.fill2 }]}>
           <BottomSheetTextInput
             style={[styles.input, { color: colors.label }]}

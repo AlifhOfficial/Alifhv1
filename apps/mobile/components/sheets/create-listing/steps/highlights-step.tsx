@@ -48,7 +48,7 @@ export function HighlightsStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Text variant="caption1Emphasized" uppercase>Highlight Tags</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Highlight Tags</Text>
           <Text variant="subhead" tone="muted">
             Select up to {MAX_TAGS}
           </Text>

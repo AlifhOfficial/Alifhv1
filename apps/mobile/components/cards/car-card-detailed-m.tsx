@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
     gap: Spacing['2xl'],
   },
   sellerBlock: {
-    gap: Spacing.md,
+    gap: Spacing['2xl'],
   },
   identityBlock: {
     gap: Spacing.sm,

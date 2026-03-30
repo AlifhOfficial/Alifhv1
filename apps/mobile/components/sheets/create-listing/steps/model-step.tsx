@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check, AlertCircle } from 'lucide-react-native';
 
-import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getModelsForMake } from '@/lib/filter-constants';
 
@@ -76,11 +76,8 @@ export function ModelStepContent({ data, onUpdate }: StepContentProps) {
           style={[styles.item, { borderBottomColor: colors.border }]}
         >
           <Text
-            variant="body"
-            style={{
-              color: isSelected ? colors.label : colors.labelSecondary,
-              fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
-            }}
+            variant={isSelected ? 'bodyEmphasized' : 'body'}
+            style={{ color: isSelected ? colors.label : colors.labelSecondary }}
           >
             {model}
           </Text>

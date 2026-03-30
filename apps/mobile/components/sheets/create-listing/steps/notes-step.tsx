@@ -13,7 +13,7 @@ import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { X, Plus } from 'lucide-react-native';
 
-import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { MAX_SPECIAL_NOTES, MAX_SPECIAL_NOTE_LENGTH } from '@/lib/listing-constants';
 
@@ -72,7 +72,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       <View style={styles.section}>
         <View style={styles.headerRow}>
-          <Text variant="caption1Emphasized" uppercase>Special Notes</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Special Notes</Text>
           <Text variant="subhead" tone="muted">
             {notes.length}/{MAX_SPECIAL_NOTES}
           </Text>
@@ -120,7 +120,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
       {/* Existing Notes */}
       {notes.length > 0 && (
         <View style={styles.section}>
-          <Text variant="caption1Emphasized" uppercase>Your Notes</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Your Notes</Text>
           <View style={styles.notesList}>
             {notes.map((note, index) => (
               <View
@@ -145,7 +145,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
       {/* Custom Note Input */}
       {notes.length < MAX_SPECIAL_NOTES && (
         <View style={styles.section}>
-          <Text variant="caption1Emphasized" uppercase>Add Custom Note</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Add Custom Note</Text>
           <View style={styles.inputRow}>
             <TextInput
               style={[

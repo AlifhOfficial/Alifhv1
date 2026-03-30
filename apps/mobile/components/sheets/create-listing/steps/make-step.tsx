@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check } from 'lucide-react-native';
 
-import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { CAR_MAKES } from '@/lib/filter-constants';
 
@@ -86,11 +86,8 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
         >
           <View style={styles.itemContent}>
             <Text
-              variant="body"
-              style={{
-                color: isSelected ? colors.label : colors.labelSecondary,
-                fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
-              }}
+              variant={isSelected ? 'bodyEmphasized' : 'body'}
+              style={{ color: isSelected ? colors.label : colors.labelSecondary }}
             >
               {make}
             </Text>
@@ -143,7 +140,7 @@ export function MakeStepContent({ data, onUpdate }: StepContentProps) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text variant="body" tone="secondary">No makes found for "{query}"</Text>
+            <Text variant="body" tone="secondary">No makes found for &quot;{query}&quot;</Text>
           </View>
         }
       />

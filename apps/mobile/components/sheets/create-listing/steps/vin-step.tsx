@@ -14,7 +14,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 import { CheckCircle2, AlertCircle } from 'lucide-react-native';
 
-import { Typography, Fonts, Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { checkVin } from '@/lib/sell-car-user-api';
 import { validateVin } from '../types';
@@ -192,7 +192,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       {/* VIN Visibility Toggle */}
       <View style={[styles.visibilitySection, { backgroundColor: colors.fill2 }]}>
         <View style={styles.visibilityContent}>
-          <Text variant="caption1Emphasized" uppercase>Show VIN publicly</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Show VIN publicly</Text>
         </View>
         <Switch
           value={data.vinVisibility === 'public'}
@@ -208,7 +208,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       {/* Info */}
       <View style={[styles.infoBox, { backgroundColor: colors.fill2 }]}>
         <Text variant="subhead" tone="muted">
-          Find your VIN on the driver's door jamb, dashboard, or vehicle registration. This setting is permanent for this listing.
+          Find your VIN on the driver&apos;s door jamb, dashboard, or vehicle registration. This setting is permanent for this listing.
         </Text>
       </View>
     </StepContainer>

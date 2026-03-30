@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   },
   alertBox: {
     width: '100%',
-    maxWidth: Spacing["5xl"],
+    maxWidth: 360,
     borderRadius: Radius['2xl'],
     borderWidth: 1,
     padding: Spacing.xl,

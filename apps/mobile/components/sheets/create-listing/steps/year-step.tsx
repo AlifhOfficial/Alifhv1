@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Search, X, Check } from 'lucide-react-native';
 
-import { Typography, Fonts, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import type { StepContentProps } from '../create-listing-flow';
@@ -85,11 +85,8 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
         <HapticPressable onPress={() => handleSelect(year)} style={styles.item}>
           <View style={styles.itemContent}>
             <Text
-              variant="body"
-              style={{
-                color: isSelected ? colors.label : colors.labelSecondary,
-                fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
-              }}
+              variant={isSelected ? 'bodyEmphasized' : 'body'}
+              style={{ color: isSelected ? colors.label : colors.labelSecondary }}
             >
               {year}
             </Text>
@@ -156,7 +153,7 @@ export function YearStepContent({ data, onUpdate }: StepContentProps) {
         }}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text variant="body" tone="secondary">No year found for "{query}"</Text>
+            <Text variant="body" tone="secondary">No year found for &quot;{query}&quot;</Text>
           </View>
         }
       />

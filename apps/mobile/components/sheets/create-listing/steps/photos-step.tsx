@@ -17,7 +17,7 @@ import DraggableFlatList, {
 import * as Haptics from 'expo-haptics';
 import { X, ImagePlus, GripVertical } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Fonts } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { pickAndUploadListingImage, deleteListingImageByUrl } from '@/components/user-inventory-management/utilities/image-upload';
 import { CDN_BASE, getThumbUrl } from '@/lib/config';
@@ -184,7 +184,7 @@ export function PhotosStepContent({ data, onUpdate }: StepContentProps) {
             {/* Thumbnail badge — only on confirmed CDN cover */}
             {isThumbnail && (
               <View style={[styles.thumbnailBadge, { backgroundColor: colors.primary }]}>
-                <Text variant="subhead" style={{ color: colors.primaryForeground, fontSize: Spacing.sm, fontWeight: Fonts.semiBold }}>
+                <Text variant="caption1Emphasized" style={{ color: colors.primaryForeground }} uppercase>
                   COVER
                 </Text>
               </View>

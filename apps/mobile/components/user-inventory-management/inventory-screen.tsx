@@ -17,7 +17,7 @@
 
 import { Text, HapticPressable, Skeleton } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, FlatList, Pressable, ScrollView, RefreshControl, ActivityIndicator, Platform, TouchableWithoutFeedback } from 'react-native';
+import { View, StyleSheet, FlatList, Pressable, ScrollView, RefreshControl, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 
 import { Image } from 'expo-image';
 import { getAppThumbUrl } from '@/lib/config';
@@ -34,7 +34,7 @@ import {
   Check,
 } from 'lucide-react-native';
 
-import { Colors, Shadows, Spacing, Radius, Layout, Sizes, ZIndex} from '@/constants/theme';
+import { Colors, Shadows, Spacing, Radius, Layout, Sizes, ZIndex, AspectRatio, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import {
   getListingForEdit,
@@ -68,10 +68,6 @@ import { useInventory } from '@/hooks/use-inventory-query';
 import { getMobileHeaderContentInset } from '@/components/layout';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-
-/** Card image dimensions — derived from theme for responsive scaling */
-const IMAGE_WIDTH = Sizes.cardThumbnailWidth + Spacing.xl;
-const IMAGE_HEIGHT = Sizes.cardThumbnailHeight + Spacing.xl;
 
 /** FAB dimensions — derived from theme */
 const FAB_SIZE = Sizes.bubbleMd + Spacing.xs;
@@ -111,7 +107,11 @@ const STATUS_TABS: StatusTab[] = [
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function InventoryScreen() {
+interface InventoryScreenProps {
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+}
+
+export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -310,8 +310,12 @@ export function InventoryScreen() {
       const statusLabel = formatListingStatus(item.moderationStatus, item.lifecycleStatus);
       const statusColor = getStatusColor(item.moderationStatus, item.lifecycleStatus, colors);
       const price = formatPrice(item.price ?? 0, item.currency);
-      const displaySpecs = SPECS_SHORT[item.specs?.toLowerCase()] || item.specs || '—';
-      const displayEmirate = EMIRATE_SHORT[item.emirate?.toLowerCase()] || item.emirate || '—';
+      const metaParts = [
+        item.year,
+        SPECS_SHORT[item.specs?.toLowerCase()] || item.specs || null,
+        EMIRATE_SHORT[item.emirate?.toLowerCase()] || item.emirate || null,
+      ].filter(Boolean);
+      const metaLine = metaParts.join(' · ');
 
       const expiry =
         item.expiresAt && item.lifecycleStatus === 'active' && item.moderationStatus === 'approved'
@@ -328,7 +332,7 @@ export function InventoryScreen() {
           style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
           {/* ── Image + Status Overlay ──────────────────────────────────── */}
-          <View style={styles.imageContainer}>
+          <View style={[styles.imageContainer, { backgroundColor: colors.surfaceSecondary }]}>
             {displayImage ? (
               <Image
                 source={{ uri: displayImage }}
@@ -341,7 +345,7 @@ export function InventoryScreen() {
                 <Ionicons name="image-outline" size={Sizes.iconXl} color={colors.labelQuaternary} />
               </View>
             )}
-            {/* Status badge overlaid on image */}
+            {/* Status badge */}
             <View style={[styles.statusOverlay, { backgroundColor: statusColor + 'E6' }]}>
               <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.primaryForeground }}>
                 {statusLabel}
@@ -351,53 +355,49 @@ export function InventoryScreen() {
 
           {/* ── Content ────────────────────────────────────────────────── */}
           <View style={styles.content}>
-            {/* Row 1: Title + action */}
+            {/* Title + three-dot action */}
             <View style={styles.titleRow}>
-              <Text variant="subhead" style={{ color: colors.label, flex: 1 }} numberOfLines={1}>
+              <Text variant="subheadEmphasized" style={[styles.titleText, { color: colors.label }]} numberOfLines={1}>
                 {title}
               </Text>
               <HapticPressable
                 onPress={() => openActions(item)}
                 hitSlop={Layout.hitSlop}
-                style={{ padding: Spacing.xs }}
+                style={[styles.actionBubble, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
               >
-                <MoreVertical size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
+                <MoreVertical size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
               </HapticPressable>
             </View>
 
-            {/* Row 2: Price */}
-            <Text variant="title3Emphasized" tone="primary">
-              {price}
-            </Text>
+            {/* Meta: year · specs · emirate (only present values) */}
+            {metaLine ? (
+              <Text variant="footnote" style={{ color: colors.labelSecondary }}>
+                {metaLine}
+              </Text>
+            ) : null}
 
-            {/* Row 3: Meta line — specs · emirate */}
-            <Text variant="subhead" style={{ color: colors.labelSecondary }}>
-              {displaySpecs} · {displayEmirate}
-            </Text>
-
-            {/* Row 4: Expiry (if applicable) */}
-            {expiry && (
-              <View style={styles.expiryRow}>
-                <Clock
-                  size={Sizes.iconXs}
-                  color={
-                    expiry.isExpired ? colors.error : expiry.isUrgent ? colors.warning : colors.labelQuaternary
-                  }
-                />
-                <Text
-                  variant="subhead"
-                  style={{
-                    color: expiry.isExpired
-                      ? colors.error
-                      : expiry.isUrgent
-                        ? colors.warning
-                        : colors.labelSecondary,
-                  }}
-                >
-                  {expiry.text}
-                </Text>
-              </View>
-            )}
+            {/* Price + expiry footer */}
+            <View style={styles.footer}>
+              <Text variant="callout" style={{ color: colors.primary }}>
+                {price}
+              </Text>
+              {expiry && (
+                <View style={styles.expiryRow}>
+                  <Clock
+                    size={Sizes.iconXs}
+                    color={expiry.isExpired ? colors.error : expiry.isUrgent ? colors.warning : colors.labelQuaternary}
+                  />
+                  <Text
+                    variant="footnote"
+                    style={{
+                      color: expiry.isExpired ? colors.error : expiry.isUrgent ? colors.warning : colors.labelSecondary,
+                    }}
+                  >
+                    {expiry.text}
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
         </HapticPressable>
       );
@@ -445,7 +445,7 @@ export function InventoryScreen() {
   const renderFooter = useCallback(() => {
     if (!isLoadingMore) return <View style={{ height: insets.bottom + Spacing['4xl'] }} />;
     return (
-      <View style={[styles.footer, { paddingBottom: insets.bottom + Spacing['4xl'] }]}>
+      <View style={[styles.listFooter, { paddingBottom: insets.bottom + Spacing['4xl'] }]}>
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
@@ -468,14 +468,11 @@ export function InventoryScreen() {
               key={i}
               style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
             >
-              <View style={styles.imageContainer}>
-                <Skeleton width={IMAGE_WIDTH - Spacing.sm * 2} height={IMAGE_HEIGHT - Spacing.sm * 2} borderRadius={Radius.md} />
-              </View>
+              <View style={[styles.imageContainer, { backgroundColor: colors.skeleton }]} />
               <View style={styles.content}>
-                <Skeleton width="80%" height={Spacing.md} />
-                <Skeleton width="55%" height={Spacing.md} />
-                <Skeleton width="60%" height={Spacing.md} />
+                <Skeleton width="75%" height={Spacing.md} />
                 <Skeleton width="50%" height={Spacing.md} />
+                <Skeleton width="40%" height={Spacing.md} />
               </View>
             </View>
           ))}
@@ -503,6 +500,8 @@ export function InventoryScreen() {
           contentContainerStyle={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }]}
           ListEmptyComponent={renderEmptyState}
           ListFooterComponent={renderFooter}
+          onScroll={onScroll}
+          scrollEventThrottle={16}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -514,6 +513,11 @@ export function InventoryScreen() {
           onEndReachedThreshold={0.4}
           showsVerticalScrollIndicator={false}
         />
+      )}
+
+      {/* Backdrop to dismiss filter drawer */}
+      {showFilterDrawer && (
+        <Pressable style={styles.drawerBackdrop} onPress={closeFilterDrawer} />
       )}
 
       {/* ─────────────────────── Bottom Sheets ──────────────────────────── */}
@@ -607,18 +611,18 @@ export function InventoryScreen() {
         isPublishedEdit={isPublishedEdit}
       />
 
+      {showFilterDrawer && (
+        <Pressable
+          style={[styles.drawerBackdrop, { backgroundColor: colors.overlay }]}
+          onPress={closeFilterDrawer}
+        />
+      )}
+
       {/* ─────────────────────── Filter Drawer Bubble ─────────────────────── */}
       <View
         style={[styles.fabCluster, { bottom: insets.bottom + Spacing.xl }]}
         pointerEvents="box-none"
       >
-        {/* Backdrop to dismiss */}
-        {showFilterDrawer && (
-          <TouchableWithoutFeedback onPress={closeFilterDrawer}>
-            <View style={StyleSheet.absoluteFillObject} />
-          </TouchableWithoutFeedback>
-        )}
-
         {/* Popover menu */}
         {showFilterDrawer && (
           <View
@@ -674,42 +678,25 @@ export function InventoryScreen() {
           <HapticPressable
             onPress={showFilterDrawer ? closeFilterDrawer : openFilterDrawer}
             style={[
-              styles.fab,
-              styles.glass,
+              styles.fabButton,
               {
-                width: FAB_SIZE,
-                paddingHorizontal: Spacing.none,
-                backgroundColor: showFilterDrawer ? colors.primary : colors.background,
+                backgroundColor: showFilterDrawer ? colors.primary : colors.surfaceSecondary,
                 borderColor: showFilterDrawer ? colors.primary : colors.border,
               },
             ]}
           >
-            {({ pressed }) => (
-              <ListFilter
-                size={Sizes.iconSm}
-                color={showFilterDrawer ? colors.primaryForeground : colors.label}
-                strokeWidth={2}
-                style={{ opacity: pressed ? 0.7 : 1 }}
-              />
-            )}
+            <ListFilter
+              size={Sizes.iconSm}
+              color={showFilterDrawer ? colors.primaryForeground : colors.label}
+              strokeWidth={2}
+            />
           </HapticPressable>
 
           <HapticPressable
             onPress={openCreateFlow}
-            style={[
-              styles.fab,
-              styles.glass,
-              {
-                width: FAB_SIZE,
-                paddingHorizontal: Spacing.none,
-                backgroundColor: colors.background,
-                borderColor: colors.border,
-              },
-            ]}
+            style={[styles.fabButton, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
           >
-            {({ pressed }) => (
-              <Plus size={Sizes.iconMd} color={colors.label} strokeWidth={2} style={{ opacity: pressed ? 0.6 : 1 }} />
-            )}
+            <Plus size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
           </HapticPressable>
         </View>
       </View>
@@ -736,29 +723,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  fab: {
-    height: FAB_SIZE,
-    borderRadius: FAB_SIZE / 2,
-    borderWidth: 1,
+  fabButton: {
+    width: Sizes.actionButtonLg,
+    height: Sizes.actionButtonLg,
+    borderRadius: Sizes.actionButtonLg / 2,
+    borderWidth: BorderWidths.medium,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.md,
     ...Shadows.md,
-  } as any,
-  fabInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
   },
-  glass: {
-    borderWidth: 1,
+  drawerBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: ZIndex.overlay,
   },
 
   // ── Filter Drawer popover ─────────────────────────────────────────────
   drawerContainer: {
     marginBottom: Spacing.sm,
-    borderRadius: Radius.xl,
-    borderWidth: 1,
+    borderRadius: Radius['3xl'],
+    borderCurve: 'continuous',
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
     minWidth: 220,
     ...Shadows.lg,
@@ -793,26 +777,28 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: Layout.screenPadding,
     paddingTop: Spacing.md,
-    gap: Spacing.lg,
   },
 
-  // ── Card (CarCardList-style) ───────────────────────────────────────────
+  // ── Card (CarCardM-style vertical) ────────────────────────────────────
   card: {
-    flexDirection: 'row',
-    borderRadius: Radius.lg,
-    borderWidth: 1,
+    width: '100%',
+    borderRadius: Radius['2xl'],
+    borderCurve: 'continuous',
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
-  },
+    marginBottom: Spacing.md,
+  } as any,
   imageContainer: {
-    width: IMAGE_WIDTH,
-    padding: Spacing.sm,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    marginHorizontal: Spacing.sm,
+    marginTop: Spacing.sm,
+    aspectRatio: AspectRatio.cardImage,
+    borderRadius: Radius['2xl'],
+    borderCurve: 'continuous',
+    overflow: 'hidden',
+  } as any,
   image: {
-    width: IMAGE_WIDTH - Spacing.sm * 2,
-    height: IMAGE_HEIGHT - Spacing.sm * 2,
-    borderRadius: Radius.md,
+    width: '100%',
+    height: '100%',
   },
   imagePlaceholder: {
     alignItems: 'center',
@@ -820,23 +806,40 @@ const styles = StyleSheet.create({
   },
   statusOverlay: {
     position: 'absolute',
-    top: Spacing.sm,
+    bottom: Spacing.sm,
     left: Spacing.sm,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: Sizes.badgePaddingH,
     paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.sm,
   },
   content: {
-    flex: 1,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-    justifyContent: 'center',
+    padding: Spacing.md,
     gap: Spacing.xs,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: Spacing.xs,
+  },
+  titleText: {
+    flex: 1,
+  },
+  actionBubble: {
+    width: Sizes.bubbleXs,
+    height: Sizes.bubbleXs,
+    borderRadius: Sizes.bubbleXs / 2,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // ── Footer: price + expiry ────────────────────────────────────────────
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: Spacing.xs,
   },
 
   // ── Expiry ─────────────────────────────────────────────────────────────
@@ -844,7 +847,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
-    marginTop: Spacing.xs,
   },
 
   // ── Empty State ────────────────────────────────────────────────────────
@@ -879,8 +881,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing['4xl'],
   },
 
-  // ── Footer ─────────────────────────────────────────────────────────────
-  footer: {
+  // ── List Footer ───────────────────────────────────────────────────────────────
+  listFooter: {
     alignItems: 'center',
     paddingVertical: Spacing.lg,
   },

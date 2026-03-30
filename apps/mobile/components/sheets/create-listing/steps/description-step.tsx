@@ -13,7 +13,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 import { Sparkles, RefreshCw } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { API_BASE } from '@/lib/config';
 import { getSession } from '@/lib/auth-api';
@@ -121,7 +121,7 @@ export function DescriptionStepContent({ data, onUpdate }: StepContentProps) {
       {/* Text Input */}
       <View style={styles.section}>
         <View style={styles.labelRow}>
-          <Text variant="caption1Emphasized" uppercase>Description</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Description</Text>
           <HapticPressable
             onPress={() => generateAIDescription(hasDescription)}
             disabled={isGenerating}

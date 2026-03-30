@@ -7,6 +7,7 @@ import React, { useCallback } from 'react';
 import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Heart, Zap, ArrowRight } from 'lucide-react-native';
 
@@ -22,6 +23,7 @@ interface SavedListProps {
   activeTab: SavedTab;
   isRefreshing: boolean;
   onRefresh: () => void;
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   quota?: {
     remaining: number;
     maxSuperlikesPerMonth: number;
@@ -80,6 +82,7 @@ export function SavedList({
   activeTab, 
   isRefreshing,
   onRefresh,
+  onScroll,
   quota,
 }: SavedListProps) {
   const insets = useSafeAreaInsets();
@@ -130,6 +133,8 @@ export function SavedList({
       contentContainerStyle={[styles.listContent, { paddingTop: topPadding, paddingBottom: bottomPadding }]}
       contentInsetAdjustmentBehavior="never"
       showsVerticalScrollIndicator={false}
+      onScroll={onScroll}
+      scrollEventThrottle={16}
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}

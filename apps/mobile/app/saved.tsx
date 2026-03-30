@@ -5,7 +5,7 @@
 
 import { Skeleton, AuthRequiredEmptyState, Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Platform, Pressable } from 'react-native';
+import { StyleSheet, View, Platform, Pressable, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -20,7 +20,7 @@ import { Heart, Sparkles, ListFilter, Check } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 
-import { Colors, Shadows, Sizes, Spacing, Radius, Layout, ZIndex, Stroke } from '@/constants/theme';
+import { Colors, Shadows, Sizes, Spacing, Radius, Layout, ZIndex, Stroke, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { SavedList } from '@/components/saved';
@@ -38,6 +38,7 @@ export default function SavedScreen() {
   const { isAuthenticated } = useAuth();
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
+  const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
 
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
 
@@ -92,6 +93,10 @@ export default function SavedScreen() {
     setActiveTab(tab);
   };
 
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
+  }, []);
+
   useEffect(() => {
     if (!isAuthenticated || isLoading || currentListings.length === 0) return;
     const readyAt = consumeDataReady('saved:listings') ?? consumeDataReady('saved:status') ?? performance.now();
@@ -118,14 +123,14 @@ export default function SavedScreen() {
     },
   ];
 
-  const FAB_SIZE = Sizes.bubbleMd + Spacing.xs;
+  const FAB_SIZE = Sizes.actionButtonLg;
 
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
-        <MobileHeader title="Saved" showBackButton />
+        <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} />
         <View style={{ flex: 1, paddingTop: headerInset }}>
         <AuthRequiredEmptyState
           title="Sign in to save"
@@ -141,7 +146,7 @@ export default function SavedScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
-        <MobileHeader title="Saved" showBackButton />
+        <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} />
         <View style={[styles.skeletonContainer, { paddingTop: headerInset }]}>
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} width="100%" height={100} borderRadius={12} />
@@ -156,7 +161,7 @@ export default function SavedScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
-        <MobileHeader title="Saved" showBackButton />
+        <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} />
         <View style={[styles.emptyContainer, { paddingTop: headerInset }]}>
           <Text variant="subhead" tone="secondary">Something went wrong</Text>
           <Text variant="subhead" tone="primary" onPress={refresh}>Tap to retry</Text>
@@ -168,7 +173,7 @@ export default function SavedScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
-      <MobileHeader title="Saved" showBackButton />
+      <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} />
 
       {/* List */}
       <SavedList
@@ -177,19 +182,22 @@ export default function SavedScreen() {
         activeTab={activeTab}
         isRefreshing={isLoading}
         onRefresh={refresh}
+        onScroll={handleScroll}
         quota={quota}
       />
+
+      {showFilterDrawer && (
+        <Pressable
+          style={[styles.drawerBackdrop, { backgroundColor: colors.overlay }]}
+          onPress={closeFilterDrawer}
+        />
+      )}
 
       {/* ── Filter Drawer Bubble ─────────────────────────────────────── */}
       <View
         style={[styles.fabCluster, { bottom: insets.bottom + Spacing.xl }]}
         pointerEvents="box-none"
       >
-        {/* Backdrop tap-away */}
-        <Animated.View style={[StyleSheet.absoluteFillObject, backdropAnimStyle]}>
-          <Pressable style={StyleSheet.absoluteFillObject} onPress={closeFilterDrawer} />
-        </Animated.View>
-
         {/* Drawer menu */}
         <Animated.View
           style={[
@@ -214,18 +222,16 @@ export default function SavedScreen() {
                     style={styles.drawerItem}
                   >
                     {({ pressed }) => (
-                      <View style={[styles.drawerItemInner, { opacity: pressed ? 0.55 : 1 }]}>
+                      <View style={[styles.drawerItemInner, { opacity: pressed ? 0.6 : 1 }]}>
                         <View style={styles.drawerItemLeft}>
                           {isActive ? (
                             <Check size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
                           ) : (
                             <View style={{ width: Sizes.iconSm }} />
                           )}
-                          {t.icon}
                           <Text
                             variant="body"
-                            tone={isActive ? 'primary' : 'secondary'}
-                            style={{ fontWeight: isActive ? '600' : '400' }}
+                            style={{ color: isActive ? colors.primary : colors.label, fontWeight: isActive ? '600' : '400' }}
                           >
                             {t.label}
                           </Text>
@@ -245,10 +251,8 @@ export default function SavedScreen() {
         <HapticPressable
           onPress={showFilterDrawer ? closeFilterDrawer : openFilterDrawer}
           style={[
-            styles.fab,
+            styles.fabButton,
             {
-              width: FAB_SIZE,
-              height: FAB_SIZE,
               backgroundColor: showFilterDrawer ? colors.primary : colors.surfaceSecondary,
               borderColor: showFilterDrawer ? colors.primary : colors.border,
             },
@@ -284,19 +288,24 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     zIndex: ZIndex.overlay,
   },
-  fab: {
-    borderRadius: Sizes.bubbleMd,
-    borderCurve: 'continuous',
-    borderWidth: 1,
+  fabButton: {
+    width: Sizes.actionButtonLg,
+    height: Sizes.actionButtonLg,
+    borderRadius: Sizes.actionButtonLg / 2,
+    borderWidth: BorderWidths.medium,
     alignItems: 'center',
     justifyContent: 'center',
     ...Shadows.md,
   } as any,
+  drawerBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: ZIndex.overlay,
+  },
 
   // ── Filter Drawer ───────────────────────────────────────────────────
   drawerContainer: {
     marginBottom: Spacing.sm,
-    borderRadius: Radius['2xl'],
+    borderRadius: Radius['3xl'],
     borderCurve: 'continuous',
     borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',

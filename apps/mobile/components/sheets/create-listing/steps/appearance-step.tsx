@@ -11,7 +11,7 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Fonts, Typography, Colors, Spacing, Radius, VehicleColorSwatches, type ColorPalette } from '@/constants/theme';
+import { Colors, Spacing, Radius, VehicleColorSwatches, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { BODY_TYPES, EXTERIOR_COLORS, INTERIOR_COLORS } from '@/lib/filter-constants';
 
@@ -54,12 +54,9 @@ function ColorChip({
         />
       )}
       <Text
-        variant="subhead"
+        variant={isSelected ? 'subheadEmphasized' : 'subhead'}
         numberOfLines={1}
-        style={{
-          color: isSelected ? themeColors.background : themeColors.label,
-          fontWeight: isSelected ? Fonts.bold : Fonts.semiBold,
-        }}
+        style={{ color: isSelected ? themeColors.background : themeColors.label }}
       >
         {color.label}
       </Text>
@@ -101,7 +98,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
     <StepContainer>
       {/* Body Type */}
       <View style={styles.section}>
-        <Text variant="caption1Emphasized" uppercase>Body Type</Text>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Body Type</Text>
         <View style={styles.chipWrap}>
           {BODY_TYPES.map((type) => {
             const isSelected = data.bodyType === type.value;
@@ -131,7 +128,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Exterior Color */}
       <View style={styles.section}>
-        <Text variant="caption1Emphasized" uppercase>Exterior Color</Text>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Exterior Color</Text>
         <View style={styles.chipWrap}>
           {EXTERIOR_COLORS.map((color) => (
             <ColorChip
@@ -147,7 +144,7 @@ export function AppearanceStepContent({ data, onUpdate }: StepContentProps) {
 
       {/* Interior Color */}
       <View style={styles.section}>
-        <Text variant="caption1Emphasized" uppercase>Interior Color</Text>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Interior Color</Text>
         <View style={styles.chipWrap}>
           {INTERIOR_COLORS.map((color) => (
             <ColorChip

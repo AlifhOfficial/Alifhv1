@@ -12,7 +12,7 @@ import { View, StyleSheet, Switch } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Fonts, Colors, Spacing, Radius } from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import { StepContainer } from '../step-container';
@@ -128,9 +128,9 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
       {/* Negotiable toggle */}
       <View style={[styles.toggleRow, { backgroundColor: colors.surfaceSecondary }]}>
         <View style={styles.toggleText}>
-          <Text variant="caption1Emphasized" uppercase>Price Negotiable?</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Price Negotiable?</Text>
           <Text variant="subhead" tone="muted">
-            Let buyers know you're open to offers
+            Let buyers know you&apos;re open to offers
           </Text>
         </View>
         <Switch

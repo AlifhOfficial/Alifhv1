@@ -15,15 +15,15 @@
 
 import { Text, HapticPressable, Skeleton } from '@/components/ui';
 import React, { useCallback, useRef, useState } from 'react';
-import { View, StyleSheet, FlatList, ScrollView, RefreshControl, ActivityIndicator, Platform, TouchableWithoutFeedback } from 'react-native';
+import { View, StyleSheet, FlatList, ScrollView, RefreshControl, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
-import { Calendar1, Clock, ListFilter, Check } from 'lucide-react-native';
+import { Calendar1, Clock, ListFilter, Check, MoreVertical } from 'lucide-react-native';
 
-import { Colors, Fonts, Shadows, Spacing, Radius, Layout, Sizes, ZIndex } from '@/constants/theme';
+import { Colors, Fonts, Shadows, Spacing, Radius, Layout, Sizes, ZIndex, AspectRatio, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { useBookings, useCancelBooking } from '@/hooks/use-booking-query';
@@ -41,11 +41,8 @@ import { getMobileHeaderContentInset } from '@/components/layout';
 
 // ─── Constants (derived from theme for responsive scaling) ──────────────────
 
-const IMAGE_WIDTH = Sizes.cardThumbnailWidth;
-const IMAGE_HEIGHT = Sizes.cardThumbnailHeight;
-
 /** FAB dimensions — derived from theme */
-const FAB_SIZE = Sizes.bubbleMd + Spacing.xs;
+const FAB_SIZE = Sizes.actionButtonLg;
 
 /** Empty state icon container — derived from theme */
 const EMPTY_ICON_SIZE = Spacing['5xl'] + Spacing['3xl'];
@@ -69,7 +66,11 @@ const STATUS_TABS: StatusTab[] = [
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function BookingsScreen() {
+interface BookingsScreenProps {
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+}
+
+export function BookingsScreen({ onScroll }: BookingsScreenProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -168,7 +169,7 @@ export function BookingsScreen() {
 
       return (
         <HapticPressable
-          onPress={() => openDetails(item)}
+          onPress={() => handleViewListing(item.listingId)}
           style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
           {/* ── Image ────────────────────────────────────────────────── */}
@@ -183,7 +184,7 @@ export function BookingsScreen() {
             ) : (
               <View style={[styles.image, { backgroundColor: colors.skeleton }]} />
             )}
-            {/* Status badge (BLK-badge style) */}
+            {/* Status badge */}
             <View style={[styles.statusBadge, { backgroundColor: statusColor + 'E6' }]}>
               <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.primaryForeground }}>
                 {statusLabel}
@@ -193,35 +194,57 @@ export function BookingsScreen() {
 
           {/* ── Content ──────────────────────────────────────────────── */}
           <View style={styles.content}>
-            {/* Title */}
-            <Text variant="subhead" style={{ color: colors.label, }} numberOfLines={1}>
-              {item.listingTitle}
-            </Text>
-
-            {/* Partner */}
-            <Text variant="subhead" style={{ color: colors.labelSecondary }} numberOfLines={1}>
-              {item.partnerName}
-            </Text>
-
-            {/* Date */}
-            <View style={styles.metaRow}>
-              <Calendar1 size={Sizes.iconXs} color={colors.labelSecondary} />
-              <Text variant="subhead" style={{ color: colors.labelSecondary }}>
-                {formatBookingDate(item.scheduledDate)}
+            {/* Title + action */}
+            <View style={styles.titleRow}>
+              <Text variant="subheadEmphasized" style={[styles.titleText, { color: colors.label }]} numberOfLines={1}>
+                {item.listingTitle}
               </Text>
+              <HapticPressable
+                onPress={() => openDetails(item)}
+                hitSlop={Layout.hitSlop}
+                style={[styles.actionBubble, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
+              >
+                <MoreVertical size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
+              </HapticPressable>
             </View>
 
-            {/* Time */}
+            {/* Date · Time */}
             <View style={styles.metaRow}>
-              <Clock size={Sizes.iconXs} color={colors.labelSecondary} />
-              <Text variant="subhead" style={{ color: colors.labelSecondary }}>
+              <Calendar1 size={Sizes.iconXs} color={colors.labelSecondary} />
+              <Text variant="footnote" style={{ color: colors.labelSecondary }}>
+                {formatBookingDate(item.scheduledDate)}
+              </Text>
+              <Clock size={Sizes.iconXs} color={colors.labelSecondary} style={{ marginLeft: Spacing.xs }} />
+              <Text variant="footnote" style={{ color: colors.labelSecondary }}>
                 {formatTimeRange(item.scheduledStartTime, item.scheduledEndTime)}
               </Text>
             </View>
 
-            {/* Countdown pill */}
-            {isActive && (
-              <View style={styles.countdownRow}>
+            {/* Footer row: partner avatar + name left, countdown right */}
+            <View style={styles.footer}>
+              {/* Partner info */}
+              <View style={styles.partnerRow}>
+                <View style={[styles.avatar, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+                  {item.partnerLogo ? (
+                    <Image
+                      source={{ uri: getAppThumbUrl(item.partnerLogo)! }}
+                      style={styles.avatarImage}
+                      contentFit="cover"
+                      transition={150}
+                    />
+                  ) : (
+                    <Text variant="caption1Emphasized" style={{ color: colors.labelSecondary }}>
+                      {item.partnerName?.charAt(0).toUpperCase()}
+                    </Text>
+                  )}
+                </View>
+                <Text variant="footnote" style={[styles.partnerName, { color: colors.labelSecondary }]} numberOfLines={1}>
+                  {item.partnerName}
+                </Text>
+              </View>
+
+              {/* Countdown pill */}
+              {isActive && (
                 <View
                   style={[
                     styles.countdownPill,
@@ -235,7 +258,7 @@ export function BookingsScreen() {
                   ]}
                 >
                   <Text
-                    variant="subhead"
+                    variant="footnote"
                     style={{
                       fontWeight: Fonts.bold,
                       color: countdown.isToday
@@ -248,8 +271,8 @@ export function BookingsScreen() {
                     {countdown.text}
                   </Text>
                 </View>
-              </View>
-            )}
+              )}
+            </View>
           </View>
         </HapticPressable>
       );
@@ -286,7 +309,7 @@ export function BookingsScreen() {
   const renderFooter = useCallback(() => {
     if (!isLoadingMore) return <View style={{ height: insets.bottom + Spacing['4xl'] }} />;
     return (
-      <View style={[styles.footer, { paddingBottom: insets.bottom + Spacing['4xl'] }]}>
+      <View style={[styles.listFooter, { paddingBottom: insets.bottom + Spacing['4xl'] }]}>
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
@@ -309,13 +332,11 @@ export function BookingsScreen() {
               key={i}
               style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
             >
-              <Skeleton width={IMAGE_WIDTH} height={IMAGE_HEIGHT} borderRadius={Radius.md} />
+              <View style={[styles.imageContainer, { backgroundColor: colors.skeleton }]} />
               <View style={styles.content}>
-                <Skeleton width="85%" height={Spacing.md} />
-                <Skeleton width="60%" height={Spacing.md} />
-                <Skeleton width="70%" height={Spacing.md} />
-                <Skeleton width="65%" height={Spacing.md} />
-                <Skeleton width="45%" height={Spacing.xl} borderRadius={Radius.sm} />
+                <Skeleton width="75%" height={Spacing.md} />
+                <Skeleton width="55%" height={Spacing.md} />
+                <Skeleton width="40%" height={Spacing.lg} borderRadius={Radius.sm} />
               </View>
             </View>
           ))}
@@ -343,6 +364,8 @@ export function BookingsScreen() {
           contentContainerStyle={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }]}
           ListEmptyComponent={renderEmptyState}
           ListFooterComponent={renderFooter}
+          onScroll={onScroll}
+          scrollEventThrottle={16}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -419,12 +442,9 @@ export function BookingsScreen() {
         <HapticPressable
           onPress={showFilterDrawer ? closeFilterDrawer : openFilterDrawer}
           style={[
-            styles.fab,
-            styles.glass,
+            styles.fabButton,
             {
-              width: FAB_SIZE,
-              paddingHorizontal: Spacing.none,
-              backgroundColor: showFilterDrawer ? colors.primary : colors.background,
+              backgroundColor: showFilterDrawer ? colors.primary : colors.surfaceSecondary,
               borderColor: showFilterDrawer ? colors.primary : colors.border,
             },
           ]}
@@ -481,24 +501,22 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     zIndex: ZIndex.overlay,
   },
-  fab: {
+  fabButton: {
+    width: FAB_SIZE,
     height: FAB_SIZE,
     borderRadius: FAB_SIZE / 2,
-    borderWidth: 1,
+    borderWidth: BorderWidths.medium,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.md,
     ...Shadows.md,
   } as any,
-  glass: {
-    borderWidth: 1,
-  },
 
   // ── Filter Drawer popover ─────────────────────────────────────────────
   drawerContainer: {
     marginBottom: Spacing.sm,
-    borderRadius: Radius.xl,
-    borderWidth: 1,
+    borderRadius: Radius['3xl'],
+    borderCurve: 'continuous',
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
     minWidth: 200,
     ...Shadows.lg,
@@ -528,38 +546,55 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.md,
   },
 
-  // ── Card (CarCardList-style) ───────────────────────────────────────────
+  // ── Card (CarCardM-style vertical) ────────────────────────────────────
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    padding: Spacing.md,
-    marginBottom: Spacing.sm,
-    gap: Spacing.md,
-  },
-  imageContainer: {
-    width: IMAGE_WIDTH,
-    height: IMAGE_HEIGHT,
-    borderRadius: Radius.md,
+    width: '100%',
+    borderRadius: Radius['2xl'],
+    borderCurve: 'continuous',
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
-    position: 'relative',
-  },
+    marginBottom: Spacing.md,
+  } as any,
+  imageContainer: {
+    marginHorizontal: Spacing.sm,
+    marginTop: Spacing.sm,
+    aspectRatio: AspectRatio.cardImage,
+    borderRadius: Radius['2xl'],
+    borderCurve: 'continuous',
+    overflow: 'hidden',
+  } as any,
   image: {
     width: '100%',
     height: '100%',
   },
   statusBadge: {
     position: 'absolute',
-    top: Spacing.sm,
+    bottom: Spacing.sm,
     left: Spacing.sm,
     paddingHorizontal: Sizes.badgePaddingH,
     paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.sm,
   },
   content: {
-    flex: 1,
+    padding: Spacing.md,
     gap: Spacing.xs,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.xs,
+  },
+  titleText: {
+    flex: 1,
+  },
+  actionBubble: {
+    width: Sizes.bubbleXs,
+    height: Sizes.bubbleXs,
+    borderRadius: Sizes.bubbleXs / 2,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   // ── Meta rows ──────────────────────────────────────────────────────────
@@ -567,13 +602,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
-    marginTop: Spacing.xs,
   },
 
-  // ── Countdown ──────────────────────────────────────────────────────────
-  countdownRow: {
+  // ── Footer / Partner + Countdown ──────────────────────────────────────
+  footer: {
     flexDirection: 'row',
-    marginTop: Spacing.xs,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: Spacing.xs,
+  },
+  partnerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    flex: 1,
+    minWidth: 0,
+  },
+  avatar: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: Sizes.bubble,
+    height: Sizes.bubble,
+    borderRadius: Sizes.bubble / 2,
+  },
+  partnerName: {
+    flexShrink: 1,
   },
   countdownPill: {
     paddingHorizontal: Spacing.sm,
@@ -604,8 +664,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing['4xl'],
   },
 
-  // ── Footer ─────────────────────────────────────────────────────────────
-  footer: {
+  // ── List Footer ─────────────────────────────────────────────────────
+  listFooter: {
     alignItems: 'center',
     paddingVertical: Spacing.lg,
   },
