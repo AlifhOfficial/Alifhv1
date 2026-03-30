@@ -3,16 +3,16 @@
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { Copy } from 'lucide-react-native';
 
@@ -36,7 +36,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
 
   const [copied, setCopied] = useState(false);
 
-  const snapPoints = useMemo(() => ['60%', '94%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
 
   const handleCopy = useCallback(async () => {
     const text = features.map(f => formatEnumValue(f)).join(', ');
@@ -73,6 +73,11 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
     []
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={onClose} />,
+    [onClose]
+  );
+
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
@@ -82,7 +87,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
+      handleComponent={renderHandle}
     >
       <View style={styles.content}>
         <View style={styles.header}>
@@ -101,16 +106,6 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
               ) : (
                 <Copy size={Sizes.iconSm} color={colors.labelSecondary} />
               )}
-            </HapticPressable>
-            <HapticPressable
-              onPress={onClose}
-              hitSlop={Spacing.md}
-              style={[
-                styles.iconButton,
-                { backgroundColor: colors.fill2 },
-              ]}
-            >
-              <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
             </HapticPressable>
           </View>
         </View>

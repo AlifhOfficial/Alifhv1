@@ -10,7 +10,7 @@ import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Zap } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { HapticPressable } from '@/components/ui/haptic-pressable';
 import type { FavoritesStatusData } from '@/lib/saved-api';
@@ -46,7 +46,7 @@ export function SuperlikeConfirmationSheet({
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Snap points
-  const snapPoints = useMemo(() => ['40%', '55%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.compact, []);
 
   // Show/hide based on visible prop
   useEffect(() => {
@@ -173,7 +173,7 @@ export function SuperlikeQuotaExhaustedSheet({
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Snap points
-  const snapPoints = useMemo(() => ['35%', '50%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.peek, []);
 
   useEffect(() => {
     if (visible) {

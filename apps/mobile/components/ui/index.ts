@@ -11,6 +11,7 @@ export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from '.
 
 // HapticPressable - Pressable with haptic feedback
 export { HapticPressable, type HapticPressableProps, type HapticType } from './haptic-pressable';
+export { SheetFloatingCloseHandle } from './sheet-floating-close';
 export { Bubble, Pill, EdgeFade } from './chrome';
 
 // Loader exports

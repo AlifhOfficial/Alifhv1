@@ -16,7 +16,7 @@
  * @module components/bookings/booking-details-sheet
  */
 
-import { Text, HapticPressable, useAlert } from '@/components/ui';
+import { Text, HapticPressable, useAlert, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, ScrollView, Linking, Platform } from 'react-native';
 import { Image } from 'expo-image';
@@ -25,6 +25,7 @@ import {
   BottomSheetBackdrop,
   BottomSheetView,
   BottomSheetScrollView,
+  type BottomSheetHandleProps,
 } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -49,7 +50,7 @@ import {
   ChevronRight,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, Typography, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import type { UserBooking } from '@/lib/booking-api';
@@ -89,7 +90,7 @@ export function BookingDetailsSheet({
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const { showAlert } = useAlert();
 
-  const snapPoints = useMemo(() => ['85%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.singleXl, []);
 
   useEffect(() => {
     if (visible && booking) {
@@ -117,6 +118,11 @@ export function BookingDetailsSheet({
       />
     ),
     [],
+  );
+
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={onClose} />,
+    [onClose]
   );
 
   const handleCall = useCallback((phone: string) => {
@@ -225,7 +231,7 @@ export function BookingDetailsSheet({
         borderTopRightRadius: Radius.sheet,
         borderCurve: 'continuous',
       }}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
+      handleComponent={renderHandle}
     >
       <BottomSheetScrollView
         style={styles.scrollView}
@@ -235,13 +241,6 @@ export function BookingDetailsSheet({
         {/* ── Header ──────────────────────────────────────────────────── */}
         <View style={styles.header}>
           <Text variant="subheadEmphasized">Booking Details</Text>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Layout.hitSlop}
-            style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
-          >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
-          </HapticPressable>
         </View>
 
         {/* ── Listing Hero ────────────────────────────────────────────── */}
@@ -604,13 +603,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.lg,
     paddingHorizontal: Spacing.sm,
-  },
-  closeButton: {
-    width: Sizes.avatarSm,
-    height: Sizes.avatarSm,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 
   // ── Hero card ──────────────────────────────────────────────────────────

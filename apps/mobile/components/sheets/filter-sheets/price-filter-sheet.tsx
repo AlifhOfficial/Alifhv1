@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 const PRICE_PRESETS = [
@@ -53,7 +53,7 @@ export function PriceFilterSheet({
     }
   }, [visible, priceMin, priceMax]);
 
-  const snapPoints = useMemo(() => ['60%', '94%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
 
   useEffect(() => {
     if (visible) {

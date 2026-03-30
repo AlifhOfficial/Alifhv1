@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Clock } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, Typography, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 
@@ -46,7 +46,7 @@ export function PendingReviewReasonSheet({
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => ['42%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.singleSm, []);
 
   useEffect(() => {
     if (visible) {

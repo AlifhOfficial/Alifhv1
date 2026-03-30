@@ -7,16 +7,16 @@
  * @module components/bookings/cancel-booking-sheet
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator, ScrollView } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetTextInput, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { X as XIcon } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import {
@@ -61,7 +61,7 @@ export function CancelBookingSheet({
   const [selectedReason, setSelectedReason] = useState<CancellationReason | null>(null);
   const [notes, setNotes] = useState('');
 
-  const snapPoints = useMemo(() => ['72%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.singleLg, []);
 
   // Format the scheduled date for display
   const formattedDate = useMemo(() => {
@@ -130,6 +130,13 @@ export function CancelBookingSheet({
     [],
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => (
+      <SheetFloatingCloseHandle {...props} onPress={onClose} disabled={loading} />
+    ),
+    [loading, onClose]
+  );
+
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
@@ -143,20 +150,12 @@ export function CancelBookingSheet({
         borderTopRightRadius: Radius.sheet,
         borderCurve: 'continuous',
       }}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
+      handleComponent={renderHandle}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
           <Text variant="subheadEmphasized">Cancel Booking</Text>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Layout.hitSlop}
-            disabled={loading}
-            style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
-          >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
-          </HapticPressable>
         </View>
 
         {/* Booking preview */}
@@ -305,13 +304,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.sm,
-  },
-  closeButton: {
-    width: Sizes.avatarSm,
-    height: Sizes.avatarSm,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   previewCard: {
     flexDirection: 'row',

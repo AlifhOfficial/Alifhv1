@@ -4,15 +4,14 @@
  * Option to refresh location if not accurate
  */
 
-import { Text, HapticPressable, useAlert } from '@/components/ui';
+import { Text, HapticPressable, useAlert, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import { MapPin, RefreshCw, X, Send } from 'lucide-react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MapPin, RefreshCw, Send } from 'lucide-react-native';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Shadows, Spacing, Radius, Sizes, Layout, Stroke } from '@/constants/theme';
+import { Shadows, Spacing, Radius, Sizes, Layout, Stroke, SheetSnapPoints } from '@/constants/theme';
 import { useLocation, type LocationResult } from '@/hooks/use-location';
 
 interface LocationPickerSheetProps {
@@ -38,7 +37,6 @@ export function LocationPickerSheet({
   onConfirm,
 }: LocationPickerSheetProps) {
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const { showAlert } = useAlert();
   const { isLoading, error, getCurrentLocation } = useLocation({ showAlert });
@@ -46,7 +44,7 @@ export function LocationPickerSheet({
   const [location, setLocation] = useState<LocationResult | null>(null);
   const [isSending, setIsSending] = useState(false);
 
-  const snapPoints = useMemo(() => ['55%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.singleMd, []);
 
   // Present / dismiss based on visible prop
   useEffect(() => {
@@ -105,6 +103,13 @@ export function LocationPickerSheet({
     [isSending],
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => (
+      <SheetFloatingCloseHandle {...props} onPress={onClose} disabled={isSending} />
+    ),
+    [isSending, onClose]
+  );
+
   const mapPreviewUrl = location 
     ? getStaticMapUrl(location.latitude, location.longitude)
     : null;
@@ -122,7 +127,7 @@ export function LocationPickerSheet({
         borderTopRightRadius: Radius.sheet,
         borderCurve: 'continuous',
       }}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
+      handleComponent={renderHandle}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
@@ -133,14 +138,6 @@ export function LocationPickerSheet({
               Send your current location
             </Text>
           </View>
-          <HapticPressable 
-            haptic="light" 
-            onPress={onClose} 
-            disabled={isSending}
-            style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
-          >
-            <X size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={Stroke.icon} />
-          </HapticPressable>
         </View>
 
         {/* Map Preview */}
@@ -260,20 +257,12 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: Layout.screenPadding,
-    paddingTop: Spacing.sm,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.lg,
-  },
-  closeButton: {
-    width: Sizes.avatarSm,
-    height: Sizes.avatarSm,
-    borderRadius: Sizes.avatarSm / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   mapContainer: {
     height: Spacing["5xl"],

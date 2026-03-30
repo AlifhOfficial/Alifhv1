@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type SearchChip, type SearchParams, type RemovableFilterKey } from '@/context/search-context';
 
@@ -82,7 +82,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
     return groups;
   }, [chips]);
 
-  const snapPoints = useMemo(() => ['50%', '80%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.detail, []);
 
   useEffect(() => {
     if (visible) {

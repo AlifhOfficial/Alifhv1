@@ -29,7 +29,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { AlertCircle, CheckCircle, AlertTriangle, Info } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, SheetSnapPoints } from '@/constants/theme';
 import type { ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
@@ -174,7 +174,7 @@ export function ResponseSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={['35%']}
+      snapPoints={SheetSnapPoints.singlePeek}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

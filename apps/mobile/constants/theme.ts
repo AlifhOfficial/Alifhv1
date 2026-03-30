@@ -388,6 +388,20 @@ export const Radius = {
   full: 9999,
 } as const;
 
+export const SheetSnapPoints = {
+  peek: ['35%', '50%'],
+  compact: ['40%', '60%'],
+  detail: ['50%', '84%'],
+  booking: ['50%', '91%'],
+  standard: ['60%', '92%'],
+  roomy: ['70%', '91%'],
+  singlePeek: ['35%'],
+  singleSm: ['40%'],
+  singleMd: ['55%'],
+  singleLg: ['72%'],
+  singleXl: ['82%'],
+} as const;
+
 export const Tracking = {
   tight: 0.3,
 } as const;

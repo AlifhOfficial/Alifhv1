@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import type { SearchSortOption } from '@/lib/search-api';
 
@@ -44,7 +44,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Snap points
-  const snapPoints = useMemo(() => ['60%', '94%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
 
   // Handle open/close based on visible prop
   useEffect(() => {

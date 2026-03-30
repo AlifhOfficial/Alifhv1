@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, ZIndex} from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, ZIndex, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { searchApi } from '@/lib/search-api';
 
@@ -60,7 +60,7 @@ interface AmnaSheetProps {
 // CONSTANTS
 // ============================================================================
 
-const SNAP_POINTS = ['70%', '93%'];
+const SNAP_POINTS = SheetSnapPoints.roomy;
 
 const LOADING_MESSAGES = [
   'Amna is judging your taste...',

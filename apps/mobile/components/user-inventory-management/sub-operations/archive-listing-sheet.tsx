@@ -14,7 +14,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Archive, ArchiveRestore } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { toggleArchiveListing, type UpdateListingResponse } from '@/lib/sell-car-user-api';
@@ -51,7 +51,7 @@ export function ArchiveListingSheet({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const snapPoints = useMemo(() => ['40%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.singleSm, []);
 
   const actionLabel = isArchived ? 'Unarchive' : 'Archive';
   const Icon = isArchived ? ArchiveRestore : Archive;

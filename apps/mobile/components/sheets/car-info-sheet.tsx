@@ -9,12 +9,11 @@
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling.
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { 
   Zap, 
   Crosshair,
@@ -25,7 +24,7 @@ import {
   Lightbulb,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout, Typography, type ColorPalette } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Typography, SheetSnapPoints, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getListingSummary, type ListingSummary } from '@/lib/summary-api';
 
@@ -79,7 +78,7 @@ export function CarInfoSheet({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const snapPoints = useMemo(() => ['60%', '85%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.detail, []);
 
   // Fetch insight when sheet opens
   useEffect(() => {
@@ -129,6 +128,11 @@ export function CarInfoSheet({
     []
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={onClose} />,
+    [onClose]
+  );
+
   const carTitle = [year, make, model].filter(Boolean).join(' ');
   const formattedPrice = price 
     ? new Intl.NumberFormat('en-AE', { style: 'currency', currency: 'AED', minimumFractionDigits: 0 }).format(price)
@@ -161,7 +165,7 @@ export function CarInfoSheet({
         borderTopRightRadius: Radius.sheet,
         borderCurve: 'continuous',
       }}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
+      handleComponent={renderHandle}
     >
       <BottomSheetScrollView
         style={styles.scrollView}
@@ -174,13 +178,6 @@ export function CarInfoSheet({
             <Zap size={Sizes.iconSm} color={colors.label} fill={colors.label} />
             <Text variant="subheadEmphasized">DarkWeave</Text>
           </View>
-          <HapticPressable 
-            onPress={onClose} 
-            hitSlop={Spacing.md}
-            style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
-          >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
-          </HapticPressable>
         </View>
 
         {/* Car Title + Price + Deal Badge */}
@@ -408,13 +405,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-  },
-  closeButton: {
-    width: Spacing['3xl'],
-    height: Spacing['3xl'],
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 
   // ─── Car Header ───

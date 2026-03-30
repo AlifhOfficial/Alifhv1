@@ -17,7 +17,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Trash2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import {
@@ -61,7 +61,7 @@ export function DeleteListingSheet({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const snapPoints = useMemo(() => ['44%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.singleSm, []);
 
   const title = hardDelete ? 'Permanently Delete' : 'Delete Listing';
   const description = hardDelete

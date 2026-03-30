@@ -7,16 +7,16 @@
  * Includes confetti + chime on success, matching CarCardM interaction patterns.
  */
 
-import { Text, HapticPressable, ConfettiBurst, useConfettiBurst } from '@/components/ui';
+import { Text, HapticPressable, ConfettiBurst, useConfettiBurst, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState, memo } from 'react';
 import { View, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetTextInput, BottomSheetScrollView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { ChevronLeft, ChevronRight, CheckCircle2, Calendar1, Clock, Users, FileText } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Fonts, Colors, Spacing, Radius, Sizes, ZIndex} from '@/constants/theme';
+import { Typography, Fonts, Colors, Spacing, Radius, Sizes, ZIndex, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import {
   getAvailableDates,
@@ -149,7 +149,7 @@ export const BookingSheet = memo(function BookingSheet({
     confirmationToken: string;
   } | null>(null);
 
-  const snapPoints = useMemo(() => ['50%', '93%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.booking, []);
 
   // ── Sheet lifecycle ──────────────────────────────────────────────────
 
@@ -185,6 +185,11 @@ export const BookingSheet = memo(function BookingSheet({
       />
     ),
     [],
+  );
+
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={onClose} />,
+    [onClose]
   );
 
   // ── Data fetching ────────────────────────────────────────────────────
@@ -386,7 +391,7 @@ export const BookingSheet = memo(function BookingSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
+      handleComponent={renderHandle}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
     >
@@ -459,13 +464,6 @@ export const BookingSheet = memo(function BookingSheet({
                   <Text variant="subhead" tone="muted">{listingTitle}</Text>
                 </View>
               </View>
-              <HapticPressable
-                onPress={onClose}
-                hitSlop={Spacing.md}
-                style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
-              >
-                <Ionicons name="close" size={Spacing.lg} color={colors.labelSecondary} />
-              </HapticPressable>
             </View>
 
             {/* Step indicator */}
@@ -827,13 +825,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backButton: {
-    width: Spacing['3xl'] - 2,
-    height: Spacing['3xl'] - 2,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  closeButton: {
     width: Spacing['3xl'] - 2,
     height: Spacing['3xl'] - 2,
     borderRadius: Radius.full,

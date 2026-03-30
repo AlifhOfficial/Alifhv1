@@ -5,14 +5,14 @@
  * Native KYC verification is not available yet.
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useRef, useCallback, useEffect, useMemo } from 'react';
 import { View, StyleSheet, Linking } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Radius, Sizes, Spacing, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 // ============================================================================
@@ -39,7 +39,7 @@ export function KycVerificationSheet({
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => ['60%', '93%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
 
   // Show/hide based on visible prop
   useEffect(() => {
@@ -73,6 +73,11 @@ export function KycVerificationSheet({
     [onClose]
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={onClose} />,
+    [onClose]
+  );
+
   const openWebsite = useCallback(() => {
     Linking.openURL('https://revvup.ae');
   }, []);
@@ -85,23 +90,18 @@ export function KycVerificationSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
+      handleComponent={renderHandle}
+      backgroundStyle={{
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: Radius.sheet,
+        borderTopRightRadius: Radius.sheet,
+        borderCurve: 'continuous',
+      }}
     >
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
           <Text variant="title3Emphasized">Identity Verification</Text>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Spacing.md}
-            style={[styles.iconButton, { backgroundColor: colors.error }]}
-          >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
-          </HapticPressable>
         </View>
 
         {/* Body */}
@@ -147,13 +147,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.lg,
     paddingHorizontal: Spacing.xs,
-  },
-  iconButton: {
-    width: Spacing['3xl'],
-    height: Spacing['3xl'],
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   body: {
     gap: Spacing.sm,

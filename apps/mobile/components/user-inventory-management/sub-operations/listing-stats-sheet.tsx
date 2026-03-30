@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Eye, Heart, Zap, MousePointerClick, Flame } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, type ColorPalette } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, SheetSnapPoints, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 
@@ -85,7 +85,7 @@ export function ListingStatsSheet({
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => ['52%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.singleMd, []);
 
   useEffect(() => {
     if (visible) {

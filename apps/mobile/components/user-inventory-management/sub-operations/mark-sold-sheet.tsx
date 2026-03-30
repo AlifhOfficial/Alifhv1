@@ -14,7 +14,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { markListingSold, type MarkSoldResponse } from '@/lib/sell-car-user-api';
@@ -50,7 +50,7 @@ export function MarkSoldSheet({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const snapPoints = useMemo(() => ['42%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.singleSm, []);
 
   // Present / dismiss based on visible prop
   useEffect(() => {

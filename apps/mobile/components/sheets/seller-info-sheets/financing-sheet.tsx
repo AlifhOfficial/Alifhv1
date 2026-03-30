@@ -3,14 +3,14 @@
  * Allows users to input custom down payment percentage and loan term
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes, Typography } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Typography, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { formatPrice, calculateEMI } from '@/components/seller-contact/utils';
 
@@ -55,7 +55,7 @@ export function FinancingSheet({
     };
   }, [downPayment, term, price, interestRate]);
 
-  const snapPoints = useMemo(() => ['70%', '93%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.roomy, []);
 
   useEffect(() => {
     if (visible) {
@@ -90,6 +90,11 @@ export function FinancingSheet({
     []
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={onClose} />,
+    [onClose]
+  );
+
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
@@ -99,7 +104,7 @@ export function FinancingSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
+      handleComponent={renderHandle}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
     >
@@ -107,13 +112,6 @@ export function FinancingSheet({
         {/* Header */}
         <View style={styles.header}>
           <Text variant="subheadEmphasized">Custom Financing</Text>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Spacing.md}
-            style={[styles.closeButton, { backgroundColor: colors.fill2 }]}
-          >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
-          </HapticPressable>
         </View>
 
         {/* Live Output */}
@@ -211,13 +209,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.sm,
-  },
-  closeButton: {
-    width: Spacing['3xl'],
-    height: Spacing['3xl'],
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   inputsContainer: {
     gap: Spacing.lg,

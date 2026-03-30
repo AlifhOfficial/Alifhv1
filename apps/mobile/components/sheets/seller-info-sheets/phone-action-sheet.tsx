@@ -3,17 +3,16 @@
  * Simple modal with Call, WhatsApp, Copy options
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, StyleSheet, Platform, Linking, Alert } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, StyleSheet, Linking, Alert } from 'react-native';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
 import { Phone, Copy } from 'lucide-react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 interface PhoneActionSheetProps {
@@ -25,10 +24,9 @@ interface PhoneActionSheetProps {
 export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => ['40%', '60%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.compact, []);
 
   useEffect(() => {
     if (visible) {
@@ -90,6 +88,11 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
     []
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={onClose} />,
+    [onClose]
+  );
+
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
@@ -99,23 +102,13 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
+      handleComponent={renderHandle}
       stackBehavior="push"
     >
       <BottomSheetView style={styles.content}>
-        {/* Header with close */}
+        {/* Header */}
         <View style={styles.header}>
           <Text variant="headline">{phoneNumber}</Text>
-          <HapticPressable 
-            onPress={onClose} 
-            hitSlop={Spacing.md}
-            style={[
-              styles.closeButton,
-              { backgroundColor: colors.fill2 }
-            ]}
-          >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.labelSecondary} />
-          </HapticPressable>
         </View>
 
         {/* Actions */}
@@ -188,13 +181,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.sm,
-  },
-  closeButton: {
-    width: Spacing['3xl'],
-    height: Spacing['3xl'],
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   actions: {
     flexDirection: 'row',

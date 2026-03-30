@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { ChevronLeft, X } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import {
@@ -114,7 +114,7 @@ export function CreateListingFlow({
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const { showAlert } = useAlert();
 
-  const snapPoints = useMemo(() => ['65%', '93%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.roomy, []);
 
   // For published edits, skip VIN step (can't change VIN/make/model/year)
   // Start at 'mileage' step (index 5) which is after the locked fields

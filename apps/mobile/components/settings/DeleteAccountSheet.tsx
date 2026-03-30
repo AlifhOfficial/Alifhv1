@@ -1,22 +1,18 @@
 /**
  * Delete Account Sheet
- * Confirmation sheet for account deletion
+ * Destructive confirmation sheet aligned with mobile sheet patterns
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useRef, useCallback, useEffect, useState, useMemo } from 'react';
 import { View, StyleSheet, TextInput, Platform } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Trash2, Loader2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Typography, InputTypography, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
+import { Colors, InputTypography, Radius, Sizes, Spacing, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-
-// ============================================================================
-// TYPES
-// ============================================================================
 
 interface DeleteAccountSheetProps {
   visible: boolean;
@@ -24,10 +20,6 @@ interface DeleteAccountSheetProps {
   onClose: () => void;
   onConfirm: () => void;
 }
-
-// ============================================================================
-// COMPONENT
-// ============================================================================
 
 export function DeleteAccountSheet({
   visible,
@@ -41,10 +33,8 @@ export function DeleteAccountSheet({
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [deleteText, setDeleteText] = useState('');
 
-  // Snap points
-  const snapPoints = useMemo(() => ['70%', '93%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.roomy, []);
 
-  // Show/hide based on visible prop
   useEffect(() => {
     if (visible) {
       bottomSheetRef.current?.present();
@@ -54,7 +44,6 @@ export function DeleteAccountSheet({
     }
   }, [visible]);
 
-  // Backdrop
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
@@ -82,14 +71,20 @@ export function DeleteAccountSheet({
     [handleClose]
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => (
+      <SheetFloatingCloseHandle {...props} onPress={handleClose} disabled={isDeleting} />
+    ),
+    [handleClose, isDeleting]
+  );
+
   const handleConfirm = useCallback(() => {
-    if (deleteText === 'DELETE') {
-      if (Platform.OS === 'ios') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-      }
-      onConfirm();
+    if (deleteText !== 'DELETE' || isDeleting) return;
+    if (Platform.OS === 'ios') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     }
-  }, [deleteText, onConfirm]);
+    onConfirm();
+  }, [deleteText, isDeleting, onConfirm]);
 
   const canConfirm = deleteText === 'DELETE' && !isDeleting;
 
@@ -101,144 +96,198 @@ export function DeleteAccountSheet({
       enablePanDownToClose={!isDeleting}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.actionButtonSm }}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      backgroundStyle={{
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: Radius.sheet,
+        borderTopRightRadius: Radius.sheet,
+        borderCurve: 'continuous',
+      }}
+      handleComponent={renderHandle}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
-      detached
-      bottomInset={insets.bottom + Spacing.xl}
-      style={styles.sheetContainer}
     >
-      <BottomSheetView style={styles.content}>
-        {/* Header */}
+      <BottomSheetScrollView
+        style={styles.scrollView}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.lg }]}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.header}>
-          <View style={[styles.iconContainer, { backgroundColor: colors.errorMuted }]}>
-            <Trash2 size={Sizes.iconLg} color={colors.error} />
-          </View>
-          <Text variant="headline" tone="error">Delete Account?</Text>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Account</Text>
         </View>
 
-        {/* Description */}
-        <Text variant="body" tone="secondary" style={styles.description}>
-          Your account will be deactivated immediately and permanently deleted after 6 months. We retain your data during this period to comply with UAE regulations and resolve any potential disputes. This action cannot be undone.
-        </Text>
+        <View style={[styles.heroCard, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+          <View style={[styles.heroIcon, { backgroundColor: colors.errorMuted }]}>
+            <Trash2 size={Sizes.iconMd} color={colors.error} />
+          </View>
+          <View style={styles.heroCopy}>
+            <Text variant="subheadEmphasized">Delete Account</Text>
+            <Text variant="subhead" tone="secondary">
+              This starts a permanent account deletion request.
+            </Text>
+          </View>
+        </View>
 
-        {/* Input */}
-        <View style={styles.inputContainer}>
-          <Text variant="subhead" tone="muted" style={styles.inputLabel}>
-            Type "DELETE" to confirm
+        <View style={styles.section}>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>What Happens</Text>
+          <View style={[styles.infoCard, { backgroundColor: colors.surfaceSecondary }]}>
+            <View style={styles.infoRow}>
+              <View style={[styles.bullet, { backgroundColor: colors.error }]} />
+              <Text variant="subhead" style={styles.infoText}>
+                Your account is deactivated immediately.
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <View style={[styles.bullet, { backgroundColor: colors.error }]} />
+              <Text variant="subhead" style={styles.infoText}>
+                Your data is retained for 6 months for UAE compliance and dispute handling.
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <View style={[styles.bullet, { backgroundColor: colors.error }]} />
+              <Text variant="subhead" style={styles.infoText}>
+                This action cannot be undone once the deletion request is submitted.
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Confirmation</Text>
+          <Text variant="subhead" tone="secondary" style={styles.sectionDescription}>
+            Type DELETE to confirm you want to remove this account.
           </Text>
           <TextInput
             value={deleteText}
             onChangeText={setDeleteText}
             placeholder="DELETE"
-            placeholderTextColor={colors.labelQuaternary}
+            placeholderTextColor={colors.placeholder}
             style={[
               styles.input,
               InputTypography,
               {
-                backgroundColor: colors.surface,
+                backgroundColor: colors.surfaceSecondary,
                 borderColor: colors.border,
                 color: colors.label,
               },
             ]}
             autoCapitalize="characters"
+            editable={!isDeleting}
           />
         </View>
 
-        {/* Actions */}
         <View style={styles.actions}>
           <HapticPressable
             onPress={handleClose}
-            style={({ pressed }) => [
-              styles.button,
-              styles.cancelButton,
-              { 
-                borderColor: colors.border,
-                opacity: pressed ? 0.7 : 1,
-              },
-            ]}
+            disabled={isDeleting}
+            style={[styles.secondaryButton, { backgroundColor: colors.fill2 }]}
           >
-            <Text variant="body" style={{ color: colors.label }}>Cancel</Text>
+            <Text variant="subhead" style={{ color: colors.label }}>Cancel</Text>
           </HapticPressable>
           <HapticPressable
             onPress={handleConfirm}
             disabled={!canConfirm}
-            style={({ pressed }) => [
-              styles.button,
-              styles.confirmButton,
+            style={[
+              styles.primaryButton,
               {
-                backgroundColor: colors.error,
-                opacity: !canConfirm ? 0.5 : pressed ? 0.8 : 1,
+                backgroundColor: canConfirm ? colors.error : colors.errorMuted,
               },
             ]}
           >
             {isDeleting ? (
               <Loader2 size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
             ) : (
-              <Text variant="body" style={{ color: colors.primaryForeground }}>Delete</Text>
+              <Text variant="subheadEmphasized" style={{ color: canConfirm ? colors.primaryForeground : colors.error }}>
+                Delete Account
+              </Text>
             )}
           </HapticPressable>
         </View>
-      </BottomSheetView>
+      </BottomSheetScrollView>
     </BottomSheetModal>
   );
 }
 
-// ============================================================================
-// STYLES
-// ============================================================================
-
 const styles = StyleSheet.create({
-  sheetContainer: {
-    marginHorizontal: Layout.screenPadding,
+  scrollView: {
+    flex: 1,
   },
   content: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xl,
   },
   header: {
+    marginBottom: Spacing.lg,
+    paddingHorizontal: Spacing.sm,
+  },
+  heroCard: {
+    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
-    paddingTop: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    marginBottom: Spacing.xl,
   },
-  iconContainer: {
-    width: Sizes.avatarLg + Spacing.sm,
-    height: Sizes.avatarLg + Spacing.sm,
+  heroIcon: {
+    width: Sizes.avatarLg,
+    height: Sizes.avatarLg,
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  description: {
-    textAlign: 'center',
-    marginTop: Spacing.md,
-    marginBottom: Spacing.lg,
+  heroCopy: {
+    flex: 1,
+    gap: Spacing.xs,
   },
-  inputContainer: {
-    marginBottom: Spacing.lg,
+  section: {
+    marginBottom: Spacing.xl,
   },
-  inputLabel: {
-    marginBottom: Spacing.sm,
+  sectionDescription: {
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  infoCard: {
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+    marginTop: Spacing.sm,
+    gap: Spacing.md,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.sm,
+  },
+  bullet: {
+    width: Spacing.xs + 2,
+    height: Spacing.xs + 2,
+    borderRadius: Radius.full,
+    marginTop: Spacing.sm,
+  },
+  infoText: {
+    flex: 1,
   },
   input: {
     height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
     borderWidth: 1,
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.md,
   },
   actions: {
     flexDirection: 'row',
     gap: Spacing.md,
   },
-  button: {
+  secondaryButton: {
     flex: 1,
     height: Sizes.actionButtonLg,
     borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cancelButton: {
-    borderWidth: 1,
+  primaryButton: {
+    flex: 1.2,
+    height: Sizes.actionButtonLg,
+    borderRadius: Radius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  confirmButton: {},
 });

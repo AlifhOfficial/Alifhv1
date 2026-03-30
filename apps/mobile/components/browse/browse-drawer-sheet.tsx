@@ -6,7 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { LayoutGrid, List } from 'lucide-react-native';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
+import { Colors, Radius, Sizes, Spacing, SheetSnapPoints } from '@/constants/theme';
 
 export type ViewMode = 'grid' | 'list';
 export type FilterPillType = 'make' | 'model' | 'price' | 'yearMileage' | 'location';
@@ -42,7 +42,7 @@ export function BrowseDrawerSheet({
   const colors = Colors[colorScheme];
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => ['58%'], []);
+  const snapPoints = useMemo(() => SheetSnapPoints.singleMd, []);
 
   useEffect(() => {
     if (visible) {

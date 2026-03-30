@@ -22,7 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, type ColorPalette } from '@/constants/theme';
+import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import {
   searchApi,
@@ -90,7 +90,7 @@ const SUGGESTION_CATEGORIES: Record<string, { dotKey: keyof ColorPalette; label:
 // CONSTANTS
 // ============================================================================
 
-const SNAP_POINTS = ['60%', '94%'];
+const SNAP_POINTS = SheetSnapPoints.standard;
 const SEARCH_DEBOUNCE_MS = 300;
 const MAX_VISIBLE_CHIPS = 12;
 
