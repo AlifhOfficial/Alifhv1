@@ -438,9 +438,9 @@ export const BookingSheet = memo(function BookingSheet({
 
             <HapticPressable
               onPress={onClose}
-              style={[styles.primaryButton, styles.doneButton, { backgroundColor: colors.label }]}
+              style={[styles.primaryButton, styles.doneButton, { backgroundColor: colors.primary }]}
             >
-              <Text variant="body" style={{ color: colors.background }}>
+              <Text variant="body" style={{ color: colors.primaryForeground }}>
                 Done
               </Text>
             </HapticPressable>
@@ -476,7 +476,7 @@ export const BookingSheet = memo(function BookingSheet({
                     {
                       backgroundColor:
                         step === s ? colors.label :
-                        (['date', 'time', 'confirm'].indexOf(step) > i) ? colors.label :
+                        (['date', 'time', 'confirm'].indexOf(step) > i) ? colors.fill2 :
                         colors.fill2,
                     },
                   ]}
@@ -556,22 +556,22 @@ export const BookingSheet = memo(function BookingSheet({
                         <HapticPressable
                           onPress={() => available && handleDateSelect(date)}
                           disabled={!available}
-                          style={[
-                            styles.calendarDayInner,
-                            isSelected && { backgroundColor: colors.label },
-                            isToday && !isSelected && { backgroundColor: colors.fill2 },
-                          ]}
-                        >
-                          <Text
-                            variant="subhead"
                             style={[
-                              isSelected && { color: colors.background },
-                              !isSelected && available && { color: colors.label },
-                              !isSelected && !available && { color: colors.labelQuaternary + '30' },
-                              isToday && !isSelected && { color: colors.label },
+                              styles.calendarDayInner,
+                              isSelected && { backgroundColor: colors.label },
+                              isToday && !isSelected && { backgroundColor: colors.fill2 },
                             ]}
                           >
-                            {date.getUTCDate()}
+                            <Text
+                              variant="subhead"
+                              style={[
+                                isSelected && { color: colors.background },
+                                !isSelected && available && { color: colors.label },
+                                !isSelected && !available && { color: colors.labelQuaternary + '30' },
+                                isToday && !isSelected && { color: colors.label },
+                              ]}
+                            >
+                              {date.getUTCDate()}
                           </Text>
                         </HapticPressable>
                         {available && !isSelected && (
@@ -646,9 +646,9 @@ export const BookingSheet = memo(function BookingSheet({
                 {selectedSlot && (
                   <HapticPressable
                     onPress={handleContinueToConfirm}
-                    style={[styles.primaryButton, { backgroundColor: colors.label }]}
+                    style={[styles.primaryButton, { backgroundColor: colors.primary }]}
                   >
-                    <Text variant="body" style={{ color: colors.background }}>
+                    <Text variant="body" style={{ color: colors.primaryForeground }}>
                       Continue
                     </Text>
                   </HapticPressable>
@@ -731,7 +731,7 @@ export const BookingSheet = memo(function BookingSheet({
                     value={notes}
                     onChangeText={setNotes}
                     placeholder="Any questions or special requests..."
-                    placeholderTextColor={colors.placeholder}
+                    placeholderTextColor={colors.labelQuaternary}
                     multiline
                     numberOfLines={2}
                     style={[
@@ -749,9 +749,9 @@ export const BookingSheet = memo(function BookingSheet({
                 {!isAuthenticated ? (
                   <HapticPressable
                     onPress={onLoginRequired}
-                    style={[styles.primaryButton, { backgroundColor: colors.label }]}
+                    style={[styles.primaryButton, { backgroundColor: colors.primary }]}
                   >
-                    <Text variant="body" style={{ color: colors.background }}>
+                    <Text variant="body" style={{ color: colors.primaryForeground }}>
                       Sign in to Book
                     </Text>
                   </HapticPressable>
@@ -761,14 +761,14 @@ export const BookingSheet = memo(function BookingSheet({
                     disabled={isLoading}
                     style={[
                       styles.primaryButton,
-                      { backgroundColor: colors.label },
+                      { backgroundColor: colors.primary },
                       isLoading && styles.buttonDisabled,
                     ]}
                   >
                     {isLoading ? (
-                      <ActivityIndicator size="small" color={colors.background} />
+                      <ActivityIndicator size="small" color={colors.primaryForeground} />
                     ) : (
-                      <Text variant="body" style={{ color: colors.background }}>
+                      <Text variant="body" style={{ color: colors.primaryForeground }}>
                         Confirm Booking
                       </Text>
                     )}
@@ -1011,7 +1011,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: Radius.lg,
     borderWidth: 1,
-    ...Typography.body,
+    ...Typography.subhead,
     minHeight: Sizes.avatarLg + Spacing.sm,
     textAlignVertical: 'top',
   },

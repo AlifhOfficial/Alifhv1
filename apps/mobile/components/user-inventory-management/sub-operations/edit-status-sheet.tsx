@@ -14,10 +14,10 @@
  *   • Delete Forever → if already soft-deleted
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -33,7 +33,7 @@ import {
   HelpCircle,
 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import type { ModerationStatus, LifecycleStatus } from '@/lib/sell-car-user-api';
@@ -196,12 +196,10 @@ export function EditStatusSheet({
 
   // Dynamic snap point based on number of actions
   const snapPoints = useMemo(() => {
-    const baseHeight = 120; // header + preview card
-    const rowHeight = 56;
-    const totalHeight = baseHeight + visibleActions.length * rowHeight + insets.bottom + 40;
-    const percentage = Math.min(Math.round((totalHeight / 812) * 100), 85);
-    return [`${percentage}%`];
-  }, [visibleActions.length, insets.bottom]);
+    if (visibleActions.length >= 6) return SheetSnapPoints.singleXl;
+    if (visibleActions.length >= 4) return SheetSnapPoints.singleLg;
+    return SheetSnapPoints.singleMd;
+  }, [visibleActions.length]);
 
   useEffect(() => {
     if (visible) {
@@ -241,6 +239,11 @@ export function EditStatusSheet({
     [],
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={onClose} />,
+    [onClose]
+  );
+
   const statusLabel = formatListingStatus(moderationStatus, lifecycleStatus);
   const statusColor = getStatusColor(moderationStatus, lifecycleStatus, colors);
 
@@ -251,23 +254,18 @@ export function EditStatusSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
+      backgroundStyle={{
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: Radius.sheet,
+        borderTopRightRadius: Radius.sheet,
+        borderCurve: 'continuous',
+      }}
+      handleComponent={renderHandle}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="title3Emphasized">Manage Listing</Text>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Spacing.md}
-            style={[
-              styles.closeButton,
-              { backgroundColor: colors.error },
-            ]}
-          >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
-          </HapticPressable>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Manage Listing</Text>
         </View>
 
         {/* Listing preview with status badge */}
@@ -280,18 +278,16 @@ export function EditStatusSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
-            <View style={styles.statusRow}>
-              <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
-              <Text variant="subhead" style={{ color: statusColor }} tone="secondary">
-                {statusLabel}
-              </Text>
-            </View>
+            <Text variant="caption1Emphasized" tone="muted" uppercase>Listing</Text>
+            <Text variant="subheadEmphasized" numberOfLines={2}>{listingTitle}</Text>
+            <Text variant="caption1Emphasized" style={{ color: statusColor }} uppercase>
+              {statusLabel}
+            </Text>
           </View>
         </View>
 
         {/* Action rows */}
-        <View style={styles.actionList}>
+        <View style={[styles.actionList, { backgroundColor: colors.surfaceSecondary }]}>
           {visibleActions.map((action, index) => {
             const IconComponent = action.icon;
             const iconColor = action.color(colors);
@@ -310,15 +306,15 @@ export function EditStatusSheet({
                   },
                 ]}
               >
-                <View style={[styles.actionIcon, { backgroundColor: isDestructive ? colors.errorMuted : colors.fill2 }]}>
-                  <IconComponent size={Sizes.iconMd} color={iconColor} />
+                <IconComponent size={Sizes.iconMd} color={iconColor} />
+                <View style={styles.actionCopy}>
+                  <Text
+                    variant="subheadEmphasized"
+                    style={{ color: isDestructive ? colors.error : colors.label }}
+                  >
+                    {action.label}
+                  </Text>
                 </View>
-                <Text
-                  variant="body"
-                  style={{ color: isDestructive ? colors.error : colors.label, flex: 1 }}
-                >
-                  {action.label}
-                </Text>
                 <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.labelQuaternary} />
               </HapticPressable>
             );
@@ -347,13 +343,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
     paddingHorizontal: Spacing.xs,
   },
-  closeButton: {
-    width: Sizes.avatarSm,
-    height: Sizes.avatarSm,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   previewCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -373,31 +362,20 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: Spacing.xs,
   },
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  statusDot: {
-    width: Spacing.sm,
-    height: Spacing.sm,
-    borderRadius: Radius.sm,
-  },
   actionList: {
     gap: Spacing.none,
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
   },
   actionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.md,
   },
-  actionIcon: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
+  actionCopy: {
+    flex: 1,
+    gap: 2,
   },
 });

@@ -17,19 +17,19 @@
  * @module components/sheets/create-listing/response-sheet
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useRef, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
   BottomSheetView,
+  type BottomSheetHandleProps,
 } from '@gorhom/bottom-sheet';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { AlertCircle, CheckCircle, AlertTriangle, Info } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, SheetSnapPoints } from '@/constants/theme';
+import { Colors, Spacing, Radius, SheetSnapPoints } from '@/constants/theme';
 import type { ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
@@ -116,7 +116,6 @@ export function ResponseSheet({
 }: ResponseSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Present/dismiss based on visible prop
@@ -168,6 +167,11 @@ export function ResponseSheet({
     []
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={handleDismiss} />,
+    [handleDismiss]
+  );
+
   const iconColor = getIconColor(type, colors);
   const hasActions = onRetry || onPrimary;
 
@@ -185,7 +189,7 @@ export function ResponseSheet({
         borderTopRightRadius: Radius.sheet,
         borderCurve: 'continuous',
       }}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
+      handleComponent={renderHandle}
     >
       <BottomSheetView style={styles.container}>
         {/* Icon */}

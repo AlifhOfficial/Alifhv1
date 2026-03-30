@@ -7,17 +7,17 @@
  * @module components/sheets/create-listing/create-listing-flow
  */
 
-import { Text, useAlert, HapticPressable } from '@/components/ui';
+import { Text, useAlert, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, StyleSheet, BackHandler, Keyboard } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
+  type BottomSheetHandleProps,
 } from '@gorhom/bottom-sheet';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { ChevronLeft, X } from 'lucide-react-native';
+import { ChevronLeft } from 'lucide-react-native';
 
 import { Colors, Spacing, Radius, Sizes, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -109,7 +109,6 @@ export function CreateListingFlow({
 }: CreateListingFlowProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const router = useRouter();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const { showAlert } = useAlert();
@@ -139,7 +138,6 @@ export function CreateListingFlow({
   const currentStep = SHEET_STEPS[currentStepIndex];
   const currentStepId = currentStep?.id;
   const progress = getProgress(currentStepIndex + 1);
-  const totalSteps = SHEET_STEPS.length;
 
   // ── Present/dismiss modal based on visible ──
   useEffect(() => {
@@ -284,6 +282,11 @@ export function CreateListingFlow({
     [handleClose]
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={handleClose} />,
+    [handleClose]
+  );
+
   // ── Determine primary button state ──
   const isOptionalStep = currentStep && !currentStep.required;
   const stepError = validateStep(currentStepId, data);
@@ -308,7 +311,7 @@ export function CreateListingFlow({
         borderTopRightRadius: Radius.sheet,
         borderCurve: 'continuous',
       }}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
+      handleComponent={renderHandle}
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
@@ -326,13 +329,6 @@ export function CreateListingFlow({
           {/* Header */}
           <View style={[styles.header, { borderBottomColor: colors.border }]}>
             <View style={styles.headerLeft}>
-              <HapticPressable
-                onPress={handleClose}
-                hitSlop={Spacing.md}
-                style={[styles.circleButton, { backgroundColor: colors.fill2 }]}
-              >
-                <X size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
-              </HapticPressable>
               {currentStepIndex > initialStepIndex && (
                 <HapticPressable
                   onPress={goToPrevStep}
@@ -345,7 +341,9 @@ export function CreateListingFlow({
             </View>
 
             <View style={styles.headerCenter}>
-              <Text variant="subheadEmphasized">{currentStep?.label || 'Create Listing'}</Text>
+              <Text variant="caption1Emphasized" tone="muted" uppercase>
+                {currentStep?.label || 'Create Listing'}
+              </Text>
             </View>
 
             {!isReviewStep ? (
@@ -354,7 +352,7 @@ export function CreateListingFlow({
                 disabled={!canProceed && !isOptionalStep}
                 style={[styles.nextButton, { backgroundColor: canProceed ? colors.primary : colors.fill2 }]}
               >
-                <Text variant="subhead" style={{ color: canProceed ? colors.primaryForeground : colors.labelQuaternary }}>
+                <Text variant="caption1Emphasized" style={{ color: canProceed ? colors.primaryForeground : colors.labelQuaternary }} uppercase>
                   {primaryLabel}
                 </Text>
               </HapticPressable>

@@ -95,7 +95,7 @@ export default function ProfileScreen() {
     daysUntilExpiry !== null && daysUntilExpiry <= 30 && daysUntilExpiry > 0;
 
   // Use profile avatar if available, fallback to user session avatar
-  const avatarUrl = profile?.avatarUrl || user?.avatarUrl || user?.image;
+  const avatarUrl = profile?.avatarUrl || user?.avatarUrl;
   const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? user?.useGeneratedAvatar ?? true;
 
   // Handlers

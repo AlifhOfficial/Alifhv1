@@ -7,10 +7,10 @@
  * EditStatusSheet.
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Eye, Heart, Zap, MousePointerClick, Flame } from 'lucide-react-native';
@@ -115,6 +115,11 @@ export function ListingStatsSheet({
     [],
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={onClose} />,
+    [onClose]
+  );
+
   const ctr = useMemo(
     () => (impressionCount > 0 ? ((viewCount / impressionCount) * 100).toFixed(1) : '0.0'),
     [impressionCount, viewCount]
@@ -161,23 +166,18 @@ export function ListingStatsSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
+      backgroundStyle={{
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: Radius.sheet,
+        borderTopRightRadius: Radius.sheet,
+        borderCurve: 'continuous',
+      }}
+      handleComponent={renderHandle}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="title3Emphasized">Insights</Text>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Spacing.md}
-            style={[
-              styles.closeButton,
-              { backgroundColor: colors.error },
-            ]}
-          >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
-          </HapticPressable>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Insights</Text>
         </View>
 
         {/* Listing preview */}
@@ -263,13 +263,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.lg,
     paddingHorizontal: Spacing.xs,
-  },
-  closeButton: {
-    width: Sizes.avatarSm,
-    height: Sizes.avatarSm,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   previewRow: {
     flexDirection: 'row',

@@ -24,9 +24,9 @@ export function ProfileMenu() {
     >
       {isAuthenticated && user ? (
         <UserAvatar
-          src={user.avatarUrl || user.image}
+          src={user.avatarUrl}
           name={user.name}
-          size="sm"
+          size="md"
           useGeneratedAvatar={user.useGeneratedAvatar ?? true}
         />
       ) : (

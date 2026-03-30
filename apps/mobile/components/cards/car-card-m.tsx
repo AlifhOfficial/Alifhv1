@@ -6,7 +6,7 @@
  * Uses semantic Text components for cross-platform consistency
  */
 
-import { HapticPressable, Skeleton, SkeletonCircle, Text, FavoriteButton, SuperlikeButton, BlkBadge } from '@/components/ui';
+import { HapticPressable, Skeleton, SkeletonCircle, Text, FavoriteButton, SuperlikeButton, BlkBadge, BrandAvatar } from '@/components/ui';
 import React, { useCallback, memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
@@ -364,20 +364,13 @@ const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartn
       {isBlackTierPartner && (
         <View style={[styles.avatarRing, { borderColor: colors.border }]} />
       )}
-      <View style={[styles.avatar, { backgroundColor: theme.avatarBg, borderColor: theme.avatarBorder }]}>
-        {avatarUri ? (
-          <Image
-            source={{ uri: avatarUri }}
-            style={styles.avatarImage}
-            contentFit="cover"
-            transition={Timing.avatarTransition}
-          />
-        ) : (
-          <Text variant="bodyEmphasized" style={{ color: theme.meta }}>
-            {name.charAt(0).toUpperCase()}
-          </Text>
-        )}
-      </View>
+      <BrandAvatar
+        src={avatarUri}
+        name={name}
+        size="sm"
+        backgroundColor={theme.avatarBg}
+        ringColor={theme.avatarBorder}
+      />
       <View style={styles.sellerMeta}>
         <Text variant="subhead" style={[styles.sellerName, { color: theme.sellerText }]} numberOfLines={1}>
           {name}
@@ -560,15 +553,6 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
   },
-  avatar: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Sizes.bubble / 2,
-    borderWidth: StyleSheet.hairlineWidth,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
   avatarRing: {
     position: 'absolute',
     width: Sizes.bubble + 6,
@@ -577,11 +561,6 @@ const styles = StyleSheet.create({
     borderWidth: BorderWidths.medium,
     top: -Spacing.xs,
     left: -Spacing.xs,
-  },
-  avatarImage: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Sizes.bubble / 2,
   },
   sellerMeta: {
     flexDirection: 'row',

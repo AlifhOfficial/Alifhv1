@@ -15,6 +15,7 @@ import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Sizes, Spacing, Typography, Fonts } from '@/constants/theme';
 import { getAppImageUrl } from '@/lib/config';
+import { getAvatarInitials } from './avatar-utils';
 
 interface UserAvatarProps {
   /** 
@@ -56,15 +57,6 @@ const fontSizes = {
   xl: Typography.title3Emphasized.fontSize,
   xxl: Typography.largeTitleEmphasized.fontSize,
 };
-
-/** Generate initials from a name */
-function getInitials(name?: string | null): string {
-  if (!name) return 'U';
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return 'U';
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-}
 
 export function UserAvatar({
   src,
@@ -114,8 +106,18 @@ export function UserAvatar({
         />
       )}
       {!showImage && (
-        <Text style={[styles.initials, { fontSize, color: colors.labelSecondary }]} variant="body">
-          {getInitials(name)}
+        <Text
+          style={[
+            styles.initials,
+            {
+              fontSize,
+              lineHeight: Math.round(fontSize * 1.1),
+              color: colors.labelSecondary,
+            },
+          ]}
+          variant="body"
+        >
+          {getAvatarInitials(name)}
         </Text>
       )}
     </View>
@@ -129,5 +131,7 @@ const styles = StyleSheet.create({
   },
   initials: {
     fontWeight: Fonts.bold,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
 });

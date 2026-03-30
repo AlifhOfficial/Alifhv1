@@ -5,10 +5,10 @@
  * Calls sellCarUserApi.toggleArchive().
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -106,6 +106,13 @@ export function ArchiveListingSheet({
     [],
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => (
+      <SheetFloatingCloseHandle {...props} onPress={onClose} disabled={loading} />
+    ),
+    [loading, onClose]
+  );
+
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
@@ -113,24 +120,18 @@ export function ArchiveListingSheet({
       enablePanDownToClose={!loading}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
+      backgroundStyle={{
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: Radius.sheet,
+        borderTopRightRadius: Radius.sheet,
+        borderCurve: 'continuous',
+      }}
+      handleComponent={renderHandle}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text variant="title3Emphasized">{actionLabel} Listing</Text>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Spacing.md}
-            disabled={loading}
-            style={[
-              styles.closeButton,
-              { backgroundColor: colors.error },
-            ]}
-          >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
-          </HapticPressable>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Listing</Text>
         </View>
 
         {/* Listing preview */}
@@ -216,13 +217,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.xs,
-  },
-  closeButton: {
-    width: Sizes.avatarSm,
-    height: Sizes.avatarSm,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   previewCard: {
     flexDirection: 'row',

@@ -5,11 +5,10 @@
  * Displays the AI reasoning and any flags that were raised.
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, StyleSheet, Image, ScrollView } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import { Clock } from 'lucide-react-native';
 
@@ -27,7 +26,7 @@ export interface PendingReviewReasonSheetProps {
   /** AI moderation info */
   aiModeration?: {
     reasoning?: string;
-    flags?: Array<string | { code: string; severity?: string; message?: string }>;
+    flags?: (string | { code: string; severity?: string; message?: string })[];
     confidence?: number;
   } | null;
 }
@@ -43,7 +42,6 @@ export function PendingReviewReasonSheet({
 }: PendingReviewReasonSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   const snapPoints = useMemo(() => SheetSnapPoints.singleSm, []);
@@ -76,6 +74,11 @@ export function PendingReviewReasonSheet({
     [],
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={onClose} />,
+    [onClose]
+  );
+
   const hasFlags = aiModeration?.flags && aiModeration.flags.length > 0;
   const hasReasoning = !!aiModeration?.reasoning;
 
@@ -86,28 +89,23 @@ export function PendingReviewReasonSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
-      handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
+      backgroundStyle={{
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: Radius.sheet,
+        borderTopRightRadius: Radius.sheet,
+        borderCurve: 'continuous',
+      }}
+      handleComponent={renderHandle}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerTitleRow}>
             <Clock size={20} color={colors.warning} />
-            <Text variant="title3Emphasized" style={{ marginLeft: Spacing.sm }}>
+            <Text variant="caption1Emphasized" tone="muted" uppercase style={{ marginLeft: Spacing.sm }}>
               Under Review
             </Text>
           </View>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Spacing.md}
-            style={[
-              styles.closeButton,
-              { backgroundColor: colors.error },
-            ]}
-          >
-            <Ionicons name="close" size={Sizes.iconSm} color={colors.primaryForeground} />
-          </HapticPressable>
         </View>
 
         {/* Listing preview */}

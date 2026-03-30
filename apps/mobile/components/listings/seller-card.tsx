@@ -2,15 +2,13 @@
  * Seller Card - Seller info with avatar
  */
 
-import { Text, BlkBadge } from '@/components/ui';
+import { Text, BlkBadge, BrandAvatar } from '@/components/ui';
 import React, { memo, ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
 import { Colors, Spacing, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { getAppThumbUrl } from '@/lib/config';
 import { SellerData } from '@/lib/listing-api';
 
 interface SellerCardProps {
@@ -49,7 +47,6 @@ export const SellerCard = memo(function SellerCard({
   const rawSellerLogo = isPartner
     ? partner?.logo
     : userProfile?.avatarUrl;
-  const sellerLogo = getAppThumbUrl(rawSellerLogo);
   
   const isVerified = isPartner
     ? partner?.isVerified
@@ -65,19 +62,13 @@ export const SellerCard = memo(function SellerCard({
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={[styles.avatar, { backgroundColor: colors.background, borderColor: colors.border }]}>
-          {sellerLogo ? (
-            <Image
-              source={{ uri: sellerLogo }}
-              style={styles.avatarImage}
-              contentFit="cover"
-            />
-          ) : (
-            <Text variant="bodyEmphasized" tone="secondary">
-              {sellerName.charAt(0).toUpperCase()}
-            </Text>
-          )}
-        </View>
+        <BrandAvatar
+          src={rawSellerLogo}
+          name={sellerName}
+          size="md"
+          backgroundColor={colors.background}
+          ringColor={colors.border}
+        />
         
         <View style={styles.details}>
           <View style={styles.nameRow}>
@@ -117,20 +108,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.md,
     flex: 1,
-  },
-  avatar: {
-    width: Sizes.avatarLg,
-    height: Sizes.avatarLg,
-    borderRadius: Sizes.avatarLg / 2,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  avatarImage: {
-    width: Sizes.avatarLg,
-    height: Sizes.avatarLg,
-    borderRadius: Sizes.avatarLg / 2,
   },
   details: {
     flex: 1,

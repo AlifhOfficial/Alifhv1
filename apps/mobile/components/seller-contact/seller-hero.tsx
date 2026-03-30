@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xl,
   },
   avatarOverlap: {
-    marginTop: -(AVATAR_SIZE / 2),
+    marginTop: -(AVATAR_SIZE * 0.32),
   },
   info: {
     alignItems: 'center',

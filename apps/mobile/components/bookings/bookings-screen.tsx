@@ -13,7 +13,7 @@
  * @module components/bookings/bookings-screen
  */
 
-import { Text, HapticPressable, Skeleton } from '@/components/ui';
+import { Text, HapticPressable, Skeleton, BrandAvatar } from '@/components/ui';
 import React, { useCallback, useRef, useState } from 'react';
 import { View, StyleSheet, FlatList, ScrollView, RefreshControl, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
@@ -224,20 +224,13 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
             <View style={styles.footer}>
               {/* Partner info */}
               <View style={styles.partnerRow}>
-                <View style={[styles.avatar, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
-                  {item.partnerLogo ? (
-                    <Image
-                      source={{ uri: getAppThumbUrl(item.partnerLogo)! }}
-                      style={styles.avatarImage}
-                      contentFit="cover"
-                      transition={150}
-                    />
-                  ) : (
-                    <Text variant="caption1Emphasized" style={{ color: colors.labelSecondary }}>
-                      {item.partnerName?.charAt(0).toUpperCase()}
-                    </Text>
-                  )}
-                </View>
+                <BrandAvatar
+                  src={item.partnerLogo}
+                  name={item.partnerName || 'Dealer'}
+                  size="md"
+                  backgroundColor={colors.surfaceSecondary}
+                  ringColor={colors.border}
+                />
                 <Text variant="footnote" style={[styles.partnerName, { color: colors.labelSecondary }]} numberOfLines={1}>
                   {item.partnerName}
                 </Text>
@@ -617,20 +610,6 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     flex: 1,
     minWidth: 0,
-  },
-  avatar: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Sizes.bubble / 2,
-    borderWidth: StyleSheet.hairlineWidth,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  avatarImage: {
-    width: Sizes.bubble,
-    height: Sizes.bubble,
-    borderRadius: Sizes.bubble / 2,
   },
   partnerName: {
     flexShrink: 1,

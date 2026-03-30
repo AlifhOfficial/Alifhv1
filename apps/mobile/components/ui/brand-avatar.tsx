@@ -3,8 +3,8 @@
  * 
  * Features:
  * - Image with automatic CDN URL handling
- * - Fallback to initial letter when image fails or missing
- * - Round (private) or squared (dealer) variants
+ * - Fallback to initials when image fails or missing
+ * - Circular shape across the mobile app
  * - Multiple sizes
  */
 
@@ -13,16 +13,17 @@ import React, { memo, useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 
-import { Sizes, Spacing, Radius } from '@/constants/theme';
+import { Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
+import { getAvatarInitials } from './avatar-utils';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-export type BrandAvatarSize = 'sm' | 'md' | 'lg' | 'xl';
-export type BrandAvatarShape = 'round' | 'square';
+export type BrandAvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type BrandAvatarShape = 'round';
 
 export interface BrandAvatarProps {
   /** Image URL (handles CDN conversion automatically) */
@@ -31,7 +32,7 @@ export interface BrandAvatarProps {
   name: string;
   /** Avatar size */
   size?: BrandAvatarSize;
-  /** Shape: round for private sellers, square for dealers/brands */
+  /** @deprecated Mobile avatars are standardized to circular. */
   shape?: BrandAvatarShape;
   /** Custom background color (defaults to surfaceSecondary) */
   backgroundColor?: string;
@@ -48,6 +49,7 @@ export interface BrandAvatarProps {
 // ============================================================================
 
 const SIZES: Record<BrandAvatarSize, number> = {
+  xs: Sizes.bubbleXs,
   sm: Sizes.avatarSm,                    // 32
   md: Sizes.avatarMd,                    // 40
   lg: Sizes.avatarLg,                    // 48
@@ -77,13 +79,17 @@ export const BrandAvatar = memo(function BrandAvatar({
     setImageError(true);
   }, []);
 
+  React.useEffect(() => {
+    setImageError(false);
+  }, [src]);
+
   const pixelSize = SIZES[size];
-  const borderRadius = shape === 'round' ? pixelSize / 2 : Radius.sm;
+  const borderRadius = pixelSize / 2;
   
   // Glass styling or custom background
   const bgColor = glass ? colors.background : (backgroundColor ?? colors.surfaceSecondary);
-  const borderColor = glass ? colors.border : (ringColor ?? colors.border);
-  const shouldShowBorder = glass || showRing;
+  const borderColor = ringColor ?? colors.border;
+  const borderWidth = showRing ? 2 : 1;
   
   // Convert to CDN URL if needed
   const imageUri = src ? getAppThumbUrl(src) : null;
@@ -98,16 +104,14 @@ export const BrandAvatar = memo(function BrandAvatar({
           height: pixelSize,
           borderRadius,
           backgroundColor: bgColor,
-        },
-        shouldShowBorder && {
-          borderWidth: glass ? 1 : 2,
+          borderWidth,
           borderColor,
         },
       ]}
     >
       {showFallback ? (
-        <Text variant="headline" tone="secondary">
-          {name.charAt(0).toUpperCase()}
+        <Text variant={size === 'xs' || size === 'sm' ? 'caption1Emphasized' : 'headline'} tone="secondary">
+          {getAvatarInitials(name, 'B')}
         </Text>
       ) : (
         <Image
