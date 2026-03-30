@@ -402,7 +402,7 @@ export const BookingSheet = memo(function BookingSheet({
             <CheckCircle2 size={Spacing['5xl']} color={colors.success} strokeWidth={1.5} />
 
             <Text variant="title3Emphasized" style={styles.centerText}>
-              You're all set!
+              You&apos;re all set!
             </Text>
             <Text variant="body" tone="secondary" style={styles.centerText}>
               Your test drive request has been sent
@@ -796,7 +796,9 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
   },
   background: {
-    borderRadius: Radius['3xl'],
+    borderTopLeftRadius: Radius.sheet,
+    borderTopRightRadius: Radius.sheet,
+    borderCurve: 'continuous',
   },
 
   content: {

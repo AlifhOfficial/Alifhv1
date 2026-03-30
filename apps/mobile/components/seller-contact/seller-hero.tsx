@@ -6,7 +6,7 @@
  * Follows ProfileIdentity pattern for consistency.
  */
 
-import { Text } from '@/components/ui';
+import { Text, BlkBadge } from '@/components/ui';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -70,11 +70,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors }: SellerHer
               />
             )}
             {seller.tier?.toLowerCase() === 'black' && (
-              <View style={[styles.tierBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-                <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.blkBadgeFg }}>
-                  BLK
-                </Text>
-              </View>
+              <BlkBadge />
             )}
           </View>
 
@@ -137,12 +133,6 @@ const styles = StyleSheet.create({
   name: {
     flexShrink: 1,
     textAlign: 'center',
-  },
-  tierBadge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.sm,
-    borderWidth: 1,
   },
   ratingRow: {
     flexDirection: 'row',

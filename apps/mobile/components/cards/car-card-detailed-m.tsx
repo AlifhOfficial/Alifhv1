@@ -13,7 +13,7 @@
  * and a thin divider keeps the rhythm.
  */
 
-import { Text, HapticPressable, Skeleton } from '@/components/ui';
+import { Text, HapticPressable, Skeleton, BlkBadge } from '@/components/ui';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, StyleSheet, View, Platform, Clipboard } from 'react-native';
 import Animated, {
@@ -217,9 +217,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
               {carTitle}
             </Text>
             {isBlk && (
-              <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
-                <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
-              </View>
+              <BlkBadge size="sm" />
             )}
           </View>
 
@@ -420,11 +418,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: Spacing.sm,
-  },
-  blkBadge: {
-    paddingHorizontal: Sizes.badgePaddingH,
-    paddingVertical: Sizes.badgePaddingV,
-    borderRadius: Radius.none,
   },
   vinRow: {
     flexDirection: 'row',

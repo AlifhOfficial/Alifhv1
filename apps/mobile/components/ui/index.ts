@@ -3,6 +3,7 @@ export { IconSymbol, type IconSymbolName } from './icon-symbol';
 export { ThemeToggle } from './theme-toggle';
 export { UserAvatar } from './user-avatar';
 export { BrandAvatar, type BrandAvatarProps, type BrandAvatarSize, type BrandAvatarShape } from './brand-avatar';
+export { BlkBadge } from './blk-badge';
 export { Skeleton, SkeletonText, SkeletonCircle, SkeletonImage } from './skeleton';
 
 // Button component

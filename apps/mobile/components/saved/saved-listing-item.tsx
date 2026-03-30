@@ -3,7 +3,7 @@
  * Simplified version of CarCardM for the saved listings view
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, BlkBadge } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View, Alert } from 'react-native';
 import { Image } from 'expo-image';
@@ -99,9 +99,7 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
         
         {/* BLK Badge */}
         {listing.isBlkListing && (
-          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-            <Text variant="caption1Emphasized" uppercase style={{ color: colors.blkBadgeFg }}>BLK</Text>
-          </View>
+          <BlkBadge size="sm" style={styles.blkBadge} />
         )}
       </View>
 
@@ -167,10 +165,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Spacing.xs,
     left: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.none,
-    borderWidth: 1,
   },
   details: {
     flex: 1,

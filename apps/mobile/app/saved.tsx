@@ -3,7 +3,7 @@
  * Native-feeling, modular saved screen connected to API
  */
 
-import { Skeleton, AuthRequiredEmptyState, Text, HapticPressable } from '@/components/ui';
+import { AuthRequiredEmptyState, Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Platform, Pressable, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import Animated, {
@@ -24,6 +24,7 @@ import { Colors, Shadows, Sizes, Spacing, Radius, Layout, ZIndex, Stroke, Border
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { SavedList } from '@/components/saved';
+import { CarCardListSkeleton } from '@/components/cards';
 import type { SavedTab } from '@/components/saved/types';
 import { useSaved } from '@/hooks/use-saved';
 import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
@@ -149,7 +150,7 @@ export default function SavedScreen() {
         <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} />
         <View style={[styles.skeletonContainer, { paddingTop: headerInset }]}>
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} width="100%" height={100} borderRadius={12} />
+            <CarCardListSkeleton key={i} />
           ))}
         </View>
       </View>

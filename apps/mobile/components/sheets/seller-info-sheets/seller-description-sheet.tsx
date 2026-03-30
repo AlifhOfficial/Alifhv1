@@ -75,7 +75,12 @@ export function SellerDescriptionSheet({ visible, onClose, description, sellerNa
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      backgroundStyle={{
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: Radius.sheet,
+        borderTopRightRadius: Radius.sheet,
+        borderCurve: 'continuous',
+      }}
       handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
     >
       <View style={styles.content}>

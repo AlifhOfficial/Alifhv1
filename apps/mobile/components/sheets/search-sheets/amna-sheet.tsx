@@ -213,7 +213,12 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      backgroundStyle={{
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: Radius.sheet,
+        borderTopRightRadius: Radius.sheet,
+        borderCurve: 'continuous',
+      }}
       handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
@@ -265,7 +270,7 @@ export function AmnaSheet({ visible, onClose, onSearch, forceDark }: AmnaSheetPr
             {/* Amna intro */}
             <View style={styles.intro}>
               <Text variant="subhead" tone="muted" style={{ textAlign: 'center' }}>
-                Describe what you're looking for
+                Describe what you&apos;re looking for
               </Text>
             </View>
 

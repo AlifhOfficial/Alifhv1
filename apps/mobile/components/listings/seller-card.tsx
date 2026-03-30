@@ -2,13 +2,13 @@
  * Seller Card - Seller info with avatar
  */
 
-import { Text } from '@/components/ui';
+import { Text, BlkBadge } from '@/components/ui';
 import React, { memo, ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { SellerData } from '@/lib/listing-api';
@@ -86,9 +86,7 @@ export const SellerCard = memo(function SellerCard({
               <CheckCircle2 size={Sizes.iconXs} color={colors.primary} strokeWidth={Stroke.icon} />
             )}
             {isBlackTier && (
-              <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
-                <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
-              </View>
+              <BlkBadge size="sm" />
             )}
           </View>
           
@@ -142,10 +140,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-  },
-  blkBadge: {
-    paddingHorizontal: Sizes.badgePaddingH,
-    paddingVertical: Sizes.badgePaddingV,
-    borderRadius: Radius.none,
   },
 });

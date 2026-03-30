@@ -2,12 +2,12 @@
  * Listing Header - Title, Price, Actions, Highlights
  */
 
-import { Text } from '@/components/ui';
+import { Text, BlkBadge } from '@/components/ui';
 import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { SpecialNotes } from '@/lib/listing-api';
 import { formatPrice } from './types';
@@ -76,9 +76,7 @@ export const ListingHeader = memo(function ListingHeader({
         </View>
 
         {isBlk && (
-          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
-            <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
-          </View>
+          <BlkBadge size="sm" />
         )}
       </View>
 
@@ -121,11 +119,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: Spacing.sm,
-  },
-  blkBadge: {
-    paddingHorizontal: Sizes.badgePaddingH,
-    paddingVertical: Sizes.badgePaddingV,
-    borderRadius: Radius.none,
   },
   highlightsRow: {
     flexDirection: 'row',

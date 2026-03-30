@@ -123,7 +123,12 @@ export function AuthSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.background, borderRadius: Radius['3xl'] }}
+      backgroundStyle={{
+        backgroundColor: colors.background,
+        borderTopLeftRadius: Radius.sheet,
+        borderTopRightRadius: Radius.sheet,
+        borderCurve: 'continuous',
+      }}
       handleIndicatorStyle={{ backgroundColor: colors.labelSecondary, width: Sizes.bubble }}
       containerStyle={{ zIndex: ZIndex.modal }}
     >

@@ -88,7 +88,12 @@ export function SuperlikeConfirmationSheet({
       onDismiss={onClose}
       backdropComponent={renderBackdrop}
       handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      backgroundStyle={{
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: Radius.sheet,
+        borderTopRightRadius: Radius.sheet,
+        borderCurve: 'continuous',
+      }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
@@ -114,7 +119,7 @@ export function SuperlikeConfirmationSheet({
         {/* Description */}
         <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundSecondary }]}>
           <Text variant="subhead" style={{ textAlign: 'center' }} tone="secondary">
-            Superlikes notify sellers that you're highly interested. Use them wisely — you have limited superlikes each month.
+            Superlikes notify sellers that you&apos;re highly interested. Use them wisely — you have limited superlikes each month.
           </Text>
         </View>
 
@@ -204,7 +209,12 @@ export function SuperlikeQuotaExhaustedSheet({
       onDismiss={onClose}
       backdropComponent={renderBackdrop}
       handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
-      backgroundStyle={{ backgroundColor: colors.surface, borderRadius: Radius['3xl'] }}
+      backgroundStyle={{
+        backgroundColor: colors.surface,
+        borderTopLeftRadius: Radius.sheet,
+        borderTopRightRadius: Radius.sheet,
+        borderCurve: 'continuous',
+      }}
     >
       <BottomSheetView style={styles.content}>
         {/* Header */}
@@ -216,8 +226,8 @@ export function SuperlikeQuotaExhaustedSheet({
             No Superlikes Left
           </Text>
           <Text variant="subhead" style={{ textAlign: 'center', marginTop: Spacing.xs }} tone="secondary">
-            You've used all your superlikes for this month.
-            {resetDate && ` They'll reset on ${resetDate}.`}
+            You&apos;ve used all your superlikes for this month.
+            {resetDate && ` They’ll reset on ${resetDate}.`}
           </Text>
         </View>
 

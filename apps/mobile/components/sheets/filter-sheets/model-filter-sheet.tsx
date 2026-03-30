@@ -323,7 +323,9 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
   },
   background: {
-    borderRadius: Radius['3xl'],
+    borderTopLeftRadius: Radius.sheet,
+    borderTopRightRadius: Radius.sheet,
+    borderCurve: 'continuous',
   },
   handleIndicator: {
     width: Sizes.bubble,

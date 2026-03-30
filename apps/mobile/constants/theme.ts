@@ -242,9 +242,9 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     favorite: palette.pink,  // Favorite/like indicator
     
     // ── BLK tier badge (premium badge branding) ───────────────────────────
-    blkBadgeBg:      'rgba(0,0,0,0.85)',                 // Dark badge background
-    blkBadgeBorder:  'rgba(255,255,255,0.12)',           // Subtle light border
-    blkBadgeFg:      '#FAFAFA',                          // Light text on dark badge
+    blkBadgeBg:      'rgba(0,0,0,0.88)',                 // Always-black premium badge
+    blkBadgeBorder:  'rgba(255,255,255,0.10)',           // Soft light outline
+    blkBadgeFg:      '#FAFAFA',                          // Light foreground on black
     
     // ── Status indicators (online/presence) ───────────────────────────────
     online:  palette.red,     // Online indicator (red per brand)
@@ -312,9 +312,9 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     favorite: palette.pinkDark,
     
     // ── BLK tier badge (premium badge branding) ───────────────────────────
-    blkBadgeBg:      'rgba(0,0,0,0.9)',                     // Slightly darker badge
-    blkBadgeBorder:  'rgba(255,255,255,0.14)',              // Slightly more visible border
-    blkBadgeFg:      '#FAFAFA',                             // Same light text
+    blkBadgeBg:      'rgba(0,0,0,0.92)',                   // Always-black premium badge
+    blkBadgeBorder:  'rgba(255,255,255,0.12)',             // Soft light outline
+    blkBadgeFg:      '#FAFAFA',                            // Light foreground on black
     
     // ── Status indicators (online/presence) ───────────────────────────────
     online:  palette.redDark,
@@ -383,6 +383,7 @@ export const Radius = {
   xl: scale(16),
   '2xl': scale(20),
   '3xl': scale(24),
+  sheet: scale(40),
   circle: Sizes.avatarMd / 2,
   full: 9999,
 } as const;

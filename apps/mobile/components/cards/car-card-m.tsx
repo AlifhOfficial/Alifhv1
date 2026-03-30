@@ -6,7 +6,7 @@
  * Uses semantic Text components for cross-platform consistency
  */
 
-import { HapticPressable, Skeleton, SkeletonCircle, Text, FavoriteButton, SuperlikeButton } from '@/components/ui';
+import { HapticPressable, Skeleton, SkeletonCircle, Text, FavoriteButton, SuperlikeButton, BlkBadge } from '@/components/ui';
 import React, { useCallback, memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
@@ -386,9 +386,7 @@ const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartn
           <CheckCircle2 size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
         )}
         {isBlackTierPartner && (
-          <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
-            <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
-          </View>
+          <BlkBadge size="sm" />
         )}
       </View>
     </View>
@@ -595,13 +593,6 @@ const styles = StyleSheet.create({
   sellerName: {
     flexShrink: 1,
   },
-  blkBadge: {
-    paddingHorizontal: Sizes.badgePaddingH,
-    paddingVertical: Sizes.badgePaddingV,
-    borderRadius: Radius.none,
-    borderWidth: BorderWidths.thin,
-  },
-
   // Actions
   actions: {
     flexDirection: 'row',
