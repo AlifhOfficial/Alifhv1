@@ -9,7 +9,7 @@ import React from 'react';
 import { View, Image, StyleSheet, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { getAppThumbUrl } from '@/lib/config';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { LocationBubble } from './location-bubble';
@@ -34,8 +34,7 @@ export function MessageBubble({
   otherUserName,
   listing,
 }: MessageBubbleProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors } = useTheme();
   const router = useRouter();
 
   const { sender, text, mediaUrl, mediaType, mediaMetadata, isEdited, isSystemMessage } = message;
@@ -62,7 +61,7 @@ export function MessageBubble({
             { backgroundColor: colors.fill2 },
           ]}
         >
-          <Text variant="subhead" style={{ color: colors.labelTertiary }}>{text}</Text>
+          <Text variant="footnote" tone="muted">{text}</Text>
         </View>
       </View>
     );
@@ -113,7 +112,7 @@ export function MessageBubble({
               />
             )}
             <View style={styles.listingInfo}>
-              <Text variant="subhead" numberOfLines={2}>
+              <Text variant="footnote" tone="secondary" numberOfLines={2}>
                 {listing.title}
               </Text>
             </View>
@@ -163,7 +162,7 @@ export function MessageBubble({
           {/* Text */}
           {text && (
             <Text
-              variant="body"
+              variant="subhead"
               style={{ color: isOwn ? colors.primaryForeground : colors.label }}
             >
               {text}
@@ -173,9 +172,9 @@ export function MessageBubble({
           {/* Edited indicator */}
           {isEdited && (
             <Text
-              variant="subhead"
+              variant="caption2"
               style={{ 
-                color: isOwn ? colors.white : colors.labelTertiary,
+                color: isOwn ? colors.primaryForeground : colors.labelQuaternary,
                 marginTop: Spacing.xs,
               }}
             >
@@ -193,7 +192,7 @@ export function MessageBubble({
         {/* Seen indicator */}
         {showSeen && isOwn && (
           <View style={styles.seenContainer}>
-            <Text variant="subhead" style={{ color: colors.labelTertiary }}>Seen</Text>
+            <Text variant="caption2" tone="muted">Seen</Text>
             <UserAvatar
               src={otherUserAvatar}
               name={otherUserName || 'User'}

@@ -6,14 +6,14 @@
  * UI follows listing detail patterns: unapologetic, content-first, minimal cards.
  */
 
-import { Text } from '@/components/ui';
+import { Text, Skeleton, SkeletonCircle } from '@/components/ui';
 import React, { useState, useCallback, useMemo } from 'react';
-import { StyleSheet, View, Pressable, Alert, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, View, Alert, FlatList, RefreshControl } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 
-import { Spacing, Colors, Layout } from '@/constants/theme';
+import { Spacing, Colors, Layout, Radius, Sizes } from '@/constants/theme';
 import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -26,13 +26,14 @@ import { PhoneActionSheet, FinancingSheet, BookingSheet, SellerDescriptionSheet 
 // Modular components
 import {
   SellerHero,
+  SellerAbout,
+  SellerSpecialties,
   SellerActions,
   SellerStatsGrid,
   SellerTags,
   SellerListings,
   FinancingCalculator,
   SellerLocation,
-  SellerContactSkeleton,
   safeOpenURL,
 } from '@/components/seller-contact';
 
@@ -267,7 +268,27 @@ export default function SellerContactScreen() {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
         <MobileHeader title="Seller" showBackButton onBackPress={handleBack} />
-        <SellerContactSkeleton colors={colors} />
+        <View style={[styles.skeletonContainer, { paddingHorizontal: Spacing.lg, paddingTop: headerInset + Spacing.lg }]}>
+          {/* Hero */}
+          <View style={styles.skeletonHero}>
+            <Skeleton width="100%" height={Sizes.cardThumbnailHeight} borderRadius={Radius.xl} />
+            <SkeletonCircle size={Sizes.avatarLg * 2} />
+            <View style={styles.skeletonHeroText}>
+              <Skeleton width={160} height={20} />
+              <Skeleton width={100} height={14} />
+            </View>
+          </View>
+          {/* Actions */}
+          <Skeleton width="100%" height={140} borderRadius={Radius.xl} />
+          {/* About */}
+          <Skeleton width="100%" height={100} borderRadius={Radius.xl} />
+          {/* Specialties / Tags */}
+          <Skeleton width="100%" height={160} borderRadius={Radius.xl} />
+          {/* Stats */}
+          <Skeleton width="100%" height={100} borderRadius={Radius.xl} />
+          {/* Listings */}
+          <Skeleton width="100%" height={200} borderRadius={Radius.xl} />
+        </View>
       </View>
     );
   }
@@ -295,22 +316,7 @@ export default function SellerContactScreen() {
 
   const sellerContent = useMemo(() => (
     <View style={styles.sectionStack}>
-      <SellerHero seller={seller} colors={colors} topInset={insets.top} />
-
-      {seller.description && (
-        <Pressable
-          style={styles.section}
-          onPress={() => setDescriptionSheetVisible(true)}
-        >
-          <Text variant="footnoteEmphasized" tone="muted" uppercase>ABOUT</Text>
-          <Text variant="subhead" tone="secondary" numberOfLines={5}>
-            {seller.description}
-          </Text>
-          {seller.description.length > 180 && (
-            <Text variant="subhead" tone="primary">Read more</Text>
-          )}
-        </Pressable>
-      )}
+      <SellerHero seller={seller} colors={colors} />
 
       {!isOwnListing && (
         <SellerActions
@@ -322,33 +328,34 @@ export default function SellerContactScreen() {
         />
       )}
 
+      {seller.description && (
+        <SellerAbout
+          description={seller.description}
+          onReadMore={() => setDescriptionSheetVisible(true)}
+          colors={colors}
+        />
+      )}
+
+      {combinedTags.length > 0 && (
+        <SellerSpecialties
+          specialties={combinedTags}
+          colors={colors}
+        />
+      )}
+
       <SellerStatsGrid
         seller={seller}
         listingsCount={otherListingsTotal + 1}
         colors={colors}
       />
 
-      {!seller.isDealer && (
+      {!seller.isDealer && seller.tags.length > 0 && (
         <SellerTags
           tags={seller.tags}
           label="INTERESTS"
           colors={colors}
         />
       )}
-
-      <SellerTags
-        tags={combinedTags}
-        label={seller.isDealer ? 'SPECIALTIES' : 'BADGES'}
-        colors={colors}
-      />
-
-      <SellerListings
-        listings={otherListings}
-        totalCount={otherListingsTotal}
-        onViewListing={handleViewListing}
-        onViewAll={handleViewAllListings}
-        colors={colors}
-      />
 
       <FinancingCalculator
         price={listing.listing.price}
@@ -366,6 +373,14 @@ export default function SellerContactScreen() {
         onViewMap={handleViewOnMap}
         onGetDirections={handleGetDirections}
         onWebsite={handleWebsite}
+        colors={colors}
+      />
+
+      <SellerListings
+        listings={otherListings}
+        totalCount={otherListingsTotal}
+        onViewListing={handleViewListing}
+        onViewAll={handleViewAllListings}
         colors={colors}
       />
     </View>
@@ -486,12 +501,21 @@ const styles = StyleSheet.create({
   sectionStack: {
     gap: Spacing.xl,
   },
+  skeletonContainer: {
+    flex: 1,
+    gap: Spacing.xl,
+  },
+  skeletonHero: {
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  skeletonHeroText: {
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
   errorContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  section: {
-    gap: Spacing.sm,
   },
 });

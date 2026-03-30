@@ -1,19 +1,78 @@
 /**
- * Seller Actions (CTA Row)
+ * Seller Actions (CTA Section)
  * 
- * Chat, Book Viewing, and Phone actions.
- * Follows listings component patterns for consistency.
+ * Chat, Book Viewing, and Phone actions in list style.
+ * Follows profile/settings component patterns for consistency.
  */
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { memo, useCallback } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
-import { Calendar1, MessageCircle, Phone } from 'lucide-react-native';
+import Animated, {
+  FadeInDown,
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { Calendar1, ChevronRight, MessageCircle, Phone } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import type { SellerActionsProps } from './types';
+
+interface ActionItemProps {
+  icon: React.ElementType;
+  label: string;
+  onPress: () => void;
+  isLoading?: boolean;
+  isLast?: boolean;
+}
+
+function ActionItem({ icon: Icon, label, onPress, isLoading, isLast }: ActionItemProps) {
+  const { colors } = useTheme();
+  const bgOpacity = useSharedValue(0);
+
+  const handlePressIn = () => {
+    bgOpacity.value = withTiming(1, { duration: 100 });
+  };
+
+  const handlePressOut = () => {
+    bgOpacity.value = withTiming(0, { duration: 200 });
+  };
+
+  const animatedBgStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(bgOpacity.value, [0, 1], ['transparent', colors.fill]),
+  }));
+
+  return (
+    <HapticPressable
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      disabled={isLoading}
+    >
+      <Animated.View
+        style={[
+          styles.item,
+          animatedBgStyle,
+          !isLast && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+        ]}
+      >
+        <View style={styles.itemLeft}>
+          <Icon size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
+          <Text variant="subhead">{label}</Text>
+        </View>
+        {isLoading ? (
+          <ActivityIndicator size="small" color={colors.labelTertiary} />
+        ) : (
+          <ChevronRight size={Sizes.iconSm} color={colors.labelTertiary} strokeWidth={Stroke.icon} />
+        )}
+      </Animated.View>
+    </HapticPressable>
+  );
+}
 
 export const SellerActions = memo(function SellerActions({
   seller,
@@ -38,114 +97,52 @@ export const SellerActions = memo(function SellerActions({
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onShowPhone();
   }, [onShowPhone]);
-  
+
+  const actions = [
+    { icon: MessageCircle, label: 'Send Message', onPress: handleChat, isLoading: isChatLoading },
+    ...(seller.isDealer ? [{ icon: Calendar1, label: 'Book a Viewing', onPress: handleBookViewing }] : []),
+    ...(seller.phone ? [{ icon: Phone, label: 'Call Seller', onPress: handleShowPhone }] : []),
+  ];
+
   return (
-    <View style={styles.container}>
-      <HapticPressable
-        onPress={handleChat}
-        disabled={isChatLoading}
-        style={[
-          styles.button,
-          styles.primaryButton,
-          { backgroundColor: colors.primary, borderColor: colors.primary },
-        ]}
-      >
-        {({ pressed }) =>
-          isChatLoading ? (
-            <ActivityIndicator size="small" color={colors.background} />
-          ) : (
-            <View style={[styles.buttonInner, { opacity: pressed ? 0.78 : 1 }]}>
-              <MessageCircle size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
-              <Text variant="bodyEmphasized" style={{ color: colors.primaryForeground }}>
-                Chat
-              </Text>
-            </View>
-          )
-        }
-      </HapticPressable>
-
-      {(seller.isDealer || seller.phone) && (
-        <View style={styles.supportingRow}>
-          {seller.isDealer && (
-            <HapticPressable
-              onPress={handleBookViewing}
-              style={[
-                styles.supportingAction,
-                { backgroundColor: colors.surfaceSecondary, borderColor: colors.outline },
-              ]}
-            >
-              {({ pressed }) => (
-                <View style={[styles.supportingInner, { opacity: pressed ? 0.72 : 1 }]}>
-                  <Calendar1 size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
-                  <Text variant="subhead" style={{ color: colors.label }}>
-                    Book
-                  </Text>
-                </View>
-              )}
-            </HapticPressable>
-          )}
-
-          {seller.phone && (
-            <HapticPressable
-              onPress={handleShowPhone}
-              hitSlop={Layout.hitSlopSmall}
-              style={[
-                styles.supportingAction,
-                { backgroundColor: colors.surfaceSecondary, borderColor: colors.outline },
-              ]}
-            >
-              {({ pressed }) => (
-                <View style={[styles.supportingInner, { opacity: pressed ? 0.72 : 1 }]}>
-                  <Phone size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
-                  <Text variant="subhead" style={{ color: colors.label }}>
-                    Phone
-                  </Text>
-                </View>
-              )}
-            </HapticPressable>
-          )}
-        </View>
-      )}
-    </View>
+    <Animated.View
+      entering={FadeInDown.delay(200).duration(350)}
+      style={styles.container}
+    >
+      <View style={[styles.content, { backgroundColor: colors.surface }]}>
+        {actions.map((action, index) => (
+          <ActionItem
+            key={action.label}
+            icon={action.icon}
+            label={action.label}
+            onPress={action.onPress}
+            isLoading={action.isLoading}
+            isLast={index === actions.length - 1}
+          />
+        ))}
+      </View>
+    </Animated.View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    gap: Spacing.lg,
+    marginTop: Spacing.xl,
   },
-  button: {
-    minHeight: Sizes.actionButtonLg,
+  content: {
     borderRadius: Radius.xl,
-    borderWidth: 1,
-    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
   },
-  primaryButton: {
-    width: '100%',
-  },
-  buttonInner: {
+  itemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-  },
-  supportingRow: {
-    flexDirection: 'row',
     gap: Spacing.md,
-  },
-  supportingAction: {
-    flex: 1,
-    minHeight: Sizes.actionButtonLg,
-    borderRadius: Radius.xl,
-    borderWidth: 1,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.md,
-  },
-  supportingInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
   },
 });

@@ -7,10 +7,12 @@
  */
 
 import { Text, HapticPressable } from '@/components/ui';
-import React, { memo, useState, useCallback } from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { PlusCircle } from 'lucide-react-native';
 
-import { Colors, Spacing, Layout } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 interface ListingDescriptionProps {
@@ -19,72 +21,51 @@ interface ListingDescriptionProps {
   onReadMore?: () => void;
 }
 
-const MAX_LINES = 4;
-
 export const ListingDescription = memo(function ListingDescription({
   description,
   isBlk = false,
   onReadMore,
 }: ListingDescriptionProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
-  const [showReadMore, setShowReadMore] = useState(false);
-  const [measured, setMeasured] = useState(false);
-
-  const textColor = isBlk ? colors.labelSecondary : colors.labelSecondary;
-
-  // Fired by the *hidden* full-text render (no numberOfLines).
-  // Reliably reports all lines on both platforms.
-  const onHiddenTextLayout = useCallback(
-    (e: { nativeEvent: { lines: unknown[] } }) => {
-      if (!measured) {
-        setShowReadMore(e.nativeEvent.lines.length > 3);
-        setMeasured(true);
-      }
-    },
-    [measured],
-  );
+  const { colors } = useTheme();
 
   return (
-    <View style={styles.container}>
-      <Text variant="footnoteEmphasized" tone="muted" uppercase>
-        DESCRIPTION
-      </Text>
+    <Animated.View entering={FadeInDown.delay(0).duration(350)}>
+      <View style={[styles.card, { backgroundColor: colors.surface }]}>
+        <View style={styles.headerRow}>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Description</Text>
+          <HapticPressable onPress={onReadMore}>
+            <PlusCircle size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
+          </HapticPressable>
+        </View>
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
-      {/* Hidden measurer — same style, no truncation, off-screen */}
-      {!measured && (
-        <Text
-          variant="body"
-          style={[styles.hiddenText, { color: textColor }]}
-          onTextLayout={onHiddenTextLayout}
-        >
-          {description}
-        </Text>
-      )}
-
-      {/* Visible text — always truncated to 3 lines */}
-      <Text variant="body" style={{ color: textColor }} numberOfLines={3}>
-        {description}
-      </Text>
-
-      {showReadMore && (
-        <HapticPressable onPress={onReadMore} hitSlop={Layout.hitSlopSmall}>
-          <Text variant="subhead" tone="primary">
-            Read more
+        <View style={styles.body}>
+          <Text variant="subhead" tone="secondary" numberOfLines={3}>
+            {description}
           </Text>
-        </HapticPressable>
-      )}
-    </View>
+        </View>
+      </View>
+    </Animated.View>
   );
 });
 
 const styles = StyleSheet.create({
-  container: {
-    gap: Spacing.sm,
+  card: {
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
   },
-  hiddenText: {
-    position: 'absolute',
-    opacity: 0,
-    pointerEvents: 'none',
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+  },
+  body: {
+    padding: Spacing.lg,
   },
 });
+

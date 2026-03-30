@@ -9,6 +9,7 @@
 import { Text } from '@/components/ui';
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { Layout, SCREEN_WIDTH, Spacing } from '@/constants/theme';
@@ -159,9 +160,12 @@ export function GreetingNote() {
   }, [timePeriod, colors]);
 
   return (
-    <View style={styles.container}>
+    <Animated.View
+      entering={FadeInDown.delay(0).duration(350)}
+      style={styles.container}
+    >
       <View style={styles.greetingRow}>
-        <Text variant={greetingVariant} style={{ color: colors.label }}>
+        <Text variant={greetingVariant}>
           {content.greeting}
           {content.name ? ', ' : ''}
         </Text>
@@ -172,10 +176,10 @@ export function GreetingNote() {
         )}
       </View>
 
-      <Text variant="body" style={{ color: colors.labelSecondary }} tone="secondary">
+      <Text variant="subhead" tone="secondary">
         {content.subtitle}
       </Text>
-    </View>
+    </Animated.View>
   );
 }
 

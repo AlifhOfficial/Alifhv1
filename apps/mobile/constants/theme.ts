@@ -194,14 +194,14 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     white: '#FFFFFF',
     
     // ── Backgrounds (3-tier hierarchy) ────────────────────────────────────
-    background:          '#FFFFFF',   // Opposite of dark #000000
-    backgroundSecondary: '#F7F7F7',   // Softer light step from dark truth
-    backgroundTertiary:  '#F1F1F1',   // Softer third tier
+    background:          '#FFFFFF',   // Pure white page background
+    backgroundSecondary: '#F7F7F7',   // Softer secondary page tier
+    backgroundTertiary:  '#F1F1F1',   // Third tier
     
     // ── Surfaces (for elevated/grouped content) ───────────────────────────
-    surface:          '#FFFFFF',   // Primary elevated light surface
-    surfaceSecondary: '#F7F7F7',   // Softer elevated tier
-    surfaceTertiary:  '#F1F1F1',   // Soft tertiary surface
+    surface:          '#F0F0F0',   // Light gray card — lifts above white bg
+    surfaceSecondary: '#E8E8E8',   // Deeper elevated tier
+    surfaceTertiary:  '#E0E0E0',   // Soft tertiary surface
     
     // ── Text/Labels (4-tier semantic hierarchy) ───────────────────────────
     label:           '#050505',               // Opposite of dark #FAFAFA

@@ -121,14 +121,30 @@ export default function SettingsScreen() {
         <View style={[styles.container, { backgroundColor: colors.background }]}> 
           <MobileHeader title="Settings" showBackButton />
           <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerInset }]}> 
-            {/* Section skeletons */}
-            {Array.from({ length: 4 }).map((_, i) => (
-              <View key={i} style={styles.skeletonSection}>
-                <Skeleton width={120} height={14} />
-                <Skeleton width="100%" height={48} borderRadius={Radius.md} />
-                <Skeleton width="100%" height={48} borderRadius={Radius.md} />
-              </View>
-            ))}
+            {/* Privacy Section - 1 row */}
+            <View style={styles.skeletonSection}>
+              <Skeleton width="100%" height={72} borderRadius={Radius.xl} />
+            </View>
+
+            {/* Selling Section - 1 row */}
+            <View style={styles.skeletonSection}>
+              <Skeleton width="100%" height={72} borderRadius={Radius.xl} />
+            </View>
+
+            {/* Identity Section - 1 row with status */}
+            <View style={styles.skeletonSection}>
+              <Skeleton width="100%" height={72} borderRadius={Radius.xl} />
+            </View>
+
+            {/* Support Section - 2 rows */}
+            <View style={styles.skeletonSection}>
+              <Skeleton width="100%" height={110} borderRadius={Radius.xl} />
+            </View>
+
+            {/* Danger Zone - Delete button */}
+            <View style={styles.skeletonSection}>
+              <Skeleton width="100%" height={52} borderRadius={Radius.xl} />
+            </View>
           </View>
         </View>
       </>
@@ -236,9 +252,8 @@ const styles = StyleSheet.create({
   },
   skeletonContainer: {
     flex: 1,
-    gap: Spacing.xl,
   },
   skeletonSection: {
-    gap: Spacing.md,
+    marginBottom: Spacing.xl,
   },
 });

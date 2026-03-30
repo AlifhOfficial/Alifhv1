@@ -1,7 +1,8 @@
 import { Text, Skeleton } from '@/components/ui';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Colors, Spacing, Radius, Layout, Typography, Sizes, scale } from '@/constants/theme';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Colors, Spacing, Radius, Layout, Sizes, scale } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { type UserDashboardStats } from '@/lib/dashboard-api';
 
@@ -80,7 +81,7 @@ function PercentRing({ value, color, trackColor }: {
         position: 'absolute',
         transform: [{ rotate: '-90deg' }],
       }} />
-      <Text style={[Typography.caption1Emphasized, { color }]}>{clamped}%</Text>
+      <Text variant="caption1Emphasized" style={{ color }}>{clamped}%</Text>
     </View>
   );
 }
@@ -88,34 +89,42 @@ function PercentRing({ value, color, trackColor }: {
 /* ── Card 1: Listings Health ───────────────────────────────────────────── */
 function ListingsCard({ stats, colors }: { stats: UserDashboardStats; colors: typeof Colors.light }) {
   return (
-    <View style={[styles.card, { backgroundColor: colors.backgroundSecondary }]}>
-      <Text style={[Typography.headline, { color: colors.labelSecondary }]}>Listings</Text>
-
-      <View style={styles.row}>
-        <View style={{ flex: 1 }}>
-          <Text style={[Typography.largeTitleEmphasized, { color: colors.primary }]}>
-            {formatCompact(stats.activeListings)}
-          </Text>
-          <Text style={[Typography.subhead, { color: colors.labelTertiary }]}>
-            of {formatCompact(stats.totalListings)} active
-          </Text>
-        </View>
+    <Animated.View entering={FadeInDown.delay(0).duration(350)} style={[styles.card, { backgroundColor: colors.surface }]}>
+      <View style={styles.headerRow}>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Listings</Text>
         {stats.expiringSoon > 0 && (
           <View style={[styles.alertPill, { backgroundColor: colors.warningMuted }]}>
-            <Text style={[Typography.caption1Emphasized, { color: colors.warning }]}>
+            <Text variant="caption1Emphasized" style={{ color: colors.warning }}>
               {stats.expiringSoon} expiring
             </Text>
           </View>
         )}
       </View>
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
-      <ProgressBar
-        value={stats.activeListings}
-        max={stats.totalListings}
-        color={colors.primary}
-        trackColor={colors.fill3}
-      />
-    </View>
+      <View style={styles.statRow}>
+        <Text variant="subhead" tone="secondary">Active</Text>
+        <Text variant="title2Emphasized" style={{ color: colors.primary }}>
+          {formatCompact(stats.activeListings)}
+        </Text>
+      </View>
+      <View style={[styles.innerDivider, { backgroundColor: colors.border }]} />
+
+      <View style={styles.statRow}>
+        <Text variant="subhead" tone="secondary">Total</Text>
+        <Text variant="subheadEmphasized">{formatCompact(stats.totalListings)}</Text>
+      </View>
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
+      <View style={styles.visualRow}>
+        <ProgressBar
+          value={stats.activeListings}
+          max={stats.totalListings}
+          color={colors.primary}
+          trackColor={colors.fill3}
+        />
+      </View>
+    </Animated.View>
   );
 }
 
@@ -126,50 +135,62 @@ function ViewsTrendCard({ stats, colors }: { stats: UserDashboardStats; colors: 
   const hasData = trendData.length > 0 && trendData.some(v => v > 0);
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.backgroundSecondary }]}>
-      <View style={styles.row}>
-        <Text style={[Typography.headline, { color: colors.labelSecondary }]}>Views</Text>
-        <Text style={[Typography.caption1Emphasized, { color: colors.labelTertiary }]}>Last 7 days</Text>
+    <Animated.View entering={FadeInDown.delay(50).duration(350)} style={[styles.card, { backgroundColor: colors.surface }]}>
+      <View style={styles.headerRow}>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Views</Text>
+        <Text variant="caption1Emphasized" tone="muted">Last 7 days</Text>
       </View>
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
-      <View style={styles.row}>
-        <Text style={[Typography.largeTitleEmphasized, { color: colors.info }]}>
+      <View style={styles.statRow}>
+        <Text variant="subhead" tone="secondary">Total</Text>
+        <Text variant="title2Emphasized" style={{ color: colors.info }}>
           {formatCompact(stats.totalViews)}
         </Text>
-        <Text style={[Typography.subhead, { color: colors.labelTertiary }]}>
-          ~{formatCompact(stats.avgViewsPerListing)} per listing
-        </Text>
       </View>
+      <View style={[styles.innerDivider, { backgroundColor: colors.border }]} />
 
-      {hasData ? (
-        <TrendChart data={trendData} color={colors.info} />
-      ) : (
-        <Text style={[Typography.subhead, { color: colors.labelTertiary, textAlign: 'center', paddingVertical: Spacing.lg }]}>
-          No trend data yet
-        </Text>
-      )}
-    </View>
+      <View style={styles.statRow}>
+        <Text variant="subhead" tone="secondary">Avg per listing</Text>
+        <Text variant="subheadEmphasized">~{formatCompact(stats.avgViewsPerListing)}</Text>
+      </View>
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
+      <View style={styles.visualRow}>
+        {hasData ? (
+          <TrendChart data={trendData} color={colors.info} />
+        ) : (
+          <Text variant="subhead" tone="muted" style={{ textAlign: 'center', paddingVertical: Spacing.sm }}>
+            No trend data yet
+          </Text>
+        )}
+      </View>
+    </Animated.View>
   );
 }
 
 /* ── Card 3: Engagement (save rate + saves) ────────────────────────────── */
 function EngagementCard({ stats, colors }: { stats: UserDashboardStats; colors: typeof Colors.light }) {
   return (
-    <View style={[styles.card, { backgroundColor: colors.backgroundSecondary }]}>
-      <Text style={[Typography.headline, { color: colors.labelSecondary }]}>Engagement</Text>
+    <Animated.View entering={FadeInDown.delay(100).duration(350)} style={[styles.card, { backgroundColor: colors.surface }]}>
+      <View style={styles.headerRow}>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Engagement</Text>
+      </View>
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
-      <View style={styles.row}>
-        <View style={{ flex: 1, gap: Spacing.xs }}>
-          <Text style={[Typography.largeTitleEmphasized, { color: colors.success }]}>
-            {formatCompact(stats.totalSaves)}
-          </Text>
-          <Text style={[Typography.subhead, { color: colors.labelTertiary }]}>
-            saves from {formatCompact(stats.totalViews)} views
-          </Text>
-        </View>
+      <View style={styles.statRow}>
+        <Text variant="subhead" tone="secondary">Saves</Text>
+        <Text variant="title2Emphasized" style={{ color: colors.success }}>
+          {formatCompact(stats.totalSaves)}
+        </Text>
+      </View>
+      <View style={[styles.innerDivider, { backgroundColor: colors.border }]} />
+
+      <View style={styles.statRow}>
+        <Text variant="subhead" tone="secondary">Save rate</Text>
         <PercentRing value={stats.saveRate} color={colors.success} trackColor={colors.fill3} />
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -180,27 +201,35 @@ function SalesCard({ stats, colors }: { stats: UserDashboardStats; colors: typeo
     : 0;
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.backgroundSecondary }]}>
-      <Text style={[Typography.headline, { color: colors.labelSecondary }]}>Sales</Text>
-
-      <View style={styles.row}>
-        <View style={{ flex: 1 }}>
-          <Text style={[Typography.largeTitleEmphasized, { color: colors.success }]}>
-            {formatCompact(stats.soldCount)}
-          </Text>
-          <Text style={[Typography.subhead, { color: colors.labelTertiary }]}>
-            sold ({conversionRate}% of listings)
-          </Text>
-        </View>
+    <Animated.View entering={FadeInDown.delay(150).duration(350)} style={[styles.card, { backgroundColor: colors.surface }]}>
+      <View style={styles.headerRow}>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Sales</Text>
       </View>
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
-      <ProgressBar
-        value={stats.soldCount}
-        max={stats.totalListings}
-        color={colors.success}
-        trackColor={colors.fill3}
-      />
-    </View>
+      <View style={styles.statRow}>
+        <Text variant="subhead" tone="secondary">Sold</Text>
+        <Text variant="title2Emphasized" style={{ color: colors.success }}>
+          {formatCompact(stats.soldCount)}
+        </Text>
+      </View>
+      <View style={[styles.innerDivider, { backgroundColor: colors.border }]} />
+
+      <View style={styles.statRow}>
+        <Text variant="subhead" tone="secondary">Conversion rate</Text>
+        <Text variant="subheadEmphasized">{conversionRate}%</Text>
+      </View>
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
+      <View style={styles.visualRow}>
+        <ProgressBar
+          value={stats.soldCount}
+          max={stats.totalListings}
+          color={colors.success}
+          trackColor={colors.fill3}
+        />
+      </View>
+    </Animated.View>
   );
 }
 
@@ -209,54 +238,59 @@ function ActivityCard({ stats, colors }: { stats: UserDashboardStats; colors: ty
   const totalSuperlikes = stats.superlikesUsed + stats.superlikesRemaining;
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.backgroundSecondary }]}>
-      <Text style={[Typography.headline, { color: colors.labelSecondary }]}>Your Activity</Text>
+    <Animated.View entering={FadeInDown.delay(200).duration(350)} style={[styles.card, { backgroundColor: colors.surface }]}>
+      <View style={styles.headerRow}>
+        <Text variant="caption1Emphasized" tone="muted" uppercase>Your Activity</Text>
+      </View>
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
-      <View style={styles.pairRow}>
-        <View style={[styles.pairCell, { backgroundColor: colors.surface }]}>
-          <Text style={[Typography.title2Emphasized, { color: colors.favorite }]}>
-            {formatCompact(stats.mySaves)}
-          </Text>
-          <Text style={[Typography.caption1Emphasized, { color: colors.labelTertiary }]}>Saved</Text>
-        </View>
-        <View style={[styles.pairCell, { backgroundColor: colors.surface }]}>
-          <Text style={[Typography.title2Emphasized, { color: colors.amna }]}>
-            {stats.superlikesRemaining}
-          </Text>
-          <Text style={[Typography.caption1Emphasized, { color: colors.labelTertiary }]}>Superlikes left</Text>
-        </View>
+      <View style={styles.statRow}>
+        <Text variant="subhead" tone="secondary">Saved</Text>
+        <Text variant="title2Emphasized" style={{ color: colors.favorite }}>
+          {formatCompact(stats.mySaves)}
+        </Text>
+      </View>
+      <View style={[styles.innerDivider, { backgroundColor: colors.border }]} />
+
+      <View style={styles.statRow}>
+        <Text variant="subhead" tone="secondary">Superlikes left</Text>
+        <Text variant="subheadEmphasized" style={{ color: colors.amna }}>
+          {stats.superlikesRemaining}
+        </Text>
       </View>
 
       {totalSuperlikes > 0 && (
-        <View style={{ gap: Spacing.xs }}>
-          <View style={styles.row}>
-            <Text style={[Typography.caption1Emphasized, { color: colors.labelTertiary }]}>Superlikes</Text>
-            <Text style={[Typography.caption1Emphasized, { color: colors.labelTertiary }]}>
-              {stats.superlikesUsed}/{totalSuperlikes} used
-            </Text>
+        <>
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          <View style={[styles.visualRow, { gap: Spacing.sm }]}>
+            <View style={styles.row}>
+              <Text variant="caption1Emphasized" tone="muted">Superlikes used</Text>
+              <Text variant="caption1Emphasized" tone="muted">
+                {stats.superlikesUsed}/{totalSuperlikes}
+              </Text>
+            </View>
+            <ProgressBar
+              value={stats.superlikesUsed}
+              max={totalSuperlikes}
+              color={colors.amna}
+              trackColor={colors.fill3}
+            />
           </View>
-          <ProgressBar
-            value={stats.superlikesUsed}
-            max={totalSuperlikes}
-            color={colors.amna}
-            trackColor={colors.fill3}
-          />
-        </View>
+        </>
       )}
-    </View>
+    </Animated.View>
   );
 }
 
 /* ── Main export ───────────────────────────────────────────────────────── */
 export function UserDashboardStatsCard({ stats, isLoading = false }: UserDashboardStatsCardProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors } = useTheme();
 
   if (isLoading) {
     return (
       <View style={styles.root}>
         {[1, 2, 3, 4, 5].map(i => (
-          <Skeleton key={i} width="100%" height={STATS_CARD_SKELETON_HEIGHT} borderRadius={Radius['2xl']} />
+          <Skeleton key={i} width="100%" height={STATS_CARD_SKELETON_HEIGHT} borderRadius={Radius.xl} />
         ))}
       </View>
     );
@@ -281,30 +315,43 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
   },
   card: {
-    borderRadius: Radius['2xl'],
-    padding: Spacing.xl,
-    gap: Spacing.md,
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+  },
+  innerDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: Spacing.lg,
+  },
+  statRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  visualRow: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+  },
   alertPill: {
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: Radius.full,
-  },
-  pairRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  pairCell: {
-    flex: 1,
-    borderRadius: Radius.xl,
-    padding: Spacing.lg,
-    gap: Spacing.xs,
-    alignItems: 'center',
   },
   /* ── Progress bar ──────────────────────── */
   progressTrack: {

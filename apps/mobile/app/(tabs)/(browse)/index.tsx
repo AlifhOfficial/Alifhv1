@@ -8,7 +8,7 @@
 
 import { Text } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, View, FlatList, RefreshControl, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -103,6 +103,7 @@ export default function BrowseScreen() {
   const colors = Colors[colorScheme];
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
 
   // ─────────────────────────────────────────────────────────────────────────
   // CONTEXT - Single Source of Truth
@@ -509,10 +510,13 @@ export default function BrowseScreen() {
   }, [hasMore, isFetchingNextPage]);
 
   const headerInset = getMobileHeaderContentInset(insets.top);
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
+  }, []);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <MobileHeader title="Browse" />
+      <MobileHeader title="Browse" titleHidden={isHeaderTitleHidden} />
       <FlatList
         ref={scrollRef}
         data={listings}
@@ -530,6 +534,8 @@ export default function BrowseScreen() {
           flexGrow: listings.length === 0 ? 1 : undefined,
         }}
         contentInsetAdjustmentBehavior="never"
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         removeClippedSubviews

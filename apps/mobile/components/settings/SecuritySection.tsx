@@ -30,12 +30,12 @@ export function SecuritySection({
   delay = 200,
 }: SecuritySectionProps) {
   return (
-    <Section title="Security" colors={colors} delay={delay}>
+    <Section colors={colors} delay={delay}>
       {/* Header with Add button */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View style={styles.info}>
           <Text variant="subhead" tone="muted">Passkeys</Text>
-          <Text variant="body">Sign in with biometrics</Text>
+          <Text variant="subhead" tone="secondary">Sign in with biometrics</Text>
         </View>
         <HapticPressable
           onPress={onAddPasskey}

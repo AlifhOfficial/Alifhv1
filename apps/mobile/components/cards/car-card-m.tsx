@@ -13,7 +13,7 @@ import { Image } from 'expo-image';
 import { Share2, CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Sizes, AspectRatio, Timing, Stroke, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { shareListing } from '@/lib/listing-share';
@@ -22,7 +22,6 @@ import { shareListing } from '@/lib/listing-share';
 // CONSTANTS
 // ============================================================================
 
-const IMAGE_ASPECT_RATIO = 16 / 9;
 const IMAGE_BLURHASH = 'L6PZfSi_.AyE_3t7t7R**0o#DgR4';
 
 // ============================================================================
@@ -81,6 +80,7 @@ function formatSpecs(specs: string): string {
 interface CardTheme {
   bg: string;
   border: string;
+  borderWidth: number;
   title: string;
   price: string;
   stats: string;
@@ -138,6 +138,7 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean): CardT
       return {
         bg: colors.background,
         border: colors.border,
+        borderWidth: BorderWidths.medium,
         title: colors.label,
         price: colors.label,
         stats: colors.labelSecondary,
@@ -153,6 +154,7 @@ function useCardTheme(colors: typeof Colors.light, isBlkListing: boolean): CardT
     return {
       bg: colors.surface,
       border: colors.border,
+      borderWidth: StyleSheet.hairlineWidth,
       title: colors.label,
       price: colors.primary,
       stats: colors.labelSecondary,
@@ -250,8 +252,8 @@ export const CarCardM = memo(function CarCardM({
       onPress={handlePress}
       onPressIn={onPressIn ? handlePressIn : undefined}
       onLongPress={onLongPress ? handleLongPress : undefined}
-      delayLongPress={400}
-      style={[styles.container, { backgroundColor: theme.bg, borderColor: theme.border }]}
+      delayLongPress={Timing.longPress}
+      style={[styles.container, { backgroundColor: theme.bg, borderColor: theme.border, borderWidth: theme.borderWidth }]}
     >
       {/* BLK Accent Line */}
       {isBlkListing && <View style={[styles.blkAccent, { backgroundColor: theme.border }]} />}
@@ -266,27 +268,23 @@ export const CarCardM = memo(function CarCardM({
 
       {/* === CONTENT SECTION === */}
       <View style={styles.content}>
-        {/* Header: Title + Year */}
-        <CardHeader 
-          make={make} 
-          model={model} 
-          year={year} 
-          titleColor={theme.title}
-          metaColor={theme.meta}
-        />
+        {/* Title row: make+model left, year right */}
+        <View style={styles.titleRow}>
+          <Text variant="bodyEmphasized" style={[styles.titleText, { color: theme.title }]} numberOfLines={1}>
+            {make} {model}
+          </Text>
+          <Text variant="subhead" style={{ color: theme.meta }}>{year}</Text>
+        </View>
 
-        {/* Price */}
-        <Text style={{ color: theme.price }} variant="headline" tone="primary">
-          {formatPrice(price)}
+        {/* Meta: mileage · specs · location */}
+        <Text variant="subhead" style={{ color: theme.meta }}>
+          {formatMileage(mileage)} km · {displaySpecs} · {displayEmirate}
         </Text>
 
-        {/* Stats: Mileage · Specs · Location */}
-        <CardStats
-          mileage={mileage}
-          specs={displaySpecs}
-          emirate={displayEmirate}
-          statsColor={theme.stats}
-        />
+        {/* Price */}
+        <Text variant="body" style={{ color: theme.price }}>
+          {formatPrice(price)}
+        </Text>
 
         {/* Footer: Seller + Actions */}
         <View style={styles.footer}>
@@ -335,7 +333,7 @@ const CardImage = memo(function CardImage({ uri, backgroundColor, placeholderCol
           source={{ uri }}
           style={styles.image}
           contentFit="cover"
-          transition={200}
+          transition={Timing.imageTransition}
           placeholder={{ blurhash: IMAGE_BLURHASH }}
         />
       ) : (
@@ -347,43 +345,9 @@ const CardImage = memo(function CardImage({ uri, backgroundColor, placeholderCol
   );
 });
 
-interface CardHeaderProps {
-  make: string;
-  model: string;
-  year: number;
-  titleColor: string;
-  metaColor: string;
-}
-
-const CardHeader = memo(function CardHeader({ make, model, year, titleColor, metaColor }: CardHeaderProps) {
-  return (
-    <View style={styles.header}>
-      <Text variant="body" style={[styles.title, { color: titleColor }]} numberOfLines={1}>
-        {make} {model}
-      </Text>
-      <Text variant="subhead" style={{ color: metaColor }} tone="secondary">{year}</Text>
-    </View>
-  );
-});
-
-interface CardStatsProps {
-  mileage: number;
-  specs: string;
-  emirate: string;
-  statsColor: string;
-}
-
-const CardStats = memo(function CardStats({ mileage, specs, emirate, statsColor }: CardStatsProps) {
-  return (
-    <View style={styles.statsRow}>
-      <Text variant="subhead" style={{ color: statsColor }} tone="secondary">{formatMileage(mileage)} km</Text>
-      <Text variant="subhead" style={{ color: statsColor, opacity: 0.4 }} tone="secondary">·</Text>
-      <Text variant="subhead" style={{ color: statsColor }} tone="secondary">{specs}</Text>
-      <Text variant="subhead" style={{ color: statsColor, opacity: 0.4 }} tone="secondary">·</Text>
-      <Text variant="subhead" style={{ color: statsColor }} numberOfLines={1} tone="secondary">{emirate}</Text>
-    </View>
-  );
-});
+// ============================================================================
+// SELLER INFO
+// ============================================================================
 
 interface SellerInfoProps {
   name: string;
@@ -406,7 +370,7 @@ const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartn
             source={{ uri: avatarUri }}
             style={styles.avatarImage}
             contentFit="cover"
-            transition={150}
+            transition={Timing.avatarTransition}
           />
         ) : (
           <Text variant="bodyEmphasized" style={{ color: theme.meta }}>
@@ -415,11 +379,11 @@ const SellerInfo = memo(function SellerInfo({ name, isVerified, isBlackTierPartn
         )}
       </View>
       <View style={styles.sellerMeta}>
-        <Text variant="subhead" style={[styles.sellerName, { color: theme.sellerText }]} numberOfLines={1} tone="secondary">
+        <Text variant="subhead" style={[styles.sellerName, { color: theme.sellerText }]} numberOfLines={1}>
           {name}
         </Text>
         {!isBlackTierPartner && isVerified && (
-          <CheckCircle2 size={Sizes.iconSm} color={colors.primary} />
+          <CheckCircle2 size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
         )}
         {isBlackTierPartner && (
           <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg, borderColor: colors.blkBadgeBorder }]}>
@@ -483,7 +447,7 @@ const CardActions = memo(function CardActions({
         hitSlop={Layout.hitSlop}
         style={[styles.actionBubble, { backgroundColor: glassBackground, borderColor: glassBorder }]}
       >
-        <Share2 size={Sizes.iconXs} color={actionIconColor} strokeWidth={1.75} />
+        <Share2 size={Sizes.iconXs} color={actionIconColor} strokeWidth={Stroke.icon} />
       </HapticPressable>
     </View>
   );
@@ -506,20 +470,14 @@ export function CarCardMSkeleton() {
 
       {/* Content */}
       <View style={styles.content}>
-        <View style={styles.header}>
-          <Skeleton width="60%" height={Spacing.lg} />
-          <Skeleton width={Sizes.avatarSm} height={Spacing.md} />
-        </View>
-        <Skeleton width="40%" height={Spacing.xl} style={{ marginVertical: Spacing.xs }} />
-        <View style={styles.statsRow}>
-          <Skeleton width="20%" height={Spacing.md} />
-          <Skeleton width="15%" height={Spacing.md} />
-          <Skeleton width="18%" height={Spacing.md} />
-        </View>
+        <Skeleton width="60%" height={Spacing.lg} />
+        <Skeleton width="45%" height={Spacing.md} />
+        <Skeleton width="40%" height={Spacing.md} />
+        <Skeleton width="25%" height={Spacing.md} />
         <View style={styles.footer}>
           <View style={styles.sellerInfo}>
             <SkeletonCircle size={Sizes.bubble} />
-            <Skeleton width="40%" height={Spacing.lg} />
+            <Skeleton width="40%" height={Spacing.md} />
           </View>
           <View style={styles.actions}>
             <SkeletonCircle size={Sizes.bubbleXs} />
@@ -551,18 +509,18 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 1,
+    height: BorderWidths.medium,
     zIndex: 1,
   },
   content: {
     padding: Spacing.md,
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
 
   // Image Section
   imageContainer: {
     width: '100%',
-    aspectRatio: IMAGE_ASPECT_RATIO,
+    aspectRatio: AspectRatio.cardImage,
     borderRadius: Radius['2xl'],
     borderCurve: 'continuous',
     overflow: 'hidden',
@@ -578,24 +536,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  // Header Section
-  header: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'space-between',
-    gap: Spacing.xs,
-  },
-  title: {
-    flex: 1,
-  },
-
-  // Stats Section
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-
   // Footer Section
   footer: {
     flexDirection: 'row',
@@ -603,6 +543,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: Spacing.sm,
     marginTop: Spacing.xs,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    gap: Spacing.xs,
+  },
+  titleText: {
+    flex: 1,
   },
 
   // Seller Info
@@ -627,7 +576,7 @@ const styles = StyleSheet.create({
     width: Sizes.bubble + 6,
     height: Sizes.bubble + 6,
     borderRadius: (Sizes.bubble + 6) / 2,
-    borderWidth: 2,
+    borderWidth: BorderWidths.medium,
     top: -Spacing.xs,
     left: -Spacing.xs,
   },
@@ -650,7 +599,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Sizes.badgePaddingH,
     paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.none,
-    borderWidth: 1,
+    borderWidth: BorderWidths.thin,
   },
 
   // Actions

@@ -9,7 +9,7 @@
 
 import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState } from '@/components/ui';
 import React, { useMemo, useCallback, useRef } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, View, FlatList, RefreshControl, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { MessageCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -42,6 +42,7 @@ export default function MessagesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { isAuthenticated, user } = useAuth();
+  const [isHeaderTitleHidden, setIsHeaderTitleHidden] = React.useState(false);
 
   const {
     conversations,
@@ -260,14 +261,23 @@ export default function MessagesScreen() {
 
   const headerInset = getMobileHeaderContentInset(insets.top);
   const tabBarInset = getTabBarContentInset(insets.bottom);
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
+  }, []);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <MobileHeader title="Chats" fadeHeight={insets.top + Spacing['5xl']} />
+      <MobileHeader
+        title="Chats"
+        titleHidden={isHeaderTitleHidden}
+        fadeHeight={insets.top + Spacing['5xl']}
+      />
       <FlatList
         data={listItems}
         renderItem={renderItem}
         keyExtractor={(item) => item.key}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         contentContainerStyle={[
           styles.listContent,
           { paddingTop: headerInset, paddingBottom: tabBarInset + Spacing.lg },

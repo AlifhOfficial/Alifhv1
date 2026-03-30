@@ -61,7 +61,7 @@ export function PersonalInfoSection({
   };
 
   return (
-    <Section title="Personal Information" colors={colors} delay={200}>
+    <Section colors={colors} delay={200}>
       <EditableField
         label="First Name"
         value={form.firstName}

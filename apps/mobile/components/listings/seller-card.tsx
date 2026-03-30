@@ -8,7 +8,7 @@ import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { SellerData } from '@/lib/listing-api';
@@ -73,7 +73,7 @@ export const SellerCard = memo(function SellerCard({
               contentFit="cover"
             />
           ) : (
-            <Text variant="title3Emphasized" tone="secondary">
+            <Text variant="bodyEmphasized" tone="secondary">
               {sellerName.charAt(0).toUpperCase()}
             </Text>
           )}
@@ -81,9 +81,9 @@ export const SellerCard = memo(function SellerCard({
         
         <View style={styles.details}>
           <View style={styles.nameRow}>
-            <Text variant="body" style={{ color: textColor }}>{sellerName}</Text>
+            <Text variant="bodyEmphasized" style={{ color: textColor }}>{sellerName}</Text>
             {isVerified && !isBlackTier && (
-              <CheckCircle2 size={Sizes.iconXs} color={colors.primary} />
+              <CheckCircle2 size={Sizes.iconXs} color={colors.primary} strokeWidth={Stroke.icon} />
             )}
             {isBlackTier && (
               <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
@@ -93,7 +93,7 @@ export const SellerCard = memo(function SellerCard({
           </View>
           
           {/* Subtitle: Dealer type or member since */}
-          <Text variant="subhead" tone="secondary">
+          <Text variant="caption1" tone="secondary">
             {isPartner ? 'Verified Dealer' : (memberSince || 'Private Seller')}
           </Text>
         </View>

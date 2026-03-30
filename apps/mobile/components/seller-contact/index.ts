@@ -5,13 +5,14 @@
  */
 
 export { SellerHero } from './seller-hero';
+export { SellerAbout } from './seller-about';
+export { SellerSpecialties } from './seller-specialties';
 export { SellerActions } from './seller-actions';
 export { SellerStatsGrid } from './seller-stats-grid';
 export { SellerTags } from './seller-tags';
 export { SellerListings } from './seller-listings';
 export { FinancingCalculator } from './financing-calculator';
 export { SellerLocation } from './seller-location';
-export { SellerContactSkeleton } from './seller-contact-skeleton';
 
 // Utils and types
 export { formatPrice, formatMemberSince, calculateEMI, safeOpenURL } from './utils';

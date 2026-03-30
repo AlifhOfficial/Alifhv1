@@ -26,7 +26,7 @@ export function SellingSection({
   delay = 150,
 }: SellingSectionProps) {
   return (
-    <Section title="Selling" colors={colors} delay={delay}>
+    <Section colors={colors} delay={delay}>
       <SettingRow
         title="Consignment Mode"
         description="Receive offers from qualified partners"

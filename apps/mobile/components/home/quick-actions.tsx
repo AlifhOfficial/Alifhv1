@@ -10,7 +10,7 @@ import { Bookmark, Box, Calendar, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Layout, Sizes, Stroke } from '@/constants/theme';
 import { CreateListingFlow } from '@/components/sheets';
 
 const actions = [
@@ -21,8 +21,7 @@ const actions = [
 ] as const;
 
 export function QuickActions() {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors } = useTheme();
   const router = useRouter();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
@@ -42,10 +41,10 @@ export function QuickActions() {
           <HapticPressable
             key={action.key}
             onPress={action.route ? () => router.push(action.route as any) : handleCreatePress}
-            style={[styles.cell, { backgroundColor: colors.backgroundSecondary }]}
+            style={[styles.cell, { backgroundColor: colors.surface }]}
           >
             <View style={[styles.iconCircle, { backgroundColor: colors.fill3 }]}>
-              <action.icon size={Sizes.iconMd} color={colors.label} strokeWidth={2} />
+              <action.icon size={Sizes.iconMd} color={colors.label} strokeWidth={Stroke.icon} />
             </View>
             <Text variant="subhead">{action.label}</Text>
           </HapticPressable>

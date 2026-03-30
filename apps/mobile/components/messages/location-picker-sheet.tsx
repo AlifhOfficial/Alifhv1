@@ -12,7 +12,7 @@ import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Shadows, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { Colors, Shadows, Spacing, Radius, Sizes, Layout, Stroke } from '@/constants/theme';
 import { useLocation, type LocationResult } from '@/hooks/use-location';
 
 interface LocationPickerSheetProps {
@@ -37,8 +37,7 @@ export function LocationPickerSheet({
   onClose,
   onConfirm,
 }: LocationPickerSheetProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const { showAlert } = useAlert();
@@ -135,7 +134,7 @@ export function LocationPickerSheet({
             disabled={isSending}
             style={[styles.closeButton, { backgroundColor: colors.error }]}
           >
-            <X size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
+            <X size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={Stroke.icon} />
           </HapticPressable>
         </View>
 
@@ -171,7 +170,7 @@ export function LocationPickerSheet({
               />
               {/* Pin overlay */}
               <View style={[styles.pinOverlay, { backgroundColor: colors.primary }]}>
-                <MapPin size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2.5} />
+                <MapPin size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={Stroke.icon} />
               </View>
             </>
           ) : null}

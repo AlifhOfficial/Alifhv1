@@ -11,7 +11,6 @@ export interface SellerContactColors {
 
 export interface SellerHeroProps extends SellerContactColors {
   seller: SellerInfo;
-  topInset: number;
 }
 
 export interface SellerActionsProps extends SellerContactColors {

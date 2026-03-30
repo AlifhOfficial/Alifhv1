@@ -12,7 +12,6 @@ import {
   NativeSyntheticEvent,
   TextInputContentSizeChangeEventData,
   Keyboard,
-  Platform,
   View,
 } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
@@ -20,7 +19,7 @@ import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller
 import { Send, MapPin } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Typography, Sizes, Layout, ZIndex, Shadows } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography, Sizes, Layout, ZIndex, Shadows, Stroke } from '@/constants/theme';
 
 interface MessageInputProps {
   onSend: (text: string) => Promise<void>;
@@ -34,7 +33,7 @@ interface MessageInputProps {
 
 const COMPOSER_PILL_HEIGHT = Sizes.actionButtonLg;
 const MIN_HEIGHT = COMPOSER_PILL_HEIGHT;
-const MAX_HEIGHT = Spacing['5xl'] * 2.5;
+const MAX_HEIGHT = Spacing['5xl'] * 2 + Spacing['3xl']; // ~128 ≈ 5-6 lines
 
 export function MessageInput({
   onSend,
@@ -192,7 +191,7 @@ export function MessageInput({
             <MapPin
               size={Sizes.iconSm}
               color={disabled ? colors.labelQuaternary : colors.labelTertiary}
-              strokeWidth={2}
+              strokeWidth={Stroke.icon}
             />
           </HapticPressable>
         )}
@@ -205,6 +204,7 @@ export function MessageInput({
                 borderColor: colors.border,
                 shadowColor: colors.black,
                 minHeight: Math.max(inputHeight, COMPOSER_PILL_HEIGHT),
+                maxHeight: MAX_HEIGHT,
               },
             ]}
         >
@@ -243,7 +243,7 @@ export function MessageInput({
           <Send
             size={Sizes.iconSm}
             color={canSend ? colors.primaryForeground : colors.labelTertiary}
-            strokeWidth={2.5}
+            strokeWidth={Stroke.icon}
           />
         </HapticPressable>
       </View>
@@ -263,27 +263,26 @@ const styles = StyleSheet.create({
   },
   composerRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     gap: Spacing.sm,
   },
   inputWrapper: {
     flex: 1,
-    borderRadius: Radius.full,
+    borderRadius: Radius['2xl'],
     borderCurve: 'continuous',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
+    paddingVertical: Spacing.sm,
     justifyContent: 'center',
     minHeight: COMPOSER_PILL_HEIGHT,
     borderWidth: 1,
     ...Shadows.md,
   },
   input: {
-    ...Typography.body,
-    lineHeight: Typography.body.lineHeight,
-    paddingTop: Platform.OS === 'ios' ? Spacing.xs : 0,
-    paddingBottom: Platform.OS === 'ios' ? Spacing.xs : 0,
-    minHeight: COMPOSER_PILL_HEIGHT - Spacing.md,
-    textAlignVertical: 'center',
+    ...Typography.callout,
+    paddingTop: 0,
+    paddingBottom: 0,
+    minHeight: COMPOSER_PILL_HEIGHT - Spacing.lg,
+    textAlignVertical: 'top',
     maxHeight: MAX_HEIGHT,
   },
   actionButton: {

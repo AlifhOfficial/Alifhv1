@@ -15,11 +15,19 @@
 
 import { Text, HapticPressable, Skeleton } from '@/components/ui';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager, StyleSheet, View } from 'react-native';
-import { ChevronRight } from 'lucide-react-native';
+import { InteractionManager, StyleSheet, View, Platform, Clipboard } from 'react-native';
+import Animated, {
+  FadeInDown,
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { ChevronRight, MessageCircle, Copy, Check } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { DescriptionSheet, FeaturesSheet, SpecsSheet } from '@/components/sheets';
 import { ListingDetailedData, SellerData } from '@/lib/listing-api';
@@ -41,15 +49,14 @@ import {
 import {
   ImageGallery,
   ImageGallerySkeleton,
-  ListingHeader,
   ListingHighlights,
-  QuickStats,
   ListingDescription,
   ListingSpecs,
   ListingFeatures,
   SellerCard,
   ListingTimestamp,
 } from '@/components/listings';
+import { formatPrice, formatMileage, formatSpecs, formatEmirate } from '@/components/listings/types';
 
 // ============================================================================
 // PROPS
@@ -59,6 +66,43 @@ export interface CarCardDetailedMProps {
   listing: ListingDetailedData;
   sellerData: SellerData;
   listingId: string;
+}
+
+// ============================================================================
+// TALK TO SELLER ROW
+// ============================================================================
+
+function TalkToSellerRow({ onPress }: { onPress: () => void }) {
+  const { colors } = useTheme();
+  const bgOpacity = useSharedValue(0);
+
+  const animatedBgStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(bgOpacity.value, [0, 1], ['transparent', colors.fill]),
+  }));
+
+  return (
+    <Animated.View entering={FadeInDown.delay(0).duration(350)}>
+      <View style={[styles.ctaCard, { backgroundColor: colors.surface }]}>
+        <View style={styles.ctaHeader}>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Contact</Text>
+        </View>
+        <View style={[styles.ctaDivider, { backgroundColor: colors.border }]} />
+        <HapticPressable
+          onPress={onPress}
+          onPressIn={() => { bgOpacity.value = withTiming(1, { duration: 100 }); }}
+          onPressOut={() => { bgOpacity.value = withTiming(0, { duration: 200 }); }}
+        >
+          <Animated.View style={[styles.ctaRow, animatedBgStyle]}>
+            <View style={styles.ctaLeft}>
+              <MessageCircle size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
+              <Text variant="subhead">Talk to Seller</Text>
+            </View>
+            <ChevronRight size={Sizes.iconSm} color={colors.labelTertiary} strokeWidth={Stroke.icon} />
+          </Animated.View>
+        </HapticPressable>
+      </View>
+    </Animated.View>
+  );
 }
 
 // ============================================================================
@@ -99,6 +143,20 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
   const handleTalkToSeller = useCallback(() => {
     router.push(`/seller-contact/${listingId}`);
   }, [router, listingId]);
+
+  // VIN copy state
+  const [vinCopied, setVinCopied] = useState(false);
+  const handleCopyVin = useCallback(async () => {
+    if (!listing.vin) return;
+    try {
+      Clipboard.setString(listing.vin);
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      setVinCopied(true);
+      setTimeout(() => setVinCopied(false), 2000);
+    } catch {}
+  }, [listing.vin]);
 
   useEffect(() => {
     setShowDeferredSections(false);
@@ -145,65 +203,79 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
-      {sellerData && (
-        <View style={styles.topSeller}>
-          <HapticPressable onPress={handleTalkToSeller}>
-            <SellerCard sellerData={sellerData} />
-          </HapticPressable>
-        </View>
-      )}
-
       {/* ── Image Gallery — 40 % of viewport ── */}
       <ImageGallery images={listing.images} title={carTitle} />
 
-      {/* ── Highlights — positioned right below gallery for prominence ── */}
-      <ListingHighlights
-        specialNotes={listing.specialNotes}
-        tags={listing.tags}
-      />
-
-      {/* ── Content — padded with generous vertical rhythm ── */}
+      {/* ── Content ── */}
       <View style={styles.content}>
 
-        {/* 1. Header: Title + Price + Actions */}
-        <ListingHeader
-          id={listing.id}
-          year={listing.year}
-          make={listing.make}
-          model={listing.model}
-          trim={listing.trim}
-          price={listing.price}
-          isNegotiable={listing.isNegotiable}
-          isBlk={isBlk}
-        />
+        {/* ── Identity block ── */}
+        <View style={styles.identityBlock}>
+          {/* 1. Car name */}
+          <View style={styles.titleRow}>
+            <Text variant="bodyEmphasized" style={{ flex: 1 }} numberOfLines={2}>
+              {carTitle}
+            </Text>
+            {isBlk && (
+              <View style={[styles.blkBadge, { backgroundColor: colors.blkBadgeBg }]}>
+                <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.blkBadgeFg }}>BLK</Text>
+              </View>
+            )}
+          </View>
 
-        {/* 2. Quick Stats: Mileage · Specs · Location · VIN */}
-        <QuickStats
-          mileage={listing.mileage}
-          specs={listing.specs}
-          emirate={listing.emirate}
-          city={listing.city}
-          vin={listing.vin}
-          vinVisibility={listing.vinVisibility}
-        />
+          {/* 2. Meta: mileage · specs · emirate */}
+          <Text variant="subhead" tone="secondary">
+            {formatMileage(listing.mileage)} km · {formatSpecs(listing.specs)} · {listing.city ? `${listing.city}, ${formatEmirate(listing.emirate)}` : formatEmirate(listing.emirate)}
+          </Text>
+
+          {/* 3. Price */}
+          <View style={styles.priceRow}>
+            <Text variant="bodyEmphasized" tone="primary">{formatPrice(listing.price)}</Text>
+            {listing.isNegotiable && (
+              <Text variant="subhead" tone="success">Negotiable</Text>
+            )}
+          </View>
+
+          {/* 4. VIN */}
+          {listing.vin && listing.vinVisibility !== 'private' && (
+            <HapticPressable onPress={handleCopyVin}>
+              <View style={styles.vinRow}>
+                <Text variant="caption1Emphasized" tone="muted">VIN</Text>
+                <Text variant="caption1" tone="muted" style={styles.vinValue}>{listing.vin}</Text>
+                {vinCopied
+                  ? <Check size={Sizes.iconXs} color={colors.success} strokeWidth={Stroke.icon} />
+                  : <Copy size={Sizes.iconXs} color={colors.labelTertiary} strokeWidth={Stroke.icon} />
+                }
+              </View>
+            </HapticPressable>
+          )}
+          {listing.vinVisibility === 'private' && (
+            <View style={styles.vinRow}>
+              <Text variant="caption1Emphasized" tone="muted">VIN</Text>
+              <Text variant="caption1" style={{ color: colors.success }}>Verified</Text>
+            </View>
+          )}
+        </View>
+
+        {/* ── Seller + Contact ── */}
+        {sellerData && (
+          <View style={styles.sellerBlock}>
+            <HapticPressable onPress={handleTalkToSeller}>
+              <SellerCard sellerData={sellerData} />
+            </HapticPressable>
+            <TalkToSellerRow onPress={handleTalkToSeller} />
+          </View>
+        )}
 
         {showDeferredSections ? (
           <>
-            <HapticPressable
-              onPress={handleTalkToSeller}
-              style={styles.contactRow}
-            >
-              {({ pressed }) => (
-                <View style={[styles.contactRowInner, { opacity: pressed ? 0.72 : 1 }]}>
-                  <Text variant="body" tone="primary">
-                    Talk to seller
-                  </Text>
-                  <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />
-                </View>
-              )}
-            </HapticPressable>
+            {/* 3. Highlights */}
+            <ListingHighlights
+              specialNotes={listing.specialNotes}
+              tags={listing.tags}
+            />
 
-            {/* 3. Specifications */}
+            {/* 4. Specifications */}
             <ListingSpecs
               condition={listing.condition}
               bodyType={listing.bodyType}
@@ -220,7 +292,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
               onViewAll={openSpecsSheet}
             />
 
-            {/* 4. Description (optional) */}
+            {/* 4. Description */}
             {listing.description && (
               <ListingDescription
                 description={listing.description}
@@ -228,10 +300,10 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
               />
             )}
 
-            {/* 5. Features / Extras */}
+            {/* 5. Features */}
             <ListingFeatures extras={listing.extras} onViewAll={openFeaturesSheet} />
 
-            {/* 6. Timestamp — subtle, non-blocking */}
+            {/* 6. Timestamp */}
             <ListingTimestamp
               createdAt={listing.createdAt}
               lastEditedAt={listing.lastEditedAt}
@@ -333,18 +405,57 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing['3xl'],
     gap: Spacing['2xl'],
   },
-  topSeller: {
+  sellerBlock: {
+    gap: Spacing.md,
+  },
+  identityBlock: {
+    gap: Spacing.sm,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.md,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: Spacing.sm,
+  },
+  blkBadge: {
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
+    borderRadius: Radius.none,
+  },
+  vinRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  vinValue: {
+    flex: 1,
+    fontVariant: ['tabular-nums'],
+  },
+  ctaCard: {
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
+  },
+  ctaHeader: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.lg,
+    paddingVertical: Spacing.md,
   },
-  contactRow: {
-    paddingVertical: Spacing.sm,
+  ctaDivider: {
+    height: StyleSheet.hairlineWidth,
   },
-  contactRowInner: {
+  ctaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+  },
+  ctaLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: Spacing.md,
   },
 

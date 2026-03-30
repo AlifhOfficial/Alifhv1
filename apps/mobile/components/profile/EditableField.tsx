@@ -169,7 +169,7 @@ export function EditableField({
           <View style={styles.labelValueContainer}>
             <Text variant="subhead" tone="muted">{label}</Text>
             <Text
-              variant="body"
+              variant="subhead"
               tone={value ? 'default' : 'muted'}
               numberOfLines={1}
             >

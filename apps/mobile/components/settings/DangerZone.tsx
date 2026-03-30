@@ -6,11 +6,9 @@
 import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, Platform } from 'react-native';
-import { Trash2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import Animated, { FadeInDown } from 'react-native-reanimated';
 
-import { Layout, Sizes, Spacing, Radius } from '@/constants/theme';
+import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface DangerZoneProps {
@@ -32,21 +30,17 @@ export function DangerZone({
   };
 
   return (
-    <Animated.View entering={FadeInDown.delay(delay).duration(350)}>
-      <HapticPressable
-        onPress={handlePress}
-        style={({ pressed }) => [
-          styles.button,
-          {
-            backgroundColor: colors.surface,
-            opacity: pressed ? 0.7 : 1,
-          },
-        ]}
-      >
-        <Trash2 size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-        <Text variant="body" tone="error">Delete Account</Text>
-      </HapticPressable>
-    </Animated.View>
+    <HapticPressable
+      onPress={handlePress}
+      style={[
+        styles.button,
+        { backgroundColor: colors.surface },
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel="Delete account"
+    >
+      <Text variant="body" style={{ color: colors.error }}>Delete Account</Text>
+    </HapticPressable>
   );
 }
 
@@ -56,9 +50,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.md,
+    paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.lg,
     borderRadius: Radius.xl,
-    marginTop: Spacing.md,
-    marginBottom: Layout.tabBarHeight + Spacing['3xl'],
+    marginBottom: Spacing['3xl'],
   },
 });

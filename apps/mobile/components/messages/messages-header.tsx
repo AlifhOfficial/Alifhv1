@@ -8,12 +8,11 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MessageCircle } from 'lucide-react-native';
-import { Colors, Spacing, Layout, Sizes, ZIndex} from '@/constants/theme';
+import { Colors, Spacing, Layout, Sizes, ZIndex, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 export function MessagesHeader() {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
 
   return (
@@ -29,7 +28,7 @@ export function MessagesHeader() {
         ]}
       >
         <View style={styles.pillContent}>
-          <MessageCircle size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
+          <MessageCircle size={Sizes.iconXs} color={colors.label} strokeWidth={Stroke.icon} />
           <Text variant="subhead">Messages</Text>
         </View>
       </View>

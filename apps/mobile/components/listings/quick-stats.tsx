@@ -8,7 +8,7 @@ import { StyleSheet, View, Platform, Clipboard } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { MapPin, Copy, Check } from 'lucide-react-native';
 
-import { Colors, Spacing, Sizes, Typography } from '@/constants/theme';
+import { Colors, Spacing, Sizes, Typography, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { formatMileage, formatSpecs, formatEmirate } from './types';
 
@@ -58,21 +58,21 @@ export const QuickStats = memo(function QuickStats({
     <View style={styles.container}>
       {/* Quick Details Row */}
       <View style={styles.statsRow}>
-        <Text variant="body" style={{ color: secondaryTextColor }}>
+        <Text variant="subhead" style={{ color: secondaryTextColor }}>
           {formatMileage(mileage)} km
         </Text>
         <Text variant="subhead" tone="muted" style={styles.separator}>
           •
         </Text>
-        <Text variant="body" style={{ color: secondaryTextColor }}>
+        <Text variant="subhead" style={{ color: secondaryTextColor }}>
           {displaySpecs} Specs
         </Text>
         <Text variant="subhead" tone="muted" style={styles.separator}>
           •
         </Text>
         <View style={styles.locationRow}>
-          <MapPin size={Sizes.iconXs} color={secondaryTextColor} />
-          <Text variant="body" style={{ color: secondaryTextColor }}>
+          <MapPin size={Sizes.iconXs} color={secondaryTextColor} strokeWidth={Stroke.icon} />
+          <Text variant="subhead" style={{ color: secondaryTextColor }}>
             {displayEmirate}
           </Text>
         </View>
@@ -84,13 +84,13 @@ export const QuickStats = memo(function QuickStats({
           {({ pressed }) => (
             <>
               <Text variant="subhead" tone="muted">VIN</Text>
-              <Text variant="body" style={[styles.vinValue, { opacity: pressed ? 0.7 : 1 }]}>
+              <Text variant="subhead" style={[styles.vinValue, { opacity: pressed ? 0.7 : 1 }]}>
                 {vin}
               </Text>
               {copied ? (
-                <Check size={Sizes.iconXs} color={colors.success} strokeWidth={2.5} />
+                <Check size={Sizes.iconXs} color={colors.success} strokeWidth={Stroke.icon} />
               ) : (
-                <Copy size={Sizes.iconXs} color={colors.labelTertiary} strokeWidth={1.75} />
+                <Copy size={Sizes.iconXs} color={colors.labelTertiary} strokeWidth={Stroke.icon} />
               )}
             </>
           )}
@@ -98,7 +98,7 @@ export const QuickStats = memo(function QuickStats({
       ) : vinVisibility === 'private' ? (
         <View style={styles.vinRow}>
           <Text variant="subhead" tone="muted">VIN</Text>
-          <Text variant="body" style={{ color: colors.success }}>Verified</Text>
+          <Text variant="subhead" style={{ color: colors.success }}>Verified</Text>
         </View>
       ) : null}
     </View>

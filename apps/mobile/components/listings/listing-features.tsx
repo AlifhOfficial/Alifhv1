@@ -1,21 +1,19 @@
 /**
- * Listing Features - Extra features as badge chips
- * Shows max 8 features with "+X more" option when exceeding
- * Features are arranged to fill rows efficiently (bin-packing)
+ * Listing Features - Extra features as list rows
+ * Shows max 8 features with "+X more" row when exceeding
  */
 
 import { Text, HapticPressable } from '@/components/ui';
-import React, { memo, useState, useCallback, useMemo } from 'react';
-import { StyleSheet, View, LayoutChangeEvent } from 'react-native';
+import React, { memo } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { PlusCircle } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { formatEnumValue } from './types';
 
 const MAX_VISIBLE_FEATURES = 8;
-const BADGE_H_PADDING = Spacing.md * 2; // horizontal padding both sides
-const BADGE_GAP = Spacing.sm;
-const CHAR_WIDTH = 7.5;
 
 interface ListingFeaturesProps {
   extras: string[];
@@ -23,122 +21,63 @@ interface ListingFeaturesProps {
   onViewAll?: () => void;
 }
 
-// Estimate badge width based on text
-function estimateBadgeWidth(text: string): number {
-  const formatted = formatEnumValue(text);
-  return BADGE_H_PADDING + (formatted.length * CHAR_WIDTH);
-}
-
-// Greedy bin-packing: arrange items to fill rows efficiently
-function arrangeForBestFit(items: string[], containerWidth: number): string[] {
-  if (containerWidth <= 0 || items.length === 0) return items;
-
-  const remaining = [...items];
-  const arranged: string[] = [];
-  let currentRowWidth = 0;
-
-  while (remaining.length > 0) {
-    // Find the best fitting item for current row
-    let bestIndex = -1;
-    let bestWidth = 0;
-    const availableWidth = containerWidth - currentRowWidth - (currentRowWidth > 0 ? BADGE_GAP : 0);
-
-    // First, try to find an item that fits in the remaining space
-    for (let i = 0; i < remaining.length; i++) {
-      const width = estimateBadgeWidth(remaining[i]);
-      if (width <= availableWidth && width > bestWidth) {
-        bestWidth = width;
-        bestIndex = i;
-      }
-    }
-
-    if (bestIndex !== -1) {
-      // Found an item that fits
-      arranged.push(remaining[bestIndex]);
-      currentRowWidth += (currentRowWidth > 0 ? BADGE_GAP : 0) + bestWidth;
-      remaining.splice(bestIndex, 1);
-    } else {
-      // No item fits, start new row with the smallest remaining item
-      const smallestIndex = remaining.reduce((minIdx, item, idx, arr) => 
-        estimateBadgeWidth(item) < estimateBadgeWidth(arr[minIdx]) ? idx : minIdx, 0);
-      arranged.push(remaining[smallestIndex]);
-      currentRowWidth = estimateBadgeWidth(remaining[smallestIndex]);
-      remaining.splice(smallestIndex, 1);
-    }
-  }
-
-  return arranged;
-}
-
 export const ListingFeatures = memo(function ListingFeatures({
   extras,
   isBlk = false,
   onViewAll,
 }: ListingFeaturesProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
-  const [containerWidth, setContainerWidth] = useState(0);
-
-  const textColor = isBlk ? colors.label : colors.label;
-
-  const handleLayout = useCallback((event: LayoutChangeEvent) => {
-    setContainerWidth(event.nativeEvent.layout.width);
-  }, []);
-
-  // Arrange features to fill space efficiently
-  const arrangedExtras = useMemo(() => {
-    return arrangeForBestFit(extras, containerWidth);
-  }, [extras, containerWidth]);
-  
-  const hasMore = arrangedExtras.length > MAX_VISIBLE_FEATURES;
-  const visibleExtras = hasMore ? arrangedExtras.slice(0, MAX_VISIBLE_FEATURES) : arrangedExtras;
-  const remainingCount = arrangedExtras.length - MAX_VISIBLE_FEATURES;
+  const { colors } = useTheme();
 
   if (extras.length === 0) return null;
 
+  const hasMore = extras.length > MAX_VISIBLE_FEATURES;
+  const visibleExtras = hasMore ? extras.slice(0, MAX_VISIBLE_FEATURES) : extras;
+  const remainingCount = extras.length - MAX_VISIBLE_FEATURES;
+
   return (
-    <View style={styles.container}>
-      <Text variant="footnoteEmphasized" tone="muted" uppercase>
-        FEATURES
-      </Text>
-      <View style={styles.badgesContainer} onLayout={handleLayout}>
-        {visibleExtras.map((extra, idx) => (
-          <View 
-            key={idx} 
-            style={[styles.badge, { backgroundColor: colors.backgroundSecondary }]}
-          >
-            <Text variant="subhead" style={{ color: textColor }}>
-              {formatEnumValue(extra)}
-            </Text>
-          </View>
+    <Animated.View entering={FadeInDown.delay(0).duration(350)}>
+      <View style={[styles.card, { backgroundColor: colors.surface }]}>
+        <View style={styles.headerRow}>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Features</Text>
+          {hasMore && (
+            <HapticPressable onPress={onViewAll}>
+              <PlusCircle size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
+            </HapticPressable>
+          )}
+        </View>
+        {visibleExtras.map((extra) => (
+          <React.Fragment key={extra}>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            <View style={styles.row}>
+              <Text variant="subhead">{formatEnumValue(extra)}</Text>
+            </View>
+          </React.Fragment>
         ))}
-        {hasMore && (
-          <HapticPressable 
-            onPress={onViewAll}
-            style={[styles.badge, { backgroundColor: colors.primary + '15' }]}
-          >
-            <Text variant="subhead" tone="primary">
-              +{remainingCount} more
-            </Text>
-          </HapticPressable>
-        )}
       </View>
-    </View>
+    </Animated.View>
   );
 });
 
 const styles = StyleSheet.create({
-  container: {
-    gap: Spacing.sm,
+  card: {
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
   },
-  badgesContainer: {
+  headerRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
   },
-  badge: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.md,
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: Spacing.lg,
+  },
+  row: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
   },
 });
+
+

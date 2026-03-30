@@ -9,7 +9,7 @@ import React, { useCallback } from 'react';
 import { View, StyleSheet, Linking, Platform, Image } from 'react-native';
 import { MapPin, ExternalLink } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Shadows, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Shadows, Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
 
 interface LocationBubbleProps {
   latitude: number;
@@ -41,8 +41,7 @@ export function LocationBubble({
   placeName,
   isOwn,
 }: LocationBubbleProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors } = useTheme();
 
   // Open location in maps app
   const handleOpenMaps = useCallback(() => {
@@ -77,7 +76,7 @@ export function LocationBubble({
         />
         {/* Pin overlay */}
         <View style={[styles.pinOverlay, { backgroundColor: colors.primary }]}>
-          <MapPin size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2.5} />
+          <MapPin size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={Stroke.icon} />
         </View>
       </View>
 
@@ -122,7 +121,7 @@ export function LocationBubble({
         <ExternalLink
           size={Sizes.iconSm}
           color={isOwn ? colors.white : colors.labelTertiary}
-          strokeWidth={1.5}
+          strokeWidth={Stroke.icon}
         />
       </View>
     </HapticPressable>

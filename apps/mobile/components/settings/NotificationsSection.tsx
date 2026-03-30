@@ -28,7 +28,7 @@ export function NotificationsSection({
   delay = 100,
 }: NotificationsSectionProps) {
   return (
-    <Section title="Notifications" colors={colors} delay={delay}>
+    <Section colors={colors} delay={delay}>
       <SettingRow
         title="Push Notifications"
         description="Get notified on your device"

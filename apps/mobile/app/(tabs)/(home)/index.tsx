@@ -5,7 +5,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, View, ScrollView, RefreshControl, Platform } from 'react-native';
+import { StyleSheet, View, ScrollView, RefreshControl, Platform, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { Sun, Moon } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,7 +19,7 @@ import {
 import { Bubble } from '@/components/ui';
 import { MobileHeader, getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Sizes } from '@/constants/theme';
+import { Spacing, Sizes } from '@/constants/theme';
 import { useUserDashboardStats } from '@/hooks/use-user-dashboard';
 
 // ============================================================================
@@ -31,10 +31,10 @@ import { useUserDashboardStats } from '@/hooks/use-user-dashboard';
 // ============================================================================
 
 export default function HomeScreen() {
-  const { colorScheme, toggleTheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors, colorScheme, toggleTheme } = useTheme();
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
+  const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
   const { stats, isLoading, refresh } = useUserDashboardStats();
   const topSpacerHeight = getMobileHeaderContentInset(insets.top) + Spacing['5xl'] * 2 + Spacing['3xl'] * 2;
   const bottomInset = getTabBarContentInset(insets.bottom, Spacing['3xl']);
@@ -54,10 +54,15 @@ export default function HomeScreen() {
 
   const ThemeIcon = colorScheme === 'dark' ? Moon : Sun;
 
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
+  }, []);
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <MobileHeader
         title="Home"
+        titleHidden={isHeaderTitleHidden}
         left={<ProfileMenu />}
         right={
           <Bubble
@@ -73,6 +78,8 @@ export default function HomeScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         contentInsetAdjustmentBehavior="never"
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl

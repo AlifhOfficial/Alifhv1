@@ -35,7 +35,7 @@ export function SettingRow({
       <View style={styles.content}>
         <Text variant="subhead" tone="muted">{title}</Text>
         {description && (
-          <Text variant="body">{description}</Text>
+          <Text variant="subhead" tone="secondary">{description}</Text>
         )}
       </View>
       {children}

@@ -26,7 +26,7 @@ export function PrivacySection({
   delay = 50,
 }: PrivacySectionProps) {
   return (
-    <Section title="Privacy" colors={colors} delay={delay} isFirst>
+    <Section colors={colors} delay={delay} isFirst>
       <SettingRow
         title="Show Phone Number"
         description="Display on public profile"

@@ -14,9 +14,10 @@ import { useTheme } from '@/context/theme-context';
 import { HapticPressable, type HapticPressableProps } from './haptic-pressable';
 
 type BubbleSize = 'sm' | 'md' | 'lg';
-type BubbleTone = 'surface' | 'accent';
+type BubbleTone = 'surface' | 'accent' | 'fill';
 
-interface BubbleProps extends Omit<HapticPressableProps, 'style'> {
+interface BubbleProps extends Omit<HapticPressableProps, 'style' | 'children'> {
+  children?: React.ReactNode;
   size?: BubbleSize;
   tone?: BubbleTone;
   style?: StyleProp<ViewStyle>;
@@ -32,6 +33,8 @@ interface EdgeFadeProps {
   height: number;
   blur?: boolean;
   blurIntensity?: number;
+  /** 0–1: how far the solid portion extends before transitioning to transparent. Default 0 = full gradient. */
+  intensity?: number;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -44,7 +47,7 @@ const BUBBLE_SIZE_MAP = {
 export function Bubble({
   children,
   size = 'md',
-  tone = 'surface',
+  tone = 'fill',
   style,
   ...pressableProps
 }: BubbleProps) {
@@ -52,6 +55,30 @@ export function Bubble({
   const colors = Colors[colorScheme];
   const bubbleSize = BUBBLE_SIZE_MAP[size];
   const isAccent = tone === 'accent';
+  const isFill = tone === 'fill';
+
+  // Fill tone — solid translucent circle
+  if (isFill) {
+    return (
+      <HapticPressable
+        style={({ pressed }: PressableStateCallbackType) => [
+          { opacity: pressed ? 0.72 : 1 },
+          style,
+        ]}
+        {...pressableProps}
+      >
+        <View
+          style={[
+            styles.bubble,
+            styles.bubbleFill,
+            { width: bubbleSize, height: bubbleSize, backgroundColor: colors.surfaceSecondary },
+          ]}
+        >
+          {children}
+        </View>
+      </HapticPressable>
+    );
+  }
 
   return (
     <HapticPressable
@@ -99,7 +126,7 @@ export function Pill({ children, style }: PillProps) {
   );
 }
 
-export function EdgeFade({ edge, height, blur = false, blurIntensity = 60, style }: EdgeFadeProps) {
+export function EdgeFade({ edge, height, blur = false, blurIntensity = 60, intensity = 0, style }: EdgeFadeProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const isTop = edge === 'top';
@@ -127,11 +154,17 @@ export function EdgeFade({ edge, height, blur = false, blurIntensity = 60, style
       )}
       <LinearGradient
         colors={
-          isTop
-            ? [colors.background, transparentBackground]
-            : [colors.background, transparentBackground]
+          intensity > 0
+            ? [colors.background, colors.background, transparentBackground]
+            : isTop
+              ? [colors.background, transparentBackground]
+              : [colors.background, transparentBackground]
         }
-        locations={[0, 1]}
+        locations={
+          intensity > 0
+            ? [0, intensity, 1]
+            : [0, 1]
+        }
         start={{ x: 0, y: isTop ? 0 : 1 }}
         end={{ x: 0, y: isTop ? 1 : 0 }}
         style={StyleSheet.absoluteFill}
@@ -146,6 +179,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  bubbleFill: {
+    overflow: 'hidden',
+    borderWidth: 0,
   },
   pill: {
     flexDirection: 'row',

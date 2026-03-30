@@ -3,12 +3,12 @@
  * Native-feeling, modular profile screen connected to API
  */
 
-import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState, Bubble, useAlert } from '@/components/ui';
+import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState, Bubble, HapticPressable, useAlert } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import {
   StyleSheet, View, Platform } from 'react-native';
-import { Settings2, LogOut } from 'lucide-react-native';
+import { Settings2 } from 'lucide-react-native';
 import { ScreenContainer, MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 
 import { Layout, Spacing, Radius, Sizes } from '@/constants/theme';
@@ -18,12 +18,9 @@ import {
   useProfileColors,
   useProfile,
   ProfileIdentity,
-  StatsGrid,
-  BadgesSection,
   PersonalInfoSection,
   BioSection,
   TagsSection,
-  type ProfileStats,
   type ProfileStatus,
 } from '@/components/profile';
 
@@ -61,14 +58,6 @@ export default function ProfileScreen() {
     onPhoneVerified,
     error,
   } = useProfile({ isAuthenticated, onAvatarChange: refreshSession, showAlert });
-
-  // Transform API stats to component format
-  const stats: ProfileStats = {
-    listings: apiStats?.activeListings ?? null,
-    sold: apiStats?.soldListings ?? null,
-    responseRate: apiStats?.responseRate ?? null,
-    rating: apiStats?.avgRating ?? null,
-  };
 
   // Transform profile to status format
   const profileStatus: ProfileStatus = {
@@ -110,10 +99,6 @@ export default function ProfileScreen() {
   const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? user?.useGeneratedAvatar ?? true;
 
   // Handlers
-  const handleBadgesLearnMore = useCallback(() => {
-    // TODO: Navigate to badges info
-  }, []);
-
   const handleSignOut = useCallback(() => {
     showAlert(
       'Sign Out',
@@ -129,34 +114,21 @@ export default function ProfileScreen() {
     );
   }, [showAlert, signOut]);
 
+  const renderHeaderRight = useCallback(() => (
+    <Bubble
+      onPress={() => router.push('/settings')}
+      accessibilityRole="button"
+      accessibilityLabel="Open settings"
+    >
+      <Settings2 size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
+    </Bubble>
+  ), [colors.label, router]);
+
   const nativeHeaderOptions = {
     headerShown: false,
   };
 
-  const renderHeaderRight = useCallback(() => (
-    <View style={styles.headerRight}>
-      <Bubble
-        onPress={() => router.push('/settings')}
-        accessibilityRole="button"
-        accessibilityLabel="Open settings"
-      >
-        <Settings2 size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
-      </Bubble>
 
-      {isAuthenticated && (
-        <>
-          <View style={[styles.headerDivider, { backgroundColor: colors.border }]} />
-          <Bubble
-            onPress={handleSignOut}
-            accessibilityRole="button"
-            accessibilityLabel="Sign out"
-          >
-            <LogOut size={Sizes.iconSm} color={colors.error} strokeWidth={2} />
-          </Bubble>
-        </>
-      )}
-    </View>
-  ), [colors.error, colors.label, handleSignOut, isAuthenticated, router]);
 
   // Unauthenticated - show auth required empty state
   if (!isAuthenticated) {
@@ -167,11 +139,10 @@ export default function ProfileScreen() {
             ...nativeHeaderOptions,
             title: 'Profile',
             headerTintColor: colors.label,
-            headerRight: renderHeaderRight,
           }}
         />
         <View style={[styles.container, styles.centered, { backgroundColor: colors.background, paddingTop: headerInset }]}> 
-        <MobileHeader title="Profile" showBackButton right={renderHeaderRight()} />
+        <MobileHeader title="Profile" showBackButton />
         <AuthRequiredEmptyState
           title="Sign in to view profile"
           subtitle="Manage your account and listings on Revvup"
@@ -190,57 +161,39 @@ export default function ProfileScreen() {
             ...nativeHeaderOptions,
             title: 'Profile',
             headerTintColor: colors.label,
-            headerRight: renderHeaderRight,
           }}
         />
         <View style={[styles.container, { backgroundColor: colors.background }]}> 
-        <MobileHeader title="Profile" showBackButton right={renderHeaderRight()} />
+        <MobileHeader title="Profile" showBackButton />
         <View style={[styles.skeletonContainer, { paddingHorizontal: Layout.screenPadding, paddingTop: headerInset }]}> 
-          {/* Avatar */}
+          {/* Profile Identity - Centered vertically */}
           <View style={styles.skeletonIdentity}>
             <SkeletonCircle size={88} />
             <View style={styles.skeletonIdentityText}>
-              <Skeleton width={160} height={18} />
-              <Skeleton width={120} height={14} />
-              <Skeleton width={90} height={12} />
+              <Skeleton width={160} height={20} />
+              <Skeleton width={180} height={16} />
+              <Skeleton width={100} height={14} />
             </View>
           </View>
 
           {/* Personal Info Section */}
           <View style={styles.skeletonSection}>
-            <Skeleton width={140} height={16} />
-            <Skeleton width="100%" height={44} borderRadius={Radius.md} />
-            <Skeleton width="100%" height={44} borderRadius={Radius.md} />
-            <Skeleton width="100%" height={44} borderRadius={Radius.md} />
+            <Skeleton width="100%" height={200} borderRadius={Radius.xl} />
           </View>
 
           {/* Bio Section */}
           <View style={styles.skeletonSection}>
-            <Skeleton width={50} height={16} />
-            <Skeleton width="100%" height={80} borderRadius={Radius.md} />
+            <Skeleton width="100%" height={100} borderRadius={Radius.xl} />
           </View>
 
           {/* Tags Section */}
           <View style={styles.skeletonSection}>
-            <Skeleton width={80} height={16} />
-            <View style={styles.skeletonTagsRow}>
-              <Skeleton width={70} height={32} borderRadius={Radius.full} />
-              <Skeleton width={90} height={32} borderRadius={Radius.full} />
-              <Skeleton width={60} height={32} borderRadius={Radius.full} />
-              <Skeleton width={80} height={32} borderRadius={Radius.full} />
-            </View>
+            <Skeleton width="100%" height={180} borderRadius={Radius.xl} />
           </View>
 
-          {/* Stats Grid */}
+          {/* Sign Out Button */}
           <View style={styles.skeletonSection}>
-            <View style={styles.skeletonStatsRow}>
-              <Skeleton width="48%" height={70} borderRadius={Radius.md} />
-              <Skeleton width="48%" height={70} borderRadius={Radius.md} />
-            </View>
-            <View style={styles.skeletonStatsRow}>
-              <Skeleton width="48%" height={70} borderRadius={Radius.md} />
-              <Skeleton width="48%" height={70} borderRadius={Radius.md} />
-            </View>
+            <Skeleton width="100%" height={52} borderRadius={Radius.xl} />
           </View>
         </View>
       </View>
@@ -257,11 +210,10 @@ export default function ProfileScreen() {
             ...nativeHeaderOptions,
             title: 'Profile',
             headerTintColor: colors.label,
-            headerRight: renderHeaderRight,
           }}
         />
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <MobileHeader title="Profile" showBackButton right={renderHeaderRight()} />
+        <MobileHeader title="Profile" showBackButton />
         <View style={[styles.errorContainer, styles.centered, { backgroundColor: colors.background, paddingTop: headerInset }]}> 
           <Text variant="body" tone="error" style={styles.errorText}>
             {error}
@@ -282,7 +234,6 @@ export default function ProfileScreen() {
           ...nativeHeaderOptions,
           title: 'Profile',
           headerTintColor: colors.label,
-          headerRight: renderHeaderRight,
         }}
       />
       <MobileHeader title="Profile" showBackButton right={renderHeaderRight()} />
@@ -291,6 +242,7 @@ export default function ProfileScreen() {
           refreshing={isRefreshing}
           onRefresh={refresh}
           verticalPadding={0}
+          horizontalPadding={Layout.screenPadding}
           contentInsetAdjustmentBehavior="never"
           contentContainerStyle={{ paddingTop: headerInset }}
         >
@@ -344,19 +296,16 @@ export default function ProfileScreen() {
         onToggle={toggleTag}
       />
 
-      {/* Stats Grid - Only shows when data exists */}
-      <StatsGrid
-        stats={stats}
-        platformRating={profileStatus.platformRating}
-        colors={colors}
-      />
+      {/* Sign Out */}
+      <HapticPressable
+        onPress={handleSignOut}
+        style={[styles.signOutRow, { backgroundColor: colors.surface }]}
+        accessibilityRole="button"
+        accessibilityLabel="Sign out"
+      >
+        <Text variant="body" style={{ color: colors.error }}>Sign Out</Text>
+      </HapticPressable>
 
-      {/* Badges */}
-      <BadgesSection
-        badges={profileStatus.badges}
-        colors={colors}
-        onLearnMore={handleBadgesLearnMore}
-      />
       </ScreenContainer>
     </View>
     </>
@@ -371,17 +320,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-  },
-  headerDivider: {
-    width: StyleSheet.hairlineWidth,
-    height: Sizes.iconSm,
-    borderRadius: Radius.sm,
-    opacity: 0.25,
-  },
   centered: {
     justifyContent: 'flex-start',
   },
@@ -390,25 +328,17 @@ const styles = StyleSheet.create({
     gap: Spacing.xl,
   },
   skeletonIdentity: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.lg,
+    gap: Spacing.xl,
+    marginTop: Spacing['3xl'],
+    marginBottom: Spacing.xl,
   },
   skeletonIdentityText: {
-    flex: 1,
-    gap: Spacing.sm,
+    alignItems: 'center',
+    gap: Spacing.xs,
   },
   skeletonSection: {
-    gap: Spacing.md,
-  },
-  skeletonTagsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  skeletonStatsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    marginBottom: Spacing.xl,
   },
   errorContainer: {
     flex: 1,
@@ -419,5 +349,15 @@ const styles = StyleSheet.create({
   },
   errorText: {
     textAlign: 'center',
+  },
+  signOutRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.md,
+    borderRadius: Radius.xl,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.lg,
+    marginBottom: Spacing['3xl'],
   },
 });

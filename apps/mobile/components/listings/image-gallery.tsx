@@ -8,7 +8,7 @@ import { Text, HapticPressable, Skeleton } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View, Dimensions, FlatList, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
-import { ChevronLeft, ChevronRight, Grid3x3 } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
@@ -153,7 +153,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         </View>
         <View style={styles.bottomOverlayRow} pointerEvents="box-none">
           <View style={[styles.counterPill, { backgroundColor: colors.overlay }]}>
-            <Text variant="subhead" style={styles.overlayText}>
+            <Text variant="caption1" style={styles.overlayText}>
               {currentIndex + 1}/{allImages.length}
             </Text>
           </View>
@@ -164,8 +164,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           >
             {({ pressed }) => (
               <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
-                <Grid3x3 size={Sizes.iconXs} color={Colors.dark.white} strokeWidth={1.75} />
-                <Text variant="subhead" style={styles.overlayText}>All</Text>
+                <Text variant="caption1" style={styles.overlayText}>All</Text>
               </View>
             )}
           </HapticPressable>

@@ -6,7 +6,7 @@
 import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { ChevronRight } from 'lucide-react-native';
 
 import { Sizes, Spacing } from '@/constants/theme';
 import { Section } from './Section';
@@ -120,11 +120,11 @@ export function IdentitySection({
   const display = getKycDisplayInfo(status, colors);
 
   return (
-    <Section title="Identity Verification" colors={colors} delay={delay}>
+    <Section colors={colors} delay={delay}>
       <View style={styles.row}>
         <View style={styles.content}>
           <Text variant="subhead" tone="muted">Status</Text>
-          <Text variant="body" style={{ color: display.statusColor }}>
+          <Text variant="subhead" style={{ color: display.statusColor }}>
             {display.statusLabel}
           </Text>
           <Text variant="subhead" tone="muted" style={styles.description}>
@@ -136,7 +136,7 @@ export function IdentitySection({
             onPress={onAction}
             hitSlop={Spacing.md}
           >
-            <Ionicons name="chevron-forward" size={Sizes.iconSm} color={colors.labelQuaternary} />
+            <ChevronRight size={Sizes.iconSm} color={colors.labelQuaternary} strokeWidth={2} />
           </HapticPressable>
         )}
       </View>

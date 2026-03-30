@@ -6,9 +6,10 @@
 import { Text, HapticPressable } from '@/components/ui';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ChevronRight } from 'lucide-react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { PlusCircle } from 'lucide-react-native';
 
-import { Colors, Spacing, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { formatEnumValue } from './types';
 
@@ -36,17 +37,6 @@ interface ListingSpecsProps {
   onViewAll?: () => void;
 }
 
-function SpecRow({ label, value }: SpecItem) {
-  const displayValue = value === null || value === undefined ? '—' : String(value);
-  
-  return (
-    <View style={styles.specRow}>
-      <Text variant="body" tone="muted">{label}</Text>
-      <Text variant="body">{displayValue}</Text>
-    </View>
-  );
-}
-
 export const ListingSpecs = memo(function ListingSpecs({
   condition,
   bodyType,
@@ -62,8 +52,7 @@ export const ListingSpecs = memo(function ListingSpecs({
   steeringSide,
   onViewAll,
 }: ListingSpecsProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors } = useTheme();
 
   const specs: SpecItem[] = [
     { label: 'Condition', value: formatEnumValue(condition || null) },
@@ -84,59 +73,52 @@ export const ListingSpecs = memo(function ListingSpecs({
   const hasMore = specs.length > MAX_VISIBLE_SPECS;
 
   return (
-    <View style={styles.container}>
-      <Text variant="footnoteEmphasized" tone="muted" uppercase>
-        SPECIFICATIONS
-      </Text>
-      <View style={styles.specsList}>
+    <Animated.View entering={FadeInDown.delay(0).duration(350)}>
+      <View style={[styles.card, { backgroundColor: colors.surface }]}>
+        <View style={styles.headerRow}>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>Specifications</Text>
+          {hasMore && (
+            <HapticPressable onPress={onViewAll}>
+              <PlusCircle size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
+            </HapticPressable>
+          )}
+        </View>
         {visibleSpecs.map((spec) => (
-          <SpecRow 
-            key={spec.label} 
-            label={spec.label} 
-            value={spec.value} 
-          />
+          <React.Fragment key={spec.label}>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            <View style={styles.specRow}>
+              <Text variant="subhead" tone="secondary">{spec.label}</Text>
+              <Text variant="subhead">{spec.value === null || spec.value === undefined ? '—' : String(spec.value)}</Text>
+            </View>
+          </React.Fragment>
         ))}
       </View>
-
-      {hasMore && (
-        <HapticPressable onPress={onViewAll} style={styles.viewAllButton}>
-          {({ pressed }) => (
-            <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
-              <Text variant="body" tone="primary">
-                View All Specifications
-              </Text>
-              <ChevronRight size={Sizes.iconSm} color={colors.primary} strokeWidth={2} />
-            </View>
-          )}
-        </HapticPressable>
-      )}
-    </View>
+    </Animated.View>
   );
 });
 
-// ============================================================================
-// STYLES
-// ============================================================================
-
 const styles = StyleSheet.create({
-  container: {
-    gap: Spacing.md,
+  card: {
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
   },
-  specsList: {
-    gap: Spacing.xs / 2,
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: Spacing.lg,
   },
   specRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: Spacing.sm,
-  },
-  viewAllButton: {
-    paddingVertical: Spacing.xs,
-  },
-  viewAllContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
   },
 });
+

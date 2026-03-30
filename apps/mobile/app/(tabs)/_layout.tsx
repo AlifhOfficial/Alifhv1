@@ -96,8 +96,10 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 style={[
                   styles.tabBtn,
                   focused && {
-                    backgroundColor: colors.fill,
+                    backgroundColor: colorScheme === 'light' ? colors.background : colors.fill,
                     borderRadius: Radius.full,
+                    borderWidth: colorScheme === 'light' ? StyleSheet.hairlineWidth : 0,
+                    borderColor: colorScheme === 'light' ? colors.border : 'transparent',
                   },
                 ]}
                 accessibilityRole="tab"

@@ -6,9 +6,10 @@
 import { Text, HapticPressable, useAlert } from '@/components/ui';
 import React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
+import { CheckCircle2, Plus } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { Spacing, Radius } from '@/constants/theme';
+import { Spacing, Sizes } from '@/constants/theme';
 import { Section } from './Section';
 import { PROFILE_TAGS } from './types';
 import type { ThemeColors } from './types';
@@ -24,22 +25,18 @@ interface TagItemProps {
 
 function TagItem({ tag, isSelected, colors, onPress }: TagItemProps) {
   return (
-    <HapticPressable
-      onPress={onPress}
-      style={[
-        styles.tag,
-        {
-          backgroundColor: isSelected ? colors.surfaceSecondary : colors.surface,
-          borderColor: isSelected ? colors.labelSecondary : colors.border,
-        },
-      ]}
-    >
+    <HapticPressable onPress={onPress} style={styles.row}>
       <Text
         variant="subhead"
-        tone={isSelected ? 'default' : 'secondary'}
+        style={[styles.label, { color: isSelected ? colors.label : colors.labelSecondary }]}
       >
         {tag}
       </Text>
+      {isSelected ? (
+        <CheckCircle2 size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
+      ) : (
+        <Plus size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
+      )}
     </HapticPressable>
   );
 }
@@ -71,42 +68,36 @@ export function TagsSection({ selectedTags, colors, onToggle }: TagsSectionProps
   };
 
   return (
-    <Section
-      title="Tags"
-      colors={colors}
-      delay={275}
-      rightElement={
-        <Text variant="body" tone="muted">
-          {selectedTags.length}/{MAX_TAGS}
-        </Text>
-      }
-    >
-      <View style={styles.container}>
-        {PROFILE_TAGS.map((tag) => (
+    <Section colors={colors} delay={275}>
+      {PROFILE_TAGS.map((tag, index) => (
+        <React.Fragment key={tag}>
+          {index > 0 && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
           <TagItem
-            key={tag}
             tag={tag}
             isSelected={selectedTags.includes(tag)}
             colors={colors}
             onPress={() => handleTagPress(tag)}
           />
-        ))}
-      </View>
+        </React.Fragment>
+      ))}
     </Section>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  row: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: Spacing.lg,
-    gap: Spacing.md,
-  },
-  tag: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
-    borderRadius: Radius.full,
-    borderWidth: StyleSheet.hairlineWidth,
+    paddingVertical: Spacing.md,
+  },
+  label: {
+    flex: 1,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: Spacing.lg,
   },
 });
+

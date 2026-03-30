@@ -7,7 +7,7 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { SpecialNotes } from '@/lib/listing-api';
 import { formatPrice } from './types';
@@ -60,11 +60,11 @@ export const ListingHeader = memo(function ListingHeader({
     <View style={styles.container}>
       <View style={styles.topRow}>
         <View style={styles.textContainer}>
-          <Text variant="title3Emphasized" style={{ color: textColor }} numberOfLines={2}>
+          <Text variant="bodyEmphasized" style={{ color: textColor }} numberOfLines={2}>
             {carTitle}
           </Text>
           <View style={styles.priceRow}>
-            <Text style={{ color: priceColor }} variant="title3Emphasized" tone="primary">
+            <Text style={{ color: priceColor }} variant="bodyEmphasized" tone="primary">
               {formatPrice(price)}
             </Text>
             {isNegotiable && (
@@ -87,7 +87,7 @@ export const ListingHeader = memo(function ListingHeader({
         <View style={styles.highlightsRow}>
           {highlights.map((highlight, idx) => (
             <View key={idx} style={styles.highlightItem}>
-              <CheckCircle2 size={Sizes.iconXs} color={colors.success} />
+              <CheckCircle2 size={Sizes.iconXs} color={colors.success} strokeWidth={Stroke.icon} />
               <Text variant="subhead" style={{ color: textColor }}>
                 {highlight}
               </Text>

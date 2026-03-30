@@ -27,12 +27,15 @@ interface MobileHeaderProps {
   subtitle?: React.ReactNode;
   left?: React.ReactNode;
   right?: React.ReactNode;
+  titleHidden?: boolean;
   barHeight?: number;
   sideSlotWidth?: number;
   showBackButton?: boolean;
   onBackPress?: () => void;
   border?: boolean;
   fadeHeight?: number;
+  /** 0–1: solid portion of the header fade before it transitions to transparent. Default 0. */
+  fadeIntensity?: number;
 }
 
 export function MobileHeader({
@@ -40,12 +43,14 @@ export function MobileHeader({
   subtitle,
   left,
   right,
+  titleHidden = false,
   barHeight = MOBILE_HEADER_BAR_HEIGHT,
   sideSlotWidth = Sizes.actionButtonLg + Spacing.lg,
   showBackButton = false,
   onBackPress,
   border = false,
   fadeHeight,
+  fadeIntensity = 0,
 }: MobileHeaderProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -78,7 +83,7 @@ export function MobileHeader({
         },
       ]}
     >
-      <EdgeFade edge="top" height={fadeHeight ?? insets.top + barHeight} />
+      <EdgeFade edge="top" height={fadeHeight ?? insets.top + barHeight} intensity={fadeIntensity} />
       <View style={[styles.row, { minHeight: barHeight }]}>
         <View style={[styles.leftSlot, { width: sideSlotWidth }]}>
           {showBackButton ? (
@@ -92,22 +97,29 @@ export function MobileHeader({
           ) : left}
         </View>
 
-        <View pointerEvents="none" style={[styles.titleSlot, { left: sideSlotWidth, right: sideSlotWidth }]}>
-          {typeof title === 'string' ? (
-            <Text variant="title3Emphasized" numberOfLines={1} style={{ color: colors.label }}>
-              {title}
-            </Text>
-          ) : (
-            title
-          )}
-          {subtitle ? (
-            typeof subtitle === 'string' ? (
-              <Text variant="subhead" tone="secondary" numberOfLines={1}>
-                {subtitle}
-              </Text>
-            ) : (
-              subtitle
-            )
+        <View
+          pointerEvents="none"
+          style={[styles.titleSlot, { left: sideSlotWidth, right: sideSlotWidth }]}
+        >
+          {!titleHidden ? (
+            <>
+              {typeof title === 'string' ? (
+                <Text variant="title3Emphasized" numberOfLines={1} style={{ color: colors.label }}>
+                  {title}
+                </Text>
+              ) : (
+                title
+              )}
+              {subtitle ? (
+                typeof subtitle === 'string' ? (
+                  <Text variant="subhead" tone="secondary" numberOfLines={1}>
+                    {subtitle}
+                  </Text>
+                ) : (
+                  subtitle
+                )
+              ) : null}
+            </>
           ) : null}
         </View>
 

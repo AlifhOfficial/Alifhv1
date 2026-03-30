@@ -5,11 +5,11 @@
 
 import { Text } from '@/components/ui';
 import React from 'react';
-import { StyleSheet, View, Platform } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 
-import { Spacing, Sizes } from '@/constants/theme';
+import { Sizes, Spacing } from '@/constants/theme';
 import { ProfileAvatar } from './ProfileAvatar';
 import type { ThemeColors } from './types';
 
@@ -79,13 +79,12 @@ export function ProfileIdentity({
             variant="body"
             tone="secondary"
             numberOfLines={1}
-            style={styles.email}
           >
             {email}
           </Text>
         )}
 
-        <Text variant="subhead" tone="muted" style={styles.memberSince}>
+        <Text variant="subhead" tone="muted">
           Member since {memberSince}
         </Text>
       </View>
@@ -95,14 +94,14 @@ export function ProfileIdentity({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
-    gap: Spacing.lg,
-    marginBottom: Spacing['2xl'],
-    marginTop: Spacing.sm,
+    gap: Spacing.xl,
+    marginBottom: Spacing.xl,
+    marginTop: Spacing['3xl'],
   },
   info: {
-    flex: 1,
+    alignItems: 'center',
     gap: Spacing.xs,
   },
   nameRow: {
@@ -112,14 +111,9 @@ const styles = StyleSheet.create({
   },
   name: {
     flexShrink: 1,
+    textAlign: 'center',
   },
   expiringBadge: {
     opacity: 0.5,
-  },
-  email: {
-    marginTop: Sizes.badgePaddingV,
-  },
-  memberSince: {
-    marginTop: Sizes.badgePaddingV,
   },
 });

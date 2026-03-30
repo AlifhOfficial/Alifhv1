@@ -12,7 +12,7 @@ import { Spacing, Radius } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 interface SectionProps {
-  title: string;
+  title?: string;
   children: React.ReactNode;
   colors: ThemeColors;
   delay?: number;
@@ -33,10 +33,12 @@ export function Section({
       entering={FadeInDown.delay(delay).duration(350)}
       style={styles.container}
     >
-      <View style={styles.header}>
-        <Text variant="caption1Emphasized" tone="muted" style={styles.title} uppercase>{title}</Text>
-        {rightElement}
-      </View>
+      {(title || rightElement) && (
+        <View style={styles.header}>
+          {title && <Text variant="caption1Emphasized" tone="muted" style={styles.title} uppercase>{title}</Text>}
+          {rightElement}
+        </View>
+      )}
       <View
         style={[
           styles.content,
@@ -52,7 +54,7 @@ export function Section({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: Spacing['2xl'],
+    marginBottom: Spacing.xl,
   },
   header: {
     flexDirection: 'row',

@@ -1,16 +1,17 @@
 /**
  * Seller Listings Section
- * 
+ *
  * Shows other listings from this seller.
- * Uses CarCardList for consistent card design.
+ * Follows profile/settings card pattern for consistency.
  */
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { memo, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { ChevronRight } from 'lucide-react-native';
 
-import { Spacing, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { CarCardList } from '@/components/cards/car-card-list';
 import type { SellerListingsProps } from './types';
 
@@ -28,54 +29,68 @@ export const SellerListings = memo(function SellerListings({
   }, [onViewListing]);
 
   return (
-    <View style={localStyles.section}>
-      <Text variant="footnoteEmphasized" tone="muted" uppercase>MORE FROM THIS SELLER</Text>
-      
-      {/* Listings list */}
-      <View style={localStyles.list}>
-        {listings.slice(0, 4).map((item) => (
-          <CarCardList
-            key={item.id}
-            id={item.id}
-            make={item.make}
-            model={item.model}
-            year={item.year}
-            price={item.price}
-            mileage={item.mileage}
-            emirate=""
-            thumbnail={item.thumbnail}
-            isBlkListing={item.isBlkListing}
-            onPress={handlePress}
-          />
-        ))}
+    <Animated.View entering={FadeInDown.delay(250).duration(350)}>
+      <View style={[styles.card, { backgroundColor: colors.surface }]}>
+        {/* Section header */}
+        <View style={styles.headerRow}>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>MORE FROM THIS SELLER</Text>
+        </View>
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
+        {/* Listing cards */}
+        <View style={styles.list}>
+          {listings.slice(0, 4).map((item) => (
+            <CarCardList
+              key={item.id}
+              id={item.id}
+              make={item.make}
+              model={item.model}
+              year={item.year}
+              price={item.price}
+              mileage={item.mileage}
+              emirate=""
+              thumbnail={item.thumbnail}
+              isBlkListing={item.isBlkListing}
+              onPress={handlePress}
+            />
+          ))}
+        </View>
+
+        {/* View All row */}
+        {totalCount > 4 && (
+          <>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            <HapticPressable onPress={onViewAll} style={styles.viewAllRow}>
+              <Text variant="subhead" tone="primary">View all {totalCount} listings</Text>
+              <ChevronRight size={Sizes.iconSm} color={colors.primary} />
+            </HapticPressable>
+          </>
+        )}
       </View>
-      
-      {/* View All button */}
-      {totalCount > 4 && (
-        <HapticPressable
-          onPress={onViewAll}
-          style={localStyles.viewAllRow}
-        >
-          <Text variant="body" tone="primary">
-            View All {totalCount} Listings
-          </Text>
-          <ChevronRight size={Sizes.iconXs} color={colors.primary} />
-        </HapticPressable>
-      )}
-    </View>
+    </Animated.View>
   );
 });
 
-const localStyles = StyleSheet.create({
-  section: {
-    gap: Spacing.md,
+const styles = StyleSheet.create({
+  card: {
+    borderRadius: Radius.xl,
+  },
+  headerRow: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
   },
   list: {
-    gap: Spacing.xs,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
   },
   viewAllRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
   },
 });

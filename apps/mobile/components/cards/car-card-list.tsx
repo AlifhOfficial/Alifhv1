@@ -10,17 +10,10 @@ import { StyleSheet, View, ImageSourcePropType } from 'react-native';
 import { Image, ImageSource } from 'expo-image';
 import { Share2 } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Layout, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Layout, Sizes, Timing, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
 import { shareListing } from '@/lib/listing-share';
-
-// ============================================================================
-// CONSTANTS (Adaptive)
-// ============================================================================
-
-const IMAGE_TRANSITION_MS = 150;
-const ICON_STROKE_WIDTH = 1.75;
 
 // ============================================================================
 // UTILITIES
@@ -208,7 +201,7 @@ export const CarCardList = memo(function CarCardList({
     <HapticPressable
       onPress={handlePress}
       onPressIn={onPressIn ? handlePressIn : undefined}
-      style={[styles.container, { backgroundColor: theme.bg, borderColor: theme.border }]}
+      style={[styles.container, { backgroundColor: theme.bg }]}
     >
       {/* === IMAGE SECTION === */}
       <ListImage
@@ -225,49 +218,44 @@ export const CarCardList = memo(function CarCardList({
       <View style={styles.infoSection}>
         {/* Content - Top */}
         <View style={styles.content}>
-          <Text variant="body" style={{ color: theme.text }} numberOfLines={1}>
+          <Text variant="subheadEmphasized" style={{ color: theme.text }} numberOfLines={1}>
             {make} {model}
           </Text>
-          <Text variant="subhead" style={{ color: theme.meta }} tone="secondary">
-            {year}
+          <Text variant="footnote" style={{ color: theme.meta }}>
+            {year}{displayEmirate ? ` · ${displayEmirate}` : ''} · {displaySpecs}
           </Text>
-          <Text style={{ color: theme.price }} variant="headline" tone="primary">
+          <Text variant="callout" style={{ color: theme.price }}>
             {formatPrice(price)}
           </Text>
-          <Text variant="subhead" style={{ color: theme.meta }} tone="secondary">
-            {formatMileage(mileage)} · {displaySpecs} · {displayEmirate}
+          <Text variant="footnote" style={{ color: theme.meta }}>
+            {formatMileage(mileage)}
           </Text>
         </View>
 
         {/* Actions - Bottom Row */}
         <View style={styles.bottomActions}>
-          <View style={[styles.actionBubble, { backgroundColor: theme.imageBg, borderColor: theme.border }]}>
-            <FavoriteButton
+          <FavoriteButton
+            listingId={id}
+            size={Sizes.iconSm}
+            onPress={onFavoritePress}
+            isFavorite={isFavoriteProp}
+            isBlkListing={isBlkListing}
+          />
+          {showSuperlike && (
+            <SuperlikeButton
               listingId={id}
-              size={Sizes.iconXs}
-              onPress={onFavoritePress}
-              isFavorite={isFavoriteProp}
+              size={Sizes.iconSm}
+              onPress={onSuperlikePress}
+              isSuperliked={isSuperlikedProp}
               isBlkListing={isBlkListing}
             />
-          </View>
-          {showSuperlike && (
-            <View style={[styles.actionBubble, { backgroundColor: theme.imageBg, borderColor: theme.border }]}>
-              <SuperlikeButton
-                listingId={id}
-                size={Sizes.iconXs}
-                onPress={onSuperlikePress}
-                isSuperliked={isSuperlikedProp}
-                isBlkListing={isBlkListing}
-              />
-            </View>
           )}
           {showShare && (
-            <HapticPressable 
-              onPress={handleSharePress} 
+            <HapticPressable
+              onPress={handleSharePress}
               hitSlop={Layout.hitSlopSmall}
-              style={[styles.actionBubble, { backgroundColor: theme.imageBg, borderColor: theme.border }]}
             >
-              <Share2 size={Sizes.iconXs} color={theme.icon} strokeWidth={ICON_STROKE_WIDTH} />
+              <Share2 size={Sizes.iconSm} color={theme.icon} strokeWidth={Stroke.icon} />
             </HapticPressable>
           )}
         </View>
@@ -309,7 +297,7 @@ const ListImage = memo(function ListImage({
   return (
     <View style={[styles.imageContainer, { backgroundColor }]}>
       {source ? (
-        <Image source={source} style={styles.image} contentFit="cover" transition={IMAGE_TRANSITION_MS} />
+        <Image source={source} style={styles.image} contentFit="cover" transition={Timing.avatarTransition} />
       ) : (
         <View style={[styles.image, { backgroundColor: skeletonColor }]} />
       )}
@@ -331,19 +319,19 @@ export function CarCardListSkeleton() {
   const colors = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+    <View style={[styles.container, { backgroundColor: colors.surface }]}>
       <Skeleton width={Sizes.cardThumbnailWidth} height={Sizes.cardThumbnailHeight} borderRadius={Radius.lg} />
       <View style={styles.infoSection}>
         <View style={styles.content}>
           <Skeleton width="80%" height={Spacing.lg} />
-          <Skeleton width="30%" height={Spacing.md} />
+          <Skeleton width="40%" height={Spacing.md} />
           <Skeleton width="50%" height={Spacing.md} />
-          <Skeleton width="60%" height={Spacing.sm} />
+          <Skeleton width="30%" height={Spacing.sm} />
         </View>
         <View style={styles.bottomActions}>
-          <SkeletonCircle size={Sizes.bubbleXs} />
-          <SkeletonCircle size={Sizes.bubbleXs} />
-          <SkeletonCircle size={Sizes.bubbleXs} />
+          <SkeletonCircle size={Sizes.iconSm} />
+          <SkeletonCircle size={Sizes.iconSm} />
+          <SkeletonCircle size={Sizes.iconSm} />
         </View>
       </View>
     </View>
@@ -358,11 +346,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    borderRadius: Radius['2xl'],
-    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: Radius.xl,
     padding: Spacing.lg,
     marginBottom: Spacing.md,
-    gap: Spacing.xl,
+    gap: Spacing.md,
   },
   imageContainer: {
     width: Sizes.cardThumbnailWidth,
@@ -381,26 +368,19 @@ const styles = StyleSheet.create({
     height: Sizes.cardThumbnailHeight,
   },
   content: {
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
   bottomActions: {
     flexDirection: 'row',
-    gap: Spacing.xs,
-  },
-  actionBubble: {
-    width: Sizes.bubbleXs,
-    height: Sizes.bubbleXs,
     alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Sizes.bubbleXs / 2,
-    borderWidth: StyleSheet.hairlineWidth,
+    gap: Spacing.md,
   },
   blkBadge: {
     position: 'absolute',
     top: Spacing.sm,
     left: Spacing.sm,
-    paddingHorizontal: Spacing.xs,
-    paddingVertical: Spacing.xs / 2,
+    paddingHorizontal: Sizes.badgePaddingH,
+    paddingVertical: Sizes.badgePaddingV,
     borderRadius: Radius.none,
     borderWidth: StyleSheet.hairlineWidth,
   },

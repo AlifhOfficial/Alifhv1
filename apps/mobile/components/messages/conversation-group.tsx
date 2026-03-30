@@ -15,7 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Layout, Spacing, Sizes, Radius, Timing } from '@/constants/theme';
+import { Layout, Spacing, Sizes, Radius, Timing } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import type { Conversation } from '@/lib/messaging-api';
 
@@ -56,8 +56,7 @@ export function ConversationGroup({
   onSelect,
   defaultExpanded = false,
 }: ConversationGroupProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const { colors } = useTheme();
 
   const isMulti = conversations.length > 1;
   const [isExpanded, setIsExpanded] = useState(
@@ -128,14 +127,14 @@ export function ConversationGroup({
             <View style={{ flex: 1, gap: Spacing.xs }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
                 <Text
-                  variant="headline"
+                  variant="bodyEmphasized"
                   tone="default"
                   style={{ flex: 1 }}
                   numberOfLines={1}
                 >
                   {name}
                 </Text>
-                <Text variant="subhead" tone="muted">
+                <Text variant="caption1" tone="secondary">
                   {formatTime(latest.lastMessageAt)}
                 </Text>
               </View>
@@ -162,7 +161,7 @@ export function ConversationGroup({
                     }}
                   >
                     <Text
-                      variant="subhead"
+                      variant="caption1Emphasized"
                       style={{
                         color: colors.primaryForeground,
                         fontVariant: ['tabular-nums'],
@@ -220,14 +219,14 @@ export function ConversationGroup({
                     >
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
                         <Text
-                          variant="body"
+                          variant="subheadEmphasized"
                           tone={cUnread ? 'default' : 'secondary'}
                           style={{ flex: 1 }}
                           numberOfLines={1}
                         >
                           {c.listing?.title || 'General Inquiry'}
                         </Text>
-                        <Text variant="subhead" tone="muted">
+                        <Text variant="caption1" tone="secondary">
                           {formatTime(c.lastMessageAt)}
                         </Text>
                       </View>
@@ -254,7 +253,7 @@ export function ConversationGroup({
                             }}
                           >
                             <Text
-                              variant="subhead"
+                              variant="caption1Emphasized"
                               style={{
                                 color: colors.primaryForeground,
                                 fontVariant: ['tabular-nums'],

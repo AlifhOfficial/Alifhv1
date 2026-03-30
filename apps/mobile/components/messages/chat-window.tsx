@@ -252,7 +252,7 @@ export function ChatWindow({
             </View>
             <View style={styles.timestampSide}>
               {timestamp && (
-                <Text variant="subhead" style={{ color: colors.labelTertiary, opacity: 0.5 }} tone="secondary">
+                <Text variant="caption2" tone="secondary">
                   {timestamp}
                 </Text>
               )}
@@ -260,7 +260,7 @@ export function ChatWindow({
           </View>
           {showDateSeparator && (
             <View style={styles.dateSeparator}>
-              <Text variant="subhead" style={{ color: colors.labelTertiary }}>
+              <Text variant="caption2Emphasized" tone="secondary">
                 {formatDateLabel(messageDate)}
               </Text>
             </View>
@@ -276,7 +276,6 @@ export function ChatWindow({
       otherUserAvatar,
       otherUserName,
       colors.border,
-      colors.labelTertiary,
       formatDateLabel,
     ]
   );
@@ -298,26 +297,25 @@ export function ChatWindow({
   const ListEmptyComponent = useMemo(() => {
     return (
       <View style={styles.emptyContainer}>
-        <Text variant="body" style={{ color: colors.labelTertiary }}>No messages yet. Say hi! 👋</Text>
+        <Text variant="subhead" tone="secondary">No messages yet. Say hi! 👋</Text>
       </View>
     );
-  }, [colors]);
+  }, []);
 
   // Typing indicator
   const ListHeaderComponent = useMemo(() => {
     if (!isOtherTyping) return null;
     return (
       <View style={styles.typingContainer}>
-        <Text variant="subhead" style={{ color: colors.labelTertiary }} tone="secondary">
+        <Text variant="footnote" tone="secondary">
           typing...
         </Text>
       </View>
     );
-  }, [isOtherTyping, colors.labelTertiary]);
+  }, [isOtherTyping]);
 
   // Activity status text for native header
   const activityText = useMemo(() => {
-    if (isOtherTyping) return 'typing...';
     if (isOnline) return 'now';
     if (lastSeenAt) {
       const date = new Date(lastSeenAt);
@@ -334,17 +332,37 @@ export function ChatWindow({
       }
     }
     return 'offline';
-  }, [isOtherTyping, isOnline, lastSeenAt]);
+  }, [isOnline, lastSeenAt]);
 
   const router = useRouter();
   const { applySearch, clearSearch, clearFilterParams } = useSearch();
 
-  // Avatar in headerRight with online dot — press navigates to partner if dealer
-  const renderHeaderRight = useCallback(() => {
+  // Avatar + name + status as a single title node
+  const titleNode = useMemo(() => {
+    if (!conversation) {
+      return (
+        <View style={styles.headerTitleCol}>
+          <Skeleton width={120} height={16} borderRadius={Radius.sm} />
+          <Skeleton width={80} height={12} borderRadius={Radius.sm} />
+        </View>
+      );
+    }
+    return (
+      <View style={styles.headerTitleCol}>
+        <Text variant="title3Emphasized" numberOfLines={1}>{displayName}</Text>
+        <Text variant="subhead" tone="secondary" numberOfLines={1}>
+          {activityText}{listingTitle ? `  ·  ${listingTitle}` : ''}
+        </Text>
+      </View>
+    );
+  }, [conversation, displayName, activityText, listingTitle]);
+
+  // Avatar in right slot with online dot
+  const avatarRight = useMemo(() => {
     const partnerId = conversation?.partner?.id ?? conversation?.partnerId ?? null;
     const partnerName = conversation?.partner?.name ?? null;
-    const avatar = (
-      <View style={[styles.headerAvatarWrap, Platform.OS === 'ios' ? { marginRight: Spacing.sm } : null]}>
+    const avatarEl = (
+      <View style={styles.headerAvatarWrap}>
         {!conversation ? (
           <Skeleton circle width={Sizes.avatarSm} height={Sizes.avatarSm} />
         ) : (
@@ -365,11 +383,11 @@ export function ChatWindow({
             router.push('/browse' as any);
           }}
         >
-          {avatar}
+          {avatarEl}
         </Pressable>
       );
     }
-    return avatar;
+    return avatarEl;
   }, [conversation, avatarUrl, displayName, isOnline, colors, router, applySearch, clearSearch, clearFilterParams]);
 
   const nativeHeaderOptions = {
@@ -389,12 +407,12 @@ export function ChatWindow({
       keyboardVerticalOffset={0}
     >
     <MobileHeader
-      title={displayName}
-      subtitle={listingTitle ? `${activityText}  ·  ${listingTitle}` : activityText}
+      title={titleNode}
       showBackButton
       onBackPress={onBack}
-      right={renderHeaderRight()}
-      fadeHeight={insets.top + Sizes.actionButtonLg + Spacing['5xl']}
+      right={avatarRight}
+      fadeHeight={insets.top + Sizes.actionButtonLg + Spacing['5xl'] + Spacing['4xl']}
+      fadeIntensity={0.35}
     />
       {/* Messages List with horizontal swipe for timestamps */}
       <GestureDetector gesture={swipeGesture}>
@@ -566,5 +584,12 @@ const styles = StyleSheet.create({
     height: Spacing.md,
     borderRadius: Spacing.md / 2,
     borderWidth: 2,
+  },
+  headerTitleCol: {
+    alignItems: 'center',
+    gap: 2,
+  },
+  headerNameBlock: {
+    gap: 2,
   },
 });

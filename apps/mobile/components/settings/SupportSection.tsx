@@ -70,8 +70,7 @@ function SupportItem({
         <View style={styles.itemLeft}>
           <Icon size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={1.5} />
           <View style={styles.itemContent}>
-            <Text variant="subhead" tone="muted">Navigate</Text>
-            <Text variant="body">{label}</Text>
+            <Text variant="subhead">{label}</Text>
           </View>
         </View>
         <ChevronRight size={Sizes.iconSm} color={colors.labelTertiary} strokeWidth={2} />
@@ -87,7 +86,7 @@ export function SupportSection({
   delay = 250,
 }: SupportSectionProps) {
   return (
-    <Section title="Support" colors={colors} delay={delay}>
+    <Section colors={colors} delay={delay}>
       <SupportItem
         icon={HelpCircle}
         label="Help & Support"

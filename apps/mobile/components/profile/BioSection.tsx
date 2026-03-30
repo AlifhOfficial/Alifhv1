@@ -62,7 +62,7 @@ export function BioSection({
     bio.length >= MAX_BIO_LENGTH ? colors.error : colors.labelTertiary;
 
   return (
-    <Section title="Bio" colors={colors} delay={250}>
+    <Section colors={colors} delay={250}>
       <HapticPressable onPress={handlePress} style={styles.container}>
         {isEditing ? (
           <Animated.View entering={FadeIn.duration(200)} style={styles.editContainer}>
@@ -115,7 +115,7 @@ export function BioSection({
         ) : (
           <View style={styles.displayContainer}>
             <Text
-              variant="body"
+              variant="subhead"
               tone={bio ? 'default' : 'muted'}
               style={styles.bioText}
             >

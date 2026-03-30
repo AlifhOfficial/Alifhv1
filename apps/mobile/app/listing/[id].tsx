@@ -33,7 +33,7 @@ export default function ListingDetailScreen() {
     listingId: id,
     trackView: true,
   });
-  
+
   const [showActions, setShowActions] = useState(false);
 
   useEffect(() => {

@@ -4,7 +4,7 @@
  * Uses expo-image-picker for photo selection
  */
 
-import { Text, useAlert } from '@/components/ui';
+import { useAlert } from '@/components/ui';
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Pressable, Platform, ActionSheetIOS } from 'react-native';
 import Animated, { 
@@ -22,7 +22,7 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Sizes, Typography } from '@/constants/theme';
 import type { ThemeColors } from './types';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -218,22 +218,34 @@ export function ProfileAvatar({
       <UserAvatar
         src={imageUrl}
         name={displayName}
-        size="xl"
+        size="xxl"
         useGeneratedAvatar={useGeneratedAvatar}
       />
       
       {/* Loading overlay */}
       {isUploading && (
-        <Animated.View entering={FadeIn.duration(200)} style={styles.overlay}>
-          <Text variant="subhead" style={[styles.loadingText, loadingTextStyle]}>
+        <Animated.View
+          entering={FadeIn.duration(200)}
+          style={[
+            styles.overlay,
+            { backgroundColor: colors.overlay },
+          ]}
+        >
+          <Animated.Text
+            style={[
+              styles.loadingText,
+              { color: colors.primaryForeground },
+              loadingTextStyle,
+            ]}
+          >
             Uploading
-          </Text>
+          </Animated.Text>
         </Animated.View>
       )}
       
       {/* Camera badge */}
       {!isUploading && (
-        <View style={styles.cameraBadge}>
+        <View style={[styles.cameraBadge, { backgroundColor: colors.overlay }]}>
           <Camera size={Sizes.iconXs} color={colors.primaryForeground} strokeWidth={2.5} />
         </View>
       )}
@@ -247,14 +259,12 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: Spacing['3xl'],
-    backgroundColor: Colors.dark.overlay,
+    borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
   loadingText: {
-    // White text on overlay - hardcoded for contrast
-    color: Colors.dark.primaryForeground,
+    ...Typography.subhead,
   },
   cameraBadge: {
     position: 'absolute',
@@ -265,6 +275,5 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.dark.overlay,
   },
 });
