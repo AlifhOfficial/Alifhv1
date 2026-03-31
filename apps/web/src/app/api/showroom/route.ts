@@ -13,7 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getPublishedShowrooms } from '@alifh/database';
+import { getCachedPublishedShowrooms } from '@/lib/showroom-cache';
 import { getCdnPublicUrl } from '@/utils';
 
 export const runtime = 'nodejs';
@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '12', 10)));
     
     // Fetch published showrooms (cached internally)
-    const { showrooms, total } = await getPublishedShowrooms(page, limit);
+    const { showrooms, total } = await getCachedPublishedShowrooms(page, limit);
     
     // Transform to card format with URLs
     const cards = showrooms.map(attachCardUrls);

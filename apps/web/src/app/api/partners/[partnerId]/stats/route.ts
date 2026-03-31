@@ -13,7 +13,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { calculatePartnerStats } from '@alifh/database';
+import { getCachedPartnerStats } from '@/lib/listing-detail-cache';
 
 
 export const runtime = 'nodejs';
@@ -44,7 +44,7 @@ export async function GET(
       );
     }
 
-    const stats = await calculatePartnerStats(partnerId);
+    const stats = await getCachedPartnerStats(partnerId);
 
     const response = NextResponse.json(stats);
     return response;

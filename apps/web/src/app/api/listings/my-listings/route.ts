@@ -29,8 +29,11 @@ import {
   getListingStatsByPartnerId,
   getListingStatsByUserId,
   getListingsByPartnerId,
-  getListingsByUserId,
 } from '@alifh/database';
+import {
+  getCachedMyListingStats,
+  getCachedMyListings,
+} from '@/lib/my-listings-cache';
 
 
 export const runtime = 'nodejs';
@@ -236,7 +239,7 @@ export async function GET(req: NextRequest) {
     
     // ⚡ OPTIMIZATION: Parallelize listings + stats fetch with individual timing
     const listingsStart = performance.now();
-    const listingsPromise = getListingsByUserId(user.id, {
+    const listingsPromise = getCachedMyListings(user.id, {
       status,
       moderationStatus,
       lifecycleStatus,
@@ -253,7 +256,7 @@ export async function GET(req: NextRequest) {
     let statsPromise: Promise<Awaited<ReturnType<typeof getListingStatsByUserId>> | undefined> = Promise.resolve(undefined);
     if (includeStats) {
       const statsStart = performance.now();
-      statsPromise = getListingStatsByUserId(user.id, { listingType }).then(stats => {
+      statsPromise = getCachedMyListingStats(user.id, listingType).then(stats => {
         if (DEBUG_TIMING) console.log(`[my-listings] stats-query: ${(performance.now() - statsStart).toFixed(0)}ms`);
         return stats;
       });

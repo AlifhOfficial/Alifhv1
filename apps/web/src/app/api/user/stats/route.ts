@@ -10,13 +10,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { calculateUserStats } from '@alifh/database';
+import { getCachedUserStats } from '@/lib/listing-detail-cache';
 
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     }
 
 
-    const stats = await calculateUserStats(user.id);
+    const stats = await getCachedUserStats(user.id);
 
     return NextResponse.json(stats);
   } catch (error) {

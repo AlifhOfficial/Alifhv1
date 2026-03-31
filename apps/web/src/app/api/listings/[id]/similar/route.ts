@@ -15,10 +15,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  getListingDetailed,
-  getSimilarListings,
-  type SimilarListingCard,
-} from '@alifh/database';
+  getCachedListingDetailed,
+  getCachedSimilarListings,
+} from '@/lib/listing-detail-cache';
 
 export const runtime = 'nodejs';
 
@@ -42,13 +41,13 @@ export async function GET(
   }
 
   try {
-    const listing = await getListingDetailed(id);
+    const listing = await getCachedListingDetailed(id);
 
     if (!listing || listing.moderationStatus !== 'approved' || listing.lifecycleStatus !== 'active') {
       return NextResponse.json({ listings: [] });
     }
 
-    const similar = await getSimilarListings({
+    const similar = await getCachedSimilarListings({
       excludeId: listing.id,
       price: listing.price,
       bodyType: listing.bodyType,

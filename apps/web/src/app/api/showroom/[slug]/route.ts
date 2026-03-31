@@ -15,10 +15,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  getPublishedShowroomBySlug,
-  getPublishedShowroomByPartnerId,
   incrementShowroomViews,
 } from '@alifh/database';
+import {
+  getCachedShowroomByPartnerId,
+  getCachedShowroomBySlug,
+} from '@/lib/showroom-cache';
 import { getCdnPublicUrl } from '@/utils';
 
 export const runtime = 'nodejs';
@@ -128,11 +130,11 @@ export async function GET(
     }
     
     // Try slug first, then fallback to partner ID lookup
-    let showroom = await getPublishedShowroomBySlug(slug);
+    let showroom = await getCachedShowroomBySlug(slug);
     
     if (!showroom) {
       // Fallback: might be a partner ID instead of slug
-      showroom = await getPublishedShowroomByPartnerId(slug);
+      showroom = await getCachedShowroomByPartnerId(slug);
     }
     
     if (!showroom) {

@@ -21,11 +21,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from '@/lib/auth/session-context';
 import { 
-  getListingDetailed, 
-  getDealerBaseProfile, 
-  getUserProfileByUserId,
-  getStaffEffectivePhone,
+  getListingDetailed,
 } from "@alifh/database";
+import {
+  getCachedDealerProfile,
+  getCachedListingDetailed,
+  getCachedStaffContact,
+  getCachedUserProfile,
+} from '@/lib/listing-detail-cache';
 
 
 export const runtime = "nodejs";
@@ -45,10 +48,10 @@ async function fetchSellerData(listing: ListingResult) {
   if (listing.partnerId) {
     // Partner listing - fetch dealer profile and staff phone (NO stats - loaded separately)
     const [partnerProfile, staffContact] = await Promise.all([
-      getDealerBaseProfile(listing.partnerId),
+      getCachedDealerProfile(listing.partnerId),
       // Get contact info for currently assigned staff (userId is updated when reassigned)
       listing.postedByRole === 'staff' && listing.userId
-        ? getStaffEffectivePhone(listing.userId, listing.partnerId)
+        ? getCachedStaffContact(listing.userId, listing.partnerId)
         : Promise.resolve(null),
     ]);
     console.log(`[fetchSellerData] partner (getDealerBaseProfile + staffPhone): ${(performance.now() - start).toFixed(0)}ms`);
@@ -67,7 +70,7 @@ async function fetchSellerData(listing: ListingResult) {
     };
   } else {
     // User listing - fetch profile only (NO stats - loaded separately)
-    const userProfile = await getUserProfileByUserId(listing.userId);
+    const userProfile = await getCachedUserProfile(listing.userId);
     console.log(`[fetchSellerData] user (getUserProfileByUserId): ${(performance.now() - start).toFixed(0)}ms`);
     
     return { 
@@ -99,7 +102,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const listing = await getListingDetailed(id);
+    const listing = await getCachedListingDetailed(id);
     logTiming('listing-query');
 
     if (!listing) {

@@ -14,11 +14,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { 
-  calculateUserStats,
-  calculatePartnerStats,
-  hasPublishedShowroom,
-} from "@alifh/database";
+import {
+  getCachedHasShowroom,
+  getCachedPartnerStats,
+  getCachedUserStats,
+} from '@/lib/listing-detail-cache';
 
 
 export const runtime = "nodejs";
@@ -53,12 +53,12 @@ export async function GET(req: NextRequest) {
     if (type === 'partner') {
       // Fetch partner stats and showroom status in parallel
       const [partnerStats, hasShowroom] = await Promise.all([
-        calculatePartnerStats(id),
-        hasPublishedShowroom(id),
+        getCachedPartnerStats(id),
+        getCachedHasShowroom(id),
       ]);
       stats = { ...partnerStats, hasShowroom };
     } else {
-      stats = await calculateUserStats(id);
+      stats = await getCachedUserStats(id);
     }
 
     console.log(`[seller-stats] ${type}:${id} - ${(performance.now() - startTime).toFixed(0)}ms`);
