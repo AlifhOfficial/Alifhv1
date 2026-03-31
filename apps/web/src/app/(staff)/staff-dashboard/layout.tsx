@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session-context";
 import { AuthenticatedAppProviders } from "@/components/shared/providers/authenticated-app-providers";
+import { GlobalChatProvider } from "@/components/shared/providers/global-chat-provider";
 import { StaffDashboardShell } from "./shell";
 
 const navSections = [
@@ -40,10 +41,12 @@ export default async function StaffDashboardLayout({ children }: { children: Rea
   };
 
   return (
-    <AuthenticatedAppProviders>
-      <StaffDashboardShell user={user} sections={navSections} staffOverride={staffOverride}>
-        {children}
-      </StaffDashboardShell>
-    </AuthenticatedAppProviders>
+    <GlobalChatProvider>
+      <AuthenticatedAppProviders>
+        <StaffDashboardShell user={user} sections={navSections} staffOverride={staffOverride}>
+          {children}
+        </StaffDashboardShell>
+      </AuthenticatedAppProviders>
+    </GlobalChatProvider>
   );
 }
