@@ -209,7 +209,7 @@ export function CarListItem({
 
   return (
     <div className={cn(
-      "group relative overflow-hidden rounded-lg transition-all duration-300 flex flex-col lg:flex-row w-full",
+      "group relative overflow-hidden rounded-[20px] transition-all duration-300 flex flex-col lg:flex-row w-full",
       isBlkListing 
         ? "bg-white dark:bg-[#0D0D0D] border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-2xl hover:shadow-zinc-900/50" 
         : "bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-md",
@@ -223,7 +223,7 @@ export function CarListItem({
       {/* Image Section */}
       <div className="p-3 w-full lg:w-72 flex-shrink-0">
         <Link href={`/listings/${id}`} prefetch={false} className={cn(
-          "relative aspect-[4/3] w-full overflow-hidden rounded-lg block",
+          "relative aspect-[4/3] w-full overflow-hidden rounded-[20px] block",
           isBlkListing ? "bg-zinc-900" : "bg-muted/20"
         )}>
           {displayImage ? (
@@ -506,13 +506,13 @@ interface CarListItemSkeletonProps {
 function CarListItemSkeletonComponent({ className }: CarListItemSkeletonProps) {
   return (
     <div className={cn(
-      "overflow-hidden rounded-lg flex flex-col lg:flex-row w-full",
+      "overflow-hidden rounded-[20px] flex flex-col lg:flex-row w-full",
       "bg-sidebar border border-sidebar-border",
       className
     )}>
       {/* Image Section */}
       <div className="p-3 w-full lg:w-72 flex-shrink-0">
-        <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+        <Skeleton className="aspect-[4/3] w-full rounded-[20px]" />
       </div>
 
       {/* Content Section */}

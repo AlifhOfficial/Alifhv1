@@ -406,9 +406,9 @@ export function DealerInventory({
       {isLoading && (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="p-4 sm:p-5 rounded-xl">
+            <div key={i} className="p-4 sm:p-5 rounded-[20px]">
               <div className="flex items-start gap-4 sm:gap-5">
-                <Skeleton className="w-24 h-16 sm:w-32 sm:h-20 rounded-xl shrink-0" />
+                <Skeleton className="w-24 h-16 sm:w-32 sm:h-20 rounded-[20px] shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-3">
                     <Skeleton className="h-5 w-2/3" />
@@ -460,13 +460,13 @@ export function DealerInventory({
                 <div
                   key={listing.id}
                   className={cn(
-                    "group p-4 sm:p-5 rounded-xl hover:bg-secondary/40 transition-colors border border-transparent hover:border-border/40",
+                    "group p-4 sm:p-5 rounded-[20px] hover:bg-secondary/40 transition-colors border border-transparent hover:border-border/40",
                     listing.isBlkListing && "bg-zinc-500/5"
                   )}
                 >
                   <div className="flex items-start gap-4 sm:gap-5">
                     {/* Thumbnail */}
-                    <div className="w-24 h-16 sm:w-32 sm:h-20 rounded-xl overflow-hidden bg-secondary flex-shrink-0 relative">
+                    <div className="w-24 h-16 sm:w-32 sm:h-20 rounded-[20px] overflow-hidden bg-secondary flex-shrink-0 relative">
                       {getAppThumbUrl(listing.thumbnail) ? (
                         <img
                           src={getAppThumbUrl(listing.thumbnail)!}

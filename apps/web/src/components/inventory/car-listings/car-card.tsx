@@ -254,7 +254,7 @@ export function CarCard({
 
   return (
     <div className={cn(
-      "group relative flex flex-col overflow-hidden rounded-lg transition-all duration-300 w-full",
+      "group relative flex flex-col overflow-hidden rounded-[20px] transition-all duration-300 w-full",
       isBlkListing 
         ? "bg-white dark:bg-[#0D0D0D] border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-2xl hover:shadow-zinc-900/50" 
         : "bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-md",
@@ -267,21 +267,25 @@ export function CarCard({
 
       {/* Image Section */}
       <Link href={`/listings/${id}`} prefetch={false} className={cn(
-        "relative aspect-[16/9] w-full overflow-hidden rounded-lg block",
-        isBlkListing ? "bg-zinc-900" : "bg-muted/20"
+        "block mx-1 mt-1"
       )}>
-        {displayImage ? (
-          <img
-            src={displayImage}
-            alt={`${year} ${make} ${model}`}
-            className="absolute inset-0 h-full w-full object-cover"
-            loading={priority ? 'eager' : 'lazy'}
-            fetchPriority={priority ? 'high' : 'auto'}
-            decoding="auto"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-muted/30" />
-        )}
+        <div className={cn(
+          "relative w-full aspect-[16/9] overflow-hidden rounded-[20px]",
+          isBlkListing ? "bg-zinc-900" : "bg-muted/20"
+        )}>
+          {displayImage ? (
+            <img
+              src={displayImage}
+              alt={`${year} ${make} ${model}`}
+              className="absolute inset-0 h-full w-full object-cover"
+              loading={priority ? 'eager' : 'lazy'}
+              fetchPriority={priority ? 'high' : 'auto'}
+              decoding="auto"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-muted/30" />
+          )}
+        </div>
         
       </Link>
 
@@ -708,13 +712,15 @@ interface CarCardSkeletonProps {
 function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
   return (
     <div className={cn(
-      "flex flex-col overflow-hidden rounded-lg w-full",
+      "flex flex-col overflow-hidden rounded-[20px] w-full",
       "bg-sidebar border border-sidebar-border",
       className
     )}>
       {/* Image Section - matches CarCard aspect ratios */}
-      <div className="relative aspect-[16/9] w-full">
-        <Skeleton className="absolute inset-0" />
+      <div className="mx-1 mt-1">
+        <div className="relative w-full aspect-[16/9] overflow-hidden rounded-[20px]">
+          <Skeleton className="absolute inset-0" />
+        </div>
       </div>
       
       {/* Content Section */}
