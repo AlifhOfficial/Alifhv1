@@ -153,6 +153,8 @@ export default function BrowseScreen() {
     [searchQueryParams]
   );
   const searchQueryHash = useMemo(() => JSON.stringify(searchQueryKey), [searchQueryKey]);
+  const searchQueryKeyRef = useRef(searchQueryKey);
+  searchQueryKeyRef.current = searchQueryKey;
   const previousSearchQueryHashRef = useRef<string | null>(null);
   const [isRevalidatingWarmSearch, setIsRevalidatingWarmSearch] = useState(false);
 
@@ -237,27 +239,20 @@ export default function BrowseScreen() {
       return;
     }
 
-    const cachedState = queryClient.getQueryState(searchQueryKey);
+    const cachedState = queryClient.getQueryState(searchQueryKeyRef.current);
     if (!cachedState?.data) {
       setIsRevalidatingWarmSearch(false);
       return;
     }
 
-    let cancelled = false;
     setIsRevalidatingWarmSearch(true);
 
     refetch()
       .catch(() => undefined)
       .finally(() => {
-        if (!cancelled) {
-          setIsRevalidatingWarmSearch(false);
-        }
+        setIsRevalidatingWarmSearch(false);
       });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [queryClient, refetch, searchQueryHash, searchQueryKey]);
+  }, [queryClient, refetch, searchQueryHash]);
 
   // Subscribe to scroll to top from tab bar double-tap
   useEffect(() => {
