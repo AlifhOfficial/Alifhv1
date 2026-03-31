@@ -341,6 +341,10 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     count += searchParams?.make?.length ?? 0;
     count += searchParams?.model?.length ?? 0;
     count += searchParams?.trim?.length ?? 0;
+    count += searchParams?.tags?.length ?? 0;
+    count += searchParams?.extras?.length ?? 0;
+    if (searchParams?.partnerId) count++;
+    if (searchParams?.sellerId) count++;
     
     // Count filter params
     if (filterParams.priceMin || filterParams.priceMax) count++;

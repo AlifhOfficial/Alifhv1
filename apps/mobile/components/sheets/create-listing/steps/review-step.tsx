@@ -207,14 +207,16 @@ export function ReviewStepContent({
           )}
         </HapticPressable>
 
-        <HapticPressable
-          onPress={handleSaveDraft}
-          disabled={submitting}
-          style={[styles.draftBtn, { borderColor: colors.border }]}
-        >
-          <Save size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
-          <Text variant="body" tone="secondary">Draft</Text>
-        </HapticPressable>
+        {!editingListingId && (
+          <HapticPressable
+            onPress={handleSaveDraft}
+            disabled={submitting}
+            style={[styles.draftBtn, { borderColor: colors.border }]}
+          >
+            <Save size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
+            <Text variant="body" tone="secondary">Draft</Text>
+          </HapticPressable>
+        )}
       </View>
     </StepContainer>
   );

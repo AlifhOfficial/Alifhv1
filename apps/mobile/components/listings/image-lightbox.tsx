@@ -8,10 +8,8 @@ import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { StyleSheet, View, Modal, Dimensions, FlatList, StatusBar, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { X } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { Colors, Spacing, Radius, Sizes, Layout, ZIndex} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -42,8 +40,6 @@ export function ImageLightbox({
   const flatListRef = useRef<FlatList>(null);
   const [internalIndex, setInternalIndex] = useState(currentIndex);
   const internalIndexRef = useRef(currentIndex);
-  const [isZoomed, setIsZoomed] = useState(false);
-
   const validImages = useMemo(() => 
     images.filter(img => img && typeof img === 'string' && img.trim().length > 0),
     [images]
@@ -108,7 +104,6 @@ export function ImageLightbox({
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          scrollEnabled={!isZoomed}
           onMomentumScrollEnd={onMomentumScrollEnd}
           keyExtractor={(_, idx) => `lightbox-img-${idx}`}
           initialScrollIndex={safeIndex}
@@ -122,12 +117,6 @@ export function ImageLightbox({
               <ZoomableImage
                 uri={item}
                 previewUri={previewImages?.[index]}
-                onSwipeDown={onClose}
-                onZoomChange={(zoomed) => {
-                  if (index === safeIndex) {
-                    setIsZoomed(zoomed);
-                  }
-                }}
               />
             </View>
           )}
@@ -164,122 +153,21 @@ export function ImageLightbox({
 function ZoomableImage({
   uri,
   previewUri,
-  onSwipeDown,
-  onZoomChange,
 }: {
   uri: string;
   previewUri?: string;
-  onSwipeDown?: () => void;
-  onZoomChange?: (zoomed: boolean) => void;
 }) {
-  const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const savedTranslateX = useSharedValue(0);
-  const savedTranslateY = useSharedValue(0);
-
-  const reportZoom = useCallback(
-    (zoomed: boolean) => {
-      onZoomChange?.(zoomed);
-    },
-    [onZoomChange],
-  );
-
-  const pinchGesture = Gesture.Pinch()
-    .onStart(() => {
-      savedScale.value = scale.value;
-    })
-    .onUpdate((event) => {
-      const nextScale = Math.min(Math.max(savedScale.value * event.scale, 1), 4);
-      scale.value = nextScale;
-      if (onZoomChange) {
-        runOnJS(reportZoom)(nextScale > 1.01);
-      }
-    })
-    .onEnd(() => {
-      if (scale.value <= 1.01) {
-        scale.value = withTiming(1);
-        translateX.value = withTiming(0);
-        translateY.value = withTiming(0);
-        if (onZoomChange) {
-          runOnJS(reportZoom)(false);
-        }
-      }
-    });
-
-  const panGesture = Gesture.Pan()
-    .onStart(() => {
-      savedTranslateX.value = translateX.value;
-      savedTranslateY.value = translateY.value;
-    })
-    .onUpdate((event) => {
-      if (scale.value <= 1) {
-        return;
-      }
-      translateX.value = savedTranslateX.value + event.translationX;
-      translateY.value = savedTranslateY.value + event.translationY;
-    });
-
-  const swipeDownGesture = Gesture.Pan()
-    .activeOffsetY(20)
-    .failOffsetX([-20, 20])
-    .onEnd((event) => {
-      if (scale.value > 1.01) {
-        return;
-      }
-      if (event.translationY > 120) {
-        if (onSwipeDown) {
-          runOnJS(onSwipeDown)();
-        }
-      }
-    });
-
-  const doubleTapGesture = Gesture.Tap()
-    .numberOfTaps(2)
-    .maxDelay(250)
-    .onEnd(() => {
-      const nextScale = scale.value > 1.01 ? 1 : 2;
-      scale.value = withTiming(nextScale, { duration: 180 });
-      if (nextScale <= 1.01) {
-        translateX.value = withTiming(0, { duration: 180 });
-        translateY.value = withTiming(0, { duration: 180 });
-      }
-      if (onZoomChange) {
-        runOnJS(reportZoom)(nextScale > 1.01);
-      }
-    });
-
-  const composed = Gesture.Simultaneous(
-    pinchGesture,
-    panGesture,
-    doubleTapGesture,
-    swipeDownGesture,
-  );
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
-  }));
-
   return (
-    <GestureDetector gesture={composed}>
-      <Animated.View style={styles.zoomContainer}>
-        <Animated.View style={animatedStyle}>
-          <Image
-            source={{ uri }}
-            placeholder={previewUri ? { uri: previewUri } : undefined}
-            style={styles.fullImage}
-            contentFit="contain"
-            transition={100}
-            cachePolicy="memory-disk"
-          />
-        </Animated.View>
-      </Animated.View>
-    </GestureDetector>
+    <View style={styles.zoomContainer}>
+      <Image
+        source={{ uri }}
+        placeholder={previewUri ? { uri: previewUri } : undefined}
+        style={styles.fullImage}
+        contentFit="contain"
+        transition={100}
+        cachePolicy="memory-disk"
+      />
+    </View>
   );
 }
 
