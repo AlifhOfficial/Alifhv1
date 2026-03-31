@@ -7,7 +7,6 @@ import { StaffDashboardShell } from "./shell";
 const navSections = [
   {
     items: [
-      { label: "Browse", href: "/staff-dashboard/inventory", icon: "compass" },
       { label: "Inventory", href: "/staff-dashboard/work-listings", icon: "package" },
       { label: "Leads", href: "/staff-dashboard/consignment", icon: "inbox" },
       { label: "Bookings", href: "/staff-dashboard/bookings", icon: "calendar" },

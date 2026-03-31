@@ -18,12 +18,30 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getAppThumbUrl } from '@/utils/storage';
 import { getFunnelMatchesAction } from '@/actions/funnels';
+import {
+  BODY_TYPES,
+  FUEL_TYPES,
+  SPECS_TYPES,
+  UAE_EMIRATES,
+} from '@/components/listings/listing-form/constants';
 
 interface ConsignmentFunnel {
   id: string;
   name: string;
   description?: string | null;
-  filters: Record<string, unknown>;
+  filters: {
+    makes?: string[];
+    models?: string[];
+    bodyTypes?: string[];
+    fuelTypes?: string[];
+    minYear?: number;
+    maxYear?: number;
+    minPrice?: number;
+    maxPrice?: number;
+    maxMileage?: number;
+    emirates?: string[];
+    specs?: string[];
+  };
 }
 
 interface MatchingListing {
@@ -82,6 +100,8 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
             </div>
           )}
         </div>
+
+        <FunnelFilterTags filters={funnel.filters} />
       </div>
 
       {/* Loading State */}
@@ -188,6 +208,66 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
           )}
         </>
       )}
+    </div>
+  );
+}
+
+// ============================================================================
+// FILTER TAGS
+// ============================================================================
+
+type FunnelFilters = ConsignmentFunnel['filters'];
+
+function FunnelFilterTags({ filters }: { filters: FunnelFilters }) {
+  const tags: { label: string; group: string }[] = [];
+
+  filters.makes?.forEach(v => tags.push({ label: v, group: 'make' }));
+  filters.models?.forEach(v => tags.push({ label: v, group: 'model' }));
+  filters.bodyTypes?.forEach(v => {
+    const found = BODY_TYPES.find(b => b.value === v);
+    tags.push({ label: found?.label ?? v, group: 'body' });
+  });
+  filters.fuelTypes?.forEach(v => {
+    const found = FUEL_TYPES.find(f => f.value === v);
+    tags.push({ label: found?.label ?? v, group: 'fuel' });
+  });
+  filters.emirates?.forEach(v => {
+    const found = UAE_EMIRATES.find(e => e.value === v);
+    tags.push({ label: found?.label ?? v, group: 'emirate' });
+  });
+  filters.specs?.forEach(v => {
+    const found = SPECS_TYPES.find(s => s.value === v);
+    tags.push({ label: found?.label ?? v, group: 'spec' });
+  });
+  if (filters.minYear || filters.maxYear) {
+    const label = filters.minYear && filters.maxYear
+      ? `${filters.minYear}–${filters.maxYear}`
+      : filters.minYear ? `From ${filters.minYear}` : `Up to ${filters.maxYear}`;
+    tags.push({ label, group: 'year' });
+  }
+  if (filters.minPrice || filters.maxPrice) {
+    const fmt = (n: number) => `AED ${n.toLocaleString()}`;
+    const label = filters.minPrice && filters.maxPrice
+      ? `${fmt(filters.minPrice)}–${fmt(filters.maxPrice)}`
+      : filters.minPrice ? `From ${fmt(filters.minPrice)}` : `Up to ${fmt(filters.maxPrice!)}`;
+    tags.push({ label, group: 'price' });
+  }
+  if (filters.maxMileage) {
+    tags.push({ label: `≤${filters.maxMileage.toLocaleString()} km`, group: 'mileage' });
+  }
+
+  if (tags.length === 0) return null;
+
+  return (
+    <div className="flex flex-wrap gap-1.5 mt-3">
+      {tags.map((tag, i) => (
+        <span
+          key={i}
+          className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sidebar-accent text-sidebar-foreground border border-sidebar-border/40"
+        >
+          {tag.label}
+        </span>
+      ))}
     </div>
   );
 }

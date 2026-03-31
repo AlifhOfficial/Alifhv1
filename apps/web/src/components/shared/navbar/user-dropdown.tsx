@@ -121,7 +121,7 @@ export function ProfileMenu({
       }
       
       if (access.partnerStaff) {
-        dashboards.push({ name: 'Staff Dashboard', path: '/staff-dashboard' });
+        dashboards.push({ name: 'Staff Dashboard', path: '/staff-dashboard/work-listings' });
         dashboards.push({ name: 'My Dashboard', path: '/user-dashboard' });
         return dashboards;
       }

@@ -23,6 +23,7 @@ export const dynamic = 'force-dynamic';
 // Validation schema for funnel filters
 const filtersSchema = z.object({
   makes: z.array(z.string()).optional(),
+  models: z.array(z.string()).optional(),
   bodyTypes: z.array(z.string()).optional(),
   fuelTypes: z.array(z.string()).optional(),
   minYear: z.number().min(1900).max(2030).optional(),
