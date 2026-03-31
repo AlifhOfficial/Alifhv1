@@ -122,6 +122,7 @@ export function ImageLightbox({
               <ZoomableImage
                 uri={item}
                 previewUri={previewImages?.[index]}
+                onSwipeDown={onClose}
                 onZoomChange={(zoomed) => {
                   if (index === safeIndex) {
                     setIsZoomed(zoomed);
@@ -163,10 +164,12 @@ export function ImageLightbox({
 function ZoomableImage({
   uri,
   previewUri,
+  onSwipeDown,
   onZoomChange,
 }: {
   uri: string;
   previewUri?: string;
+  onSwipeDown?: () => void;
   onZoomChange?: (zoomed: boolean) => void;
 }) {
   const scale = useSharedValue(1);
@@ -218,6 +221,20 @@ function ZoomableImage({
       translateY.value = savedTranslateY.value + event.translationY;
     });
 
+  const swipeDownGesture = Gesture.Pan()
+    .activeOffsetY(20)
+    .failOffsetX([-20, 20])
+    .onEnd((event) => {
+      if (scale.value > 1.01) {
+        return;
+      }
+      if (event.translationY > 120) {
+        if (onSwipeDown) {
+          runOnJS(onSwipeDown)();
+        }
+      }
+    });
+
   const doubleTapGesture = Gesture.Tap()
     .numberOfTaps(2)
     .maxDelay(250)
@@ -233,7 +250,12 @@ function ZoomableImage({
       }
     });
 
-  const composed = Gesture.Simultaneous(pinchGesture, panGesture, doubleTapGesture);
+  const composed = Gesture.Simultaneous(
+    pinchGesture,
+    panGesture,
+    doubleTapGesture,
+    swipeDownGesture,
+  );
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [

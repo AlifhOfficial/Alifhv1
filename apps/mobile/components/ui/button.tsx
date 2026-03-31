@@ -20,7 +20,7 @@ import { Text } from './text';
 import React, { memo } from 'react';
 import { Pressable, PressableProps, StyleSheet, View, ActivityIndicator, ViewStyle, StyleProp } from 'react-native';
 
-import { Spacing, Radius, Colors, Sizes } from '@/constants/theme';
+import { Spacing, Radius, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 // ═══════════════════════════════════════════════════
@@ -149,6 +149,7 @@ export const Button = memo(function Button({
             paddingHorizontal: config.paddingHorizontal,
             backgroundColor: pressedStyles.backgroundColor,
             opacity: pressedStyles.opacity,
+            borderRadius: variant === 'secondary' ? Radius.sheet : Radius.lg,
           },
           fullWidth && styles.fullWidth,
           style,

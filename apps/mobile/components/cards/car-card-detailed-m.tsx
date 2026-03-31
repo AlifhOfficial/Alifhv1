@@ -243,7 +243,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
 
           {/* 3. Price */}
           <View style={styles.priceRow}>
-            <Text variant="bodyEmphasized" tone="primary">{formatPrice(listing.price)}</Text>
+            <Text variant="title2Emphasized" tone="primary">{formatPrice(listing.price)}</Text>
             {listing.isNegotiable && (
               <Text variant="subhead" tone="success">Negotiable</Text>
             )}

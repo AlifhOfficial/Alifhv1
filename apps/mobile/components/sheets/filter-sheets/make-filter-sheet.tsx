@@ -150,7 +150,13 @@ export function MakeFilterSheet({
     return (
         <HapticPressable
           onPress={() => handleToggle(make)}
-          style={styles.listItem}
+          style={[
+            styles.listItem,
+            {
+              backgroundColor: isSelected ? colors.primaryMuted : colors.surfaceSecondary,
+              borderColor: isSelected ? colors.primary : colors.border,
+            },
+          ]}
         >
           <View style={styles.labelRow}>
             <Text
@@ -162,17 +168,20 @@ export function MakeFilterSheet({
               {make}
             </Text>
           {count > 0 && (
-            <Text variant="caption1Emphasized" tone="muted">
+            <Text
+              variant="caption1Emphasized"
+              style={{ color: isSelected ? colors.primary : colors.labelQuaternary }}
+            >
               {count.toLocaleString()}
             </Text>
           )}
         </View>
         <View style={[
           styles.radio,
-          { borderColor: isSelected ? colors.labelQuaternary : colors.border },
+          { borderColor: isSelected ? colors.primary : colors.outline },
         ]}>
           {isSelected && (
-            <View style={[styles.radioInner, { backgroundColor: colors.labelQuaternary }]} />
+            <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />
           )}
         </View>
       </HapticPressable>
@@ -339,6 +348,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.md,
+    borderWidth: 1,
+    borderRadius: Radius.lg,
+    marginBottom: Spacing.xs,
   },
   labelRow: {
     flexDirection: 'row',

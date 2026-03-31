@@ -537,15 +537,15 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
       style={[
         styles.chip,
         {
-          backgroundColor: isSelected ? colors.label : colors.fill2,
-          borderColor: isSelected ? colors.label : colors.border,
+          backgroundColor: isSelected ? colors.primaryMuted : colors.surfaceSecondary,
+          borderColor: isSelected ? colors.primary : colors.border,
         },
       ]}
       onPress={onPress}
     >
       <Text
         variant="subhead"
-        style={{ color: isSelected ? colors.background : colors.label }}
+        style={{ color: isSelected ? colors.primary : colors.label }}
        tone="secondary">
         {label}
       </Text>
@@ -555,7 +555,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
         </Text>
       )}
       {isSelected && (
-        <Ionicons name="close" size={Spacing.md} color={colors.background} />
+        <Ionicons name="close" size={Spacing.md} color={colors.primary} />
       )}
     </HapticPressable>
   );

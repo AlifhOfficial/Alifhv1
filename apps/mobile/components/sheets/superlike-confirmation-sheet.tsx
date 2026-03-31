@@ -3,12 +3,12 @@
  * Shows quota info and confirms before using a superlike
  */
 
-import { Text } from '@/components/ui';
+import { Text, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useRef, useCallback, useEffect, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { Zap } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -42,10 +42,7 @@ export function SuperlikeConfirmationSheet({
 }: SuperlikeConfirmationSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-
-  // Snap points
   const snapPoints = useMemo(() => SheetSnapPoints.compact, []);
 
   // Show/hide based on visible prop
@@ -56,6 +53,12 @@ export function SuperlikeConfirmationSheet({
       bottomSheetRef.current?.dismiss();
     }
   }, [visible]);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) {
+      onClose();
+    }
+  }, [onClose]);
 
   // Backdrop
   const renderBackdrop = useCallback(
@@ -71,7 +74,20 @@ export function SuperlikeConfirmationSheet({
     []
   );
 
+  const handleCancel = useCallback(() => {
+    bottomSheetRef.current?.dismiss();
+  }, []);
+
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => (
+      <SheetFloatingCloseHandle {...props} onPress={handleCancel} />
+    ),
+    [handleCancel]
+  );
+
   const handleConfirm = useCallback(() => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     onConfirm();
     bottomSheetRef.current?.dismiss();
   }, [onConfirm]);
@@ -85,8 +101,10 @@ export function SuperlikeConfirmationSheet({
       snapPoints={snapPoints}
       enableDynamicSizing={false}
       enablePanDownToClose
+      onChange={handleSheetChanges}
       onDismiss={onClose}
       backdropComponent={renderBackdrop}
+      handleComponent={renderHandle}
       handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       backgroundStyle={{
         backgroundColor: colors.surface,
@@ -126,25 +144,26 @@ export function SuperlikeConfirmationSheet({
         {/* Actions */}
         <View style={styles.actions}>
           <HapticPressable
-            onPress={onClose}
-            style={({ pressed }) => [
-              styles.button,
-              styles.cancelButton,
-              { borderColor: colors.border, opacity: pressed ? 0.7 : 1 },
+            onPress={handleCancel}
+            style={[
+              styles.secondaryBtn,
+              {
+                backgroundColor: 'transparent',
+                borderColor: colors.border,
+              },
             ]}
           >
-            <Text variant="body" style={{ color: colors.label }}>Cancel</Text>
+            <Text variant="body" tone="secondary">Cancel</Text>
           </HapticPressable>
           <HapticPressable
             onPress={handleConfirm}
-            style={({ pressed }) => [
-              styles.button,
-              styles.confirmButton,
-              { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 },
+            style={[
+              styles.primaryBtn,
+              { backgroundColor: colors.warning },
             ]}
           >
-            <Zap size={Spacing.lg} color={colors.primaryForeground} />
-            <Text variant="body" style={{ color: colors.primaryForeground }}>Confirm</Text>
+            <Zap size={Sizes.iconSm} color={colors.primaryForeground} />
+            <Text variant="body" style={{ color: colors.primaryForeground }}>Superlike</Text>
           </HapticPressable>
         </View>
       </BottomSheetView>
@@ -169,10 +188,7 @@ export function SuperlikeQuotaExhaustedSheet({
 }: SuperlikeQuotaExhaustedSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-
-  // Snap points
   const snapPoints = useMemo(() => SheetSnapPoints.peek, []);
 
   useEffect(() => {
@@ -182,6 +198,12 @@ export function SuperlikeQuotaExhaustedSheet({
       bottomSheetRef.current?.dismiss();
     }
   }, [visible]);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) {
+      onClose();
+    }
+  }, [onClose]);
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -196,6 +218,17 @@ export function SuperlikeQuotaExhaustedSheet({
     []
   );
 
+  const handleClosePress = useCallback(() => {
+    bottomSheetRef.current?.dismiss();
+  }, []);
+
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => (
+      <SheetFloatingCloseHandle {...props} onPress={handleClosePress} />
+    ),
+    [handleClosePress]
+  );
+
   const resetDate = quota?.periodEndDate 
     ? new Date(quota.periodEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     : null;
@@ -206,8 +239,10 @@ export function SuperlikeQuotaExhaustedSheet({
       snapPoints={snapPoints}
       enableDynamicSizing={false}
       enablePanDownToClose
+      onChange={handleSheetChanges}
       onDismiss={onClose}
       backdropComponent={renderBackdrop}
+      handleComponent={renderHandle}
       handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       backgroundStyle={{
         backgroundColor: colors.surface,
@@ -233,10 +268,9 @@ export function SuperlikeQuotaExhaustedSheet({
 
         {/* Action */}
         <HapticPressable
-          onPress={onClose}
+          onPress={handleClosePress}
           style={({ pressed }) => [
-            styles.button,
-            styles.confirmButton,
+            styles.primaryBtn,
             { backgroundColor: colors.primary, marginTop: Spacing.lg, opacity: pressed ? 0.8 : 1 },
           ]}
         >
@@ -289,19 +323,23 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
     marginTop: Spacing.lg,
   },
-  button: {
+  secondaryBtn: {
     flex: 1,
-    height: Sizes.actionButtonLg,
-    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row',
-    gap: Spacing.xs,
-  },
-  cancelButton: {
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.lg,
     borderWidth: 1,
   },
-  confirmButton: {},
+  primaryBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.lg,
+  },
   exhaustedHeader: {
     alignItems: 'center',
     paddingTop: Spacing.sm,
