@@ -11,7 +11,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
 
 import { queryKeys } from '@/lib/query-client';
-import { listingApi, type ListingDetailed } from '@/lib/listing-api';
+import { listingApi, type ListingDetailed, type SimilarListingCard } from '@/lib/listing-api';
 import { getSellerListings, type SellerListingCard } from '@/lib/seller-api';
 import { consumeInteractionStart } from '@/lib/config';
 
@@ -247,4 +247,31 @@ export function useInvalidateListing() {
     },
     [queryClient]
   );
+}
+
+// ============================================================================
+// SIMILAR LISTINGS HOOK
+// ============================================================================
+
+export interface UseSimilarListingsResult {
+  listings: SimilarListingCard[];
+  isLoading: boolean;
+}
+
+/**
+ * Hook for fetching price-similar listings.
+ */
+export function useSimilarListings(listingId: string | undefined): UseSimilarListingsResult {
+  const { data, isLoading } = useQuery({
+    queryKey: queryKeys.similarListings(listingId ?? ''),
+    queryFn: () => listingApi.getSimilar(listingId!),
+    enabled: !!listingId,
+    staleTime: 12 * 60 * 60 * 1000, // 12h — matches server cache
+    gcTime: 24 * 60 * 60 * 1000,
+  });
+
+  return {
+    listings: data ?? [],
+    isLoading: isLoading && !data,
+  };
 }

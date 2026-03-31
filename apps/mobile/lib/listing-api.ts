@@ -285,6 +285,46 @@ export async function getListingBasic(id: string): Promise<ListingDetailedData> 
 }
 
 // Session-level dedup for views (prevents re-tracking on re-renders/remounts)
+export interface SimilarListingCard {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  trim: string | null;
+  price: number;
+  mileage: number;
+  emirate: string;
+  specs: string | null;
+  thumbnail: string | null;
+  isBlkListing: boolean;
+  partnerName: string | null;
+  partnerLogo: string | null;
+  partnerVerified: boolean | null;
+  isBlackTierPartner: boolean;
+  sellerName: string | null;
+  sellerAvatarUrl: string | null;
+}
+
+/**
+ * Get similar listings (price-range based)
+ * Calls: GET /api/listings/[id]/similar
+ */
+export async function getSimilarListings(listingId: string): Promise<SimilarListingCard[]> {
+  const url = `${API_BASE}/api/listings/${listingId}/similar`;
+  const response = await fetch(url);
+  if (!response.ok) return [];
+  const data = await response.json();
+  const listings: SimilarListingCard[] = data.listings ?? [];
+  // Transform thumbnails to absolute URLs
+  return listings.map((l) => ({
+    ...l,
+    thumbnail: toAbsoluteUrl(l.thumbnail),
+    partnerLogo: toAbsoluteUrl(l.partnerLogo),
+    sellerAvatarUrl: toAbsoluteUrl(l.sellerAvatarUrl),
+  }));
+}
+
+// Session-level dedup for views (prevents re-tracking on re-renders/remounts)
 const sessionTrackedViews = new Set<string>();
 
 /**
@@ -313,6 +353,7 @@ export const listingApi = {
   getDetailed: getListingDetailed,
   getBasic: getListingBasic,
   trackView,
+  getSimilar: getSimilarListings,
 };
 
 export default listingApi;
