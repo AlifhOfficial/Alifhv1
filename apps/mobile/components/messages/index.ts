@@ -9,7 +9,6 @@ export { MessageBubble } from './message-bubble';
 export { LocationBubble } from './location-bubble';
 export { LocationPickerSheet } from './location-picker-sheet';
 export { MessageInput, MESSAGE_INPUT_HEIGHT } from './message-input';
-export { ChatHeader } from './chat-header';
 export { ChatWindow } from './chat-window';
 
 // Hooks

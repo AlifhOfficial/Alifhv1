@@ -312,24 +312,24 @@ export function ChatWindow({
     );
   }, [isOtherTyping]);
 
-  // Activity status text for native header
-  const activityText = useMemo(() => {
-    if (isOnline) return 'now';
+  // Offline time text — null when online (green dot handles it)
+  const offlineTimeText = useMemo((): string | null => {
+    if (isOnline) return null;
     if (lastSeenAt) {
       const date = new Date(lastSeenAt);
       if (!isNaN(date.getTime())) {
         const diffMs = Date.now() - date.getTime();
         const diffMins = Math.floor(diffMs / 60000);
-        if (diffMins < 1) return 'now';
-        if (diffMins < 60) return `${diffMins}m`;
+        if (diffMins < 1) return null;
+        if (diffMins < 60) return `${diffMins}m ago`;
         const diffHours = Math.floor(diffMins / 60);
-        if (diffHours < 24) return `${diffHours}h`;
+        if (diffHours < 24) return `${diffHours}h ago`;
         const diffDays = Math.floor(diffHours / 24);
-        if (diffDays < 7) return `${diffDays}d`;
+        if (diffDays < 7) return `${diffDays}d ago`;
         return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
       }
     }
-    return 'offline';
+    return null;
   }, [isOnline, lastSeenAt]);
 
   const router = useRouter();
@@ -348,26 +348,31 @@ export function ChatWindow({
     return (
       <View style={styles.headerTitleCol}>
         <Text variant="title3Emphasized" numberOfLines={1}>{displayName}</Text>
-        <Text variant="subhead" tone="secondary" numberOfLines={1}>
-          {activityText}{listingTitle ? `  ·  ${listingTitle}` : ''}
-        </Text>
+        {listingTitle && (
+          <Text variant="subhead" tone="secondary" numberOfLines={1}>{listingTitle}</Text>
+        )}
       </View>
     );
-  }, [conversation, displayName, activityText, listingTitle]);
+  }, [conversation, displayName, listingTitle]);
 
   // Avatar in right slot with online dot
   const avatarRight = useMemo(() => {
     const partnerId = conversation?.partner?.id ?? conversation?.partnerId ?? null;
     const partnerName = conversation?.partner?.name ?? null;
     const avatarEl = (
-      <View style={styles.headerAvatarWrap}>
-        {!conversation ? (
-          <Skeleton circle width={Sizes.avatarSm} height={Sizes.avatarSm} />
-        ) : (
-          <UserAvatar src={avatarUrl} name={displayName} size="sm" />
-        )}
-        {isOnline && conversation && (
-          <View style={[styles.headerOnlineDot, { backgroundColor: colors.success, borderColor: colors.background }]} />
+      <View style={styles.headerAvatarOuter}>
+        <View style={styles.headerAvatarWrap}>
+          {!conversation ? (
+            <Skeleton circle width={Sizes.avatarMd} height={Sizes.avatarMd} />
+          ) : (
+            <UserAvatar src={avatarUrl} name={displayName} size="md" />
+          )}
+          {isOnline && conversation && (
+            <View style={[styles.headerOnlineDot, { backgroundColor: colors.success, borderColor: colors.background }]} />
+          )}
+        </View>
+        {offlineTimeText && conversation && (
+          <Text variant="caption2" tone="secondary" numberOfLines={1}>{offlineTimeText}</Text>
         )}
       </View>
     );
@@ -386,7 +391,7 @@ export function ChatWindow({
       );
     }
     return avatarEl;
-  }, [conversation, avatarUrl, displayName, isOnline, colors, router, applySearch, clearSearch, clearFilterParams]);
+  }, [conversation, avatarUrl, displayName, isOnline, offlineTimeText, colors, router, applySearch, clearSearch, clearFilterParams]);
 
   const nativeHeaderOptions = {
     headerShown: false,
@@ -571,6 +576,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Layout.screenPadding + Sizes.iconXl + Spacing.sm,
     paddingVertical: Spacing.xs,
   },
+  headerAvatarOuter: {
+    alignItems: 'center',
+    gap: 2,
+  },
   headerAvatarWrap: {
     position: 'relative',
   },
@@ -586,6 +595,14 @@ const styles = StyleSheet.create({
   headerTitleCol: {
     alignItems: 'center',
     gap: 2,
+  },
+  headerNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  headerNameText: {
+    flexShrink: 1,
   },
   headerNameBlock: {
     gap: 2,

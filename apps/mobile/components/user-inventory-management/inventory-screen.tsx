@@ -98,12 +98,12 @@ interface StatusTab {
 }
 
 const STATUS_TABS: StatusTab[] = [
-  { key: 'all',      label: 'All',      count: (s) => s?.total ?? 0 },
-  { key: 'active',   label: 'Active',   count: (s) => s?.active ?? 0 },
-  { key: 'draft',    label: 'Drafts',   count: (s) => s?.draft ?? 0 },
+  { key: 'all',      label: 'All',       count: (s) => s?.total ?? 0 },
+  { key: 'public',   label: 'Public',    count: (s) => s?.active ?? 0 },
+  { key: 'draft',    label: 'Drafts',    count: (s) => s?.draft ?? 0 },
   { key: 'in_review', label: 'In Review', count: (s) => s?.pending ?? 0 },
-  { key: 'sold',     label: 'Sold',     count: (s) => s?.sold ?? 0 },
-  { key: 'archived', label: 'Archived', count: (s) => s?.archived ?? 0 },
+  { key: 'sold',     label: 'Sold',      count: (s) => s?.sold ?? 0 },
+  { key: 'archived', label: 'Archived',  count: (s) => s?.archived ?? 0 },
 ];
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -636,6 +636,7 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
             {STATUS_TABS.map((t, index) => {
               const isActive = t.key === activeTab;
               const isLast = index === STATUS_TABS.length - 1;
+              const count = t.count(stats);
               return (
                 <View key={t.key}>
                   <HapticPressable
@@ -663,6 +664,13 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
                             {t.label}
                           </Text>
                         </View>
+                        {count > 0 && (
+                          <View style={[styles.drawerBadge, { backgroundColor: isActive ? colors.primaryMuted : colors.surfaceSecondary }]}>
+                            <Text variant="footnoteEmphasized" style={{ color: isActive ? colors.primary : colors.labelSecondary }}>
+                              {count}
+                            </Text>
+                          </View>
+                        )}
                       </View>
                     )}
                   </HapticPressable>
@@ -808,7 +816,7 @@ const styles = StyleSheet.create({
   },
   statusOverlay: {
     position: 'absolute',
-    bottom: Spacing.sm,
+    top: Spacing.sm,
     left: Spacing.sm,
     paddingHorizontal: Sizes.badgePaddingH,
     paddingVertical: Sizes.badgePaddingV,

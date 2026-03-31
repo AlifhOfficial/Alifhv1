@@ -4,10 +4,10 @@
  * Shows filter chips grouped by category with remove buttons, clear all functionality
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -82,7 +82,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
     return groups;
   }, [chips]);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.detail, []);
+  const snapPoints = useMemo<(string | number)[]>(() => [...SheetSnapPoints.detail], []);
 
   useEffect(() => {
     if (visible) {
@@ -144,6 +144,11 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
     []
   );
 
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={onClose} />,
+    [onClose]
+  );
+
   const hasFilters = chips.length > 0;
 
   return (
@@ -155,32 +160,22 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
+      handleComponent={renderHandle}
     >
       {/* Fixed Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View style={styles.headerTopRow}>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Spacing.md}
-            style={styles.cancelButton}
-          >
-            <Text variant="subhead" tone="muted">Cancel</Text>
-          </HapticPressable>
-          
           <Text variant="caption1Emphasized" tone="muted" uppercase>Active Filters</Text>
-          
-          <View style={styles.placeholder} />
         </View>
 
         {/* Selection Summary */}
         {hasFilters && (
           <View style={styles.selectionSummary}>
-            <Text variant="caption1Emphasized" numberOfLines={1} style={{ flex: 1 }} tone="muted">
+            <Text variant="subhead" tone="secondary" numberOfLines={1} style={styles.selectionCount}>
               {chips.length} filter{chips.length !== 1 ? 's' : ''} active
             </Text>
             <HapticPressable onPress={handleClearAll} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="caption1Emphasized" style={{ color: colors.error }} tone="muted" uppercase>
+              <Text variant="subhead" style={[styles.clearAllText, { color: colors.error }]}> 
                 Clear all
               </Text>
             </HapticPressable>
@@ -202,7 +197,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
           groupedChips.map((group) => (
             <View key={group.category} style={styles.categorySection}>
               <Text variant="caption1Emphasized" tone="muted" style={styles.categoryLabel} uppercase>
-                {group.label.toUpperCase()}
+                {group.label}
               </Text>
               <View style={styles.chipGrid}>
                 {group.chips.map((chip, idx) => (
@@ -216,7 +211,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
                       chip.locked && { opacity: 0.7 },
                     ]}
                   >
-                    <Text variant="caption1Emphasized" numberOfLines={1} style={styles.chipText}>
+                    <Text variant="subhead" tone="secondary" numberOfLines={1} style={styles.chipText}>
                       {chip.label}
                     </Text>
                     {!chip.locked && (
@@ -256,17 +251,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerTopRow: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     marginBottom: Spacing.sm,
-  },
-  cancelButton: {
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.sm,
-  },
-  placeholder: {
-    width: Spacing.xl * 3,
   },
   selectionSummary: {
     flexDirection: 'row',
@@ -275,6 +261,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
     gap: Spacing['2xl'],
     marginTop: Spacing.md,
+  },
+  selectionCount: {
+    flex: 1,
+  },
+  clearAllText: {
+    textTransform: 'uppercase',
   },
   scrollView: {
     flex: 1,

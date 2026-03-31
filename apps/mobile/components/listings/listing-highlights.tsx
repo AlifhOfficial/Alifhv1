@@ -11,22 +11,25 @@ import { SpecialNotes } from '@/lib/listing-api';
 interface ListingHighlightsProps {
   specialNotes?: SpecialNotes;
   tags?: string[];
+  isNegotiable?: boolean;
 }
 
 export const ListingHighlights = memo(function ListingHighlights({
   specialNotes,
   tags = [],
+  isNegotiable = false,
 }: ListingHighlightsProps) {
   const { colors } = useTheme();
 
   const highlights = useMemo(() => {
     const items: string[] = [...tags];
+    if (isNegotiable) items.push('Negotiable');
     if (specialNotes?.serviceHistory) items.push('Full Service History');
     if (specialNotes?.singleOwner) items.push('Single Owner');
     if (specialNotes?.accidentFree) items.push('Accident Free');
     if (specialNotes?.underWarranty) items.push('Under Warranty');
     return items;
-  }, [tags, specialNotes]);
+  }, [tags, isNegotiable, specialNotes]);
 
   if (highlights.length === 0) return null;
 

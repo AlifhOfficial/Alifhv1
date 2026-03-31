@@ -59,6 +59,7 @@ import {
 } from '@/components/listings';
 import { FinancingCalculator } from '@/components/listings';
 import { formatPrice, formatMileage, formatSpecs, formatEmirate } from '@/components/listings/types';
+import { calculateEMI } from '@/components/seller-contact/utils';
 
 // ============================================================================
 // PROPS
@@ -155,6 +156,12 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
     setLoanTermMonths(term);
   }, []);
 
+  // Default EMI for price display (20% down, 48mo, 3.5% APR)
+  const defaultMonthlyEMI = useMemo(() => {
+    const downPayment = listing.price * 0.2;
+    return calculateEMI(listing.price - downPayment, 3.5, 48);
+  }, [listing.price]);
+
   // Navigate to the dedicated seller contact screen
   const handleTalkToSeller = useCallback(() => {
     router.push(`/seller-contact/${listingId}`);
@@ -242,12 +249,15 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
             {formatMileage(listing.mileage)} km · {formatSpecs(listing.specs)} · {listing.city ? `${listing.city}, ${formatEmirate(listing.emirate)}` : formatEmirate(listing.emirate)}
           </Text>
 
-          {/* 3. Price */}
-          <View style={styles.priceRow}>
-            <Text variant="title2Emphasized" tone="primary">{formatPrice(listing.price)}</Text>
-            {listing.isNegotiable && (
-              <Text variant="subhead" tone="success">Negotiable</Text>
-            )}
+          {/* 3. Price + monthly estimate */}
+          <View style={styles.priceBlock}>
+            <View style={styles.priceRow}>
+              <Text variant="title2Emphasized" tone="primary">{formatPrice(listing.price)}</Text>
+              <Text variant="subhead" tone="secondary">
+                <Text variant="subhead" tone="secondary">/  </Text>
+                {formatPrice(defaultMonthlyEMI)}<Text variant="footnote" tone="secondary">/mo</Text>
+              </Text>
+            </View>
           </View>
 
           {/* 4. VIN */}
@@ -287,6 +297,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
             <ListingHighlights
               specialNotes={listing.specialNotes}
               tags={listing.tags}
+              isNegotiable={listing.isNegotiable}
             />
 
             {/* 5. Specifications */}
@@ -453,6 +464,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.md,
+  },
+  priceBlock: {
+    gap: Spacing.xs,
   },
   priceRow: {
     flexDirection: 'row',

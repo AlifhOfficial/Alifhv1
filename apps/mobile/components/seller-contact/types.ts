@@ -33,7 +33,6 @@ export interface SellerTagsProps extends SellerContactColors {
 
 export interface SellerListingsProps extends SellerContactColors {
   listings: SellerListingCard[];
-  totalCount: number;
   onViewListing: (id: string) => void;
   onViewAll: () => void;
 }

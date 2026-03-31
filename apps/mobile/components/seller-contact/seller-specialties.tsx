@@ -25,7 +25,6 @@ export const SellerSpecialties = memo(function SellerSpecialties({
   return (
     <Animated.View
       entering={FadeInDown.delay(150).duration(350)}
-      style={styles.container}
     >
       <View style={[styles.content, { backgroundColor: colors.surface }]}>
         <View style={styles.headerRow}>
@@ -47,9 +46,6 @@ export const SellerSpecialties = memo(function SellerSpecialties({
 });
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: Spacing.xl,
-  },
   content: {
     borderRadius: Radius.xl,
     overflow: 'hidden',

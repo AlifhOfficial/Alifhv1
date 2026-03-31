@@ -3,10 +3,10 @@
  * Uses @gorhom/bottom-sheet modal for proper iOS gesture handling
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView, type BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 
@@ -58,7 +58,7 @@ export function LocationFilterSheet({
     return [...selectedOpts, ...rest];
   }, [localSelected]);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
+  const snapPoints = useMemo<(string | number)[]>(() => [...SheetSnapPoints.standard], []);
 
   useEffect(() => {
     if (visible) {
@@ -116,6 +116,18 @@ export function LocationFilterSheet({
     []
   );
 
+  const handleClosePress = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    bottomSheetRef.current?.dismiss();
+  }, []);
+
+  const renderHandle = useCallback(
+    (props: BottomSheetHandleProps) => <SheetFloatingCloseHandle {...props} onPress={handleClosePress} />,
+    [handleClosePress]
+  );
+
   const hasValue = localSelected.length > 0;
 
   return (
@@ -127,24 +139,17 @@ export function LocationFilterSheet({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
+      handleComponent={renderHandle}
     >
       {/* Fixed Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View style={styles.headerTopRow}>
-          <HapticPressable
-            onPress={onClose}
-            hitSlop={Spacing.md}
-            style={styles.cancelButton}
-          >
-            <Text variant="subhead" tone="muted">Cancel</Text>
-          </HapticPressable>
-          
           <Text variant="caption1Emphasized" tone="muted" uppercase>Location</Text>
-          
+
           <HapticPressable
             style={[
               styles.applyButton,
+              styles.headerApplyButton,
               { backgroundColor: hasValue ? colors.primary : colors.fill2 },
             ]}
             onPress={handleApply}
@@ -162,11 +167,11 @@ export function LocationFilterSheet({
         {/* Selection Summary */}
         {hasValue && (
           <View style={styles.selectionSummary}>
-            <Text variant="caption1Emphasized" numberOfLines={1} style={{ flex: 1 }} tone="muted">
+            <Text variant="subhead" tone="secondary" numberOfLines={1} style={styles.selectionValue}>
               {localSelected.join(', ')}
             </Text>
             <HapticPressable onPress={handleClear} hitSlop={Layout.hitSlopSmall}>
-              <Text variant="caption1Emphasized" style={{ color: colors.error }} tone="muted" uppercase>
+              <Text variant="subhead" style={[styles.clearText, { color: colors.error }]}>
                 Clear
               </Text>
             </HapticPressable>
@@ -241,14 +246,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerTopRow: {
-    flexDirection: 'row',
+    position: 'relative',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    minHeight: Sizes.actionButtonSm,
     marginBottom: Spacing.sm,
-  },
-  cancelButton: {
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.sm,
   },
   selectionSummary: {
     flexDirection: 'row',
@@ -257,6 +259,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
     gap: Spacing['2xl'],
     marginTop: Spacing.md,
+  },
+  selectionValue: {
+    flex: 1,
+  },
+  clearText: {
+    textTransform: 'uppercase',
   },
   listContainer: {
     gap: Spacing.xs,
@@ -293,5 +301,9 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.lg,
     borderRadius: Radius.full,
+  },
+  headerApplyButton: {
+    position: 'absolute',
+    right: 0,
   },
 });

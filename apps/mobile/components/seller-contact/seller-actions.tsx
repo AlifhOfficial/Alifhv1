@@ -107,7 +107,6 @@ export const SellerActions = memo(function SellerActions({
   return (
     <Animated.View
       entering={FadeInDown.delay(200).duration(350)}
-      style={styles.container}
     >
       <View style={[styles.content, { backgroundColor: colors.surface }]}>
         {actions.map((action, index) => (
@@ -126,9 +125,6 @@ export const SellerActions = memo(function SellerActions({
 });
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: Spacing.xl,
-  },
   content: {
     borderRadius: Radius.xl,
     overflow: 'hidden',

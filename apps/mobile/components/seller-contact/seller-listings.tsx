@@ -11,13 +11,12 @@ import { View, StyleSheet } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { ChevronRight } from 'lucide-react-native';
 
-import { Spacing, Radius, Sizes } from '@/constants/theme';
+import { Spacing, Sizes, Radius } from '@/constants/theme';
 import { CarCardList } from '@/components/cards/car-card-list';
 import type { SellerListingsProps } from './types';
 
 export const SellerListings = memo(function SellerListings({
   listings,
-  totalCount,
   onViewListing,
   onViewAll,
   colors,
@@ -29,51 +28,49 @@ export const SellerListings = memo(function SellerListings({
   }, [onViewListing]);
 
   return (
-    <Animated.View entering={FadeInDown.delay(250).duration(350)}>
-      <View style={[styles.card, { backgroundColor: colors.surface }]}>
-        {/* Section header */}
+    <Animated.View entering={FadeInDown.delay(250).duration(350)} style={styles.container}>
+      <View style={[styles.headerCard, { backgroundColor: colors.surface }]}> 
         <View style={styles.headerRow}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>MORE FROM THIS SELLER</Text>
+          <Text variant="subhead">More from this seller</Text>
         </View>
-        <View style={[styles.divider, { backgroundColor: colors.border }]} />
-
-        {/* Listing cards */}
-        <View style={styles.list}>
-          {listings.slice(0, 4).map((item) => (
-            <CarCardList
-              key={item.id}
-              id={item.id}
-              make={item.make}
-              model={item.model}
-              year={item.year}
-              price={item.price}
-              mileage={item.mileage}
-              emirate=""
-              thumbnail={item.thumbnail}
-              isBlkListing={item.isBlkListing}
-              onPress={handlePress}
-            />
-          ))}
-        </View>
-
-        {/* View All row */}
-        {totalCount > 4 && (
-          <>
-            <View style={[styles.divider, { backgroundColor: colors.border }]} />
-            <HapticPressable onPress={onViewAll} style={styles.viewAllRow}>
-              <Text variant="subhead" tone="primary">View all {totalCount} listings</Text>
-              <ChevronRight size={Sizes.iconSm} color={colors.primary} />
-            </HapticPressable>
-          </>
-        )}
       </View>
+
+      {/* Listing cards */}
+      <View style={styles.list}>
+        {listings.slice(0, 4).map((item) => (
+          <CarCardList
+            key={item.id}
+            id={item.id}
+            make={item.make}
+            model={item.model}
+            year={item.year}
+            price={item.price}
+            mileage={item.mileage}
+            emirate=""
+            thumbnail={item.thumbnail}
+            isBlkListing={item.isBlkListing}
+            onPress={handlePress}
+          />
+        ))}
+      </View>
+
+      {/* View All row */}
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
+      <HapticPressable onPress={onViewAll} style={styles.viewAllRow}>
+        <Text variant="subhead" tone="primary">View all listings</Text>
+        <ChevronRight size={Sizes.iconSm} color={colors.primary} />
+      </HapticPressable>
     </Animated.View>
   );
 });
 
 const styles = StyleSheet.create({
-  card: {
+  container: {
+    gap: Spacing.sm,
+  },
+  headerCard: {
     borderRadius: Radius.xl,
+    overflow: 'hidden',
   },
   headerRow: {
     paddingHorizontal: Spacing.lg,
@@ -83,14 +80,13 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
   },
   list: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
+    gap: Spacing.sm,
   },
   viewAllRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.md,
   },
 });

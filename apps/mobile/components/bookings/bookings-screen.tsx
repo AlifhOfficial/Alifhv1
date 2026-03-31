@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
   },
   statusBadge: {
     position: 'absolute',
-    bottom: Spacing.sm,
+    top: Spacing.sm,
     left: Spacing.sm,
     paddingHorizontal: Sizes.badgePaddingH,
     paddingVertical: Sizes.badgePaddingV,

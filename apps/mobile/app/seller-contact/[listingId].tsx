@@ -310,7 +310,6 @@ export default function SellerContactScreen() {
 
         <SellerListings
           listings={otherListings}
-          totalCount={otherListingsTotal}
           onViewListing={handleViewListing}
           onViewAll={handleViewAllListings}
           colors={colors}
