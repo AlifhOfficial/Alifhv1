@@ -50,6 +50,7 @@ import {
   ImageGallery,
   ImageGallerySkeleton,
   ListingHighlights,
+  ListingQuickNotes,
   ListingDescription,
   ListingSpecs,
   ListingFeatures,
@@ -288,7 +289,7 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
               tags={listing.tags}
             />
 
-            {/* 4. Specifications */}
+            {/* 5. Specifications */}
             <ListingSpecs
               condition={listing.condition}
               bodyType={listing.bodyType}
@@ -315,6 +316,9 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
 
             {/* 5. Features */}
             <ListingFeatures extras={listing.extras} onViewAll={openFeaturesSheet} />
+
+            {/* 6. Seller Notes */}
+            <ListingQuickNotes specialNotes={listing.specialNotes} />
 
             <FinancingCalculator
               price={listing.price}

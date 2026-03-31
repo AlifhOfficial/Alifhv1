@@ -13,7 +13,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState, useMemo } from 'react';
-import { Modal, View, LogBox, Platform, InteractionManager, Text as RNText, TextInput as RNTextInput } from 'react-native';
+import { Modal, View, LogBox, Platform, InteractionManager, AppState, Text as RNText, TextInput as RNTextInput } from 'react-native';
 import 'react-native-reanimated';
 
 // Suppress warnings from third-party dependencies that can't be fixed in user code
@@ -48,7 +48,7 @@ textInputWithDefaults.defaultProps = {
 };
 
 import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider, focusManager } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
 import { AppFontFamilies, Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
@@ -159,7 +159,18 @@ function RootLayoutNav() {
   const { showAuthFlow, closeAuthFlow, signIn } = useAuth();
   const router = useRouter();
   const colors = Colors[colorScheme];
-  
+
+  // Wire TanStack Query focusManager to AppState so stale queries refetch when app comes to foreground.
+  // React Native has no "window focus" events, so this must be done manually.
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (status) => {
+      if (Platform.OS !== 'web') {
+        focusManager.setFocused(status === 'active');
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+
   // Set native root view background color (fixes Android black flash during transitions)
   useEffect(() => {
     if (Platform.OS !== 'android') {

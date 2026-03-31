@@ -103,7 +103,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                   size={Sizes.iconMd}
                   color={focused ? colors.label : colors.labelSecondary}
                   strokeWidth={focused ? ACTIVE_ICON_STROKE : Stroke.icon}
-                  fill={tab.name === '(home)' ? (focused ? colors.label : colors.labelSecondary) : 'transparent'}
+                  fill={tab.name === '(home)' ? (focused ? colors.label : colors.labelSecondary) : (focused ? colors.label : 'transparent')}
                 />
               </HapticPressable>
             );

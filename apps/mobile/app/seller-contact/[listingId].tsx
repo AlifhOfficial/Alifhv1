@@ -246,6 +246,94 @@ export default function SellerContactScreen() {
     router.push('/(tabs)/(browse)');
   }, [seller, applySearch, clearSearch, clearFilterParams, router]);
 
+  // Combined tags for display — must be before early returns (used in sellerContent memo)
+  const combinedTags = useMemo(
+    () => [...(seller?.specialties ?? []), ...(seller?.badges ?? [])],
+    [seller?.specialties, seller?.badges]
+  );
+  const flatListData = useMemo(() => [{ key: 'seller-contact-body' }], []);
+  const sellerContentPaddingTop = insets.top + Spacing.lg;
+  const sellerContentPaddingBottom = insets.bottom + Layout.bottomGradientExtension + Spacing.xl;
+
+  const sellerContent = useMemo(() => {
+    if (!seller) return null;
+    return (
+      <View style={styles.sectionStack}>
+        <SellerHero seller={seller} colors={colors} />
+
+        {!isOwnListing && (
+          <SellerActions
+            seller={seller}
+            isChatLoading={isChatLoading}
+            onChat={handleChat}
+            onBookViewing={handleBookViewing}
+            onShowPhone={handleShowPhoneSheet}
+          />
+        )}
+
+        {seller.description && (
+          <SellerAbout
+            description={seller.description}
+            onReadMore={() => setDescriptionSheetVisible(true)}
+            colors={colors}
+          />
+        )}
+
+        {combinedTags.length > 0 && (
+          <SellerSpecialties
+            specialties={combinedTags}
+            colors={colors}
+          />
+        )}
+
+        <SellerStatsGrid
+          seller={seller}
+          listingsCount={otherListingsTotal + 1}
+          colors={colors}
+        />
+
+        {!seller.isDealer && seller.tags.length > 0 && (
+          <SellerTags
+            tags={seller.tags}
+            label="INTERESTS"
+            colors={colors}
+          />
+        )}
+
+        <SellerLocation
+          seller={seller}
+          onViewMap={handleViewOnMap}
+          onGetDirections={handleGetDirections}
+          onWebsite={handleWebsite}
+          colors={colors}
+        />
+
+        <SellerListings
+          listings={otherListings}
+          totalCount={otherListingsTotal}
+          onViewListing={handleViewListing}
+          onViewAll={handleViewAllListings}
+          colors={colors}
+        />
+      </View>
+    );
+  }, [
+    colors,
+    combinedTags,
+    handleBookViewing,
+    handleChat,
+    handleGetDirections,
+    handleShowPhoneSheet,
+    handleViewAllListings,
+    handleViewListing,
+    handleViewOnMap,
+    handleWebsite,
+    isChatLoading,
+    isOwnListing,
+    otherListings,
+    otherListingsTotal,
+    seller,
+  ]);
 
   // Loading state
   if (isLoading) {
@@ -292,89 +380,6 @@ export default function SellerContactScreen() {
       </View>
     );
   }
-
-  // Combined tags for display
-  const combinedTags = [...seller.specialties, ...seller.badges];
-  const flatListData = useMemo(() => [{ key: 'seller-contact-body' }], []);
-  const sellerContentPaddingTop = insets.top + Spacing.lg;
-  const sellerContentPaddingBottom = insets.bottom + Layout.bottomGradientExtension + Spacing.xl;
-
-  const sellerContent = useMemo(() => (
-    <View style={styles.sectionStack}>
-      <SellerHero seller={seller} colors={colors} />
-
-      {!isOwnListing && (
-        <SellerActions
-          seller={seller}
-          isChatLoading={isChatLoading}
-          onChat={handleChat}
-          onBookViewing={handleBookViewing}
-          onShowPhone={handleShowPhoneSheet}
-        />
-      )}
-
-      {seller.description && (
-        <SellerAbout
-          description={seller.description}
-          onReadMore={() => setDescriptionSheetVisible(true)}
-          colors={colors}
-        />
-      )}
-
-      {combinedTags.length > 0 && (
-        <SellerSpecialties
-          specialties={combinedTags}
-          colors={colors}
-        />
-      )}
-
-      <SellerStatsGrid
-        seller={seller}
-        listingsCount={otherListingsTotal + 1}
-        colors={colors}
-      />
-
-      {!seller.isDealer && seller.tags.length > 0 && (
-        <SellerTags
-          tags={seller.tags}
-          label="INTERESTS"
-          colors={colors}
-        />
-      )}
-
-      <SellerLocation
-        seller={seller}
-        onViewMap={handleViewOnMap}
-        onGetDirections={handleGetDirections}
-        onWebsite={handleWebsite}
-        colors={colors}
-      />
-
-      <SellerListings
-        listings={otherListings}
-        totalCount={otherListingsTotal}
-        onViewListing={handleViewListing}
-        onViewAll={handleViewAllListings}
-        colors={colors}
-      />
-    </View>
-  ), [
-    colors,
-    combinedTags,
-    handleBookViewing,
-    handleChat,
-    handleGetDirections,
-    handleShowPhoneSheet,
-    handleViewAllListings,
-    handleViewListing,
-    handleViewOnMap,
-    handleWebsite,
-    isChatLoading,
-    isOwnListing,
-    otherListings,
-    otherListingsTotal,
-    seller,
-  ]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

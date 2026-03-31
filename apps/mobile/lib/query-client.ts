@@ -15,18 +15,18 @@ export const queryClient = new QueryClient({
       // Data is considered fresh for 2 minutes (matches web's CDN TTL)
       staleTime: 2 * 60 * 1000,
       
-      // Keep unused data in cache for 30 minutes
-      gcTime: 30 * 60 * 1000,
+      // Keep unused data in cache for 5 minutes (was 30min — too long for search results)
+      gcTime: 5 * 60 * 1000,
       
       // Retry failed requests with exponential backoff
       retry: 2,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
       
-      // Don't refetch when window regains focus (mobile doesn't have this concept)
-      refetchOnWindowFocus: false,
+      // Refetch on window focus is handled via focusManager + AppState wiring in _layout.tsx
+      refetchOnWindowFocus: true,
       
-      // Don't refetch on mount if data is fresh
-      refetchOnMount: false,
+      // Refetch on mount if data is stale (past staleTime) — critical for tab switches
+      refetchOnMount: true,
       
       // Refetch when network reconnects (important for mobile)
       refetchOnReconnect: true,

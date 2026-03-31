@@ -170,7 +170,11 @@ export default function BrowseScreen() {
     },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.meta.hasMore ? lastPage.meta.nextCursor ?? undefined : undefined,
-
+    // staleTime: 0 — search results must always be fresh when query key changes.
+    // The global staleTime (2min) is too long here: cached results from a prior
+    // search session would show stale data until the user manually refreshes.
+    // The server already caches at 2min, so this adds no extra server load.
+    staleTime: 0,
   });
 
   const listings = useMemo(() => {
