@@ -70,7 +70,7 @@ export function BrowseDrawerSheet({
             <View style={[styles.handleIndicator, { backgroundColor: colors.border }]} />
           </View>
 
-          <View style={[styles.header, { borderBottomColor: colors.border }]}>
+          <View style={styles.header}>
             <View style={styles.headerTopRow}>
               <HapticPressable onPress={onClose} hitSlop={Layout.hitSlopSmall} style={styles.cancelButton}>
                 <Text variant="subhead" tone="muted">Cancel</Text>
@@ -80,8 +80,8 @@ export function BrowseDrawerSheet({
             </View>
           </View>
 
-          <HapticPressable style={[styles.row, { borderBottomColor: colors.border }]} onPress={handleSettingsPress}>
-            <View style={styles.rowInner}>
+          <View style={styles.rows}>
+            <HapticPressable style={[styles.row, { backgroundColor: colors.backgroundSecondary }]} onPress={handleSettingsPress}>
               <Text variant="subhead">Filters</Text>
               {settingsCount > 0 ? (
                 <View style={[styles.badge, { backgroundColor: colors.label }]}>
@@ -90,33 +90,30 @@ export function BrowseDrawerSheet({
                   </Text>
                 </View>
               ) : null}
-            </View>
-          </HapticPressable>
+            </HapticPressable>
 
-          {pills.map((pill) => (
-            <HapticPressable
-              key={pill.type}
-              style={[styles.row, { borderBottomColor: colors.border }]}
-              onPress={() => handlePillPress(pill.type)}
-            >
-              <View style={styles.rowInner}>
+            {pills.map((pill) => (
+              <HapticPressable
+                key={pill.type}
+                style={[styles.row, { backgroundColor: colors.backgroundSecondary }]}
+                onPress={() => handlePillPress(pill.type)}
+              >
                 <Text variant="subhead">{pill.label}</Text>
-                {pill.activeCount > 0 ? (
+                {pill.activeCount > 0 || pill.type === 'location' ? (
                   <View style={[styles.badge, { backgroundColor: colors.label }]}>
                     <Text variant="caption1Emphasized" style={{ color: colors.background }}>
                       {pill.activeCount > 9 ? '9+' : pill.activeCount}
                     </Text>
                   </View>
                 ) : null}
-              </View>
-            </HapticPressable>
-          ))}
+              </HapticPressable>
+            ))}
 
-          <HapticPressable style={styles.row} onPress={handleViewToggle}>
-            <View style={styles.rowInner}>
-              <Text variant="subhead">View: {viewMode === 'grid' ? 'Grid' : 'List'}</Text>
-            </View>
-          </HapticPressable>
+            <HapticPressable style={[styles.row, { backgroundColor: colors.backgroundSecondary }]} onPress={handleViewToggle}>
+              <Text variant="subhead">View</Text>
+              <Text variant="subhead" tone="secondary">{viewMode === 'grid' ? 'Grid' : 'List'}</Text>
+            </HapticPressable>
+          </View>
         </View>
       </View>
     </Modal>
@@ -151,9 +148,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
   },
   header: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.md,
+    paddingBottom: Spacing.sm,
   },
   headerTopRow: {
     flexDirection: 'row',
@@ -167,19 +163,19 @@ const styles = StyleSheet.create({
   headerPlaceholder: {
     width: Spacing.xl * 3,
   },
+  rows: {
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.md,
+    gap: Spacing.xs,
+  },
   row: {
     minHeight: Sizes.pillHeight,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xs,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  rowInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
+    borderRadius: Radius.lg,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
   },
   badge: {
     minWidth: Sizes.iconSm,

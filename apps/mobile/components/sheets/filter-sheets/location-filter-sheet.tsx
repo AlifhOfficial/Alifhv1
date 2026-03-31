@@ -6,12 +6,11 @@
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Ionicons } from '@expo/vector-icons';
 
-import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import type { SearchParams } from '@/lib/search-api';
 import { UAE_EMIRATES } from '@/lib/filter-constants';
@@ -47,12 +46,11 @@ export function LocationFilterSheet({
     }
   }, [visible, selected]);
 
-  // Sort options: selected first, then by count
+  // Sort options: selected first
   const sortedOptions = useMemo(() => {
     const options = UAE_EMIRATES.map((emirate) => ({
       value: emirate.value,
       label: emirate.label,
-      count: 0,
     }));
     const selectedSet = new Set(localSelected);
     const selectedOpts = options.filter(o => selectedSet.has(o.value));
@@ -196,9 +194,6 @@ export function LocationFilterSheet({
                     }}
                   >
                     {option.label}
-                  </Text>
-                  <Text variant="caption1Emphasized" tone="muted">
-                    {option.count.toLocaleString()}
                   </Text>
                 </View>
                 <View style={[
