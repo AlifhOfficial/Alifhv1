@@ -46,13 +46,12 @@ export function AuthFlow({
 }: AuthFlowProps) {
   const { colors, colorScheme } = useTheme();
 
-  // Force dark navigation bar on Android for OLED black auth screens
   useEffect(() => {
     if (Platform.OS === 'android') {
-      NavigationBar.setBackgroundColorAsync(colors.black).catch(() => {});
-      NavigationBar.setButtonStyleAsync('light').catch(() => {});
+      NavigationBar.setBackgroundColorAsync(colors.background).catch(() => {});
+      NavigationBar.setButtonStyleAsync(colorScheme === 'dark' ? 'light' : 'dark').catch(() => {});
     }
-    // Restore on unmount based on theme
+
     return () => {
       if (Platform.OS === 'android') {
         try {
@@ -62,7 +61,7 @@ export function AuthFlow({
         }
       }
     };
-  }, [colorScheme, colors.black]);
+  }, [colorScheme, colors.background]);
 
   const [currentScreen, setCurrentScreen] = useState<AuthScreen>(initialScreen);
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
@@ -398,8 +397,7 @@ export function AuthFlow({
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Force light status bar content for OLED black auth screens */}
-      <StatusBar style="light" />
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       {renderScreen()}
     </View>
   );

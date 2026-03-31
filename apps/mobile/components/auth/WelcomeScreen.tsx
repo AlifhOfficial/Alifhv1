@@ -1,16 +1,10 @@
-/**
- * Welcome Screen - First touch point
- * Premium OLED black design with Apple-style logo reveal
- */
-
-import { Text, HapticPressable } from '@/components/ui';
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { ArrowRight } from 'lucide-react-native';
 
-import { Colors, Spacing, Sizes, Radius } from '@/constants/theme';
+import { HapticPressable, Text } from '@/components/ui';
+import { Layout, Radius, Sizes, Spacing } from '@/constants/theme';
 
 interface WelcomeScreenProps {
   onGetStarted: () => void;
@@ -18,106 +12,135 @@ interface WelcomeScreenProps {
   onSkip?: () => void;
 }
 
-// Derived sizes from theme tokens
-const LOGO_SIZE = Sizes.avatarLg + Spacing.lg; // 64
-
-const colors = Colors.dark;
-
 export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.black, paddingTop: insets.top }]}>
-      {/* Main content - Logo centered with CTAs below */}
-      <View style={styles.mainSection}>
-        {/* Logo - centered */}
-        <View style={styles.logoWrapper}>
-          <Animated.View entering={FadeIn.duration(800)}>
-            <Image
-              source={require('@/assets/images/revv.png')}
-              style={{ width: LOGO_SIZE, height: LOGO_SIZE, tintColor: colors.white }}
-              resizeMode="contain"
-            />
-          </Animated.View>
+    <View style={styles.screen}>
+      <View style={[styles.content, { paddingTop: insets.top + Spacing.lg }]}>
+        <View style={styles.header}>
+          <Image
+            source={require('@/assets/images/Revvup-wordmark-white.png')}
+            style={styles.wordmark}
+            resizeMode="contain"
+          />
         </View>
 
-        {/* CTAs below logo - left aligned */}
-        <View style={styles.ctaSection}>
-          {/* Get Started with glass arrow bubble */}
-          <Animated.View entering={FadeInUp.delay(600).duration(400)}>
-            <HapticPressable
-              onPress={onGetStarted}
-              style={styles.getStartedRow}
-              hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
-            >
-              <Text variant="title3Emphasized" style={{ color: colors.white }}>Get Started</Text>
-              <View style={[styles.glassBubble, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                <ArrowRight size={Sizes.iconXs} color={colors.white} strokeWidth={2} />
-              </View>
-            </HapticPressable>
-          </Animated.View>
+        <View style={styles.hero}>
+          <Image
+            source={require('@/assets/images/revvupab.png')}
+            style={styles.heroArtwork}
+            resizeMode="contain"
+          />
 
-          {/* Sign In */}
-          <Animated.View entering={FadeInUp.delay(700).duration(400)}>
-            <HapticPressable
-              onPress={onSignIn}
-              hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
-            >
-              <Text variant="title3Emphasized" tone="secondary">Sign In</Text>
+          <Text variant="title1Emphasized" style={styles.heroTitle}>
+            Sell smarter.
+          </Text>
+
+          <Text variant="callout" style={styles.heroSubtitle}>
+            Free listings, real buyers, no paid boosts.
+          </Text>
+        </View>
+
+        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + Spacing.lg, Spacing['2xl']) }]}>
+          <HapticPressable onPress={onGetStarted} style={({ pressed }) => [styles.primaryAction, pressed && styles.linkPressed]}>
+            <Text variant="title2Emphasized" style={styles.primaryActionText}>
+              Create Account
+            </Text>
+            <ArrowRight size={Sizes.iconSm} color="#FFFFFF" strokeWidth={2.4} />
+          </HapticPressable>
+
+          <HapticPressable onPress={onSignIn} style={({ pressed }) => [styles.secondaryAction, pressed && styles.linkPressed]}>
+            <Text variant="headline" style={styles.secondaryActionText}>
+              Sign in
+            </Text>
+          </HapticPressable>
+
+          {onSkip ? (
+            <HapticPressable onPress={onSkip} style={({ pressed }) => [styles.skipAction, pressed && styles.skipPressed]}>
+              <Text variant="subhead" style={styles.skipText}>
+                Explore first
+              </Text>
             </HapticPressable>
-          </Animated.View>
+          ) : null}
         </View>
       </View>
-
-      {/* Skip - Bottom center */}
-      {onSkip && (
-        <Animated.View 
-          entering={FadeInUp.delay(800).duration(300)}
-          style={[styles.skipSection, { paddingBottom: Math.max(insets.bottom + Spacing.lg, Spacing['2xl']) }]}
-        >
-          <HapticPressable
-            onPress={onSkip}
-            hitSlop={{ top: Spacing.md, bottom: Spacing.md, left: Spacing.xl, right: Spacing.xl }}
-          >
-            <Text variant="body" tone="muted">Skip</Text>
-          </HapticPressable>
-        </Animated.View>
-      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
+    backgroundColor: '#050505',
   },
-  mainSection: {
+  content: {
     flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing['2xl'],
+    paddingHorizontal: Layout.screenPadding,
+    justifyContent: 'space-between',
   },
-  logoWrapper: {
-    alignItems: 'flex-start',
+  header: {
+    gap: Spacing.md,
   },
-  ctaSection: {
-    marginTop: Spacing['3xl'],
-    alignItems: 'flex-start',
+  wordmark: {
+    width: 188,
+    height: 54,
+  },
+  hero: {
     gap: Spacing.lg,
+    paddingTop: Spacing.md,
   },
-  getStartedRow: {
+  heroArtwork: {
+    width: '100%',
+    height: 250,
+  },
+  heroTitle: {
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  heroSubtitle: {
+    color: 'rgba(255,255,255,0.76)',
+    textAlign: 'center',
+    maxWidth: 320,
+    alignSelf: 'center',
+  },
+  footer: {
+    gap: Spacing.lg,
+    paddingTop: Spacing.lg,
+  },
+  primaryAction: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.sm,
-  },
-  glassBubble: {
-    width: Sizes.bubbleXs,
-    height: Sizes.bubbleXs,
+    alignSelf: 'stretch',
+    minHeight: Sizes.actionButtonLg,
+    paddingHorizontal: Spacing.xl,
+    backgroundColor: '#0A84FF',
     borderRadius: Radius.full,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderCurve: 'continuous',
+  },
+  primaryActionText: {
+    color: '#FFFFFF',
+  },
+  secondaryAction: {
+    alignSelf: 'flex-start',
+  },
+  secondaryActionText: {
+    color: 'rgba(255,255,255,0.82)',
+  },
+  skipAction: {
+    minHeight: Sizes.actionButtonMd,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  skipSection: {
-    alignItems: 'center',
+  skipText: {
+    color: 'rgba(255,255,255,0.58)',
+  },
+  linkPressed: {
+    opacity: 0.66,
+  },
+  skipPressed: {
+    opacity: 0.72,
   },
 });

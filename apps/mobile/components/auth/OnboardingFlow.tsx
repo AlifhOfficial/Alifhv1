@@ -16,10 +16,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 import Animated, {
-  FadeIn,
-  FadeOut,
   SlideInRight,
   SlideOutLeft,
   SlideInLeft,
@@ -27,7 +24,6 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import * as AuthAPI from '@/lib/auth-api';
-import { Colors } from '@/constants/theme';
 
 import { NameStep } from './NameStep';
 import { EmailStep } from './EmailStep';
@@ -46,8 +42,6 @@ interface OnboardingFlowProps {
 }
 
 export function OnboardingFlow({ onComplete, onBack }: OnboardingFlowProps) {
-  const colors = Colors.dark;
-
   // Current step
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('name');
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
@@ -197,9 +191,7 @@ export function OnboardingFlow({ onComplete, onBack }: OnboardingFlowProps) {
   const stepNumber = getStepNumber(currentStep);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.black }]}>
-      {/* Force light status bar content for OLED black onboarding screens */}
-      <StatusBar style="light" />
+    <View style={styles.container}>
       <Animated.View key={currentStep} entering={entering} exiting={exiting} style={styles.screen}>
         {currentStep === 'name' && (
           <NameStep

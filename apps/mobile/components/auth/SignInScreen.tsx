@@ -1,18 +1,19 @@
-/**
- * Sign In Screen - Simple OLED black themed sign in
- * Matches the onboarding aesthetic
- */
-
-import { Text, HapticPressable, ButtonLoader } from '@/components/ui';
-import React, { useState, useRef } from 'react';
-import { View, TextInput, Platform, StyleSheet, ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
-import Svg, { Path, G, Rect, ClipPath, Defs } from 'react-native-svg';
-
+import React, { useRef, useState } from 'react';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
-import { BrandColors, Colors, Spacing, Radius, Sizes } from '@/constants/theme';
-import { onboardingStyles, ONBOARDING_LAYOUT } from './onboarding-styles';
+
+import { Button, HapticPressable, Text } from '@/components/ui';
+import { BrandColors, Radius, Sizes, Spacing } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
+
+import {
+  AuthErrorBanner,
+  AuthField,
+  AuthPrimaryButton,
+  AuthSection,
+  AuthScreenShell,
+} from './auth-theme';
 
 interface SignInScreenProps {
   onBack: () => void;
@@ -25,13 +26,8 @@ interface SignInScreenProps {
   error?: string | null;
 }
 
-// Simple email validation
-const isValidEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
+const isValidEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-// Google logo with brand colors
 function GoogleIcon({ size = Sizes.iconMd }: { size?: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -65,16 +61,14 @@ export function SignInScreen({
   isLoading = false,
   error,
 }: SignInScreenProps) {
-  const colors = Colors.dark; // OLED black theme
-  const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const isValid = isValidEmail(email) && password.length >= 1;
+  const isValid = isValidEmail(email) && password.length > 0;
 
   const handleSubmit = async () => {
     if (!isValid || isLoading) return;
@@ -82,235 +76,146 @@ export function SignInScreen({
   };
 
   return (
-    <ScrollView
-      style={[onboardingStyles.container, { backgroundColor: colors.black }]}
-      contentContainerStyle={[
-        onboardingStyles.content,
-        { paddingTop: insets.top + Spacing.sm, paddingBottom: insets.bottom + Spacing['2xl'] },
-      ]}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
+    <AuthScreenShell
+      title="Welcome back"
+      subtitle="Sign in to manage listings, buyer messages, and test drive requests."
+      eyebrow="Welcome back"
+      onBack={onBack}
+      footer={
+        <View style={styles.centered}>
+          <Text variant="subhead" tone="secondary">
+            New to Revvup?{' '}
+          </Text>
+          <Text variant="subhead" style={{ color: colors.primary }} onPress={onSwitchToSignUp}>
+            Create your account
+          </Text>
+        </View>
+      }
     >
-          {/* Header */}
-          <Animated.View entering={FadeIn.duration(300)} style={onboardingStyles.header}>
-            <HapticPressable
-              onPress={onBack}
-              style={[onboardingStyles.backButton]}
-            >
-              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.white} />
-            </HapticPressable>
-            <View style={{ flex: 1 }} />
-            <View style={onboardingStyles.skipButton} />
-          </Animated.View>
+      <AuthErrorBanner error={error} />
 
-          {/* Hero Section */}
-          <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Text variant="subhead" style={[onboardingStyles.greeting, { color: colors.primary }]} tone="secondary">
-              Welcome back
-            </Text>
-            <Text variant="title2Emphasized" style={[onboardingStyles.title, { color: colors.white }]}>
-              Sign in to continue
-            </Text>
-          </Animated.View>
+      <AuthSection>
+        <AuthField
+          ref={emailRef}
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          placeholder="you@example.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="email"
+          textContentType="emailAddress"
+          returnKeyType="next"
+          editable={!isLoading}
+          onSubmitEditing={() => passwordRef.current?.focus()}
+        />
 
-          {/* Error */}
-          {error && (
-            <Animated.View
-              entering={FadeIn.duration(200)}
-              style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
-            >
-              <Text variant="subhead" tone="error" style={onboardingStyles.errorText}>
-                {error}
+        <AuthField
+          ref={passwordRef}
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Enter your password"
+          secureTextEntry={!showPassword}
+          autoComplete={Platform.OS === 'android' ? 'off' : 'password'}
+          textContentType={Platform.OS === 'ios' ? 'oneTimeCode' : undefined}
+          returnKeyType="done"
+          editable={!isLoading}
+          onSubmitEditing={handleSubmit}
+          right={
+            <HapticPressable onPress={() => setShowPassword((value) => !value)}>
+              <Text variant="subhead" tone="secondary">
+                {showPassword ? 'Hide' : 'Show'}
               </Text>
-            </Animated.View>
-          )}
+            </HapticPressable>
+          }
+        />
 
-          {/* Form */}
-          <Animated.View entering={FadeInDown.delay(200).duration(400)} style={onboardingStyles.inputSection}>
-            {/* Email */}
-            <View
-              style={[
-                onboardingStyles.inputWrapper,
-                {
-                  backgroundColor: `${colors.white}08`,
-                  borderColor: email.length > 0
-                    ? isValidEmail(email) ? colors.primary : colors.error
-                    : `${colors.white}15`,
-                },
-              ]}
-            >
-              <TextInput
-                ref={emailRef}
-                style={[onboardingStyles.inputInner, { color: colors.white }]}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Email"
-                placeholderTextColor={colors.labelTertiary}
-                keyboardType="email-address"
-                keyboardAppearance="dark"
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="email"
-                textContentType="emailAddress"
-                selectionColor={colors.primary}
-                underlineColorAndroid="transparent"
-                editable={!isLoading}
-                returnKeyType="next"
-                onSubmitEditing={() => passwordRef.current?.focus()}
-              />
-            </View>
+        <View style={styles.actions}>
+          <Button variant="ghost" size="medium" onPress={onForgotPassword}>
+            Forgot password?
+          </Button>
+          <AuthPrimaryButton onPress={handleSubmit} loading={isLoading} disabled={!isValid}>
+            Sign in
+          </AuthPrimaryButton>
+        </View>
+      </AuthSection>
 
-            {/* Password */}
-            <View
-              style={[
-                onboardingStyles.inputWrapper,
-                {
-                  backgroundColor: `${colors.white}08`,
-                  borderColor: password.length > 0 ? colors.primary : `${colors.white}15`,
-                },
-              ]}
-            >
-              <TextInput
-                ref={passwordRef}
-                style={[
-                  onboardingStyles.inputInner,
-                  onboardingStyles.passwordInputInner,
-                  { color: colors.white },
-                ]}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Password"
-                placeholderTextColor={colors.labelTertiary}
-                keyboardAppearance="dark"
-                secureTextEntry={!showPassword}
-                autoComplete={Platform.OS === 'android' ? 'off' : 'password'}
-                textContentType={Platform.OS === 'ios' ? 'oneTimeCode' : undefined}
-                selectionColor={colors.primary}
-                underlineColorAndroid="transparent"
-                editable={!isLoading}
-                returnKeyType="done"
-                onSubmitEditing={handleSubmit}
-              />
+      {(onGoogleSignIn || onAppleSignIn) ? (
+        <AuthSection>
+          <Text variant="subhead" tone="secondary">
+            Faster ways to sign in
+          </Text>
+          <View style={styles.socialStack}>
+            {onAppleSignIn && Platform.OS === 'ios' ? (
               <HapticPressable
-                onPress={() => setShowPassword(!showPassword)}
-                style={onboardingStyles.showPasswordButton}
+                onPress={onAppleSignIn}
+                disabled={isLoading}
+                style={({ pressed }) => [
+                  styles.socialAction,
+                  {
+                    backgroundColor: colors.label,
+                    borderColor: colors.label,
+                    opacity: pressed || isLoading ? 0.88 : 1,
+                  },
+                ]}
               >
-                <Text variant="subhead" style={{ color: colors.labelTertiary }}>
-                  {showPassword ? 'Hide' : 'Show'}
+                <Ionicons name="logo-apple" size={Sizes.iconSm} color={colors.background} />
+                <Text variant="headline" style={{ color: colors.background }}>
+                  Continue with Apple
                 </Text>
               </HapticPressable>
-            </View>
-
-            {/* Forgot Password */}
-            <HapticPressable
-              onPress={onForgotPassword}
-              style={{ alignSelf: 'flex-end', paddingVertical: Spacing.xs }}
-            >
-              <Text variant="subhead" style={{ color: colors.labelSecondary }}>
-                Forgot password?
-              </Text>
-            </HapticPressable>
-          </Animated.View>
-
-          {/* Sign In Action */}
-          <Animated.View entering={FadeInDown.delay(300).duration(400)} style={{ gap: Spacing.lg }}>
-            <HapticPressable
-              onPress={handleSubmit}
-              disabled={!isValid || isLoading}
-              hitSlop={{ top: Spacing.sm, bottom: Spacing.sm, left: Spacing.sm, right: Spacing.sm }}
-            >
-              {isLoading ? (
-                <ButtonLoader size="sm" variant="primary" />
-              ) : (
-                <Text variant="title3Emphasized" style={{ color: isValid ? colors.white : colors.labelTertiary }}>
-                  Sign In
+            ) : null}
+            {onGoogleSignIn ? (
+              <HapticPressable
+                onPress={onGoogleSignIn}
+                disabled={isLoading}
+                style={({ pressed }) => [
+                  styles.socialAction,
+                  styles.googleAction,
+                  {
+                    borderColor: colors.border,
+                    opacity: pressed || isLoading ? 0.92 : 1,
+                  },
+                ]}
+              >
+                <GoogleIcon size={Sizes.iconSm} />
+                <Text variant="headline" style={{ color: '#050505' }}>
+                  Continue with Google
                 </Text>
-              )}
-            </HapticPressable>
-
-            {/* Social Auth */}
-            {(onGoogleSignIn || onAppleSignIn) && (
-              <View style={styles.socialSection}>
-                <View style={styles.dividerRow}>
-                  <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-                  <Text variant="subhead" style={{ color: colors.labelTertiary }} tone="secondary">or</Text>
-                  <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-                </View>
-
-                <View style={styles.socialButtonsRow}>
-                  {/* Apple */}
-                  {onAppleSignIn && Platform.OS === 'ios' && (
-                    <HapticPressable
-                      onPress={onAppleSignIn}
-                      disabled={isLoading}
-                      style={[
-                        styles.socialButton,
-                        { backgroundColor: colors.white, opacity: isLoading ? 0.5 : 1 },
-                      ]}
-                    >
-                      <Ionicons name="logo-apple" size={Sizes.iconSm} color={colors.black} />
-                    </HapticPressable>
-                  )}
-
-                  {/* Google */}
-                  {onGoogleSignIn && (
-                    <HapticPressable
-                      onPress={onGoogleSignIn}
-                      disabled={isLoading}
-                      style={[
-                        styles.socialButton,
-                        { 
-                          backgroundColor: colors.white, 
-                          opacity: isLoading ? 0.5 : 1,
-                        },
-                      ]}
-                    >
-                      <GoogleIcon size={Sizes.iconMd} />
-                    </HapticPressable>
-                  )}
-                </View>
-              </View>
-            )}
-
-            {/* Switch to Sign Up */}
-            <Animated.View entering={FadeIn.delay(400).duration(300)} style={onboardingStyles.footer}>
-              <Text variant="subhead" style={{ color: colors.labelSecondary }}>
-                Don't have an account?{' '}
-              </Text>
-              <HapticPressable onPress={onSwitchToSignUp}>
-                <Text variant="subhead" style={{ color: colors.primary }}>Sign up</Text>
               </HapticPressable>
-            </Animated.View>
-          </Animated.View>
-    </ScrollView>
+            ) : null}
+          </View>
+        </AuthSection>
+      ) : null}
+    </AuthScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  // Social auth styles
-  socialSection: {
+  actions: {
+    gap: Spacing.sm,
+  },
+  centered: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  socialStack: {
     gap: Spacing.md,
-    marginTop: Spacing.lg,
   },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.lg,
-  },
-  dividerLine: {
-    flex: 1,
-    height: StyleSheet.hairlineWidth,
-  },
-  socialButtonsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: Spacing.lg,
-  },
-  socialButton: {
-    width: ONBOARDING_LAYOUT.buttonHeight,
-    height: ONBOARDING_LAYOUT.buttonHeight,
+  socialAction: {
+    minHeight: Sizes.actionButtonLg + Spacing.xs,
     borderRadius: Radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: Spacing.lg,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: Spacing.sm,
+  },
+  googleAction: {
+    backgroundColor: '#FFFFFF',
   },
 });

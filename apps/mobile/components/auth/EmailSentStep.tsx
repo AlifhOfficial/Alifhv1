@@ -1,18 +1,14 @@
-/**
- * Email Sent Step - Confirmation that verification email was sent
- * Bridge between account creation and OTP entry
- */
+import React, { useState } from 'react';
 
-import { Text, HapticPressable, ButtonLoader } from '@/components/ui';
-import React from 'react';
-import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
-import Svg, { Path, Circle } from 'react-native-svg';
+import { Button, Text } from '@/components/ui';
 
-import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, Sizes, Radius } from '@/constants/theme';
-import { onboardingStyles, ONBOARDING_LAYOUT } from './onboarding-styles';
+import {
+  AuthInlineLink,
+  AuthPrimaryButton,
+  AuthProgress,
+  AuthSection,
+  AuthScreenShell,
+} from './auth-theme';
 
 interface EmailSentStepProps {
   email: string;
@@ -25,36 +21,6 @@ interface EmailSentStepProps {
   totalSteps: number;
 }
 
-// Mail icon for success state
-function MailIcon({ color, size = Sizes.bubble }: { color: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M3 8L10.89 13.26C11.2187 13.4793 11.6049 13.5963 12 13.5963C12.3951 13.5963 12.7813 13.4793 13.11 13.26L21 8M5 19H19C19.5304 19 20.0391 18.7893 20.4142 18.4142C20.7893 18.0391 21 17.5304 21 17V7C21 6.46957 20.7893 5.96086 20.4142 5.58579C20.0391 5.21071 19.5304 5 19 5H5C4.46957 5 3.96086 5.21071 3.58579 5.58579C3.21071 5.96086 3 6.46957 3 7V17C3 17.5304 3.21071 18.0391 3.58579 18.4142C3.96086 18.7893 4.46957 19 5 19Z"
-        stroke={color}
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-}
-
-// Checkmark icon
-function CheckIcon({ color, size = Sizes.iconMd }: { color: string; size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M20 6L9 17L4 12"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-}
-
 export function EmailSentStep({
   email,
   userName,
@@ -65,10 +31,7 @@ export function EmailSentStep({
   currentStep,
   totalSteps,
 }: EmailSentStepProps) {
-  const colors = Colors.dark; // OLED black theme
-  const insets = useSafeAreaInsets();
-
-  const [isResending, setIsResending] = React.useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const handleResend = async () => {
     if (isResending) return;
@@ -81,112 +44,26 @@ export function EmailSentStep({
   };
 
   return (
-    <View style={[onboardingStyles.container, { backgroundColor: colors.black }]}>
-      <View
-        style={[
-          onboardingStyles.content,
-          { paddingTop: insets.top + Spacing.sm, paddingBottom: insets.bottom + Spacing['2xl'] },
-        ]}
-      >
-        {/* Header with progress */}
-        <Animated.View entering={FadeIn.duration(300)} style={onboardingStyles.header}>
-          <HapticPressable
-            onPress={onBack}
-            style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
-          >
-            <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.white} />
-          </HapticPressable>
+    <AuthScreenShell
+      title="Check your inbox"
+      subtitle={`We sent ${userName ? `${userName} ` : ''}a 6-digit code. Enter it to finish setting up your Revvup account.`}
+      eyebrow="Verify email"
+      onBack={onBack}
+    >
+      <AuthProgress currentStep={currentStep} totalSteps={totalSteps} />
 
-          <View style={onboardingStyles.progressContainer}>
-            {Array.from({ length: totalSteps }).map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  onboardingStyles.progressBar,
-                  {
-                    backgroundColor:
-                      index < currentStep ? colors.primary : colors.border,
-                  },
-                ]}
-              />
-            ))}
-          </View>
-
-          <View style={onboardingStyles.skipButton} />
-        </Animated.View>
-
-        {/* Center Content */}
-        <View style={onboardingStyles.centerContent}>
-          {/* Email Icon with check badge */}
-          <Animated.View entering={FadeInDown.delay(100).duration(500)} style={onboardingStyles.iconContainer}>
-            <View
-              style={[
-                onboardingStyles.emailSentIcon,
-                { backgroundColor: colors.primaryMuted },
-              ]}
-            >
-              <MailIcon color={colors.primary} size={ONBOARDING_LAYOUT.emailIconSize} />
-            </View>
-          </Animated.View>
-
-          {/* Title */}
-          <Animated.View entering={FadeInDown.delay(200).duration(400)}>
-            <Text variant="title2Emphasized" style={[onboardingStyles.welcomeTitle, { color: colors.white }]}>
-              Check your inbox
-            </Text>
-          </Animated.View>
-
-          {/* Subtitle */}
-          <Animated.View entering={FadeInDown.delay(300).duration(400)}>
-            <Text variant="subhead" style={[onboardingStyles.welcomeSubtitle, { color: colors.labelSecondary }]}>
-              We've sent a verification code to
-            </Text>
-          </Animated.View>
-
-          {/* Email highlight */}
-          <Animated.View
-            entering={FadeInDown.delay(400).duration(400)}
-            style={[onboardingStyles.emailHighlight, { backgroundColor: `${colors.white}08` }]}
-          >
-            <Text variant="subhead" style={{ color: colors.white }}>
-              {email}
-            </Text>
-          </Animated.View>
-        </View>
-
-        {/* Buttons */}
-        <Animated.View entering={FadeInUp.delay(500).duration(400)} style={onboardingStyles.buttonSection}>
-          <HapticPressable
-            onPress={onContinue}
-            disabled={isLoading}
-            style={({ pressed }) => [
-              onboardingStyles.continueButton,
-              {
-                backgroundColor: colors.primary,
-                opacity: pressed ? 0.9 : 1,
-              },
-            ]}
-          >
-            {isLoading ? (
-              <ButtonLoader size="sm" variant="white" />
-            ) : (
-              <Text style={{ color: colors.primaryForeground }} variant="body">Enter Code</Text>
-            )}
-          </HapticPressable>
-
-          {/* Resend link */}
-          <View style={onboardingStyles.resendSection}>
-            <HapticPressable onPress={handleResend} disabled={isResending || isLoading}>
-              <Text variant="subhead" style={{ color: colors.labelSecondary }}>
-                Didn't receive it?{' '}
-                <Text variant="subhead" style={{ color: colors.primary }}>
-                  {isResending ? 'Sending...' : 'Resend'}
-                </Text>
-              </Text>
-            </HapticPressable>
-          </View>
-        </Animated.View>
-      </View>
-    </View>
+      <AuthSection>
+        <AuthInlineLink label="Verification email" value={email} onPress={onContinue} />
+        <Text variant="subhead" tone="secondary">
+          Open the code screen when you’re ready. If it does not show up, you can resend it below.
+        </Text>
+        <AuthPrimaryButton onPress={onContinue} loading={isLoading}>
+          Enter code
+        </AuthPrimaryButton>
+        <Button variant="ghost" size="medium" onPress={handleResend} disabled={isResending || isLoading}>
+          {isResending ? 'Sending again...' : 'Resend email'}
+        </Button>
+      </AuthSection>
+    </AuthScreenShell>
   );
 }

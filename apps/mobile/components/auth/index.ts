@@ -20,7 +20,3 @@ export { NameStep } from './NameStep';
 export { EmailStep } from './EmailStep';
 export { PasswordStep } from './PasswordStep';
 export { EmailSentStep } from './EmailSentStep';
-
-// Shared styles
-export { authStyles, AUTH_LAYOUT } from './auth-styles';
-export { onboardingStyles, ONBOARDING_LAYOUT } from './onboarding-styles';

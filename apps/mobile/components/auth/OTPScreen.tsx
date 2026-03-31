@@ -1,19 +1,16 @@
-/**
- * OTP Verification Screen
- * OLED black themed OTP input for sign-in verification
- */
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, TextInput, View } from 'react-native';
 
-import { Text, HapticPressable } from '@/components/ui';
-import React, { useState, useRef, useEffect } from 'react';
-import { View, TextInput } from 'react-native';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import { InlineLoader } from '@/components/ui/loaders';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { Button, InlineLoader, Text } from '@/components/ui';
+import { Radius, Sizes, Spacing } from '@/constants/theme';
+import { useTheme } from '@/context/theme-context';
 
-import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, Sizes } from '@/constants/theme';
-import { onboardingStyles } from './onboarding-styles';
+import {
+  AuthErrorBanner,
+  AuthPrimaryButton,
+  AuthSection,
+  AuthScreenShell,
+} from './auth-theme';
 
 interface OTPScreenProps {
   email: string;
@@ -34,36 +31,31 @@ export function OTPScreen({
   isLoading = false,
   error,
 }: OTPScreenProps) {
-  const colors = Colors.dark; // OLED black theme
-  const insets = useSafeAreaInsets();
-
+  const { colors } = useTheme();
+  const inputRef = useRef<TextInput>(null);
   const [code, setCode] = useState('');
   const [resendTimer, setResendTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
-  const inputRef = useRef<TextInput>(null);
 
-  // Resend timer
+  useEffect(() => {
+    const timer = setTimeout(() => inputRef.current?.focus(), 250);
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     if (resendTimer > 0) {
-      const timer = setTimeout(() => setResendTimer((t) => t - 1), 1000);
+      const timer = setTimeout(() => setResendTimer((value) => value - 1), 1000);
       return () => clearTimeout(timer);
-    } else {
-      setCanResend(true);
     }
+
+    setCanResend(true);
   }, [resendTimer]);
 
-  // Auto-submit when code is complete
   useEffect(() => {
     if (code.length === CODE_LENGTH && !isLoading) {
       onVerify(code);
     }
   }, [code, isLoading, onVerify]);
-
-  // Focus input on mount
-  useEffect(() => {
-    const timer = setTimeout(() => inputRef.current?.focus(), 300);
-    return () => clearTimeout(timer);
-  }, []);
 
   const handleCodeChange = (text: string) => {
     const cleaned = text.replace(/[^0-9]/g, '').slice(0, CODE_LENGTH);
@@ -78,147 +70,103 @@ export function OTPScreen({
     await onResend();
   };
 
-  const focusInput = () => {
-    inputRef.current?.focus();
-  };
-
   return (
-    <View style={[onboardingStyles.container, { backgroundColor: colors.black }]}>
-      <KeyboardAvoidingView behavior="padding" style={onboardingStyles.keyboardView}>
-        <View
-          style={[
-            onboardingStyles.content,
-            { paddingTop: insets.top + Spacing.sm, paddingBottom: insets.bottom + Spacing['2xl'] },
-          ]}
-        >
-          {/* Header */}
-          <Animated.View entering={FadeIn.duration(300)} style={onboardingStyles.header}>
-            <HapticPressable
-              onPress={onBack}
-              style={({ pressed }) => [onboardingStyles.backButton, { opacity: pressed ? 0.5 : 1 }]}
-            >
-              <Ionicons name="chevron-back" size={Sizes.iconLg} color={colors.white} />
-            </HapticPressable>
-            <View style={{ flex: 1 }} />
-            <View style={onboardingStyles.skipButton} />
-          </Animated.View>
+    <AuthScreenShell
+      title="Enter your code"
+      subtitle={`We sent a 6-digit code to ${email}. This helps keep Revvup secure and free of abuse.`}
+      eyebrow="Verify email"
+      onBack={onBack}
+    >
+      <AuthErrorBanner error={error} />
 
-          {/* Hero Section */}
-          <Animated.View entering={FadeInDown.delay(100).duration(400)} style={onboardingStyles.heroSection}>
-            <Text variant="subhead" style={[onboardingStyles.greeting, { color: colors.primary }]} tone="secondary">
-              Verify your email
-            </Text>
-            <Text variant="title2Emphasized" style={[onboardingStyles.title, { color: colors.white }]}>
-              Enter the code
-            </Text>
-            <Text variant="subhead" style={[onboardingStyles.subtitle, { color: colors.labelSecondary }]}>
-              Sent to {email}
-            </Text>
-          </Animated.View>
+      <AuthSection>
+        <Text variant="subhead" tone="muted">
+          Verification code
+        </Text>
 
-          {/* Error */}
-          {error && (
-            <Animated.View
-              entering={FadeIn.duration(200)}
-              style={[onboardingStyles.errorContainer, { backgroundColor: colors.errorMuted }]}
-            >
-              <Text variant="subhead" tone="error" style={onboardingStyles.errorText}>
-                {error}
-              </Text>
-            </Animated.View>
-          )}
+        <View style={styles.codeRow}>
+          {Array.from({ length: CODE_LENGTH }).map((_, index) => {
+            const digit = code[index] || '';
+            const isActive = index === code.length;
+            const isFilled = index < code.length;
 
-          {/* Code Input */}
-          <Animated.View entering={FadeInDown.delay(200).duration(400)} style={onboardingStyles.codeSection}>
-            <HapticPressable onPress={focusInput} style={onboardingStyles.codeBoxes}>
-              {Array.from({ length: CODE_LENGTH }).map((_, index) => {
-                const digit = code[index] || '';
-                const isActive = index === code.length;
-                const isFilled = index < code.length;
-
-                return (
-                  <View
-                    key={index}
-                    style={[
-                      onboardingStyles.codeBox,
-                      {
-                        backgroundColor: isFilled
-                          ? `${colors.primary}15`
-                          : `${colors.white}08`,
-                        borderColor: error
-                          ? colors.error
-                          : isActive
-                          ? colors.primary
-                          : isFilled
-                          ? colors.primary
-                          : `${colors.white}15`,
-                      },
-                    ]}
-                  >
-                    <Text variant="title3Emphasized" style={{ color: colors.white }}>
-                      {digit}
-                    </Text>
-                    {isActive && !isLoading && (
-                      <Animated.View
-                        entering={FadeIn.duration(150)}
-                        style={[onboardingStyles.codeCursor, { backgroundColor: colors.primary }]}
-                      />
-                    )}
-                  </View>
-                );
-              })}
-            </HapticPressable>
-
-            {/* Hidden input */}
-            <TextInput
-              ref={inputRef}
-              value={code}
-              onChangeText={handleCodeChange}
-              keyboardType="number-pad"
-              keyboardAppearance="dark"
-              maxLength={CODE_LENGTH}
-              autoFocus
-              style={onboardingStyles.codeHiddenInput}
-              editable={!isLoading}
-            />
-          </Animated.View>
-
-          {/* Loading */}
-          {isLoading && (
-            <Animated.View
-              entering={FadeIn.duration(150)}
-              style={{ alignItems: 'center', marginTop: Spacing['2xl'] }}
-            >
-              <InlineLoader size="sm" />
-            </Animated.View>
-          )}
-
-          {/* Resend & Help */}
-          <View style={onboardingStyles.buttonSection}>
-            {/* Resend */}
-            <Animated.View entering={FadeIn.delay(300).duration(300)} style={onboardingStyles.resendSection}>
-              {canResend ? (
-                <HapticPressable onPress={handleResend} disabled={isLoading}>
-                  <Text variant="subhead" style={{ color: colors.primary }}>
-                    Resend code
-                  </Text>
-                </HapticPressable>
-              ) : (
-                <Text variant="subhead" style={{ color: colors.labelTertiary }} tone="secondary">
-                  Resend in {resendTimer}s
+            return (
+              <View
+                key={index}
+                style={[
+                  styles.codeBox,
+                  {
+                    backgroundColor: isFilled ? colors.primaryMuted : colors.background,
+                    borderColor: error
+                      ? colors.error
+                      : isActive || isFilled
+                        ? colors.primary
+                        : colors.border,
+                  },
+                ]}
+              >
+                <Text variant="title3Emphasized" style={{ color: colors.label }}>
+                  {digit || ' '}
                 </Text>
-              )}
-            </Animated.View>
-
-            {/* Help text */}
-            <Animated.View entering={FadeIn.delay(400).duration(300)}>
-              <Text variant="subhead" style={[onboardingStyles.helpText, { color: colors.labelTertiary }]} tone="secondary">
-                Check your spam folder if you don't see it
-              </Text>
-            </Animated.View>
-          </View>
+              </View>
+            );
+          })}
         </View>
-      </KeyboardAvoidingView>
-    </View>
+
+        <TextInput
+          ref={inputRef}
+          value={code}
+          onChangeText={handleCodeChange}
+          keyboardType="number-pad"
+          maxLength={CODE_LENGTH}
+          autoFocus
+          editable={!isLoading}
+          style={styles.hiddenInput}
+        />
+
+        {isLoading ? (
+          <View style={styles.loaderWrap}>
+            <InlineLoader size="sm" />
+          </View>
+        ) : null}
+
+        <Text variant="subhead" tone="secondary">
+          Check your spam folder if it does not arrive right away.
+        </Text>
+
+        <AuthPrimaryButton onPress={() => inputRef.current?.focus()}>
+          Enter code manually
+        </AuthPrimaryButton>
+
+        <Button variant="ghost" size="medium" onPress={handleResend} disabled={!canResend || isLoading}>
+          {canResend ? 'Resend code' : `Resend in ${resendTimer}s`}
+        </Button>
+      </AuthSection>
+    </AuthScreenShell>
   );
 }
+
+const styles = StyleSheet.create({
+  codeRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  codeBox: {
+    flex: 1,
+    height: 56,
+    borderRadius: Radius.xl,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hiddenInput: {
+    position: 'absolute',
+    opacity: 0,
+    width: 1,
+    height: 1,
+  },
+  loaderWrap: {
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+  },
+});
