@@ -6,9 +6,9 @@
  * UI follows listing detail patterns: unapologetic, content-first, minimal cards.
  */
 
-import { Text, Skeleton, SkeletonCircle } from '@/components/ui';
+import { Text, Skeleton, SkeletonCircle, HapticRefreshControl } from '@/components/ui';
 import React, { useState, useCallback, useMemo } from 'react';
-import { StyleSheet, View, Alert, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, View, Alert, FlatList } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -433,7 +433,7 @@ export default function SellerContactScreen() {
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         refreshControl={
-          <RefreshControl
+          <HapticRefreshControl
             refreshing={isRefreshing}
             onRefresh={refresh}
             tintColor={colors.primary}

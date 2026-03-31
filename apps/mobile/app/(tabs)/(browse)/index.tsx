@@ -6,14 +6,14 @@
  * No local filter state - all updates go through context.
  */
 
-import { Text } from '@/components/ui';
+import { Text, HapticRefreshControl } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BROWSE_TOOLBAR_HEIGHT, BrowseToolbar, type FilterPillType } from '@/components/browse';
+import { BrowseTabBar, type FilterPillType } from '@/components/browse';
 import { ACTIVE_CHIPS_HEIGHT } from '@/components/layout/active-search-chips';
 import {
   MobileHeader,
@@ -36,7 +36,7 @@ import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/
 import { searchApi, type ListingCard, type SearchParams } from '@/lib/search-api';
 import { queryKeys } from '@/lib/query-client';
 import { consumeDataReady, markInteractionStart, scheduleRenderPerf } from '@/lib/config';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Layout, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type FilterParams } from '@/context/search-context';
 import { getModelsForMake } from '@/lib/filter-constants';
@@ -104,6 +104,9 @@ export default function BrowseScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
+  const [isBrowseTabBarVisible, setIsBrowseTabBarVisible] = useState(true);
+  const lastScrollYRef = useRef(0);
+  const tabBarVisibleRef = useRef(true);
 
   // ─────────────────────────────────────────────────────────────────────────
   // CONTEXT - Single Source of Truth
@@ -410,12 +413,12 @@ export default function BrowseScreen() {
   // ──────────────────────────────────────────────────────────────────────────
 
   const tabBarInset = getTabBarContentInset(insets.bottom);
-  const toolbarBottomOffset = getTabBarOverlayHeight(insets.bottom);
+  const browseTabBarOffset = getTabBarOverlayHeight(insets.bottom);
 
   const bottomPadding =
     tabBarInset +
     (hasActiveChips ? ACTIVE_CHIPS_HEIGHT + Spacing.sm : 0) +
-    BROWSE_TOOLBAR_HEIGHT +
+    Layout.tabBarHeight +
     Spacing['3xl'];
 
   const renderListing = useCallback(({ item }: { item: ListingCard }) => {
@@ -511,7 +514,28 @@ export default function BrowseScreen() {
 
   const headerInset = getMobileHeaderContentInset(insets.top);
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
+    const offsetY = Math.max(0, event.nativeEvent.contentOffset.y);
+    const deltaY = offsetY - lastScrollYRef.current;
+
+    setIsHeaderTitleHidden(offsetY > Spacing.lg);
+
+    const directionThreshold = Spacing.xs;
+    const hideAfterOffset = Spacing['2xl'];
+
+    if (offsetY <= hideAfterOffset) {
+      if (!tabBarVisibleRef.current) {
+        tabBarVisibleRef.current = true;
+        setIsBrowseTabBarVisible(true);
+      }
+    } else if (deltaY > directionThreshold && tabBarVisibleRef.current) {
+      tabBarVisibleRef.current = false;
+      setIsBrowseTabBarVisible(false);
+    } else if (deltaY < -directionThreshold && !tabBarVisibleRef.current) {
+      tabBarVisibleRef.current = true;
+      setIsBrowseTabBarVisible(true);
+    }
+
+    lastScrollYRef.current = offsetY;
   }, []);
 
   return (
@@ -544,7 +568,7 @@ export default function BrowseScreen() {
         windowSize={7}
         initialNumToRender={6}
         refreshControl={
-          <RefreshControl
+          <HapticRefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
             tintColor={colors.primary}
@@ -613,14 +637,15 @@ export default function BrowseScreen() {
         sellerName={infoSheetMeta.sellerName}
       />
 
-      <BrowseToolbar
+      <BrowseTabBar
+        bottomOffset={browseTabBarOffset}
+        visible={isBrowseTabBarVisible}
         pills={filterPillConfigs}
         onPillPress={handleFilterPillPress}
         onSettingsPress={handleSettingsPress}
         settingsCount={moreFiltersCount}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
-        bottomOffset={toolbarBottomOffset}
       />
     </View>
   );

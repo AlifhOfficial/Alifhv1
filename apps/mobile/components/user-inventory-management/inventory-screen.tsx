@@ -15,9 +15,9 @@
  * @module components/user-inventory-management/inventory-screen
  */
 
-import { Text, HapticPressable, Skeleton } from '@/components/ui';
+import { Text, HapticPressable, Skeleton, HapticRefreshControl } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, FlatList, Pressable, ScrollView, RefreshControl, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, StyleSheet, FlatList, Pressable, ScrollView, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 
 import { Image } from 'expo-image';
 import { getAppThumbUrl } from '@/lib/config';
@@ -503,7 +503,7 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
           onScroll={onScroll}
           scrollEventThrottle={16}
           refreshControl={
-            <RefreshControl
+            <HapticRefreshControl
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
               tintColor={colors.primary}

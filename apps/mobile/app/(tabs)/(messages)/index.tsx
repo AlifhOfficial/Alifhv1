@@ -7,9 +7,9 @@
  * - Multiple conversations with same partner/user render as collapsible groups
  */
 
-import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState } from '@/components/ui';
+import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState, HapticRefreshControl } from '@/components/ui';
 import React, { useMemo, useCallback, useRef } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { MessageCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -286,7 +286,7 @@ export default function MessagesScreen() {
         contentInsetAdjustmentBehavior="never"
         ListEmptyComponent={renderEmpty}
         refreshControl={
-          <RefreshControl
+          <HapticRefreshControl
             refreshing={isRefreshing}
             onRefresh={pullToRefresh}
             tintColor={colors.primary}

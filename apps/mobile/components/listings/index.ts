@@ -19,8 +19,5 @@ export * from './listing-timestamp';
 // Seller components
 export * from './seller-card';
 
-// Actions
-export * from './floating-listing-actions';
-
 // Utilities
 export { formatPrice, formatMileage, formatEmirate, formatSpecs, formatEnumValue } from './types';

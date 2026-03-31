@@ -2,9 +2,9 @@
  * Saved List - Displays saved listings (favorites or superlikes)
  */
 
-import { Text, HapticPressable } from '@/components/ui';
+import { Text, HapticPressable, HapticRefreshControl } from '@/components/ui';
 import React, { useCallback } from 'react';
-import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
@@ -136,7 +136,7 @@ export function SavedList({
       onScroll={onScroll}
       scrollEventThrottle={16}
       refreshControl={
-        <RefreshControl
+        <HapticRefreshControl
           refreshing={isRefreshing}
           onRefresh={onRefresh}
           tintColor={colors.primary}

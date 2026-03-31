@@ -1,17 +1,14 @@
+import React from 'react';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
+
 import { Text, HapticPressable } from '@/components/ui';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import * as Haptics from 'expo-haptics';
-import { LayoutGrid, List } from 'lucide-react-native';
-
 import { useTheme } from '@/context/theme-context';
-import { Colors, Radius, Sizes, Spacing, SheetSnapPoints } from '@/constants/theme';
+import { BorderWidths, Colors, Layout, Radius, Shadows, Sizes, Spacing, ZIndex } from '@/constants/theme';
 
-export type ViewMode = 'grid' | 'list';
 export type FilterPillType = 'make' | 'model' | 'price' | 'yearMileage' | 'location';
+export type ViewMode = 'grid' | 'list';
 
-export interface FilterPillConfig {
+interface DrawerPillItem {
   type: FilterPillType;
   label: string;
   activeCount: number;
@@ -20,243 +17,176 @@ export interface FilterPillConfig {
 interface BrowseDrawerSheetProps {
   visible: boolean;
   onClose: () => void;
-  pills?: FilterPillConfig[];
+  pills: DrawerPillItem[];
   onPillPress?: (type: FilterPillType) => void;
   onSettingsPress?: () => void;
   settingsCount?: number;
   viewMode?: ViewMode;
   onViewModeChange?: (mode: ViewMode) => void;
+  bottomOffset?: number;
 }
 
 export function BrowseDrawerSheet({
   visible,
   onClose,
-  pills = [],
+  pills,
   onPillPress,
   onSettingsPress,
   settingsCount = 0,
   viewMode = 'grid',
   onViewModeChange,
+  bottomOffset = 0,
 }: BrowseDrawerSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.singleMd, []);
+  const handleSettingsPress = () => {
+    onClose();
+    onSettingsPress?.();
+  };
 
-  useEffect(() => {
-    if (visible) {
-      bottomSheetRef.current?.present();
-      return;
-    }
+  const handlePillPress = (type: FilterPillType) => {
+    onClose();
+    onPillPress?.(type);
+  };
 
-    bottomSheetRef.current?.dismiss();
-  }, [visible]);
-
-  const handleSheetChanges = useCallback((index: number) => {
-    if (index === -1) {
-      onClose();
-    }
-  }, [onClose]);
-
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        opacity={0.5}
-        pressBehavior="close"
-      />
-    ),
-    [],
-  );
-
-  const closeAndRun = useCallback((action?: () => void) => {
-    if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    bottomSheetRef.current?.dismiss();
-    if (!action) return;
-    setTimeout(action, 180);
-  }, []);
-
-  const handleSettingsPress = useCallback(() => {
-    closeAndRun(onSettingsPress);
-  }, [closeAndRun, onSettingsPress]);
-
-  const handlePillPress = useCallback((type: FilterPillType) => {
-    closeAndRun(() => onPillPress?.(type));
-  }, [closeAndRun, onPillPress]);
-
-  const handleViewModePress = useCallback((mode: ViewMode) => {
-    if (Platform.OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+  const handleViewToggle = () => {
+    const mode = viewMode === 'grid' ? 'list' : 'grid';
+    onClose();
     onViewModeChange?.(mode);
-  }, [onViewModeChange]);
+  };
 
   return (
-    <BottomSheetModal
-      ref={bottomSheetRef}
-      snapPoints={snapPoints}
-      enableDynamicSizing={false}
-      enablePanDownToClose
-      onChange={handleSheetChanges}
-      backdropComponent={renderBackdrop}
-      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
-      handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
+    <Modal
+      visible={visible}
+      animationType="fade"
+      transparent
+      onRequestClose={onClose}
     >
-      <BottomSheetView style={styles.content}>
-        <View style={[styles.header, { borderBottomColor: colors.border }]}> 
-          <HapticPressable onPress={onClose} hitSlop={Spacing.md} style={styles.cancelButton}>
-            <Text variant="body" tone="secondary">Close</Text>
-          </HapticPressable>
-          <Text variant="headline">Drawer</Text>
-          <View style={styles.placeholder} />
-        </View>
+      <View style={styles.container}>
+        <Pressable style={[styles.backdrop, { backgroundColor: colors.overlay }]} onPress={onClose} />
+        <View style={[styles.popover, { bottom: bottomOffset + Sizes.actionButtonLg + Spacing.lg, backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={styles.handleWrap}>
+            <View style={[styles.handleIndicator, { backgroundColor: colors.border }]} />
+          </View>
 
-        <View style={styles.section}>
-          <Text variant="subhead" tone="secondary">Filters</Text>
-          <HapticPressable
-            onPress={handleSettingsPress}
-            style={[styles.row, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
-          >
-            <Text variant="body">All Filters</Text>
-            {settingsCount > 0 ? (
-              <View style={[styles.badge, { backgroundColor: colors.label }]}>
-                <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.background }}>
-                  {settingsCount > 9 ? '9+' : settingsCount}
-                </Text>
-              </View>
-            ) : (
-              <Text variant="subhead" tone="secondary">Open</Text>
-            )}
+          <View style={[styles.header, { borderBottomColor: colors.border }]}>
+            <View style={styles.headerTopRow}>
+              <HapticPressable onPress={onClose} hitSlop={Layout.hitSlopSmall} style={styles.cancelButton}>
+                <Text variant="subhead" tone="muted">Cancel</Text>
+              </HapticPressable>
+              <Text variant="caption1Emphasized" tone="muted" uppercase>Browse Menu</Text>
+              <View style={styles.headerPlaceholder} />
+            </View>
+          </View>
+
+          <HapticPressable style={[styles.row, { borderBottomColor: colors.border }]} onPress={handleSettingsPress}>
+            <View style={styles.rowInner}>
+              <Text variant="subhead">Filters</Text>
+              {settingsCount > 0 ? (
+                <View style={[styles.badge, { backgroundColor: colors.label }]}>
+                  <Text variant="caption1Emphasized" style={{ color: colors.background }}>
+                    {settingsCount > 9 ? '9+' : settingsCount}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
           </HapticPressable>
 
           {pills.map((pill) => (
             <HapticPressable
               key={pill.type}
+              style={[styles.row, { borderBottomColor: colors.border }]}
               onPress={() => handlePillPress(pill.type)}
-              style={[styles.row, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}
             >
-              <Text variant="body">{pill.label}</Text>
-              {pill.activeCount > 0 ? (
-                <View style={[styles.badge, { backgroundColor: colors.label }]}>
-                  <Text variant="caption1Emphasized" uppercase={false} style={{ color: colors.background }}>
-                    {pill.activeCount > 9 ? '9+' : pill.activeCount}
-                  </Text>
-                </View>
-              ) : (
-                <Text variant="subhead" tone="secondary">Open</Text>
-              )}
+              <View style={styles.rowInner}>
+                <Text variant="subhead">{pill.label}</Text>
+                {pill.activeCount > 0 ? (
+                  <View style={[styles.badge, { backgroundColor: colors.label }]}>
+                    <Text variant="caption1Emphasized" style={{ color: colors.background }}>
+                      {pill.activeCount > 9 ? '9+' : pill.activeCount}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
             </HapticPressable>
           ))}
-        </View>
 
-        <View style={styles.section}>
-          <Text variant="subhead" tone="secondary">View</Text>
-          <View style={styles.viewModeRow}>
-            <HapticPressable
-              onPress={() => handleViewModePress('grid')}
-              style={[
-                styles.viewModeButton,
-                {
-                  backgroundColor: viewMode === 'grid' ? colors.primaryMuted : colors.surfaceSecondary,
-                  borderColor: viewMode === 'grid' ? colors.primary : colors.border,
-                },
-              ]}
-            >
-              <LayoutGrid size={Sizes.iconSm} color={viewMode === 'grid' ? colors.primary : colors.labelSecondary} strokeWidth={2} />
-              <Text variant="subhead" style={{ color: viewMode === 'grid' ? colors.primary : colors.labelSecondary }}>
-                Grid
-              </Text>
-            </HapticPressable>
-
-            <HapticPressable
-              onPress={() => handleViewModePress('list')}
-              style={[
-                styles.viewModeButton,
-                {
-                  backgroundColor: viewMode === 'list' ? colors.primaryMuted : colors.surfaceSecondary,
-                  borderColor: viewMode === 'list' ? colors.primary : colors.border,
-                },
-              ]}
-            >
-              <List size={Sizes.iconSm} color={viewMode === 'list' ? colors.primary : colors.labelSecondary} strokeWidth={2} />
-              <Text variant="subhead" style={{ color: viewMode === 'list' ? colors.primary : colors.labelSecondary }}>
-                List
-              </Text>
-            </HapticPressable>
-          </View>
+          <HapticPressable style={styles.row} onPress={handleViewToggle}>
+            <View style={styles.rowInner}>
+              <Text variant="subhead">View: {viewMode === 'grid' ? 'Grid' : 'List'}</Text>
+            </View>
+          </HapticPressable>
         </View>
-      </BottomSheetView>
-    </BottomSheetModal>
+      </View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
-    borderRadius: Radius['3xl'],
+  container: {
+    flex: 1,
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  popover: {
+    position: 'absolute',
+    left: Layout.screenPadding,
+    right: Layout.screenPadding,
+    borderRadius: Radius['2xl'],
+    borderWidth: BorderWidths.thin,
+    overflow: 'hidden',
+    zIndex: ZIndex.modal,
+    ...Shadows.lg,
+  },
+  handleWrap: {
+    alignItems: 'center',
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.xs,
   },
   handleIndicator: {
     width: Sizes.bubble,
     height: Spacing.xs,
     borderRadius: Radius.full,
   },
-  content: {
-    flex: 1,
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing['2xl'],
-    gap: Spacing.lg,
-  },
   header: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.md,
+  },
+  headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingBottom: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   cancelButton: {
     paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
   },
-  placeholder: {
+  headerPlaceholder: {
     width: Spacing.xl * 3,
   },
-  section: {
-    gap: Spacing.sm,
-  },
   row: {
-    minHeight: 52,
-    borderWidth: 1,
-    borderRadius: Radius.xl,
-    paddingHorizontal: Spacing.md,
+    minHeight: Sizes.pillHeight,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.xs,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  rowInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
   },
   badge: {
     minWidth: Sizes.iconSm,
     height: Sizes.iconSm,
-    paddingHorizontal: Spacing.xs,
     borderRadius: Sizes.iconSm / 2,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  viewModeRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  viewModeButton: {
-    flex: 1,
-    minHeight: 52,
-    borderWidth: 1,
-    borderRadius: Radius.xl,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
   },
 });

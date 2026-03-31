@@ -5,12 +5,13 @@
  */
 
 import React, { forwardRef, ReactNode } from 'react';
-import { StyleSheet, View, ScrollView, RefreshControl, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { StyleSheet, View, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing } from '@/constants/theme';
+import { HapticRefreshControl } from '@/components/ui/haptic-refresh-control';
 import { getTabBarContentInset } from './tab-bar-metrics';
 
 interface ScreenContainerProps {
@@ -130,7 +131,7 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
         scrollEventThrottle={400}
         refreshControl={
           onRefresh ? (
-            <RefreshControl
+            <HapticRefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
               tintColor={colors.primary}

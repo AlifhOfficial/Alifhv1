@@ -1,7 +1,7 @@
 # Bottom Sheet UI/UX Patterns Guide
 
 > Comprehensive reference for building bottom sheets in the Alifh mobile app.
-> Based on: `SearchSheet`, `MakeFilterSheet`, `ModelFilterSheet`, `AmnaSheet`
+> Based on: `SearchSheet`, `MakeFilterSheet`, `ModelFilterSheet`
 
 ---
 
@@ -318,7 +318,7 @@ const handleSheetChanges = useCallback((index: number) => {
 </View>
 ```
 
-### Header with Icon + Title (AmnaSheet style)
+### Header with Icon + Title
 
 ```tsx
 <View style={styles.headerRow}>

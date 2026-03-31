@@ -5,21 +5,23 @@
  * Uses React Query for data fetching (caching, dedup, prefetch support).
  */
 
-import { Text } from '@/components/ui';
-import { useEffect, useState, useCallback } from 'react';
+import { Bubble, ConfettiBurst, HapticRefreshControl, Text, useFavoriteActions } from '@/components/ui';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { 
-  View, ScrollView, StyleSheet, RefreshControl, InteractionManager } from 'react-native';
+  View, ScrollView, StyleSheet, InteractionManager, Platform } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Heart, Share2, Zap } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Sizes } from '@/constants/theme';
 import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { useTheme } from '@/context/theme-context';
 import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
-import { FloatingListingActions } from '@/components/listings';
 import { useListingDetail } from '@/hooks/use-listing-query';
 import { shareListing } from '@/lib/listing-share';
 import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
+import { SuperlikeConfirmationSheet, SuperlikeQuotaExhaustedSheet } from '@/components/sheets';
 
 export default function ListingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -27,6 +29,7 @@ export default function ListingDetailScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
+  const listingId = id ?? '';
   
   // Data fetching via React Query (caching, dedup, view tracking)
   const { listing, isLoading, isRefreshing, error, refresh } = useListingDetail({
@@ -61,12 +64,15 @@ export default function ListingDetailScreen() {
     refresh();
   }, [refresh]);
 
-  const handleShare = useCallback(async (listingId: string) => {
-    if (!listing) return;
+  const handleShare = useCallback(async () => {
+    if (!listing || !listingId) return;
+    if (Platform.OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
     try {
       const l = listing.listing;
       await shareListing({
-        listingId,
+        listingId: listingId,
         year: l.year,
         make: l.make,
         model: l.model,
@@ -79,7 +85,79 @@ export default function ListingDetailScreen() {
     } catch (error) {
       console.error('Share failed:', error);
     }
-  }, [listing]);
+  }, [listing, listingId]);
+
+  const {
+    isFavorite,
+    isSuperliked,
+    toggleFavorite,
+    toggleSuperlike,
+    favConfettiRef,
+    superConfettiRef,
+    quota,
+    showConfirmSheet,
+    showExhaustedSheet,
+    setShowConfirmSheet,
+    setShowExhaustedSheet,
+    handleConfirmSuperlike,
+  } = useFavoriteActions(listingId);
+
+  const headerActionsWidth = useMemo(() => {
+    const actionSize = Sizes.actionButtonSm;
+    return actionSize * 3 + Spacing.sm * 2;
+  }, []);
+
+  const headerActions = listing && showActions ? (
+    <View style={styles.headerActions}>
+      <View style={styles.actionItem}>
+        <Bubble
+          size="sm"
+          haptic="none"
+          accessibilityRole="button"
+          accessibilityLabel="Like listing"
+          onPress={toggleFavorite}
+        >
+          <Heart
+            size={Sizes.iconSm}
+            color={isFavorite ? colors.favorite : colors.label}
+            fill={isFavorite ? colors.favorite : 'none'}
+            strokeWidth={isFavorite ? 2.25 : 1.75}
+          />
+        </Bubble>
+        <ConfettiBurst ref={favConfettiRef} />
+      </View>
+
+      <View style={styles.actionItem}>
+        <Bubble
+          size="sm"
+          haptic="none"
+          accessibilityRole="button"
+          accessibilityLabel="Superlike listing"
+          onPress={toggleSuperlike}
+        >
+          <Zap
+            size={Sizes.iconSm}
+            color={isSuperliked ? colors.warning : colors.label}
+            fill={isSuperliked ? colors.warning : 'none'}
+            strokeWidth={1.75}
+          />
+        </Bubble>
+        <ConfettiBurst ref={superConfettiRef} />
+      </View>
+
+      <View style={styles.actionItem}>
+        <Bubble
+          size="sm"
+          haptic="none"
+          accessibilityRole="button"
+          accessibilityLabel="Share listing"
+          onPress={handleShare}
+        >
+          <Share2 size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
+        </Bubble>
+      </View>
+    </View>
+  ) : null;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -88,7 +166,12 @@ export default function ListingDetailScreen() {
           headerShown: false,
         }}
       />
-      <MobileHeader title="" showBackButton />
+      <MobileHeader
+        title=""
+        showBackButton
+        right={headerActions}
+        sideSlotWidth={headerActionsWidth}
+      />
 
       <ScrollView
         style={styles.scrollView}
@@ -96,13 +179,13 @@ export default function ListingDetailScreen() {
           styles.scrollContent,
           {
             paddingTop: headerInset,
-            paddingBottom: insets.bottom + Spacing['3xl'] + Sizes.actionButtonLg + Spacing['3xl'],
+            paddingBottom: insets.bottom + Spacing['3xl'],
           },
         ]}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={32}
         refreshControl={
-          <RefreshControl
+          <HapticRefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
             tintColor={colors.primary}
@@ -128,13 +211,17 @@ export default function ListingDetailScreen() {
         ) : null}
       </ScrollView>
 
-      {/* Floating Listing Actions - uses useFavoriteActions internally */}
-      {listing && showActions && (
-        <FloatingListingActions
-          id={id!}
-          onSharePress={handleShare}
-        />
-      )}
+      <SuperlikeConfirmationSheet
+        visible={showConfirmSheet}
+        onClose={() => setShowConfirmSheet(false)}
+        onConfirm={handleConfirmSuperlike}
+        quota={quota}
+      />
+      <SuperlikeQuotaExhaustedSheet
+        visible={showExhaustedSheet}
+        onClose={() => setShowExhaustedSheet(false)}
+        quota={quota}
+      />
 
     </View>
   );
@@ -157,5 +244,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: Spacing['5xl'],
     paddingHorizontal: Spacing.lg,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: Spacing.sm,
+  },
+  actionItem: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

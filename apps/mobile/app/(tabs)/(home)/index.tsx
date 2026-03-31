@@ -5,7 +5,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, View, ScrollView, RefreshControl, Platform, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { StyleSheet, View, ScrollView, Platform, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { Sun, Moon } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,7 +16,7 @@ import {
   UserDashboardStatsCard,
   ProfileMenu,
 } from '@/components/home';
-import { Bubble } from '@/components/ui';
+import { Bubble, HapticRefreshControl } from '@/components/ui';
 import { MobileHeader, getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
 import { useTheme } from '@/context/theme-context';
 import { Spacing, Sizes } from '@/constants/theme';
@@ -82,7 +82,7 @@ export default function HomeScreen() {
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl
+          <HapticRefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
             tintColor={colors.label}

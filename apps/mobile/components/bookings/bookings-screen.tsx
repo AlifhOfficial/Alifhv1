@@ -13,9 +13,9 @@
  * @module components/bookings/bookings-screen
  */
 
-import { Text, HapticPressable, Skeleton, BrandAvatar } from '@/components/ui';
+import { Text, HapticPressable, Skeleton, BrandAvatar, HapticRefreshControl } from '@/components/ui';
 import React, { useCallback, useRef, useState } from 'react';
-import { View, StyleSheet, FlatList, ScrollView, RefreshControl, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, StyleSheet, FlatList, ScrollView, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -360,7 +360,7 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
           onScroll={onScroll}
           scrollEventThrottle={16}
           refreshControl={
-            <RefreshControl
+            <HapticRefreshControl
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
               tintColor={colors.primary}

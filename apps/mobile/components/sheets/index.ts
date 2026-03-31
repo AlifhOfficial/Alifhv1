@@ -1,5 +1,5 @@
 // Search sheets
-export { SearchSheet, type SearchSheetProps, AmnaSheet, type AmnaSearchParams } from './search-sheets';
+export { SearchSheet, type SearchSheetProps } from './search-sheets';
 
 // Listing detail sheets
 export { DescriptionSheet, FeaturesSheet, SpecsSheet } from './listing-detail-sheets';
