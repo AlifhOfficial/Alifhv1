@@ -10,7 +10,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-client';
 import { fetchUserDashboardStats, type UserDashboardStats } from '@/lib/dashboard-api';
 
-export function useUserDashboardStats() {
+export function useUserDashboardStats(userId?: string) {
   const queryClient = useQueryClient();
 
   const {
@@ -19,15 +19,17 @@ export function useUserDashboardStats() {
     error,
     refetch,
   } = useQuery<UserDashboardStats>({
-    queryKey: queryKeys.userDashboard(),
+    queryKey: queryKeys.userDashboard(userId),
     queryFn: fetchUserDashboardStats,
+    enabled: !!userId,
     staleTime: 24 * 60 * 60 * 1000,
   });
 
   const refresh = useCallback(async () => {
-    await queryClient.invalidateQueries({ queryKey: queryKeys.userDashboard() });
+    if (!userId) return;
+    await queryClient.invalidateQueries({ queryKey: queryKeys.userDashboard(userId) });
     await refetch();
-  }, [queryClient, refetch]);
+  }, [queryClient, refetch, userId]);
 
   return {
     stats: data ?? null,

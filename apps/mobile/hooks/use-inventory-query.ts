@@ -22,6 +22,7 @@ import { queryKeys } from '@/lib/query-client';
 const PAGE_SIZE = 20;
 
 export interface UseInventoryOptions {
+  userId?: string;
   /** Filter by status */
   filter: MyListingsFilter;
   /** Whether to enable the query */
@@ -58,11 +59,11 @@ export interface UseInventoryResult {
 // ============================================================================
 
 export function useInventory(options: UseInventoryOptions): UseInventoryResult {
-  const { filter, enabled = true } = options;
+  const { userId, filter, enabled = true } = options;
   const queryClient = useQueryClient();
 
   // Query key includes filter
-  const queryKey = useMemo(() => queryKeys.inventory(filter), [filter]);
+  const queryKey = useMemo(() => queryKeys.inventory(userId, filter), [filter, userId]);
 
   const {
     data,
@@ -91,7 +92,7 @@ export function useInventory(options: UseInventoryOptions): UseInventoryResult {
       const loadedCount = allPages.reduce((acc, page) => acc + page.listings.length, 0);
       return loadedCount < lastPage.total ? loadedCount : undefined;
     },
-    enabled,
+    enabled: enabled && !!userId,
     staleTime: 1 * 60 * 1000, // 1 minute - inventory changes frequently
     gcTime: 30 * 60 * 1000,
   });

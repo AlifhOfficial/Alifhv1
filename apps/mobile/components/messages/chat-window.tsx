@@ -127,7 +127,7 @@ export function ChatWindow({
   const otherUserName = displayName;
   const myLastReadAt = conversation?.myLastReadAt;
   const myLastReadAtDate = myLastReadAt ? new Date(myLastReadAt) : null;
-  const { markAsRead } = useMarkAsRead();
+  const { markAsRead } = useMarkAsRead(userId);
   
   // Track last marked message to prevent duplicate API calls
   const lastMarkedMsgIdRef = useRef<string | null>(null);

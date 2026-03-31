@@ -67,24 +67,24 @@ export const queryKeys = {
   // User data
   favorites: () => ['favorites'] as const,
   saved: () => ['saved'] as const,
-  userDashboard: () => ['user', 'dashboard'] as const,
+  userDashboard: (userId?: string) => ['user', userId ?? 'anonymous', 'dashboard'] as const,
   
   // Booking
   bookingSlots: (listingId: string) => ['booking', 'slots', listingId] as const,
   
   // Messaging
-  conversations: (scope?: string) => ['conversations', scope ?? 'personal'] as const,
-  conversation: (id: string) => ['conversation', id] as const,
+  conversations: (userId?: string, scope?: string) => ['conversations', userId ?? 'anonymous', scope ?? 'personal'] as const,
+  conversation: (userId: string | undefined, id: string) => ['conversation', userId ?? 'anonymous', id] as const,
   messages: (conversationId: string) => ['messages', conversationId] as const,
   
   // User data
-  profile: () => ['profile'] as const,
+  profile: (userId?: string) => ['profile', userId ?? 'anonymous'] as const,
   settings: () => ['settings'] as const,
-  savedStatus: () => ['saved', 'status'] as const,
+  savedStatus: (userId?: string) => ['saved', userId ?? 'anonymous', 'status'] as const,
   savedListings: (type: 'favorites' | 'superlikes', ids: readonly string[] = []) =>
     ['saved', 'listings', type, ids.join(',')] as const,
   
   // Inventory
-  inventory: (filter?: string) => ['inventory', filter ?? 'all'] as const,
-  inventoryStats: () => ['inventory', 'stats'] as const,
+  inventory: (userId?: string, filter?: string) => ['inventory', userId ?? 'anonymous', filter ?? 'all'] as const,
+  inventoryStats: (userId?: string) => ['inventory', userId ?? 'anonymous', 'stats'] as const,
 } as const;

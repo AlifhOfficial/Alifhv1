@@ -24,6 +24,7 @@ import type { EditingField, ProfileFormData } from '../types';
 
 interface UseProfileOptions {
   isAuthenticated: boolean;
+  userId?: string;
   /** Callback to refresh auth context session (syncs avatar across app) */
   onAvatarChange?: () => Promise<void>;
   /** Themed alert function */
@@ -61,7 +62,7 @@ interface UseProfileReturn {
   error: string | null;
 }
 
-export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UseProfileOptions): UseProfileReturn {
+export function useProfile({ isAuthenticated, userId, onAvatarChange, showAlert }: UseProfileOptions): UseProfileReturn {
   const queryClient = useQueryClient();
   
   // Local UI states (not cached)
@@ -90,7 +91,7 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
     error: queryError,
     refetch,
   } = useQuery<ProfileData>({
-    queryKey: queryKeys.profile(),
+    queryKey: queryKeys.profile(userId),
     queryFn: async () => {
       const result = await fetchProfile();
       if (result.success && result.data) {
@@ -98,7 +99,7 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
       }
       throw new Error(result.error || 'Failed to load profile');
     },
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes - profile is relatively stable
     gcTime: 30 * 60 * 1000,
     placeholderData: (prev) => prev,
@@ -110,10 +111,10 @@ export function useProfile({ isAuthenticated, onAvatarChange, showAlert }: UsePr
 
   // Helper to update cache
   const updateProfileCache = useCallback((updatedProfile: UserProfile) => {
-    queryClient.setQueryData<ProfileData>(queryKeys.profile(), (old) => 
+    queryClient.setQueryData<ProfileData>(queryKeys.profile(userId), (old) =>
       old ? { ...old, profile: updatedProfile } : old
     );
-  }, [queryClient]);
+  }, [queryClient, userId]);
 
   // Sync form with profile data
   useEffect(() => {

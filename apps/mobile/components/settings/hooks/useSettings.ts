@@ -25,9 +25,10 @@ import { queryKeys } from '@/lib/query-client';
 
 interface UseSettingsOptions {
   isAuthenticated: boolean;
+  userId?: string;
 }
 
-export function useSettings({ isAuthenticated }: UseSettingsOptions) {
+export function useSettings({ isAuthenticated, userId }: UseSettingsOptions) {
   const queryClient = useQueryClient();
   
   // Local UI states
@@ -46,7 +47,7 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
     isLoading: isQueryLoading,
     refetch,
   } = useQuery<ProfileData>({
-    queryKey: queryKeys.profile(),
+    queryKey: queryKeys.profile(userId),
     queryFn: async () => {
       const result = await fetchProfile();
       if (result.success && result.data) {
@@ -54,7 +55,7 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
       }
       throw new Error(result.error || 'Failed to load profile');
     },
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && !!userId,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     placeholderData: (prev) => prev,
@@ -73,10 +74,10 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
 
   // Helper to update cache
   const updateProfileCache = useCallback((updatedProfile: UserProfile) => {
-    queryClient.setQueryData<ProfileData>(queryKeys.profile(), (old) => 
+    queryClient.setQueryData<ProfileData>(queryKeys.profile(userId), (old) =>
       old ? { ...old, profile: updatedProfile } : old
     );
-  }, [queryClient]);
+  }, [queryClient, userId]);
 
   const loadProfile = useCallback(async () => {
     await refetch();
@@ -188,7 +189,7 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
         // Invalidate cache to refetch passkeys
-        await queryClient.invalidateQueries({ queryKey: queryKeys.profile() });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.profile(userId) });
       } else {
         Alert.alert('Error', result.error || 'Failed to delete passkey');
       }
@@ -197,7 +198,7 @@ export function useSettings({ isAuthenticated }: UseSettingsOptions) {
     } finally {
       setDeletingPasskeyId(null);
     }
-  }, [queryClient]);
+  }, [queryClient, userId]);
 
   return {
     // State - only loading when no cached data

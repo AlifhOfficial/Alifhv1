@@ -63,7 +63,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     isLoading: isStatusLoading,
     refetch: refetchStatus,
   } = useQuery<SavedStatusCache>({
-    queryKey: queryKeys.savedStatus(),
+    queryKey: queryKeys.savedStatus(user?.id),
     queryFn: async () => mapSavedStatus(await savedApi.getFavoritesStatus()),
     enabled: isStatusEnabled,
     staleTime: SAVED_STATUS_STALE_TIME,
@@ -95,9 +95,9 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
   const updateSavedStatus = useCallback(
     (updater: (current: SavedStatusCache | undefined) => SavedStatusCache | undefined) => {
-      queryClient.setQueryData<SavedStatusCache | undefined>(queryKeys.savedStatus(), updater);
+      queryClient.setQueryData<SavedStatusCache | undefined>(queryKeys.savedStatus(user?.id), updater);
     },
-    [queryClient]
+    [queryClient, user?.id]
   );
 
   const refresh = useCallback(async () => {
@@ -113,9 +113,9 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const favoriteMutation = useMutation({
     mutationFn: async (listingId: string) => savedApi.toggleFavorite(listingId),
     onMutate: async (listingId: string) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.savedStatus() });
+      await queryClient.cancelQueries({ queryKey: queryKeys.savedStatus(user?.id) });
 
-      const previousStatus = queryClient.getQueryData<SavedStatusCache>(queryKeys.savedStatus());
+      const previousStatus = queryClient.getQueryData<SavedStatusCache>(queryKeys.savedStatus(user?.id));
       const previousFavoriteListings = queryClient.getQueriesData<SavedListingCard[]>({
         queryKey: ['saved', 'listings', 'favorites'],
       });
@@ -140,7 +140,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     },
     onError: (error, _listingId, context) => {
       if (context?.previousStatus) {
-        queryClient.setQueryData(queryKeys.savedStatus(), context.previousStatus);
+        queryClient.setQueryData(queryKeys.savedStatus(user?.id), context.previousStatus);
       }
       context?.previousFavoriteListings?.forEach(([key, data]) => {
         queryClient.setQueryData(key, data);
@@ -151,16 +151,16 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       }
     },
     onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.savedStatus() });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.savedStatus(user?.id) });
     },
   });
 
   const superlikeMutation = useMutation({
     mutationFn: async (listingId: string) => savedApi.toggleSuperlike(listingId),
     onMutate: async (listingId: string) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.savedStatus() });
+      await queryClient.cancelQueries({ queryKey: queryKeys.savedStatus(user?.id) });
 
-      const previousStatus = queryClient.getQueryData<SavedStatusCache>(queryKeys.savedStatus());
+      const previousStatus = queryClient.getQueryData<SavedStatusCache>(queryKeys.savedStatus(user?.id));
       const previousSuperlikeListings = queryClient.getQueriesData<SavedListingCard[]>({
         queryKey: ['saved', 'listings', 'superlikes'],
       });
@@ -198,7 +198,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     },
     onError: (error, _listingId, context) => {
       if (context?.previousStatus) {
-        queryClient.setQueryData(queryKeys.savedStatus(), context.previousStatus);
+        queryClient.setQueryData(queryKeys.savedStatus(user?.id), context.previousStatus);
       }
       context?.previousSuperlikeListings?.forEach(([key, data]) => {
         queryClient.setQueryData(key, data);
@@ -217,7 +217,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       }
     },
     onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.savedStatus() });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.savedStatus(user?.id) });
     },
   });
 

@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronLeft } from 'lucide-react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { Bubble, EdgeFade, Text } from '@/components/ui';
 import { Colors, Layout, Sizes, Spacing, ZIndex } from '@/constants/theme';
@@ -56,6 +61,21 @@ export function MobileHeader({
   const insets = useSafeAreaInsets();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const titleVisibility = useSharedValue(titleHidden ? 0 : 1);
+
+  useEffect(() => {
+    titleVisibility.value = withTiming(titleHidden ? 0 : 1, {
+      duration: titleHidden ? 140 : 220,
+    });
+  }, [titleHidden, titleVisibility]);
+
+  const titleAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: titleVisibility.value,
+    transform: [
+      { translateY: (1 - titleVisibility.value) * -6 },
+      { scale: 0.97 + titleVisibility.value * 0.03 },
+    ],
+  }));
 
   const handleBack = () => {
     if (onBackPress) {
@@ -97,31 +117,33 @@ export function MobileHeader({
           ) : left}
         </View>
 
-        <View
+        <Animated.View
           pointerEvents="none"
-          style={[styles.titleSlot, { left: sideSlotWidth, right: sideSlotWidth }]}
+          style={[
+            styles.titleSlot,
+            { left: sideSlotWidth, right: sideSlotWidth },
+            titleAnimatedStyle,
+          ]}
         >
-          {!titleHidden ? (
-            <>
-              {typeof title === 'string' ? (
-                <Text variant="title3Emphasized" numberOfLines={1} style={{ color: colors.label }}>
-                  {title}
+          <>
+            {typeof title === 'string' ? (
+              <Text variant="title3Emphasized" numberOfLines={1} style={{ color: colors.label }}>
+                {title}
+              </Text>
+            ) : (
+              title
+            )}
+            {subtitle ? (
+              typeof subtitle === 'string' ? (
+                <Text variant="subhead" tone="secondary" numberOfLines={1}>
+                  {subtitle}
                 </Text>
               ) : (
-                title
-              )}
-              {subtitle ? (
-                typeof subtitle === 'string' ? (
-                  <Text variant="subhead" tone="secondary" numberOfLines={1}>
-                    {subtitle}
-                  </Text>
-                ) : (
-                  subtitle
-                )
-              ) : null}
-            </>
-          ) : null}
-        </View>
+                subtitle
+              )
+            ) : null}
+          </>
+        </Animated.View>
 
         <View style={[styles.rightSlot, { width: sideSlotWidth }]}>{right}</View>
       </View>

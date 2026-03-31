@@ -57,7 +57,7 @@ export default function ProfileScreen() {
     removePhone,
     onPhoneVerified,
     error,
-  } = useProfile({ isAuthenticated, onAvatarChange: refreshSession, showAlert });
+  } = useProfile({ isAuthenticated, userId: user?.id, onAvatarChange: refreshSession, showAlert });
 
   // Transform profile to status format
   const profileStatus: ProfileStatus = {
@@ -236,9 +236,16 @@ export default function ProfileScreen() {
           headerTintColor: colors.label,
         }}
       />
-      <MobileHeader title="Profile" showBackButton right={renderHeaderRight()} />
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <ScreenContainer
+          header={({ titleHidden }) => (
+            <MobileHeader
+              title="Profile"
+              showBackButton
+              titleHidden={titleHidden}
+              right={renderHeaderRight()}
+            />
+          )}
           refreshing={isRefreshing}
           onRefresh={refresh}
           verticalPadding={0}

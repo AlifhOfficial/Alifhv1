@@ -36,6 +36,7 @@ import {
 
 import { Colors, Shadows, Spacing, Radius, Layout, Sizes, ZIndex, AspectRatio, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
+import { useAuth } from '@/context/auth-context';
 import {
   getListingForEdit,
   type MyListingCard,
@@ -113,6 +114,7 @@ interface InventoryScreenProps {
 
 export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   const { colorScheme } = useTheme();
+  const { user } = useAuth();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
@@ -143,7 +145,7 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
     loadMore,
     refresh,
     invalidate,
-  } = useInventory({ filter: activeTab });
+  } = useInventory({ userId: user?.id, filter: activeTab });
 
   // Sync active tab when URL param changes
   useEffect(() => {

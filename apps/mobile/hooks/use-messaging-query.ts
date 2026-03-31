@@ -25,6 +25,7 @@ const READ_MARK_DEDUPE_MS = 60_000;
 // ============================================================================
 
 export interface UseConversationOptions {
+  userId?: string;
   conversationId: string | undefined;
   /** Initial data passed from navigation (avoids fetch if available) */
   initialData?: Conversation;
@@ -43,6 +44,7 @@ export interface UseConversationResult {
 }
 
 export interface UseConversationsQueryOptions {
+  userId?: string;
   scope?: 'personal' | 'staff';
   enabled?: boolean;
 }
@@ -81,10 +83,10 @@ export interface UseConversationsQueryResult {
  * ```
  */
 export function useConversation(options: UseConversationOptions): UseConversationResult {
-  const { conversationId, initialData, enabled = true } = options;
+  const { userId, conversationId, initialData, enabled = true } = options;
   
-  const queryKey = conversationId 
-    ? queryKeys.conversation(conversationId) 
+  const queryKey = conversationId
+    ? queryKeys.conversation(userId, conversationId)
     : ['conversation', 'none'] as const;
   
   const {
@@ -112,7 +114,7 @@ export function useConversation(options: UseConversationOptions): UseConversatio
         } : null,
       };
     },
-    enabled: enabled && !!conversationId,
+    enabled: enabled && !!userId && !!conversationId,
     // Use initial data from navigation params
     initialData,
     // Conversations are fairly stable
@@ -149,9 +151,9 @@ export function useConversation(options: UseConversationOptions): UseConversatio
  * which handles presence and new message notifications.
  */
 export function useConversationsQuery(options: UseConversationsQueryOptions = {}): UseConversationsQueryResult {
-  const { scope = 'personal', enabled = true } = options;
+  const { userId, scope = 'personal', enabled = true } = options;
   
-  const queryKey = queryKeys.conversations(scope);
+  const queryKey = queryKeys.conversations(userId, scope);
   
   const {
     data,
@@ -180,7 +182,7 @@ export function useConversationsQuery(options: UseConversationsQueryOptions = {}
         }));
       return { conversations, totalUnread: response.totalUnread };
     },
-    enabled,
+    enabled: enabled && !!userId,
     // Messages list should refresh more often
     staleTime: 1 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
@@ -212,7 +214,7 @@ export function useConversationsQuery(options: UseConversationsQueryOptions = {}
  * Mutation hook for marking conversation as read.
  * Optimistically updates cache.
  */
-export function useMarkAsRead() {
+export function useMarkAsRead(userId?: string) {
   const queryClient = useQueryClient();
   const markedRef = useRef(new Set<string>());
 
@@ -244,14 +246,14 @@ export function useMarkAsRead() {
       
       // Get current data
       const previousData = queryClient.getQueryData<{ conversations: Conversation[]; totalUnread: number }>(
-        queryKeys.conversations('personal')
+        queryKeys.conversations(userId, 'personal')
       );
       
       if (previousData) {
         const conv = previousData.conversations.find(c => c.id === conversationId);
         const unreadToRemove = conv?.unreadCount ?? 0;
         
-        queryClient.setQueryData(queryKeys.conversations('personal'), {
+        queryClient.setQueryData(queryKeys.conversations(userId, 'personal'), {
           ...previousData,
           conversations: previousData.conversations.map(c =>
             c.id === conversationId ? { ...c, unreadCount: 0, myLastReadAt: now } : c
@@ -261,11 +263,11 @@ export function useMarkAsRead() {
       }
 
       const previousConversation = queryClient.getQueryData<Conversation>(
-        queryKeys.conversation(conversationId)
+        queryKeys.conversation(userId, conversationId)
       );
 
       if (previousConversation) {
-        queryClient.setQueryData(queryKeys.conversation(conversationId), {
+        queryClient.setQueryData(queryKeys.conversation(userId, conversationId), {
           ...previousConversation,
           unreadCount: 0,
           myLastReadAt: now,
@@ -280,10 +282,10 @@ export function useMarkAsRead() {
         recentReadMarks.delete(`${variables.conversationId}:${variables.messageId}`);
       }
       if (context?.previousData) {
-        queryClient.setQueryData(queryKeys.conversations('personal'), context.previousData);
+        queryClient.setQueryData(queryKeys.conversations(userId, 'personal'), context.previousData);
       }
       if (context?.previousConversation) {
-        queryClient.setQueryData(queryKeys.conversation(variables.conversationId), context.previousConversation);
+        queryClient.setQueryData(queryKeys.conversation(userId, variables.conversationId), context.previousConversation);
       }
     },
     onSettled: (_data, _error, variables) => {
@@ -308,18 +310,18 @@ export function useMarkAsRead() {
  * Hook to prefetch a conversation before navigation.
  * Call when user touches a conversation row.
  */
-export function usePrefetchConversation() {
+export function usePrefetchConversation(userId?: string) {
   const queryClient = useQueryClient();
   
   return useCallback(
     (conversationId: string) => {
       queryClient.prefetchQuery({
-        queryKey: queryKeys.conversation(conversationId),
+        queryKey: queryKeys.conversation(userId, conversationId),
         queryFn: () => fetchConversation(conversationId),
         staleTime: 5 * 60 * 1000,
       });
     },
-    [queryClient]
+    [queryClient, userId]
   );
 }
 
@@ -331,7 +333,7 @@ export function usePrefetchConversation() {
  * Update a conversation in the cache (for WebSocket updates).
  * Call from WebSocket handler to merge real-time updates.
  */
-export function useConversationCacheUpdater() {
+export function useConversationCacheUpdater(userId?: string) {
   const queryClient = useQueryClient();
   
   const updateConversation = useCallback(
@@ -352,11 +354,11 @@ export function useConversationCacheUpdater() {
       
       // Update single conversation cache
       queryClient.setQueryData<Conversation>(
-        queryKeys.conversation(conversationId),
+        queryKeys.conversation(userId, conversationId),
         (old) => (old ? updater(old) : old)
       );
     },
-    [queryClient]
+    [queryClient, userId]
   );
   
   const invalidateConversations = useCallback(

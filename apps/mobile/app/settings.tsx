@@ -33,7 +33,7 @@ import {
 
 export default function SettingsScreen() {
   const colors = useSettingsColors();
-  const { signOut, isAuthenticated } = useAuth();
+  const { signOut, isAuthenticated, user } = useAuth();
   const { showAlert } = useAlert();
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
@@ -50,7 +50,7 @@ export default function SettingsScreen() {
     saveToggle,
     deleteAccount,
     setIsDeleting,
-  } = useSettings({ isAuthenticated });
+  } = useSettings({ isAuthenticated, userId: user?.id });
 
   const kycStatus: KYCStatus = {
     kycVerified: profile?.kycVerified ?? false,
@@ -161,8 +161,14 @@ export default function SettingsScreen() {
         }}
       />
       <View style={[styles.container, { backgroundColor: colors.background }]}> 
-        <MobileHeader title="Settings" showBackButton />
         <ScreenContainer
+          header={({ titleHidden }) => (
+            <MobileHeader
+              title="Settings"
+              showBackButton
+              titleHidden={titleHidden}
+            />
+          )}
           keyboardAvoiding={false}
           verticalPadding={0}
           contentInsetAdjustmentBehavior="never"

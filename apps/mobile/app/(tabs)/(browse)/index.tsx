@@ -108,6 +108,7 @@ export default function BrowseScreen() {
   const [isBrowseTabBarVisible, setIsBrowseTabBarVisible] = useState(true);
   const lastScrollYRef = useRef(0);
   const tabBarVisibleRef = useRef(true);
+  const loadMoreLockRef = useRef(false);
 
   // ─────────────────────────────────────────────────────────────────────────
   // CONTEXT - Single Source of Truth
@@ -225,6 +226,7 @@ export default function BrowseScreen() {
   // Reset scroll instantly when search/filters change (no animation)
   useEffect(() => {
     scrollRef.current?.scrollToOffset({ offset: 0, animated: false });
+    loadMoreLockRef.current = false;
   }, [searchQueryKey]);
 
   useEffect(() => {
@@ -275,9 +277,12 @@ export default function BrowseScreen() {
   }, [refetch]);
 
   const handleLoadMore = useCallback(() => {
-    if (hasMore && !isFetchingNextPage) {
-      fetchNextPage();
-    }
+    if (!hasMore || isFetchingNextPage || loadMoreLockRef.current) return;
+
+    loadMoreLockRef.current = true;
+    fetchNextPage().catch(() => {
+      loadMoreLockRef.current = false;
+    });
   }, [fetchNextPage, hasMore, isFetchingNextPage]);
 
   const handleCardPress = useCallback((id: string) => {
@@ -558,15 +563,16 @@ export default function BrowseScreen() {
 
     setIsHeaderTitleHidden(offsetY > Spacing.lg);
 
-    const directionThreshold = Spacing.xs;
-    const hideAfterOffset = Spacing['2xl'];
+    const directionThreshold = Spacing.md;
+    const hideAfterOffset = Spacing['3xl'];
+    const showNearTopOffset = Spacing.xl;
 
-    if (offsetY <= hideAfterOffset) {
+    if (offsetY <= showNearTopOffset) {
       if (!tabBarVisibleRef.current) {
         tabBarVisibleRef.current = true;
         setIsBrowseTabBarVisible(true);
       }
-    } else if (deltaY > directionThreshold && tabBarVisibleRef.current) {
+    } else if (offsetY > hideAfterOffset && deltaY > directionThreshold && tabBarVisibleRef.current) {
       tabBarVisibleRef.current = false;
       setIsBrowseTabBarVisible(false);
     } else if (deltaY < -directionThreshold && !tabBarVisibleRef.current) {
@@ -588,6 +594,12 @@ export default function BrowseScreen() {
         keyExtractor={keyExtractor}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
+        onScrollBeginDrag={() => {
+          loadMoreLockRef.current = false;
+        }}
+        onMomentumScrollBegin={() => {
+          loadMoreLockRef.current = false;
+        }}
         ListEmptyComponent={renderEmptyState}
         ListFooterComponent={renderFooter}
         contentContainerStyle={{

@@ -8,6 +8,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import * as AuthAPI from '@/lib/auth-api';
 import { unregisterPushTokenOnLogout } from '@/lib/push-token-store';
+import { queryClient } from '@/lib/query-client';
 
 // Auth sheet context types
 export type AuthSheetContext = 'profile' | 'saved' | 'messages' | 'listings' | 'default';
@@ -82,6 +83,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [authSheetVisible, setAuthSheetVisible] = useState(false);
   const [authSheetContext, setAuthSheetContext] = useState<AuthSheetContext>('default');
 
+  const clearAuthenticatedCaches = useCallback(() => {
+    queryClient.clear();
+  }, []);
+
   // Check for existing session on mount
   useEffect(() => {
     checkSession();
@@ -118,13 +123,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(result.user);
         setIsAuthenticated(true);
       } else {
+        clearAuthenticatedCaches();
         setUser(null);
         setIsAuthenticated(false);
       }
     } catch (error) {
       console.error('[AuthContext] Failed to refresh session:', error);
     }
-  }, []);
+  }, [clearAuthenticatedCaches]);
 
   const openAuthFlow = useCallback(() => {
     setShowAuthFlow(true);
@@ -145,6 +151,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const signIn = useCallback(async (userData: AuthUser) => {
+    clearAuthenticatedCaches();
+
     // Set basic user data immediately for quick UI update
     setUser(userData);
     setIsAuthenticated(true);
@@ -159,7 +167,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.error('[AuthContext] Failed to refresh session after sign-in:', error);
     }
-  }, []);
+  }, [clearAuthenticatedCaches]);
 
   const signOut = useCallback(async () => {
     try {
@@ -169,10 +177,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.error('[AuthContext] Sign out error:', error);
     } finally {
+      clearAuthenticatedCaches();
       setUser(null);
       setIsAuthenticated(false);
     }
-  }, []);
+  }, [clearAuthenticatedCaches]);
 
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
   const isSuperAdmin = user?.role === 'super_admin';

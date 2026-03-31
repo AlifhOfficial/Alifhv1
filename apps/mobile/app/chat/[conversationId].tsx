@@ -50,6 +50,7 @@ export default function ChatScreen() {
 
   // React Query hook - uses cache + initialData from nav params
   const { conversation, error } = useConversation({
+    userId: user?.id,
     conversationId,
     initialData: initialConversation,
     enabled: isAuthenticated,

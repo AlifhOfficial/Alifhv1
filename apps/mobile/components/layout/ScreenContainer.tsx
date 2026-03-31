@@ -1,10 +1,11 @@
 /**
  * Screen Container Component
  * Unified content area for all screens with safe area handling
- * Handles scrolling, keyboard avoiding, pull-to-refresh, and infinite scroll
+ * Handles scrolling, keyboard avoiding, pull-to-refresh, infinite scroll,
+ * and shared header title visibility driven by scroll position.
  */
 
-import React, { forwardRef, ReactNode } from 'react';
+import React, { forwardRef, ReactNode, useMemo, useState } from 'react';
 import { StyleSheet, View, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,7 +18,11 @@ import { getTabBarContentInset } from './tab-bar-metrics';
 interface ScreenContainerProps {
   children: ReactNode;
   /** Custom header component rendered above scroll content */
-  header?: ReactNode;
+  header?: ReactNode | ((state: { titleHidden: boolean }) => ReactNode);
+  /** Automatically hide header title after scrolling past threshold */
+  autoHideHeaderTitle?: boolean;
+  /** Scroll threshold in px before header title hides */
+  headerHideThreshold?: number;
   /** Enable scroll view (default: true) */
   scrollable?: boolean;
   /** Enable keyboard avoiding behavior (default: true on iOS) */
@@ -55,6 +60,8 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
     {
       children,
       header,
+      autoHideHeaderTitle = true,
+      headerHideThreshold = Spacing.lg,
       scrollable = true,
       keyboardAvoiding = true,
       refreshing = false,
@@ -76,6 +83,7 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
     const { colorScheme } = useTheme();
     const colors = Colors[colorScheme];
     const insets = useSafeAreaInsets();
+    const [titleHidden, setTitleHidden] = useState(false);
 
     // Resolve padding values from theme or raw numbers
     const hPadding =
@@ -106,6 +114,11 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
 
     // Handle scroll with infinite scroll detection
     const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (autoHideHeaderTitle) {
+        const nextTitleHidden = event.nativeEvent.contentOffset.y > headerHideThreshold;
+        setTitleHidden((prev) => (prev === nextTitleHidden ? prev : nextTitleHidden));
+      }
+
       externalOnScroll?.(event);
 
       if (!onEndReached) return;
@@ -118,6 +131,13 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
         onEndReached();
       }
     };
+
+    const resolvedHeader = useMemo(() => {
+      if (typeof header === 'function') {
+        return header({ titleHidden });
+      }
+      return header;
+    }, [header, titleHidden]);
 
     const scrollContent = scrollable ? (
       <ScrollView
@@ -160,7 +180,7 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
 
     return (
       <View style={containerStyle}>
-        {header}
+        {resolvedHeader}
         {wrappedContent}
       </View>
     );

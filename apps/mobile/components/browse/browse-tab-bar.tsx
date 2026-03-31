@@ -8,7 +8,7 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { MotiPressable } from 'moti/interactions';
 import * as Haptics from 'expo-haptics';
 import { Search, ArrowUpDown, Package2 } from 'lucide-react-native';
-import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { SearchSheet, SortSheet, ActiveFiltersSheet } from '@/components/sheets';
 import { Text } from '@/components/ui';
@@ -121,9 +121,12 @@ export function BrowseTabBar({
   }, []);
 
   useEffect(() => {
-    visibilityProgress.value = withTiming(visible ? 1 : 0, {
-      duration: Timing.imageTransition,
-      easing: Easing.out(Easing.quad),
+    visibilityProgress.value = withSpring(visible ? 1 : 0, {
+      damping: 18,
+      stiffness: 180,
+      mass: 0.9,
+      overshootClamping: false,
+      energyThreshold: 0.01,
     });
   }, [visible, visibilityProgress]);
 
@@ -132,7 +135,10 @@ export function BrowseTabBar({
 
     return {
       opacity: progress,
-      transform: [{ translateY: interpolate(progress, [0, 1], [Sizes.actionButtonLg, 0]) }],
+      transform: [
+        { translateY: interpolate(progress, [0, 1], [Spacing['2xl'], 0]) },
+        { scale: 0.96 + progress * 0.04 },
+      ],
     };
   });
 

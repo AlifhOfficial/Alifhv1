@@ -19,6 +19,7 @@ import {
 import { Bubble, HapticRefreshControl } from '@/components/ui';
 import { MobileHeader, getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
 import { useTheme } from '@/context/theme-context';
+import { useAuth } from '@/context/auth-context';
 import { Spacing, Sizes } from '@/constants/theme';
 import { useUserDashboardStats } from '@/hooks/use-user-dashboard';
 
@@ -32,10 +33,11 @@ import { useUserDashboardStats } from '@/hooks/use-user-dashboard';
 
 export default function HomeScreen() {
   const { colors, colorScheme, toggleTheme } = useTheme();
+  const { user } = useAuth();
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
-  const { stats, isLoading, refresh } = useUserDashboardStats();
+  const { stats, isLoading, refresh } = useUserDashboardStats(user?.id);
   const topSpacerHeight = getMobileHeaderContentInset(insets.top) + Spacing['5xl'] * 2 + Spacing['3xl'] * 2;
   const bottomInset = getTabBarContentInset(insets.bottom, Spacing['3xl']);
 
