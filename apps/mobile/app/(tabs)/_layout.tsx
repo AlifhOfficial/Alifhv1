@@ -13,7 +13,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home, LayoutGrid, MessageCircle } from 'lucide-react-native';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { Colors, Shadows, Sizes, Spacing, Radius, ZIndex } from '@/constants/theme';
+import { BorderWidths, Colors, Radius, Shadows, Sizes, Spacing, Stroke, ZIndex } from '@/constants/theme';
+import { getTabBarBottomPadding } from '@/components/layout/tab-bar-metrics';
 
 const TAB_CONFIG = [
   { name: '(home)', icon: Home, label: 'Home' },
@@ -24,6 +25,8 @@ const TAB_CONFIG = [
 const PILL_PADDING = Spacing.xs;
 const TAB_HEIGHT = Sizes.actionButtonLg;
 const TAB_WIDTH = Sizes.actionButtonLg + Spacing.md;
+const BAR_HORIZONTAL_PADDING = Spacing.xs;
+const ACTIVE_ICON_STROKE = Stroke.icon + 0.55;
 const DOUBLE_TAP_MS = 320;
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
@@ -37,7 +40,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     <View
       style={[
         styles.wrapper,
-        { paddingBottom: Math.max(insets.bottom, Spacing.md) },
+        { paddingBottom: getTabBarBottomPadding(insets.bottom) },
       ]}
       pointerEvents="box-none"
     >
@@ -47,7 +50,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             styles.pill,
             styles.shell,
             {
-              backgroundColor: colors.background,
+              backgroundColor: colors.surface,
               borderColor: colors.border,
               shadowColor: colors.black,
             },
@@ -86,10 +89,10 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 style={[
                   styles.tabBtn,
                   focused && {
-                    backgroundColor: colorScheme === 'light' ? colors.background : colors.fill,
+                    backgroundColor: colorScheme === 'light' ? colors.background : colors.surfaceSecondary,
                     borderRadius: Radius.full,
-                    borderWidth: colorScheme === 'light' ? StyleSheet.hairlineWidth : 0,
-                    borderColor: colorScheme === 'light' ? colors.border : 'transparent',
+                    borderWidth: BorderWidths.thin,
+                    borderColor: colors.border,
                   },
                 ]}
                 accessibilityRole="tab"
@@ -99,8 +102,8 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 <Icon
                   size={Sizes.iconMd}
                   color={focused ? colors.label : colors.labelSecondary}
-                  strokeWidth={3.2}
-                  fill={tab.name === '(home)' || focused ? (focused ? colors.label : colors.labelSecondary) : 'transparent'}
+                  strokeWidth={focused ? ACTIVE_ICON_STROKE : Stroke.icon}
+                  fill={tab.name === '(home)' ? (focused ? colors.label : colors.labelSecondary) : 'transparent'}
                 />
               </HapticPressable>
             );
@@ -141,15 +144,16 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   shell: {
-    borderWidth: 1,
+    borderWidth: BorderWidths.thin,
     ...Shadows.lg,
   },
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: Radius.full,
-    padding: PILL_PADDING,
-    gap: PILL_PADDING,
+    paddingVertical: PILL_PADDING,
+    paddingHorizontal: BAR_HORIZONTAL_PADDING,
+    gap: Spacing.xs,
   },
   tabBtn: {
     width: TAB_WIDTH,

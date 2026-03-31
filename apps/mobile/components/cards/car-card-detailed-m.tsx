@@ -29,7 +29,7 @@ import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { DescriptionSheet, FeaturesSheet, SpecsSheet } from '@/components/sheets';
+import { DescriptionSheet, FeaturesSheet, FinancingSheet, SpecsSheet } from '@/components/sheets';
 import { ListingDetailedData, SellerData } from '@/lib/listing-api';
 import {
   getEnumLabel,
@@ -56,6 +56,7 @@ import {
   SellerCard,
   ListingTimestamp,
 } from '@/components/listings';
+import { FinancingCalculator } from '@/components/listings';
 import { formatPrice, formatMileage, formatSpecs, formatEmirate } from '@/components/listings/types';
 
 // ============================================================================
@@ -138,6 +139,20 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
   const openFeaturesSheet = useCallback(() => setFeaturesSheetVisible(true), []);
   const closeFeaturesSheet = useCallback(() => setFeaturesSheetVisible(false), []);
   const [showDeferredSections, setShowDeferredSections] = useState(false);
+
+  const [downPaymentPercent, setDownPaymentPercent] = useState(20);
+  const [loanTermMonths, setLoanTermMonths] = useState(48);
+  const [interestRate] = useState(3.5);
+  const [financingSheetVisible, setFinancingSheetVisible] = useState(false);
+
+  const handleCustomizeFinancing = useCallback(() => {
+    setFinancingSheetVisible(true);
+  }, []);
+
+  const handleApplyCustomFinancing = useCallback((dp: number, term: number) => {
+    setDownPaymentPercent(dp);
+    setLoanTermMonths(term);
+  }, []);
 
   // Navigate to the dedicated seller contact screen
   const handleTalkToSeller = useCallback(() => {
@@ -301,6 +316,17 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
             {/* 5. Features */}
             <ListingFeatures extras={listing.extras} onViewAll={openFeaturesSheet} />
 
+            <FinancingCalculator
+              price={listing.price}
+              downPaymentPercent={downPaymentPercent}
+              loanTermMonths={loanTermMonths}
+              interestRate={interestRate}
+              onDownPaymentChange={setDownPaymentPercent}
+              onTermChange={setLoanTermMonths}
+              onCustomize={handleCustomizeFinancing}
+              colors={colors}
+            />
+
             {/* 6. Timestamp */}
             <ListingTimestamp
               createdAt={listing.createdAt}
@@ -336,6 +362,16 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           features={listing.extras}
         />
       )}
+
+      <FinancingSheet
+        visible={financingSheetVisible}
+        onClose={() => setFinancingSheetVisible(false)}
+        initialDownPayment={downPaymentPercent}
+        initialTerm={loanTermMonths}
+        price={listing.price}
+        interestRate={interestRate}
+        onApply={handleApplyCustomFinancing}
+      />
     </View>
   );
 });

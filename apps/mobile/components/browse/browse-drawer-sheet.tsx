@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import { Plus } from 'lucide-react-native';
 
 import { Text, HapticPressable } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
@@ -89,25 +90,33 @@ export function BrowseDrawerSheet({
                     {settingsCount > 9 ? '9+' : settingsCount}
                   </Text>
                 </View>
-              ) : null}
+              ) : (
+                <View style={[styles.plusWrap, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}>
+                  <Plus size={Sizes.iconSm - Spacing.xs} color={colors.labelSecondary} strokeWidth={2.25} />
+                </View>
+              )}
             </HapticPressable>
 
-            {pills.map((pill) => (
-              <HapticPressable
-                key={pill.type}
-                style={[styles.row, { backgroundColor: colors.backgroundSecondary }]}
-                onPress={() => handlePillPress(pill.type)}
-              >
-                <Text variant="subhead">{pill.label}</Text>
-                {pill.activeCount > 0 || pill.type === 'location' ? (
-                  <View style={[styles.badge, { backgroundColor: colors.label }]}>
-                    <Text variant="caption1Emphasized" style={{ color: colors.background }}>
-                      {pill.activeCount > 9 ? '9+' : pill.activeCount}
-                    </Text>
-                  </View>
-                ) : null}
-              </HapticPressable>
-            ))}
+          {pills.map((pill) => (
+            <HapticPressable
+              key={pill.type}
+              style={[styles.row, { backgroundColor: colors.backgroundSecondary }]}
+              onPress={() => handlePillPress(pill.type)}
+            >
+              <Text variant="subhead">{pill.label}</Text>
+              {Number.isFinite(pill.activeCount) && pill.activeCount > 0 ? (
+                <View style={[styles.badge, { backgroundColor: colors.label }]}>
+                  <Text variant="caption1Emphasized" style={{ color: colors.background }}>
+                    {pill.activeCount > 9 ? '9+' : pill.activeCount}
+                  </Text>
+                </View>
+              ) : (
+                <View style={[styles.plusWrap, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}>
+                  <Plus size={Sizes.iconSm - Spacing.xs} color={colors.labelSecondary} strokeWidth={2.25} />
+                </View>
+              )}
+            </HapticPressable>
+          ))}
 
             <HapticPressable style={[styles.row, { backgroundColor: colors.backgroundSecondary }]} onPress={handleViewToggle}>
               <Text variant="subhead">View</Text>
@@ -131,7 +140,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: Layout.screenPadding,
     right: Layout.screenPadding,
-    borderRadius: Radius['2xl'],
+    borderRadius: Radius.sheet,
     borderWidth: BorderWidths.thin,
     overflow: 'hidden',
     zIndex: ZIndex.modal,
@@ -184,5 +193,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.xs,
+  },
+  plusWrap: {
+    width: Sizes.iconSm,
+    height: Sizes.iconSm,
+    borderRadius: Sizes.iconSm / 2,
+    borderWidth: BorderWidths.thin,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

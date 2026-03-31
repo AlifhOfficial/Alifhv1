@@ -1,6 +1,6 @@
 /**
  * Financing Calculator
- * 
+ *
  * EMI estimation with adjustable down payment and loan term.
  * Follows profile/settings card pattern for consistency.
  */
@@ -11,12 +11,22 @@ import { View, StyleSheet } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Settings2 } from 'lucide-react-native';
 
-import { Spacing, Radius, Sizes, Layout } from '@/constants/theme';
-import type { FinancingCalculatorProps } from './types';
-import { formatPrice, calculateEMI } from './utils';
+import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { formatPrice, calculateEMI } from '@/components/seller-contact/utils';
 
 const DOWN_PAYMENT_OPTIONS = [10, 20, 30];
 const TERM_OPTIONS = [36, 48, 60];
+
+export interface FinancingCalculatorProps {
+  price: number;
+  downPaymentPercent: number;
+  loanTermMonths: number;
+  interestRate: number;
+  onDownPaymentChange: (value: number) => void;
+  onTermChange: (value: number) => void;
+  onCustomize?: () => void;
+  colors: typeof Colors.light;
+}
 
 export const FinancingCalculator = memo(function FinancingCalculator({
   price,
@@ -27,7 +37,7 @@ export const FinancingCalculator = memo(function FinancingCalculator({
   onTermChange,
   onCustomize,
   colors,
-}: FinancingCalculatorProps & { onCustomize?: () => void }) {
+}: FinancingCalculatorProps) {
   const emi = useMemo(() => {
     const downPayment = price * (downPaymentPercent / 100);
     return calculateEMI(price - downPayment, interestRate, loanTermMonths);
@@ -38,23 +48,33 @@ export const FinancingCalculator = memo(function FinancingCalculator({
       entering={FadeInDown.delay(250).duration(350)}
       style={styles.container}
     >
-      <View style={[styles.card, { backgroundColor: colors.surface }]}>
+      <View style={[styles.card, { backgroundColor: colors.surface }]}
+      >
         {/* Header */}
         <View style={styles.cardHeader}>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Financing Estimate</Text>
-          {onCustomize && (
-            <HapticPressable onPress={onCustomize} hitSlop={Layout.hitSlopSmall} style={styles.customizeBtn}>
+          <Text variant="caption1Emphasized" tone="muted" uppercase>
+            Financing Estimate
+          </Text>
+          {onCustomize ? (
+            <HapticPressable
+              onPress={onCustomize}
+              hitSlop={Layout.hitSlopSmall}
+              style={styles.customizeBtn}
+            >
               <Settings2 size={Sizes.iconXs} color={colors.labelSecondary} />
               <Text variant="subhead" tone="secondary">Customize</Text>
             </HapticPressable>
-          )}
+          ) : null}
         </View>
 
         <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         {/* Monthly EMI */}
         <View style={styles.emiBlock}>
-          <Text variant="title2Emphasized">{formatPrice(emi)}<Text variant="body" tone="secondary">/mo</Text></Text>
+          <Text variant="title2Emphasized">
+            {formatPrice(emi)}
+            <Text variant="body" tone="secondary">/mo</Text>
+          </Text>
           <Text variant="subhead" tone="muted">
             {downPaymentPercent}% down · {loanTermMonths}mo · {interestRate}% APR
           </Text>
@@ -64,7 +84,9 @@ export const FinancingCalculator = memo(function FinancingCalculator({
 
         {/* Down Payment */}
         <View style={styles.row}>
-          <Text variant="subhead" tone="secondary" style={styles.rowLabel}>Down payment</Text>
+          <Text variant="subhead" tone="secondary" style={styles.rowLabel}>
+            Down payment
+          </Text>
           <View style={styles.chips}>
             {DOWN_PAYMENT_OPTIONS.map((dp) => {
               const isSelected = downPaymentPercent === dp;
@@ -95,7 +117,9 @@ export const FinancingCalculator = memo(function FinancingCalculator({
 
         {/* Loan Term */}
         <View style={styles.row}>
-          <Text variant="subhead" tone="secondary" style={styles.rowLabel}>Loan term</Text>
+          <Text variant="subhead" tone="secondary" style={styles.rowLabel}>
+            Loan term
+          </Text>
           <View style={styles.chips}>
             {TERM_OPTIONS.map((term) => {
               const isSelected = loanTermMonths === term;

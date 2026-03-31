@@ -4,11 +4,11 @@
  * Includes grid modal and lightbox integration
  */
 
-import { Text, HapticPressable, Skeleton } from '@/components/ui';
+import { Bubble, HapticPressable, Pill, Skeleton, Text } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View, Dimensions, FlatList, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
@@ -152,22 +152,26 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           <ChevronRight size={Sizes.iconMd} color={Colors.dark.white} strokeWidth={2.2} />
         </View>
         <View style={styles.bottomOverlayRow} pointerEvents="box-none">
-          <View style={[styles.counterPill, { backgroundColor: colors.overlay }]}>
-            <Text variant="caption1" style={styles.overlayText}>
+          <Pill
+            style={[
+              styles.counterPill,
+              { backgroundColor: colors.surfaceSecondary, borderColor: colors.outline },
+            ]}
+          >
+            <Text variant="caption1" style={[styles.overlayText, { color: colors.label }]}>
               {currentIndex + 1}/{allImages.length}
             </Text>
-          </View>
+          </Pill>
 
-          <HapticPressable
+          <Bubble
+            size="sm"
+            tone="fill"
             onPress={onViewAllPress}
-            style={[styles.viewAllButton, { backgroundColor: colors.overlay }]}
+            accessibilityRole="button"
+            accessibilityLabel="View all photos"
           >
-            {({ pressed }) => (
-              <View style={[styles.viewAllContent, { opacity: pressed ? 0.7 : 1 }]}>
-                <Text variant="caption1" style={styles.overlayText}>All</Text>
-              </View>
-            )}
-          </HapticPressable>
+            <Plus size={Sizes.iconSm} color={colors.label} strokeWidth={2.2} />
+          </Bubble>
         </View>
       </View>
 
@@ -188,7 +192,6 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
       {lightboxOpen ? (
         <ImageLightbox
           images={fullImages}
-          previewImages={thumbImages}
           currentIndex={currentIndex}
           isOpen={lightboxOpen}
           onClose={() => setLightboxOpen(false)}
@@ -267,25 +270,11 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   counterPill: {
-    minWidth: Sizes.actionButtonMd,
-    height: Sizes.actionButtonMd,
+    minWidth: Sizes.actionButtonSm,
+    height: Sizes.actionButtonSm,
     paddingHorizontal: Spacing.sm,
-    borderRadius: Radius.circle,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  viewAllButton: {
-    minWidth: Sizes.actionButtonMd,
-    height: Sizes.actionButtonMd,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: Radius.circle,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  viewAllContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
   },
   overlayText: {
     color: Colors.dark.white,

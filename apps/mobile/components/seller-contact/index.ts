@@ -11,7 +11,6 @@ export { SellerActions } from './seller-actions';
 export { SellerStatsGrid } from './seller-stats-grid';
 export { SellerTags } from './seller-tags';
 export { SellerListings } from './seller-listings';
-export { FinancingCalculator } from './financing-calculator';
 export { SellerLocation } from './seller-location';
 
 // Utils and types

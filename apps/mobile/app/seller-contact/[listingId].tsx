@@ -21,7 +21,7 @@ import { useSearch } from '@/context/search-context';
 import { useListingDetail, useSellerListings } from '@/hooks/use-listing-query';
 import { normalizeSellerData, SellerInfo } from '@/lib/seller-api';
 import { createConversation } from '@/lib/messaging-api';
-import { PhoneActionSheet, FinancingSheet, BookingSheet, SellerDescriptionSheet } from '@/components/sheets';
+import { PhoneActionSheet, BookingSheet, SellerDescriptionSheet } from '@/components/sheets';
 
 // Modular components
 import {
@@ -32,7 +32,6 @@ import {
   SellerStatsGrid,
   SellerTags,
   SellerListings,
-  FinancingCalculator,
   SellerLocation,
   safeOpenURL,
 } from '@/components/seller-contact';
@@ -70,15 +69,9 @@ export default function SellerContactScreen() {
   });
 
   const [phoneSheetVisible, setPhoneSheetVisible] = useState(false);
-  const [financingSheetVisible, setFinancingSheetVisible] = useState(false);
   const [bookingSheetVisible, setBookingSheetVisible] = useState(false);
   const [descriptionSheetVisible, setDescriptionSheetVisible] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
-  
-  // Calculator state
-  const [downPaymentPercent, setDownPaymentPercent] = useState(20);
-  const [loanTermMonths, setLoanTermMonths] = useState(48);
-  const [interestRate] = useState(3.5);
 
   // Normalize seller data
   const seller = useMemo<SellerInfo | null>(() => {
@@ -253,14 +246,6 @@ export default function SellerContactScreen() {
     router.push('/(tabs)/(browse)');
   }, [seller, applySearch, clearSearch, clearFilterParams, router]);
 
-  const handleCustomizeFinancing = useCallback(() => {
-    setFinancingSheetVisible(true);
-  }, []);
-
-  const handleApplyCustomFinancing = useCallback((dp: number, term: number) => {
-    setDownPaymentPercent(dp);
-    setLoanTermMonths(term);
-  }, []);
 
   // Loading state
   if (isLoading) {
@@ -357,17 +342,6 @@ export default function SellerContactScreen() {
         />
       )}
 
-      <FinancingCalculator
-        price={listing.listing.price}
-        downPaymentPercent={downPaymentPercent}
-        loanTermMonths={loanTermMonths}
-        interestRate={interestRate}
-        onDownPaymentChange={setDownPaymentPercent}
-        onTermChange={setLoanTermMonths}
-        onCustomize={handleCustomizeFinancing}
-        colors={colors}
-      />
-
       <SellerLocation
         seller={seller}
         onViewMap={handleViewOnMap}
@@ -387,22 +361,16 @@ export default function SellerContactScreen() {
   ), [
     colors,
     combinedTags,
-    downPaymentPercent,
     handleBookViewing,
     handleChat,
-    handleCustomizeFinancing,
     handleGetDirections,
     handleShowPhoneSheet,
     handleViewAllListings,
     handleViewListing,
     handleViewOnMap,
     handleWebsite,
-    insets.top,
-    interestRate,
     isChatLoading,
     isOwnListing,
-    listing.listing.price,
-    loanTermMonths,
     otherListings,
     otherListingsTotal,
     seller,
@@ -463,17 +431,6 @@ export default function SellerContactScreen() {
           onLoginRequired={handleBookingLoginRequired}
         />
       )}
-
-      {/* Financing Sheet */}
-      <FinancingSheet
-        visible={financingSheetVisible}
-        onClose={() => setFinancingSheetVisible(false)}
-        initialDownPayment={downPaymentPercent}
-        initialTerm={loanTermMonths}
-        price={listing.listing.price}
-        interestRate={interestRate}
-        onApply={handleApplyCustomFinancing}
-      />
 
       {/* Seller Description Sheet */}
       {seller.description && (

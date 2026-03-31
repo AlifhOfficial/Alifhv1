@@ -510,7 +510,8 @@ const styles = StyleSheet.create({
 
   // Image Section
   imageContainer: {
-    width: '100%',
+    marginHorizontal: Spacing.xs,
+    marginTop: Spacing.xs,
     aspectRatio: AspectRatio.cardImage,
     borderRadius: Radius['2xl'],
     borderCurve: 'continuous',
@@ -519,7 +520,6 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    borderRadius: Radius['2xl'],
   },
   imagePlaceholder: {
     flex: 1,

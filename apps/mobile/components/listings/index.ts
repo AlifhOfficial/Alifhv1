@@ -15,6 +15,7 @@ export * from './listing-description';
 export * from './listing-specs';
 export * from './listing-features';
 export * from './listing-timestamp';
+export * from './financing-calculator';
 
 // Seller components
 export * from './seller-card';
