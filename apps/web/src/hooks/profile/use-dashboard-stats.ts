@@ -1,8 +1,8 @@
 /**
  * User Dashboard Stats Hook
- * 
+ *
  * Single hook for all dashboard metrics.
- * Cached for 5 minutes to reduce database load.
+ * Dashboard data is relatively stable, so we keep it fresh for 24 hours.
  */
 
 'use client';
@@ -71,7 +71,8 @@ export function useDashboardStats(initialData?: DashboardStats | null) {
     refetchOnMount: false,
     refetchOnReconnect: false,
     enabled: isAuthenticated,
-    staleTime: initialData ? Infinity : 0,
+    staleTime: 24 * 60 * 60 * 1000,
+    gcTime: 24 * 60 * 60 * 1000,
     initialData: initialData ?? undefined,
   });
 

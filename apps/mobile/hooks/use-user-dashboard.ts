@@ -21,7 +21,7 @@ export function useUserDashboardStats() {
   } = useQuery<UserDashboardStats>({
     queryKey: queryKeys.userDashboard(),
     queryFn: fetchUserDashboardStats,
-    staleTime: 2 * 60 * 1000,
+    staleTime: 24 * 60 * 60 * 1000,
   });
 
   const refresh = useCallback(async () => {

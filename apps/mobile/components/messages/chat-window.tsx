@@ -25,9 +25,15 @@ import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { LocationPickerSheet } from './location-picker-sheet';
 import { useMessages } from './hooks/useMessages';
+import { useMarkAsRead } from '@/hooks/use-messaging-query';
+import { markConversationActive, markConversationInactive } from './hooks/active-conversations';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { markConversationAsRead, sendLocationMessage, type Message, type Conversation } from '@/lib/messaging-api';
+import { sendLocationMessage, type Message, type Conversation } from '@/lib/messaging-api';
 import type { LocationResult } from '@/hooks/use-location';
+import {
+  getLastReadOwnMessageId,
+  getNewestUnreadIncomingMessageId,
+} from '@alifh/shared';
 
 const PANEL_WIDTH = Spacing['5xl'] + Spacing['3xl']; // ~80
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -92,7 +98,6 @@ export function ChatWindow({
     isOtherTyping,
     isOtherOnline,
     otherLastSeenAt,
-    error,
     sendMessage,
     fetchMore,
     refresh,
@@ -122,46 +127,39 @@ export function ChatWindow({
   const otherUserName = displayName;
   const myLastReadAt = conversation?.myLastReadAt;
   const myLastReadAtDate = myLastReadAt ? new Date(myLastReadAt) : null;
+  const { markAsRead } = useMarkAsRead();
   
   // Track last marked message to prevent duplicate API calls
   const lastMarkedMsgIdRef = useRef<string | null>(null);
 
+  useEffect(() => {
+    markConversationActive(conversationId);
+    return () => markConversationInactive(conversationId);
+  }, [conversationId]);
+
+  useEffect(() => {
+    lastMarkedMsgIdRef.current = null;
+  }, [conversationId]);
+
   // Find the newest message that was read by other user (for "seen" indicator)
-  const lastReadMsgId = useMemo(() => {
-    if (!otherLastReadAt) return null;
-    for (const m of messages) {
-      if (
-        m.senderId === userId &&
-        new Date(m.createdAt) <= new Date(otherLastReadAt)
-      ) {
-        return m.id;
-      }
-    }
-    return null;
-  }, [messages, otherLastReadAt, userId]);
+  const lastReadMsgId = useMemo(
+    () => getLastReadOwnMessageId(messages, userId, otherLastReadAt),
+    [messages, otherLastReadAt, userId]
+  );
+
+  const newestUnreadIncomingMessageId = useMemo(
+    () => getNewestUnreadIncomingMessageId(messages, userId, myLastReadAtDate),
+    [messages, userId, myLastReadAtDate]
+  );
 
   // Mark conversation as read when viewing messages from other user
   useEffect(() => {
-    if (isLoading || messages.length === 0) return;
+    if (isLoading || !newestUnreadIncomingMessageId) return;
+    if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessageId) return;
 
-    // Find newest message from OTHER user
-    const newestFromOther = messages.find(m => m.senderId !== userId);
-    if (!newestFromOther) return;
-
-    // Already marked this message?
-    if (lastMarkedMsgIdRef.current === newestFromOther.id) return;
-
-    // Check if we already read this message
-    const messageTime = new Date(newestFromOther.createdAt).getTime();
-    const alreadyRead = myLastReadAtDate && messageTime <= myLastReadAtDate.getTime();
-    
-    if (!alreadyRead) {
-      lastMarkedMsgIdRef.current = newestFromOther.id;
-      markConversationAsRead(conversationId).catch(() => {
-        // Silent fail - mark as read is non-critical
-      });
-    }
-  }, [isLoading, messages, userId, conversationId, myLastReadAtDate]);
+    lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
+    markAsRead(conversationId, newestUnreadIncomingMessageId);
+  }, [conversationId, isLoading, newestUnreadIncomingMessageId, markAsRead]);
 
   // Handle sending message
   const handleSend = useCallback(

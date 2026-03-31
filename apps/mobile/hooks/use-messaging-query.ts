@@ -6,7 +6,7 @@
  */
 
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { queryKeys } from '@/lib/query-client';
 import {
@@ -16,6 +16,9 @@ import {
   type Conversation,
 } from '@/lib/messaging-api';
 import { getAvatarUrl } from '@/lib/config';
+
+const recentReadMarks = new Map<string, number>();
+const READ_MARK_DEDUPE_MS = 60_000;
 
 // ============================================================================
 // TYPES
@@ -211,15 +214,33 @@ export function useConversationsQuery(options: UseConversationsQueryOptions = {}
  */
 export function useMarkAsRead() {
   const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (conversationId: string) => {
+  const markedRef = useRef(new Set<string>());
+
+  const mutation = useMutation({
+    mutationFn: async ({ conversationId, messageId }: { conversationId: string; messageId?: string }) => {
+      const dedupeKey = messageId ? `${conversationId}:${messageId}` : conversationId;
+      const lastMarkedAt = recentReadMarks.get(dedupeKey);
+      if (lastMarkedAt && Date.now() - lastMarkedAt < READ_MARK_DEDUPE_MS) {
+        return conversationId;
+      }
+
+      recentReadMarks.set(dedupeKey, Date.now());
       await markReadApi(conversationId);
       return conversationId;
     },
-    onMutate: async (conversationId) => {
+    onMutate: async ({ conversationId, messageId }) => {
+      const dedupeKey = messageId ? `${conversationId}:${messageId}` : conversationId;
+      const lastMarkedAt = recentReadMarks.get(dedupeKey);
+      if (lastMarkedAt && Date.now() - lastMarkedAt < READ_MARK_DEDUPE_MS) {
+        return { skipped: true };
+      }
+
+      if (markedRef.current.has(conversationId)) return;
+      markedRef.current.add(conversationId);
+
       // Optimistically update conversations cache
       await queryClient.cancelQueries({ queryKey: ['conversations'] });
+      const now = new Date().toISOString();
       
       // Get current data
       const previousData = queryClient.getQueryData<{ conversations: Conversation[]; totalUnread: number }>(
@@ -233,21 +254,50 @@ export function useMarkAsRead() {
         queryClient.setQueryData(queryKeys.conversations('personal'), {
           ...previousData,
           conversations: previousData.conversations.map(c =>
-            c.id === conversationId ? { ...c, unreadCount: 0 } : c
+            c.id === conversationId ? { ...c, unreadCount: 0, myLastReadAt: now } : c
           ),
           totalUnread: Math.max(0, previousData.totalUnread - unreadToRemove),
         });
       }
+
+      const previousConversation = queryClient.getQueryData<Conversation>(
+        queryKeys.conversation(conversationId)
+      );
+
+      if (previousConversation) {
+        queryClient.setQueryData(queryKeys.conversation(conversationId), {
+          ...previousConversation,
+          unreadCount: 0,
+          myLastReadAt: now,
+        });
+      }
       
-      return { previousData };
+      return { previousData, previousConversation };
     },
-    onError: (_err, _conversationId, context) => {
+    onError: (_err, variables, context) => {
       // Rollback on error
+      if (variables?.messageId) {
+        recentReadMarks.delete(`${variables.conversationId}:${variables.messageId}`);
+      }
       if (context?.previousData) {
         queryClient.setQueryData(queryKeys.conversations('personal'), context.previousData);
       }
+      if (context?.previousConversation) {
+        queryClient.setQueryData(queryKeys.conversation(variables.conversationId), context.previousConversation);
+      }
     },
+    onSettled: (_data, _error, variables) => {
+      setTimeout(() => {
+        markedRef.current.delete(variables.conversationId);
+      }, 5000);
+    }
   });
+
+  return {
+    markAsRead: (conversationId: string, messageId?: string) =>
+      mutation.mutate({ conversationId, messageId }),
+    isMarking: mutation.isPending,
+  };
 }
 
 // ============================================================================

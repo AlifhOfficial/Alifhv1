@@ -251,7 +251,6 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache for back navigation
     refetchOnWindowFocus: false,
     refetchOnMount: false, // Don't refetch on mount if we have cached data
-    placeholderData: (previousData) => previousData, // Keep previous data visible while fetching
     enabled: !serverDriven && ((params.page || 1) <= 1 || resolvedCursor !== undefined),
   });
 

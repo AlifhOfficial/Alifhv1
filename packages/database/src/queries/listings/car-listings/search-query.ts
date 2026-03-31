@@ -312,7 +312,10 @@ function buildSearchConditions(params: SearchParams, now: Date): SQL[] {
     conditions.push(lte(carListing.price, params.priceMax));
   }
 
-  // Mileage max
+  // Mileage range
+  if (params.mileageMin) {
+    conditions.push(gte(carListing.mileage, params.mileageMin));
+  }
   if (params.mileageMax) {
     conditions.push(lte(carListing.mileage, params.mileageMax));
   }

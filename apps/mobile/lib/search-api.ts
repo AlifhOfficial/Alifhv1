@@ -10,80 +10,19 @@
  */
 
 import { API_BASE, getAppImageUrl, markDataReady, parseJsonWithPerf } from './config';
+import {
+  searchParamsToUrl as buildSharedSearchParamsUrl,
+  type FacetBucket,
+  type SearchFacets,
+  type SearchParams as SharedSearchParams,
+  type SearchSortOption,
+} from '../../../packages/database/src/schema/search-types';
+
+export type { FacetBucket, SearchFacets, SearchSortOption };
 
 // ============================================================================
-// SEARCH TYPES (Local definitions to avoid @alifh/database Node.js deps)
+// SEARCH TYPES
 // ============================================================================
-
-export type SearchSortOption =
-  | 'relevance'
-  | 'popular'
-  | 'newest'
-  | 'oldest'
-  | 'price_low'
-  | 'price_high'
-  | 'mileage_low'
-  | 'mileage_high'
-  | 'year_new'
-  | 'year_old';
-
-export interface FacetBucket {
-  value: string;
-  count: number;
-  label?: string;
-}
-
-export interface SearchFacets {
-  make?: FacetBucket[];
-  model?: FacetBucket[];
-  trim?: FacetBucket[];
-  bodyType?: FacetBucket[];
-  fuelType?: FacetBucket[];
-  transmission?: FacetBucket[];
-  emirate?: FacetBucket[];
-  specs?: FacetBucket[];
-  sellerType?: FacetBucket[];
-  yearRange?: { min: number; max: number };
-  priceRange?: { min: number; max: number };
-  mileageRange?: { min: number; max: number };
-  engineSize?: FacetBucket[];
-  exteriorColor?: FacetBucket[];
-  interiorColor?: FacetBucket[];
-}
-
-interface DBSearchParams {
-  q?: string;
-  make?: string | string[];
-  model?: string | string[];
-  trim?: string | string[];
-  priceMin?: number;
-  priceMax?: number;
-  yearMin?: number;
-  yearMax?: number;
-  mileageMax?: number;
-  bodyType?: string | string[];
-  fuelType?: string | string[];
-  transmission?: string | string[];
-  emirate?: string | string[];
-  specs?: string | string[];
-  engineSize?: string | string[];
-  exteriorColor?: string | string[];
-  interiorColor?: string | string[];
-  tags?: string | string[];
-  extras?: string | string[];
-  condition?: string;
-  sellerType?: string;
-  exportStatus?: string | string[];
-  isBlkListing?: boolean;
-  isBlackTierPartner?: boolean;
-  isNegotiable?: boolean;
-  partnerId?: string;
-  partnerName?: string;
-  sellerId?: string;
-  sortBy?: SearchSortOption;
-  limit?: number;
-  cursor?: string;
-}
 
 // Re-export sort options (mobile-friendly labels)
 export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
@@ -99,9 +38,9 @@ export const SORT_OPTIONS: { value: SearchSortOption; label: string }[] = [
   { value: 'year_old', label: 'Year: Oldest' },
 ];
 
-export interface SearchParams extends DBSearchParams {
-  page?: number;
-}
+export type SearchParams = SharedSearchParams & {
+  sellerName?: string;
+};
 
 // Mobile-friendly listing card (with absolute URLs)
 export interface ListingCard {
@@ -201,43 +140,10 @@ function toAbsoluteUrl(path: string | null): string | null {
   return getAppImageUrl(path);
 }
 
-/** 
- * Map internal param names to API URL param names
- * The web API uses different param names than our internal SearchParams
- */
-const PARAM_KEY_MAP: Record<string, string> = {
-  sortBy: 'sort',
-  sortOrder: 'order',
-  isNegotiable: 'negotiable',
-  underWarranty: 'warranty',
-  isBlkListing: 'black',
-  partnerVerified: 'verified',
-  isBlackTierPartner: 'blackTier',
-  sellerType: 'seller',
-};
-
 /** Convert SearchParams to URLSearchParams for API call */
 function paramsToUrl(params: SearchParams): URLSearchParams {
-  const urlParams = new URLSearchParams();
-  
-  Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === '') return;
-    
-    // Map internal param name to API param name
-    const urlKey = PARAM_KEY_MAP[key] || key;
-    
-    // Handle arrays (multi-select) - join with comma
-    if (Array.isArray(value)) {
-      if (value.length > 0) {
-        urlParams.set(urlKey, value.join(','));
-      }
-      return;
-    }
-    
-    urlParams.set(urlKey, String(value));
-  });
-  
-  return urlParams;
+  const { sellerName: _sellerName, ...sharedParams } = params;
+  return buildSharedSearchParamsUrl(sharedParams);
 }
 
 /** Transform web API item to mobile ListingCard (with absolute URLs) */
@@ -544,6 +450,8 @@ export function getFilterChips(params: SearchParams): FilterChip[] {
   const bodyTypes = toArray(params.bodyType);
   const fuelTypes = toArray(params.fuelType);
   const transmissions = toArray(params.transmission);
+  const doorOptions = toArray(params.doors);
+  const seatingOptions = toArray(params.seatingCapacity);
 
   // Make chips
   if (makes.length) {
@@ -594,10 +502,12 @@ export function getFilterChips(params: SearchParams): FilterChip[] {
 
   // Mileage
   if (params.mileageMax) {
-    chips.push({ 
-      key: 'mileage', 
-      label: `Under ${Math.round(params.mileageMax / 1000)}K km`, 
-      value: String(params.mileageMax) 
+    const min = params.mileageMin ? `${Math.round(params.mileageMin / 1000)}K` : '0';
+    const max = `${Math.round(params.mileageMax / 1000)}K`;
+    chips.push({
+      key: 'mileage',
+      label: params.mileageMin ? `Mileage: ${min} - ${max} km` : `Under ${max} km`,
+      value: params.mileageMin ? [String(params.mileageMin), String(params.mileageMax)] : String(params.mileageMax),
     });
   }
 
@@ -621,6 +531,14 @@ export function getFilterChips(params: SearchParams): FilterChip[] {
     chips.push({ key: 'transmission', label: transmissions.join(', '), value: transmissions });
   }
 
+  if (doorOptions.length) {
+    chips.push({ key: 'doors', label: doorOptions.join(', '), value: doorOptions });
+  }
+
+  if (seatingOptions.length) {
+    chips.push({ key: 'seatingCapacity', label: seatingOptions.join(', '), value: seatingOptions });
+  }
+
   // Condition
   if (params.condition === 'new') {
     chips.push({ key: 'condition', label: 'New Cars', value: 'new' });
@@ -632,6 +550,12 @@ export function getFilterChips(params: SearchParams): FilterChip[] {
   }
   if (params.isBlackTierPartner) {
     chips.push({ key: 'isBlackTierPartner', label: 'Black Members', value: 'true' });
+  }
+  if (params.underWarranty) {
+    chips.push({ key: 'underWarranty', label: 'Under Warranty', value: 'true' });
+  }
+  if (params.partnerVerified) {
+    chips.push({ key: 'partnerVerified', label: 'Verified Dealers', value: 'true' });
   }
 
   // Sort (only if not default)
@@ -704,6 +628,7 @@ export function removeFilter(
       delete newParams.priceMax;
       break;
     case 'mileage':
+      delete newParams.mileageMin;
       delete newParams.mileageMax;
       break;
     case 'emirate':
@@ -718,8 +643,20 @@ export function removeFilter(
     case 'transmission':
       delete newParams.transmission;
       break;
+    case 'doors':
+      delete newParams.doors;
+      break;
+    case 'seatingCapacity':
+      delete newParams.seatingCapacity;
+      break;
     case 'condition':
       delete newParams.condition;
+      break;
+    case 'underWarranty':
+      delete newParams.underWarranty;
+      break;
+    case 'partnerVerified':
+      delete newParams.partnerVerified;
       break;
     case 'isBlkListing':
       delete newParams.isBlkListing;

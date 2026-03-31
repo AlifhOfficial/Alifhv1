@@ -94,7 +94,6 @@ export function useInventory(options: UseInventoryOptions): UseInventoryResult {
     enabled,
     staleTime: 1 * 60 * 1000, // 1 minute - inventory changes frequently
     gcTime: 30 * 60 * 1000,
-    placeholderData: (prev) => prev,
   });
 
   // Flatten all pages

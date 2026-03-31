@@ -6,6 +6,7 @@
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, TextInput } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -15,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { CAR_MAKES } from '@/lib/filter-constants';
+import { queryKeys } from '@/lib/query-client';
 import { searchApi, type FacetBucket, type SearchParams } from '@/lib/search-api';
 
 interface MakeFilterSheetProps {
@@ -42,10 +44,6 @@ export function MakeFilterSheet({
   const [localSelected, setLocalSelected] = useState<string[]>(selected);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<TextInput>(null);
-  
-  // Dynamic facets
-  const [facets, setFacets] = useState<FacetBucket[]>([]);
-  const [isLoadingFacets, setIsLoadingFacets] = useState(false);
 
   // Sync with props when sheet opens
   useEffect(() => {
@@ -55,21 +53,16 @@ export function MakeFilterSheet({
     }
   }, [visible, selected]);
 
-  // Fetch global make counts when the sheet opens
-  useEffect(() => {
-    if (visible) {
-      setIsLoadingFacets(true);
-      searchApi
-        .getFacets()
-        .then((result) => {
-          setFacets(result?.make ?? []);
-        })
-        .catch(console.error)
-        .finally(() => setIsLoadingFacets(false));
-    }
-  }, [visible]);
+  const { data: facets = [], isLoading: isLoadingFacets } = useQuery<FacetBucket[]>({
+    queryKey: queryKeys.facets({ surface: 'make-sheet' }),
+    queryFn: async () => (await searchApi.getFacets())?.make ?? [],
+    enabled: visible,
+    staleTime: 60 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    placeholderData: (prev) => prev,
+  });
 
-  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
+  const snapPoints = useMemo<(string | number)[]>(() => [...SheetSnapPoints.standard], []);
 
   useEffect(() => {
     if (visible) {

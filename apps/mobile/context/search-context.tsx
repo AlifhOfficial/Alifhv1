@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
-import type { SearchSortOption } from '@/lib/search-api';
+import type { SearchParams as SearchApiParams, SearchSortOption } from '@/lib/search-api';
 
 // Sort option labels for display
 const SORT_LABELS: Record<SearchSortOption, string> = {
@@ -20,42 +20,37 @@ const SORT_LABELS: Record<SearchSortOption, string> = {
   year_old: 'Year: Oldest',
 };
 
-export type SearchParams = {
-  q?: string;
-  make?: string[];
-  model?: string[];
-  trim?: string[];
-  tags?: string[];
-  extras?: string[];
-  partnerId?: string;
-  partnerName?: string;
-  sellerId?: string;
+export type SearchParams = Pick<
+  SearchApiParams,
+  'q' | 'make' | 'model' | 'trim' | 'tags' | 'extras' | 'partnerId' | 'partnerName' | 'sellerId'
+> & {
   sellerName?: string;
 };
 
 // Filter params for browse screen
-export type FilterParams = {
-  priceMin?: number;
-  priceMax?: number;
-  yearMin?: number;
-  yearMax?: number;
-  mileageMin?: number;
-  mileageMax?: number;
-  emirate?: string[];
-  bodyType?: string[];
-  fuelType?: string[];
-  transmission?: string[];
-  specs?: string[];
-  exteriorColor?: string[];
-  interiorColor?: string[];
-  engineSize?: string[];
-  condition?: 'new' | 'used';
-  isNegotiable?: boolean;
-  isBlkListing?: boolean;
-  isBlackTierPartner?: boolean;
-  sellerType?: 'dealer' | 'private';
-  exportStatus?: string[];
-};
+export type FilterParams = Pick<
+  SearchApiParams,
+  | 'priceMin'
+  | 'priceMax'
+  | 'yearMin'
+  | 'yearMax'
+  | 'mileageMin'
+  | 'mileageMax'
+  | 'emirate'
+  | 'bodyType'
+  | 'fuelType'
+  | 'transmission'
+  | 'specs'
+  | 'exteriorColor'
+  | 'interiorColor'
+  | 'engineSize'
+  | 'condition'
+  | 'isNegotiable'
+  | 'isBlkListing'
+  | 'isBlackTierPartner'
+  | 'sellerType'
+  | 'exportStatus'
+>;
 
 // Chip type for active search display
 export type SearchChip = {

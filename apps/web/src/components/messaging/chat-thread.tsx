@@ -17,6 +17,10 @@ import {
 import { markConversationActive, markConversationInactive } from '@/hooks/messaging/active-conversations';
 import { cn } from '@/utils/cn';
 import type { LocationResult } from '@/hooks/use-location';
+import {
+  getLastReadOwnMessageId,
+  getNewestUnreadIncomingMessageId,
+} from '@alifh/shared';
 
 interface ChatThreadParticipant {
   id: string;
@@ -138,21 +142,25 @@ export function useChatThreadController({
     return () => markConversationInactive(conversationId);
   }, [conversationId, active]);
 
+  const newestUnreadIncomingMessageId = useMemo(
+    () => getNewestUnreadIncomingMessageId(messages, userId, myLastReadAtDate),
+    [messages, userId, myLastReadAtDate]
+  );
+
   useEffect(() => {
-    if (!active || isLoading || !isDocumentActive || messages.length === 0) return;
+    if (!active || isLoading || !isDocumentActive || !newestUnreadIncomingMessageId) return;
+    if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessageId) return;
 
-    const newestFromOther = messages.find((message) => message.senderId !== userId);
-    if (!newestFromOther) return;
-
-    if (lastMarkedMsgIdRef.current === newestFromOther.id) return;
-
-    const messageTime = new Date(newestFromOther.createdAt).getTime();
-    const alreadyRead = myLastReadAtDate && messageTime <= myLastReadAtDate.getTime();
-    if (alreadyRead) return;
-
-    lastMarkedMsgIdRef.current = newestFromOther.id;
-    markAsRead(conversationId, newestFromOther.id);
-  }, [active, conversationId, isLoading, isDocumentActive, messages, userId, myLastReadAtDate, markAsRead]);
+    lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
+    markAsRead(conversationId, newestUnreadIncomingMessageId);
+  }, [
+    active,
+    conversationId,
+    isLoading,
+    isDocumentActive,
+    newestUnreadIncomingMessageId,
+    markAsRead,
+  ]);
 
   return {
     conversationId,
@@ -265,15 +273,10 @@ export function ChatThread({
     }
   }, [messages, orderedMessages.length, isLoading, updateScrollState]);
 
-  const lastReadMsgId = useMemo(() => {
-    if (!otherLastReadAt) return null;
-    for (const message of messages) {
-      if (message.senderId === userId && new Date(message.createdAt) <= otherLastReadAt) {
-        return message.id;
-      }
-    }
-    return null;
-  }, [messages, otherLastReadAt, userId]);
+  const lastReadMsgId = useMemo(
+    () => getLastReadOwnMessageId(messages, userId, otherLastReadAt),
+    [messages, userId, otherLastReadAt]
+  );
 
   const handleScroll = useCallback(() => {
     const el = containerRef.current;

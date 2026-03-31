@@ -12,21 +12,23 @@ import { QueryClient } from '@tanstack/react-query';
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // Data is considered fresh for 2 minutes (matches web's CDN TTL)
-      staleTime: 2 * 60 * 1000,
+      // Most mobile reads sit behind a 5 minute server/cache layer.
+      // More volatile surfaces override this per-query.
+      staleTime: 5 * 60 * 1000,
       
-      // Keep unused data in cache for 5 minutes (was 30min — too long for search results)
-      gcTime: 5 * 60 * 1000,
+      // Keep inactive data around long enough for tab switches and back navigation.
+      gcTime: 30 * 60 * 1000,
       
       // Retry failed requests with exponential backoff
       retry: 2,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
       
-      // Refetch on window focus is handled via focusManager + AppState wiring in _layout.tsx
-      refetchOnWindowFocus: true,
+      // Mobile foreground transitions happen often; prefer explicit invalidation
+      // over global focus churn.
+      refetchOnWindowFocus: false,
       
-      // Refetch on mount if data is stale (past staleTime) — critical for tab switches
-      refetchOnMount: true,
+      // Mounting a screen should usually reuse cached data unless the query opts in.
+      refetchOnMount: false,
       
       // Refetch when network reconnects (important for mobile)
       refetchOnReconnect: true,
@@ -79,7 +81,8 @@ export const queryKeys = {
   profile: () => ['profile'] as const,
   settings: () => ['settings'] as const,
   savedStatus: () => ['saved', 'status'] as const,
-  savedListings: (type: 'favorites' | 'superlikes') => ['saved', 'listings', type] as const,
+  savedListings: (type: 'favorites' | 'superlikes', ids: readonly string[] = []) =>
+    ['saved', 'listings', type, ids.join(',')] as const,
   
   // Inventory
   inventory: (filter?: string) => ['inventory', filter ?? 'all'] as const,

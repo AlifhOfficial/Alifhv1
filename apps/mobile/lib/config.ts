@@ -94,12 +94,50 @@ if (__DEV__) {
 // API file needs to worry about it.
 // ============================================================================
 const _originalFetch = globalThis.fetch;
+let requestCounter = 0;
+const inFlightRequests = new Map<string, number>();
+
 globalThis.fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+  const method = init?.method || (typeof input !== 'string' && !(input instanceof URL) ? input.method : undefined) || 'GET';
+  const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
+  const requestId = ++requestCounter;
 
   // Only intercept requests to our own API — leave third-party requests alone
   if (url.startsWith(API_BASE)) {
     init = { ...init, credentials: 'omit' };
+
+    if (__DEV__) {
+      const key = `${method} ${url}`;
+      const duplicates = (inFlightRequests.get(key) ?? 0) + 1;
+      inFlightRequests.set(key, duplicates);
+      console.log(`[FetchDebug] #${requestId} ${method} ${url} start inflight=${duplicates}`);
+
+      return _originalFetch(input, init).then(
+        (response) => {
+          const duration = Math.round((typeof performance !== 'undefined' ? performance.now() : Date.now()) - startedAt);
+          const remaining = Math.max(0, (inFlightRequests.get(key) ?? 1) - 1);
+          if (remaining === 0) inFlightRequests.delete(key);
+          else inFlightRequests.set(key, remaining);
+          console.log(
+            `[FetchDebug] #${requestId} ${method} ${url} done status=${response.status} ok=${response.ok} ms=${duration} inflight=${remaining}`
+          );
+          return response;
+        },
+        (error) => {
+          const duration = Math.round((typeof performance !== 'undefined' ? performance.now() : Date.now()) - startedAt);
+          const remaining = Math.max(0, (inFlightRequests.get(key) ?? 1) - 1);
+          if (remaining === 0) inFlightRequests.delete(key);
+          else inFlightRequests.set(key, remaining);
+          console.log(
+            `[FetchDebug] #${requestId} ${method} ${url} error ms=${duration} inflight=${remaining} message="${
+              error instanceof Error ? error.message : 'unknown'
+            }"`
+          );
+          throw error;
+        }
+      );
+    }
   }
 
   return _originalFetch(input, init);

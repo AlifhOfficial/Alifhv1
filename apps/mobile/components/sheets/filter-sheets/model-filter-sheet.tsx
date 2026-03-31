@@ -7,6 +7,7 @@
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, TextInput } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -16,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { CAR_MODELS, getModelsForMake } from '@/lib/filter-constants';
+import { queryKeys } from '@/lib/query-client';
 import { searchApi, type FacetBucket, type SearchParams } from '@/lib/search-api';
 
 interface ModelFilterSheetProps {
@@ -50,10 +52,6 @@ export function ModelFilterSheet({
   // Local state
   const [localSelected, setLocalSelected] = useState<string[]>(selected);
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Dynamic facets
-  const [facets, setFacets] = useState<FacetBucket[]>([]);
-  const [isLoadingFacets, setIsLoadingFacets] = useState(false);
 
   // Sync with props when sheet opens
   useEffect(() => {
@@ -63,23 +61,15 @@ export function ModelFilterSheet({
     }
   }, [visible, selected]);
 
-  // Fetch model counts for the selected makes only
-  useEffect(() => {
-    if (visible && selectedMakes.length > 0) {
-      setIsLoadingFacets(true);
-      searchApi
-        .getModelsForMakes(selectedMakes)
-        .then((models) => setFacets(models))
-        .catch(console.error)
-        .finally(() => setIsLoadingFacets(false));
-    } else if (visible) {
-      // When no make is selected we still show the full model taxonomy from constants.
-      setFacets([]);
-      setIsLoadingFacets(false);
-    }
-  }, [visible, selectedMakes]);
+  const { data: facets = [], isLoading: isLoadingFacets } = useQuery<FacetBucket[]>({
+    queryKey: queryKeys.facets({ surface: 'model-sheet', makes: selectedMakes.join(',') }),
+    queryFn: () => searchApi.getModelsForMakes(selectedMakes),
+    enabled: visible && selectedMakes.length > 0,
+    staleTime: 60 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
 
-  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
+  const snapPoints = useMemo<(string | number)[]>(() => [...SheetSnapPoints.standard], []);
 
   useEffect(() => {
     if (visible) {

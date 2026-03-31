@@ -50,6 +50,7 @@ textInputWithDefaults.defaultProps = {
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { QueryClientProvider, focusManager } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
+import { installQueryDebugLogger } from '@/lib/query-debug';
 import { AppFontFamilies, Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
@@ -169,6 +170,10 @@ function RootLayoutNav() {
       }
     });
     return () => subscription.remove();
+  }, []);
+
+  useEffect(() => {
+    return installQueryDebugLogger(queryClient);
   }, []);
 
   // Set native root view background color (fixes Android black flash during transitions)

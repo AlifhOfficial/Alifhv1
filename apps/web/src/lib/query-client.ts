@@ -1,30 +1,35 @@
 import { QueryClient, isServer } from '@tanstack/react-query';
 
+const DEFAULT_STALE_TIME_MS = 5 * 60 * 1000;
+const DEFAULT_GC_TIME_MS = 30 * 60 * 1000;
+
 /**
  * Query Client Factory - Standardized Configuration
- * 
- * Creates React Query clients with server-side only caching.
- * No client-side caching - server handles all caching with proper invalidation.
+ *
+ * Web is SSR-first, but we still keep a modest client cache so navigation and
+ * background revalidation feel fast without pretending old data is live.
+ *
+ * Per-query hooks can tighten or loosen these defaults when a surface needs a
+ * different freshness model.
  */
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        // No client-side caching - server handles caching with proper invalidation
-        staleTime: 0,
-        gcTime: 0,
-        
-        // Don't refetch on window focus by default (opt-in per query)
+        staleTime: DEFAULT_STALE_TIME_MS,
+        gcTime: DEFAULT_GC_TIME_MS,
+
+        // Keep focus refetch opt-in to avoid noisy reloads on navigation-heavy pages.
         refetchOnWindowFocus: false,
-        
-        // Don't retry failed queries by default (opt-in per query)
+
+        // Retry remains opt-in so failures stay explicit.
         retry: false,
-        
-        // Don't refetch on reconnect by default (opt-in per query)
+
+        // Reconnect refetch is opt-in because some pages are intentionally
+        // server-hydrated snapshots, while others are real-time or manually refreshed.
         refetchOnReconnect: false,
       },
       mutations: {
-        // Don't retry failed mutations by default
         retry: false,
       },
     },

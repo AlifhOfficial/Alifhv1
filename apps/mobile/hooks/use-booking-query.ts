@@ -100,8 +100,6 @@ export function useBookings({
       return loadedCount < lastPage.total ? loadedCount : undefined;
     },
     enabled,
-    // Show cached data instantly while revalidating in background
-    placeholderData: (prev) => prev,
     // Bookings change frequently, shorter stale time
     staleTime: 1 * 60 * 1000, // 1 minute
   });

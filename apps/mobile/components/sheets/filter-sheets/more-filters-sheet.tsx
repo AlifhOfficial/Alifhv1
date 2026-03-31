@@ -34,21 +34,22 @@ const VIEW_OPTIONS: { value: ViewMode; label: string }[] = [
   { value: 'list', label: 'List' },
 ];
 
-export interface MoreFiltersState {
-  condition?: 'new' | 'used';
-  isBlkListing?: boolean;
-  isBlackTierPartner?: boolean;
-  isNegotiable?: boolean;
-  specs?: string[];
-  bodyType?: string[];
-  fuelType?: string[];
-  transmission?: string[];
-  exteriorColor?: string[];
-  interiorColor?: string[];
-  engineSize?: string[];
-  sellerType?: 'dealer' | 'private';
-  exportStatus?: string[];
-}
+export type MoreFiltersState = Pick<
+  SearchParams,
+  | 'condition'
+  | 'isBlkListing'
+  | 'isBlackTierPartner'
+  | 'isNegotiable'
+  | 'specs'
+  | 'bodyType'
+  | 'fuelType'
+  | 'transmission'
+  | 'exteriorColor'
+  | 'interiorColor'
+  | 'engineSize'
+  | 'sellerType'
+  | 'exportStatus'
+>;
 
 interface MoreFiltersSheetProps {
   visible: boolean;
@@ -88,7 +89,7 @@ export function MoreFiltersSheet({
     }
   }, [visible, filters]);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
+  const snapPoints = useMemo<(string | number)[]>(() => [...SheetSnapPoints.standard], []);
 
   useEffect(() => {
     if (visible) {

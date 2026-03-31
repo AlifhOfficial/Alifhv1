@@ -8,13 +8,13 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   fetchConversations,
-  markConversationAsRead,
   type Conversation,
   type Message,
 } from '@/lib/messaging-api';
 import { getAvatarUrl } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
 import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
+import { isConversationActive } from './active-conversations';
 
 interface UseConversationsOptions {
   isAuthenticated: boolean;
@@ -32,7 +32,6 @@ interface UseConversationsReturn {
   refresh: () => Promise<void>;
   /** User-initiated pull-to-refresh (shows RefreshControl spinner) */
   pullToRefresh: () => Promise<void>;
-  markAsRead: (conversationId: string) => Promise<void>;
 }
 
 export function useConversations({
@@ -47,8 +46,6 @@ export function useConversations({
   const { subscribe, send, isConnected } = useWebSocket();
   const abortControllerRef = useRef<AbortController | null>(null);
   const watchedUsersRef = useRef<Set<string>>(new Set());
-  const loadingRef = useRef(false);
-  const markedConversationsRef = useRef<Set<string>>(new Set());
   const loadConversationsRef = useRef<(() => Promise<void>) | null>(null);
   
   // Keep userId in a ref for WebSocket handler
@@ -67,6 +64,7 @@ export function useConversations({
         // or newMsg.senderId (message content)
         const senderId = msg.userId || newMsg?.senderId;
         const isOwnMessage = senderId === userIdRef.current;
+        const isActiveOpenConversation = isConversationActive(msg.conversationId);
 
         setConversations(prev => {
           const exists = prev.some(c => c.id === msg.conversationId);
@@ -76,16 +74,23 @@ export function useConversations({
             return prev;
           }
 
+          const createdAt = newMsg?.createdAt || new Date().toISOString();
+
           return prev
             .map(conv => {
               if (conv.id !== msg.conversationId) return conv;
+              const preview = newMsg?.text?.substring(0, 100) || conv.lastMessagePreview || 'New message';
+
               return {
                 ...conv,
-                lastMessageAt: new Date().toISOString(),
-                lastMessagePreview: newMsg?.text?.substring(0, 100) || 'New message',
-                messageCount: (conv.messageCount || 0) + 1,
-                // Only increment unread if NOT own message
-                unreadCount: isOwnMessage ? conv.unreadCount : (conv.unreadCount || 0) + 1,
+                lastMessageAt: createdAt,
+                lastMessagePreview: preview,
+                messageCount: Math.max((conv.messageCount || 0) + (isOwnMessage ? 0 : 1), conv.messageCount || 0),
+                unreadCount: isOwnMessage || isActiveOpenConversation ? 0 : (conv.unreadCount || 0) + 1,
+                myLastReadAt:
+                  !isOwnMessage && isActiveOpenConversation
+                    ? createdAt
+                    : conv.myLastReadAt,
               };
             })
             // Re-sort by lastMessageAt (most recent first)
@@ -288,32 +293,6 @@ export function useConversations({
     await loadConversations();
   }, [loadConversations]);
 
-  // Mark as read (with deduplication — prevents duplicate API calls within 5s)
-  const markAsRead = useCallback(async (conversationId: string) => {
-    // Skip if already marked recently
-    if (markedConversationsRef.current.has(conversationId)) return;
-    markedConversationsRef.current.add(conversationId);
-
-    try {
-      await markConversationAsRead(conversationId);
-      
-      // Optimistically update local state
-      setConversations(prev =>
-        prev.map(conv =>
-          conv.id === conversationId
-            ? { ...conv, unreadCount: 0, myLastReadAt: new Date().toISOString() }
-            : conv
-        )
-      );
-      
-    } catch (err) {
-      console.error('[useConversations] Mark as read error:', err);
-    } finally {
-      // Allow re-marking after 5 seconds
-      setTimeout(() => markedConversationsRef.current.delete(conversationId), 5000);
-    }
-  }, []);
-
   const totalUnread = useMemo(
     () => conversations.reduce((sum, conversation) => sum + (conversation.unreadCount || 0), 0),
     [conversations]
@@ -327,6 +306,5 @@ export function useConversations({
     error,
     refresh,
     pullToRefresh,
-    markAsRead,
   };
 }

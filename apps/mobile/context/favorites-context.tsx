@@ -1,36 +1,33 @@
 /**
- * Favorites Context - Global favorites & superlikes state
- * 
- * Provides favorites/superlikes state accessible from any card component.
- * Syncs with API and provides optimistic updates.
- * 
- * Usage:
- *   const { isFavorite, toggleFavorite } = useFavorites();
- *   <Heart fill={isFavorite(listingId) ? 'red' : 'none'} />
+ * Favorites Context - TanStack-backed saved/favorite state.
+ *
+ * This context exposes a convenient API for listing cards while delegating the
+ * actual server state to the shared React Query cache. Saved screens and card
+ * actions now read from the same source of truth.
  */
 
 import { useAlert } from '@/components/ui';
-import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode, useMemo, useRef } from 'react';
-import { savedApi, FavoritesStatusData } from '@/lib/saved-api';
+import React, { createContext, useContext, useMemo, useRef, type ReactNode, useCallback, useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { savedApi, type FavoritesStatusData, type SavedListingCard } from '@/lib/saved-api';
+import { queryKeys } from '@/lib/query-client';
 import { useAuth } from '@/context/auth-context';
 
-// ============================================================================
-// TYPES
-// ============================================================================
+interface SavedStatusCache {
+  favoriteIds: string[];
+  superlikeIds: string[];
+  quota: FavoritesStatusData['quota'];
+}
 
 interface FavoritesContextType {
-  // State
   favoriteIds: string[];
   superlikeIds: string[];
   quota: FavoritesStatusData['quota'] | null;
   isLoading: boolean;
-  
-  // Helpers
   isFavorite: (listingId: string) => boolean;
   isSuperliked: (listingId: string) => boolean;
   isPending: (listingId: string) => boolean;
-  
-  // Actions
   toggleFavorite: (listingId: string) => Promise<void>;
   toggleSuperlike: (listingId: string) => Promise<void>;
   refresh: () => Promise<void>;
@@ -38,306 +35,283 @@ interface FavoritesContextType {
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
-// ============================================================================
-// CONSTANTS
-// ============================================================================
+const DEBOUNCE_MS = 500;
+const SAVED_STATUS_STALE_TIME = 5 * 60 * 1000;
 
-const DEBOUNCE_MS = 500; // Minimum time between toggles for same listing
-
-// ============================================================================
-// PROVIDER
-// ============================================================================
-
-interface FavoritesProviderProps {
-  children: ReactNode;
+function mapSavedStatus(status: FavoritesStatusData): SavedStatusCache {
+  return {
+    favoriteIds: status.favorites,
+    superlikeIds: status.superlikes,
+    quota: status.quota,
+  };
 }
 
-export function FavoritesProvider({ children }: FavoritesProviderProps) {
+export function FavoritesProvider({ children }: { children: ReactNode }) {
   const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
   const { showAlert } = useAlert();
-  
-  // State - using arrays for stable references
-  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const [superlikeIds, setSuperlikeIds] = useState<string[]>([]);
-  const [quota, setQuota] = useState<FavoritesStatusData['quota'] | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  
-  // Track pending requests to prevent duplicates and rate limiting
+  const queryClient = useQueryClient();
+
   const pendingFavoritesRef = useRef<Set<string>>(new Set());
   const pendingSuperlikesRef = useRef<Set<string>>(new Set());
   const lastToggleTimeRef = useRef<Map<string, number>>(new Map());
-  
-  // Track current user to detect changes
   const prevUserIdRef = useRef<string | undefined>(undefined);
 
-  // Helper: Check if a listing has a pending operation
-  const isPending = useCallback((listingId: string): boolean => {
+  const isStatusEnabled = isAuthenticated && !!user?.id && !isAuthLoading;
+
+  const {
+    data: statusData,
+    isLoading: isStatusLoading,
+    refetch: refetchStatus,
+  } = useQuery<SavedStatusCache>({
+    queryKey: queryKeys.savedStatus(),
+    queryFn: async () => mapSavedStatus(await savedApi.getFavoritesStatus()),
+    enabled: isStatusEnabled,
+    staleTime: SAVED_STATUS_STALE_TIME,
+    gcTime: 30 * 60 * 1000,
+    placeholderData: (prev) => prev,
+    retry: (failureCount, error) => {
+      if (error instanceof Error && error.message === 'AUTH_REQUIRED') {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+
+  useEffect(() => {
+    const currentUserId = user?.id;
+    if (prevUserIdRef.current !== currentUserId) {
+      queryClient.removeQueries({ queryKey: queryKeys.saved() });
+      prevUserIdRef.current = currentUserId;
+    }
+  }, [queryClient, user?.id]);
+
+  const favoriteIds = statusData?.favoriteIds ?? [];
+  const superlikeIds = statusData?.superlikeIds ?? [];
+  const quota = statusData?.quota ?? null;
+
+  const isPending = useCallback((listingId: string) => {
     return pendingFavoritesRef.current.has(listingId) || pendingSuperlikesRef.current.has(listingId);
   }, []);
 
-  // Fetch favorites status from API
-  const fetchStatus = useCallback(async () => {
-    console.log('[FavoritesContext] fetchStatus called, isAuthenticated:', isAuthenticated, 'userId:', user?.id);
-    
-    if (!isAuthenticated || !user?.id) {
-      console.log('[FavoritesContext] Clearing favorites - not authenticated');
-      setFavoriteIds([]);
-      setSuperlikeIds([]);
-      setQuota(null);
+  const updateSavedStatus = useCallback(
+    (updater: (current: SavedStatusCache | undefined) => SavedStatusCache | undefined) => {
+      queryClient.setQueryData<SavedStatusCache | undefined>(queryKeys.savedStatus(), updater);
+    },
+    [queryClient]
+  );
+
+  const refresh = useCallback(async () => {
+    if (!isStatusEnabled) {
+      queryClient.removeQueries({ queryKey: queryKeys.saved() });
       return;
     }
 
-    setIsLoading(true);
-    try {
-      console.log('[FavoritesContext] Fetching favorites from API...');
-      const status = await savedApi.getFavoritesStatus();
-      console.log('[FavoritesContext] Got favorites:', status.favorites.length, 'superlikes:', status.superlikes.length);
-      setFavoriteIds(status.favorites);
-      setSuperlikeIds(status.superlikes);
-      setQuota(status.quota);
-    } catch (err) {
-      console.error('[FavoritesContext] Failed to fetch status:', err);
-      // Keep existing data on error
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isAuthenticated, user?.id]);
+    await refetchStatus();
+    await queryClient.invalidateQueries({ queryKey: ['saved', 'listings'] });
+  }, [isStatusEnabled, queryClient, refetchStatus]);
 
-  // Fetch when auth state changes
-  useEffect(() => {
-    // Wait for auth to finish loading
-    if (isAuthLoading) {
-      console.log('[FavoritesContext] Waiting for auth to load...');
-      return;
-    }
-    
-    // Detect user change (login/logout/switch)
-    const currentUserId = user?.id;
-    const prevUserId = prevUserIdRef.current;
-    
-    console.log('[FavoritesContext] Auth state changed:', { 
-      isAuthenticated, 
-      currentUserId, 
-      prevUserId,
-      isAuthLoading 
-    });
-    
-    // Update ref
-    prevUserIdRef.current = currentUserId;
-    
-    // Fetch on user change
-    if (currentUserId !== prevUserId) {
-      fetchStatus();
-    }
-  }, [isAuthenticated, user?.id, isAuthLoading, fetchStatus]);
+  const favoriteMutation = useMutation({
+    mutationFn: async (listingId: string) => savedApi.toggleFavorite(listingId),
+    onMutate: async (listingId: string) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.savedStatus() });
 
-  // Helper: Check if listing is favorited
-  const isFavorite = useCallback((listingId: string): boolean => {
-    return favoriteIds.includes(listingId);
-  }, [favoriteIds]);
+      const previousStatus = queryClient.getQueryData<SavedStatusCache>(queryKeys.savedStatus());
+      const previousFavoriteListings = queryClient.getQueriesData<SavedListingCard[]>({
+        queryKey: ['saved', 'listings', 'favorites'],
+      });
 
-  // Helper: Check if listing is superliked
-  const isSuperliked = useCallback((listingId: string): boolean => {
-    return superlikeIds.includes(listingId);
-  }, [superlikeIds]);
+      updateSavedStatus((current) => {
+        if (!current) return current;
+        const isActive = current.favoriteIds.includes(listingId);
+        return {
+          ...current,
+          favoriteIds: isActive
+            ? current.favoriteIds.filter((id) => id !== listingId)
+            : [...current.favoriteIds, listingId],
+        };
+      });
 
-  // Action: Toggle favorite with optimistic update
+      queryClient.setQueriesData<SavedListingCard[]>(
+        { queryKey: ['saved', 'listings', 'favorites'] },
+        (current) => current?.filter((listing) => listing.id !== listingId) ?? current
+      );
+
+      return { previousStatus, previousFavoriteListings };
+    },
+    onError: (error, _listingId, context) => {
+      if (context?.previousStatus) {
+        queryClient.setQueryData(queryKeys.savedStatus(), context.previousStatus);
+      }
+      context?.previousFavoriteListings?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
+
+      if (error instanceof Error && error.message === 'RATE_LIMITED') {
+        showAlert('Please slow down', "You're saving too fast. Please wait a moment and try again.");
+      }
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.savedStatus() });
+    },
+  });
+
+  const superlikeMutation = useMutation({
+    mutationFn: async (listingId: string) => savedApi.toggleSuperlike(listingId),
+    onMutate: async (listingId: string) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.savedStatus() });
+
+      const previousStatus = queryClient.getQueryData<SavedStatusCache>(queryKeys.savedStatus());
+      const previousSuperlikeListings = queryClient.getQueriesData<SavedListingCard[]>({
+        queryKey: ['saved', 'listings', 'superlikes'],
+      });
+
+      updateSavedStatus((current) => {
+        if (!current) return current;
+        const isActive = current.superlikeIds.includes(listingId);
+        return {
+          ...current,
+          superlikeIds: isActive
+            ? current.superlikeIds.filter((id) => id !== listingId)
+            : [...current.superlikeIds, listingId],
+          quota: current.quota && !isActive
+            ? {
+                ...current.quota,
+                currentMonthSuperlikesUsed: current.quota.currentMonthSuperlikesUsed + 1,
+                remaining: Math.max(0, current.quota.remaining - 1),
+              }
+            : current.quota,
+        };
+      });
+
+      queryClient.setQueriesData<SavedListingCard[]>(
+        { queryKey: ['saved', 'listings', 'superlikes'] },
+        (current) => current?.filter((listing) => listing.id !== listingId) ?? current
+      );
+
+      return { previousStatus, previousSuperlikeListings };
+    },
+    onSuccess: (result) => {
+      updateSavedStatus((current) => {
+        if (!current) return current;
+        return { ...current, quota: result.quota };
+      });
+    },
+    onError: (error, _listingId, context) => {
+      if (context?.previousStatus) {
+        queryClient.setQueryData(queryKeys.savedStatus(), context.previousStatus);
+      }
+      context?.previousSuperlikeListings?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
+
+      if (error instanceof Error && error.message === 'QUOTA_EXCEEDED') {
+        showAlert(
+          'Superlike limit reached',
+          "You've used all your superlikes for this month. Upgrade to Premium for more!"
+        );
+        return;
+      }
+
+      if (error instanceof Error && error.message === 'RATE_LIMITED') {
+        showAlert('Please slow down', "You're acting too fast. Please wait a moment and try again.");
+      }
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.savedStatus() });
+    },
+  });
+
   const toggleFavorite = useCallback(async (listingId: string) => {
-    console.log('[FavoritesContext] toggleFavorite:', listingId);
-    
     if (!isAuthenticated) {
       throw new Error('AUTH_REQUIRED');
     }
 
-    // Debounce: check if we toggled this listing recently
     const now = Date.now();
     const lastToggle = lastToggleTimeRef.current.get(`fav:${listingId}`);
     if (lastToggle && now - lastToggle < DEBOUNCE_MS) {
-      console.log('[FavoritesContext] Debounced - too soon since last toggle');
       return;
     }
-
-    // Check if already pending
     if (pendingFavoritesRef.current.has(listingId)) {
-      console.log('[FavoritesContext] Skipping - request already pending');
       return;
     }
 
-    // Mark as pending and record time
     pendingFavoritesRef.current.add(listingId);
     lastToggleTimeRef.current.set(`fav:${listingId}`, now);
 
-    const wasActive = favoriteIds.includes(listingId);
-
-    // Optimistic update
-    setFavoriteIds(prev => 
-      wasActive 
-        ? prev.filter(id => id !== listingId)
-        : [...prev, listingId]
-    );
-
     try {
-      await savedApi.toggleFavorite(listingId);
-      console.log('[FavoritesContext] Toggle favorite success');
-    } catch (err) {
-      // Revert on error
-      console.error('[FavoritesContext] Toggle favorite failed:', err);
-      setFavoriteIds(prev => 
-        wasActive 
-          ? [...prev, listingId]
-          : prev.filter(id => id !== listingId)
-      );
-      
-      // Handle rate limit error gracefully
-      if (err instanceof Error && err.message === 'RATE_LIMITED') {
-        showAlert(
-          'Please slow down',
-          'You\'re saving too fast. Please wait a moment and try again.'
-        );
-        return; // Don't rethrow for rate limit
-      }
-      
-      throw err;
+      await favoriteMutation.mutateAsync(listingId);
     } finally {
       pendingFavoritesRef.current.delete(listingId);
     }
-  }, [isAuthenticated, favoriteIds, showAlert]);
+  }, [favoriteMutation, isAuthenticated]);
 
-  // Action: Toggle superlike with optimistic update
   const toggleSuperlike = useCallback(async (listingId: string) => {
-    console.log('[FavoritesContext] toggleSuperlike:', listingId);
-    
     if (!isAuthenticated) {
       throw new Error('AUTH_REQUIRED');
     }
 
-    // Debounce: check if we toggled this listing recently
     const now = Date.now();
     const lastToggle = lastToggleTimeRef.current.get(`superlike:${listingId}`);
     if (lastToggle && now - lastToggle < DEBOUNCE_MS) {
-      console.log('[FavoritesContext] Debounced - too soon since last toggle');
       return;
     }
-
-    // Check if already pending
     if (pendingSuperlikesRef.current.has(listingId)) {
-      console.log('[FavoritesContext] Skipping - request already pending');
       return;
     }
 
-    // Mark as pending and record time
     pendingSuperlikesRef.current.add(listingId);
     lastToggleTimeRef.current.set(`superlike:${listingId}`, now);
 
-    const wasActive = superlikeIds.includes(listingId);
-
-    // Optimistic update
-    setSuperlikeIds(prev => 
-      wasActive 
-        ? prev.filter(id => id !== listingId)
-        : [...prev, listingId]
-    );
-
-    // Update quota optimistically (only when adding - no refunds on removal)
-    if (quota && !wasActive) {
-      setQuota(prev => prev ? {
-        ...prev,
-        currentMonthSuperlikesUsed: prev.currentMonthSuperlikesUsed + 1,
-        remaining: prev.remaining - 1,
-      } : null);
-    }
-
     try {
-      const result = await savedApi.toggleSuperlike(listingId);
-      console.log('[FavoritesContext] Toggle superlike success');
-      // Update quota with server response
-      setQuota(result.quota);
-    } catch (err) {
-      // Revert on error
-      console.error('[FavoritesContext] Toggle superlike failed:', err);
-      setSuperlikeIds(prev => 
-        wasActive 
-          ? [...prev, listingId]
-          : prev.filter(id => id !== listingId)
-      );
-      // Refresh to get correct quota
-      fetchStatus();
-      
-      // Handle quota exceeded gracefully
-      if (err instanceof Error && err.message === 'QUOTA_EXCEEDED') {
-        showAlert(
-          'Superlike limit reached',
-          'You\'ve used all your superlikes for this month. Upgrade to Premium for more!'
-        );
-        return; // Don't rethrow for quota exceeded
-      }
-      
-      // Handle rate limit error gracefully
-      if (err instanceof Error && err.message === 'RATE_LIMITED') {
-        showAlert(
-          'Please slow down',
-          'You\'re acting too fast. Please wait a moment and try again.'
-        );
-        return; // Don't rethrow for rate limit
-      }
-      
-      throw err;
+      await superlikeMutation.mutateAsync(listingId);
     } finally {
       pendingSuperlikesRef.current.delete(listingId);
     }
-  }, [isAuthenticated, superlikeIds, quota, fetchStatus, showAlert]);
+  }, [isAuthenticated, superlikeMutation]);
 
-  // Memoize context value
+  const isFavorite = useCallback((listingId: string) => favoriteIds.includes(listingId), [favoriteIds]);
+  const isSuperliked = useCallback((listingId: string) => superlikeIds.includes(listingId), [superlikeIds]);
+
   const value = useMemo<FavoritesContextType>(() => ({
     favoriteIds,
     superlikeIds,
     quota,
-    isLoading,
+    isLoading: isStatusEnabled ? isStatusLoading && !statusData : false,
     isFavorite,
     isSuperliked,
     isPending,
     toggleFavorite,
     toggleSuperlike,
-    refresh: fetchStatus,
+    refresh,
   }), [
     favoriteIds,
     superlikeIds,
     quota,
-    isLoading,
+    isStatusEnabled,
+    isStatusLoading,
+    statusData,
     isFavorite,
     isSuperliked,
     isPending,
     toggleFavorite,
     toggleSuperlike,
-    fetchStatus,
+    refresh,
   ]);
 
-  return (
-    <FavoritesContext.Provider value={value}>
-      {children}
-    </FavoritesContext.Provider>
-  );
+  return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>;
 }
-
-// ============================================================================
-// HOOK
-// ============================================================================
 
 export function useFavorites(): FavoritesContextType {
   const context = useContext(FavoritesContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useFavorites must be used within a FavoritesProvider');
   }
   return context;
 }
 
-/**
- * Convenience hook for a single listing's favorite state
- * Reduces re-renders by only returning state for one listing
- */
 export function useListingFavorite(listingId: string) {
   const { isFavorite, isSuperliked, isPending, toggleFavorite, toggleSuperlike, quota } = useFavorites();
-  
+
   return useMemo(() => ({
     isFavorite: isFavorite(listingId),
     isSuperliked: isSuperliked(listingId),

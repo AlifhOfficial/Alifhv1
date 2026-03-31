@@ -49,6 +49,7 @@ export interface MediumFilterParams {
   yearMax?: number;
   priceMin?: number;
   priceMax?: number;
+  mileageMin?: number;
   mileageMax?: number;
   emirate?: string[];
   specs?: SpecsType[];
@@ -87,11 +88,15 @@ export interface AdvancedFilterParams {
   
   // Partner specific
   partnerId?: string;
+  partnerName?: string;
   partnerVerified?: boolean;
   isBlackTierPartner?: boolean;
   
   // Private seller specific
   sellerId?: string;
+
+  // Optional client-side toggle for intentionally non-stable ordering
+  randomize?: boolean;
 }
 
 /**
@@ -319,6 +324,8 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   if (params.engineSize?.length) urlParams.set('engineSize', params.engineSize.join(','));
   if (params.exteriorColor?.length) urlParams.set('exteriorColor', params.exteriorColor.join(','));
   if (params.interiorColor?.length) urlParams.set('interiorColor', params.interiorColor.join(','));
+  if (params.doors?.length) urlParams.set('doors', params.doors.join(','));
+  if (params.seatingCapacity?.length) urlParams.set('seatingCapacity', params.seatingCapacity.join(','));
   if (params.tags?.length) urlParams.set('tags', params.tags.join(','));
   if (params.extras?.length) urlParams.set('extras', params.extras.join(','));
   
@@ -327,6 +334,7 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   if (params.yearMax) urlParams.set('yearMax', String(params.yearMax));
   if (params.priceMin) urlParams.set('priceMin', String(params.priceMin));
   if (params.priceMax) urlParams.set('priceMax', String(params.priceMax));
+  if (params.mileageMin) urlParams.set('mileageMin', String(params.mileageMin));
   if (params.mileageMax) urlParams.set('mileageMax', String(params.mileageMax));
   
   // Booleans
@@ -337,10 +345,13 @@ export function searchParamsToUrl(params: SearchParams): URLSearchParams {
   if (params.isBlackTierPartner !== undefined) urlParams.set('blackTier', String(params.isBlackTierPartner));
   
   // Seller
+  if (params.condition) urlParams.set('condition', params.condition);
   if (params.sellerType) urlParams.set('seller', params.sellerType);
   if (params.exportStatus?.length) urlParams.set('exportStatus', params.exportStatus.join(','));
   if (params.partnerId) urlParams.set('partnerId', params.partnerId);
+  if (params.partnerName) urlParams.set('partnerName', params.partnerName);
   if (params.sellerId) urlParams.set('sellerId', params.sellerId);
+  if (params.randomize !== undefined) urlParams.set('randomize', String(params.randomize));
   
   // Pagination & Sort
   if (params.limit) urlParams.set('limit', String(params.limit));
@@ -390,6 +401,8 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     engineSize: parseArray('engineSize') as SearchParams['engineSize'],
     exteriorColor: parseArray('exteriorColor') as SearchParams['exteriorColor'],
     interiorColor: parseArray('interiorColor') as SearchParams['interiorColor'],
+    doors: parseArray('doors') as SearchParams['doors'],
+    seatingCapacity: parseArray('seatingCapacity') as SearchParams['seatingCapacity'],
     tags: parseArray('tags'),
     extras: parseArray('extras'),
     
@@ -397,6 +410,7 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     yearMax: parseNumber('yearMax'),
     priceMin: parseNumber('priceMin'),
     priceMax: parseNumber('priceMax'),
+    mileageMin: parseNumber('mileageMin'),
     mileageMax: parseNumber('mileageMax'),
     
     isNegotiable: parseBoolean('negotiable'),
@@ -408,7 +422,9 @@ export function urlToSearchParams(urlParams: URLSearchParams): SearchParams {
     sellerType: urlParams.get('seller') as SearchParams['sellerType'],
     exportStatus: parseArray('exportStatus') as SearchParams['exportStatus'],
     partnerId: urlParams.get('partnerId') || undefined,
+    partnerName: urlParams.get('partnerName') || undefined,
     sellerId: urlParams.get('sellerId') || undefined,
+    randomize: parseBoolean('randomize'),
     
     limit: parseNumber('limit'),
     cursor: urlParams.get('cursor') || undefined,
@@ -430,7 +446,7 @@ export function countActiveFilters(params: SearchParams): number {
   if (params.model?.length) count++;
   if (params.yearMin || params.yearMax) count++;
   if (params.priceMin || params.priceMax) count++;
-  if (params.mileageMax) count++;
+  if (params.mileageMin || params.mileageMax) count++;
   if (params.emirate?.length) count++;
   if (params.specs?.length) count++;
   if (params.condition) count++;
@@ -440,12 +456,15 @@ export function countActiveFilters(params: SearchParams): number {
   if (params.engineSize?.length) count++;
   if (params.exteriorColor?.length) count++;
   if (params.interiorColor?.length) count++;
+  if (params.doors?.length) count++;
+  if (params.seatingCapacity?.length) count++;
   if (params.sellerType) count++;
   if (params.exportStatus?.length) count++;
   if (params.tags?.length) count++;
   if (params.isNegotiable !== undefined) count++;
   if (params.underWarranty !== undefined) count++;
   if (params.isBlkListing !== undefined) count++;
+  if (params.randomize !== undefined) count++;
   if (params.partnerVerified !== undefined) count++;
   if (params.isBlackTierPartner !== undefined) count++;
   

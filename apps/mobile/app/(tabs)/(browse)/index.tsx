@@ -10,7 +10,7 @@ import { Text, HapticRefreshControl } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BrowseTabBar, type FilterPillType } from '@/components/browse';
@@ -38,7 +38,7 @@ import { queryKeys } from '@/lib/query-client';
 import { consumeDataReady, markInteractionStart, scheduleRenderPerf } from '@/lib/config';
 import { Colors, Layout, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { useSearch, type FilterParams } from '@/context/search-context';
+import { useSearch, type FilterParams, type SearchParams as ContextSearchParams } from '@/context/search-context';
 import { getModelsForMake } from '@/lib/filter-constants';
 
 // ============================================================================
@@ -99,6 +99,7 @@ function compactSearchParams(params: SearchParams): SearchParams {
 // ============================================================================
 
 export default function BrowseScreen() {
+  const queryClient = useQueryClient();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const router = useRouter();
@@ -150,6 +151,9 @@ export default function BrowseScreen() {
     () => queryKeys.searchInfinite({ ...searchQueryParams, limit: 20 }),
     [searchQueryParams]
   );
+  const searchQueryHash = useMemo(() => JSON.stringify(searchQueryKey), [searchQueryKey]);
+  const previousSearchQueryHashRef = useRef<string | null>(null);
+  const [isRevalidatingWarmSearch, setIsRevalidatingWarmSearch] = useState(false);
 
   const {
     data,
@@ -170,11 +174,10 @@ export default function BrowseScreen() {
     },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.meta.hasMore ? lastPage.meta.nextCursor ?? undefined : undefined,
-    // staleTime: 0 — search results must always be fresh when query key changes.
-    // The global staleTime (2min) is too long here: cached results from a prior
-    // search session would show stale data until the user manually refreshes.
-    // The server already caches at 2min, so this adds no extra server load.
-    staleTime: 0,
+    // Match the server-side search cache. Query key changes still create a new
+    // cache entry, but revisiting the same filter set within 2 minutes can reuse
+    // the cached cursor pages instead of immediately refetching.
+    staleTime: 2 * 60 * 1000,
   });
 
   const listings = useMemo(() => {
@@ -195,7 +198,9 @@ export default function BrowseScreen() {
   }, [data?.pages]);
 
   const hasMore = hasNextPage ?? false;
-  const isRefreshing = isRefetching && !isFetchingNextPage;
+  const isRefreshing = (isRefetching && !isFetchingNextPage) || isRevalidatingWarmSearch;
+  const visibleListings = isRevalidatingWarmSearch ? [] : listings;
+  const showInitialLoading = (isLoading && visibleListings.length === 0) || isRevalidatingWarmSearch;
 
   // View mode (persisted across tab switches via module-level variable)
   const [viewMode, setViewModeState] = useState<ViewMode>(persistedViewMode);
@@ -221,6 +226,36 @@ export default function BrowseScreen() {
   useEffect(() => {
     scrollRef.current?.scrollToOffset({ offset: 0, animated: false });
   }, [searchQueryKey]);
+
+  useEffect(() => {
+    const previousHash = previousSearchQueryHashRef.current;
+    previousSearchQueryHashRef.current = searchQueryHash;
+
+    if (previousHash === null || previousHash === searchQueryHash) {
+      return;
+    }
+
+    const cachedState = queryClient.getQueryState(searchQueryKey);
+    if (!cachedState?.data) {
+      setIsRevalidatingWarmSearch(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsRevalidatingWarmSearch(true);
+
+    refetch()
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) {
+          setIsRevalidatingWarmSearch(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [queryClient, refetch, searchQueryHash, searchQueryKey]);
 
   // Subscribe to scroll to top from tab bar double-tap
   useEffect(() => {
@@ -251,17 +286,17 @@ export default function BrowseScreen() {
   }, [router]);
 
   useEffect(() => {
-    if (isLoading || listings.length === 0) return;
+    if (showInitialLoading || visibleListings.length === 0) return;
     const readyAt = consumeDataReady('browse:results') ?? performance.now();
     scheduleRenderPerf('browse.results', readyAt, {
-      count: listings.length,
+      count: visibleListings.length,
       hasMore,
     });
-  }, [isLoading, listings.length, hasMore]);
+  }, [showInitialLoading, visibleListings.length, hasMore]);
 
   // Handle long-press on card — show AI info sheet
   const handleCardLongPress = useCallback((id: string) => {
-    const listing = listings.find(l => l.id === id);
+    const listing = visibleListings.find(l => l.id === id);
     setInfoSheetListingId(id);
     setInfoSheetMeta({
       make: listing?.make,
@@ -271,7 +306,7 @@ export default function BrowseScreen() {
       sellerName: listing?.partnerName || listing?.sellerName || undefined,
     });
     setInfoSheetVisible(true);
-  }, [listings]);
+  }, [visibleListings]);
 
   // Handle filter pill press
   const handleFilterPillPress = useCallback((type: FilterPillType) => {
@@ -299,7 +334,7 @@ export default function BrowseScreen() {
 
   // Handle make filter apply — updates searchParams in context
   const handleMakeApply = useCallback((makes: string[]) => {
-    const current = searchParams ?? {};
+    const current: ContextSearchParams = searchParams ?? {};
     if (makes.length > 0) {
       // If makes changed, clear models that no longer belong
       const currentModels = current.model ?? [];
@@ -320,7 +355,7 @@ export default function BrowseScreen() {
 
   // Handle model filter apply — updates searchParams in context
   const handleModelApply = useCallback((models: string[]) => {
-    const current = searchParams ?? {};
+    const current: ContextSearchParams = searchParams ?? {};
     if (models.length > 0) {
       applySearch({ ...current, model: models });
     } else {
@@ -481,7 +516,7 @@ export default function BrowseScreen() {
   const keyExtractor = useCallback((item: ListingCard) => item.id, []);
 
   const renderEmptyState = useCallback(() => {
-    if (isLoading && listings.length === 0) {
+    if (showInitialLoading && visibleListings.length === 0) {
       return viewMode === 'grid' ? (
         <>
           <CarCardMSkeleton />
@@ -504,7 +539,7 @@ export default function BrowseScreen() {
         <Text variant="body" tone="secondary">No cars found</Text>
       </View>
     );
-  }, [isLoading, listings.length, viewMode]);
+  }, [showInitialLoading, viewMode, visibleListings.length]);
 
   const renderFooter = useCallback(() => {
     if (!hasMore || !isFetchingNextPage) return <View style={styles.bottomSpacer} />;
@@ -547,7 +582,7 @@ export default function BrowseScreen() {
       <MobileHeader title="Browse" titleHidden={isHeaderTitleHidden} />
       <FlatList
         ref={scrollRef}
-        data={listings}
+        data={visibleListings}
         key={viewMode}
         renderItem={renderListing}
         keyExtractor={keyExtractor}
@@ -559,7 +594,7 @@ export default function BrowseScreen() {
           paddingTop: headerInset,
           paddingBottom: bottomPadding,
           paddingHorizontal: Spacing.sm,
-          flexGrow: listings.length === 0 ? 1 : undefined,
+          flexGrow: visibleListings.length === 0 ? 1 : undefined,
         }}
         contentInsetAdjustmentBehavior="never"
         onScroll={handleScroll}

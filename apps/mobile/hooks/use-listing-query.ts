@@ -84,8 +84,6 @@ export function useListingDetail(options: UseListingDetailOptions): UseListingDe
     // Listing detail is relatively stable - cache for 5 minutes
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
-    // Keep showing previous data while fetching new (prevents skeleton flash)
-    placeholderData: (previousData) => previousData,
   });
   
   // Track view when listing loads successfully (fire-and-forget)
@@ -160,8 +158,6 @@ export function useSellerListings(options: UseSellerListingsOptions): UseSellerL
     },
     enabled: enabled && !!sellerId && !!sellerType,
     staleTime: 5 * 60 * 1000,
-    // Keep showing previous data while fetching new
-    placeholderData: (previousData) => previousData,
   });
   
   const listings = data?.listings ?? [];

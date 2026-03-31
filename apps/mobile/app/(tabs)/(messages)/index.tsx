@@ -51,7 +51,6 @@ export default function MessagesScreen() {
     error,
     refresh,
     pullToRefresh,
-    markAsRead,
   } = useConversations({
     isAuthenticated,
     userId: user?.id,
@@ -186,11 +185,8 @@ export default function MessagesScreen() {
           conversationData: JSON.stringify(conversation),
         },
       });
-      if (conversation.unreadCount > 0) {
-        await markAsRead(conversation.id);
-      }
     },
-    [router, markAsRead]
+    [router]
   );
 
   // ── Render list item ─────────────────────────

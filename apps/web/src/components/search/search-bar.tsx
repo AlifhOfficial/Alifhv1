@@ -258,13 +258,13 @@ export function SearchBar({
     } else if (suggestion.type === 'extra') {
       handleSearch('', { extras: [suggestion.extra!] });
     } else if (suggestion.type === 'bodyType') {
-      handleSearch('', { bodyType: [suggestion.bodyType!] });
+      handleSearch('', { bodyType: [suggestion.bodyType!] as SearchParams['bodyType'] });
     } else if (suggestion.type === 'fuelType') {
-      handleSearch('', { fuelType: [suggestion.fuelType!] });
+      handleSearch('', { fuelType: [suggestion.fuelType!] as SearchParams['fuelType'] });
     } else if (suggestion.type === 'transmission') {
-      handleSearch('', { transmission: [suggestion.transmission!] });
+      handleSearch('', { transmission: [suggestion.transmission!] as SearchParams['transmission'] });
     } else if (suggestion.type === 'specs') {
-      handleSearch('', { specs: [suggestion.specs!] });
+      handleSearch('', { specs: [suggestion.specs!] as SearchParams['specs'] });
     } else if (suggestion.type === 'condition') {
       handleSearch('', { condition: suggestion.condition });
     } else if (suggestion.type === 'sellerType') {

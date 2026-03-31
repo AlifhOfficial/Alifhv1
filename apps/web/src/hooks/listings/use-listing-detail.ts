@@ -176,10 +176,12 @@ export function useListingDetail(
     initialData: initialData as ListingDetailResponse | undefined,
     // Mark when initial data was set (for stale calculation)
     initialDataUpdatedAt: hasInitialData ? Date.now() : undefined,
-    // If the server already provided full detail data, keep it as source of truth.
-    staleTime: (initialListing && initialSellerData) ? Infinity : 0,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
+    // SSR gives us instant paint, but listing detail should still revalidate
+    // occasionally so edits, moderation changes, or seller updates can surface.
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 
   return {

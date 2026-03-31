@@ -6,8 +6,8 @@
  */
 
 import { Text } from '@/components/ui';
-import React, { useEffect, useRef, useMemo } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { ChatWindow } from '@/components/messages';
@@ -15,7 +15,7 @@ import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { useConversation, useMarkAsRead } from '@/hooks/use-messaging-query';
+import { useConversation } from '@/hooks/use-messaging-query';
 import type { Conversation } from '@/lib/messaging-api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -35,7 +35,6 @@ export default function ChatScreen() {
   const { conversationId, conversationData } = params;
   
   const { isAuthenticated, user } = useAuth();
-  const markedAsReadRef = useRef(false);
 
   // Parse initial conversation data from nav params (avoids fetch if available)
   const initialConversation = useMemo<Conversation | undefined>(() => {
@@ -50,26 +49,11 @@ export default function ChatScreen() {
   }, [conversationData]);
 
   // React Query hook - uses cache + initialData from nav params
-  const { conversation, isLoading, error } = useConversation({
+  const { conversation, error } = useConversation({
     conversationId,
     initialData: initialConversation,
     enabled: isAuthenticated,
   });
-  
-  const { mutate: markAsRead } = useMarkAsRead();
-
-  // Mark as read when entering the chat (once)
-  useEffect(() => {
-    if (
-      conversation && 
-      conversationId && 
-      conversation.unreadCount > 0 && 
-      !markedAsReadRef.current
-    ) {
-      markedAsReadRef.current = true;
-      markAsRead(conversationId);
-    }
-  }, [conversation, conversationId, markAsRead]);
 
   const handleBack = () => {
     router.back();

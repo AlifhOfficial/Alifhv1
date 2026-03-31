@@ -12,6 +12,7 @@
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { View, StyleSheet, Platform, ActivityIndicator, Keyboard } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
@@ -25,10 +26,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { Fonts, Typography, Colors, Spacing, Radius, Sizes, Layout, SheetSnapPoints, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import {
+  queryKeys,
+} from '@/lib/query-client';
+import {
   searchApi,
   type Suggestion,
   type FacetBucket,
   type SearchFacets,
+  type SearchParams as SearchApiParams,
 } from '@/lib/search-api';
 
 // ============================================================================
@@ -42,32 +47,33 @@ interface SearchSheetProps {
   forceDark?: boolean;
 }
 
-interface SearchParams {
-  q?: string;
-  make?: string[];
-  model?: string[];
-  trim?: string[];
-  tags?: string[];
-  extras?: string[];
-  bodyType?: string[];
-  fuelType?: string[];
-  transmission?: string[];
-  specs?: string[];
-  exteriorColor?: string[];
-  interiorColor?: string[];
-  engineSize?: string[];
-  emirate?: string[];
-  priceMin?: number;
-  priceMax?: number;
-  yearMin?: number;
-  yearMax?: number;
-  mileageMax?: number;
-  condition?: 'new' | 'used';
-  sellerType?: 'dealer' | 'private';
-  sortBy?: string;
-  partnerId?: string;
-  partnerName?: string;
-}
+type SearchParams = Pick<
+  SearchApiParams,
+  | 'q'
+  | 'make'
+  | 'model'
+  | 'trim'
+  | 'tags'
+  | 'extras'
+  | 'bodyType'
+  | 'fuelType'
+  | 'transmission'
+  | 'specs'
+  | 'exteriorColor'
+  | 'interiorColor'
+  | 'engineSize'
+  | 'emirate'
+  | 'priceMin'
+  | 'priceMax'
+  | 'yearMin'
+  | 'yearMax'
+  | 'mileageMax'
+  | 'condition'
+  | 'sellerType'
+  | 'sortBy'
+  | 'partnerId'
+  | 'partnerName'
+>;
 
 // Suggestion category config (dot color keys → resolved via theme)
 const SUGGESTION_CATEGORIES: Record<string, { dotKey: keyof ColorPalette; label: string }> = {
@@ -121,12 +127,10 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
   const colors = Colors[forceDark ? 'dark' : colorScheme];
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // State - Search
   const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
 
   // State - Selections
   const [selectedMakes, setSelectedMakes] = useState<string[]>([]);
@@ -144,14 +148,8 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
   const [selectedCondition, setSelectedCondition] = useState<'new' | 'used' | null>(null);
   const [selectedSellerType, setSelectedSellerType] = useState<'dealer' | 'private' | null>(null);
 
-  // State - Facets
-  const [facets, setFacets] = useState<SearchFacets | null>(null);
-  const [modelFacets, setModelFacets] = useState<FacetBucket[]>([]);
-  const [trimFacets, setTrimFacets] = useState<FacetBucket[]>([]);
-  const [isLoadingFacets, setIsLoadingFacets] = useState(false);
-
   // Snap points
-  const snapPoints = useMemo(() => SNAP_POINTS, []);
+  const snapPoints = useMemo<(string | number)[]>(() => [...SNAP_POINTS], []);
 
   // ============================================================================
   // SHEET LIFECYCLE
@@ -169,7 +167,6 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
     if (index === -1) {
       // Reset state on close
       setQuery('');
-      setSuggestions([]);
       setSelectedMakes([]);
       setSelectedModels([]);
       setSelectedTrims([]);
@@ -182,6 +179,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
       setSelectedSpecs([]);
       setSelectedCondition(null);
       setSelectedSellerType(null);
+      setDebouncedQuery('');
       onClose();
     }
   }, [onClose]);
@@ -190,79 +188,80 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
   // DATA FETCHING
   // ============================================================================
 
-  // Facet counts are now hierarchical only:
-  // - make: global
-  // - model: scoped by selected make
-  // - trim: scoped by selected make + model
   useEffect(() => {
-    if (visible) {
-      setIsLoadingFacets(true);
-      searchApi
-        .getFacets()
-        .then((f) => setFacets(f))
-        .catch(console.error)
-        .finally(() => setIsLoadingFacets(false));
-    }
-  }, [visible]);
-
-  // Fetch model counts for the selected makes only
-  useEffect(() => {
-    if (selectedMakes.length > 0) {
-      searchApi
-        .getModelsForMakes(selectedMakes)
-        .then((models) => setModelFacets(models))
-        .catch(console.error);
-    } else {
-      setModelFacets([]);
-      setSelectedModels([]);
-      setSelectedTrims([]);
-    }
-  }, [selectedMakes]);
-
-  // Fetch trim counts for the selected make + model combination
-  useEffect(() => {
-    if (selectedMakes.length > 0 && selectedModels.length > 0) {
-      searchApi
-        .getTrimsForModels(selectedMakes, selectedModels)
-        .then((trims) => setTrimFacets(trims))
-        .catch(console.error);
-    } else {
-      setTrimFacets([]);
-      setSelectedTrims([]);
-    }
-  }, [selectedMakes, selectedModels]);
-
-  // Debounced search suggestions
-  useEffect(() => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
     if (!query.trim()) {
-      setSuggestions([]);
-      setIsLoadingSuggestions(false);
+      setDebouncedQuery('');
       return;
     }
 
-    setIsLoadingSuggestions(true);
-    searchTimeoutRef.current = setTimeout(async () => {
-      try {
-        const res = await searchApi.suggest(query.trim(), {
-          make: selectedMakes.length > 0 ? selectedMakes : undefined,
-          model: selectedModels.length > 0 ? selectedModels : undefined,
-        });
-        setSuggestions(res.suggestions);
-      } catch (error) {
-        console.error('Suggest error:', error);
-      } finally {
-        setIsLoadingSuggestions(false);
-      }
+    const timeout = setTimeout(() => {
+      setDebouncedQuery(query.trim());
     }, SEARCH_DEBOUNCE_MS);
 
-    return () => {
-      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-    };
-  }, [query, selectedMakes, selectedModels]);
+    return () => clearTimeout(timeout);
+  }, [query]);
+
+  const { data: facets, isLoading: isLoadingFacets } = useQuery<SearchFacets | null>({
+    queryKey: queryKeys.facets({ surface: 'search-sheet' }),
+    queryFn: () => searchApi.getFacets(),
+    enabled: visible,
+    staleTime: 60 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    placeholderData: (prev) => prev,
+  });
+
+  const { data: modelFacets = [] } = useQuery<FacetBucket[]>({
+    queryKey: queryKeys.facets({ surface: 'search-sheet-models', makes: selectedMakes.join(',') }),
+    queryFn: () => searchApi.getModelsForMakes(selectedMakes),
+    enabled: visible && selectedMakes.length > 0,
+    staleTime: 60 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+
+  const { data: trimFacets = [] } = useQuery<FacetBucket[]>({
+    queryKey: queryKeys.facets({
+      surface: 'search-sheet-trims',
+      makes: selectedMakes.join(','),
+      models: selectedModels.join(','),
+    }),
+    queryFn: () => searchApi.getTrimsForModels(selectedMakes, selectedModels),
+    enabled: visible && selectedMakes.length > 0 && selectedModels.length > 0,
+    staleTime: 60 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+
+  const {
+    data: suggestionResponse,
+    isLoading: isLoadingSuggestions,
+  } = useQuery<{ suggestions: Suggestion[] }>({
+    queryKey: [
+      'search',
+      'suggest',
+      debouncedQuery,
+      selectedMakes.join(','),
+      selectedModels.join(','),
+    ],
+    queryFn: () => searchApi.suggest(debouncedQuery, {
+      make: selectedMakes.length > 0 ? selectedMakes : undefined,
+      model: selectedModels.length > 0 ? selectedModels : undefined,
+    }),
+    enabled: visible && debouncedQuery.length > 0,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+
+  const suggestions = suggestionResponse?.suggestions ?? [];
+
+  useEffect(() => {
+    if (selectedMakes.length > 0) return;
+    setSelectedModels([]);
+    setSelectedTrims([]);
+  }, [selectedMakes.length]);
+
+  useEffect(() => {
+    if (selectedModels.length > 0) return;
+    setSelectedTrims([]);
+  }, [selectedModels.length]);
 
   // ============================================================================
   // HANDLERS
@@ -436,10 +435,10 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
     if (selectedExtras.length > 0) params.extras = selectedExtras;
     
     // Filter categories
-    if (selectedBodyTypes.length > 0) params.bodyType = selectedBodyTypes;
-    if (selectedFuelTypes.length > 0) params.fuelType = selectedFuelTypes;
-    if (selectedTransmission.length > 0) params.transmission = selectedTransmission;
-    if (selectedSpecs.length > 0) params.specs = selectedSpecs;
+    if (selectedBodyTypes.length > 0) params.bodyType = selectedBodyTypes as SearchParams['bodyType'];
+    if (selectedFuelTypes.length > 0) params.fuelType = selectedFuelTypes as SearchParams['fuelType'];
+    if (selectedTransmission.length > 0) params.transmission = selectedTransmission as SearchParams['transmission'];
+    if (selectedSpecs.length > 0) params.specs = selectedSpecs as SearchParams['specs'];
     if (selectedCondition) params.condition = selectedCondition;
     if (selectedSellerType) params.sellerType = selectedSellerType;
 
