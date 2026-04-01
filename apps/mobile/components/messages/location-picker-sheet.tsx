@@ -141,7 +141,7 @@ export function LocationPickerSheet({
         </View>
 
         {/* Map Preview */}
-        <View style={[styles.mapContainer, { backgroundColor: colors.surfaceSecondary }]}>
+        <View style={[styles.mapContainer, { backgroundColor: colors.surfaceSecondary }]}> 
           {isLoading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={colors.primary} />
@@ -171,7 +171,7 @@ export function LocationPickerSheet({
                 resizeMode="cover"
               />
               {/* Pin overlay */}
-              <View style={[styles.pinOverlay, { backgroundColor: colors.primary }]}>
+              <View style={[styles.pinOverlay, { backgroundColor: colors.primary }]}> 
                 <MapPin size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={Stroke.icon} />
               </View>
             </>
@@ -180,7 +180,7 @@ export function LocationPickerSheet({
 
         {/* Location Info */}
         {location && (
-          <View style={[styles.locationInfo, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={[styles.locationInfo, { backgroundColor: colors.surface, borderColor: colors.border }]}> 
             <View style={styles.locationTextContainer}>
               {location.placeName && (
                 <Text variant="body" numberOfLines={1}>

@@ -44,8 +44,10 @@ function formatTime(dateStr: string): string {
 const AVATAR_SIZE = Sizes.avatarLg;
 const ROW_H_PAD = Layout.screenPadding;
 const ROW_GAP = Spacing.md;
+const ROW_V_PAD = Spacing.md;
+const SUB_ROW_V_PAD = Spacing.sm;
 const UNREAD_BADGE_SIZE = Sizes.bubbleXs;
-const META_COLUMN_WIDTH = Sizes.bubble;
+const META_MIN_WIDTH = Sizes.bubbleMd;
 
 export function ConversationGroup({
   name,
@@ -89,7 +91,7 @@ export function ConversationGroup({
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              paddingVertical: Spacing.md,
+              paddingVertical: ROW_V_PAD,
               gap: ROW_GAP,
               opacity: pressed ? 0.7 : 1,
             }}
@@ -147,7 +149,6 @@ export function ConversationGroup({
               <Text
                 variant="subheadEmphasized"
                 tone="default"
-                style={{ flex: 1 }}
                 numberOfLines={1}
               >
                 {name}
@@ -165,7 +166,16 @@ export function ConversationGroup({
               </View>
             </View>
 
-            <View style={{ width: META_COLUMN_WIDTH, alignItems: 'center', justifyContent: 'center', gap: Spacing.xs }}>
+            <View
+              style={{
+                minWidth: META_MIN_WIDTH,
+                paddingLeft: Spacing.xs,
+                alignItems: 'flex-end',
+                justifyContent: 'center',
+                gap: Spacing.xs,
+                flexShrink: 0,
+              }}
+            >
               {isMulti ? (
                 <View
                   style={{
@@ -221,7 +231,7 @@ export function ConversationGroup({
                   {({ pressed }) => (
                     <View
                       style={{
-                        paddingVertical: Spacing.sm,
+                        paddingVertical: SUB_ROW_V_PAD,
                         gap: Spacing.xs,
                         opacity: pressed ? 0.7 : 1,
                       }}
@@ -231,7 +241,6 @@ export function ConversationGroup({
                           <Text
                             variant="subheadEmphasized"
                             tone={cUnread ? 'default' : 'secondary'}
-                            style={{ flex: 1 }}
                             numberOfLines={1}
                           >
                             {c.listing?.title || 'General Inquiry'}
@@ -271,7 +280,16 @@ export function ConversationGroup({
                             </Text>
                           </View>
                         </View>
-                        <View style={{ width: META_COLUMN_WIDTH, alignItems: 'center', justifyContent: 'center', gap: Spacing.xs }}>
+                        <View
+                          style={{
+                            minWidth: META_MIN_WIDTH,
+                            paddingLeft: Spacing.xs,
+                            alignItems: 'flex-end',
+                            justifyContent: 'center',
+                            gap: Spacing.xs,
+                            flexShrink: 0,
+                          }}
+                        >
                           <Text variant="footnote" tone="secondary">
                             {formatTime(c.lastMessageAt)}
                           </Text>
