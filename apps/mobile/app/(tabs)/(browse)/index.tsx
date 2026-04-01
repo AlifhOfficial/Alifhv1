@@ -6,12 +6,13 @@
  * No local filter state - all updates go through context.
  */
 
-import { Text, HapticRefreshControl } from '@/components/ui';
+import { Text, HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SearchX } from 'lucide-react-native';
 
 import { BrowseTabBar, type FilterPillType } from '@/components/browse';
 import { ACTIVE_CHIPS_HEIGHT } from '@/components/layout/active-search-chips';
@@ -535,9 +536,12 @@ export default function BrowseScreen() {
     }
 
     return (
-      <View style={styles.empty}>
-        <Text variant="body" tone="secondary">No cars found</Text>
-      </View>
+      <EmptyState
+        icon={SearchX}
+        title="No cars found."
+        subtitle="Try adjusting your filters or search terms."
+        style={styles.empty}
+      />
     );
   }, [showInitialLoading, viewMode, visibleListings.length]);
 
@@ -704,7 +708,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   empty: {
-    alignItems: 'center',
+    flex: 1,
     paddingVertical: Spacing['3xl'],
   },
   loadingMore: {

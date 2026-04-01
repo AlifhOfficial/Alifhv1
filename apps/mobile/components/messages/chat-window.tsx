@@ -3,7 +3,7 @@
  * Full conversation view with messages list, input, and real-time updates
  */
 
-import { Text, Skeleton } from '@/components/ui';
+import { Text, Skeleton, EmptyState } from '@/components/ui';
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, ActivityIndicator, Dimensions, Platform, Pressable } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
@@ -21,6 +21,7 @@ import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { MobileHeader } from '@/components/layout';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
+import { MessageCircle } from 'lucide-react-native';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { LocationPickerSheet } from './location-picker-sheet';
@@ -294,9 +295,11 @@ export function ChatWindow({
   // Empty state
   const ListEmptyComponent = useMemo(() => {
     return (
-      <View style={styles.emptyContainer}>
-        <Text variant="subhead" tone="secondary">No messages yet. Say hi! 👋</Text>
-      </View>
+      <EmptyState
+        icon={MessageCircle}
+        title="No messages yet."
+        subtitle="Say hi and start the conversation!"
+      />
     );
   }, []);
 

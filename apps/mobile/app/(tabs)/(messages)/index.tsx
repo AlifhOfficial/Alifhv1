@@ -7,7 +7,7 @@
  * - Multiple conversations with same partner/user render as collapsible groups
  */
 
-import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState, HapticRefreshControl } from '@/components/ui';
+import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState, HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useMemo, useCallback, useRef } from 'react';
 import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -19,7 +19,7 @@ import {
   useConversations,
 } from '@/components/messages';
 import { MobileHeader, getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
-import { Colors, Layout, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Layout, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import type { Conversation } from '@/lib/messaging-api';
@@ -236,24 +236,24 @@ export default function MessagesScreen() {
 
     if (error && conversations.length === 0) {
       return (
-        <View style={styles.emptyState}>
-          <Text variant="body" style={{ textAlign: 'center', color: colors.labelSecondary }}>{error}</Text>
-        </View>
+        <EmptyState
+          icon={MessageCircle}
+          title="No messages yet."
+          subtitle={error}
+          style={styles.emptyState}
+        />
       );
     }
 
     return (
-      <View style={styles.emptyState}>
-        <View style={[styles.iconCircle, { backgroundColor: colors.fill2 }]}>
-          <MessageCircle size={Sizes.avatarSm} color={colors.labelTertiary} strokeWidth={1.5} />
-        </View>
-        <Text variant="title3Emphasized">No Messages Yet</Text>
-        <Text variant="body" tone="secondary" style={{ textAlign: 'center' }}>
-          Your conversations will appear here
-        </Text>
-      </View>
+      <EmptyState
+        icon={MessageCircle}
+        title="No messages yet."
+        subtitle="Your conversations will appear here."
+        style={styles.emptyState}
+      />
     );
-  }, [isAuthenticated, isLoading, isRefreshing, conversations.length, error, colors]);
+  }, [isAuthenticated, isLoading, isRefreshing, conversations.length, error]);
 
   const headerInset = getMobileHeaderContentInset(insets.top);
   const tabBarInset = getTabBarContentInset(insets.bottom);
@@ -326,17 +326,5 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: Spacing['5xl'],
-    gap: Spacing.sm,
-  },
-  iconCircle: {
-    width: Sizes.avatarLg + Spacing.lg,
-    height: Sizes.avatarLg + Spacing.lg,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.sm,
   },
 });

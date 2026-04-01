@@ -15,7 +15,7 @@
  * @module components/user-inventory-management/inventory-screen
  */
 
-import { Text, HapticPressable, Skeleton, HapticRefreshControl } from '@/components/ui';
+import { Text, HapticPressable, Skeleton, HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet, FlatList, Pressable, ScrollView, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 
@@ -24,7 +24,6 @@ import { getAppThumbUrl } from '@/lib/config';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Ionicons } from '@expo/vector-icons';
 import {
   MoreVertical,
   Plus,
@@ -32,9 +31,11 @@ import {
   Package,
   ListFilter,
   Check,
+  Image as ImageIcon,
+  AlertCircle,
 } from 'lucide-react-native';
 
-import { Colors, Shadows, Spacing, Radius, Layout, Sizes, ZIndex, AspectRatio, BorderWidths } from '@/constants/theme';
+import { Colors, Shadows, Spacing, Radius, Layout, Sizes, ZIndex, AspectRatio, BorderWidths, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import {
@@ -72,9 +73,6 @@ import { getMobileHeaderContentInset } from '@/components/layout';
 
 /** FAB dimensions — derived from theme */
 const FAB_SIZE = Sizes.bubbleMd + Spacing.xs;
-
-/** Empty state icon container — derived from theme */
-const EMPTY_ICON_SIZE = Spacing['5xl'] + Spacing['3xl'];
 
 const SPECS_SHORT: Record<string, string> = {
   gcc: 'GCC', us: 'US', european: 'EU', japanese: 'JP',
@@ -344,7 +342,7 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
               />
             ) : (
               <View style={[styles.image, styles.imagePlaceholder, { backgroundColor: colors.skeleton }]}>
-                <Ionicons name="image-outline" size={Sizes.iconXl} color={colors.labelQuaternary} />
+                <ImageIcon size={Sizes.iconXl} color={colors.labelQuaternary} strokeWidth={Stroke.icon} />
               </View>
             )}
             {/* Status badge */}
@@ -417,32 +415,22 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
     const isAll = activeTab === 'all';
 
     return (
-      <View style={styles.emptyContainer}>
-        <View style={[styles.emptyIcon, { backgroundColor: colors.surfaceSecondary }]}>
-          <Ionicons name="image-outline" size={Sizes.iconXl} color={colors.labelQuaternary} />
-        </View>
-        <Text variant="headline" style={{ marginTop: Spacing.lg }}>
-          {isAll ? 'No listings yet' : `No ${tabLabel.toLowerCase()} listings`}
-        </Text>
-        <Text variant="body" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
-          {isAll
-            ? 'Create your first listing to start selling'
-            : `Listings matching "${tabLabel}" will appear here`}
-        </Text>
-        {isAll && (
-          <HapticPressable
-            onPress={openCreateFlow}
-            style={[styles.emptyBtn, { backgroundColor: colors.primary }]}
-          >
-            <Plus size={Sizes.iconSm} color={colors.primaryForeground} />
-            <Text variant="body" style={{ color: colors.primaryForeground }}>
-              Create Listing
-            </Text>
-          </HapticPressable>
-        )}
-      </View>
+      <EmptyState
+        icon={Package}
+        title={isAll ? 'No listings yet.' : `No ${tabLabel.toLowerCase()} listings.`}
+        subtitle={
+          isAll
+            ? 'Create your first listing to start selling.'
+            : `Listings matching "${tabLabel}" will appear here.`
+        }
+        action={
+          isAll
+            ? { label: 'Create Listing', onPress: openCreateFlow, icon: Plus }
+            : undefined
+        }
+      />
     );
-  }, [isLoading, activeTab, colors, router]);
+  }, [isLoading, activeTab, openCreateFlow]);
 
   const renderFooter = useCallback(() => {
     if (!isLoadingMore) return <View style={{ height: insets.bottom + Spacing['4xl'] }} />;
@@ -481,7 +469,7 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
         </View>
       ) : error && listings.length === 0 ? (
         <View style={[styles.centerContainer, { paddingTop: headerInset, paddingBottom: footerHeight }]}>
-          <Ionicons name="alert-circle-outline" size={Sizes.avatarLg} color={colors.error} />
+          <AlertCircle size={Sizes.avatarLg} color={colors.error} strokeWidth={Stroke.icon} />
           <Text
             variant="body"
             style={{ color: colors.error, textAlign: 'center', marginTop: Spacing.md }}
@@ -499,7 +487,7 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
           keyExtractor={(item) => item.id}
           renderItem={renderCard}
           contentInsetAdjustmentBehavior="never"
-          contentContainerStyle={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }]}
+          contentContainerStyle={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }, listings.length === 0 && { flexGrow: 1 }]}
           ListEmptyComponent={renderEmptyState}
           ListFooterComponent={renderFooter}
           onScroll={onScroll}
@@ -860,28 +848,7 @@ const styles = StyleSheet.create({
   },
 
   // ── Empty State ────────────────────────────────────────────────────────
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: EMPTY_ICON_SIZE,
-    paddingHorizontal: Spacing['4xl'],
-  },
-  emptyIcon: {
-    width: EMPTY_ICON_SIZE,
-    height: EMPTY_ICON_SIZE,
-    borderRadius: EMPTY_ICON_SIZE / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md,
-    borderRadius: Radius.lg,
-    marginTop: Spacing['2xl'],
-  },
+  // (handled by shared EmptyState component)
 
   // ── Loading / Error ────────────────────────────────────────────────────
   centerContainer: {

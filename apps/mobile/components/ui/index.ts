@@ -60,7 +60,8 @@ export { ErrorBoundary } from './error-boundary';
 // Network status
 export { OfflineBanner } from './offline-banner';
 
-// Auth Required Empty State
+// Empty States
+export { EmptyState, type EmptyStateProps, type EmptyStateAction, type EmptyStateIconComponent } from './empty-state';
 export { AuthRequiredEmptyState, type AuthRequiredEmptyStateProps } from './auth-required-empty-state';
 
 // Themed Alert (Android-compatible)

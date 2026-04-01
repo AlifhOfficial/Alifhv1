@@ -13,14 +13,13 @@
  * @module components/bookings/bookings-screen
  */
 
-import { Text, HapticPressable, Skeleton, BrandAvatar, HapticRefreshControl } from '@/components/ui';
+import { Text, HapticPressable, Skeleton, BrandAvatar, HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useCallback, useRef, useState } from 'react';
 import { View, StyleSheet, FlatList, ScrollView, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Ionicons } from '@expo/vector-icons';
 import { Calendar1, Clock, ListFilter, Check, MoreVertical } from 'lucide-react-native';
 
 import { Colors, Fonts, Shadows, Spacing, Radius, Layout, Sizes, ZIndex, AspectRatio, BorderWidths } from '@/constants/theme';
@@ -43,9 +42,6 @@ import { getMobileHeaderContentInset } from '@/components/layout';
 
 /** FAB dimensions — derived from theme */
 const FAB_SIZE = Sizes.actionButtonLg;
-
-/** Empty state icon container — derived from theme */
-const EMPTY_ICON_SIZE = Spacing['5xl'] + Spacing['3xl'];
 
 // ─── Tab Configuration ───────────────────────────────────────────────────────
 
@@ -283,21 +279,17 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
     const isAll = activeTab === 'all';
 
     return (
-      <View style={styles.emptyContainer}>
-        <View style={[styles.emptyIcon, { backgroundColor: colors.surfaceSecondary }]}>
-          <Ionicons name="calendar-outline" size={Sizes.iconXl} color={colors.labelQuaternary} />
-        </View>
-        <Text variant="headline" style={{ marginTop: Spacing.lg }}>
-          {isAll ? 'No bookings yet' : `No ${tabLabel.toLowerCase()} bookings`}
-        </Text>
-        <Text variant="body" tone="secondary" style={{ textAlign: 'center', marginTop: Spacing.sm }}>
-          {isAll
+      <EmptyState
+        icon={Calendar1}
+        title={isAll ? 'No bookings yet.' : `No ${tabLabel.toLowerCase()} bookings.`}
+        subtitle={
+          isAll
             ? 'When you book a test drive on a listing, it will appear here.'
-            : `You don't have any ${tabLabel.toLowerCase()} bookings.`}
-        </Text>
-      </View>
+            : `You don't have any ${tabLabel.toLowerCase()} bookings.`
+        }
+      />
     );
-  }, [isLoading, activeTab, colors]);
+  }, [isLoading, activeTab]);
 
   const renderFooter = useCallback(() => {
     if (!isLoadingMore) return <View style={{ height: insets.bottom + Spacing['4xl'] }} />;
@@ -354,7 +346,7 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
           keyExtractor={(item) => item.id}
           renderItem={renderCard}
           contentInsetAdjustmentBehavior="never"
-          contentContainerStyle={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }]}
+          contentContainerStyle={[styles.listContent, { paddingTop: headerInset, paddingBottom: footerHeight }, bookings.length === 0 && { flexGrow: 1 }]}
           ListEmptyComponent={renderEmptyState}
           ListFooterComponent={renderFooter}
           onScroll={onScroll}
@@ -621,19 +613,7 @@ const styles = StyleSheet.create({
   },
 
   // ── Empty State ────────────────────────────────────────────────────────
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: EMPTY_ICON_SIZE,
-    paddingHorizontal: Spacing['4xl'],
-  },
-  emptyIcon: {
-    width: EMPTY_ICON_SIZE,
-    height: EMPTY_ICON_SIZE,
-    borderRadius: EMPTY_ICON_SIZE / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  // (now handled by shared EmptyState component)
 
   // ── Loading / Error ────────────────────────────────────────────────────
   centerContainer: {

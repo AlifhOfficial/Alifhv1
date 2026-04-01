@@ -2,16 +2,15 @@
  * Saved List - Displays saved listings (favorites or superlikes)
  */
 
-import { Text, HapticPressable, HapticRefreshControl } from '@/components/ui';
+import { Text, HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useCallback } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Heart, Zap, ArrowRight } from 'lucide-react-native';
+import { Heart, Zap } from 'lucide-react-native';
 
-import { Shadows, Sizes, Spacing, Radius } from '@/constants/theme';
+import { Sizes, Spacing, Radius } from '@/constants/theme';
 import { getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
 import { CarCardList } from '@/components/cards/car-card-list';
 import { SavedListingCard } from '@/lib/saved-api';
@@ -31,50 +30,8 @@ interface SavedListProps {
 }
 
 // ============================================================================
-// EMPTY STATE COMPONENT
+// SAVED LIST
 // ============================================================================
-
-function EmptyState({ 
-  colors,
-  isFavorites,
-  onBrowse,
-}: { 
-  colors: ThemeColors;
-  isFavorites: boolean;
-  onBrowse: () => void;
-}) {
-  const IconComponent = isFavorites ? Heart : Zap;
-  const iconColor = isFavorites ? colors.favorite : colors.warning;
-  
-  return (
-    <View style={styles.emptyContainer}>
-      <Animated.View 
-        entering={FadeIn.duration(300)} 
-        style={[styles.emptyCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
-      >
-        <IconComponent size={Sizes.iconXl} color={iconColor} fill={iconColor} strokeWidth={1.5} />
-        <Text variant="headline" style={styles.emptyTitle}>
-          {isFavorites ? 'No favorites yet' : 'No superlikes yet'}
-        </Text>
-        <Text variant="subhead" tone="secondary" style={styles.emptySubtitle}>
-          {isFavorites 
-            ? 'Tap the heart on any listing to save it here'
-            : 'Long press the heart to superlike a listing'}
-        </Text>
-        <HapticPressable
-          haptic="medium"
-          onPress={onBrowse}
-          style={styles.ctaRow}
-        >
-          <Text variant="headline" style={{ color: colors.label }}>Browse</Text>
-          <View style={[styles.ctaBubble, { backgroundColor: colors.background, borderColor: colors.border }]}>
-            <ArrowRight size={Sizes.iconXs} color={colors.label} strokeWidth={2} />
-          </View>
-        </HapticPressable>
-      </Animated.View>
-    </View>
-  );
-}
 
 export function SavedList({ 
   colors,
@@ -101,7 +58,17 @@ export function SavedList({
   // Empty state
   if (listings.length === 0) {
     const isFavorites = activeTab === 'favorites';
-    return <EmptyState colors={colors} isFavorites={isFavorites} onBrowse={handleBrowse} />;
+    return (
+      <EmptyState
+        icon={isFavorites ? Heart : Zap}
+        title={isFavorites ? 'Your favorites is empty.' : 'No superlikes yet.'}
+        subtitle={
+          isFavorites
+            ? 'Tap the heart on any listing to save it here.'
+            : 'Long press the heart on a listing to superlike it.'
+        }
+      />
+    );
   }
 
   return (
@@ -157,42 +124,6 @@ export function SavedList({
 }
 
 const styles = StyleSheet.create({
-  // Empty State
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing['2xl'],
-  },
-  emptyCard: {
-    alignItems: 'center',
-    padding: Spacing.xl,
-    borderRadius: Radius['2xl'],
-    borderWidth: 1,
-    gap: Spacing.sm,
-    ...Shadows.md,
-  },
-  emptyTitle: {
-    textAlign: 'center',
-  },
-  emptySubtitle: {
-    textAlign: 'center',
-  },
-  ctaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    marginTop: Spacing.sm,
-  },
-  ctaBubble: {
-    width: Sizes.bubbleXs,
-    height: Sizes.bubbleXs,
-    borderRadius: Radius.full,
-    borderWidth: StyleSheet.hairlineWidth,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  
   // List
   listContent: {
     paddingHorizontal: Spacing.lg,
