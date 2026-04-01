@@ -66,7 +66,7 @@ export function BrowseDrawerSheet({
     >
       <View style={styles.container}>
         <Pressable style={[styles.backdrop, { backgroundColor: colors.overlay }]} onPress={onClose} />
-        <View style={[styles.popover, { bottom: bottomOffset + Sizes.actionButtonLg + Spacing.lg, backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={[styles.popover, { bottom: bottomOffset + Sizes.actionButtonLg + Spacing.lg, backgroundColor: colors.sheet, borderColor: colors.border }]}>
           <View style={styles.handleWrap}>
             <View style={[styles.handleIndicator, { backgroundColor: colors.border }]} />
           </View>
@@ -82,7 +82,7 @@ export function BrowseDrawerSheet({
           </View>
 
           <View style={styles.rows}>
-            <HapticPressable style={[styles.row, { backgroundColor: colors.backgroundSecondary }]} onPress={handleSettingsPress}>
+            <HapticPressable style={[styles.row, { backgroundColor: colors.surface }]} onPress={handleSettingsPress}>
               <Text variant="subhead">Filters</Text>
               {settingsCount > 0 ? (
                 <View style={[styles.badge, { backgroundColor: colors.label }]}>
@@ -100,7 +100,7 @@ export function BrowseDrawerSheet({
           {pills.map((pill) => (
             <HapticPressable
               key={pill.type}
-              style={[styles.row, { backgroundColor: colors.backgroundSecondary }]}
+              style={[styles.row, { backgroundColor: colors.surface }]}
               onPress={() => handlePillPress(pill.type)}
             >
               <Text variant="subhead">{pill.label}</Text>
@@ -118,7 +118,7 @@ export function BrowseDrawerSheet({
             </HapticPressable>
           ))}
 
-            <HapticPressable style={[styles.row, { backgroundColor: colors.backgroundSecondary }]} onPress={handleViewToggle}>
+            <HapticPressable style={[styles.row, { backgroundColor: colors.surface }]} onPress={handleViewToggle}>
               <Text variant="subhead">View</Text>
               <Text variant="subhead" tone="secondary">{viewMode === 'grid' ? 'Grid' : 'List'}</Text>
             </HapticPressable>

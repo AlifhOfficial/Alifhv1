@@ -81,7 +81,7 @@ export function SellerDescriptionSheet({ visible, onClose, description, sellerNa
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{
-        backgroundColor: colors.surface,
+        backgroundColor: colors.sheet,
         borderTopLeftRadius: Radius.sheet,
         borderTopRightRadius: Radius.sheet,
         borderCurve: 'continuous',

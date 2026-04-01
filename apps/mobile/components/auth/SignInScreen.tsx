@@ -3,7 +3,7 @@ import { Platform, StyleSheet, TextInput, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Button, HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, Text } from '@/components/ui';
 import { BrandColors, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
@@ -111,49 +111,55 @@ export function SignInScreen({
           onSubmitEditing={() => passwordRef.current?.focus()}
         />
 
-        <AuthField
-          ref={passwordRef}
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Enter your password"
-          secureTextEntry={!showPassword}
-          autoComplete={Platform.OS === 'android' ? 'off' : 'password'}
-          textContentType={Platform.OS === 'ios' ? 'oneTimeCode' : undefined}
-          returnKeyType="done"
-          editable={!isLoading}
-          onSubmitEditing={handleSubmit}
-          right={
-            <HapticPressable onPress={() => setShowPassword((value) => !value)}>
-              <Text variant="subhead" tone="secondary">
-                {showPassword ? 'Hide' : 'Show'}
+        <View style={styles.passwordGroup}>
+          <AuthField
+            ref={passwordRef}
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Enter your password"
+            secureTextEntry={!showPassword}
+            autoComplete={Platform.OS === 'android' ? 'off' : 'password'}
+            textContentType={Platform.OS === 'ios' ? 'oneTimeCode' : undefined}
+            returnKeyType="done"
+            editable={!isLoading}
+            onSubmitEditing={handleSubmit}
+            right={
+              <HapticPressable onPress={() => setShowPassword((value) => !value)}>
+                <Text variant="subhead" tone="secondary">
+                  {showPassword ? 'Hide' : 'Show'}
+                </Text>
+              </HapticPressable>
+            }
+          />
+          <View style={styles.forgotRow}>
+            <HapticPressable onPress={onForgotPassword} disabled={isLoading}>
+              <Text variant="subhead" style={{ color: colors.primary }}>
+                Forgot password?
               </Text>
             </HapticPressable>
-          }
-        />
-
-        <View style={styles.actions}>
-          <Button variant="ghost" size="medium" onPress={onForgotPassword}>
-            Forgot password?
-          </Button>
-          <AuthPrimaryButton onPress={handleSubmit} loading={isLoading} disabled={!isValid}>
-            Sign in
-          </AuthPrimaryButton>
+          </View>
         </View>
+
+        <AuthPrimaryButton onPress={handleSubmit} loading={isLoading} disabled={!isValid}>
+          Sign in
+        </AuthPrimaryButton>
       </AuthSection>
 
       {(onGoogleSignIn || onAppleSignIn) ? (
-        <AuthSection>
-          <Text variant="subhead" tone="secondary">
-            Faster ways to sign in
-          </Text>
+        <>
+          <View style={styles.dividerRow}>
+            <View style={[styles.dividerLine, { backgroundColor: colors.separator }]} />
+            <Text variant="footnote" tone="muted">or</Text>
+            <View style={[styles.dividerLine, { backgroundColor: colors.separator }]} />
+          </View>
           <View style={styles.socialStack}>
             {onAppleSignIn && Platform.OS === 'ios' ? (
               <HapticPressable
                 onPress={onAppleSignIn}
                 disabled={isLoading}
                 style={({ pressed }) => [
-                  styles.socialAction,
+                  styles.socialButton,
                   {
                     backgroundColor: colors.label,
                     borderColor: colors.label,
@@ -172,41 +178,54 @@ export function SignInScreen({
                 onPress={onGoogleSignIn}
                 disabled={isLoading}
                 style={({ pressed }) => [
-                  styles.socialAction,
-                  styles.googleAction,
+                  styles.socialButton,
                   {
+                    backgroundColor: colors.white,
                     borderColor: colors.border,
                     opacity: pressed || isLoading ? 0.92 : 1,
                   },
                 ]}
               >
                 <GoogleIcon size={Sizes.iconSm} />
-                <Text variant="headline" style={{ color: '#050505' }}>
+                <Text variant="headline" style={{ color: colors.black }}>
                   Continue with Google
                 </Text>
               </HapticPressable>
             ) : null}
           </View>
-        </AuthSection>
+        </>
       ) : null}
     </AuthScreenShell>
   );
 }
 
 const styles = StyleSheet.create({
-  actions: {
-    gap: Spacing.sm,
-  },
   centered: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  passwordGroup: {
+    gap: Spacing.sm,
+  },
+  forgotRow: {
+    alignItems: 'flex-end',
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    marginVertical: Spacing.xl,
+  },
+  dividerLine: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+  },
   socialStack: {
     gap: Spacing.md,
   },
-  socialAction: {
-    minHeight: Sizes.actionButtonLg + Spacing.xs,
+  socialButton: {
+    minHeight: Sizes.actionButtonLg,
     borderRadius: Radius.xl,
     borderWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: Spacing.lg,
@@ -214,8 +233,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-  },
-  googleAction: {
-    backgroundColor: '#FFFFFF',
   },
 });

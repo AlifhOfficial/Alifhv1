@@ -99,7 +99,7 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{
-        backgroundColor: colors.surface,
+        backgroundColor: colors.sheet,
         borderTopLeftRadius: Radius.sheet,
         borderTopRightRadius: Radius.sheet,
         borderCurve: 'continuous',

@@ -572,7 +572,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       backgroundStyle={{
-        backgroundColor: colors.surface,
+        backgroundColor: colors.sheet,
         borderTopLeftRadius: Radius.sheet,
         borderTopRightRadius: Radius.sheet,
         borderCurve: 'continuous',

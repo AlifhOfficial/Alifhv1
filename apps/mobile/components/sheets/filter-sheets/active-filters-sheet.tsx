@@ -159,7 +159,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
+      backgroundStyle={[styles.background, { backgroundColor: colors.sheet }]}
       handleComponent={renderHandle}
     >
       {/* Fixed Header */}

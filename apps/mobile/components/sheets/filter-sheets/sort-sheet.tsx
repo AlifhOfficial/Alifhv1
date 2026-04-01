@@ -90,7 +90,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
+      backgroundStyle={[styles.background, { backgroundColor: colors.sheet }]}
       handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.border }]}
     >
       <BottomSheetView style={styles.content}>

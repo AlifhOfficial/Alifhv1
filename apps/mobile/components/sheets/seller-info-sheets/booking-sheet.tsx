@@ -390,7 +390,7 @@ export const BookingSheet = memo(function BookingSheet({
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
+      backgroundStyle={[styles.background, { backgroundColor: colors.sheet }]}
       handleComponent={renderHandle}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"

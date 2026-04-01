@@ -1,7 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowRight } from 'lucide-react-native';
 
 import { HapticPressable, Text } from '@/components/ui';
 import { Layout, Radius, Sizes, Spacing } from '@/constants/theme';
@@ -17,53 +16,44 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
 
   return (
     <View style={styles.screen}>
-      <View style={[styles.content, { paddingTop: insets.top + Spacing.lg }]}>
-        <View style={styles.header}>
-          <Image
-            source={require('@/assets/images/Revvup-wordmark-white.png')}
-            style={styles.wordmark}
-            resizeMode="contain"
-          />
-        </View>
+      <View style={[styles.content, { paddingTop: insets.top + Spacing['2xl'], paddingBottom: Math.max(insets.bottom + Spacing.xl, Spacing['3xl']) }]}>
 
+        {/* Logo */}
+        <Image
+          source={require('@/assets/images/Revvup-wordmark-white.png')}
+          style={styles.wordmark}
+          resizeMode="contain"
+        />
+
+        {/* Hero */}
         <View style={styles.hero}>
           <Image
             source={require('@/assets/images/revvupab.png')}
             style={styles.heroArtwork}
             resizeMode="contain"
           />
-
-          <Text variant="title1Emphasized" style={styles.heroTitle}>
-            Sell smarter.
-          </Text>
-
-          <Text variant="callout" style={styles.heroSubtitle}>
-            Free listings, real buyers, no paid boosts.
+          <Text variant="largeTitleEmphasized" style={styles.heroTitle}>
+            Buy and sell{'\n'}cars in the UAE.
           </Text>
         </View>
 
-        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + Spacing.lg, Spacing['2xl']) }]}>
-          <HapticPressable onPress={onGetStarted} style={({ pressed }) => [styles.primaryAction, pressed && styles.linkPressed]}>
-            <Text variant="title2Emphasized" style={styles.primaryActionText}>
-              Create Account
-            </Text>
-            <ArrowRight size={Sizes.iconSm} color="#FFFFFF" strokeWidth={2.4} />
+        {/* Actions */}
+        <View style={styles.actions}>
+          <HapticPressable onPress={onGetStarted} style={({ pressed }) => [styles.primaryBtn, pressed && { opacity: 0.82 }]}>
+            <Text variant="bodyEmphasized" style={styles.primaryBtnText}>Create Account</Text>
           </HapticPressable>
 
-          <HapticPressable onPress={onSignIn} style={({ pressed }) => [styles.secondaryAction, pressed && styles.linkPressed]}>
-            <Text variant="headline" style={styles.secondaryActionText}>
-              Sign in
-            </Text>
+          <HapticPressable onPress={onSignIn} style={({ pressed }) => [styles.secondaryBtn, pressed && { opacity: 0.6 }]}>
+            <Text variant="body" style={styles.secondaryBtnText}>Sign In</Text>
           </HapticPressable>
 
           {onSkip ? (
-            <HapticPressable onPress={onSkip} style={({ pressed }) => [styles.skipAction, pressed && styles.skipPressed]}>
-              <Text variant="subhead" style={styles.skipText}>
-                Explore first
-              </Text>
+            <HapticPressable onPress={onSkip} style={({ pressed }) => [styles.skipBtn, pressed && { opacity: 0.5 }]}>
+              <Text variant="footnote" style={styles.skipText}>Explore without account</Text>
             </HapticPressable>
           ) : null}
         </View>
+
       </View>
     </View>
   );
@@ -79,68 +69,55 @@ const styles = StyleSheet.create({
     paddingHorizontal: Layout.screenPadding,
     justifyContent: 'space-between',
   },
-  header: {
-    gap: Spacing.md,
-  },
   wordmark: {
-    width: 188,
-    height: 54,
+    width: 120,
+    height: 36,
   },
   hero: {
-    gap: Spacing.lg,
-    paddingTop: Spacing.md,
+    gap: Spacing['2xl'],
+    alignItems: 'flex-start',
   },
   heroArtwork: {
     width: '100%',
-    height: 250,
+    height: 220,
   },
   heroTitle: {
     color: '#FFFFFF',
-    textAlign: 'center',
   },
-  heroSubtitle: {
-    color: 'rgba(255,255,255,0.76)',
-    textAlign: 'center',
-    maxWidth: 320,
-    alignSelf: 'center',
+  actions: {
+    gap: Spacing.md,
   },
-  footer: {
-    gap: Spacing.lg,
-    paddingTop: Spacing.lg,
-  },
-  primaryAction: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    alignSelf: 'stretch',
-    minHeight: Sizes.actionButtonLg,
-    paddingHorizontal: Spacing.xl,
-    backgroundColor: '#0A84FF',
+  primaryBtn: {
+    height: Sizes.actionButtonLg,
     borderRadius: Radius.full,
     borderCurve: 'continuous',
-  },
-  primaryActionText: {
-    color: '#FFFFFF',
-  },
-  secondaryAction: {
-    alignSelf: 'flex-start',
-  },
-  secondaryActionText: {
-    color: 'rgba(255,255,255,0.82)',
-  },
-  skipAction: {
-    minHeight: Sizes.actionButtonMd,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  primaryBtnText: {
+    color: '#050505',
+  },
+  secondaryBtn: {
+    height: Sizes.actionButtonLg,
+    borderRadius: Radius.full,
+    borderCurve: 'continuous',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  secondaryBtnText: {
+    color: 'rgba(255,255,255,0.82)',
+  },
+  skipBtn: {
+    alignSelf: 'center',
+    paddingVertical: Spacing.sm,
   },
   skipText: {
-    color: 'rgba(255,255,255,0.58)',
-  },
-  linkPressed: {
-    opacity: 0.66,
-  },
-  skipPressed: {
-    opacity: 0.72,
+    color: 'rgba(255,255,255,0.4)',
   },
 });
+

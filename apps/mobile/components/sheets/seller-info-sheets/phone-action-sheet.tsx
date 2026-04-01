@@ -101,7 +101,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
-      backgroundStyle={[styles.background, { backgroundColor: colors.surface }]}
+      backgroundStyle={[styles.background, { backgroundColor: colors.sheet }]}
       handleComponent={renderHandle}
       stackBehavior="push"
     >

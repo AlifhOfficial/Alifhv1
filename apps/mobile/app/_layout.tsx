@@ -76,7 +76,7 @@ const LightTheme: NavTheme = {
   colors: {
     primary: Colors.light.primary,
     background: Colors.light.background,
-    card: Colors.light.surface,
+    card: Colors.light.background,
     text: Colors.light.label,
     border: Colors.light.border,
     notification: Colors.light.primary,
@@ -94,7 +94,7 @@ const CustomDarkTheme: NavTheme = {
   colors: {
     primary: Colors.dark.primary,
     background: Colors.dark.background,
-    card: Colors.dark.surface,
+    card: Colors.dark.background,
     text: Colors.dark.label,
     border: Colors.dark.border,
     notification: Colors.dark.primary,

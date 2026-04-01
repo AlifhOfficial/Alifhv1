@@ -107,7 +107,7 @@ export function SuperlikeConfirmationSheet({
       handleComponent={renderHandle}
       handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       backgroundStyle={{
-        backgroundColor: colors.surface,
+        backgroundColor: colors.sheet,
         borderTopLeftRadius: Radius.sheet,
         borderTopRightRadius: Radius.sheet,
         borderCurve: 'continuous',
@@ -245,7 +245,7 @@ export function SuperlikeQuotaExhaustedSheet({
       handleComponent={renderHandle}
       handleIndicatorStyle={{ backgroundColor: colors.labelQuaternary, width: Sizes.bubble }}
       backgroundStyle={{
-        backgroundColor: colors.surface,
+        backgroundColor: colors.sheet,
         borderTopLeftRadius: Radius.sheet,
         borderTopRightRadius: Radius.sheet,
         borderCurve: 'continuous',
