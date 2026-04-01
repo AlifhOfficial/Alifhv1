@@ -5,13 +5,13 @@
  * Uses React Query for data fetching (caching, dedup, prefetch support).
  */
 
-import { Bubble, ConfettiBurst, HapticRefreshControl, Text, useFavoriteActions } from '@/components/ui';
+import { Bubble, ConfettiBurst, HapticRefreshControl, Text, useFavoriteActions, EmptyState } from '@/components/ui';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { 
   View, ScrollView, StyleSheet, InteractionManager, Platform } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Heart, Share2, Zap } from 'lucide-react-native';
+import { Heart, Share2, Zap, AlertCircle, FileX } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Sizes } from '@/constants/theme';
@@ -195,13 +195,15 @@ export default function ListingDetailScreen() {
         {isLoading ? (
           <CarCardDetailedMSkeleton />
         ) : error ? (
-          <View style={styles.errorContainer}>
-            <Text variant="subhead" tone="secondary" style={{ textAlign: 'center' }}>
-              {error.message?.includes('not found') 
-                ? 'This listing is no longer available or may have expired'
-                : 'Failed to load listing. Please try again.'}
-            </Text>
-          </View>
+          <EmptyState
+            icon={error.message?.includes('not found') ? FileX : AlertCircle}
+            title={error.message?.includes('not found') ? 'Listing not found.' : 'Something went wrong.'}
+            subtitle={
+              error.message?.includes('not found')
+                ? 'This listing is no longer available or may have expired.'
+                : 'We couldn\'t load this listing. Please try again.'
+            }
+          />
         ) : listing ? (
           <CarCardDetailedM 
             listing={listing.listing}

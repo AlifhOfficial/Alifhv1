@@ -6,7 +6,7 @@
  * Requires authentication — shows auth empty state if not signed in.
  */
 
-import { AuthRequiredEmptyState } from '@/components/ui';
+import { AuthGate } from '@/components/ui';
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, Platform, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { Stack } from 'expo-router';
@@ -16,6 +16,7 @@ import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { BookingsScreen } from '@/components/bookings/bookings-screen';
 import { Colors, Spacing } from '@/constants/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CalendarDays } from 'lucide-react-native';
 
 export default function BookingsRoute() {
   const { isAuthenticated } = useAuth();
@@ -40,9 +41,10 @@ export default function BookingsRoute() {
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Bookings', headerTintColor: colors.label }} />
         <MobileHeader title="Bookings" showBackButton titleHidden={isHeaderTitleHidden} />
         <View style={{ flex: 1, paddingTop: headerInset }}>
-        <AuthRequiredEmptyState
-          title="Sign in to view bookings"
-          subtitle="Manage your test drive appointments on Revvup"
+        <AuthGate
+          icon={CalendarDays}
+          title="Sign in to view bookings."
+          subtitle="Manage your test drive appointments on Revvup."
         />
         </View>
       </View>

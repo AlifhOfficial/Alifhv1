@@ -5,7 +5,7 @@
  * Conversation data can be passed via nav params to avoid fetch.
  */
 
-import { Text } from '@/components/ui';
+import { Text, EmptyState } from '@/components/ui';
 import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -18,6 +18,7 @@ import { useAuth } from '@/context/auth-context';
 import { useConversation } from '@/hooks/use-messaging-query';
 import type { Conversation } from '@/lib/messaging-api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MessageCircleOff, AlertCircle, ArrowLeft } from 'lucide-react-native';
 
 export default function ChatScreen() {
   const { colorScheme } = useTheme();
@@ -71,16 +72,12 @@ export default function ChatScreen() {
         <Stack.Screen options={{ ...nativeHeaderOptions, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.label, title: '' }} />
         <MobileHeader title="Chat" showBackButton onBackPress={handleBack} />
         <View style={[styles.centered, { paddingTop: headerInset }]}>
-          <Text variant="body" tone="secondary" style={styles.errorText}>
-            Conversation not found
-          </Text>
-          <Text
-            tone="primary"
-            style={styles.backLink}
-            onPress={handleBack}
-           variant="body">
-            ← Go Back
-          </Text>
+          <EmptyState
+            icon={MessageCircleOff}
+            title="Conversation not found."
+            subtitle="This conversation doesn't exist or may have been deleted."
+            action={{ label: 'Go Back', onPress: handleBack, icon: ArrowLeft }}
+          />
         </View>
       </View>
     );
@@ -93,16 +90,12 @@ export default function ChatScreen() {
         <Stack.Screen options={{ ...nativeHeaderOptions, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.label, title: '' }} />
         <MobileHeader title="Chat" showBackButton onBackPress={handleBack} />
         <View style={[styles.centered, { paddingTop: headerInset }]}>
-          <Text variant="body" tone="secondary" style={styles.errorText}>
-            {error.message}
-          </Text>
-          <Text
-            tone="primary"
-            style={styles.backLink}
-            onPress={handleBack}
-           variant="body">
-            ← Go Back
-          </Text>
+          <EmptyState
+            icon={AlertCircle}
+            title="Something went wrong."
+            subtitle="We couldn't load this conversation. Please try again."
+            action={{ label: 'Go Back', onPress: handleBack, icon: ArrowLeft }}
+          />
         </View>
       </View>
     );

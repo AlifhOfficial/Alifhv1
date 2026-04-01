@@ -5,11 +5,11 @@
 
 import { Text } from './text';
 import React, { Component, type ReactNode } from 'react';
-import { View, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, StyleSheet as RNStyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react-native';
+import { AlertTriangle, RefreshCw } from 'lucide-react-native';
 
-import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, Stroke, scale } from '@/constants/theme';
 
 interface Props {
   children: ReactNode;
@@ -19,13 +19,12 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
-  errorInfo: React.ErrorInfo | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -33,18 +32,11 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    this.setState({ errorInfo });
-    // Log to error tracking service here (e.g., Sentry, Bugsnag)
     console.error('ErrorBoundary caught:', error, errorInfo);
   }
 
   handleReload = () => {
-    // Reset the error state to attempt recovery
-    this.setState({ hasError: false, error: null, errorInfo: null });
-  };
-
-  handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
+    this.setState({ hasError: false, error: null });
   };
 
   render() {
@@ -52,130 +44,90 @@ export class ErrorBoundary extends Component<Props, State> {
       if (this.props.fallback) {
         return this.props.fallback;
       }
-
       return (
-        <ErrorFallback 
-          error={this.state.error}
+        <ErrorFallback
           onReload={this.handleReload}
-          onReset={this.handleReset}
         />
       );
     }
-
     return this.props.children;
   }
 }
 
-// Error Fallback UI Component
+// ── Error Fallback UI ────────────────────────────────────────────────────────
+// Uses Colors.dark directly — renders outside ThemeProvider context.
+
+const ICON_SIZE = scale(52);
+const ICON_CONTAINER = scale(108);
+
 interface ErrorFallbackProps {
-  error: Error | null;
   onReload: () => void;
-  onReset: () => void;
 }
 
-function ErrorFallback({ error, onReload, onReset }: ErrorFallbackProps) {
-  const colors = Colors.dark; // Use dark theme for error screen (always visible)
-  const [showDetails, setShowDetails] = React.useState(false);
+function ErrorFallback({ onReload }: ErrorFallbackProps) {
+  const colors = Colors.dark;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView 
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Icon */}
-        <View style={[styles.iconContainer, { backgroundColor: colors.error + '20' }]}>
-          <AlertTriangle size={Sizes.avatarMd} color={colors.error} strokeWidth={1.5} />
+      <View style={styles.inner}>
+        {/* Icon bubble */}
+        <View style={[styles.iconContainer, { backgroundColor: colors.fill3, borderColor: colors.border }]}>
+          <AlertTriangle size={ICON_SIZE} color={colors.labelTertiary} strokeWidth={Stroke.icon} />
         </View>
 
-        {/* Title */}
-        <Text variant="title2Emphasized" style={[styles.title, { color: colors.label }]}>
-          Something went wrong
-        </Text>
+        {/* Text block */}
+        <View style={styles.textBlock}>
+          <Text variant="title1" style={[styles.title, { color: colors.label }]}>
+            Something went wrong.
+          </Text>
+          <Text variant="subhead" style={[styles.subtitle, { color: colors.labelSecondary }]}>
+            The app ran into an unexpected issue. Try reloading.
+          </Text>
+        </View>
 
-        {/* Description */}
-        <Text variant="body" tone="secondary" style={styles.description}>
-          The app ran into an unexpected issue. We're sorry for the inconvenience.
-        </Text>
-
-        {/* Primary Actions */}
+        {/* Actions */}
         <View style={styles.actions}>
-          <Pressable
-            onPress={onReload}
-            style={[styles.button, styles.primaryButton, { backgroundColor: colors.primary }]}
+          <View
+            style={[styles.button, { backgroundColor: colors.primary }]}
+            onTouchEnd={onReload}
           >
-            <RefreshCw size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
-            <Text variant="body" style={{ color: colors.primaryForeground }}>Reload App</Text>
-          </Pressable>
-
-          <Pressable
-            onPress={onReset}
-            style={[styles.button, styles.secondaryButton, { borderColor: colors.border }]}
-          >
-            <Home size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
-            <Text variant="body" style={{ color: colors.label }}>Try Again</Text>
-          </Pressable>
-        </View>
-
-        {/* Error Details (collapsible) */}
-        {error && (
-          <View style={styles.detailsSection}>
-            <Pressable 
-              onPress={() => setShowDetails(!showDetails)}
-              style={styles.detailsToggle}
-            >
-              <Bug size={Sizes.iconXs} color={colors.labelQuaternary} />
-              <Text variant="subhead" tone="muted">
-                {showDetails ? 'Hide' : 'Show'} error details
-              </Text>
-            </Pressable>
-
-            {showDetails && (
-              <View style={[styles.errorBox, { backgroundColor: colors.surface }]}>
-                <Text variant="subhead" style={{ color: colors.error, fontFamily: 'monospace' }} tone="secondary">
-                  {error.name}: {error.message}
-                </Text>
-                {error.stack && (
-                  <Text variant="subhead" tone="muted" style={styles.stackTrace}>
-                    {error.stack.split('\n').slice(0, 5).join('\n')}
-                  </Text>
-                )}
-              </View>
-            )}
+            <RefreshCw size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={Stroke.icon} />
+            <Text variant="headline" style={{ color: colors.primaryForeground }}>Reload</Text>
           </View>
-        )}
-      </ScrollView>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = RNStyleSheet.create({
   container: {
     flex: 1,
   },
-  content: {
+  inner: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing['2xl'],
+    paddingHorizontal: Spacing['4xl'],
+    gap: Spacing['3xl'],
   },
   iconContainer: {
-    width: Sizes.avatarLg + Sizes.avatarMd,
-    height: Sizes.avatarLg + Sizes.avatarMd,
-    borderRadius: (Sizes.avatarLg + Sizes.avatarMd) / 2,
+    width: ICON_CONTAINER,
+    height: ICON_CONTAINER,
+    borderRadius: Radius.full,
+    borderWidth: RNStyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.lg,
+  },
+  textBlock: {
+    alignItems: 'center',
+    gap: Spacing.md,
   },
   title: {
     textAlign: 'center',
-    marginBottom: Spacing.sm,
   },
-  description: {
+  subtitle: {
     textAlign: 'center',
-    maxWidth: Spacing["5xl"],
-    marginBottom: Spacing.xl,
   },
   actions: {
     width: '100%',
@@ -187,34 +139,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: Spacing.sm,
     height: Spacing['5xl'] + Spacing.xs,
-    borderRadius: Radius.lg,
-  },
-  primaryButton: {
-    // backgroundColor set inline
-  },
-  secondaryButton: {
-    borderWidth: 1,
-  },
-  detailsSection: {
-    width: '100%',
-    marginTop: Spacing.xl,
-  },
-  detailsToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.xs,
-    paddingVertical: Spacing.sm,
-  },
-  errorBox: {
-    padding: Spacing.md,
-    borderRadius: Radius.md,
-    marginTop: Spacing.xs,
-  },
-  stackTrace: {
-    marginTop: Spacing.sm,
-    fontFamily: 'monospace',
-    fontSize: Spacing.sm,
-    lineHeight: Spacing.lg,
+    paddingHorizontal: Spacing['3xl'],
+    borderRadius: Radius.full,
   },
 });

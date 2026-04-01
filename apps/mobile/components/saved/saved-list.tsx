@@ -65,7 +65,7 @@ export function SavedList({
         subtitle={
           isFavorites
             ? 'Tap the heart on any listing to save it here.'
-            : 'Long press the heart on a listing to superlike it.'
+            : 'Tap the lightning bolt on any listing to superlike it.'
         }
       />
     );

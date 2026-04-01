@@ -6,7 +6,7 @@
  * Requires authentication — shows auth empty state if not signed in.
  */
 
-import { AuthRequiredEmptyState } from '@/components/ui';
+import { AuthGate } from '@/components/ui';
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, Platform, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { Stack } from 'expo-router';
@@ -16,6 +16,7 @@ import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { InventoryScreen } from '@/components/user-inventory-management/inventory-screen';
 import { Colors, Spacing } from '@/constants/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Package } from 'lucide-react-native';
 
 export default function InventoryRoute() {
   const { isAuthenticated } = useAuth();
@@ -40,9 +41,10 @@ export default function InventoryRoute() {
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Inventory', headerTintColor: colors.label }} />
         <MobileHeader title="Inventory" showBackButton titleHidden={isHeaderTitleHidden} />
         <View style={{ flex: 1, paddingTop: headerInset }}>
-        <AuthRequiredEmptyState
-          title="Sign in to view inventory"
-          subtitle="Manage your car listings on Revvup"
+        <AuthGate
+          icon={Package}
+          title="Sign in to view inventory."
+          subtitle="Manage your car listings on Revvup."
         />
         </View>
       </View>

@@ -10,6 +10,7 @@ import { Bookmark, Box, Calendar, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 import { useTheme } from '@/context/theme-context';
+import { useAuth } from '@/context/auth-context';
 import { Spacing, Radius, Layout, Sizes, Stroke } from '@/constants/theme';
 import { CreateListingFlow } from '@/components/sheets';
 
@@ -22,12 +23,17 @@ const actions = [
 
 export function QuickActions() {
   const { colors } = useTheme();
+  const { isAuthenticated, showAuthSheet } = useAuth();
   const router = useRouter();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const handleCreatePress = useCallback(() => {
+    if (!isAuthenticated) {
+      showAuthSheet('listings');
+      return;
+    }
     setIsCreateOpen(true);
-  }, []);
+  }, [isAuthenticated, showAuthSheet]);
 
   const handleCreateSuccess = useCallback((listingId: string) => {
     setIsCreateOpen(false);

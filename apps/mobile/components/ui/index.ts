@@ -62,7 +62,7 @@ export { OfflineBanner } from './offline-banner';
 
 // Empty States
 export { EmptyState, type EmptyStateProps, type EmptyStateAction, type EmptyStateIconComponent } from './empty-state';
-export { AuthRequiredEmptyState, type AuthRequiredEmptyStateProps } from './auth-required-empty-state';
+export { AuthGate, type AuthGateProps } from './auth-gate';
 
 // Themed Alert (Android-compatible)
 export { AlertProvider, useAlert } from './themed-alert';

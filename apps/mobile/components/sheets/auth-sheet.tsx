@@ -1,15 +1,13 @@
 /**
  * AuthSheet - Premium auth sheet for unauthenticated users
- * Uses @gorhom/bottom-sheet modal with the RevvupLogo
+ * Uses @gorhom/bottom-sheet modal with the Revvup wordmark
  * Shown when user tries to access features requiring authentication
  */
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useCallback, useRef, useEffect } from 'react';
-import { StyleSheet, Platform, Image } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
@@ -62,8 +60,6 @@ export function AuthSheet({
 }: AuthSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Get contextual messages
@@ -82,10 +78,8 @@ export function AuthSheet({
   const handleSheetChanges = useCallback((index: number) => {
     if (index === -1) {
       onClose();
-      // Navigate back to home when dismissed without signing in
-      router.push('/');
     }
-  }, [onClose, router]);
+  }, [onClose]);
 
   const handleSignIn = useCallback(() => {
     if (Platform.OS === 'ios') {
@@ -100,8 +94,7 @@ export function AuthSheet({
 
   const handleDismiss = useCallback(() => {
     onClose();
-    router.push('/');
-  }, [onClose, router]);
+  }, [onClose]);
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -133,24 +126,12 @@ export function AuthSheet({
       containerStyle={{ zIndex: ZIndex.modal }}
     >
       <BottomSheetView style={styles.content}>
-        {/* Header with Logo */}
-        <Animated.View 
-          entering={FadeInUp.delay(100).duration(400)}
-          style={styles.header}
-        >
-          <Image
-            source={require('@/assets/images/revv.png')}
-            style={{ width: Sizes.iconXl, height: Sizes.iconXl, tintColor: colors.label }}
-            resizeMode="contain"
-          />
-        </Animated.View>
-
         {/* Title & Subtitle */}
         <Animated.View 
-          entering={FadeInUp.delay(200).duration(400)}
+          entering={FadeInUp.delay(100).duration(400)}
           style={styles.textContent}
         >
-          <Text variant="subheadEmphasized" style={[styles.title, { color: colors.label }]}>
+          <Text variant="title1" style={[styles.title, { color: colors.label }]}>
             {displayTitle}
           </Text>
           <Text variant="subhead" style={[styles.subtitle, { color: colors.labelSecondary }]} tone="secondary">
@@ -160,21 +141,21 @@ export function AuthSheet({
 
         {/* Actions */}
         <Animated.View 
-          entering={FadeInUp.delay(300).duration(400)}
+          entering={FadeInUp.delay(200).duration(400)}
           style={styles.actions}
         >
           <HapticPressable
             onPress={handleSignIn}
             style={({ pressed }) => [{
               height: Sizes.actionButtonLg,
-              borderRadius: Radius.lg,
+              borderRadius: Radius.full,
               alignItems: 'center' as const,
               justifyContent: 'center' as const,
               backgroundColor: colors.primary,
               opacity: pressed ? 0.8 : 1,
             }]}
           >
-            <Text variant="body" style={{ color: colors.primaryForeground }}>
+            <Text variant="headline" style={{ color: colors.primaryForeground }}>
               Sign In
             </Text>
           </HapticPressable>
@@ -183,7 +164,7 @@ export function AuthSheet({
             onPress={handleDismiss}
             style={({ pressed }) => [{
               height: Sizes.actionButtonLg,
-              borderRadius: Radius.lg,
+              borderRadius: Radius.full,
               alignItems: 'center' as const,
               justifyContent: 'center' as const,
               borderWidth: 1,
@@ -191,7 +172,7 @@ export function AuthSheet({
               opacity: pressed ? 0.7 : 1,
             }]}
           >
-            <Text variant="body" style={{ color: colors.labelSecondary }}>
+            <Text variant="headline" style={{ color: colors.labelSecondary }}>
               Maybe Later
             </Text>
           </HapticPressable>
@@ -210,29 +191,23 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
   },
   content: {
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing['2xl'],
+    paddingHorizontal: Spacing['3xl'],
+    paddingTop: Spacing['2xl'],
+    paddingBottom: Spacing['3xl'],
     overflow: 'hidden',
-  },
-  header: {
-    alignItems: 'center',
-    paddingTop: Spacing.md,
+    gap: Spacing['2xl'],
   },
   textContent: {
     alignItems: 'center',
-    marginTop: Spacing.lg,
-    gap: Spacing.xs,
+    gap: Spacing.md,
   },
   title: {
     textAlign: 'center',
   },
   subtitle: {
     textAlign: 'center',
-    maxWidth: Spacing["5xl"],
   },
   actions: {
-    marginTop: Spacing['2xl'],
     gap: Spacing.md,
   },
 });

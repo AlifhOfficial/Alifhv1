@@ -3,13 +3,14 @@
  * Native-feeling, modular settings screen connected to API
  */
 
-import { Skeleton, AuthRequiredEmptyState, useAlert } from '@/components/ui';
+import { Skeleton, AuthGate, useAlert } from '@/components/ui';
 import React, { useState, useCallback } from 'react';
 import { Stack } from 'expo-router';
 import {
   StyleSheet, View, Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer, MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
+import { SlidersHorizontal } from 'lucide-react-native';
 
 import { Layout, Spacing, Radius } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
@@ -98,9 +99,10 @@ export default function SettingsScreen() {
         />
         <MobileHeader title="Settings" showBackButton />
         <View style={[styles.container, { backgroundColor: colors.background, paddingTop: headerInset }]}> 
-          <AuthRequiredEmptyState
-            title="Sign in to settings"
-            subtitle="Manage your account preferences on Revvup"
+          <AuthGate
+            icon={SlidersHorizontal}
+            title="Sign in to settings."
+            subtitle="Manage your account preferences on Revvup."
           />
         </View>
       </>

@@ -7,7 +7,7 @@
  * - Multiple conversations with same partner/user render as collapsible groups
  */
 
-import { Text, Skeleton, SkeletonCircle, AuthRequiredEmptyState, HapticRefreshControl, EmptyState } from '@/components/ui';
+import { Text, Skeleton, SkeletonCircle, AuthGate, HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useMemo, useCallback, useRef } from 'react';
 import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -208,9 +208,10 @@ export default function MessagesScreen() {
   const renderEmpty = useCallback(() => {
     if (!isAuthenticated) {
       return (
-        <AuthRequiredEmptyState
-          title="Sign in to message"
-          subtitle="Connect with buyers and sellers on Revvup"
+        <AuthGate
+          icon={MessageCircle}
+          title="Sign in to message."
+          subtitle="Connect with buyers and sellers on Revvup."
         />
       );
     }

@@ -3,7 +3,7 @@
  * Native-feeling, modular saved screen connected to API
  */
 
-import { AuthRequiredEmptyState, Text, HapticPressable } from '@/components/ui';
+import { AuthGate, Text, HapticPressable, EmptyState } from '@/components/ui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Platform, Pressable, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import Animated, {
@@ -16,7 +16,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Stack } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { Heart, Sparkles, ListFilter, Check } from 'lucide-react-native';
+import { Heart, Sparkles, ListFilter, Check, AlertCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 
@@ -133,9 +133,10 @@ export default function SavedScreen() {
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
         <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} />
         <View style={{ flex: 1, paddingTop: headerInset }}>
-        <AuthRequiredEmptyState
-          title="Sign in to save"
-          subtitle="Keep track of your favorite cars on Revvup"
+        <AuthGate
+          icon={Heart}
+          title="Sign in to save."
+          subtitle="Keep track of your favorite cars on Revvup."
         />
         </View>
       </View>
@@ -163,9 +164,13 @@ export default function SavedScreen() {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
         <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} />
-        <View style={[styles.emptyContainer, { paddingTop: headerInset }]}>
-          <Text variant="subhead" tone="secondary">Something went wrong</Text>
-          <Text variant="subhead" tone="primary" onPress={refresh}>Tap to retry</Text>
+        <View style={{ flex: 1, paddingTop: headerInset }}>
+          <EmptyState
+            icon={AlertCircle}
+            title="Something went wrong."
+            subtitle="We couldn't load your saved cars."
+            action={{ label: 'Retry', onPress: refresh }}
+          />
         </View>
       </View>
     );
