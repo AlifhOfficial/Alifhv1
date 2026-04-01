@@ -10,7 +10,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router/tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, MessageCircle, LayoutGrid } from 'lucide-react-native';
+import { Store, MessageCircle, LayoutGrid } from 'lucide-react-native';
 import type { LucideIcon } from 'lucide-react-native';
 import Animated, {
   interpolate,
@@ -23,11 +23,18 @@ import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { AppFontFamilies, BorderWidths, Colors, Radius, Shadows, Sizes, Spacing, Typography, ZIndex } from '@/constants/theme';
 
+type TabConfigItem = {
+  name: '(home)' | '(messages)' | '(browse)';
+  icon: LucideIcon;
+  label: string;
+  fillActive?: boolean;
+};
+
 const TAB_CONFIG = [
-  { name: '(home)', icon: Home, label: 'Home' },
-  { name: '(messages)', icon: MessageCircle, label: 'Chats' },
-  { name: '(browse)', icon: LayoutGrid, label: 'Browse' },
-] as const;
+  { name: '(home)', icon: Store, label: 'Home', fillActive: false },
+  { name: '(messages)', icon: MessageCircle, label: 'Chats', fillActive: false },
+  { name: '(browse)', icon: LayoutGrid, label: 'Browse', fillActive: false },
+] as const satisfies readonly TabConfigItem[];
 
 const ACTIVE_ICON_STROKE = 2.5;
 const INACTIVE_ICON_STROKE = 2.5;
@@ -44,6 +51,7 @@ type AnimatedTabChipProps = {
   activeColor: string;
   inactiveColor: string;
   transparentActiveColor: string;
+  activeFillColor?: string;
   onPress: () => void;
   onLayout: (x: number, width: number) => void;
 };
@@ -77,6 +85,7 @@ function AnimatedTabChip({
   activeColor,
   inactiveColor,
   transparentActiveColor,
+  activeFillColor,
   onPress,
   onLayout,
 }: AnimatedTabChipProps) {
@@ -87,7 +96,7 @@ function AnimatedTabChip({
   }, [focused, progress]);
 
   const contentAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: interpolate(progress.value, [0, 1], [0.98, 1]) }],
+    transform: [{ scale: interpolate(progress.value, [0, 1], [0.98, 1.04]) }],
   }));
 
   const activeLayerStyle = useAnimatedStyle(() => ({
@@ -125,7 +134,7 @@ function AnimatedTabChip({
               size={Sizes.iconMd}
               color={activeColor}
               strokeWidth={ACTIVE_ICON_STROKE}
-              fill={activeColor}
+              fill={activeFillColor ?? activeColor}
             />
           </Animated.View>
         </View>
@@ -172,11 +181,11 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
 
   // Light: white shell, slightly elevated white chip (bg on surface)
   // Dark:  black shell, slightly elevated black chip (background on surface)
-  const shellBg = toRgbaColor(colors.background, colorScheme === 'dark' ? 0.88 : 0.92);
-  const shellBorder = colors.border;
+  const shellBg = toRgbaColor(colors.background, colorScheme === 'dark' ? 0.84 : 0.92);
+  const shellBorder = colorScheme === 'dark' ? toRgbaColor(colors.border, 0.58) : colors.border;
 
-  const chipActiveBg = colors.background;
-  const chipActiveBorder = colors.border;
+  const chipActiveBg = colorScheme === 'dark' ? toRgbaColor(colors.background, 0.8) : colors.background;
+  const chipActiveBorder = colorScheme === 'dark' ? toRgbaColor(colors.border, 0.52) : colors.border;
   const chipActiveContent = colors.label;
   const chipInactiveContent = colors.labelTertiary;
   const chipTransparentActiveContent = React.useMemo(
@@ -241,6 +250,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 activeColor={chipActiveContent}
                 inactiveColor={chipInactiveContent}
                 transparentActiveColor={chipTransparentActiveContent}
+                activeFillColor={tab.fillActive ? chipActiveContent : chipTransparentActiveContent}
                 onPress={() => {
                   const now = Date.now();
                   const isDoubleTap =
@@ -314,7 +324,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: Radius.full,
     borderWidth: BorderWidths.thin,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.md,
     ...Shadows.lg,
   },
@@ -335,12 +345,12 @@ const styles = StyleSheet.create({
   chip: {
     zIndex: 1,
     borderRadius: Radius.full,
-    minWidth: Sizes.actionButtonLg + Spacing['3xl'],
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.xl,
+    minWidth: Sizes.actionButtonLg + Spacing.xl,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
   },
   chipContent: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
   },
   iconStack: {
@@ -358,9 +368,13 @@ const styles = StyleSheet.create({
   },
   labelStack: {
     position: 'relative',
+    marginTop: Spacing.xs,
+    alignItems: 'center',
   },
   chipLabel: {
-    marginLeft: Spacing.xs,
+    textAlign: 'center',
+    fontSize: 12,
+    lineHeight: 14,
   },
   labelBase: {
     opacity: 1,
@@ -368,6 +382,7 @@ const styles = StyleSheet.create({
   labelOverlay: {
     position: 'absolute',
     top: 0,
-    left: Spacing.xs,
+    left: 0,
+    right: 0,
   },
 });

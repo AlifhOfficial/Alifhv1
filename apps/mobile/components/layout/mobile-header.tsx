@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChevronLeft } from 'lucide-react-native';
+import { ArrowLeft } from 'lucide-react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -112,7 +112,7 @@ export function MobileHeader({
               accessibilityRole="button"
               accessibilityLabel="Go back"
             >
-              <ChevronLeft size={Sizes.iconSm} color={colors.label} strokeWidth={2.4} />
+                <ArrowLeft size={Sizes.iconSm} color={colors.label} strokeWidth={2.4} />
             </Bubble>
           ) : left}
         </View>

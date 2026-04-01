@@ -45,7 +45,7 @@ export function BrowseTabBar({
   const { applySearch, sortBy, applySort, updateFilterParams, getActiveFilterCount } = useSearch();
   const colors = Colors[colorScheme];
   const visibilityProgress = useSharedValue(visible ? 1 : 0);
-  const bubbleBackgroundColor = colors.background;
+  const bubbleBackgroundColor = colorScheme === 'dark' ? colors.surfaceSecondary : colors.background;
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -150,7 +150,7 @@ export function BrowseTabBar({
         pointerEvents={visible ? 'auto' : 'none'}
       >
         <View style={styles.content}>
-          <View style={styles.leftGroup}>
+          <View style={styles.centerGroup}>
             <MotiPressable
               onPress={handleDrawerPress}
               animate={({ pressed }) => {
@@ -173,9 +173,7 @@ export function BrowseTabBar({
             >
               <Package2 size={Sizes.iconMd} color={colors.label} strokeWidth={2.5} />
             </MotiPressable>
-          </View>
 
-          <View style={styles.rightGroup}>
             <MotiPressable
               onPress={handleSearchPress}
               animate={({ pressed }) => {
@@ -296,17 +294,12 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: Layout.screenPadding,
     paddingTop: Layout.headerPadding + Spacing.xs,
     paddingBottom: Spacing.sm,
   },
-  leftGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  rightGroup: {
+  centerGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
