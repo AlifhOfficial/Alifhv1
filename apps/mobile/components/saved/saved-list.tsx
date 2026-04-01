@@ -106,7 +106,6 @@ export function SavedList({
         <HapticRefreshControl
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          tintColor={colors.primary}
         />
       }
       ListHeaderComponent={

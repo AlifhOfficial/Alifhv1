@@ -56,7 +56,7 @@ export const SellerHero = memo(function SellerHero({ seller, colors }: SellerHer
           {/* Name + Badges */}
           <View style={styles.nameRow}>
             <Text
-              variant="title3Emphasized"
+              variant="headline"
               style={styles.name}
               numberOfLines={1}
             >

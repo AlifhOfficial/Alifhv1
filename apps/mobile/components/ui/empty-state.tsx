@@ -42,8 +42,8 @@ import { HapticPressable } from './haptic-pressable';
 // CONSTANTS
 // ═══════════════════════════════════════════════════
 
-const ICON_SIZE = scale(52);
-const ICON_CONTAINER_SIZE = scale(108);
+const ICON_SIZE = scale(44);
+const ICON_CONTAINER_SIZE = scale(92);
 
 // ═══════════════════════════════════════════════════
 // TYPES
@@ -115,7 +115,7 @@ export const EmptyState = memo(function EmptyState({
 
       {/* Text block */}
       <View style={styles.textBlock}>
-        <Text variant="title1" style={[styles.title, { color: colors.label }]}>
+        <Text variant="headline" style={[styles.title, { color: colors.label }]}>
           {title}
         </Text>
         <Text variant="subhead" style={[styles.subtitle, { color: colors.labelSecondary }]}>
@@ -137,7 +137,7 @@ export const EmptyState = memo(function EmptyState({
               strokeWidth={Stroke.icon}
             />
           )}
-          <Text variant="headline" style={{ color: colors.primaryForeground }}>
+          <Text variant="subhead" style={{ color: colors.primaryForeground }}>
             {action.label}
           </Text>
         </HapticPressable>
@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing['4xl'],
-    gap: Spacing['3xl'],
+    paddingHorizontal: Spacing['3xl'],
+    gap: Spacing['2xl'],
   },
   iconContainer: {
     width: ICON_CONTAINER_SIZE,
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   },
   textBlock: {
     alignItems: 'center',
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
   title: {
     textAlign: 'center',
@@ -180,9 +180,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
     borderRadius: Radius.full,
-    marginTop: Spacing.sm,
+    marginTop: Spacing.xs,
   },
 });

@@ -3,9 +3,9 @@
  * Handles phone number editing and OTP verification flow
  */
 
-import { Text, HapticPressable, useAlert, PulseLoader } from '@/components/ui';
+import { Text, HapticPressable, useAlert } from '@/components/ui';
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, TextInput, Pressable, Platform } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, TextInput, Pressable, Platform } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -246,7 +246,7 @@ export function PhoneVerificationField({
   if (step === 'sending' || step === 'verifying') {
     return (
       <View style={[styles.fieldContainer, styles.loadingContainer, { borderBottomWidth: 0 }]}>
-        <PulseLoader size="sm" variant="primary" />
+        <ActivityIndicator size="small" color={colors.labelSecondary} />
         <Text variant="body" tone="secondary">
           {step === 'sending' ? 'Sending code...' : 'Verifying...'}
         </Text>

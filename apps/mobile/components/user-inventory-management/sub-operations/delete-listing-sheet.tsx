@@ -164,7 +164,7 @@ export function DeleteListingSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
+            <Text variant="subhead" numberOfLines={1}>{listingTitle}</Text>
             <Text variant="subhead" tone="secondary">{description}</Text>
           </View>
         </View>
@@ -189,7 +189,7 @@ export function DeleteListingSheet({
               },
             ]}
           >
-            <Text variant="body" tone="secondary">Cancel</Text>
+            <Text variant="subhead" tone="secondary">Cancel</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -208,7 +208,7 @@ export function DeleteListingSheet({
             ) : (
               <>
                 <Trash2 size={Sizes.iconSm} color={colors.primaryForeground} />
-                <Text variant="body" style={{ color: colors.primaryForeground }}>
+                <Text variant="subhead" style={{ color: colors.primaryForeground }}>
                   {hardDelete ? 'Delete Forever' : 'Delete'}
                 </Text>
               </>

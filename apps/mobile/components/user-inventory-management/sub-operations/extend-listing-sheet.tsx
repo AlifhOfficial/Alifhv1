@@ -143,7 +143,7 @@ export function ExtendListingSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
+            <Text variant="subhead" numberOfLines={1}>{listingTitle}</Text>
             {expiryDisplay && (
               <Text variant="subhead" tone={expiryDisplay.isUrgent ? 'error' : 'secondary'}>
                 {expiryDisplay.text}
@@ -173,7 +173,7 @@ export function ExtendListingSheet({
                   },
                 ]}
               >
-                <Text variant="title3Emphasized" style={selected ? { color: colors.primary } : undefined}>
+                <Text variant="headline" style={selected ? { color: colors.primary } : undefined}>
                   {days}
                 </Text>
                 <Text variant="subhead" tone={selected ? 'primary' : 'secondary'}>
@@ -204,7 +204,7 @@ export function ExtendListingSheet({
               },
             ]}
           >
-            <Text variant="body" tone="secondary">Cancel</Text>
+            <Text variant="subhead" tone="secondary">Cancel</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -223,7 +223,7 @@ export function ExtendListingSheet({
             ) : (
               <>
                 <CalendarPlus size={Sizes.iconSm} color={colors.primaryForeground} />
-                <Text variant="body" style={{ color: colors.primaryForeground }}>
+                <Text variant="subhead" style={{ color: colors.primaryForeground }}>
                   Extend {selectedDays} Days
                 </Text>
               </>

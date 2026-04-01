@@ -408,9 +408,6 @@ export default function SellerContactScreen() {
           <HapticRefreshControl
             refreshing={isRefreshing}
             onRefresh={refresh}
-            tintColor={colors.primary}
-            colors={[colors.primary]}
-            progressBackgroundColor={colors.background}
           />
         }
       />

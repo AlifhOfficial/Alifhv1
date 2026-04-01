@@ -621,9 +621,6 @@ export default function BrowseScreen() {
           <HapticRefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={colors.primary}
-            colors={[colors.primary]}
-            progressBackgroundColor={colors.background}
           />
         }
       />

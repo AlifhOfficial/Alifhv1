@@ -198,7 +198,7 @@ export function ListingStatsSheet({
           <View style={[styles.metricCard, { backgroundColor: colors.fill2 }]}>
             <Text variant="subhead" tone="secondary">Click Rate</Text>
             <View style={styles.metricValueRow}>
-              <Text variant="title2Emphasized">{ctr}%</Text>
+              <Text variant="title3Emphasized">{ctr}%</Text>
             </View>
           </View>
 
@@ -206,7 +206,7 @@ export function ListingStatsSheet({
             <Text variant="subhead" tone="secondary">Engagement</Text>
             <View style={styles.metricValueRow}>
               <Flame size={Sizes.iconSm} color={colors[hotLevel.colorKey]} />
-              <Text variant="title2Emphasized" style={{ color: colors[hotLevel.colorKey] }}>
+              <Text variant="title3Emphasized" style={{ color: colors[hotLevel.colorKey] }}>
                 {hotLevel.label}
               </Text>
             </View>

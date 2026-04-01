@@ -116,7 +116,7 @@ export function SavedListingItem({ listing, colors }: SavedListingItemProps) {
         )}
 
         {/* Price */}
-        <Text style={styles.price} variant="title3Emphasized" tone="primary">{formatPrice(listing.price || 0)}</Text>
+        <Text style={styles.price} variant="headline" tone="primary">{formatPrice(listing.price || 0)}</Text>
 
         {/* Meta */}
         <View style={styles.meta}>

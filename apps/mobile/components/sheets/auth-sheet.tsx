@@ -131,7 +131,7 @@ export function AuthSheet({
           entering={FadeInUp.delay(100).duration(400)}
           style={styles.textContent}
         >
-          <Text variant="title1" style={[styles.title, { color: colors.label }]}>
+          <Text variant="title3" style={[styles.title, { color: colors.label }]}> 
             {displayTitle}
           </Text>
           <Text variant="subhead" style={[styles.subtitle, { color: colors.labelSecondary }]} tone="secondary">
@@ -155,7 +155,7 @@ export function AuthSheet({
               opacity: pressed ? 0.8 : 1,
             }]}
           >
-            <Text variant="headline" style={{ color: colors.primaryForeground }}>
+            <Text variant="subhead" style={{ color: colors.primaryForeground }}>
               Sign In
             </Text>
           </HapticPressable>
@@ -172,7 +172,7 @@ export function AuthSheet({
               opacity: pressed ? 0.7 : 1,
             }]}
           >
-            <Text variant="headline" style={{ color: colors.labelSecondary }}>
+            <Text variant="subhead" style={{ color: colors.labelSecondary }}>
               Maybe Later
             </Text>
           </HapticPressable>
@@ -192,14 +192,14 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: Spacing['3xl'],
-    paddingTop: Spacing['2xl'],
+    paddingTop: Spacing.xl,
     paddingBottom: Spacing['3xl'],
     overflow: 'hidden',
-    gap: Spacing['2xl'],
+    gap: Spacing.xl,
   },
   textContent: {
     alignItems: 'center',
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
   title: {
     textAlign: 'center',
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   actions: {
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
 });
 

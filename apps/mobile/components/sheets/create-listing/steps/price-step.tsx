@@ -87,7 +87,7 @@ export function PriceStepContent({ data, onUpdate }: StepContentProps) {
 
         {/* Formatted display */}
         {data.price && priceNum > 0 && (
-          <Text variant="title2Emphasized" style={{ color: colors.label, textAlign: 'center' }}>
+          <Text variant="title3Emphasized" style={{ color: colors.label, textAlign: 'center' }}>
             AED {priceNum.toLocaleString()}
           </Text>
         )}
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    ...Typography.title2Emphasized,
+    ...Typography.title3Emphasized,
     paddingVertical: Spacing.sm,
     textAlign: 'left',
   },

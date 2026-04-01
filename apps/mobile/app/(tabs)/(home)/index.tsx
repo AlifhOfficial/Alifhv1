@@ -87,7 +87,6 @@ export default function HomeScreen() {
           <HapticRefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor={colors.label}
           />
         }
       >

@@ -350,7 +350,7 @@ export function ChatWindow({
     }
     return (
       <View style={styles.headerTitleCol}>
-        <Text variant="title3Emphasized" numberOfLines={1}>{displayName}</Text>
+        <Text variant="headline" numberOfLines={1}>{displayName}</Text>
         {listingTitle && (
           <Text variant="subhead" tone="secondary" numberOfLines={1}>{listingTitle}</Text>
         )}

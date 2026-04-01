@@ -62,7 +62,7 @@ export function AuthSuccessScreen({
         >
           <CheckCircle2 size={Sizes.iconXl} color={colors.success} strokeWidth={2.2} />
         </View>
-        <Text variant="title3Emphasized" style={{ color: colors.label, textAlign: 'center' }}>
+        <Text variant="headline" style={{ color: colors.label, textAlign: 'center' }}>
           Ready to get started?
         </Text>
         <Text variant="subhead" tone="secondary" style={{ textAlign: 'center' }}>

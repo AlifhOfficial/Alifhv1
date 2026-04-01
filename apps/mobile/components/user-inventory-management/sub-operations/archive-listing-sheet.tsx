@@ -144,7 +144,7 @@ export function ArchiveListingSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
+            <Text variant="subhead" numberOfLines={1}>{listingTitle}</Text>
             <Text variant="subhead" tone="secondary">{description}</Text>
           </View>
         </View>
@@ -169,7 +169,7 @@ export function ArchiveListingSheet({
               },
             ]}
           >
-            <Text variant="body" tone="secondary">Cancel</Text>
+            <Text variant="subhead" tone="secondary">Cancel</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -188,7 +188,7 @@ export function ArchiveListingSheet({
             ) : (
               <>
                 <Icon size={Sizes.iconSm} color={colors.primaryForeground} />
-                <Text variant="body" style={{ color: colors.primaryForeground }}>
+                <Text variant="subhead" style={{ color: colors.primaryForeground }}>
                   {actionLabel}
                 </Text>
               </>

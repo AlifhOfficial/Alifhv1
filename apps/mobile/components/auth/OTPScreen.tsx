@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
 
-import { Button, InlineLoader, Text } from '@/components/ui';
+import { Button, Text } from '@/components/ui';
 import { Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
@@ -105,7 +105,7 @@ export function OTPScreen({
                   },
                 ]}
               >
-                <Text variant="title3Emphasized" style={{ color: colors.label }}>
+                <Text variant="headline" style={{ color: colors.label }}>
                   {digit || ' '}
                 </Text>
               </View>
@@ -126,7 +126,7 @@ export function OTPScreen({
 
         {isLoading ? (
           <View style={styles.loaderWrap}>
-            <InlineLoader size="sm" />
+            <ActivityIndicator size="small" color={colors.labelSecondary} />
           </View>
         ) : null}
 

@@ -77,7 +77,7 @@ function ErrorFallback({ onReload }: ErrorFallbackProps) {
 
         {/* Text block */}
         <View style={styles.textBlock}>
-          <Text variant="title1" style={[styles.title, { color: colors.label }]}>
+          <Text variant="headline" style={[styles.title, { color: colors.label }]}> 
             Something went wrong.
           </Text>
           <Text variant="subhead" style={[styles.subtitle, { color: colors.labelSecondary }]}>
@@ -92,7 +92,7 @@ function ErrorFallback({ onReload }: ErrorFallbackProps) {
             onTouchEnd={onReload}
           >
             <RefreshCw size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={Stroke.icon} />
-            <Text variant="headline" style={{ color: colors.primaryForeground }}>Reload</Text>
+            <Text variant="subhead" style={{ color: colors.primaryForeground }}>Reload</Text>
           </View>
         </View>
       </View>

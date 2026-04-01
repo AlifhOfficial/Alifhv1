@@ -85,7 +85,7 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
       {/* Formatted display */}
       {localMileage && (
         <View style={styles.formattedRow}>
-          <Text variant="title2Emphasized" style={{ color: colors.label }}>
+          <Text variant="title3Emphasized" style={{ color: colors.label }}>
             {mileageNum.toLocaleString()} km
           </Text>
           {isLowMileage && (

@@ -185,7 +185,7 @@ export function CarInfoSheet({
           {carTitle ? <Text variant="subheadEmphasized">{carTitle}</Text> : null}
           <View style={styles.priceRow}>
             {formattedPrice && (
-              <Text variant="title2Emphasized" style={{ color: colors.primary }}>{formattedPrice}</Text>
+              <Text variant="title3Emphasized" style={{ color: colors.primary }}>{formattedPrice}</Text>
             )}
             {dealConfig && (
               <View style={[styles.dealBadge, { borderColor: colors[dealConfig.colorKey] }]}>

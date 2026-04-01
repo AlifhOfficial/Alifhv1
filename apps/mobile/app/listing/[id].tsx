@@ -188,7 +188,6 @@ export default function ListingDetailScreen() {
           <HapticRefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={colors.primary}
           />
         }
       >

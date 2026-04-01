@@ -286,7 +286,6 @@ export default function MessagesScreen() {
           <HapticRefreshControl
             refreshing={isRefreshing}
             onRefresh={pullToRefresh}
-            tintColor={colors.primary}
           />
         }
         showsVerticalScrollIndicator={false}

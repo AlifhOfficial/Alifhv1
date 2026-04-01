@@ -58,7 +58,7 @@ export function ProfileIdentity({
       <View style={styles.info}>
         <View style={styles.nameRow}>
           <Text
-            variant="title3Emphasized"
+            variant="headline"
             style={styles.name}
             numberOfLines={1}
           >

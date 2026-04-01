@@ -355,7 +355,6 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
             <HapticRefreshControl
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
-              tintColor={colors.primary}
             />
           }
           onEndReached={handleLoadMore}

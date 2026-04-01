@@ -15,22 +15,6 @@ export { HapticRefreshControl, type HapticRefreshControlProps } from './haptic-r
 export { SheetFloatingCloseHandle } from './sheet-floating-close';
 export { Bubble, Pill, EdgeFade } from './chrome';
 
-// Loader exports
-export { Loader, SpinnerLoader, LogoLoader, RefreshLoader } from './loader';
-export {
-  PulseLoader,
-  SpinLoader,
-  BreatheLoader,
-  GlowLoader,
-  ButtonLoader,
-  InlineLoader,
-  FullScreenLoader,
-  SkeletonLoader,
-  type LoaderSize,
-  type LoaderVariant,
-} from './loaders';
-
-
 // Confetti burst effect
 export {
   ConfettiBurst,

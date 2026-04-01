@@ -32,7 +32,7 @@ export function WelcomeScreen({ onGetStarted, onSignIn, onSkip }: WelcomeScreenP
             style={styles.heroArtwork}
             resizeMode="contain"
           />
-          <Text variant="largeTitleEmphasized" style={styles.heroTitle}>
+          <Text variant="title2Emphasized" style={styles.heroTitle}>
             Buy and sell{'\n'}cars in the UAE.
           </Text>
         </View>

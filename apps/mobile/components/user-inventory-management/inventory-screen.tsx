@@ -496,7 +496,6 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
             <HapticRefreshControl
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
-              tintColor={colors.primary}
             />
           }
           onEndReached={handleLoadMore}

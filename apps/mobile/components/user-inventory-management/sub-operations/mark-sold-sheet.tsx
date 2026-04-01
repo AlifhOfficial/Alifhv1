@@ -138,7 +138,7 @@ export function MarkSoldSheet({
             </View>
           )}
           <View style={styles.previewInfo}>
-            <Text variant="body" numberOfLines={1}>{listingTitle}</Text>
+            <Text variant="subhead" numberOfLines={1}>{listingTitle}</Text>
             <Text variant="subhead" tone="secondary">
               This listing will be marked as sold and removed from public search.
             </Text>
@@ -165,7 +165,7 @@ export function MarkSoldSheet({
               },
             ]}
           >
-            <Text variant="body" tone="secondary">Cancel</Text>
+            <Text variant="subhead" tone="secondary">Cancel</Text>
           </HapticPressable>
 
           <HapticPressable
@@ -184,7 +184,7 @@ export function MarkSoldSheet({
             ) : (
               <>
                 <CheckCircle2 size={Sizes.iconSm} color={colors.primaryForeground} />
-                <Text variant="body" style={{ color: colors.primaryForeground }}>
+                <Text variant="subhead" style={{ color: colors.primaryForeground }}>
                   Confirm Sold
                 </Text>
               </>

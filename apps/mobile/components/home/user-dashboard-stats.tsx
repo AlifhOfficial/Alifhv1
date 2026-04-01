@@ -104,7 +104,7 @@ function ListingsCard({ stats, colors }: { stats: UserDashboardStats; colors: ty
 
       <View style={styles.statRow}>
         <Text variant="subhead" tone="secondary">Active</Text>
-        <Text variant="title2Emphasized" style={{ color: colors.primary }}>
+        <Text variant="title3Emphasized" style={{ color: colors.primary }}>
           {formatCompact(stats.activeListings)}
         </Text>
       </View>
@@ -144,7 +144,7 @@ function ViewsTrendCard({ stats, colors }: { stats: UserDashboardStats; colors: 
 
       <View style={styles.statRow}>
         <Text variant="subhead" tone="secondary">Total</Text>
-        <Text variant="title2Emphasized" style={{ color: colors.info }}>
+        <Text variant="title3Emphasized" style={{ color: colors.info }}>
           {formatCompact(stats.totalViews)}
         </Text>
       </View>
@@ -180,7 +180,7 @@ function EngagementCard({ stats, colors }: { stats: UserDashboardStats; colors: 
 
       <View style={styles.statRow}>
         <Text variant="subhead" tone="secondary">Saves</Text>
-        <Text variant="title2Emphasized" style={{ color: colors.success }}>
+        <Text variant="title3Emphasized" style={{ color: colors.success }}>
           {formatCompact(stats.totalSaves)}
         </Text>
       </View>
@@ -209,7 +209,7 @@ function SalesCard({ stats, colors }: { stats: UserDashboardStats; colors: typeo
 
       <View style={styles.statRow}>
         <Text variant="subhead" tone="secondary">Sold</Text>
-        <Text variant="title2Emphasized" style={{ color: colors.success }}>
+        <Text variant="title3Emphasized" style={{ color: colors.success }}>
           {formatCompact(stats.soldCount)}
         </Text>
       </View>
@@ -246,7 +246,7 @@ function ActivityCard({ stats, colors }: { stats: UserDashboardStats; colors: ty
 
       <View style={styles.statRow}>
         <Text variant="subhead" tone="secondary">Saved</Text>
-        <Text variant="title2Emphasized" style={{ color: colors.favorite }}>
+        <Text variant="title3Emphasized" style={{ color: colors.favorite }}>
           {formatCompact(stats.mySaves)}
         </Text>
       </View>

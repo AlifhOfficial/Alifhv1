@@ -143,7 +143,7 @@ export function ReviewStepContent({
         <View style={styles.heroInfo}>
           <Text variant="headline" numberOfLines={2}>{vehicleTitle}</Text>
           {data.trim && <Text variant="subhead" tone="muted">{data.trim}</Text>}
-          <Text variant="title2Emphasized" style={{ color: colors.primary, marginTop: Spacing.xs }}>
+            <Text variant="title3Emphasized" style={{ color: colors.primary, marginTop: Spacing.xs }}>
             AED {priceNum.toLocaleString()}
           </Text>
         </View>

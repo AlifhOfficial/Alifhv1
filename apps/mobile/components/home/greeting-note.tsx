@@ -121,7 +121,7 @@ function getDailyIndex(options: unknown[]): number {
 export function GreetingNote() {
   const { colors } = useTheme();
   const { user, isAuthenticated } = useAuth();
-  const greetingVariant = SCREEN_WIDTH <= 390 ? 'title1Emphasized' : 'largeTitleEmphasized';
+  const greetingVariant = SCREEN_WIDTH <= 390 ? 'title2Emphasized' : 'title1Emphasized';
   
   const timePeriod = getTimePeriod();
   const firstName = getFirstName(user);

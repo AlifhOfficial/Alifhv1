@@ -154,9 +154,6 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
             <HapticRefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={colors.primary}
-              colors={[colors.primary]}
-              progressBackgroundColor={colors.background}
             />
           ) : undefined
         }
