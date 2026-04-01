@@ -43,7 +43,6 @@ export function SuperlikeConfirmationSheet({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => SheetSnapPoints.compact, []);
 
   // Show/hide based on visible prop
   useEffect(() => {
@@ -98,7 +97,7 @@ export function SuperlikeConfirmationSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.compact}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
@@ -189,7 +188,6 @@ export function SuperlikeQuotaExhaustedSheet({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => SheetSnapPoints.peek, []);
 
   useEffect(() => {
     if (visible) {
@@ -236,7 +234,7 @@ export function SuperlikeQuotaExhaustedSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.peek}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

@@ -36,7 +36,6 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
 
   const [copied, setCopied] = useState(false);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
 
   const handleCopy = useCallback(async () => {
     const text = features.map(f => formatEnumValue(f)).join(', ');
@@ -81,7 +80,7 @@ export function FeaturesSheet({ visible, onClose, features }: FeaturesSheetProps
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.standard}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

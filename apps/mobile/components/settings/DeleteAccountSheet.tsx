@@ -33,7 +33,6 @@ export function DeleteAccountSheet({
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [deleteText, setDeleteText] = useState('');
 
-  const snapPoints = useMemo(() => SheetSnapPoints.roomy, []);
 
   useEffect(() => {
     if (visible) {
@@ -91,7 +90,7 @@ export function DeleteAccountSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.roomy}
       enableDynamicSizing={false}
       enablePanDownToClose={!isDeleting}
       onChange={handleSheetChanges}

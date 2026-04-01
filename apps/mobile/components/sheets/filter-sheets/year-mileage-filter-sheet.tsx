@@ -65,7 +65,6 @@ export function YearMileageFilterSheet({
     }
   }, [visible, yearMin, yearMax, mileageMin, mileageMax]);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
 
   useEffect(() => {
     if (visible) {
@@ -141,7 +140,7 @@ export function YearMileageFilterSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.standard}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

@@ -53,7 +53,6 @@ export function ExtendListingSheet({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.singleMd, []);
 
   useEffect(() => {
     if (visible) {
@@ -115,7 +114,8 @@ export function ExtendListingSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.singleMd}
+      enableDynamicSizing={false}
       enablePanDownToClose={!loading}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}

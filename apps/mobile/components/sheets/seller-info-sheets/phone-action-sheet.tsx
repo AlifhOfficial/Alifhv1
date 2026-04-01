@@ -26,7 +26,6 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
   const colors = Colors[colorScheme];
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.compact, []);
 
   useEffect(() => {
     if (visible) {
@@ -96,7 +95,7 @@ export function PhoneActionSheet({ visible, onClose, phoneNumber }: PhoneActionS
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.compact}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

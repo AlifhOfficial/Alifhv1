@@ -50,7 +50,6 @@ export function MarkSoldSheet({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.singleSm, []);
 
   // Present / dismiss based on visible prop
   useEffect(() => {
@@ -110,7 +109,8 @@ export function MarkSoldSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.singleSm}
+      enableDynamicSizing={false}
       enablePanDownToClose={!loading}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}

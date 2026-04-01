@@ -53,7 +53,6 @@ export function PriceFilterSheet({
     }
   }, [visible, priceMin, priceMax]);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
 
   useEffect(() => {
     if (visible) {
@@ -125,7 +124,7 @@ export function PriceFilterSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.standard}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

@@ -44,7 +44,6 @@ export function LocationPickerSheet({
   const [location, setLocation] = useState<LocationResult | null>(null);
   const [isSending, setIsSending] = useState(false);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.singleMd, []);
 
   // Present / dismiss based on visible prop
   useEffect(() => {
@@ -117,7 +116,8 @@ export function LocationPickerSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.singleMd}
+      enableDynamicSizing={false}
       enablePanDownToClose={!isSending}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}

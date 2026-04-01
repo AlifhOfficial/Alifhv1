@@ -19,7 +19,7 @@ import { format, isToday, isYesterday, isThisWeek, isSameDay } from 'date-fns';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { MobileHeader } from '@/components/layout';
+import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { MessageCircle } from 'lucide-react-native';
 import { MessageBubble } from './message-bubble';
@@ -471,7 +471,8 @@ export function ChatWindow({
                 contentContainerStyle={[
                   styles.messagesContent,
                   {
-                    paddingBottom: Spacing.md,
+                    // In an inverted list, visual top spacing maps to paddingBottom.
+                    paddingBottom: getMobileHeaderContentInset(insets.top),
                     paddingTop: Spacing.md,
                   },
                 ]}

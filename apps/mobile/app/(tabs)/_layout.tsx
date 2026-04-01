@@ -120,13 +120,6 @@ export default function TabLayout() {
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        animation: 'fade',
-        transitionSpec: {
-          animation: 'timing',
-          config: {
-            duration: 200,
-          },
-        },
       }}
     >
       <Tabs.Screen name="(home)" />

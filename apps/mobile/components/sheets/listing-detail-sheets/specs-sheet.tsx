@@ -46,7 +46,6 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
 
   const [copied, setCopied] = useState(false);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
 
   const handleCopy = useCallback(async () => {
     const text = specs
@@ -93,7 +92,7 @@ export function SpecsSheet({ visible, onClose, specs }: SpecsSheetProps) {
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.standard}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

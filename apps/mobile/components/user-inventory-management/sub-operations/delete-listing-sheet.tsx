@@ -61,7 +61,6 @@ export function DeleteListingSheet({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.singleSm, []);
 
   const description = hardDelete
     ? 'This action is irreversible. The listing and all its images will be permanently removed.'
@@ -126,7 +125,8 @@ export function DeleteListingSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.singleSm}
+      enableDynamicSizing={false}
       enablePanDownToClose={!loading}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}

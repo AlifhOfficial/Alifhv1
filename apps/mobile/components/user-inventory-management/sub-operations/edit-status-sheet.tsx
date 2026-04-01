@@ -194,13 +194,6 @@ export function EditStatusSheet({
     [moderationStatus, lifecycleStatus, isArchived, expiresAt],
   );
 
-  // Dynamic snap point based on number of actions
-  const snapPoints = useMemo(() => {
-    if (visibleActions.length >= 6) return SheetSnapPoints.singleXl;
-    if (visibleActions.length >= 4) return SheetSnapPoints.singleLg;
-    return SheetSnapPoints.singleMd;
-  }, [visibleActions.length]);
-
   useEffect(() => {
     if (visible) {
       bottomSheetRef.current?.present();
@@ -250,7 +243,14 @@ export function EditStatusSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={
+        visibleActions.length >= 6
+          ? SheetSnapPoints.singleXl
+          : visibleActions.length >= 4
+            ? SheetSnapPoints.singleLg
+            : SheetSnapPoints.singleMd
+      }
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}

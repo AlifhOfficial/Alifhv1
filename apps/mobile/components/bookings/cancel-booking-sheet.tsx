@@ -61,7 +61,6 @@ export function CancelBookingSheet({
   const [selectedReason, setSelectedReason] = useState<CancellationReason | null>(null);
   const [notes, setNotes] = useState('');
 
-  const snapPoints = useMemo(() => SheetSnapPoints.singleLg, []);
 
   // Format the scheduled date for display
   const formattedDate = useMemo(() => {
@@ -140,7 +139,8 @@ export function CancelBookingSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.singleLg}
+      enableDynamicSizing={false}
       enablePanDownToClose={!loading}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}

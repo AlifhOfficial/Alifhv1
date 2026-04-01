@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
-import { Send, MapPin } from 'lucide-react-native';
+import { Send, Plus } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Spacing, Radius, Typography, Sizes, Layout, ZIndex, Shadows, Stroke } from '@/constants/theme';
@@ -31,7 +31,7 @@ interface MessageInputProps {
   onRequestLocation?: () => void;
 }
 
-const COMPOSER_PILL_HEIGHT = Sizes.actionButtonLg;
+const COMPOSER_PILL_HEIGHT = Sizes.actionButtonMd;
 const MIN_HEIGHT = COMPOSER_PILL_HEIGHT;
 const MAX_HEIGHT = Spacing['5xl'] * 2 + Spacing['3xl']; // ~128 ≈ 5-6 lines
 
@@ -165,11 +165,15 @@ export function MessageInput({
         animatedContainerStyle,
       ]}
     >
-      <View
-        style={[
-          styles.composerRow,
-        ]}
-      >
+      <View style={styles.composerRow}>
+        <View
+          style={[
+            styles.composerShell,
+            {
+              backgroundColor: colors.background,
+            },
+          ]}
+        >
         {/* Location Button */}
         {onRequestLocation && (
           <HapticPressable
@@ -180,15 +184,13 @@ export function MessageInput({
             }}
             disabled={disabled}
             style={[
-              styles.actionButton,
+              styles.iconButton,
               {
                 backgroundColor: colors.surface,
-                borderColor: colors.border,
-                shadowColor: colors.black,
               },
             ]}
           >
-            <MapPin
+            <Plus
               size={Sizes.iconSm}
               color={disabled ? colors.labelQuaternary : colors.labelTertiary}
               strokeWidth={Stroke.icon}
@@ -201,8 +203,6 @@ export function MessageInput({
               styles.inputWrapper,
               {
                 backgroundColor: colors.surface,
-                borderColor: colors.border,
-                shadowColor: colors.black,
                 minHeight: Math.max(inputHeight, COMPOSER_PILL_HEIGHT),
                 maxHeight: MAX_HEIGHT,
               },
@@ -229,14 +229,13 @@ export function MessageInput({
 
         <HapticPressable
           haptic="medium"
-          onPress={handleSend}
-          disabled={!canSend}
+          onPress={canSend ? handleSend : () => inputRef.current?.focus()}
+          disabled={disabled}
+          hitSlop={Layout.hitSlopSmall}
             style={[
-              styles.sendWrapper,
+              styles.iconButton,
               {
                 backgroundColor: canSend ? colors.primary : colors.surface,
-                borderColor: canSend ? colors.primary : colors.border,
-                shadowColor: colors.black,
               },
             ]}
           >
@@ -246,6 +245,7 @@ export function MessageInput({
             strokeWidth={Stroke.icon}
           />
         </HapticPressable>
+        </View>
       </View>
     </Animated.View>
   );
@@ -266,43 +266,38 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     gap: Spacing.sm,
   },
+  composerShell: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: Spacing.xs,
+    borderRadius: Radius.full,
+    borderCurve: 'continuous',
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: Spacing.xs,
+  },
   inputWrapper: {
     flex: 1,
-    borderRadius: Radius['2xl'],
+    borderRadius: Radius.full,
     borderCurve: 'continuous',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.xs,
     justifyContent: 'center',
     minHeight: COMPOSER_PILL_HEIGHT,
-    borderWidth: 1,
-    ...Shadows.md,
   },
   input: {
-    ...Typography.callout,
+    ...Typography.chatText,
     paddingTop: 0,
     paddingBottom: 0,
     minHeight: COMPOSER_PILL_HEIGHT - Spacing.lg,
     textAlignVertical: 'top',
     maxHeight: MAX_HEIGHT,
   },
-  actionButton: {
+  iconButton: {
     width: COMPOSER_PILL_HEIGHT,
     height: COMPOSER_PILL_HEIGHT,
     borderRadius: COMPOSER_PILL_HEIGHT / 2,
     borderCurve: 'continuous',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    ...Shadows.md,
-  },
-  sendWrapper: {
-    width: COMPOSER_PILL_HEIGHT,
-    height: COMPOSER_PILL_HEIGHT,
-    borderRadius: COMPOSER_PILL_HEIGHT / 2,
-    borderCurve: 'continuous',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    ...Shadows.md,
   },
 });

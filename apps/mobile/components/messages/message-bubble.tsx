@@ -162,7 +162,7 @@ export function MessageBubble({
           {/* Text */}
           {text && (
             <Text
-              variant="subhead"
+              variant="chatText"
               style={{ color: isOwn ? colors.primaryForeground : colors.label }}
             >
               {text}

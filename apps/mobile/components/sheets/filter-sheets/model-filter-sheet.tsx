@@ -69,7 +69,6 @@ export function ModelFilterSheet({
     gcTime: 30 * 60 * 1000,
   });
 
-  const snapPoints = useMemo<(string | number)[]>(() => [...SheetSnapPoints.standard], []);
 
   useEffect(() => {
     if (visible) {
@@ -215,7 +214,7 @@ export function ModelFilterSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.standard}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

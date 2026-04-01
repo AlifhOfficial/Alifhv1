@@ -39,7 +39,6 @@ export function KycVerificationSheet({
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
 
   // Show/hide based on visible prop
   useEffect(() => {
@@ -85,7 +84,7 @@ export function KycVerificationSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.standard}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

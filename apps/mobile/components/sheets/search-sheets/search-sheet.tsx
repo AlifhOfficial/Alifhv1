@@ -96,7 +96,6 @@ const SUGGESTION_CATEGORIES: Record<string, { dotKey: keyof ColorPalette; label:
 // CONSTANTS
 // ============================================================================
 
-const SNAP_POINTS = SheetSnapPoints.standard;
 const SEARCH_DEBOUNCE_MS = 300;
 const MAX_VISIBLE_CHIPS = 12;
 
@@ -147,9 +146,6 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
   const [selectedSpecs, setSelectedSpecs] = useState<string[]>([]);
   const [selectedCondition, setSelectedCondition] = useState<'new' | 'used' | null>(null);
   const [selectedSellerType, setSelectedSellerType] = useState<'dealer' | 'private' | null>(null);
-
-  // Snap points
-  const snapPoints = useMemo<(string | number)[]>(() => [...SNAP_POINTS], []);
 
   // ============================================================================
   // SHEET LIFECYCLE
@@ -566,7 +562,7 @@ export function SearchSheet({ visible, onClose, onSearch, forceDark }: SearchShe
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.standard}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

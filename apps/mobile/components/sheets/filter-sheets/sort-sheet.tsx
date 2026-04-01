@@ -44,7 +44,6 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Snap points
-  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
 
   // Handle open/close based on visible prop
   useEffect(() => {
@@ -85,7 +84,7 @@ export function SortSheet({ visible, onClose, currentSort, onSortChange, forceDa
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.standard}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

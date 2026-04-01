@@ -271,10 +271,8 @@ function RootLayoutNav() {
             headerShown: false,
             headerBackTitle: 'Back',
             gestureEnabled: true,
-            fullScreenGestureEnabled: true,
             gestureDirection: 'horizontal',
             animation: 'slide_from_right',
-            animationDuration: 260,
             contentStyle: { backgroundColor: colors.background },
           }}
         >

@@ -55,7 +55,6 @@ export function FinancingSheet({
     };
   }, [downPayment, term, price, interestRate]);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.roomy, []);
 
   useEffect(() => {
     if (visible) {
@@ -98,7 +97,7 @@ export function FinancingSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.roomy}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

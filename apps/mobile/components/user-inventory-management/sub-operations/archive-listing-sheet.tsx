@@ -51,7 +51,6 @@ export function ArchiveListingSheet({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.singleSm, []);
 
   const actionLabel = isArchived ? 'Unarchive' : 'Archive';
   const Icon = isArchived ? ArchiveRestore : Archive;
@@ -116,7 +115,8 @@ export function ArchiveListingSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.singleSm}
+        enableDynamicSizing={false}
       enablePanDownToClose={!loading}
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}

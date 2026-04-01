@@ -30,7 +30,6 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
 
   const [copied, setCopied] = useState(false);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.standard, []);
 
   const handleCopy = useCallback(async () => {
     await Clipboard.setStringAsync(description);
@@ -74,7 +73,7 @@ export function DescriptionSheet({ visible, onClose, description }: DescriptionS
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.standard}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

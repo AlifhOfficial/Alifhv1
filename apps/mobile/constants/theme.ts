@@ -403,7 +403,7 @@ export const SheetSnapPoints = {
   singleMd: ['55%'],
   singleLg: ['72%'],
   singleXl: ['82%'],
-} as const;
+} satisfies Record<string, (string | number)[]>;
 
 export const Tracking = {
   tight: 0.3,
@@ -467,6 +467,7 @@ const ios = {
   body:        t(17, 22, '600'),  bodyE:        t(17, 22, '700'),  // 17pt  Semibold / Bold
   callout:     t(16, 21, '600'),  calloutE:     t(16, 21, '700'),  // 16pt  Semibold / Bold
   subhead:     t(15, 20, '600'),  subheadE:     t(15, 20, '700'),  // 15pt  Semibold / Bold
+  chatText:    t(16, 21, '400'),                                    // 16pt  Regular (chat body, Apple callout scale)
   footnote:    t(13, 18, '600'),  footnoteE:    t(13, 18, '700'),  // 13pt  Semibold / Bold
   caption1:    t(12, 16, '600'),  caption1E:    t(12, 16, '700'),  // 12pt  Semibold / Bold
   caption2:    t(11, 13, '600'),  caption2E:    t(11, 13, '700'),  // 11pt  Semibold / Bold
@@ -488,6 +489,7 @@ export const Typography = {
   calloutEmphasized:      ios.calloutE,
   subhead:                ios.subhead,
   subheadEmphasized:      ios.subheadE,
+  chatText:               ios.chatText,
   footnote:               ios.footnote,
   footnoteEmphasized:     tc(13, 18, R7, { letterSpacing: 0.8 }),
   caption1:               ios.caption1,

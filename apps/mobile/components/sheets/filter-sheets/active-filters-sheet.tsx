@@ -82,7 +82,6 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
     return groups;
   }, [chips]);
 
-  const snapPoints = useMemo<(string | number)[]>(() => [...SheetSnapPoints.detail], []);
 
   useEffect(() => {
     if (visible) {
@@ -154,7 +153,7 @@ export function ActiveFiltersSheet({ visible, onClose }: ActiveFiltersSheetProps
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.detail}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

@@ -31,7 +31,6 @@ export function SellerDescriptionSheet({ visible, onClose, description, sellerNa
 
   const [copied, setCopied] = useState(false);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.detail, []);
 
   const handleCopy = useCallback(async () => {
     await Clipboard.setStringAsync(description);
@@ -75,7 +74,7 @@ export function SellerDescriptionSheet({ visible, onClose, description, sellerNa
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.detail}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

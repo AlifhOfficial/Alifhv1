@@ -86,7 +86,6 @@ export function BookingDetailsSheet({
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const { showAlert } = useAlert();
 
-  const snapPoints = useMemo(() => SheetSnapPoints.singleXl, []);
 
   useEffect(() => {
     if (visible && booking) {
@@ -217,7 +216,8 @@ export function BookingDetailsSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.singleXl}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}

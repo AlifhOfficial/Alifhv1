@@ -149,7 +149,6 @@ export const BookingSheet = memo(function BookingSheet({
     confirmationToken: string;
   } | null>(null);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.booking, []);
 
   // ── Sheet lifecycle ──────────────────────────────────────────────────
 
@@ -385,7 +384,7 @@ export const BookingSheet = memo(function BookingSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.booking}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

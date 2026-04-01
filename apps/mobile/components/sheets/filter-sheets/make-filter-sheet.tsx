@@ -62,7 +62,6 @@ export function MakeFilterSheet({
     placeholderData: (prev) => prev,
   });
 
-  const snapPoints = useMemo<(string | number)[]>(() => [...SheetSnapPoints.standard], []);
 
   useEffect(() => {
     if (visible) {
@@ -184,7 +183,7 @@ export function MakeFilterSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.standard}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

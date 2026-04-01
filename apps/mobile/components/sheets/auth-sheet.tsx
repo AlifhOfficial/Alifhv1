@@ -11,7 +11,7 @@ import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { Colors, Spacing, Radius, Sizes, ZIndex} from '@/constants/theme';
+import { Colors, Spacing, Radius, Sizes, ZIndex, SheetSnapPoints } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 interface AuthSheetProps {
@@ -112,7 +112,8 @@ export function AuthSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      enableDynamicSizing
+      snapPoints={SheetSnapPoints.singleSm}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}

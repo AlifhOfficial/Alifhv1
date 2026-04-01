@@ -78,7 +78,6 @@ export function CarInfoSheet({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.detail, []);
 
   // Fetch insight when sheet opens
   useEffect(() => {
@@ -154,7 +153,7 @@ export function CarInfoSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.detail}
       enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}

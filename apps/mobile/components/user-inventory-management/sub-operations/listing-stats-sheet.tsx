@@ -85,7 +85,6 @@ export function ListingStatsSheet({
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.singleMd, []);
 
   useEffect(() => {
     if (visible) {
@@ -162,7 +161,8 @@ export function ListingStatsSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.singleMd}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}

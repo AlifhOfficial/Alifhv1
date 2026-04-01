@@ -44,7 +44,6 @@ export function PendingReviewReasonSheet({
   const colors = Colors[colorScheme];
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const snapPoints = useMemo(() => SheetSnapPoints.singleSm, []);
 
   useEffect(() => {
     if (visible) {
@@ -85,7 +84,8 @@ export function PendingReviewReasonSheet({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.singleSm}
+      enableDynamicSizing={false}
       enablePanDownToClose
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}

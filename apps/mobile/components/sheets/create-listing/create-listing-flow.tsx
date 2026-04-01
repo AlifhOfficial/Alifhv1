@@ -113,7 +113,6 @@ export function CreateListingFlow({
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const { showAlert } = useAlert();
 
-  const snapPoints = useMemo(() => [...SheetSnapPoints.roomy], []);
 
   // For published edits, skip VIN step (can't change VIN/make/model/year)
   // Start at 'mileage' step (index 5) which is after the locked fields
@@ -300,7 +299,7 @@ export function CreateListingFlow({
   return (
     <BottomSheetModal
       ref={bottomSheetRef}
-      snapPoints={snapPoints}
+      snapPoints={SheetSnapPoints.roomy}
       enableDynamicSizing={false}
       enablePanDownToClose={currentStepIndex === initialStepIndex}
       onChange={handleSheetChanges}
