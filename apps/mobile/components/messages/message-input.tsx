@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     minHeight: COMPOSER_PILL_HEIGHT,
   },
   input: {
-    ...Typography.chatText,
+    ...Typography.subhead,
     paddingTop: 0,
     paddingBottom: 0,
     minHeight: COMPOSER_PILL_HEIGHT - Spacing.lg,

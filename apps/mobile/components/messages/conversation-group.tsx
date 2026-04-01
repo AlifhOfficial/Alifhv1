@@ -3,19 +3,16 @@
  */
 
 import { Text, HapticPressable } from '@/components/ui';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View } from 'react-native';
+import { Plus } from 'lucide-react-native';
 import Animated, {
   FadeIn,
   FadeOut,
   LinearTransition,
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
 } from 'react-native-reanimated';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useTheme } from '@/context/theme-context';
-import { Layout, Spacing, Sizes, Radius, Timing } from '@/constants/theme';
+import { Layout, Spacing, Sizes, Radius, Timing, Stroke } from '@/constants/theme';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import type { Conversation } from '@/lib/messaging-api';
 
@@ -44,9 +41,12 @@ function formatTime(dateStr: string): string {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-const AVATAR_SIZE = Sizes.avatarMd;
+const AVATAR_SIZE = Sizes.avatarLg;
 const ROW_H_PAD = Layout.screenPadding;
 const ROW_GAP = Spacing.md;
+const UNREAD_BADGE_SIZE = Sizes.bubbleXs;
+const META_COLUMN_WIDTH = Sizes.bubble;
+
 export function ConversationGroup({
   name,
   avatarUrl,
@@ -65,15 +65,6 @@ export function ConversationGroup({
   const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
   const hasUnread = totalUnread > 0;
   const latest = conversations[0];
-
-  const chevronRotation = useSharedValue(isExpanded ? 90 : 0);
-  const chevronStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${chevronRotation.value}deg` }],
-  }));
-
-  useEffect(() => {
-    chevronRotation.value = withTiming(isExpanded ? 90 : 0, { duration: Timing.imageTransition });
-  }, [isExpanded]);
 
   const toggleExpanded = useCallback(() => setIsExpanded((p) => !p), []);
 
@@ -105,7 +96,35 @@ export function ConversationGroup({
           >
             {/* Avatar with online dot */}
             <View style={{ position: 'relative' }}>
-              <UserAvatar src={avatarUrl} name={name} size="md" />
+              <UserAvatar src={avatarUrl} name={name} size="lg" />
+              {totalUnread > 0 && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: -Spacing.xs / 2,
+                    right: -Spacing.xs / 2,
+                    width: UNREAD_BADGE_SIZE,
+                    height: UNREAD_BADGE_SIZE,
+                    borderRadius: Radius.full,
+                    borderCurve: 'continuous',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: colors.favorite,
+                    borderWidth: 2,
+                    borderColor: colors.background,
+                  }}
+                >
+                  <Text
+                    variant="caption2Emphasized"
+                    style={{
+                      color: colors.primaryForeground,
+                      fontVariant: ['tabular-nums'],
+                    }}
+                  >
+                    {totalUnread > 99 ? '99' : String(totalUnread)}
+                  </Text>
+                </View>
+              )}
               {isOnline && (
                 <View
                   style={{
@@ -124,62 +143,52 @@ export function ConversationGroup({
             </View>
 
             {/* Text content */}
-            <View style={{ flex: 1, gap: Spacing.xs }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
-                <Text
-                  variant="bodyEmphasized"
-                  tone="default"
-                  style={{ flex: 1 }}
-                  numberOfLines={1}
-                >
-                  {name}
-                </Text>
-                <Text variant="caption1" tone="secondary">
-                  {formatTime(latest.lastMessageAt)}
-                </Text>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
+            <View style={{ flex: 1, gap: Spacing.xs, minWidth: 0 }}>
+              <Text
+                variant="subheadEmphasized"
+                tone="default"
+                style={{ flex: 1 }}
+                numberOfLines={1}
+              >
+                {name}
+              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, minWidth: 0 }}>
                 <Text
                   variant="subhead"
                   tone={hasUnread ? 'secondary' : 'muted'}
                   style={{ flex: 1 }}
                   numberOfLines={1}
+                  ellipsizeMode="tail"
                 >
                   {latest.lastMessagePreview || 'No messages'}
                 </Text>
-                {totalUnread > 0 ? (
-                  <View
-                    style={{
-                      minWidth: Spacing.xl,
-                      height: Spacing.xl,
-                      borderRadius: Radius.md,
-                      borderCurve: 'continuous',
-                      paddingHorizontal: Spacing.xs,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: colors.primary,
-                    }}
-                  >
-                    <Text
-                      variant="caption1Emphasized"
-                      style={{
-                        color: colors.primaryForeground,
-                        fontVariant: ['tabular-nums'],
-                      }}
-                    >
-                      {totalUnread > 99 ? '99+' : String(totalUnread)}
-                    </Text>
-                  </View>
-                ) : isMulti ? (
-                  <Animated.View style={chevronStyle}>
-                    <IconSymbol
-                      name="chevron.right"
-                      size={Sizes.iconXs}
-                      color={colors.labelTertiary}
-                    />
-                  </Animated.View>
-                ) : null}
               </View>
+            </View>
+
+            <View style={{ width: META_COLUMN_WIDTH, alignItems: 'center', justifyContent: 'center', gap: Spacing.xs }}>
+              {isMulti ? (
+                <View
+                  style={{
+                    width: UNREAD_BADGE_SIZE,
+                    height: UNREAD_BADGE_SIZE,
+                    borderRadius: Radius.full,
+                    borderCurve: 'continuous',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                  }}
+                >
+                  <Plus
+                    size={Sizes.iconXs}
+                    color={colors.labelTertiary}
+                    strokeWidth={Stroke.icon}
+                  />
+                </View>
+              ) : null}
+              <Text variant="footnote" tone="secondary">
+                {formatTime(latest.lastMessageAt)}
+              </Text>
             </View>
           </View>
         )}
@@ -218,51 +227,55 @@ export function ConversationGroup({
                       }}
                     >
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
-                        <Text
-                          variant="subheadEmphasized"
-                          tone={cUnread ? 'default' : 'secondary'}
-                          style={{ flex: 1 }}
-                          numberOfLines={1}
-                        >
-                          {c.listing?.title || 'General Inquiry'}
-                        </Text>
-                        <Text variant="caption1" tone="secondary">
-                          {formatTime(c.lastMessageAt)}
-                        </Text>
-                      </View>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
-                        <Text
-                          variant="subhead"
-                          tone={cUnread ? 'secondary' : 'muted'}
-                          style={{ flex: 1 }}
-                          numberOfLines={1}
-                        >
-                          {c.lastMessagePreview || 'No messages'}
-                        </Text>
-                        {c.unreadCount > 0 && (
-                          <View
-                            style={{
-                              minWidth: Spacing.xl,
-                              height: Spacing.xl,
-                              borderRadius: Radius.md,
-                              borderCurve: 'continuous',
-                              paddingHorizontal: Spacing.xs,
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              backgroundColor: colors.primary,
-                            }}
+                        <View style={{ flex: 1, gap: Spacing.xs, minWidth: 0 }}>
+                          <Text
+                            variant="subheadEmphasized"
+                            tone={cUnread ? 'default' : 'secondary'}
+                            style={{ flex: 1 }}
+                            numberOfLines={1}
                           >
+                            {c.listing?.title || 'General Inquiry'}
+                          </Text>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, minWidth: 0 }}>
+                            {c.unreadCount > 0 && (
+                              <View
+                                style={{
+                                  width: UNREAD_BADGE_SIZE,
+                                  height: UNREAD_BADGE_SIZE,
+                                  borderRadius: Radius.full,
+                                  borderCurve: 'continuous',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  backgroundColor: colors.favorite,
+                                }}
+                              >
+                                <Text
+                                  variant="caption2Emphasized"
+                                  style={{
+                                    color: colors.primaryForeground,
+                                    fontVariant: ['tabular-nums'],
+                                  }}
+                                >
+                                  {c.unreadCount > 99 ? '99' : String(c.unreadCount)}
+                                </Text>
+                              </View>
+                            )}
                             <Text
-                              variant="caption1Emphasized"
-                              style={{
-                                color: colors.primaryForeground,
-                                fontVariant: ['tabular-nums'],
-                              }}
+                              variant="subhead"
+                              tone={cUnread ? 'secondary' : 'muted'}
+                              style={{ flex: 1 }}
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
                             >
-                              {c.unreadCount > 99 ? '99+' : String(c.unreadCount)}
+                              {c.lastMessagePreview || 'No messages'}
                             </Text>
                           </View>
-                        )}
+                        </View>
+                        <View style={{ width: META_COLUMN_WIDTH, alignItems: 'center', justifyContent: 'center', gap: Spacing.xs }}>
+                          <Text variant="footnote" tone="secondary">
+                            {formatTime(c.lastMessageAt)}
+                          </Text>
+                        </View>
                       </View>
                     </View>
                   )}

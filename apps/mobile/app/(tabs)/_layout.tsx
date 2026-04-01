@@ -1,20 +1,27 @@
 /**
  * Tab Layout - Revvup Mobile App
  * 3 tabs: Home, Messages, Browse
- * Floating pill tab bar — icons only, active pill highlight.
+ * Floating individual pill chips — no outer wrapper shell.
  */
 
 import { HapticPressable } from '@/components/ui';
 import React, { useRef } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router/tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, LayoutGrid, MessageCircle } from 'lucide-react-native';
+import { Home, MessageCircle, LayoutGrid } from 'lucide-react-native';
+import type { LucideIcon } from 'lucide-react-native';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
-import { BorderWidths, Colors, Radius, Shadows, Sizes, Spacing, Stroke, ZIndex } from '@/constants/theme';
-import { getTabBarBottomPadding } from '@/components/layout/tab-bar-metrics';
+import { AppFontFamilies, BorderWidths, Colors, Radius, Shadows, Sizes, Spacing, Typography, ZIndex } from '@/constants/theme';
 
 const TAB_CONFIG = [
   { name: '(home)', icon: Home, label: 'Home' },
@@ -22,12 +29,135 @@ const TAB_CONFIG = [
   { name: '(browse)', icon: LayoutGrid, label: 'Browse' },
 ] as const;
 
-const PILL_PADDING = Spacing.xs;
-const TAB_HEIGHT = Sizes.actionButtonLg;
-const TAB_WIDTH = Sizes.actionButtonLg + Spacing.md;
-const BAR_HORIZONTAL_PADDING = Spacing.xs;
-const ACTIVE_ICON_STROKE = Stroke.icon + 0.55;
+const ACTIVE_ICON_STROKE = 2.5;
+const INACTIVE_ICON_STROKE = 2.5;
 const DOUBLE_TAP_MS = 320;
+const TAB_SPRING_CONFIG = { damping: 20, stiffness: 260, mass: 0.6 };
+const TAB_FADE_DURATION_MS = 210;
+
+const AnimatedText = Animated.createAnimatedComponent(Text);
+
+type AnimatedTabChipProps = {
+  label: string;
+  Icon: LucideIcon;
+  focused: boolean;
+  activeColor: string;
+  inactiveColor: string;
+  transparentActiveColor: string;
+  onPress: () => void;
+  onLayout: (x: number, width: number) => void;
+};
+
+const toRgbaColor = (hex: string, alpha: number) => {
+  'worklet';
+
+  const normalized = hex.replace('#', '');
+  const expanded = normalized.length === 3
+    ? normalized
+        .split('')
+        .map((char) => char + char)
+        .join('')
+    : normalized;
+
+  if (expanded.length !== 6) {
+    return hex;
+  }
+
+  const r = parseInt(expanded.slice(0, 2), 16);
+  const g = parseInt(expanded.slice(2, 4), 16);
+  const b = parseInt(expanded.slice(4, 6), 16);
+
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
+function AnimatedTabChip({
+  label,
+  Icon,
+  focused,
+  activeColor,
+  inactiveColor,
+  transparentActiveColor,
+  onPress,
+  onLayout,
+}: AnimatedTabChipProps) {
+  const progress = useSharedValue(focused ? 1 : 0);
+
+  React.useEffect(() => {
+    progress.value = withTiming(focused ? 1 : 0, { duration: TAB_FADE_DURATION_MS });
+  }, [focused, progress]);
+
+  const contentAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: interpolate(progress.value, [0, 1], [0.98, 1]) }],
+  }));
+
+  const activeLayerStyle = useAnimatedStyle(() => ({
+    opacity: progress.value,
+  }));
+
+  const inactiveLayerStyle = useAnimatedStyle(() => ({
+    opacity: 1 - progress.value,
+  }));
+
+  return (
+    <HapticPressable
+      onPress={onPress}
+      onLayout={(event) => {
+        const { x, width } = event.nativeEvent.layout;
+        onLayout(x, width);
+      }}
+      style={styles.chip}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: focused }}
+      accessibilityLabel={label}
+    >
+      <Animated.View style={[styles.chipContent, contentAnimatedStyle]}>
+        <View style={styles.iconStack}>
+          <Animated.View style={[styles.overlayLayer, inactiveLayerStyle]}>
+            <Icon
+              size={Sizes.iconMd}
+              color={inactiveColor}
+              strokeWidth={INACTIVE_ICON_STROKE}
+              fill={transparentActiveColor}
+            />
+          </Animated.View>
+          <Animated.View style={[styles.overlayLayer, activeLayerStyle]}>
+            <Icon
+              size={Sizes.iconMd}
+              color={activeColor}
+              strokeWidth={ACTIVE_ICON_STROKE}
+              fill={activeColor}
+            />
+          </Animated.View>
+        </View>
+
+        <View style={styles.labelStack}>
+          <AnimatedText
+            style={[
+              Typography.subheadEmphasized,
+              styles.chipLabel,
+              styles.labelBase,
+              { color: inactiveColor, fontFamily: AppFontFamilies.bold },
+              inactiveLayerStyle,
+            ]}
+          >
+            {label}
+          </AnimatedText>
+          <AnimatedText
+            style={[
+              Typography.subheadEmphasized,
+              styles.chipLabel,
+              styles.labelOverlay,
+              { color: activeColor, fontFamily: AppFontFamilies.bold },
+              activeLayerStyle,
+            ]}
+          >
+            {label}
+          </AnimatedText>
+        </View>
+      </Animated.View>
+    </HapticPressable>
+  );
+}
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const { colorScheme } = useTheme();
@@ -35,33 +165,82 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const lastPressRef = useRef<{ name: string; time: number }>({ name: '', time: 0 });
+  const [chipLayouts, setChipLayouts] = React.useState<Record<number, { x: number; width: number }>>({});
+  const indicatorX = useSharedValue(0);
+  const indicatorWidth = useSharedValue(0);
+  const indicatorOpacity = useSharedValue(0);
+
+  // Light: white shell, slightly elevated white chip (bg on surface)
+  // Dark:  black shell, slightly elevated black chip (background on surface)
+  const shellBg = toRgbaColor(colors.background, colorScheme === 'dark' ? 0.88 : 0.92);
+  const shellBorder = colors.border;
+
+  const chipActiveBg = colors.background;
+  const chipActiveBorder = colors.border;
+  const chipActiveContent = colors.label;
+  const chipInactiveContent = colors.labelTertiary;
+  const chipTransparentActiveContent = React.useMemo(
+    () => toRgbaColor(chipActiveContent, 0),
+    [chipActiveContent],
+  );
+
+  React.useEffect(() => {
+    const activeLayout = chipLayouts[state.index];
+
+    if (!activeLayout) {
+      return;
+    }
+
+    indicatorX.value = withSpring(activeLayout.x, TAB_SPRING_CONFIG);
+    indicatorWidth.value = withSpring(activeLayout.width, TAB_SPRING_CONFIG);
+    indicatorOpacity.value = withTiming(1, { duration: 140 });
+  }, [chipLayouts, indicatorOpacity, indicatorWidth, indicatorX, state.index]);
+
+  const animatedIndicatorStyle = useAnimatedStyle(() => ({
+    opacity: indicatorOpacity.value,
+    width: indicatorWidth.value,
+    transform: [{ translateX: indicatorX.value }],
+  }));
 
   return (
     <View
-      style={[
-        styles.wrapper,
-        { paddingBottom: getTabBarBottomPadding(insets.bottom) },
-      ]}
+      style={[styles.wrapper, { paddingBottom: insets.bottom }]}
       pointerEvents="box-none"
     >
-      <View style={styles.barRow}>
-        <View
-          style={[
-            styles.pill,
-            styles.shell,
-            {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              shadowColor: colors.black,
-            },
-          ]}
-        >
+      <View
+        style={[
+          styles.shell,
+          {
+            backgroundColor: shellBg,
+            borderColor: shellBorder,
+            shadowColor: colors.black,
+          },
+        ]}
+      >
+        <View style={styles.row}>
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.activeIndicator,
+              {
+                backgroundColor: chipActiveBg,
+                borderColor: chipActiveBorder,
+              },
+              animatedIndicatorStyle,
+            ]}
+          />
           {TAB_CONFIG.map((tab, index) => {
             const focused = state.index === index;
-            const Icon = tab.icon;
+
             return (
-              <HapticPressable
+              <AnimatedTabChip
                 key={tab.name}
+                label={tab.label}
+                Icon={tab.icon}
+                focused={focused}
+                activeColor={chipActiveContent}
+                inactiveColor={chipInactiveContent}
+                transparentActiveColor={chipTransparentActiveContent}
                 onPress={() => {
                   const now = Date.now();
                   const isDoubleTap =
@@ -86,26 +265,20 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                     navigation.navigate(state.routes[index].name);
                   }
                 }}
-                style={[
-                  styles.tabBtn,
-                  focused && {
-                    backgroundColor: colorScheme === 'light' ? colors.background : colors.surfaceSecondary,
-                    borderRadius: Radius.full,
-                    borderWidth: BorderWidths.thin,
-                    borderColor: colors.border,
-                  },
-                ]}
-                accessibilityRole="tab"
-                accessibilityState={{ selected: focused }}
-                accessibilityLabel={tab.label}
-              >
-                <Icon
-                  size={Sizes.iconMd}
-                  color={focused ? colors.label : colors.labelSecondary}
-                  strokeWidth={focused ? ACTIVE_ICON_STROKE : Stroke.icon}
-                  fill={tab.name === '(home)' ? (focused ? colors.label : colors.labelSecondary) : (focused ? colors.label : 'transparent')}
-                />
-              </HapticPressable>
+                onLayout={(x, width) => {
+                  setChipLayouts((prev) => {
+                    const current = prev[index];
+                    if (current && current.x === x && current.width === width) {
+                      return prev;
+                    }
+
+                    return {
+                      ...prev,
+                      [index]: { x, width },
+                    };
+                  });
+                }}
+              />
             );
           })}
         </View>
@@ -118,9 +291,7 @@ export default function TabLayout() {
   return (
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}
-      screenOptions={{
-        headerShown: false,
-      }}
+      screenOptions={{ headerShown: false }}
     >
       <Tabs.Screen name="(home)" />
       <Tabs.Screen name="(messages)" />
@@ -136,30 +307,67 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    zIndex: ZIndex.overlay + 1,
-  },
-  barRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
+    zIndex: ZIndex.modal,
+    elevation: ZIndex.modal,
   },
   shell: {
+    flexDirection: 'row',
+    borderRadius: Radius.full,
     borderWidth: BorderWidths.thin,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
     ...Shadows.lg,
   },
-  pill: {
+  row: {
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: Radius.full,
-    paddingVertical: PILL_PADDING,
-    paddingHorizontal: BAR_HORIZONTAL_PADDING,
     gap: Spacing.xs,
   },
-  tabBtn: {
-    width: TAB_WIDTH,
-    height: TAB_HEIGHT,
+  activeIndicator: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
     borderRadius: Radius.full,
+    borderWidth: BorderWidths.thin,
+  },
+  chip: {
+    zIndex: 1,
+    borderRadius: Radius.full,
+    minWidth: Sizes.actionButtonLg + Spacing['3xl'],
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+  },
+  chipContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconStack: {
+    width: Sizes.iconMd,
+    height: Sizes.iconMd,
+  },
+  overlayLayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  labelStack: {
+    position: 'relative',
+  },
+  chipLabel: {
+    marginLeft: Spacing.xs,
+  },
+  labelBase: {
+    opacity: 1,
+  },
+  labelOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: Spacing.xs,
   },
 });

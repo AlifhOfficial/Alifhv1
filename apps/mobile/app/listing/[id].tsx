@@ -171,6 +171,7 @@ export default function ListingDetailScreen() {
         showBackButton
         right={headerActions}
         sideSlotWidth={headerActionsWidth}
+        fadeHeight={insets.top + Spacing.xs}
       />
 
       <ScrollView

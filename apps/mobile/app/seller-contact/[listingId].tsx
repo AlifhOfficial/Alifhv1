@@ -339,7 +339,12 @@ export default function SellerContactScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
-        <MobileHeader title="Seller" showBackButton onBackPress={handleBack} />
+        <MobileHeader
+          title="Seller"
+          showBackButton
+          onBackPress={handleBack}
+          fadeHeight={insets.top + Spacing.xs}
+        />
         <View style={[styles.skeletonContainer, { paddingHorizontal: Spacing.lg, paddingTop: headerInset + Spacing.lg }]}>
           {/* Hero */}
           <View style={styles.skeletonHero}>
@@ -370,7 +375,12 @@ export default function SellerContactScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ headerShown: false }} />
-        <MobileHeader title="Seller" showBackButton onBackPress={handleBack} />
+        <MobileHeader
+          title="Seller"
+          showBackButton
+          onBackPress={handleBack}
+          fadeHeight={insets.top + Spacing.xs}
+        />
         <View style={styles.errorContainer}>
           <Text variant="body" tone="secondary">
             This listing is no longer available or may have expired
@@ -387,6 +397,7 @@ export default function SellerContactScreen() {
         title=""
         showBackButton
         onBackPress={handleBack}
+        fadeHeight={insets.top + Spacing.xs}
       />
       
       <FlatList

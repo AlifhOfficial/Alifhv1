@@ -324,7 +324,7 @@ export function CarCardListSkeleton() {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    borderRadius: Radius['2xl'],
+    borderRadius: Radius['3xl'],
     borderCurve: 'continuous',
     borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.sm,
     marginTop: Spacing.sm,
     aspectRatio: AspectRatio.cardImage,
-    borderRadius: Radius['2xl'],
+    borderRadius: Radius['3xl'],
     borderCurve: 'continuous',
     overflow: 'hidden',
   },

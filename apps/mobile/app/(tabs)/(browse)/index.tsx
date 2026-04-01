@@ -109,6 +109,8 @@ export default function BrowseScreen() {
   const [isBrowseTabBarVisible, setIsBrowseTabBarVisible] = useState(true);
   const lastScrollYRef = useRef(0);
   const tabBarVisibleRef = useRef(true);
+  const scrollDirectionRef = useRef<'up' | 'down' | null>(null);
+  const directionalDistanceRef = useRef(0);
   const loadMoreLockRef = useRef(false);
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -556,35 +558,86 @@ export default function BrowseScreen() {
   }, [hasMore, isFetchingNextPage]);
 
   const headerInset = getMobileHeaderContentInset(insets.top);
+
+  const setBrowseTabBarVisibility = useCallback((visible: boolean) => {
+    if (tabBarVisibleRef.current === visible) return;
+    tabBarVisibleRef.current = visible;
+    setIsBrowseTabBarVisible(visible);
+  }, []);
+
+  const resetScrollTracking = useCallback(() => {
+    scrollDirectionRef.current = null;
+    directionalDistanceRef.current = 0;
+  }, []);
+
+  const handleScrollBeginDrag = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    loadMoreLockRef.current = false;
+    lastScrollYRef.current = Math.max(0, event.nativeEvent.contentOffset.y);
+    resetScrollTracking();
+  }, [resetScrollTracking]);
+
+  const handleMomentumScrollBegin = useCallback(() => {
+    loadMoreLockRef.current = false;
+  }, []);
+
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetY = Math.max(0, event.nativeEvent.contentOffset.y);
     const deltaY = offsetY - lastScrollYRef.current;
+    lastScrollYRef.current = offsetY;
 
     setIsHeaderTitleHidden(offsetY > Spacing.lg);
 
-    const directionThreshold = Spacing.md;
+    const jitterThreshold = 1;
     const hideAfterOffset = Spacing['3xl'];
     const showNearTopOffset = Spacing.xl;
+    const hideTravelDistance = Spacing.lg;
+    const showTravelDistance = Spacing.md;
 
     if (offsetY <= showNearTopOffset) {
-      if (!tabBarVisibleRef.current) {
-        tabBarVisibleRef.current = true;
-        setIsBrowseTabBarVisible(true);
-      }
-    } else if (offsetY > hideAfterOffset && deltaY > directionThreshold && tabBarVisibleRef.current) {
-      tabBarVisibleRef.current = false;
-      setIsBrowseTabBarVisible(false);
-    } else if (deltaY < -directionThreshold && !tabBarVisibleRef.current) {
-      tabBarVisibleRef.current = true;
-      setIsBrowseTabBarVisible(true);
+      setBrowseTabBarVisibility(true);
+      resetScrollTracking();
+      return;
     }
 
-    lastScrollYRef.current = offsetY;
-  }, []);
+    if (Math.abs(deltaY) <= jitterThreshold) {
+      return;
+    }
+
+    const direction: 'up' | 'down' = deltaY > 0 ? 'down' : 'up';
+
+    if (scrollDirectionRef.current !== direction) {
+      scrollDirectionRef.current = direction;
+      directionalDistanceRef.current = 0;
+    }
+
+    directionalDistanceRef.current += Math.abs(deltaY);
+
+    if (
+      direction === 'down' &&
+      offsetY > hideAfterOffset &&
+      directionalDistanceRef.current >= hideTravelDistance
+    ) {
+      setBrowseTabBarVisibility(false);
+      directionalDistanceRef.current = 0;
+      return;
+    }
+
+    if (
+      direction === 'up' &&
+      directionalDistanceRef.current >= showTravelDistance
+    ) {
+      setBrowseTabBarVisibility(true);
+      directionalDistanceRef.current = 0;
+    }
+  }, [resetScrollTracking, setBrowseTabBarVisibility]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <MobileHeader title="Browse" titleHidden={isHeaderTitleHidden} />
+      <MobileHeader
+        title="Browse"
+        titleHidden={isHeaderTitleHidden}
+        fadeHeight={insets.top + Spacing.xs}
+      />
       <FlatList
         ref={scrollRef}
         data={visibleListings}
@@ -593,12 +646,6 @@ export default function BrowseScreen() {
         keyExtractor={keyExtractor}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
-        onScrollBeginDrag={() => {
-          loadMoreLockRef.current = false;
-        }}
-        onMomentumScrollBegin={() => {
-          loadMoreLockRef.current = false;
-        }}
         ListEmptyComponent={renderEmptyState}
         ListFooterComponent={renderFooter}
         contentContainerStyle={{
@@ -617,6 +664,8 @@ export default function BrowseScreen() {
         updateCellsBatchingPeriod={40}
         windowSize={7}
         initialNumToRender={6}
+        onScrollBeginDrag={handleScrollBeginDrag}
+        onMomentumScrollBegin={handleMomentumScrollBegin}
         refreshControl={
           <HapticRefreshControl
             refreshing={isRefreshing}

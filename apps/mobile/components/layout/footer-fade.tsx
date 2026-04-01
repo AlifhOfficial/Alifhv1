@@ -13,10 +13,11 @@ interface FooterFadeProps {
 export function FooterFade({ height }: FooterFadeProps) {
   const insets = useSafeAreaInsets();
   const segments = useSegments();
+  const routeSegments = segments as string[];
   const hideForMessages =
-    segments.includes('(messages)') ||
-    segments.includes('chat') ||
-    segments.some((segment) => segment.startsWith('[conversationId]'));
+    routeSegments.includes('(messages)') ||
+    routeSegments.includes('chat') ||
+    routeSegments.some((segment) => segment.startsWith('[conversationId]'));
 
   if (hideForMessages) {
     return null;

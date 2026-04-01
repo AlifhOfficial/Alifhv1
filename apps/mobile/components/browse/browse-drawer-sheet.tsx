@@ -40,6 +40,7 @@ export function BrowseDrawerSheet({
 }: BrowseDrawerSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const popoverBackground = colorScheme === 'dark' ? colors.surfaceSecondary : colors.background;
 
   const handleSettingsPress = () => {
     onClose();
@@ -65,8 +66,8 @@ export function BrowseDrawerSheet({
       onRequestClose={onClose}
     >
       <View style={styles.container}>
-        <Pressable style={[styles.backdrop, { backgroundColor: colors.overlay }]} onPress={onClose} />
-        <View style={[styles.popover, { bottom: bottomOffset + Sizes.actionButtonLg + Spacing.lg, backgroundColor: colors.sheet, borderColor: colors.border }]}>
+        <Pressable style={styles.backdrop} onPress={onClose} />
+        <View style={[styles.popover, { bottom: bottomOffset + Sizes.actionButtonLg + Spacing.lg, backgroundColor: popoverBackground, borderColor: colors.border }]}>
           <View style={styles.handleWrap}>
             <View style={[styles.handleIndicator, { backgroundColor: colors.border }]} />
           </View>
@@ -82,7 +83,7 @@ export function BrowseDrawerSheet({
           </View>
 
           <View style={styles.rows}>
-            <HapticPressable style={[styles.row, { backgroundColor: colors.surface }]} onPress={handleSettingsPress}>
+            <HapticPressable style={styles.row} onPress={handleSettingsPress}>
               <Text variant="subhead">Filters</Text>
               {settingsCount > 0 ? (
                 <View style={[styles.badge, { backgroundColor: colors.label }]}>
@@ -91,7 +92,7 @@ export function BrowseDrawerSheet({
                   </Text>
                 </View>
               ) : (
-                <View style={[styles.plusWrap, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}>
+                <View style={[styles.plusWrap, { borderColor: colors.border }]}>
                   <Plus size={Sizes.iconSm - Spacing.xs} color={colors.labelSecondary} strokeWidth={2.25} />
                 </View>
               )}
@@ -100,7 +101,7 @@ export function BrowseDrawerSheet({
           {pills.map((pill) => (
             <HapticPressable
               key={pill.type}
-              style={[styles.row, { backgroundColor: colors.surface }]}
+              style={styles.row}
               onPress={() => handlePillPress(pill.type)}
             >
               <Text variant="subhead">{pill.label}</Text>
@@ -111,14 +112,14 @@ export function BrowseDrawerSheet({
                   </Text>
                 </View>
               ) : (
-                <View style={[styles.plusWrap, { borderColor: colors.border, backgroundColor: colors.surfaceSecondary }]}>
+                <View style={[styles.plusWrap, { borderColor: colors.border }]}>
                   <Plus size={Sizes.iconSm - Spacing.xs} color={colors.labelSecondary} strokeWidth={2.25} />
                 </View>
               )}
             </HapticPressable>
           ))}
 
-            <HapticPressable style={[styles.row, { backgroundColor: colors.surface }]} onPress={handleViewToggle}>
+            <HapticPressable style={styles.row} onPress={handleViewToggle}>
               <Text variant="subhead">View</Text>
               <Text variant="subhead" tone="secondary">{viewMode === 'grid' ? 'Grid' : 'List'}</Text>
             </HapticPressable>

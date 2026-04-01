@@ -45,6 +45,7 @@ export function BrowseTabBar({
   const { applySearch, sortBy, applySort, updateFilterParams, getActiveFilterCount } = useSearch();
   const colors = Colors[colorScheme];
   const visibilityProgress = useSharedValue(visible ? 1 : 0);
+  const bubbleBackgroundColor = colors.background;
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -149,7 +150,7 @@ export function BrowseTabBar({
         pointerEvents={visible ? 'auto' : 'none'}
       >
         <View style={styles.content}>
-          <View style={styles.navGroup}>
+          <View style={styles.leftGroup}>
             <MotiPressable
               onPress={handleDrawerPress}
               animate={({ pressed }) => {
@@ -166,13 +167,15 @@ export function BrowseTabBar({
                 styles.bubble,
                 {
                   borderColor: colors.border,
-                  backgroundColor: colors.surface,
+                  backgroundColor: bubbleBackgroundColor,
                 },
               ]}
             >
-              <Package2 size={Sizes.iconMd} color={colors.label} strokeWidth={2} />
+              <Package2 size={Sizes.iconMd} color={colors.label} strokeWidth={2.5} />
             </MotiPressable>
+          </View>
 
+          <View style={styles.rightGroup}>
             <MotiPressable
               onPress={handleSearchPress}
               animate={({ pressed }) => {
@@ -189,11 +192,11 @@ export function BrowseTabBar({
                 styles.bubble,
                 {
                   borderColor: colors.border,
-                  backgroundColor: colors.surface,
+                  backgroundColor: bubbleBackgroundColor,
                 },
               ]}
             >
-              <Search size={Sizes.iconMd} color={colors.label} strokeWidth={2} />
+              <Search size={Sizes.iconMd} color={colors.label} strokeWidth={2.5} />
             </MotiPressable>
 
             <MotiPressable
@@ -212,11 +215,11 @@ export function BrowseTabBar({
                 styles.bubble,
                 {
                   borderColor: colors.border,
-                  backgroundColor: colors.surface,
+                  backgroundColor: bubbleBackgroundColor,
                 },
               ]}
             >
-              <ArrowUpDown size={Sizes.iconMd} color={colors.label} strokeWidth={2} />
+              <ArrowUpDown size={Sizes.iconMd} color={colors.label} strokeWidth={2.5} />
             </MotiPressable>
 
             {hasFilters ? (
@@ -236,11 +239,11 @@ export function BrowseTabBar({
                   styles.bubble,
                   {
                     borderColor: colors.border,
-                    backgroundColor: colors.surface,
+                    backgroundColor: bubbleBackgroundColor,
                   },
                 ]}
               >
-                <Text variant="subhead" tone="secondary">
+                <Text variant="subheadEmphasized" tone="default" style={{ fontVariant: ['tabular-nums'] }}>
                   {activeFilterCount > 9 ? '9+' : activeFilterCount}
                 </Text>
               </MotiPressable>
@@ -293,12 +296,17 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Layout.screenPadding,
     paddingTop: Layout.headerPadding + Spacing.xs,
     paddingBottom: Spacing.sm,
   },
-  navGroup: {
+  leftGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  rightGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,

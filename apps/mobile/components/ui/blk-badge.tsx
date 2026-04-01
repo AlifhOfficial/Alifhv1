@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     borderRadius: Radius.sm,
     borderWidth: StyleSheet.hairlineWidth,
+    transform: [{ translateY: Spacing.xs / 2 }],
   },
   sm: {
     paddingHorizontal: Spacing.xs,

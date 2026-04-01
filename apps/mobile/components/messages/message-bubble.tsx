@@ -18,6 +18,7 @@ import type { Message } from '@/lib/messaging-api';
 interface MessageBubbleProps {
   message: Message;
   isOwn: boolean;
+  isGroupBreak?: boolean;
   showAvatar?: boolean;
   showSeen?: boolean;
   otherUserAvatar?: string | null;
@@ -28,6 +29,7 @@ interface MessageBubbleProps {
 export function MessageBubble({
   message,
   isOwn,
+  isGroupBreak = false,
   showAvatar = true,
   showSeen = false,
   otherUserAvatar,
@@ -42,6 +44,8 @@ export function MessageBubble({
   // Check if optimistic message (sending state)
   const isOptimistic = message.id.startsWith('temp-');
   const isLongTextMessage = !!text && text.length > 90;
+  const sameUserGap = Platform.OS === 'android' ? Spacing.xs : Spacing.xs / 2;
+  const messageGap = isGroupBreak ? sameUserGap * 2 : sameUserGap;
 
   // Extract location data if present
   const locationData = mediaType === 'location' && mediaMetadata ? {
@@ -71,7 +75,8 @@ export function MessageBubble({
     <View
       style={[
         styles.container,
-        Platform.OS === 'android' && isLongTextMessage ? styles.containerLongTextAndroid : null,
+        { marginBottom: messageGap },
+        Platform.OS === 'android' && isLongTextMessage ? { marginBottom: Math.max(messageGap, Spacing.sm) } : null,
         isOwn ? styles.containerOwn : styles.containerOther,
       ]}
     >
@@ -162,7 +167,7 @@ export function MessageBubble({
           {/* Text */}
           {text && (
             <Text
-              variant="chatText"
+              variant="subhead"
               style={{ color: isOwn ? colors.primaryForeground : colors.label }}
             >
               {text}
@@ -212,7 +217,6 @@ const BUBBLE_TAIL = Radius.sm;
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    marginBottom: Platform.OS === 'android' ? Spacing.xs : Spacing.xs / 2,
     paddingHorizontal: Spacing.md,
     gap: Spacing.sm,
     alignItems: 'flex-end',
@@ -222,9 +226,6 @@ const styles = StyleSheet.create({
   },
   containerOther: {
     justifyContent: 'flex-start',
-  },
-  containerLongTextAndroid: {
-    marginBottom: Spacing.sm,
   },
   avatarPlaceholder: {
     width: Sizes.iconXl,

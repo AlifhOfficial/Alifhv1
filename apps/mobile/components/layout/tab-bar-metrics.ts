@@ -6,7 +6,7 @@ export const getTabBarBottomPadding = (bottomInset: number) =>
 export const getTabBarOverlayHeight = (bottomInset: number) =>
   Math.max(
     Layout.tabBarHeight,
-    Sizes.pillHeightMd + Spacing.xl + getTabBarBottomPadding(bottomInset)
+    Sizes.actionButtonLg + Spacing['2xl'] + getTabBarBottomPadding(bottomInset)
   );
 
 export const getTabBarContentInset = (bottomInset: number, extra = 0) =>

@@ -224,6 +224,11 @@ export function ChatWindow({
         (!nextMessage ||
           nextMessage.senderId !== item.senderId ||
           nextMessage.isSystemMessage);
+      const isGroupBreak =
+        !nextMessage ||
+        nextMessage.senderId !== item.senderId ||
+        nextMessage.isSystemMessage ||
+        item.isSystemMessage;
       const showSeen = item.id === lastReadMsgId;
 
       // Check if we need to show a date separator (compare with older message above in inverted list)
@@ -243,6 +248,7 @@ export function ChatWindow({
               <MessageBubble
                 message={item}
                 isOwn={isOwn}
+                isGroupBreak={isGroupBreak}
                 showAvatar={showAvatar}
                 showSeen={showSeen}
                 otherUserAvatar={otherUserAvatar}
