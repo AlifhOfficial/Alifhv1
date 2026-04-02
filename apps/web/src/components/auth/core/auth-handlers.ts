@@ -36,6 +36,11 @@ export interface AuthResult {
   error?: string;
 }
 
+export interface OtpRateLimitMeta {
+  attemptsRemaining?: number;
+  retryAfterSeconds?: number;
+}
+
 export interface EmailData {
   email: string;
   type: "verification" | "reset" | "magic-link";
@@ -237,7 +242,7 @@ export const signUpWithGoogle = async (callbackURL: string = "/"): Promise<AuthR
 export const requestPasswordReset = async (
   email: string,
   redirectTo: string = "/reset-password"
-): Promise<{ success: boolean; error?: string }> => {
+): Promise<{ success: boolean; error?: string; retryAfterSeconds?: number }> => {
   return safeAuthOperation(async () => {
     const emailValidation = validateEmail(email);
     if (!emailValidation.valid) {
@@ -259,11 +264,15 @@ export const requestPasswordReset = async (
     if (!response.ok) {
       return {
         success: false,
-        error: result.error || "Failed to send reset email"
+        error: result.error || "Failed to send reset email",
+        retryAfterSeconds: typeof result.retryAfterSeconds === 'number' ? result.retryAfterSeconds : undefined,
       };
     }
 
-    return { success: true };
+    return {
+      success: true,
+      retryAfterSeconds: typeof result.retryAfterSeconds === 'number' ? result.retryAfterSeconds : undefined,
+    };
   }, "Failed to send reset email");
 };
 
@@ -271,7 +280,7 @@ export const requestPasswordReset = async (
 export const sendMagicLink = async (
   email: string,
   callbackURL: string = "/"
-): Promise<{ success: boolean; error?: string }> => {
+): Promise<{ success: boolean; error?: string; retryAfterSeconds?: number }> => {
   return safeAuthOperation(async () => {
     const emailValidation = validateEmail(email);
     if (!emailValidation.valid) {
@@ -292,11 +301,15 @@ export const sendMagicLink = async (
     if (!response.ok) {
       return {
         success: false,
-        error: result?.error || "Failed to send magic link"
+        error: result?.error || "Failed to send magic link",
+        retryAfterSeconds: typeof result?.retryAfterSeconds === 'number' ? result.retryAfterSeconds : undefined,
       };
     }
 
-    return { success: true };
+    return {
+      success: true,
+      retryAfterSeconds: typeof result?.retryAfterSeconds === 'number' ? result.retryAfterSeconds : undefined,
+    };
   }, "Failed to send magic link");
 };
 
@@ -311,7 +324,7 @@ export const sendMagicLink = async (
 export const verifyEmailWithOTP = async (
   email: string,
   otp: string
-): Promise<AuthResult> => {
+): Promise<AuthResult & OtpRateLimitMeta> => {
   return safeAuthOperation(async () => {
     const response = await fetch('/api/auth/verify-email', {
       method: 'POST',
@@ -325,7 +338,12 @@ export const verifyEmailWithOTP = async (
     const result = await response.json();
 
     if (!response.ok || result.error) {
-      return { success: false, error: result.error || "Verification failed" };
+      return {
+        success: false,
+        error: result.error || "Verification failed",
+        attemptsRemaining: typeof result.attemptsRemaining === 'number' ? result.attemptsRemaining : undefined,
+        retryAfterSeconds: typeof result.retryAfterSeconds === 'number' ? result.retryAfterSeconds : undefined,
+      };
     }
 
     return { success: true };
@@ -338,17 +356,33 @@ export const verifyEmailWithOTP = async (
 export const resendVerificationOTP = async (
   email: string,
   type: "email-verification" | "sign-in" | "forget-password" = "email-verification"
-): Promise<{ success: boolean; error?: string }> => {
+): Promise<{ success: boolean; error?: string; retryAfterSeconds?: number; attemptsRemaining?: number }> => {
   return safeAuthOperation(async () => {
-    const result = await authClient.emailOtp.sendVerificationOtp({
-      email: normalizeEmail(email),
-      type,
+    const response = await fetch(AUTH_CONFIG.ENDPOINTS.RESEND_OTP, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: normalizeEmail(email),
+        type,
+      }),
     });
 
-    if (result.error) {
-      return { success: false, error: result.error.message || "Failed to resend code" };
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok || result.error) {
+      return {
+        success: false,
+        error: result.error || result.message || "Failed to resend code",
+        retryAfterSeconds: typeof result.retryAfterSeconds === 'number' ? result.retryAfterSeconds : undefined,
+        attemptsRemaining: typeof result.attemptsRemaining === 'number' ? result.attemptsRemaining : undefined,
+      };
     }
 
-    return { success: true };
+    return {
+      success: true,
+      retryAfterSeconds: typeof result.retryAfterSeconds === 'number'
+        ? result.retryAfterSeconds
+        : AUTH_CONFIG.EMAIL_OTP.RESEND_COOLDOWN_SECONDS,
+    };
   }, "Failed to resend verification code");
 };

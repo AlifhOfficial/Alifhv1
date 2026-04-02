@@ -90,15 +90,32 @@ export class AuthFlowController {
           this.actions.setOtpData({ 
             email: normalizedEmail, 
             type: "email-verification", 
-            password 
+            password,
+            attemptsRemaining: AUTH_CONFIG.EMAIL_OTP.VERIFY_MAX_ATTEMPTS,
+            cooldownSeconds: otpResult.retryAfterSeconds ?? AUTH_CONFIG.EMAIL_OTP.RESEND_COOLDOWN_SECONDS,
           });
           this.actions.setLoading(false);
           this.actions.setCurrentModal("otp-verification");
         } else {
-          // Failed to send OTP - show error
-          this.actions.setError("Failed to send verification code. Please try again.");
-          this.actions.setLoading(false);
-          this.actions.setCurrentModal("signin");
+          if (typeof otpResult.retryAfterSeconds === 'number') {
+            this.actions.setOtpData({
+              email: normalizedEmail,
+              type: "email-verification",
+              password,
+              attemptsRemaining: typeof otpResult.attemptsRemaining === 'number'
+                ? otpResult.attemptsRemaining
+                : 0,
+              cooldownSeconds: otpResult.retryAfterSeconds,
+            });
+            this.actions.setError(otpResult.error || "Please wait before requesting a new code.");
+            this.actions.setLoading(false);
+            this.actions.setCurrentModal("otp-verification");
+          } else {
+            // Failed to send OTP - show error
+            this.actions.setError("Failed to send verification code. Please try again.");
+            this.actions.setLoading(false);
+            this.actions.setCurrentModal("signin");
+          }
         }
       } else {
         const errorMessage = parseAuthError(result.error);
@@ -174,7 +191,13 @@ export class AuthFlowController {
       if (result.success) {
         // Show OTP verification modal - user stays in same browser tab!
         // Store password so we can auto sign-in after OTP verification
-        this.actions.setOtpData({ email: normalizedEmail, type: "email-verification", password });
+        this.actions.setOtpData({
+          email: normalizedEmail,
+          type: "email-verification",
+          password,
+          attemptsRemaining: AUTH_CONFIG.EMAIL_OTP.VERIFY_MAX_ATTEMPTS,
+          cooldownSeconds: AUTH_CONFIG.EMAIL_OTP.RESEND_COOLDOWN_SECONDS,
+        });
         this.actions.setLoading(false);
         this.actions.setCurrentModal("otp-verification");
       } else {
@@ -240,11 +263,16 @@ export class AuthFlowController {
         this.actions.setEmailSentData({ email: normalizedEmail, type: "reset" });
         this.actions.setCurrentModal("email-sent");
       } else {
-        const errorMessage = parseAuthError(result.error);
-        const errorInfo = getAuthErrorInfo(errorMessage);
-        
-        this.actions.setAuthErrorInfo(errorInfo);
-        this.actions.setCurrentModal("auth-error");
+        if (typeof result.retryAfterSeconds === 'number' && result.retryAfterSeconds > 0) {
+          this.actions.setError(`${result.error || 'Please wait before retrying.'} (${result.retryAfterSeconds}s)`);
+          this.actions.setCurrentModal("forgot-password");
+        } else {
+          const errorMessage = parseAuthError(result.error);
+          const errorInfo = getAuthErrorInfo(errorMessage);
+          
+          this.actions.setAuthErrorInfo(errorInfo);
+          this.actions.setCurrentModal("auth-error");
+        }
       }
 
       this.actions.setLoading(false);
@@ -265,11 +293,16 @@ export class AuthFlowController {
         this.actions.setEmailSentData({ email: normalizedEmail, type: "magic-link" });
         this.actions.setCurrentModal("email-sent");
       } else {
-        const errorMessage = parseAuthError(result.error);
-        const errorInfo = getAuthErrorInfo(errorMessage);
-        
-        this.actions.setAuthErrorInfo(errorInfo);
-        this.actions.setCurrentModal("auth-error");
+        if (typeof result.retryAfterSeconds === 'number' && result.retryAfterSeconds > 0) {
+          this.actions.setError(`${result.error || 'Please wait before retrying.'} (${result.retryAfterSeconds}s)`);
+          this.actions.setCurrentModal("magic-link");
+        } else {
+          const errorMessage = parseAuthError(result.error);
+          const errorInfo = getAuthErrorInfo(errorMessage);
+          
+          this.actions.setAuthErrorInfo(errorInfo);
+          this.actions.setCurrentModal("auth-error");
+        }
       }
 
       this.actions.setLoading(false);
@@ -328,6 +361,19 @@ export class AuthFlowController {
       } else {
         // Show error inline in the OTP modal
         this.actions.setError(result.error || "Verification failed");
+
+        if (typeof result.attemptsRemaining === 'number' || typeof result.retryAfterSeconds === 'number') {
+          this.actions.setOtpData({
+            ...otpData,
+            attemptsRemaining: typeof result.attemptsRemaining === 'number'
+              ? result.attemptsRemaining
+              : otpData.attemptsRemaining,
+            cooldownSeconds: typeof result.retryAfterSeconds === 'number'
+              ? result.retryAfterSeconds
+              : otpData.cooldownSeconds,
+          });
+        }
+
         this.actions.setLoading(false);
       }
     });
@@ -338,7 +384,9 @@ export class AuthFlowController {
    */
   async handleResendOTP() {
     const otpData = this.state.otpData;
-    if (!otpData) return;
+    if (!otpData) {
+      return { success: false, error: "Missing OTP data" };
+    }
 
     this.actions.setLoading(true);
     this.actions.setError(null);
@@ -349,9 +397,25 @@ export class AuthFlowController {
     
     if (!result.success) {
       this.actions.setError(result.error || "Failed to resend code");
+      this.actions.setOtpData({
+        ...otpData,
+        attemptsRemaining: typeof result.attemptsRemaining === 'number'
+          ? result.attemptsRemaining
+          : otpData.attemptsRemaining,
+        cooldownSeconds: typeof result.retryAfterSeconds === 'number'
+          ? result.retryAfterSeconds
+          : otpData.cooldownSeconds,
+      });
+      return result;
     }
-    
-    return result.success;
+
+    this.actions.setOtpData({
+      ...otpData,
+      attemptsRemaining: AUTH_CONFIG.EMAIL_OTP.VERIFY_MAX_ATTEMPTS,
+      cooldownSeconds: result.retryAfterSeconds ?? AUTH_CONFIG.EMAIL_OTP.RESEND_COOLDOWN_SECONDS,
+    });
+
+    return result;
   }
 
   /**

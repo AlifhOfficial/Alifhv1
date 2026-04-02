@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 const NATIVE_SHEET_LEAF_ROUTES = new Set([
   'sort',
   'search',
@@ -11,6 +13,9 @@ const NATIVE_SHEET_LEAF_ROUTES = new Set([
   'active-filters',
   'auth-prompt',
   'sign-in-sheet',
+  'sign-up-sheet',
+  'verify-email-sheet',
+  'forgot-password-sheet',
   'listing-description',
   'listing-specs',
   'listing-features',
@@ -37,6 +42,7 @@ const NATIVE_SHEET_LEAF_ROUTES = new Set([
 ]);
 
 export function shouldHideForNativeSheet(routeSegments: string[]): boolean {
+  if (Platform.OS !== 'android') return false;
   const leafRoute = routeSegments[routeSegments.length - 1] ?? '';
   return NATIVE_SHEET_LEAF_ROUTES.has(leafRoute);
 }
@@ -44,3 +50,4 @@ export function shouldHideForNativeSheet(routeSegments: string[]): boolean {
 export const nativeSheetVisibility = {
   hideOverlays: shouldHideForNativeSheet,
 };
+

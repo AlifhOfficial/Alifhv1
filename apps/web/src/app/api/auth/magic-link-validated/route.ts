@@ -19,6 +19,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
+import { AUTH_CONFIG } from "@/lib/auth/config";
+import { getAuthRateLimitSource } from "@/lib/auth/email-otp-rate-limit";
+import { getActionRateLimitStatus, recordActionRequest } from "@/lib/auth/request-rate-limit";
 import { validateUserExists } from "../validation-utils";
 
 const MagicLinkSchema = z.object({
@@ -43,8 +46,22 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, callbackURL } = result.data;
+    const normalizedEmail = email.trim().toLowerCase();
+    const source = getAuthRateLimitSource(request.headers);
 
-    const validation = await validateUserExists(email);
+    const rateLimit = getActionRateLimitStatus('magic-link', normalizedEmail, source);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: `Please wait ${rateLimit.retryAfterSeconds} seconds before requesting another magic link.`,
+          code: rateLimit.code,
+          retryAfterSeconds: rateLimit.retryAfterSeconds,
+        },
+        { status: 429 }
+      );
+    }
+
+    const validation = await validateUserExists(normalizedEmail);
 
     if (!validation.exists) {
       console.warn("[magic-link] Attempt for non-existent user", email);
@@ -56,15 +73,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("📧 Proceeding with magic link for existing user:", email);
+    console.log("📧 Proceeding with magic link for existing user:", normalizedEmail);
 
     // Send the magic link through Better Auth
     const authResult = await auth.api.signInMagicLink({
-      body: { email, callbackURL },
+      body: { email: normalizedEmail, callbackURL },
       headers: request.headers,
     });
 
-    return NextResponse.json(authResult);
+    recordActionRequest('magic-link', normalizedEmail, source);
+
+    return NextResponse.json({
+      ...authResult,
+      retryAfterSeconds: AUTH_CONFIG.MAGIC_LINK.COOLDOWN_SECONDS,
+    });
   } catch (error: any) {
     console.error("[magic-link] Error", error);
     return NextResponse.json(

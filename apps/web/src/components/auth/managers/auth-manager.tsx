@@ -105,6 +105,8 @@ export function AuthManager({
         onResend={() => flowController.handleResendOTP()}
         onBack={() => flowController.handleOTPBack()}
         email={state.otpData?.email || ""}
+        attemptsRemaining={state.otpData?.attemptsRemaining}
+        cooldownSeconds={state.otpData?.cooldownSeconds}
         isLoading={state.isLoading}
         error={state.error}
       />

@@ -12,7 +12,6 @@ import { queryClient } from '@/lib/query-client';
 
 // Auth sheet context types
 export type AuthSheetContext = 'profile' | 'saved' | 'messages' | 'listings' | 'bookings' | 'default';
-export type AuthEntryScreen = 'welcome' | 'signin' | 'signup';
 
 export interface AuthUser {
   id: string;
@@ -48,14 +47,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   user: AuthUser | null;
-  showAuthFlow: boolean;
   isAdmin: boolean;
   isSuperAdmin: boolean;
-  
-  // Flow control
-  openAuthFlow: (initialScreen?: AuthEntryScreen) => void;
-  closeAuthFlow: () => void;
-  authFlowInitialScreen: AuthEntryScreen;
   
   // Auth sheet (for unauthenticated prompts)
   showAuthSheet: (context?: AuthSheetContext) => void;
@@ -79,8 +72,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [showAuthFlow, setShowAuthFlow] = useState(false);
-  const [authFlowInitialScreen, setAuthFlowInitialScreen] = useState<AuthEntryScreen>('welcome');
   
   // Auth sheet state
   const [authSheetVisible, setAuthSheetVisible] = useState(false);
@@ -135,16 +126,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [clearAuthenticatedCaches]);
 
-  const openAuthFlow = useCallback((initialScreen: AuthEntryScreen = 'welcome') => {
-    setAuthFlowInitialScreen(initialScreen);
-    setShowAuthFlow(true);
-  }, []);
-
-  const closeAuthFlow = useCallback(() => {
-    setShowAuthFlow(false);
-    setAuthFlowInitialScreen('welcome');
-  }, []);
-
   // Auth sheet controls
   const showAuthSheetFn = useCallback((context: AuthSheetContext = 'default') => {
     setAuthSheetContext(context);
@@ -161,7 +142,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Set basic user data immediately for quick UI update
     setUser(userData);
     setIsAuthenticated(true);
-    setShowAuthFlow(false);
     
     // Then refresh session to get enriched data (avatarUrl, etc.) from server
     try {
@@ -197,12 +177,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isAuthenticated,
         isLoading,
         user,
-        showAuthFlow,
         isAdmin,
         isSuperAdmin,
-        openAuthFlow,
-        closeAuthFlow,
-        authFlowInitialScreen,
         showAuthSheet: showAuthSheetFn,
         hideAuthSheet,
         authSheetVisible,

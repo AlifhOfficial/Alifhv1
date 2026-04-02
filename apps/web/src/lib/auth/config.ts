@@ -16,10 +16,12 @@ export const AUTH_CONFIG = {
     WELCOME_DISPLAY: 3000,
   },
   
-  /** Magic link authentication settings */
+  /** Magic link authentication settings and rate limits */
   MAGIC_LINK: {
     EXPIRES_IN: 600, // 10 minutes in seconds
     DISABLE_SIGN_UP: true, // Existing users only
+    COOLDOWN_SECONDS: 60,
+    MAX_REQUESTS_PER_HOUR: 12,
   },
   
   /** Session lifecycle configuration */
@@ -32,7 +34,21 @@ export const AUTH_CONFIG = {
   EMAIL_VERIFICATION: {
     SEND_ON_SIGN_UP: true,
   },
-  
+
+  /** Email OTP throttling and verification safeguards */
+  EMAIL_OTP: {
+    RESEND_COOLDOWN_SECONDS: 45,
+    RESEND_MAX_REQUESTS_PER_HOUR: 20,
+    VERIFY_MAX_ATTEMPTS: 5,
+    LOCKOUT_SECONDS_AFTER_MAX_ATTEMPTS: 10 * 60,
+  },
+
+  /** Password reset rate limits */
+  PASSWORD_RESET: {
+    COOLDOWN_SECONDS: 60,
+    MAX_REQUESTS_PER_HOUR: 12,
+  },
+
   /** Password validation rules */
   PASSWORD: {
     MIN_LENGTH: 8,
@@ -42,6 +58,8 @@ export const AUTH_CONFIG = {
   ENDPOINTS: {
     PASSWORD_RESET: '/api/auth/password-reset-validated',
     MAGIC_LINK: '/api/auth/magic-link-validated',
+    VERIFY_EMAIL: '/api/auth/verify-email',
+    RESEND_OTP: '/api/auth/email-otp/send-verification-otp',
   },
 } as const;
 

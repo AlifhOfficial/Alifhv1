@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,25 +13,30 @@ import * as AuthAPI from '@/lib/auth-api';
 
 const isValidEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-export default function SignInSheetScreen() {
+export default function SignUpSheetScreen() {
   const params = useLocalSearchParams<{ email?: string }>();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const { signIn } = useAuth();
 
+  const nameRef = useRef<TextInput>(null);
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState(typeof params.email === 'string' ? params.email : '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [showSignInSuccess, setShowSignInSuccess] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const canSubmit = isValidEmail(email) && password.length > 0 && !isLoading && !isAuthenticating;
+  const canSubmit =
+    name.trim().length >= 2 &&
+    isValidEmail(email) &&
+    password.length >= 8 &&
+    !isLoading;
 
   async function handleSubmit() {
     if (!canSubmit) return;
@@ -40,66 +45,56 @@ export default function SignInSheetScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
-    setIsAuthenticating(true);
     setIsLoading(true);
-    setShowSignInSuccess(false);
     setError(null);
 
     try {
       const normalizedEmail = email.toLowerCase().trim();
-      const result = await AuthAPI.signInWithEmail(normalizedEmail, password);
+      const result = await AuthAPI.signUpWithEmail(name.trim(), normalizedEmail, password);
 
-      if (result.needsVerification) {
-        await AuthAPI.resendVerificationOTP(normalizedEmail, 'email-verification').catch(() => null);
-        setIsAuthenticating(false);
-        router.replace({
-          pathname: '/verify-email-sheet',
-          params: {
-            email: normalizedEmail,
-            password,
-            mode: 'signin',
-          },
-        });
+      if (!result.success) {
+        setError(result.error || 'Failed to create account. Please try again.');
         return;
       }
 
-      if (!result.success || !result.user) {
-        setError(result.error || 'Sign in failed. Please try again.');
-        return;
-      }
-
-      signIn(result.user);
-      setIsAuthenticating(false);
-      setShowSignInSuccess(true);
+      setShowSuccess(true);
 
       if (process.env.EXPO_OS === 'ios') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
 
       setTimeout(() => {
-        router.back();
-      }, 320);
+        router.replace({
+          pathname: '/verify-email-sheet',
+          params: {
+            email: normalizedEmail,
+            password,
+            mode: 'signup',
+          },
+        });
+      }, 220);
     } catch (err: any) {
-      setError(err?.message || 'Sign in failed. Please try again.');
-      setIsAuthenticating(false);
+      setError(err?.message || 'Failed to create account. Please try again.');
     } finally {
       setIsLoading(false);
     }
   }
 
-  async function handleForgotPassword() {
-    if (isLoading || isAuthenticating) return;
+  function handleSignIn() {
+    if (isLoading) return;
 
-    router.push({
-      pathname: '/forgot-password-sheet',
-      params: email.trim().length > 0
-        ? { email: email.toLowerCase().trim() }
-        : {},
+    if (process.env.EXPO_OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    router.replace({
+      pathname: '/sign-in-sheet',
+      params: email.trim().length > 0 ? { email: email.toLowerCase().trim() } : {},
     });
   }
 
   async function handleGoogleAuth() {
-    if (isLoading || isAuthenticating) return;
+    if (isLoading) return;
 
     if (process.env.EXPO_OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -109,10 +104,10 @@ export default function SignInSheetScreen() {
     setError(null);
 
     try {
-      const result = await AuthAPI.signInWithGoogle();
+      const result = await AuthAPI.signUpWithGoogle();
 
       if (!result.success || !result.user) {
-        setError(result.error || 'Google sign in failed. Please try again.');
+        setError(result.error || 'Google sign up failed. Please try again.');
         return;
       }
 
@@ -126,43 +121,27 @@ export default function SignInSheetScreen() {
         router.back();
       }, 220);
     } catch (err: any) {
-      setError(err?.message || 'Google sign in failed. Please try again.');
+      setError(err?.message || 'Google sign up failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   }
 
-  function handleSignUp() {
-    if (process.env.EXPO_OS === 'ios') {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-
-    router.replace({
-      pathname: '/sign-up-sheet',
-      params: email.trim().length > 0 ? { email: email.toLowerCase().trim() } : {},
-    });
-  }
-
-  if (isAuthenticating || showSignInSuccess) {
+  if (showSuccess) {
     return (
       <View style={[styles.container, styles.stateScreen, { backgroundColor: colors.sheet }]}> 
         <View style={styles.stateTopSpacer} />
         <View style={styles.stateContent}>
-          {isAuthenticating ? (
-            <>
-              <ActivityIndicator size="large" color={colors.primary} />
-              <Text variant={SheetTypography.rowLabel} style={{ color: colors.sheetLabelMuted }}>
-                Signing in...
-              </Text>
-            </>
-          ) : (
-            <>
-              <Ionicons name="checkmark-circle" size={48} color={colors.success} />
-              <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.success }}>
-                Signed In
-              </Text>
-            </>
-          )}
+          <Ionicons name="mail-open-outline" size={42} color={colors.primary} />
+          <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>
+            Account Created
+          </Text>
+          <Text
+            variant={SheetTypography.rowLabel}
+            style={[styles.stateMessage, { color: colors.sheetLabelMuted }]}
+          >
+            Finishing setup...
+          </Text>
         </View>
         <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
       </View>
@@ -173,11 +152,33 @@ export default function SignInSheetScreen() {
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
       <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
         <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Welcome to Revvup
+          Join Revvup
+        </Text>
+        <Text variant={SheetTypography.rowLabel} style={[styles.subtitle, { color: colors.sheetLabelMuted }]}>
+          Create your account to get started on Revvup.
         </Text>
       </View>
 
       <View style={styles.form}>
+        <View style={[styles.inputWrap, { backgroundColor: colors.fill2, borderColor: colors.sheetBorder }]}> 
+          <Text variant="caption1" style={{ color: colors.sheetLabelMuted }}>
+            Full name
+          </Text>
+          <TextInput
+            ref={nameRef}
+            value={name}
+            onChangeText={setName}
+            placeholder="Your name"
+            placeholderTextColor={colors.sheetLabelMuted}
+            autoCapitalize="words"
+            autoCorrect={false}
+            editable={!isLoading}
+            returnKeyType="next"
+            onSubmitEditing={() => emailRef.current?.focus()}
+            style={[styles.input, { color: colors.sheetLabel }]}
+          />
+        </View>
+
         <View style={[styles.inputWrap, { backgroundColor: colors.fill2, borderColor: colors.sheetBorder }]}> 
           <Text variant="caption1" style={{ color: colors.sheetLabelMuted }}>
             Email
@@ -215,13 +216,13 @@ export default function SignInSheetScreen() {
             ref={passwordRef}
             value={password}
             onChangeText={setPassword}
-            placeholder="Enter your password"
+            placeholder="At least 8 characters"
             placeholderTextColor={colors.sheetLabelMuted}
             secureTextEntry={!showPassword}
             autoCapitalize="none"
             autoCorrect={false}
-            autoComplete="password"
-            textContentType="password"
+            autoComplete="new-password"
+            textContentType="newPassword"
             editable={!isLoading}
             returnKeyType="done"
             onSubmitEditing={handleSubmit}
@@ -246,23 +247,20 @@ export default function SignInSheetScreen() {
             },
           ]}
         >
-          <Text
-            variant={SheetTypography.rowLabelSelected}
-            style={{ color: colors.primaryForeground }}
-          >
-            {isLoading ? 'Signing in...' : 'Sign In'}
+          <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.primaryForeground }}>
+            {isLoading ? 'Creating account...' : 'Create Account'}
           </Text>
         </HapticPressable>
 
         <HapticPressable
           onPress={handleGoogleAuth}
-          disabled={isLoading || isAuthenticating}
+          disabled={isLoading}
           style={({ pressed }) => [
             styles.secondaryAction,
             {
               borderColor: colors.sheetBorder,
               backgroundColor: colors.fill2,
-              opacity: isLoading || isAuthenticating ? 0.55 : pressed ? 0.8 : 1,
+              opacity: isLoading ? 0.55 : pressed ? 0.8 : 1,
             },
           ]}
         >
@@ -274,19 +272,11 @@ export default function SignInSheetScreen() {
           </View>
         </HapticPressable>
 
-        <View style={styles.linksRow}>
-          <HapticPressable onPress={handleForgotPassword} disabled={isLoading}>
-            <Text variant={SheetTypography.rowLabel} style={{ color: colors.primary }}>
-              Forgot password?
-            </Text>
-          </HapticPressable>
-
-          <HapticPressable onPress={handleSignUp} disabled={isLoading}>
-            <Text variant={SheetTypography.rowLabel} style={{ color: colors.primary }}>
-              Create account
-            </Text>
-          </HapticPressable>
-        </View>
+        <HapticPressable onPress={handleSignIn} disabled={isLoading} style={styles.secondaryLink}>
+          <Text variant={SheetTypography.rowLabel} style={{ color: colors.primary }}>
+            Already have an account? Sign in
+          </Text>
+        </HapticPressable>
       </View>
 
       <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
@@ -306,6 +296,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     marginBottom: SheetChrome.headerMarginBottom,
     alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  subtitle: {
+    textAlign: 'center',
   },
   form: {
     gap: Spacing.md,
@@ -344,10 +338,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.xs,
   },
-  linksRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  secondaryLink: {
     alignItems: 'center',
+    justifyContent: 'center',
     minHeight: Sizes.actionButtonMd,
   },
   stateScreen: {
@@ -362,5 +355,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: Spacing['3xl'],
     gap: Spacing.sm,
+  },
+  stateMessage: {
+    textAlign: 'center',
   },
 });

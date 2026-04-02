@@ -15,9 +15,11 @@ interface OTPVerificationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onVerify: (otp: string) => Promise<void>;
-  onResend: () => Promise<boolean>;
+  onResend: () => Promise<{ success: boolean; retryAfterSeconds?: number; attemptsRemaining?: number }>;
   onBack: () => void;
   email: string;
+  attemptsRemaining?: number;
+  cooldownSeconds?: number;
   isLoading?: boolean;
   error?: string | null;
 }
@@ -29,23 +31,37 @@ export function OTPVerificationModal({
   onResend,
   onBack,
   email,
+  attemptsRemaining = 5,
+  cooldownSeconds = 45,
   isLoading = false,
   error,
 }: OTPVerificationModalProps) {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
-  const [countdown, setCountdown] = useState(60);
+  const [countdown, setCountdown] = useState(cooldownSeconds);
   const [isResending, setIsResending] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const formatDuration = (seconds: number) => {
+    const safeSeconds = Math.max(0, seconds);
+    const minutes = Math.floor(safeSeconds / 60);
+    const remainingSeconds = safeSeconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
 
   // Reset state when modal opens
   useEffect(() => {
     if (open) {
       setOtp(Array(6).fill(""));
-      setCountdown(60);
+      setCountdown(cooldownSeconds);
       // Focus first input after a short delay
       setTimeout(() => inputRefs.current[0]?.focus(), 100);
     }
-  }, [open]);
+  }, [open, cooldownSeconds]);
+
+  useEffect(() => {
+    if (!open) return;
+    setCountdown(cooldownSeconds);
+  }, [cooldownSeconds, open]);
 
   // Countdown timer
   useEffect(() => {
@@ -78,7 +94,7 @@ export function OTPVerificationModal({
     }
 
     // Auto-submit when all digits entered
-    if (digit && index === 5) {
+    if (digit && index === 5 && attemptsRemaining > 0) {
       const fullOtp = newOtp.join("");
       if (fullOtp.length === 6) {
         onVerify(fullOtp);
@@ -124,19 +140,24 @@ export function OTPVerificationModal({
     if (countdown > 0 || isResending) return;
 
     setIsResending(true);
-    const success = await onResend();
+    const result = await onResend();
     setIsResending(false);
 
-    if (success) {
-      setCountdown(60);
+    if (result.success) {
+      setCountdown(result.retryAfterSeconds ?? 30);
+      if (typeof result.attemptsRemaining === 'number' && result.attemptsRemaining <= 0) {
+        setCountdown(result.retryAfterSeconds ?? countdown);
+      }
       setOtp(Array(6).fill(""));
       inputRefs.current[0]?.focus();
+    } else if (typeof result.retryAfterSeconds === 'number') {
+      setCountdown(result.retryAfterSeconds);
     }
   };
 
   const handleSubmit = () => {
     const fullOtp = otp.join("");
-    if (fullOtp.length === 6) {
+    if (fullOtp.length === 6 && attemptsRemaining > 0) {
       onVerify(fullOtp);
     }
   };
@@ -213,11 +234,19 @@ export function OTPVerificationModal({
             </div>
           )}
 
+          <p className="text-[12px] text-muted-foreground mb-4">
+            {attemptsRemaining > 0
+              ? `${attemptsRemaining} attempt${attemptsRemaining === 1 ? '' : 's'} remaining`
+              : countdown > 0
+                ? `Locked for ${formatDuration(countdown)}`
+                : 'Request a new code to continue'}
+          </p>
+
           {/* Actions */}
           <div className="w-full space-y-3">
             <button
               onClick={handleSubmit}
-              disabled={isLoading || otp.join("").length !== 6}
+              disabled={isLoading || otp.join("").length !== 6 || attemptsRemaining <= 0}
               className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
@@ -245,7 +274,7 @@ export function OTPVerificationModal({
             {isResending
               ? "Sending..."
               : countdown > 0
-                ? `Resend in ${countdown}s`
+                ? `Resend in ${formatDuration(countdown)}`
                 : "Resend code"
             }
           </button>

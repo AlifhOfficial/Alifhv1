@@ -42,7 +42,7 @@ export default function AuthPromptScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const { hideAuthSheet, openAuthFlow } = useAuth();
+  const { hideAuthSheet } = useAuth();
 
   const context: AuthSheetContext =
     params.context === 'profile' ||
@@ -78,10 +78,7 @@ export default function AuthPromptScreen() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
     hideAuthSheet();
-    router.back();
-    setTimeout(() => {
-      openAuthFlow('signup');
-    }, 150);
+    router.replace('/sign-up-sheet');
   };
 
   const handleSignIn = () => {

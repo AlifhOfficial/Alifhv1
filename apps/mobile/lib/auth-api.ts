@@ -58,6 +58,8 @@ export interface AuthResult {
   error?: string;
   code?: string;
   needsVerification?: boolean;
+  attemptsRemaining?: number;
+  retryAfterSeconds?: number;
 }
 
 // ============================================================================
@@ -392,20 +394,26 @@ export async function verifyEmailOTP(
           success: false,
           error: 'Invalid or expired code. Please try again.',
           code: 'INVALID_OTP',
+          attemptsRemaining: typeof data.attemptsRemaining === 'number' ? data.attemptsRemaining : undefined,
         };
       }
 
       if (data.code === 'TOO_MANY_ATTEMPTS' || response.status === 429) {
         return {
           success: false,
-          error: 'Too many attempts. Please request a new code.',
+          error: data?.error || 'Too many attempts. Please request a new code.',
           code: 'TOO_MANY_ATTEMPTS',
+          attemptsRemaining: typeof data.attemptsRemaining === 'number' ? data.attemptsRemaining : 0,
+          retryAfterSeconds: typeof data.retryAfterSeconds === 'number' ? data.retryAfterSeconds : undefined,
         };
       }
 
       return {
         success: false,
         error: data?.error || 'Verification failed',
+        code: data?.code,
+        attemptsRemaining: typeof data?.attemptsRemaining === 'number' ? data.attemptsRemaining : undefined,
+        retryAfterSeconds: typeof data?.retryAfterSeconds === 'number' ? data.retryAfterSeconds : undefined,
       };
     }
 
@@ -429,7 +437,7 @@ export async function verifyEmailOTP(
 export async function resendVerificationOTP(
   email: string,
   type: 'email-verification' | 'sign-in' | 'forget-password' = 'email-verification'
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; retryAfterSeconds?: number }> {
   try {
     const response = await authFetch(AUTH_ENDPOINTS.RESEND_OTP, {
       method: 'POST',
@@ -445,6 +453,7 @@ export async function resendVerificationOTP(
       return {
         success: false,
         error: data?.message || data?.error || 'Failed to resend code',
+        retryAfterSeconds: typeof data?.retryAfterSeconds === 'number' ? data.retryAfterSeconds : undefined,
       };
     }
 
@@ -463,7 +472,7 @@ export async function resendVerificationOTP(
  */
 export async function requestPasswordReset(
   email: string
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; retryAfterSeconds?: number }> {
   try {
     const response = await authFetch(AUTH_ENDPOINTS.PASSWORD_RESET, {
       method: 'POST',
@@ -480,10 +489,14 @@ export async function requestPasswordReset(
       return {
         success: false,
         error: data?.error || 'Failed to send reset email',
+        retryAfterSeconds: typeof data?.retryAfterSeconds === 'number' ? data.retryAfterSeconds : undefined,
       };
     }
 
-    return { success: true };
+    return {
+      success: true,
+      retryAfterSeconds: typeof data?.retryAfterSeconds === 'number' ? data.retryAfterSeconds : undefined,
+    };
   } catch (error: any) {
     console.error('[Auth] Password reset error:', error);
     return {
@@ -950,10 +963,12 @@ export async function signInWithPasskey(): Promise<AuthResult> {
 // ============================================================================
 
 /**
- * Sign in with Google using expo-web-browser
+ * Start Google OAuth flow using expo-web-browser.
+ * Web and mobile share the same backend social endpoint; sign-up and sign-in
+ * are both handled by the provider flow with account auto-link/create rules.
  * Opens a browser window to complete Google OAuth, then redirects back to the app
  */
-export async function signInWithGoogle(): Promise<AuthResult> {
+async function startGoogleOAuthFlow(mode: 'signin' | 'signup'): Promise<AuthResult> {
   try {
     // Import expo-web-browser dynamically to avoid issues if not installed
     const WebBrowser = await import('expo-web-browser');
@@ -969,11 +984,10 @@ export async function signInWithGoogle(): Promise<AuthResult> {
       path: 'auth/callback',
     });
     
-    // Build the auth URL with the redirect URI passed as a parameter
-    // This tells the callback page where to redirect back to
-    const authUrl = `${API_BASE}${AUTH_ENDPOINTS.GOOGLE_SIGN_IN}?redirect=${encodeURIComponent(redirectUri)}`;
+    // Build the auth URL using the web app's dedicated mobile Google start route.
+    const authUrl = `${API_BASE}${AUTH_ENDPOINTS.GOOGLE_SIGN_IN}?redirect=${encodeURIComponent(redirectUri)}&mode=${mode}`;
     
-    console.log('[Auth] Starting Google OAuth');
+    console.log('[Auth] Starting Google OAuth:', mode);
     console.log('[Auth] Auth URL:', authUrl);
     console.log('[Auth] Redirect URI:', redirectUri);
     
@@ -986,11 +1000,11 @@ export async function signInWithGoogle(): Promise<AuthResult> {
     console.log('[Auth] Browser result:', result.type);
     
     if (result.type === 'cancel' || result.type === 'dismiss') {
-      return { success: false, error: 'Sign in was cancelled' };
+      return { success: false, error: `${mode === 'signup' ? 'Sign up' : 'Sign in'} was cancelled` };
     }
     
     if (result.type !== 'success' || !result.url) {
-      return { success: false, error: 'Google sign in failed' };
+      return { success: false, error: `Google ${mode === 'signup' ? 'sign up' : 'sign in'} failed` };
     }
     
     // Parse the callback URL to get session data
@@ -1038,15 +1052,23 @@ export async function signInWithGoogle(): Promise<AuthResult> {
     // Store the session
     await storeSession(session, user);
     
-    console.log('[Auth] Google sign in successful');
+    console.log('[Auth] Google OAuth successful:', mode);
     return { success: true, user, session };
   } catch (error: any) {
-    console.error('[Auth] Google sign in error:', error);
+    console.error('[Auth] Google OAuth error:', mode, error);
     return {
       success: false,
-      error: error?.message || 'Google sign in failed. Please try again.',
+      error: error?.message || `Google ${mode === 'signup' ? 'sign up' : 'sign in'} failed. Please try again.`,
     };
   }
+}
+
+export async function signInWithGoogle(): Promise<AuthResult> {
+  return startGoogleOAuthFlow('signin');
+}
+
+export async function signUpWithGoogle(): Promise<AuthResult> {
+  return startGoogleOAuthFlow('signup');
 }
 
 // ============================================================================

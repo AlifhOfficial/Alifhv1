@@ -12,11 +12,18 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { AUTH_CONFIG } from "@/lib/auth/config";
+import {
+  clearOtpVerifyAttempts,
+  getOtpVerifyStatus,
+  recordFailedOtpVerifyAttempt,
+} from "@/lib/auth/email-otp-rate-limit";
 import { getUserForStripeCustomer, updateUserStripeCustomerId } from "@alifh/database";
 import { createStripeCustomerForUser } from "@/lib/stripe/config";
-import { headers } from "next/headers";
 
 export async function POST(request: NextRequest) {
+  let normalizedEmail = '';
+
   try {
     const body = await request.json();
     const { email, otp } = body;
@@ -29,7 +36,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
+    normalizedEmail = email.trim().toLowerCase();
+    const verifyStatus = getOtpVerifyStatus(normalizedEmail);
+
+    if (!verifyStatus.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Too many attempts. Request a new code to continue.',
+          code: 'TOO_MANY_ATTEMPTS',
+          attemptsRemaining: 0,
+          retryAfterSeconds: verifyStatus.retryAfterSeconds || AUTH_CONFIG.EMAIL_OTP.LOCKOUT_SECONDS_AFTER_MAX_ATTEMPTS,
+        },
+        { status: 429 }
+      );
+    }
 
     // Verify OTP via Better Auth's internal emailOTP endpoint
     // We call the internal auth handler directly
@@ -53,14 +73,27 @@ export async function POST(request: NextRequest) {
       const errorMessage = responseData?.message?.toLowerCase() || responseData?.error?.toLowerCase() || '';
       
       if (errorMessage.includes('invalid') || errorMessage.includes('expired')) {
+        const attemptStatus = recordFailedOtpVerifyAttempt(normalizedEmail);
         return NextResponse.json(
-          { error: "Invalid or expired code. Please try again.", code: "INVALID_OTP" },
-          { status: 400 }
+          {
+            error: attemptStatus.blocked
+              ? 'Too many attempts. Request a new code to continue.'
+              : 'Invalid or expired code. Please try again.',
+            code: attemptStatus.blocked ? 'TOO_MANY_ATTEMPTS' : 'INVALID_OTP',
+            attemptsRemaining: attemptStatus.attemptsRemaining,
+            retryAfterSeconds: attemptStatus.retryAfterSeconds || undefined,
+          },
+          { status: attemptStatus.blocked ? 429 : 400 }
         );
       }
       if (errorMessage.includes('too_many') || errorMessage.includes('attempts')) {
         return NextResponse.json(
-          { error: "Too many attempts. Please request a new code.", code: "TOO_MANY_ATTEMPTS" },
+          {
+            error: 'Too many attempts. Request a new code to continue.',
+            code: 'TOO_MANY_ATTEMPTS',
+            attemptsRemaining: 0,
+            retryAfterSeconds: AUTH_CONFIG.EMAIL_OTP.LOCKOUT_SECONDS_AFTER_MAX_ATTEMPTS,
+          },
           { status: 429 }
         );
       }
@@ -70,6 +103,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    clearOtpVerifyAttempts(normalizedEmail);
 
     // Verification successful - now create Stripe customer
     console.log(`[VerifyEmail] Email verified successfully: ${normalizedEmail}`);
@@ -103,10 +138,18 @@ export async function POST(request: NextRequest) {
     // Handle specific Better Auth errors
     const errorMessage = error?.message?.toLowerCase() || '';
     
-    if (errorMessage.includes('invalid') || errorMessage.includes('expired')) {
+    if (normalizedEmail && (errorMessage.includes('invalid') || errorMessage.includes('expired'))) {
+      const attemptStatus = recordFailedOtpVerifyAttempt(normalizedEmail);
       return NextResponse.json(
-        { error: "Invalid or expired code. Please try again.", code: "INVALID_OTP" },
-        { status: 400 }
+        {
+          error: attemptStatus.blocked
+            ? 'Too many attempts. Request a new code to continue.'
+            : 'Invalid or expired code. Please try again.',
+          code: attemptStatus.blocked ? 'TOO_MANY_ATTEMPTS' : 'INVALID_OTP',
+          attemptsRemaining: attemptStatus.attemptsRemaining,
+          retryAfterSeconds: attemptStatus.retryAfterSeconds || undefined,
+        },
+        { status: attemptStatus.blocked ? 429 : 400 }
       );
     }
 

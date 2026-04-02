@@ -26,6 +26,8 @@ export interface OtpData {
   type: "email-verification" | "sign-in" | "forget-password";
   /** Password for auto sign-in after email verification */
   password?: string;
+  attemptsRemaining?: number;
+  cooldownSeconds?: number;
 }
 
 export interface AuthState {

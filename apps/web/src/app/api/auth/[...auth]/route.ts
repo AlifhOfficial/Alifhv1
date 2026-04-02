@@ -7,6 +7,8 @@
  */
 
 import { auth } from "@/lib/auth";
+import { AUTH_CONFIG } from "@/lib/auth/config";
+import { getAuthRateLimitSource, getOtpResendStatus, recordOtpResend } from "@/lib/auth/email-otp-rate-limit";
 import { NextResponse } from "next/server";
 
 /**
@@ -178,6 +180,32 @@ export async function POST(request: Request) {
   const origin = request.headers.get("origin");
   // Override baseURL header so Better Auth uses the correct origin for OAuth callbacks
   const baseURL = getBaseURLFromRequest(request);
+  const requestUrl = new URL(request.url);
+  let resendEmail: string | null = null;
+
+  if (requestUrl.pathname.endsWith(AUTH_CONFIG.ENDPOINTS.RESEND_OTP)) {
+    const payload = await request.clone().json().catch(() => null);
+    resendEmail = typeof payload?.email === 'string' ? payload.email.trim().toLowerCase() : null;
+
+    if (resendEmail) {
+      const source = getAuthRateLimitSource(request.headers);
+      const resendStatus = getOtpResendStatus(resendEmail, source);
+
+      if (!resendStatus.allowed) {
+        return addCorsHeaders(
+          NextResponse.json(
+            {
+              error: `Please wait ${resendStatus.retryAfterSeconds} seconds before requesting a new code.`,
+              code: 'OTP_RESEND_COOLDOWN',
+              retryAfterSeconds: resendStatus.retryAfterSeconds,
+            },
+            { status: 429 }
+          ),
+          origin
+        );
+      }
+    }
+  }
   
   // Check if request has a body - handle empty bodies for endpoints like sign-out
   const contentLength = request.headers.get("content-length");
@@ -191,5 +219,10 @@ export async function POST(request: Request) {
   };
   const modifiedRequest = new Request(request.url, requestInit);
   const response = await auth.handler(modifiedRequest);
+
+  if (response.ok && resendEmail) {
+    recordOtpResend(resendEmail, getAuthRateLimitSource(request.headers));
+  }
+
   return addCorsHeaders(response, origin);
 }

@@ -19,6 +19,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
+import { AUTH_CONFIG } from "@/lib/auth/config";
+import { getAuthRateLimitSource } from "@/lib/auth/email-otp-rate-limit";
+import { getActionRateLimitStatus, recordActionRequest } from "@/lib/auth/request-rate-limit";
 import { validateUserExists } from "../validation-utils";
 
 const PasswordResetSchema = z.object({
@@ -43,8 +46,22 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, redirectTo } = result.data;
+    const normalizedEmail = email.trim().toLowerCase();
+    const source = getAuthRateLimitSource(request.headers);
 
-    const validation = await validateUserExists(email);
+    const rateLimit = getActionRateLimitStatus('password-reset', normalizedEmail, source);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: `Please wait ${rateLimit.retryAfterSeconds} seconds before requesting another reset email.`,
+          code: rateLimit.code,
+          retryAfterSeconds: rateLimit.retryAfterSeconds,
+        },
+        { status: 429 }
+      );
+    }
+
+    const validation = await validateUserExists(normalizedEmail);
     
     if (!validation.exists) {
       console.log("🚫 Password reset request for non-existent user:", email);
@@ -54,13 +71,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("📧 Proceeding with password reset for existing user:", email);
+    console.log("📧 Proceeding with password reset for existing user:", normalizedEmail);
     
     const authResult = await auth.api.requestPasswordReset({
-      body: { email, redirectTo },
+      body: { email: normalizedEmail, redirectTo },
     });
 
-    return NextResponse.json(authResult);
+    recordActionRequest('password-reset', normalizedEmail, source);
+
+    return NextResponse.json({
+      ...authResult,
+      retryAfterSeconds: AUTH_CONFIG.PASSWORD_RESET.COOLDOWN_SECONDS,
+    });
   } catch (error: any) {
     console.error("Password reset error:", error);
     return NextResponse.json(

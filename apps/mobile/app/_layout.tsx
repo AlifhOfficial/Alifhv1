@@ -3,7 +3,7 @@
  */
 
 import { Theme as NavTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
-import { Stack, useRouter, router as expoRouter } from 'expo-router';
+import { Stack, router as expoRouter } from 'expo-router';
 import { usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -14,7 +14,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState, useMemo } from 'react';
-import { Modal, View, LogBox, Platform, InteractionManager, AppState, Text as RNText, TextInput as RNTextInput } from 'react-native';
+import { View, LogBox, Platform, InteractionManager, AppState, Text as RNText, TextInput as RNTextInput } from 'react-native';
 import 'react-native-reanimated';
 
 // Suppress warnings from third-party dependencies that can't be fixed in user code
@@ -64,7 +64,7 @@ import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { AlertProvider } from '@/components/ui/themed-alert';
 import { FooterFade } from '@/components/layout';
-import { AuthFlow } from '@/components/auth';
+import { SimpleAuthWelcome } from '@/components/onboarding/simple-auth-welcome';
 
 // Prevent splash screen from auto-hiding until fonts load
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -75,7 +75,7 @@ const LightTheme: NavTheme = {
   colors: {
     primary: Colors.light.primary,
     background: Colors.light.background,
-    card: Colors.light.background,
+    card: Colors.light.sheet,
     text: Colors.light.label,
     border: Colors.light.border,
     notification: Colors.light.primary,
@@ -93,7 +93,7 @@ const CustomDarkTheme: NavTheme = {
   colors: {
     primary: Colors.dark.primary,
     background: Colors.dark.background,
-    card: Colors.dark.background,
+    card: Colors.dark.sheet,
     text: Colors.dark.label,
     border: Colors.dark.border,
     notification: Colors.dark.primary,
@@ -156,8 +156,7 @@ if (!navLockState.installed) {
 
 function RootLayoutNav() {
   const { colorScheme } = useTheme();
-  const { showAuthFlow, closeAuthFlow, signIn, authFlowInitialScreen } = useAuth();
-  const router = useRouter();
+  const { signIn } = useAuth();
   const colors = Colors[colorScheme];
 
   // Wire TanStack Query focusManager to AppState so stale queries refetch when app comes to foreground.
@@ -216,19 +215,7 @@ function RootLayoutNav() {
     checkOnboarding();
   }, []);
 
-  const handleOnboardingComplete = async (user?: { id: string; name: string; email: string }) => {
-    try {
-      await AsyncStorage.setItem('hasCompletedOnboarding', 'true');
-      if (user) {
-        signIn(user);
-      }
-      setHasCompletedOnboarding(true);
-    } catch {
-      setHasCompletedOnboarding(true);
-    }
-  };
-
-  const handleOnboardingSkip = async () => {
+  const markOnboardingComplete = async () => {
     try {
       await AsyncStorage.setItem('hasCompletedOnboarding', 'true');
       setHasCompletedOnboarding(true);
@@ -237,24 +224,25 @@ function RootLayoutNav() {
     }
   };
 
-  const handleAuthComplete = (user?: { id: string; name: string; email: string }) => {
-    if (user) {
-      signIn(user);
-    }
-    closeAuthFlow();
-    router.replace('/(tabs)/(browse)');
+  const handleContinueAsGuest = async () => {
+    await markOnboardingComplete();
   };
 
-  // Show onboarding auth flow if not completed
+  const handleOpenAuthSheet = async (target: 'signin' | 'signup') => {
+    await markOnboardingComplete();
+    requestAnimationFrame(() => {
+      expoRouter.push(target === 'signup' ? '/sign-up-sheet' : '/sign-in-sheet');
+    });
+  };
+
+  // Show a minimal first-run welcome and route users into the new sheet-based auth flow.
   if (hasCompletedOnboarding === false) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <AuthFlow 
-          onComplete={handleOnboardingComplete}
-          onSkip={handleOnboardingSkip}
-        />
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      </View>
+      <SimpleAuthWelcome
+        onCreateAccount={() => handleOpenAuthSheet('signup')}
+        onSignIn={() => handleOpenAuthSheet('signin')}
+        onContinueAsGuest={handleContinueAsGuest}
+      />
     );
   }
 
@@ -290,6 +278,39 @@ function RootLayoutNav() {
             name="sign-in-sheet"
             options={{
               title: 'Sign In',
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: 'fitToContents',
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="sign-up-sheet"
+            options={{
+              title: 'Create Account',
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: 'fitToContents',
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="verify-email-sheet"
+            options={{
+              title: 'Verify Email',
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: 'fitToContents',
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="forgot-password-sheet"
+            options={{
+              title: 'Reset Password',
               presentation: 'formSheet',
               sheetGrabberVisible: true,
               sheetAllowedDetents: 'fitToContents',
@@ -442,22 +463,6 @@ function RootLayoutNav() {
       <AuthSheetRenderer />
       
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      
-      {/* Auth Flow Modal - can be triggered from anywhere via useAuth */}
-      <Modal
-        visible={showAuthFlow}
-        animationType="slide"
-        presentationStyle="fullScreen"
-        statusBarTranslucent
-      >
-        <View style={{ flex: 1, backgroundColor: colors.background }}>
-          <AuthFlow 
-            onComplete={handleAuthComplete}
-            onSkip={closeAuthFlow}
-            initialScreen={authFlowInitialScreen}
-          />
-        </View>
-      </Modal>
     </NavigationThemeProvider>
   );
 }

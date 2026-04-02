@@ -33,6 +33,7 @@ import { UserRole } from "@/types/auth";
 import { emailService } from "@/lib/email";
 import { ac, roles } from "@/lib/auth/permissions";
 import { AUTH_CONFIG } from "./config";
+import { recordOtpResend } from "./email-otp-rate-limit";
 import { getStripeClient, getStripePlans } from "@/lib/stripe/config";
 
 // Check if Stripe is configured
@@ -96,6 +97,7 @@ export const auth = betterAuth({
       overrideDefaultEmailVerification: true,
       async sendVerificationOTP({ email, otp, type }) {
         await emailService.sendVerificationOTP({ email, otp, type });
+        recordOtpResend(email, null);
       },
     }),
     magicLink({

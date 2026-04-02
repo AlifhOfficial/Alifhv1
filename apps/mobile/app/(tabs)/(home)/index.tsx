@@ -11,7 +11,6 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
-  BrowseByMake,
   GreetingNote,
   QuickActions,
   ProfileMenu,
@@ -91,7 +90,6 @@ export default function HomeScreen() {
           <GreetingNote />
         </View>
         <QuickActions />
-        <BrowseByMake />
         <HomeFeed />
 
         <View style={[styles.bottomSpacer, { height: bottomInset }]} />

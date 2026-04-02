@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, X } from "lucide-react";
 
 interface MagicLinkModalProps {
@@ -30,6 +30,24 @@ export function MagicLinkModal({
   email: successEmail,
 }: MagicLinkModalProps) {
   const [email, setEmail] = useState("");
+  const [retryCountdown, setRetryCountdown] = useState(0);
+
+  useEffect(() => {
+    if (!error) return;
+    const secondsMatch = error.match(/\((\d+)s\)/);
+    if (!secondsMatch) return;
+
+    const value = Number(secondsMatch[1]);
+    if (Number.isFinite(value) && value > 0) {
+      setRetryCountdown(value);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (retryCountdown <= 0) return;
+    const timer = setTimeout(() => setRetryCountdown((value) => Math.max(0, value - 1)), 1000);
+    return () => clearTimeout(timer);
+  }, [retryCountdown]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,10 +158,10 @@ export function MagicLinkModal({
 
             <button
               type="submit"
-              disabled={isLoading || !email}
+              disabled={isLoading || !email || retryCountdown > 0}
               className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Sending..." : "Send magic link"}
+              {isLoading ? "Sending..." : retryCountdown > 0 ? `Retry in ${retryCountdown}s` : "Send magic link"}
             </button>
           </form>
 
