@@ -6,8 +6,14 @@
 node_modules
 
 # Ignore unrelated apps and assets for the web deployment
-apps/mobile
-apps/ws
+apps/mobile/**
+!apps/mobile/
+!apps/mobile/package.json
+
+apps/ws/**
+!apps/ws/
+!apps/ws/package.json
+
 apps/preprocessing
 
 docs
