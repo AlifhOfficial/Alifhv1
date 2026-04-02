@@ -24,9 +24,7 @@
     "r2:watch": "cd apps/web && bun scripts/r2-watch.ts"
   },
   "workspaces": [
-    "apps/web",
-    "apps/mobile",
-    "apps/ws",
+    "apps/*",
     "packages/*"
   ],
   "devDependencies": {
