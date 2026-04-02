@@ -64,14 +64,14 @@ export async function POST(request: NextRequest) {
     const validation = await validateUserExists(normalizedEmail);
     
     if (!validation.exists) {
-      console.log("🚫 Password reset request for non-existent user:", email);
+      console.warn("🚫 Password reset request for non-existent user:", email);
       return NextResponse.json(
         { error: validation.error },
         { status: 400 }
       );
     }
 
-    console.log("📧 Proceeding with password reset for existing user:", normalizedEmail);
+    console.warn("📧 Proceeding with password reset for existing user:", normalizedEmail);
     
     const authResult = await auth.api.requestPasswordReset({
       body: { email: normalizedEmail, redirectTo },

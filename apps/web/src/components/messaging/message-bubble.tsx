@@ -32,9 +32,9 @@ export function MessageBubble({
   message,
   isOwn,
   showAvatar = true,
-  isReadByOther = false,
+  isReadByOther: _isReadByOther = false,
   showSeen = false,
-  seenAt,
+  seenAt: _seenAt,
   otherUserAvatar,
   otherUserName,
   listing,
@@ -132,7 +132,6 @@ export function MessageBubble({
           >
             {/* Media (if any) */}
             {mediaUrl && mediaType === 'image' && (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={mediaUrl}
                 alt="Attached"

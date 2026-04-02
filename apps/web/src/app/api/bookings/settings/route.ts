@@ -16,7 +16,7 @@ export const runtime = 'nodejs';
  * GET /api/bookings/settings
  * Get staff's availability rules and booking settings
  */
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {

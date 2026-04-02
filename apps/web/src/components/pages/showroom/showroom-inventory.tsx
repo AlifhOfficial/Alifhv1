@@ -403,7 +403,7 @@ interface ShowroomCarCardProps {
   theme: ReturnType<typeof getAmbientTheme>;
 }
 
-function ShowroomCarCard({ listing, priority = false, index, theme }: ShowroomCarCardProps) {
+function ShowroomCarCard({ listing, priority = false, index: _index, theme: _theme }: ShowroomCarCardProps) {
   const displayImage = listing.thumbnail
     ? getAppThumbUrl(listing.thumbnail)
     : listing.images?.[0]

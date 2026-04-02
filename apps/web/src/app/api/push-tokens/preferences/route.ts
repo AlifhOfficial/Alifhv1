@@ -94,7 +94,7 @@ export async function PATCH(req: NextRequest) {
 
     await updateNotificationPreferences(user.id, updates);
 
-    console.log(`[Push API] Updated preferences for user ${user.id}`);
+    console.warn(`[Push API] Updated preferences for user ${user.id}`);
 
     return NextResponse.json({
       success: true,

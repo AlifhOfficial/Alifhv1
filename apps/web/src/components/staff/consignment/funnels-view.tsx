@@ -14,7 +14,6 @@ import {
   Trash2,
   Edit2,
   Loader2,
-  Search,
   AlertTriangle,
   Inbox,
   RefreshCw,

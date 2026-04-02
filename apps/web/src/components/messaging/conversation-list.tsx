@@ -13,11 +13,10 @@
 
 'use client';
 
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { Search, MessageCircle, PanelLeft, Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ConversationListItem } from './conversation-list-item';
 import { PartnerConversationGroup } from './partner-conversation-group';
 import { UserConversationGroup } from './user-conversation-group';
 import type { Conversation } from '@/hooks/messaging';
@@ -101,7 +100,7 @@ export function ConversationList({
   // For personal inbox, separate direct conversations from partner conversations
   // Partner conversations get grouped by partner
   // For staff inbox, group customer inquiries by user
-  const { directConversations, partnerGroups, userGroups } = useMemo(() => {
+  const { directConversations: _directConversations, partnerGroups, userGroups } = useMemo(() => {
     if (inbox === 'staff') {
       // Staff inbox: group by customer (user)
       // V1: Team chat disabled - only customer inquiries

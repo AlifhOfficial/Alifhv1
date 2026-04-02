@@ -8,7 +8,7 @@
 import { useState, useEffect, useCallback, useTransition } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { AlertCircle, RefreshCw, CheckCircle2, Settings, Search, X, ChevronDown } from 'lucide-react';
+import { RefreshCw, CheckCircle2, Settings, Search, X, ChevronDown } from 'lucide-react';
 import type { BookingData, BookingStats, AvailabilityRule, BookingSettings } from './types';
 import { BookingList } from './booking-list';
 import { AvailabilitySettings } from './availability-settings';
@@ -82,7 +82,7 @@ const SECONDARY_STATUS_TABS = [
   { key: 'no_show', label: 'No Show', color: 'gray' },
 ];
 
-function getColorClasses(color?: string) {
+function _getColorClasses(color?: string) {
   switch (color) {
     case 'blue': return 'text-blue-600 dark:text-blue-400';
     case 'green': return 'text-green-600 dark:text-green-400';

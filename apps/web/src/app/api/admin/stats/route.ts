@@ -29,7 +29,7 @@ export const dynamic = 'force-dynamic';
 // GET - Dashboard Statistics
 // ============================================================================
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {

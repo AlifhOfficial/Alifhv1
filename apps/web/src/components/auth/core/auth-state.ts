@@ -6,7 +6,7 @@
  */
 
 import { useState } from "react";
-import { AuthUser, AuthResult, EmailData } from "./auth-handlers";
+import { AuthUser, EmailData } from "./auth-handlers";
 import { AuthErrorInfo } from "@/lib/auth/errors";
 
 export type AuthModalType = 

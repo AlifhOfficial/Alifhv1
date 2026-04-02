@@ -22,7 +22,7 @@ interface MobileMenuProps {
   onSignOut?: () => void;
 }
 
-export function MobileMenu({ navItems, pathname, onNavigate, onSignIn, onSignUp, user, onProfile, onSignOut }: MobileMenuProps) {
+export function MobileMenu({ navItems, pathname, onNavigate, onSignIn: _onSignIn, onSignUp: _onSignUp, user: _user, onProfile: _onProfile, onSignOut: _onSignOut }: MobileMenuProps) {
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const toggleExpanded = (label: string) => {

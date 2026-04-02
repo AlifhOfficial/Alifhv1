@@ -88,7 +88,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
   });
   
   const [selectedDate, setSelectedDate] = useState<Date>();
-  const [dateInputValue, setDateInputValue] = useState('');
+  const [_dateInputValue, setDateInputValue] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});

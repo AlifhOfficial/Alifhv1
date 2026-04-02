@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 // V1: Invite expiry is 7 days from invite date
 const INVITE_EXPIRY_DAYS = 7;
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {

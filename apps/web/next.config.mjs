@@ -115,6 +115,8 @@ const nextConfig = {
   },
   
   images: {
+    // Avoid Next.js image optimizer dependency/costs; serves source URLs directly.
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 31536000,
     remotePatterns: [

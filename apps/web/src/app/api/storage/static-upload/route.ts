@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         finalContentType = "image/webp";
         finalFileName = file.name.replace(/\.[^.]+$/, ".webp");
         
-        console.log(`[marketing-upload] Processed: ${detectedFormat} → webp, ${buffer.length} → ${processedBuffer.length} bytes`);
+        console.warn(`[marketing-upload] Processed: ${detectedFormat} → webp, ${buffer.length} → ${processedBuffer.length} bytes`);
       } catch (err) {
         if (err instanceof ImageValidationError) {
           const status = err.code === 'FILE_TOO_LARGE' ? 413 
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
 }
 
 // List existing marketing asset folders (optional)
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user || !["staff", "admin"].includes(user.role ?? "")) {
@@ -143,7 +143,7 @@ export async function GET(request: NextRequest) {
       maxSize: MAX_SIZE,
       baseUrl: process.env.NEXT_PUBLIC_R2_PUBLIC_URL,
     });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Failed to fetch info" }, { status: 500 });
   }
 }

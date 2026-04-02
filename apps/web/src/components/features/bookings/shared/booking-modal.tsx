@@ -6,7 +6,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Dialog,
@@ -22,12 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/forms/select';
-import {
-  CarFront, 
+import { 
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  MapPin,
 } from 'lucide-react';
 import { cn } from '@/utils';
 import type { PublicBookingAvailabilityResponse } from '@/lib/bookings/public-availability';
@@ -84,9 +82,9 @@ export function BookingModal({
   onClose,
   listingId,
   listingTitle,
-  listingThumbnail,
-  partnerName,
-  partnerAddress,
+  listingThumbnail: _listingThumbnail,
+  partnerName: _partnerName,
+  partnerAddress: _partnerAddress,
   isAuthenticated,
   onLoginRequired,
   initialAvailability,
@@ -106,7 +104,7 @@ export function BookingModal({
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   
   // Booking settings
-  const [settings, setSettings] = useState<BookingSettings | null>(null);
+  const [_settings, setSettings] = useState<BookingSettings | null>(null);
   
   // Booking form
   const [notes, setNotes] = useState('');
@@ -120,52 +118,7 @@ export function BookingModal({
   } | null>(null);
   const hasHydratedAvailabilityRef = React.useRef(false);
 
-  // Fetch available dates when modal opens
-  useEffect(() => {
-    if (isOpen && listingId) {
-      if (!hasHydratedAvailabilityRef.current && initialAvailability) {
-        hasHydratedAvailabilityRef.current = true;
-        setError(initialAvailability.available ? null : (initialAvailability.reason || 'Bookings not available'));
-        setAvailableDates(initialAvailability.dates || []);
-        setSettings(initialAvailability.settings || null);
-        return;
-      }
-      fetchAvailableDates();
-    }
-  }, [isOpen, listingId, initialAvailability]);
-
-  // Fetch time slots when date is selected
-  useEffect(() => {
-    if (selectedDate) {
-      const dateKey = toUtcDateKey(selectedDate);
-      const prefetchedSlots = initialAvailability?.slotsByDate?.[dateKey];
-      if (prefetchedSlots) {
-        setTimeSlots(prefetchedSlots);
-        setStep('time');
-        setError(null);
-        return;
-      }
-      fetchTimeSlots(selectedDate);
-    }
-  }, [selectedDate, initialAvailability]);
-
-  // Reset state when modal closes
-  useEffect(() => {
-    if (!isOpen) {
-      setTimeout(() => {
-        setStep('date');
-        setSelectedDate(null);
-        setSelectedSlot(null);
-        setNotes('');
-        setSpecialRequests('');
-        setAttendees(1);
-        setBookingResult(null);
-        setError(null);
-      }, 300);
-    }
-  }, [isOpen]);
-
-  async function fetchAvailableDates() {
+  const fetchAvailableDates = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     
@@ -191,9 +144,9 @@ export function BookingModal({
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [listingId]);
 
-  async function fetchTimeSlots(date: Date) {
+  const fetchTimeSlots = useCallback(async (date: Date) => {
     setIsLoading(true);
     setError(null);
     
@@ -215,7 +168,52 @@ export function BookingModal({
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [listingId]);
+
+  // Fetch available dates when modal opens
+  useEffect(() => {
+    if (isOpen && listingId) {
+      if (!hasHydratedAvailabilityRef.current && initialAvailability) {
+        hasHydratedAvailabilityRef.current = true;
+        setError(initialAvailability.available ? null : (initialAvailability.reason || 'Bookings not available'));
+        setAvailableDates(initialAvailability.dates || []);
+        setSettings(initialAvailability.settings || null);
+        return;
+      }
+      fetchAvailableDates();
+    }
+  }, [isOpen, listingId, initialAvailability, fetchAvailableDates]);
+
+  // Fetch time slots when date is selected
+  useEffect(() => {
+    if (selectedDate) {
+      const dateKey = toUtcDateKey(selectedDate);
+      const prefetchedSlots = initialAvailability?.slotsByDate?.[dateKey];
+      if (prefetchedSlots) {
+        setTimeSlots(prefetchedSlots);
+        setStep('time');
+        setError(null);
+        return;
+      }
+      fetchTimeSlots(selectedDate);
+    }
+  }, [selectedDate, initialAvailability, fetchTimeSlots]);
+
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setTimeout(() => {
+        setStep('date');
+        setSelectedDate(null);
+        setSelectedSlot(null);
+        setNotes('');
+        setSpecialRequests('');
+        setAttendees(1);
+        setBookingResult(null);
+        setError(null);
+      }, 300);
+    }
+  }, [isOpen]);
 
   async function handleBooking() {
     if (!isAuthenticated) {

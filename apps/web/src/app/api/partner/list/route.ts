@@ -51,7 +51,7 @@ function attachImageUrls(partner: any) {
   return { ...partner, logoUrl, heroImageUrl };
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const partners = await getPartnersList();
 

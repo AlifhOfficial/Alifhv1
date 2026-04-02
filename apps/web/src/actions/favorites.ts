@@ -2,7 +2,6 @@
 
 import {
   getListingCards,
-  getListingCardsByIds,
   getFavoriteStatusForListings,
   getSuperlikeQuotaForUser,
 } from '@alifh/database';

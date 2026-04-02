@@ -63,7 +63,7 @@ import {
 
 export const runtime = "nodejs";
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {

@@ -21,13 +21,13 @@ export async function sendOTPViaDev(
 ): Promise<SendOTPResult> {
   try {
     // In development, just log the OTP
-    console.log('\n='.repeat(60));
-    console.log('🔐 PHONE VERIFICATION OTP (DEVELOPMENT MODE)');
-    console.log('='.repeat(60));
-    console.log(`📱 Phone: ${phoneNumber}`);
-    console.log(`🔢 OTP Code: ${otp}`);
-    console.log(`⏰ Expires: 10 minutes`);
-    console.log('='.repeat(60) + '\n');
+    console.warn('\n='.repeat(60));
+    console.warn('🔐 PHONE VERIFICATION OTP (DEVELOPMENT MODE)');
+    console.warn('='.repeat(60));
+    console.warn(`📱 Phone: ${phoneNumber}`);
+    console.warn(`🔢 OTP Code: ${otp}`);
+    console.warn(`⏰ Expires: 10 minutes`);
+    console.warn('='.repeat(60) + '\n');
 
     // Simulate async operation
     await new Promise((resolve) => setTimeout(resolve, 100));

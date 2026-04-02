@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const identifier = user.id;
+    const _identifier = user.id;
 
     const formData = await req.formData();
     const file = formData.get("file");

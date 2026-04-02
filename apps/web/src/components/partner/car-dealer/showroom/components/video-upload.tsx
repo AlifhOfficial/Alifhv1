@@ -13,7 +13,7 @@
 import React, { useRef } from 'react';
 import { cn } from '@/utils';
 import { getPublicUrl } from '@/utils';
-import { Video, X, Loader2, CheckCircle2, RefreshCw, Upload } from 'lucide-react';
+import { X, Loader2, CheckCircle2, RefreshCw, Upload } from 'lucide-react';
 import type { VideoUploadProps } from '../types';
 
 export function VideoUpload({ 

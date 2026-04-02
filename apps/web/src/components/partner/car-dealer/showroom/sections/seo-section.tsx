@@ -30,7 +30,7 @@ export function SeoSection({
   form,
   showroom,
   imageUploading,
-  partnerId,
+  partnerId: _partnerId,
   getEditableFieldProps,
   uploadImage,
   removeImage,

@@ -105,7 +105,7 @@ export function CarValuationTool() {
   const handleCalculate = () => {
     if (!formData.year || !formData.mileage) return
 
-    let basePrice = 80000
+    const basePrice = 80000
     const carAge = 2026 - parseInt(formData.year)
     const mileageNum = parseInt(formData.mileage.replace(/,/g, ''))
 

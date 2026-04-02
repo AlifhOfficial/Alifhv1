@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     clearOtpVerifyAttempts(normalizedEmail);
 
     // Verification successful - now create Stripe customer
-    console.log(`[VerifyEmail] Email verified successfully: ${normalizedEmail}`);
+    console.warn(`[VerifyEmail] Email verified successfully: ${normalizedEmail}`);
 
     // Get the user to create Stripe customer (using query function)
     const user = await getUserForStripeCustomer(normalizedEmail);
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       // Update user with Stripe customer ID (using query function)
       if (stripeCustomerId) {
         await updateUserStripeCustomerId(user.id, stripeCustomerId);
-        console.log(`[VerifyEmail] Stripe customer ${stripeCustomerId} linked to user ${user.id}`);
+        console.warn(`[VerifyEmail] Stripe customer ${stripeCustomerId} linked to user ${user.id}`);
       }
     }
 

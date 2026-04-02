@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
  * GET /api/staff/profile
  * Get staff profile for current user (when they are staff at a dealership, not owner)
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const user = await getSessionUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

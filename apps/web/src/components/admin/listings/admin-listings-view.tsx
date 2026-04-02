@@ -228,7 +228,7 @@ export function AdminListingsView() {
   useEffect(() => {
     setOffset(0);
     fetchData(false, false);
-  }, [activeTab, deepInventoryFilter, typeFilter, sortOption]);
+  }, [fetchData]);
 
   const loadMore = () => {
     if (!isLoadingMore && hasMore) {

@@ -12,13 +12,11 @@ import {
   signInWithEmail, 
   signInWithGooglePopup,
   signInWithApplePopup,
-  signInWithPasskey,
   signUpWithEmail, 
   requestPasswordReset,
   sendMagicLink,
   verifyEmailWithOTP,
   resendVerificationOTP,
-  AuthUser,
 } from "./auth-handlers";
 import { AuthState, AuthActions, AuthCallbacks } from "./auth-state";
 import { getAuthErrorInfo, parseAuthError, AuthErrorAction } from "@/lib/auth/errors";
@@ -79,7 +77,7 @@ export class AuthFlowController {
       } else if ((result as any).needsVerification && result.error === "EMAIL_NOT_VERIFIED") {
         // User exists but email not verified
         // Only proceed if this is truly a verification issue, not a network/origin error
-        console.log('[AuthFlow] User needs verification, sending OTP');
+        console.warn('[AuthFlow] User needs verification, sending OTP');
         
         // Send OTP for verification
         const otpResult = await resendVerificationOTP(normalizedEmail, "email-verification");

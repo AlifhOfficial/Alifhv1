@@ -25,7 +25,7 @@ interface PartnerProfileCardProps {
 
 export function PartnerProfileCard({ sellerData }: PartnerProfileCardProps) {
   const partner = sellerData.partner;
-  const staffContact = sellerData.staffContact;
+  const _staffContact = sellerData.staffContact;
   
   const { stats, isLoading: statsLoading } = useSellerStats('partner', sellerData.partnerId, sellerData.partnerStats);
   

@@ -170,7 +170,7 @@ export function ImageUpload({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [displayProgress, setDisplayProgress] = useState(0);
   const fakeAnimRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [deleting, setDeleting] = useState<number | null>(null);
+  const [_deleting, setDeleting] = useState<number | null>(null);
 
   // Animate 0 → 40% immediately when upload starts for perceived speed
   useEffect(() => {

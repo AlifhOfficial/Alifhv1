@@ -104,7 +104,7 @@ export async function GET(
     }
 
     const totalTime = performance.now() - start;
-    console.log(`[partner dealer-profile] GET ${partnerId.slice(0, 8)}... - Query: ${queryTime.toFixed(2)}ms, Total: ${totalTime.toFixed(2)}ms`);
+    console.warn(`[partner dealer-profile] GET ${partnerId.slice(0, 8)}... - Query: ${queryTime.toFixed(2)}ms, Total: ${totalTime.toFixed(2)}ms`);
 
     // Attach cache-busted URLs for images
     const profileWithUrls = attachImageUrls(profile);
@@ -162,8 +162,8 @@ export async function PATCH(
 
     const updatedProfile = await updateDealerBaseProfile(partnerId, validationResult.data);
 
-    console.log('[PATCH dealer-profile] input:', validationResult.data);
-    console.log('[PATCH dealer-profile] DB result:', { logo: updatedProfile?.logo, heroImage: updatedProfile?.heroImage });
+    console.warn('[PATCH dealer-profile] input:', validationResult.data);
+    console.warn('[PATCH dealer-profile] DB result:', { logo: updatedProfile?.logo, heroImage: updatedProfile?.heroImage });
 
     if (!updatedProfile) {
       return NextResponse.json(

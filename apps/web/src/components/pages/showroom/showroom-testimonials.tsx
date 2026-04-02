@@ -99,7 +99,7 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
 
 function TestimonialCard({ 
   testimonial, 
-  index 
+  index: _index 
 }: { 
   testimonial: ShowroomTestimonial; 
   index: number;

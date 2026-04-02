@@ -35,7 +35,7 @@ function GoogleStartContent() {
           provider: "google",
           callbackURL,
         });
-      } catch (err) {
+      } catch (_err) {
         setError("Failed to start Google sign in");
         // Notify parent window of error
         if (window.opener) {

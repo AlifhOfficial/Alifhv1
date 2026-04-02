@@ -152,7 +152,7 @@ export async function sendEmail(emailData: EmailData) {
       text: emailData.text,
     });
 
-    console.log(`📧 Email sent to ${emailData.to}`);
+    console.warn(`📧 Email sent to ${emailData.to}`);
     return result;
   } catch (error) {
     console.error('❌ Email send failed:', error);

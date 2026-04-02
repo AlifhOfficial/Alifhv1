@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     let sellerLocation: string | null = null;
     let sellerRating: number | null = null;
     let sellerReviewCount: number | null = null;
-    let sellerActiveListings: number | null = null;
+    const sellerActiveListings: number | null = null;
     let sellerBadges: string[] | null = null;
     let sellerSpecialties: string[] | null = null;
     let sellerType: 'partner' | 'user' = 'user';

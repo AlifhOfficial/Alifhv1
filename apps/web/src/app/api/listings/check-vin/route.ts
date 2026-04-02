@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
       
       const timings = timer.getTimings();
       if (debug) {
-        console.log('[check-vin] Timings (ms):', timings);
+        console.warn('[check-vin] Timings (ms):', timings);
       }
       
       return NextResponse.json({
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
     
     const timings = timer.getTimings();
     if (debug) {
-      console.log('[check-vin] Timings (ms):', timings);
+      console.warn('[check-vin] Timings (ms):', timings);
     }
     
     // VIN is available

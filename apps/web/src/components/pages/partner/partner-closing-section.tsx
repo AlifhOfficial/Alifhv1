@@ -5,7 +5,6 @@
 
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthRequired } from '@/hooks/use-auth-required';
 import { AuthRequiredModal } from '@/components/auth/auth-required-modal';

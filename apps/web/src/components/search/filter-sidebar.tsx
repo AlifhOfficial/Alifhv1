@@ -35,7 +35,7 @@ interface FilterSidebarProps {
 export function FilterSidebar({
   params,
   facets,
-  isLoading,
+  isLoading: _isLoading,
   onFilterChange,
   onClearFilters: _onClearFilters,
   activeFilterCount: _activeFilterCount,

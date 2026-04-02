@@ -25,7 +25,7 @@ export function MarketingImage(props: MarketingImageProps) {
     return (
       <img
         src={resolveImageSrc(src)}
-        alt={alt}
+        alt={alt ?? ''}
         className={className}
         loading={priority ? 'eager' : 'lazy'}
         decoding="async"
@@ -33,5 +33,5 @@ export function MarketingImage(props: MarketingImageProps) {
     );
   }
 
-  return <Image {...props} unoptimized={props.unoptimized ?? false} />;
+  return <Image {...props} alt={alt ?? ''} unoptimized={props.unoptimized ?? false} />;
 }

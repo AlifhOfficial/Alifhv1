@@ -16,11 +16,8 @@ import {
   XCircle,
   FileText,
   Calendar,
-  User,
   Mail,
-  ExternalLink,
-  Download,
-  Eye
+  ExternalLink
 } from 'lucide-react';
 
 export function PartnerRequestAdminList() {
@@ -29,7 +26,7 @@ export function PartnerRequestAdminList() {
   const [approvingId, setApprovingId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [trialMonths, setTrialMonths] = useState<number>(3); // Default 3 months
-  const [viewingDocument, setViewingDocument] = useState<string | null>(null);
+  const [_viewingDocument, _setViewingDocument] = useState<string | null>(null);
   
   const { data, isLoading, refetch } = usePartnerRequestsAdmin({
     status: statusFilter,
@@ -71,7 +68,7 @@ export function PartnerRequestAdminList() {
       if (!response.ok) throw new Error('Failed to generate URL');
       const data = await response.json();
       window.open(data.url, '_blank');
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Failed to open document',
         description: 'Could not generate secure URL',

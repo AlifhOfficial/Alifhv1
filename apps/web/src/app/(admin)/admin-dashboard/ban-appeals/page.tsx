@@ -57,7 +57,7 @@ export default function AdminBanAppealsPage() {
     },
   });
 
-  const allAppeals = data?.appeals || [];
+  const allAppeals = useMemo(() => data?.appeals ?? [], [data?.appeals]);
   
   // Compute stats from full dataset (always accurate)
   const pendingCount = useMemo(() => allAppeals.filter(a => a.appeal.status === 'pending').length, [allAppeals]);
@@ -184,7 +184,7 @@ export default function AdminBanAppealsPage() {
             </div>
           ) : (
             <div className="space-y-0 border border-border rounded-xl overflow-hidden divide-y divide-border">
-              {appeals.map(({ appeal, user, userProfile, reviewer }) => (
+              {appeals.map(({ appeal, user, reviewer }) => (
                 <div
                   key={appeal.id}
                   className="p-6 hover:bg-secondary/10 transition-colors"

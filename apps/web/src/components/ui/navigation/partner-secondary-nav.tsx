@@ -1,11 +1,9 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import { cn } from '@/utils';
 import {
   EyeIcon,
   PencilIcon,
-  TrashIcon,
   PlusIcon,
   ArrowPathIcon,
   ShareIcon,

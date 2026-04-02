@@ -9,8 +9,6 @@
 
 import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
-import { Suspense } from 'react';
-import { ListingsView } from '@/components/listings/listings-view';
 import { CAR_MAKES, UAE_EMIRATES } from '@/lib/filter-constants';
 
 type CarMake = typeof CAR_MAKES[number];
@@ -354,7 +352,7 @@ export default async function HubPage({ params }: PageProps) {
   redirect(`/listings?make=${encodeURIComponent(brand)}`);
 }
 
-function PageSkeleton() {
+function _PageSkeleton() {
   return (
     <div className="min-h-screen bg-background pt-8">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">

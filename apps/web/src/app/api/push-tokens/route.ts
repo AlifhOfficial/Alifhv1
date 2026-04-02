@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       deviceName,
     });
 
-    console.log(`[Push API] Registered token for user ${user.id}: ${result.created ? 'created' : 'updated'}`);
+    console.warn(`[Push API] Registered token for user ${user.id}: ${result.created ? 'created' : 'updated'}`);
 
     return NextResponse.json({
       success: true,
@@ -96,7 +96,7 @@ export async function DELETE(req: NextRequest) {
     // Unregister the token (doesn't require auth - token is enough)
     const removed = await unregisterPushToken(token);
 
-    console.log(`[Push API] Unregistered token: ${removed ? 'success' : 'not found'}`);
+    console.warn(`[Push API] Unregistered token: ${removed ? 'success' : 'not found'}`);
 
     return NextResponse.json({
       success: true,

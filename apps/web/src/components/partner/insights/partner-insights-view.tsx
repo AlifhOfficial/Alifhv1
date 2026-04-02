@@ -18,17 +18,9 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { 
-  AlertCircle, 
-  Calendar,
-  CheckCircle2, 
+  Calendar, 
   Clock,
-  Database,
-  Heart,
-  Info, 
-  Package,
-  Shield, 
-  TrendingUp,
-  Zap,
+  Info,
 } from 'lucide-react';
 import type { ExtendedUser } from '@/types/auth';
 import type { HealthCheckResponse } from '@/lib/health';
@@ -123,7 +115,7 @@ const GHOST_ACTIVITY_PATTERN = [
   true, true, true, false, true, false, true,
 ];
 
-function ActivityDots({ activeDays, days = 28 }: { activeDays?: boolean[]; days?: number }) {
+function _ActivityDots({ activeDays, days = 28 }: { activeDays?: boolean[]; days?: number }) {
   const dotsPerRow = 7;
   const rows = Math.ceil(days / dotsPerRow);
   const isGhost = !activeDays;
@@ -160,7 +152,7 @@ function ActivityDots({ activeDays, days = 28 }: { activeDays?: boolean[]; days?
 // Loading Skeleton
 // ============================================================================
 
-function InsightsSkeleton() {
+function _InsightsSkeleton() {
   return (
     <div className="space-y-4 sm:space-y-6">
         {/* Header Skeleton */}

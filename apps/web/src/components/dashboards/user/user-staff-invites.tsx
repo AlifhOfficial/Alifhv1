@@ -9,7 +9,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { StaffInviteActionModal } from './staff-invite-action-modal';
-import { cn } from '@/utils';
 
 interface StaffInvite {
   id: string;

@@ -43,7 +43,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'KYC record not found' }, { status: 404 });
     }
 
-    console.log(`[Admin/KYC] Record ${id} rejected by admin ${user.id}: ${parsed.data.reason}`);
+    console.warn(`[Admin/KYC] Record ${id} rejected by admin ${user.id}: ${parsed.data.reason}`);
 
     return NextResponse.json({ 
       success: true, 

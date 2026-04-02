@@ -5,7 +5,7 @@
  */
 
 import Link from 'next/link';
-import { CheckCircle2, Circle, ArrowRight, Shield, Users, TrendingUp, Handshake, MessageCircle, Zap } from 'lucide-react';
+import { CheckCircle2, Circle, ArrowRight, Shield, Handshake, Zap } from 'lucide-react';
 
 export function DealerPartnersView() {
   return (

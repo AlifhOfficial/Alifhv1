@@ -255,7 +255,7 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
         description: `Changed to ${getStatusConfig(newStatus).label}`,
       });
       onUpdate();
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'Failed to update status',
@@ -286,7 +286,7 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
         description: 'Admin note has been updated',
       });
       onUpdate();
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'Failed to save note',
@@ -314,7 +314,7 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
       });
       onClose();
       onUpdate();
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'Failed to delete',

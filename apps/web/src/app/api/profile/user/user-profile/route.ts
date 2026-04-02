@@ -72,7 +72,7 @@ async function attachAvatarUrl(profile: any) {
   return { ...profile, avatarUrl };
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getSessionUser();
     

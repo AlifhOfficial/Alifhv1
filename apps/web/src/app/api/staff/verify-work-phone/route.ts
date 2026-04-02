@@ -51,16 +51,16 @@ export async function POST(req: NextRequest) {
             to: phoneNumber,
             channel: 'whatsapp',
           });
-        console.log('[StaffWorkPhone] OTP sent via WhatsApp to:', phoneNumber);
+        console.warn('[StaffWorkPhone] OTP sent via WhatsApp to:', phoneNumber);
       } catch (whatsappError: any) {
-        console.log('[StaffWorkPhone] WhatsApp failed, trying SMS:', whatsappError?.message);
+        console.warn('[StaffWorkPhone] WhatsApp failed, trying SMS:', whatsappError?.message);
         await twilioClient.verify.v2
           .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
           .verifications.create({
             to: phoneNumber,
             channel: 'sms',
           });
-        console.log('[StaffWorkPhone] OTP sent via SMS to:', phoneNumber);
+        console.warn('[StaffWorkPhone] OTP sent via SMS to:', phoneNumber);
       }
 
       return NextResponse.json({ success: true, message: 'OTP sent' });
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
           workPhoneVerified: true,
         });
 
-        console.log('[StaffWorkPhone] Work phone verified for staff:', staffId);
+        console.warn('[StaffWorkPhone] Work phone verified for staff:', staffId);
         return NextResponse.json({ success: true, verified: true });
       } catch (error: any) {
         if (error?.code === 20404) {

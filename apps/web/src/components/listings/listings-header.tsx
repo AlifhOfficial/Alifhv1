@@ -5,13 +5,12 @@
 
 'use client';
 
-import { useMemo, useCallback, useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+import { useMemo, useCallback, useState } from 'react';
 import { SearchBar } from '@/components/search/search-bar';
 import { FilterSidebar } from '@/components/search/filter-sidebar';
 import { AdvancedFilters } from '@/components/search/advanced-filters';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowUpDown, LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft, ChevronRight, Search } from 'lucide-react';
+import { ArrowUpDown, LayoutGrid, List, SlidersHorizontal, X, ChevronDown, PanelLeft, ChevronRight } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -78,7 +77,7 @@ interface ListingsHeaderProps {
 export function ListingsHeader({
   params,
   facets,
-  meta,
+  meta: _meta,
   activeFilterCount,
   isLoading,
   listings,

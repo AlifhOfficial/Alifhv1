@@ -84,7 +84,7 @@ function attachPublicUrls(showroom: any) {
   };
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     // Require authentication
     const user = await getSessionUser();

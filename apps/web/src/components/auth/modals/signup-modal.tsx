@@ -6,7 +6,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Loader2 } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BRAND_LOGO_SVG } from "@/lib/brand-assets";
 

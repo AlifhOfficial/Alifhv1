@@ -203,11 +203,12 @@ export function useConversations(options: UseConversationsOptions = {}) {
   }, [options.userId, enabled, isConnected, flatData.conversations, send]);
 
   useEffect(() => {
+    const watchedUsers = watchedUsersRef.current;
     return () => {
-      for (const userId of watchedUsersRef.current) {
+      for (const userId of watchedUsers) {
         send({ type: 'unwatch_user', targetUserId: userId });
       }
-      watchedUsersRef.current.clear();
+      watchedUsers.clear();
     };
   }, [send]);
 

@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
 // GET - Get User's Partner Request
 // ============================================================================
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {
@@ -174,7 +174,7 @@ export async function GET(req: NextRequest) {
 // DELETE - Cancel/Dismiss Partner Request
 // ============================================================================
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE(_req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {

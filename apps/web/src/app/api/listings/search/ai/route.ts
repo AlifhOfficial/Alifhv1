@@ -58,10 +58,10 @@ export async function POST(req: NextRequest) {
       ? 0 
       : result.intent.confidence;
     
-    console.log('[AI Search] query:', query);
-    console.log('[AI Search] intent:', JSON.stringify(result.intent));
-    console.log('[AI Search] searchUrl:', searchUrl);
-    console.log('[AI Search] hasFilters:', hasFilters);
+    console.warn('[AI Search] query:', query);
+    console.warn('[AI Search] intent:', JSON.stringify(result.intent));
+    console.warn('[AI Search] searchUrl:', searchUrl);
+    console.warn('[AI Search] hasFilters:', hasFilters);
 
     return NextResponse.json({
       intent: { ...result.intent, confidence: effectiveConfidence },

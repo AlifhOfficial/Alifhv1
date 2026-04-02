@@ -22,7 +22,7 @@ export default function AppleStartPage() {
           provider: "apple",
           callbackURL: "/auth/apple/callback",
         });
-      } catch (err) {
+      } catch (_err) {
         setError("Failed to start Apple sign in");
         // Notify parent window of error
         if (window.opener) {

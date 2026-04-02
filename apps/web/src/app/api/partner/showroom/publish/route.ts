@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
         message: 'Showroom is now live!',
       });
     } else {
-      const unpublished = await unpublishShowroom(showroom.id);
+      const _unpublished = await unpublishShowroom(showroom.id);
       
       // Invalidate caches
       revalidatePath('/black');

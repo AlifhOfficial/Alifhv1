@@ -52,9 +52,9 @@ interface AdvancedFiltersProps {
 
 export function AdvancedFilters({
   params,
-  facets,
+  facets: _facets,
   onFilterChange,
-  activeCount = 0,
+  activeCount: _activeCount = 0,
   children,
   inline = false,
 }: AdvancedFiltersProps) {
@@ -81,7 +81,7 @@ export function AdvancedFilters({
     });
   };
 
-  const handleClose = () => {
+  const _handleClose = () => {
     setMobileOpen(false);
     setDesktopOpen(false);
   };

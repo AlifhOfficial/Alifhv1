@@ -161,7 +161,7 @@ export async function createStripeCustomerForUser(user: {
   name?: string | null;
 }, businessName?: string): Promise<string | null> {
   if (!isStripeConfigured()) {
-    console.log('[Stripe] Not configured, skipping customer creation');
+    console.warn('[Stripe] Not configured, skipping customer creation');
     return null;
   }
 
@@ -175,7 +175,7 @@ export async function createStripeCustomerForUser(user: {
     });
 
     if (existingCustomers.data.length > 0) {
-      console.log(`[Stripe] Customer already exists for ${user.email}: ${existingCustomers.data[0].id}`);
+      console.warn(`[Stripe] Customer already exists for ${user.email}: ${existingCustomers.data[0].id}`);
       return existingCustomers.data[0].id;
     }
 
@@ -190,7 +190,7 @@ export async function createStripeCustomerForUser(user: {
       },
     });
 
-    console.log(`[Stripe] Customer ${customer.id} created for verified user ${user.id}`);
+    console.warn(`[Stripe] Customer ${customer.id} created for verified user ${user.id}`);
     return customer.id;
   } catch (error) {
     console.error('[Stripe] Failed to create customer:', error);
@@ -209,7 +209,7 @@ export async function deleteStripeCustomer(customerId: string): Promise<boolean>
   try {
     const stripe = getStripeClient();
     await stripe.customers.del(customerId);
-    console.log(`[Stripe] Customer ${customerId} deleted`);
+    console.warn(`[Stripe] Customer ${customerId} deleted`);
     return true;
   } catch (error: any) {
     // Ignore "customer not found" errors
@@ -239,7 +239,7 @@ export async function deleteStripeCustomerByEmail(email: string): Promise<boolea
     // Delete all customers with this email (shouldn't be many)
     for (const customer of customers.data) {
       await stripe.customers.del(customer.id);
-      console.log(`[Stripe] Deleted customer ${customer.id} for email ${email}`);
+      console.warn(`[Stripe] Deleted customer ${customer.id} for email ${email}`);
     }
     return true;
   } catch (error) {

@@ -71,7 +71,7 @@ interface EditableFieldProps {
 }
 
 const EditableField = React.memo(function EditableField({
-  field,
+  field: _field,
   label,
   value,
   placeholder,
@@ -309,7 +309,7 @@ export function PartnerBasicProfileForm({
           }
         } catch {}
       }
-    } catch (err) {
+    } catch (_err) {
       toast({ title: 'Failed to save', variant: 'destructive' });
     }
   };

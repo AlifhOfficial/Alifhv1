@@ -61,7 +61,7 @@ const formatPrice = (amount: number) => priceFormatter.format(amount);
 
 const formatMileage = (km: number) => mileageFormatter.format(km);
 
-const formatPriceShort = (amount: number) => {
+const _formatPriceShort = (amount: number) => {
   if (amount >= 1000000) {
     return `AED ${(amount / 1000000).toFixed(1)}M`;
   }
@@ -89,10 +89,9 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
   const [showAllImages, setShowAllImages] = useState(false);
   
   // Ensure images is always an array and filter out empty/invalid entries
-  const imageArray = Array.isArray(images) ? images : [];
   const validImages = useMemo(() => 
-    imageArray.filter(img => img && typeof img === 'string' && img.trim().length > 0),
-    [imageArray]
+    (Array.isArray(images) ? images : []).filter(img => img && typeof img === 'string' && img.trim().length > 0),
+    [images]
   );
   
   // Resolve image pairs strictly through the CDN.
@@ -297,8 +296,9 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
 
   // Cleanup timers on unmount
   useEffect(() => {
+    const timers = timersRef.current;
     return () => {
-      timersRef.current.forEach(clearTimeout);
+      timers.forEach(clearTimeout);
     };
   }, []);
 

@@ -48,7 +48,7 @@ export async function DELETE(req: NextRequest) {
   try {
     // Authentication required
     const user = await getSessionUser();
-    console.log("[storage/delete] User:", user?.id ?? "null");
+    console.warn("[storage/delete] User:", user?.id ?? "null");
     if (!user) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
@@ -88,7 +88,7 @@ export async function DELETE(req: NextRequest) {
 
     await deleteFile(storageKey);
 
-    console.log(`[storage/delete] Deleted: ${storageKey} by user: ${user.id}`);
+    console.warn(`[storage/delete] Deleted: ${storageKey} by user: ${user.id}`);
 
     return NextResponse.json({ success: true });
   } catch (error) {

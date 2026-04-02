@@ -7,7 +7,6 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
-import Link from 'next/link';
 import { Volume2, VolumeX, Pause, Play } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getVideoEmbedUrl } from '@/components/partner/car-dealer/showroom/components';

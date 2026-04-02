@@ -139,7 +139,7 @@ interface MyListingsViewProps {
 const ITEMS_PER_PAGE = 50;
 
 export function MyListingsView({
-  userId,
+  userId: _userId,
   listingType = 'personal',
   initialData,
   initialBlackQuota = null,

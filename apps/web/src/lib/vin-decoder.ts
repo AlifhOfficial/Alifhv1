@@ -255,7 +255,7 @@ export async function decodeVIN(vin: string): Promise<VINDecodeResult> {
     const fetchDuration = Math.round(performance.now() - fetchStart);
     
     if (!response.ok) {
-      console.log(`[vin-decoder] NHTSA fetch failed in ${fetchDuration}ms`);
+      console.warn(`[vin-decoder] NHTSA fetch failed in ${fetchDuration}ms`);
       return { success: false, error: 'Failed to connect to VIN decoder service' };
     }
     
@@ -263,7 +263,7 @@ export async function decodeVIN(vin: string): Promise<VINDecodeResult> {
     const data: NHTSAResponse = await response.json();
     const parseDuration = Math.round(performance.now() - parseStart);
     
-    console.log(`[vin-decoder] NHTSA API: fetch=${fetchDuration}ms, parse=${parseDuration}ms, total=${Math.round(performance.now() - startTime)}ms`);
+    console.warn(`[vin-decoder] NHTSA API: fetch=${fetchDuration}ms, parse=${parseDuration}ms, total=${Math.round(performance.now() - startTime)}ms`);
     
     // Extract make, model, year - try to get whatever data is available
     // Note: Error codes 5,14 etc. mean partial decode - we still want partial data

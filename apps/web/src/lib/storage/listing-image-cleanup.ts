@@ -62,7 +62,7 @@ export async function deleteListingImages(images: string[]): Promise<{
     return { total: 0, deleted: 0, failed: 0 };
   }
 
-  console.log(`[image-cleanup] Deleting ${images.length} images...`);
+  console.warn(`[image-cleanup] Deleting ${images.length} images...`);
   
   const results = await Promise.allSettled(
     images.map(img => deleteImageSilently(img))
@@ -74,7 +74,7 @@ export async function deleteListingImages(images: string[]): Promise<{
   
   const failed = images.length - deleted;
   
-  console.log(`[image-cleanup] Complete: ${deleted}/${images.length} deleted, ${failed} failed`);
+  console.warn(`[image-cleanup] Complete: ${deleted}/${images.length} deleted, ${failed} failed`);
   
   return {
     total: images.length,

@@ -170,7 +170,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
     });
   }, []);
 
-  const setRangeFilter = useCallback((minKey: keyof FunnelFilters, maxKey: keyof FunnelFilters, min?: number, max?: number) => {
+  const _setRangeFilter = useCallback((minKey: keyof FunnelFilters, maxKey: keyof FunnelFilters, min?: number, max?: number) => {
     setFilters(prev => ({
       ...prev,
       [minKey]: min,
@@ -431,7 +431,7 @@ interface FilterGroupProps {
   onChange: (value: string) => void;
 }
 
-function FilterGroup({ title, options, selected, onChange }: FilterGroupProps) {
+function _FilterGroup({ title, options, selected, onChange }: FilterGroupProps) {
   const [expanded, setExpanded] = useState(false);
   const visibleOptions = expanded ? options : options.slice(0, 3);
   const hasMore = !expanded && options.length > 3;

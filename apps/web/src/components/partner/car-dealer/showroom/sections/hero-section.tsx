@@ -56,7 +56,7 @@ export function HeroSection({
   uploadVideo,
   removeVideo,
   updateShowroom,
-  toast,
+  toast: _toast,
 }: HeroSectionProps) {
   const [activeTab, setActiveTab] = React.useState<HeroTab>(() => deriveActiveTab(form));
 

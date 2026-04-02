@@ -47,7 +47,7 @@ const ReviewPartnerRequestSchema = z.object({
 // Helper: Check Admin Role
 // ============================================================================
 
-async function checkAdminAccess(user: any) {
+async function checkAdminAccess(_user: any) {
   // TODO: Implement proper role check when role system is in place
   // For now, you can check against specific user IDs or implement your role logic
   // Example: if (user.role !== 'admin' && user.role !== 'super_admin') return false;

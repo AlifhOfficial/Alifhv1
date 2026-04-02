@@ -6,7 +6,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, Lock, ArrowLeft, X } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, X } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/utils/cn";
 import { PageLoader } from "@/components/shared/page-loader";

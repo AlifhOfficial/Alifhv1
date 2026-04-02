@@ -37,12 +37,19 @@ export function LocationPickerDialog({
   const [location, setLocation] = useState<LocationResult | null>(null);
   const [isSending, setIsSending] = useState(false);
 
+  const handleRefreshLocation = useCallback(async () => {
+    const result = await getCurrentLocation();
+    if (result) {
+      setLocation(result);
+    }
+  }, [getCurrentLocation]);
+
   // Fetch location when dialog opens
   useEffect(() => {
     if (isOpen && !location && !isLoading) {
       handleRefreshLocation();
     }
-  }, [isOpen]);
+  }, [isOpen, location, isLoading, handleRefreshLocation]);
 
   // Reset state when dialog closes
   useEffect(() => {
@@ -51,13 +58,6 @@ export function LocationPickerDialog({
       setIsSending(false);
     }
   }, [isOpen]);
-
-  const handleRefreshLocation = useCallback(async () => {
-    const result = await getCurrentLocation();
-    if (result) {
-      setLocation(result);
-    }
-  }, [getCurrentLocation]);
 
   const handleConfirm = useCallback(async () => {
     if (!location) return;
@@ -134,7 +134,6 @@ export function LocationPickerDialog({
               </div>
             ) : mapPreviewUrl ? (
               <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={mapPreviewUrl}
                   alt="Location map"

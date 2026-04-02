@@ -1333,4 +1333,4 @@ describe('KYC Full Flow Integration', () => {
   });
 });
 
-console.log('✅ KYC Comprehensive Test Suite loaded successfully');
+console.warn('✅ KYC Comprehensive Test Suite loaded successfully');

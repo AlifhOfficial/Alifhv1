@@ -11,8 +11,6 @@ import {
   Users,
   Building2,
   Shield,
-  Crown,
-  CheckCircle2,
   AlertTriangle,
   XCircle,
   ArrowRight,

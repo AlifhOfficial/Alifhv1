@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("📧 Proceeding with magic link for existing user:", normalizedEmail);
+    console.warn("📧 Proceeding with magic link for existing user:", normalizedEmail);
 
     // Send the magic link through Better Auth
     const authResult = await auth.api.signInMagicLink({

@@ -375,7 +375,7 @@ function CompositionDonutCard({ data, title, icon: Icon, colorPalette = DONUT_CO
 // Stat Label with Tooltip
 // ============================================================================
 
-function StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
+function _StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
@@ -397,7 +397,7 @@ function StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
 // Loading Skeleton
 // ============================================================================
 
-function AdvancedStatsSkeleton() {
+function _AdvancedStatsSkeleton() {
   return (
     <div className="space-y-4 sm:space-y-6">
         {/* Header Skeleton */}
@@ -537,7 +537,7 @@ interface StatCardProps {
   iconColor?: string;
 }
 
-function StatCard({ icon: Icon, label, value, subtext, trend, iconColor = 'text-muted-foreground' }: StatCardProps) {
+function _StatCard({ icon: Icon, label, value, subtext, trend, iconColor = 'text-muted-foreground' }: StatCardProps) {
   return (
     <div className="p-5 sm:p-6 flex flex-col gap-1.5">
       <div className="flex items-center gap-2">
@@ -567,7 +567,7 @@ interface SimpleListChartProps {
   icon: React.ElementType;
 }
 
-function SimpleListChart({ data, title, icon: Icon }: SimpleListChartProps) {
+function _SimpleListChart({ data, title, icon: Icon }: SimpleListChartProps) {
   const total = data.reduce((sum, d) => sum + d.value, 0);
   const maxValue = Math.max(...data.map(d => d.value), 1);
   
@@ -612,7 +612,7 @@ interface HorizontalBarChartProps {
   icon: React.ElementType;
 }
 
-function HorizontalBarChartCard({ data, title, icon: Icon }: HorizontalBarChartProps) {
+function _HorizontalBarChartCard({ data, title, icon: Icon }: HorizontalBarChartProps) {
   const maxValue = Math.max(...data.map(d => d.value), 1);
   
   return (
@@ -653,7 +653,7 @@ interface VerticalBarChartProps {
   icon: React.ElementType;
 }
 
-function VerticalBarChartCard({ data, title, icon: Icon }: VerticalBarChartProps) {
+function _VerticalBarChartCard({ data, title, icon: Icon }: VerticalBarChartProps) {
   const maxValue = Math.max(...data.map(d => d.value), 1);
   
   return (
@@ -694,7 +694,7 @@ interface PriceDistributionChartProps {
 
 function PriceDistributionChart({ data }: PriceDistributionChartProps) {
   const total = data.reduce((sum, d) => sum + d.value, 0);
-  const maxValue = Math.max(...data.map(d => d.value), 1);
+  const _maxValue = Math.max(...data.map(d => d.value), 1);
   
   // Prepare chart data with colors
   const chartData = data.map((d, i) => ({
@@ -761,7 +761,7 @@ interface TrendComparisonProps {
   }>;
 }
 
-function TrendComparison({ title, metrics }: TrendComparisonProps) {
+function _TrendComparison({ title, metrics }: TrendComparisonProps) {
   return (
     <div className="rounded-xl border border-border/40 bg-sidebar p-5">
       <div className="flex items-center gap-2 mb-4">
@@ -808,7 +808,7 @@ interface BookingFunnelProps {
   cancellationRate: number;
 }
 
-function BookingFunnel({ pending, confirmed, completed, noShowRate, cancellationRate }: BookingFunnelProps) {
+function _BookingFunnel({ pending, confirmed, completed, noShowRate, cancellationRate }: BookingFunnelProps) {
   return (
     <div className="rounded-xl border border-border/40 bg-sidebar p-5">
       <div className="flex items-center gap-2 mb-4">
@@ -884,7 +884,7 @@ interface AlertBannerProps {
   };
 }
 
-function AlertBanner({ listing }: AlertBannerProps) {
+function _AlertBanner({ listing }: AlertBannerProps) {
   return (
     <div className="flex items-center gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/20">
       <Clock className="w-4 h-4 text-amber-600 dark:text-amber-500 flex-shrink-0" />

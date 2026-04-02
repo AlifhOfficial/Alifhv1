@@ -19,9 +19,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { 
   urlToSearchParams,
-  type SearchParams,
   type SearchResponse,
-  type SearchFacets,
 } from "@alifh/database";
 import { getCachedSearchFacets, getCachedSearchResults } from '@/lib/search-cache';
 export const runtime = "nodejs";

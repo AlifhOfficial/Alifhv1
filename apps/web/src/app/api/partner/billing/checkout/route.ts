@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       .limit(1);
 
     // Get user's Stripe customer ID (create if needed)
-    let user = await getUserById(sessionUser.id);
+    const user = await getUserById(sessionUser.id);
     let stripeCustomerId = user?.stripeCustomerId;
     
     const stripe = getStripeClient();
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
     // Get current partner tier from DB (flow or black)
     const currentTier = partnerData?.tier || 'flow';
     const isUpgrade = currentTier !== 'black' && plan === 'black';
-    const isDowngrade = currentTier === 'black' && plan === 'flow';
+    const _isDowngrade = currentTier === 'black' && plan === 'flow';
     const isSamePlan = (currentTier === 'black' && plan === 'black') || 
                        (currentTier === 'flow' && plan === 'flow');
     
@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
       } else if (isInTrial && isUpgrade) {
         // User is upgrading during trial - they pay for Black immediately
         // No trial period for upgrades
-        console.log(`[Checkout] Partner ${partnerMembership.partnerId} upgrading from ${currentTier} to ${plan} during trial - no trial benefit for upgrade`);
+        console.warn(`[Checkout] Partner ${partnerMembership.partnerId} upgrading from ${currentTier} to ${plan} during trial - no trial benefit for upgrade`);
         hasRemainingTrial = false;
       }
     }

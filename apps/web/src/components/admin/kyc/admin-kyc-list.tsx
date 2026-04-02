@@ -24,15 +24,12 @@ import {
   ShieldCheck,
   ShieldX,
   Clock,
-  User,
   Mail,
   Calendar,
-  ChevronRight,
   CheckCircle2,
   XCircle,
   Eye,
   FileText,
-  Camera,
   AlertTriangle,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
@@ -133,7 +130,7 @@ export function AdminKycList() {
   const [selectedRecord, setSelectedRecord] = useState<KycRecordData | null>(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
 
-  const { records, stats, isLoading, refetch } = useAdminKyc({ 
+  const { records, stats, isLoading, refetch: _refetch } = useAdminKyc({ 
     status: statusFilter,
     limit: 50,
   });

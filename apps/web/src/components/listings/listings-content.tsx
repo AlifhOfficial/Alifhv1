@@ -8,7 +8,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CarCard, CarCardMinimal, CarListItem } from '@/components/inventory';
-import { Search, X, XCircle, Package } from 'lucide-react';
+import { X, XCircle, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTrackImpressions } from '@/hooks/listings';
 import { useAuthRequired } from '@/hooks/use-auth-required';
@@ -63,14 +63,14 @@ interface ListingsContentProps {
 
 export function ListingsContent({
   listings,
-  meta,
+  meta: _meta,
   isLoading,
   isFetching,
   error,
   activeFilterCount,
   viewMode,
   clearFilters,
-  loadMore,
+  loadMore: _loadMore,
   currentPage,
 }: ListingsContentProps) {
   const router = useRouter();

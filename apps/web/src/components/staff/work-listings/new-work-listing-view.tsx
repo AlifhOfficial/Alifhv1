@@ -54,7 +54,7 @@ export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProp
       }
 
       const result = await response.json();
-      const listingId = result.data?.id;
+      const _listingId = result.data?.id;
 
       // Staff listings are auto-approved, navigate to the work listings view
       router.push('/staff-dashboard/work-listings?tab=active');

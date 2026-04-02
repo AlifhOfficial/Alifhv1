@@ -94,7 +94,7 @@ describe.skipIf(SKIP_INTEGRATION)('Listings API Integration Tests', () => {
         const browseData = await browseResponse.json();
         
         if (browseData.data.length === 0) {
-          console.log('No listings available to test detailed endpoint');
+          console.warn('No listings available to test detailed endpoint');
           return;
         }
         

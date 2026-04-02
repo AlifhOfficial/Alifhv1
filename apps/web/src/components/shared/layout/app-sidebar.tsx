@@ -21,7 +21,6 @@ import {
   MessageCircle,
   Heart,
   ChevronDown,
-  ChevronUp,
   Zap,
   ShieldCheck,
   Car,
@@ -36,7 +35,6 @@ import {
   Briefcase,
   LifeBuoy,
   Send,
-  X,
   Crown,
   CreditCard,
   Compass,
@@ -53,7 +51,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -179,7 +176,7 @@ function SidebarFooterContent({
   useGeneratedAvatar,
   showFooterMenu,
   setShowFooterMenu,
-  setShowSupportModal,
+  setShowSupportModal: _setShowSupportModal,
   pathname,
 }: SidebarFooterContentProps) {
   const { state } = useSidebar();
@@ -325,7 +322,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
   const user = clientUser || initialUser;
   
   // Track hydration state to prevent mismatch
-  const [isHydrated, setIsHydrated] = useState(false);
+  const [_isHydrated, setIsHydrated] = useState(false);
   
   // Support modal state
   const [showSupportModal, setShowSupportModal] = useState(false);

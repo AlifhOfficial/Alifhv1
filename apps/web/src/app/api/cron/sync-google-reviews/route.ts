@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    console.log('[Cron] Starting Google Reviews sync');
+    console.warn('[Cron] Starting Google Reviews sync');
     
     const startTime = Date.now();
     
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     
     const duration = Date.now() - startTime;
     
-    console.log('[Cron] Google Reviews sync complete:', {
+    console.warn('[Cron] Google Reviews sync complete:', {
       ...result,
       durationMs: duration,
       durationSec: Math.round(duration / 1000),

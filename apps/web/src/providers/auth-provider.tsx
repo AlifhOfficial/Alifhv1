@@ -70,7 +70,7 @@ export function AuthProvider({ children, initialSession }: AuthProviderProps) {
       setSession(user);
       
       if (process.env.NODE_ENV === 'development') {
-        console.log('[AuthProvider] Session fetched', { 
+        console.warn('[AuthProvider] Session fetched', { 
           hasSession: !!user,
           userId: user?.id?.slice(0, 8),
           avatarUrl: user?.avatarUrl?.slice(0, 50),

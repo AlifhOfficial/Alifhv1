@@ -10,8 +10,7 @@ import {
   Clock, 
   ChevronDown,
   ImageIcon,
-  Users,
-  MapPin
+  Users
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/utils';

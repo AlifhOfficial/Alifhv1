@@ -120,7 +120,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
   const addPasskey = async () => {
     try {
       setAddingPasskey(true);
-      const { data, error } = await authClient.passkey.addPasskey({
+      const { _data, error } = await authClient.passkey.addPasskey({
         name: `Passkey ${new Date().toLocaleDateString()}`,
       });
       
@@ -164,7 +164,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
       // Optimistically update local state and refresh from server
       setPasskeys(prev => prev.filter(p => p.id !== id));
       await refresh();
-    } catch (err) {
+    } catch (_err) {
       toast({ title: 'Failed to delete passkey', variant: 'destructive' });
     } finally {
       setDeletingPasskeyId(null);
@@ -173,7 +173,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
 
   const consignmentMode = profile?.consignmentMode ?? true;
   const showPhone = profile?.privacySettings?.showPhone ?? true;
-  const useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? true;
+  const _useGeneratedAvatar = profile?.preferences?.useGeneratedAvatar ?? true;
 
   const saveToggle = async (field: 'consignmentMode' | 'showPhone' | 'useGeneratedAvatar', currentValue: boolean) => {
     const newValue = !currentValue;

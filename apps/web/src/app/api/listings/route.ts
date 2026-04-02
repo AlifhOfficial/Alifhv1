@@ -330,7 +330,7 @@ export async function POST(req: NextRequest) {
       try {
         const result = await moderateListing(moderationInput);
         await updateListingAIModeration(listingId, result);
-        console.log(`[AI Moderation] Listing ${listingId}: ${result.decision} (confidence: ${result.confidence})`);
+        console.warn(`[AI Moderation] Listing ${listingId}: ${result.decision} (confidence: ${result.confidence})`);
         aiModeration = {
           decision: result.decision,
           approved: result.decision === 'approve',

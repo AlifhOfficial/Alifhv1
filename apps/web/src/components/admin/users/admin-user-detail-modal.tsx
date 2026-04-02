@@ -11,11 +11,7 @@ import { AdminUserOperations } from '@/components/admin/user-operations';
 import {
   Mail,
   Phone,
-  Calendar,
   MapPin,
-  ShieldCheck,
-  Building2,
-  User,
   Clock,
   Star,
   Package,

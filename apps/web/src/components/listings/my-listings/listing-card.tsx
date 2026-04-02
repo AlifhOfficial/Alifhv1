@@ -89,7 +89,7 @@ export function ListingCard({
   deleteConfirm,
   onArchive,
   onDelete,
-  onRelist,
+  onRelist: _onRelist,
   onMarkSold,
   onExtend,
   onCancelDelete,

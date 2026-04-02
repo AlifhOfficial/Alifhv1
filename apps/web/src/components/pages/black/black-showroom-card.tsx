@@ -56,7 +56,7 @@ interface BlackShowroomCardProps {
 // Component
 // ============================================================================
 
-export function BlackShowroomCard({ showroom, priority = false, index }: BlackShowroomCardProps) {
+export function BlackShowroomCard({ showroom, priority = false, index: _index }: BlackShowroomCardProps) {
   const { partner } = showroom;
   
   // Build showroom link

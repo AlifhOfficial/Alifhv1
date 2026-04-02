@@ -13,7 +13,7 @@ import { getSessionUser } from '@/lib/auth/session-context';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getSessionUser();
     if (!user) {

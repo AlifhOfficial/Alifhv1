@@ -7,11 +7,10 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/providers/auth-provider';
 import { useToast } from '@/hooks/use-toast';
 import { Send, CheckCircle2, Clock, Archive, Loader2 } from 'lucide-react';
-import { cn } from '@/utils/cn';
 
 // ============================================================================
 // Types
@@ -78,7 +77,7 @@ export function FeedbackView() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchFeedback = async () => {
+  const fetchFeedback = useCallback(async () => {
     if (!user) return;
     
     setIsLoading(true);
@@ -93,13 +92,13 @@ export function FeedbackView() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user) {
       fetchFeedback();
     }
-  }, [user]);
+  }, [user, fetchFeedback]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,7 +123,7 @@ export function FeedbackView() {
       } else {
         toast({ title: 'Failed to submit', description: data.error || 'Please try again', variant: 'destructive' });
       }
-    } catch (error) {
+    } catch (_error) {
       toast({ title: 'Error', description: 'An error occurred while submitting feedback', variant: 'destructive' });
     } finally {
       setIsSubmitting(false);

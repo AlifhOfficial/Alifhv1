@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
 
     const duration = Math.round(performance.now() - startTime);
 
-    console.log(`[cron/expire-listings] Completed: ${totalExpired} listings expired in ${iterations} batches (${duration}ms)`);
+    console.warn(`[cron/expire-listings] Completed: ${totalExpired} listings expired in ${iterations} batches (${duration}ms)`);
 
     return NextResponse.json({
       success: true,

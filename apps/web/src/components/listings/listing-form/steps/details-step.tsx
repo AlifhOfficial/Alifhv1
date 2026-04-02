@@ -71,7 +71,7 @@ function FieldWrapper({
   );
 }
 
-function TogglePill({
+function _TogglePill({
   label,
   pressed,
   onClick,

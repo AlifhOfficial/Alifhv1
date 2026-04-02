@@ -27,7 +27,7 @@ export const dynamic = 'force-dynamic';
 // Helper: Check Admin Role
 // ============================================================================
 
-async function checkAdminAccess(user: any) {
+async function checkAdminAccess(_user: any) {
   // TODO: Implement proper role check when role system is in place
   return true; // TEMPORARY - REPLACE WITH ACTUAL ADMIN CHECK
 }

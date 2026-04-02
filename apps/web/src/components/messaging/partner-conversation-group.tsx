@@ -40,7 +40,7 @@ export function PartnerConversationGroup({
   const isOnline = conversations.some(c => c.otherParticipant?.isOnline);
   
   // Get most recent message time
-  const mostRecentAt = conversations.reduce((latest, c) => {
+  const _mostRecentAt = conversations.reduce((latest, c) => {
     const convTime = new Date(c.lastMessageAt).getTime();
     return convTime > latest ? convTime : latest;
   }, 0);

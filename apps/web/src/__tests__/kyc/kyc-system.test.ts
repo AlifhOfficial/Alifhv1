@@ -459,4 +459,4 @@ describe('KYC Full Flow Simulation', () => {
   });
 });
 
-console.log('KYC System Tests loaded successfully');
+console.warn('KYC System Tests loaded successfully');

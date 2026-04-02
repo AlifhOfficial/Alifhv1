@@ -8,7 +8,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { TrendingUp, TrendingDown, Minus, AlertCircle, Clock, Eye } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, AlertCircle, Eye } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import { getAppThumbUrl } from '@/utils/storage';

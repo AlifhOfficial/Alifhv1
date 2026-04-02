@@ -63,7 +63,7 @@ export function ListingDetailView({
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const { createConversation } = useCreateConversation();
-  const { session: user, isAuthenticated } = useAuth();
+  const { session: user, isAuthenticated: _isAuthenticated } = useAuth();
   const { trackView } = useTrackView();
   
   // Fetch listing data via hook - pass initial data for instant display

@@ -82,8 +82,8 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
     name,
     alt = "User avatar", 
     size = "md",
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    useGeneratedAvatar, // deprecated, ignored
+     
+    useGeneratedAvatar: _useGeneratedAvatar, // deprecated, ignored
     updatedAt,
     ...props 
   }, ref) => {
@@ -101,7 +101,7 @@ const UserAvatar = React.forwardRef<HTMLDivElement, UserAvatarProps>(
     React.useEffect(() => setImageError(false), [resolvedUrl]);
 
     // Calculate sizes
-    const pixelSize = size === "xs" ? 24 : size === "sm" ? 32 : size === "md" ? 40 : size === "lg" ? 48 : 64;
+    const _pixelSize = size === "xs" ? 24 : size === "sm" ? 32 : size === "md" ? 40 : size === "lg" ? 48 : 64;
 
     // Show image if available, otherwise show initials
     const showImage = resolvedUrl && !imageError;

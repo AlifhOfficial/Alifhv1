@@ -158,7 +158,7 @@ interface GallerySectionProps {
 export function GallerySection({
   form,
   showroom,
-  isUpdating,
+  isUpdating: _isUpdating,
   imageUploading,
   partnerId,
   getEditableFieldProps,

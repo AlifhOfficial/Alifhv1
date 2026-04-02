@@ -10,7 +10,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { authClient } from '@/lib/auth/client';
-import { Loader2, CheckCircle2, Info, Phone, Building2 } from 'lucide-react';
+import { Loader2, CheckCircle2, Info, Phone } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { Skeleton } from '@/components/ui/skeleton';
 

@@ -37,13 +37,13 @@ export function ContactSection({
   listingId,
   currentUserId,
   sellerUserId,
-  partnerId,
+  partnerId: _partnerId,
   isOwnPartnerListing = false,
   onStartChat,
   isStartingChat,
   showBooking = false,
   onBookTestDrive,
-  partnerName,
+  partnerName: _partnerName,
   className,
 }: ContactSectionProps) {
   const [showPhone, setShowPhone] = useState(false);

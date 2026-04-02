@@ -5,11 +5,10 @@
 
 'use client';
 
-import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { Combobox } from "@/components/ui/forms/combobox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Box, RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X, Phone, Mail, User, Clock, Users, Hash, MessageSquare, FileText, XCircle, ChevronDown, ImageIcon, Copy, Check } from "lucide-react";
+import { RefreshCw, Search, ChevronLeft, ChevronRight, Calendar, X, Phone, Mail, User, Clock, ChevronDown, ImageIcon, Copy, Check } from "lucide-react";
 import { useMemo, useState, useEffect, useCallback, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { cn } from "@/utils";
@@ -501,7 +500,7 @@ export function PartnerBookingsClient({
               const teamMember = booking.staffUserId ? teamMemberMap.get(booking.staffUserId) : null;
               const dateInfo = formatBookingDate(booking.scheduledStartTime);
               const isExpanded = expandedBooking === booking.id;
-              const isCancelledOrRejected = normalizedStatus === 'cancelled' || normalizedStatus === 'rejected';
+              const _isCancelledOrRejected = normalizedStatus === 'cancelled' || normalizedStatus === 'rejected';
               
               return (
                 <div

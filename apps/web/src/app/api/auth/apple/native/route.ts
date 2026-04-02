@@ -10,7 +10,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createRemoteJWKSet, jwtVerify, JWTPayload } from "jose";
 import { db, eq } from "@alifh/database";
 import * as schema from "@alifh/database";
-import { auth } from "@/lib/auth";
 
 // Apple's public keys for JWT verification
 const APPLE_KEYS_URL = "https://appleid.apple.com/auth/keys";
@@ -55,7 +54,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    console.log("[Apple Auth] Verifying identity token");
+    console.warn("[Apple Auth] Verifying identity token");
     
     // Verify the JWT with Apple's public keys
     let payload: AppleTokenPayload;
@@ -77,7 +76,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    console.log("[Apple Auth] Token verified for user:", payload.sub);
+    console.warn("[Apple Auth] Token verified for user:", payload.sub);
     
     // Extract user info from token
     // Note: Apple only sends email/name on FIRST sign in
@@ -132,7 +131,7 @@ export async function POST(request: NextRequest) {
       }
       
       user = users[0];
-      console.log("[Apple Auth] Existing user found:", userId);
+      console.warn("[Apple Auth] Existing user found:", userId);
     } else {
       // Check if a user with this email already exists to link accounts
       const existingUsers = await db
@@ -162,7 +161,7 @@ export async function POST(request: NextRequest) {
           updatedAt: new Date(),
         });
         
-        console.log("[Apple Auth] Linked Apple account to existing user:", userId);
+        console.warn("[Apple Auth] Linked Apple account to existing user:", userId);
       } else {
         // Create new user
         userId = crypto.randomUUID();
@@ -207,7 +206,7 @@ export async function POST(request: NextRequest) {
         
         user = newUsers[0];
         
-        console.log("[Apple Auth] Created new user:", userId);
+        console.warn("[Apple Auth] Created new user:", userId);
       }
     }
     
@@ -227,7 +226,7 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     });
     
-    console.log("[Apple Auth] Session created for user:", userId);
+    console.warn("[Apple Auth] Session created for user:", userId);
     
     // Return session info to mobile app
     return NextResponse.json({

@@ -6,7 +6,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Link from 'next/link';
 import { MapPin, Phone } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { ShowroomData } from './types';

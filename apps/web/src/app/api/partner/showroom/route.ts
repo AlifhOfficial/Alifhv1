@@ -271,7 +271,7 @@ function attachImageUrls(showroom: any, updatedAt: Date) {
 // GET - Fetch showroom data
 // ============================================================================
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     // Require authentication
     const user = await getSessionUser();

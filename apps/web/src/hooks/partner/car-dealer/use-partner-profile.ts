@@ -8,7 +8,6 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query-keys';
 import { useAuth } from '@/providers/auth-provider';
 
 // ============================================================================
@@ -130,7 +129,7 @@ async function updatePartnerProfileAPI(partnerId: string, updates: PartnerProfil
   }
 
   const result = await res.json();
-  console.log('[updatePartnerProfileAPI] Response:', { 
+  console.warn('[updatePartnerProfileAPI] Response:', { 
     logo: result.logo, 
     heroImage: result.heroImage,
     logoUrl: result.logoUrl,

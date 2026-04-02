@@ -13,7 +13,6 @@ import {
   Ban,
   CheckCircle,
   Shield,
-  Tag,
   Award,
   Mail,
   Phone,

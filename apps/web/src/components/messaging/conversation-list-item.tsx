@@ -10,7 +10,6 @@ import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { cn } from '@/utils/cn';
 import { formatDistanceToNow } from 'date-fns';
 import type { Conversation } from '@/hooks/messaging';
-import { Pin } from 'lucide-react';
 import Link from 'next/link';
 
 interface ConversationListItemProps {
@@ -39,8 +38,8 @@ export function ConversationListItem({
     lastMessagePreview,
     lastMessageAt,
     unreadCount,
-    isPinned,
-    isMuted,
+    isPinned: _isPinned,
+    isMuted: _isMuted,
     listing,
     partner,
   } = conversation;

@@ -15,8 +15,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
-import { getStripeClient, isStripeConfigured, PLANS } from '@/lib/stripe/config';
-import { db, partner as partnerTable, partnerStaff as partnerStaffTable, eq, and, ne } from '@alifh/database';
+import { getStripeClient, isStripeConfigured } from '@/lib/stripe/config';
+import { db, partner as partnerTable, partnerStaff as partnerStaffTable, eq, and } from '@alifh/database';
 
 export const runtime = 'nodejs';
 
@@ -36,7 +36,7 @@ async function updatePartnerTier(partnerId: string, planName: string, subscripti
   // Set billingActive based on subscription status
   const billingActive = ['active', 'trialing'].includes(subscriptionStatus);
   
-  console.log(`[Stripe Webhook] Updating partner ${partnerId}: tier=${newTier}, status=${subscriptionStatus}, billingActive=${billingActive}`);
+  console.warn(`[Stripe Webhook] Updating partner ${partnerId}: tier=${newTier}, status=${subscriptionStatus}, billingActive=${billingActive}`);
   
   await db
     .update(partnerTable)
@@ -58,7 +58,7 @@ async function updatePartnerTier(partnerId: string, planName: string, subscripti
  * Reset partner tier when subscription is cancelled/deleted
  */
 async function resetPartnerTier(partnerId: string) {
-  console.log(`[Stripe Webhook] Resetting partner ${partnerId} to flow tier, billingActive=false (subscription cancelled)`);
+  console.warn(`[Stripe Webhook] Resetting partner ${partnerId} to flow tier, billingActive=false (subscription cancelled)`);
   
   await db
     .update(partnerTable)
@@ -80,7 +80,7 @@ async function resetPartnerTier(partnerId: string) {
  * Also sets billingActive to false on the partner
  */
 async function disablePartnerStaff(partnerId: string) {
-  console.log(`[Stripe Webhook] Disabling staff for partner ${partnerId} and setting billingActive=false`);
+  console.warn(`[Stripe Webhook] Disabling staff for partner ${partnerId} and setting billingActive=false`);
   
   // Set partner billingActive to false
   await db
@@ -111,7 +111,7 @@ async function disablePartnerStaff(partnerId: string) {
  * Also sets billingActive to true on the partner
  */
 async function enablePartnerStaff(partnerId: string) {
-  console.log(`[Stripe Webhook] Re-enabling staff for partner ${partnerId} and setting billingActive=true`);
+  console.warn(`[Stripe Webhook] Re-enabling staff for partner ${partnerId} and setting billingActive=true`);
   
   // Set partner billingActive to true
   await db
@@ -188,7 +188,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
-    console.log(`[Stripe Webhook] Received event: ${event.type}`);
+    console.warn(`[Stripe Webhook] Received event: ${event.type}`);
 
     // Handle different event types
     switch (event.type) {
@@ -201,7 +201,7 @@ export async function POST(req: NextRequest) {
         
         if (partnerId && planName) {
           await updatePartnerTier(partnerId, planName, 'active');
-          console.log(`[Stripe Webhook] Checkout completed: partner=${partnerId}, plan=${planName}`);
+          console.warn(`[Stripe Webhook] Checkout completed: partner=${partnerId}, plan=${planName}`);
         } else {
           console.warn('[Stripe Webhook] checkout.session.completed missing partnerId or plan in metadata');
         }
@@ -232,7 +232,7 @@ export async function POST(req: NextRequest) {
           await resetPartnerTier(partnerId);
         }
         
-        console.log(`[Stripe Webhook] Subscription ${event.type}: partner=${partnerId}, plan=${planName}, status=${subscription.status}`);
+        console.warn(`[Stripe Webhook] Subscription ${event.type}: partner=${partnerId}, plan=${planName}, status=${subscription.status}`);
         break;
       }
 
@@ -242,7 +242,7 @@ export async function POST(req: NextRequest) {
         
         if (partnerId) {
           await resetPartnerTier(partnerId);
-          console.log(`[Stripe Webhook] Subscription deleted: partner=${partnerId} reset to standard`);
+          console.warn(`[Stripe Webhook] Subscription deleted: partner=${partnerId} reset to standard`);
         } else {
           console.warn('[Stripe Webhook] subscription.deleted: no partnerId in metadata');
         }
@@ -251,14 +251,14 @@ export async function POST(req: NextRequest) {
 
       case 'invoice.paid': {
         const invoice = event.data.object as Stripe.Invoice;
-        console.log(`[Stripe Webhook] Invoice paid: ${invoice.id}`);
+        console.warn(`[Stripe Webhook] Invoice paid: ${invoice.id}`);
         // Could add additional logic here if needed
         break;
       }
 
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice;
-        console.log(`[Stripe Webhook] Invoice payment failed: ${invoice.id}`);
+        console.warn(`[Stripe Webhook] Invoice payment failed: ${invoice.id}`);
         
         // Get subscription to find partnerId (subscription field may be string or object)
         const subscriptionId = typeof (invoice as any).subscription === 'string' 
@@ -273,7 +273,7 @@ export async function POST(req: NextRequest) {
             if (partnerId) {
               // Disable staff accounts (owner keeps access for billing management)
               await disablePartnerStaff(partnerId);
-              console.log(`[Stripe Webhook] Staff disabled for partner ${partnerId} due to payment failure`);
+              console.warn(`[Stripe Webhook] Staff disabled for partner ${partnerId} due to payment failure`);
             }
           } catch (err) {
             console.error('[Stripe Webhook] Failed to process payment failure:', err);
@@ -283,7 +283,7 @@ export async function POST(req: NextRequest) {
       }
 
       default:
-        console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`);
+        console.warn(`[Stripe Webhook] Unhandled event type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });

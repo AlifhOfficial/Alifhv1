@@ -37,7 +37,7 @@ export function useHealthCheck(initialData?: HealthCheckResponse | null, enableF
         } else {
           setError('Health check failed');
         }
-      } catch (err) {
+      } catch (_err) {
         if (!mounted) return;
         setError('Unable to connect');
         setHealth(null);

@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
       stats = await getCachedUserStats(id);
     }
 
-    console.log(`[seller-stats] ${type}:${id} - ${(performance.now() - startTime).toFixed(0)}ms`);
+    console.warn(`[seller-stats] ${type}:${id} - ${(performance.now() - startTime).toFixed(0)}ms`);
 
     return NextResponse.json(stats);
   } catch (error) {

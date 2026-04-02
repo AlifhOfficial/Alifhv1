@@ -56,7 +56,7 @@ export function CarListItem({
   specs = 'GCC',
   thumbnail,
   images,
-  qiScore,
+  qiScore: _qiScore,
   isBlkListing,
   partnerName,
   partnerLogo,
@@ -131,8 +131,9 @@ export function CarListItem({
 
   // Cleanup timers on unmount
   useEffect(() => {
+    const timers = timersRef.current;
     return () => {
-      timersRef.current.forEach(clearTimeout);
+      timers.forEach(clearTimeout);
     };
   }, []);
 

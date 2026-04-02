@@ -38,7 +38,7 @@ import {
 const currentYear = new Date().getFullYear();
 
 /** VIN validation pattern (17 chars, no I, O, Q) */
-const VIN_PATTERN = /^[A-HJ-NPR-Z0-9]{17}$/i;
+const _VIN_PATTERN = /^[A-HJ-NPR-Z0-9]{17}$/i;
 
 // ============================================================================
 // IMAGE TYPES

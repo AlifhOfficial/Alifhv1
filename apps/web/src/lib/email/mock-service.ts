@@ -118,14 +118,14 @@ export async function sendEmailMock(emailData: EmailData) {
 
   sentEmails.push(mockEmail);
 
-  console.log('\n📧 MOCK EMAIL SENT');
-  console.log('───────────────────────────────────');
-  console.log(`To: ${emailData.to}`);
-  console.log(`Subject: ${emailData.subject}`);
+  console.warn('\n📧 MOCK EMAIL SENT');
+  console.warn('───────────────────────────────────');
+  console.warn(`To: ${emailData.to}`);
+  console.warn(`Subject: ${emailData.subject}`);
   if (emailData.text) {
-    console.log(`Preview: ${emailData.text.substring(0, 80)}...`);
+    console.warn(`Preview: ${emailData.text.substring(0, 80)}...`);
   }
-  console.log('───────────────────────────────────\n');
+  console.warn('───────────────────────────────────\n');
 
   await new Promise(resolve => setTimeout(resolve, 200));
 

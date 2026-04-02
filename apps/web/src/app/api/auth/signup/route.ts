@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       }
 
       // User exists but NOT verified - clean up everything and allow re-registration
-      console.log(`[Signup] Cleaning up unverified user for re-registration: ${normalizedEmail}`);
+      console.warn(`[Signup] Cleaning up unverified user for re-registration: ${normalizedEmail}`);
       
       // Delete any orphaned Stripe customers first (shouldn't exist since we create after verification)
       await deleteStripeCustomerByEmail(normalizedEmail);
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         );
       }
       
-      console.log(`[Signup] Successfully cleaned up unverified user, proceeding with signup: ${normalizedEmail}`);
+      console.warn(`[Signup] Successfully cleaned up unverified user, proceeding with signup: ${normalizedEmail}`);
     }
 
     // Proceed with Better Auth signup

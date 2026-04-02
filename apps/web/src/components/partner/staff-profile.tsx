@@ -8,7 +8,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, RefreshCw, User, Phone, Briefcase } from 'lucide-react';
+import { ArrowLeft, Loader2, RefreshCw, User, Phone } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';

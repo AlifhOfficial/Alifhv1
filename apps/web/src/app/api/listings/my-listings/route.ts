@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
   const startTime = performance.now();
   const logTiming = (label: string) => {
     if (DEBUG_TIMING) {
-      console.log(`[my-listings] ${label}: ${(performance.now() - startTime).toFixed(0)}ms`);
+      console.warn(`[my-listings] ${label}: ${(performance.now() - startTime).toFixed(0)}ms`);
     }
   };
   
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
       100
     );
     const offset = parseInt(searchParams.get('offset') || '0');
-    const partnerIdParam = searchParams.get('partnerId') || undefined;
+    const _partnerIdParam = searchParams.get('partnerId') || undefined;
 
     // Validate status if provided
     const validLegacyStatuses = [
@@ -249,7 +249,7 @@ export async function GET(req: NextRequest) {
       limit,
       offset,
     }).then(result => {
-      if (DEBUG_TIMING) console.log(`[my-listings] listings-query: ${(performance.now() - listingsStart).toFixed(0)}ms (${result.listings.length} rows)`);
+      if (DEBUG_TIMING) console.warn(`[my-listings] listings-query: ${(performance.now() - listingsStart).toFixed(0)}ms (${result.listings.length} rows)`);
       return result;
     });
 
@@ -257,7 +257,7 @@ export async function GET(req: NextRequest) {
     if (includeStats) {
       const statsStart = performance.now();
       statsPromise = getCachedMyListingStats(user.id, listingType).then(stats => {
-        if (DEBUG_TIMING) console.log(`[my-listings] stats-query: ${(performance.now() - statsStart).toFixed(0)}ms`);
+        if (DEBUG_TIMING) console.warn(`[my-listings] stats-query: ${(performance.now() - statsStart).toFixed(0)}ms`);
         return stats;
       });
     }

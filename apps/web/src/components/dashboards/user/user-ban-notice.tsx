@@ -7,7 +7,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AlertCircle, Clock, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 
 interface UserBanNoticeProps {
   banReason: string;
@@ -15,7 +15,7 @@ interface UserBanNoticeProps {
   userId?: string;
 }
 
-export function UserBanNotice({ banReason, banExpires, userId }: UserBanNoticeProps) {
+export function UserBanNotice({ banReason, banExpires, userId: _userId }: UserBanNoticeProps) {
   const [showAppealForm, setShowAppealForm] = useState(false);
   const [appealMessage, setAppealMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -43,7 +43,7 @@ export function UserBanNotice({ banReason, banExpires, userId }: UserBanNoticePr
 
       setSubmitted(true);
       setAppealMessage('');
-    } catch (error) {
+    } catch (_error) {
       alert('Failed to submit appeal. Please try again.');
     } finally {
       setSubmitting(false);

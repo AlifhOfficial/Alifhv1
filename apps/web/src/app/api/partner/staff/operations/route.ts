@@ -27,7 +27,7 @@ export const dynamic = 'force-dynamic';
 async function wouldLeaveNoOwners(
   partnerId: string, 
   staffId: string, 
-  operation: 'demote' | 'suspend' | 'remove'
+  _operation: 'demote' | 'suspend' | 'remove'
 ): Promise<boolean> {
   // Count active owners excluding the target staff member
   const otherOwners = await db

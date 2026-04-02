@@ -128,8 +128,8 @@ export const auth = betterAuth({
     }),
     phoneNumber({
       // Use Twilio Verify for OTP - WhatsApp first, SMS fallback
-      sendOTP: async ({ phoneNumber, code }, ctx) => {
-        console.log("[PhoneVerify] sendOTP called for:", phoneNumber);
+      sendOTP: async ({ phoneNumber, code: _code }, _ctx) => {
+        console.warn("[PhoneVerify] sendOTP called for:", phoneNumber);
         // Twilio Verify generates its own code, so we ignore the `code` param
         // Try WhatsApp first (cheaper, no toll fraud, works on Wi-Fi)
         try {
@@ -139,11 +139,11 @@ export const auth = betterAuth({
               to: phoneNumber,
               channel: "whatsapp",
             });
-          console.log("[PhoneVerify] OTP sent via WhatsApp to:", phoneNumber);
+          console.warn("[PhoneVerify] OTP sent via WhatsApp to:", phoneNumber);
           return;
         } catch (whatsappError: any) {
           // WhatsApp failed - fall back to SMS
-          console.log("[PhoneVerify] WhatsApp failed, falling back to SMS:", whatsappError?.message);
+          console.warn("[PhoneVerify] WhatsApp failed, falling back to SMS:", whatsappError?.message);
         }
         
         // Fallback to SMS
@@ -153,11 +153,11 @@ export const auth = betterAuth({
             to: phoneNumber,
             channel: "sms",
           });
-        console.log("[PhoneVerify] OTP sent via SMS to:", phoneNumber);
+        console.warn("[PhoneVerify] OTP sent via SMS to:", phoneNumber);
       },
       // Use Twilio Verify to validate OTP - bypasses Better Auth's internal verification
-      verifyOTP: async ({ phoneNumber, code }, ctx) => {
-        console.log("[PhoneVerify] verifyOTP called for:", phoneNumber, "code:", code);
+      verifyOTP: async ({ phoneNumber, code }, _ctx) => {
+        console.warn("[PhoneVerify] verifyOTP called for:", phoneNumber, "code:", code);
         try {
           const check = await twilioClient.verify.v2
             .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
@@ -165,7 +165,7 @@ export const auth = betterAuth({
               to: phoneNumber,
               code,
             });
-          console.log("[PhoneVerify] Verification result:", check.status, "for:", phoneNumber);
+          console.warn("[PhoneVerify] Verification result:", check.status, "for:", phoneNumber);
           return check.status === "approved";
         } catch (error: any) {
           // 20404 = Verification not found (expired, already verified, or too many attempts)
@@ -287,7 +287,7 @@ export const auth = betterAuth({
           avatarUrl = `${publicUrl.replace(/\/$/, '')}/${avatar}?v=${cacheBuster}`;
           
           if (process.env.SESSION_DEBUG === 'true') {
-            console.log(`[customSession] Avatar URL: ${avatarUrl}`);
+            console.warn(`[customSession] Avatar URL: ${avatarUrl}`);
           }
         }
       } else if (avatar) {
@@ -339,7 +339,7 @@ export const auth = betterAuth({
         plans: getStripePlans(),
         // Only partner owners can manage subscriptions
         authorizeReference: async ({ user, referenceId, action }) => {
-          console.log(`[Stripe] authorizeReference called: user=${user.id}, referenceId=${referenceId}, action=${action}`);
+          console.warn(`[Stripe] authorizeReference called: user=${user.id}, referenceId=${referenceId}, action=${action}`);
           
           // referenceId is partner.id - verify user is owner of this partner
           const ownership = await db.query.partnerStaff.findFirst({
@@ -351,7 +351,7 @@ export const auth = betterAuth({
             ),
           });
           
-          console.log(`[Stripe] Ownership check result:`, ownership ? 'found' : 'not found');
+          console.warn(`[Stripe] Ownership check result:`, ownership ? 'found' : 'not found');
           
           if (!ownership) {
             console.warn(`[Stripe] Unauthorized: User ${user.id} is not owner of partner ${referenceId}`);
@@ -372,10 +372,10 @@ export const auth = betterAuth({
             })
             .where(eq(schema.partner.id, partnerId));
           
-          console.log(`[Stripe] Partner ${partnerId} subscribed to ${plan.name} plan`);
+          console.warn(`[Stripe] Partner ${partnerId} subscribed to ${plan.name} plan`);
         },
         onSubscriptionUpdate: async ({ subscription }) => {
-          console.log(`[Stripe] Subscription ${subscription.id} updated: ${subscription.status}`);
+          console.warn(`[Stripe] Subscription ${subscription.id} updated: ${subscription.status}`);
         },
         onSubscriptionCancel: async ({ subscription }) => {
           // Downgrade partner to flow tier on cancellation
@@ -388,7 +388,7 @@ export const auth = betterAuth({
             })
             .where(eq(schema.partner.id, partnerId));
           
-          console.log(`[Stripe] Partner ${partnerId} subscription cancelled`);
+          console.warn(`[Stripe] Partner ${partnerId} subscription cancelled`);
         },
       },
     })] : []),
@@ -551,7 +551,7 @@ export const auth = betterAuth({
               .set({ stripeCustomerId: customerId })
               .where(eq(schema.user.id, user.id));
             
-            console.log(`[Auth] Stripe customer ${customerId} created for user ${user.id}`);
+            console.warn(`[Auth] Stripe customer ${customerId} created for user ${user.id}`);
           } catch (error) {
             console.error('[Auth] Failed to create Stripe customer:', error);
             // Don't throw - user creation should still succeed

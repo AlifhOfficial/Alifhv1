@@ -37,7 +37,7 @@ export function useToast() {
       title,
       description,
       variant = 'default',
-      action,
+      action: _action,
     }: {
       title?: string;
       description?: string;

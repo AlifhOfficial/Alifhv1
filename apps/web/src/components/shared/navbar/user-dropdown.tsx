@@ -61,7 +61,7 @@ export function ProfileMenu({
   onSignIn,
   onSignUp,
   onSignOut,
-  onProfile,
+  onProfile: _onProfile,
   navItems,
   pathname,
   onNavigate,
@@ -239,7 +239,7 @@ export function ProfileMenu({
             {/* Menu Items */}
             <div className="py-1.5">
               {/* Dashboards Section */}
-              {availableDashboards.map((dashboard, index) => (
+              {availableDashboards.map((dashboard, _index) => (
                 <button
                   key={dashboard.path}
                   onClick={() => handleDashboardNavigation(dashboard.path)}

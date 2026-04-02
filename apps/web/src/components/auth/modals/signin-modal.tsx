@@ -53,7 +53,7 @@ export function SignInModal({
       const result = await authClient.signIn.passkey();
       if (result?.data && onPasskeySuccess) onPasskeySuccess();
     } catch (error: any) {
-      console.debug('[Passkey] Sign in cancelled or not available:', error.message);
+      console.warn('[Passkey] Sign in cancelled or not available:', error.message);
     } finally {
       setIsPasskeyLoading(false);
     }

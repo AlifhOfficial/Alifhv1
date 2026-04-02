@@ -54,7 +54,7 @@ async function fetchSellerData(listing: ListingResult) {
         ? getCachedStaffContact(listing.userId, listing.partnerId)
         : Promise.resolve(null),
     ]);
-    console.log(`[fetchSellerData] partner (getDealerBaseProfile + staffPhone): ${(performance.now() - start).toFixed(0)}ms`);
+    console.warn(`[fetchSellerData] partner (getDealerBaseProfile + staffPhone): ${(performance.now() - start).toFixed(0)}ms`);
     
     return { 
       type: 'partner' as const, 
@@ -71,7 +71,7 @@ async function fetchSellerData(listing: ListingResult) {
   } else {
     // User listing - fetch profile only (NO stats - loaded separately)
     const userProfile = await getCachedUserProfile(listing.userId);
-    console.log(`[fetchSellerData] user (getUserProfileByUserId): ${(performance.now() - start).toFixed(0)}ms`);
+    console.warn(`[fetchSellerData] user (getUserProfileByUserId): ${(performance.now() - start).toFixed(0)}ms`);
     
     return { 
       type: 'user' as const, 
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   const logTiming = (label: string) => {
     const duration = Math.round(performance.now() - startTime);
     timingMarks.set(label, duration);
-    console.log(`[listing-detailed] ${label}: ${duration}ms`);
+    console.warn(`[listing-detailed] ${label}: ${duration}ms`);
   };
 
   try {

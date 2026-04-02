@@ -7,7 +7,6 @@
 
 import { type ReactNode, createContext, useContext, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -129,7 +128,7 @@ interface DashboardContentProps {
 }
 
 export function DashboardContent({ children, header, fullHeight = false, noPadding = false, hideFooterOnMobile = false }: DashboardContentProps) {
-  const { resolvedTheme } = useTheme();
+  const { resolvedTheme: _resolvedTheme } = useTheme();
   const onSignOut = async () => {
     await handleSignOut();
   };

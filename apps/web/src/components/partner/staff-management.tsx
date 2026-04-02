@@ -99,7 +99,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
   const hasActiveFilters = searchQuery.trim() !== '';
 
   // Get role badge
-  const getRoleBadge = (role: string) => {
+  const _getRoleBadge = (role: string) => {
     return ROLE_CONFIG[role] || ROLE_CONFIG.staff;
   };
 

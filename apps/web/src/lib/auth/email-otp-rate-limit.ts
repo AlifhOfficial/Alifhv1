@@ -51,7 +51,7 @@ function buildResendKey(email: string): string {
   return normalizeEmail(email);
 }
 
-export function getOtpResendStatus(email: string, source: string | null) {
+export function getOtpResendStatus(email: string, _source: string | null) {
   const now = Date.now();
   cleanupExpiredResends(now);
   cleanupExpiredLockouts(now);
@@ -95,7 +95,7 @@ export function getOtpResendStatus(email: string, source: string | null) {
   };
 }
 
-export function recordOtpResend(email: string, source: string | null) {
+export function recordOtpResend(email: string, _source: string | null) {
   const now = Date.now();
   const key = buildResendKey(email);
   const cooldownMs = AUTH_CONFIG.EMAIL_OTP.RESEND_COOLDOWN_SECONDS * 1000;

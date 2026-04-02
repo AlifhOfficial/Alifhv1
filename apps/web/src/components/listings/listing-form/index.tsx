@@ -10,7 +10,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Loader2, ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
 import { cn } from '@/utils';
 import {
   type FormStep,

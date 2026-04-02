@@ -14,7 +14,7 @@ interface ShowroomFooterProps {
 
 export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
   const partner = showroom.partner;
-  const theme = getAmbientTheme(showroom.ambientStyle);
+  const _theme = getAmbientTheme(showroom.ambientStyle);
   
   const hasSocials = showroom.instagramHandle || showroom.youtubeChannelUrl || showroom.linkedinUrl || showroom.tiktokHandle;
   
@@ -28,7 +28,7 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
   
   // Contact priority: tollNumber > adminPhone > registered phone
   const displayPhone = partner?.tollNumber || partner?.adminPhone || partner?.phone;
-  const contactName = partner?.adminName;
+  const _contactName = partner?.adminName;
 
   return (
     <footer className="border-t border-border/40">

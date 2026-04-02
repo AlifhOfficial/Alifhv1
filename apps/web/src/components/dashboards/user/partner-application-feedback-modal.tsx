@@ -25,7 +25,7 @@ export function PartnerApplicationFeedbackModal({
   if (!open) return null;
 
   const isError = !!error;
-  const isLoading = isSubmitting && !success && !isError;
+  const _isLoading = isSubmitting && !success && !isError;
 
   return (
     <div className="fixed inset-0 z-[9999] bg-background/40 backdrop-blur-2xl flex items-center justify-center p-4">

@@ -71,7 +71,7 @@ export default function AppleCallbackPage() {
             window.location.href = '/';
           }, 1000);
         }
-      } catch (err) {
+      } catch (_err) {
         setStatus('error');
         setMessage('Something went wrong');
         

@@ -567,16 +567,16 @@ export async function PUT(
       updated?.postedByRole === 'user' &&
       (isFirstTimePublish || hasMajorContentChanges);
 
-    console.log(`[AI Check] postedByRole=${updated?.postedByRole}, wasDraft=${wasDraft}, isBeingPublished=${isBeingPublished}, hasMajorChanges=${hasMajorContentChanges}, shouldRun=${shouldRunAIModeration}`);
+    console.warn(`[AI Check] postedByRole=${updated?.postedByRole}, wasDraft=${wasDraft}, isBeingPublished=${isBeingPublished}, hasMajorChanges=${hasMajorContentChanges}, shouldRun=${shouldRunAIModeration}`);
     
     // Initialize moderation result for response
     let aiModeration: { decision: 'approve' | 'flag'; approved: boolean } | null = null;
 
     if (shouldRunAIModeration && updated) {
-      console.log(`[AI Moderation] Starting AI moderation for listing ${id}...`);
+      console.warn(`[AI Moderation] Starting AI moderation for listing ${id}...`);
       // Get full listing data for AI moderation
       const fullListing = await getListingDetailed(id);
-      console.log(`[AI Moderation] Got full listing: ${!!fullListing}`);
+      console.warn(`[AI Moderation] Got full listing: ${!!fullListing}`);
       if (fullListing) {
         const moderationInput: ModerationInput = {
           make: fullListing.make,
@@ -611,7 +611,7 @@ export async function PUT(
           try {
             const result = await moderateListing(moderationInput);
             await updateListingAIModeration(id, result);
-            console.log(`[AI Moderation] Listing ${id} (first publish): ${result.decision} (confidence: ${result.confidence})`);
+            console.warn(`[AI Moderation] Listing ${id} (first publish): ${result.decision} (confidence: ${result.confidence})`);
             aiModeration = {
               decision: result.decision,
               approved: result.decision === 'approve',
@@ -629,7 +629,7 @@ export async function PUT(
           moderateListing(moderationInput)
             .then(async (result) => {
               await updateListingAIModeration(id, result);
-              console.log(`[AI Moderation] Listing ${id} (resubmit): ${result.decision} (confidence: ${result.confidence})`);
+              console.warn(`[AI Moderation] Listing ${id} (resubmit): ${result.decision} (confidence: ${result.confidence})`);
             })
             .catch((error) => {
               console.error(`[AI Moderation] Failed for listing ${id}:`, error);

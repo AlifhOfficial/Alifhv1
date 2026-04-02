@@ -93,7 +93,7 @@ export async function GET() {
   // Analysis
   const healthLatency = typeof results.healthCheck === 'object' && 'latencyMs' in results.healthCheck 
     ? (results.healthCheck as { latencyMs: number }).latencyMs : 0;
-  const broadcastLatency = typeof results.broadcast === 'object' && 'latencyMs' in results.broadcast
+  const _broadcastLatency = typeof results.broadcast === 'object' && 'latencyMs' in results.broadcast
     ? (results.broadcast as { latencyMs: number }).latencyMs : 0;
   
   results.analysis = {

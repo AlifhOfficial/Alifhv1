@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
       : null;
 
     // Select appropriate cache headers: CDN for public browse, no-cache for specific ID lookups
-    const isPublicBrowse = !ids?.length;
+    const _isPublicBrowse = !ids?.length;
 
     // In dev, bypass cache so new/updated listings reflect immediately.
     if (!isProd) {

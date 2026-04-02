@@ -72,7 +72,7 @@ export async function GET(_req: NextRequest) {
       // Auto-heal: sync billingActive if mismatched
       const shouldBeActive = isInTrial;
       if (partnerData?.billingActive !== shouldBeActive) {
-        console.log(`[Subscription] Auto-heal: partner ${partnerMembership.partnerId} billingActive ${partnerData?.billingActive} → ${shouldBeActive} (no Stripe customer)`);
+        console.warn(`[Subscription] Auto-heal: partner ${partnerMembership.partnerId} billingActive ${partnerData?.billingActive} → ${shouldBeActive} (no Stripe customer)`);
         await db
           .update(partnerTable)
           .set({ billingActive: shouldBeActive, updatedAt: new Date() })
@@ -136,7 +136,7 @@ export async function GET(_req: NextRequest) {
       // Auto-heal: sync billingActive if mismatched
       const shouldBeActive = isInTrial;
       if (partnerData?.billingActive !== shouldBeActive) {
-        console.log(`[Subscription] Auto-heal: partner ${partnerMembership.partnerId} billingActive ${partnerData?.billingActive} → ${shouldBeActive}`);
+        console.warn(`[Subscription] Auto-heal: partner ${partnerMembership.partnerId} billingActive ${partnerData?.billingActive} → ${shouldBeActive}`);
         await db
           .update(partnerTable)
           .set({ billingActive: shouldBeActive, updatedAt: new Date() })
@@ -174,7 +174,7 @@ export async function GET(_req: NextRequest) {
     // Auto-heal: sync billingActive based on Stripe subscription status
     const shouldBeActive = ['active', 'trialing'].includes(activeSubscription.status);
     if (partnerData?.billingActive !== shouldBeActive) {
-      console.log(`[Subscription] Auto-heal: partner ${partnerMembership.partnerId} billingActive ${partnerData?.billingActive} → ${shouldBeActive} (subscription.status=${activeSubscription.status})`);
+      console.warn(`[Subscription] Auto-heal: partner ${partnerMembership.partnerId} billingActive ${partnerData?.billingActive} → ${shouldBeActive} (subscription.status=${activeSubscription.status})`);
       await db
         .update(partnerTable)
         .set({ billingActive: shouldBeActive, updatedAt: new Date() })

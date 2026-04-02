@@ -27,7 +27,6 @@
 
 'use client';
 
-import { cn } from '@/utils';
 import type { SellerData } from '@/hooks/listings';
 import { PartnerProfileCard } from './partner-profile-card';
 import { UserProfileCard } from './user-profile-card';
@@ -38,7 +37,7 @@ interface SellerProfileCardProps {
   className?: string;
 }
 
-function SellerProfileCardComponent({ sellerData, className }: SellerProfileCardProps) {
+function SellerProfileCardComponent({ sellerData, className: _className }: SellerProfileCardProps) {
   if (sellerData.type === 'partner') return <PartnerProfileCard sellerData={sellerData} />;
   return <UserProfileCard sellerData={sellerData} />;
 }

@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   }
 
-  const identifier = user.id;
+  const _identifier = user.id;
   try {
     const payload = await req.json().catch(() => null);
     const validationResult = SignedUrlSchema.safeParse(payload);

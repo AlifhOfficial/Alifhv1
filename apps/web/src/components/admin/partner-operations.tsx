@@ -14,7 +14,6 @@ import {
   Award,
   Tag,
   Star,
-  DollarSign,
   Loader2,
   Trash2,
   Shield,
