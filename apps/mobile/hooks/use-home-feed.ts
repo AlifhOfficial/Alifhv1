@@ -21,7 +21,7 @@ import { queryKeys } from '@/lib/query-client';
 
 const FEED_LIMIT = 10;
 const STALE_TIME = 10 * 60 * 1000;
-const BLK_PARAMS = { isBlkListing: true, sortBy: 'popular', limit: FEED_LIMIT } as const;
+const BLK_PARAMS = { isBlkListing: true, sortBy: 'newest', limit: FEED_LIMIT } as const;
 const JUST_LISTED_PARAMS = { sortBy: 'newest', limit: FEED_LIMIT } as const;
 const HIDDEN_GEMS_PARAMS = { sortBy: 'price_low', mileageMax: 60000, limit: FEED_LIMIT } as const;
 

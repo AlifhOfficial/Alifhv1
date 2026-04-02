@@ -131,6 +131,7 @@ export interface ColorPalette {
   surface: string;
   surfaceSecondary: string;
   surfaceTertiary: string;
+  grid: string;            // Section grid background — slightly deeper than surface so cards lift above it
   sheet: string;           // Sheet/modal background (white in light, #1A1A1A in dark)
   sheetBorder: string;     // Subtle dividers inside sheets
   sheetHandle: string;     // Drag handle tint
@@ -208,6 +209,7 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     surface:          '#F0F0F0',   // Light gray card — lifts above white bg
     surfaceSecondary: '#E8E8E8',   // Deeper elevated tier
     surfaceTertiary:  '#E0E0E0',   // Soft tertiary surface
+    grid:             '#E9E9E9',   // Section grid bg — slightly deeper than surface
     sheet:            '#FFFFFF',   // Apple HIG-style sheet base in light mode
     sheetBorder:      '#E1E1E1',   // Quiet sheet dividers
     sheetHandle:      '#D2D2D2',   // Subtle grabber tint
@@ -284,6 +286,7 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     surface:          palette.secondarySystemBackgroundDark, // Default surface
     surfaceSecondary: palette.tertiarySystemBackgroundDark,  // Elevated
     surfaceTertiary:  '#333333',                                     // Highest
+    grid:             '#141414',   // Section grid bg — slightly deeper than surface
     sheet:            palette.secondarySystemBackgroundDark, // Apple HIG-style sheet base (#1A1A1A)
     sheetBorder:      palette.opaqueSeparatorDark,           // Quiet sheet dividers
     sheetHandle:      '#474747',                             // Subtle grabber tint

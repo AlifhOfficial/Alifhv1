@@ -1,14 +1,11 @@
 /**
  * HomeFeed
  *
- * Four sections below QuickActions on the home tab:
- *  1. Browse by Make  — horizontal pill row (navigates to browse with make filter)
- *  2. BLK             — premium BLK listings with dark header
- *  3. New Arrivals    — recently listed (sortBy: newest)
- *  4. Hidden Gems     — low mileage, competitive price
- *
- * All styling uses the Revvup design system tokens.
- * Follows Apple Human Interface Guidelines.
+ * Three curated sections below QuickActions on the home tab.
+ * Each section is a surface-backed rounded container:
+ *   — centered title
+ *   — horizontal card scroll
+ *   — "View all" centered at the bottom
  */
 
 import React, { memo, useCallback } from 'react';
@@ -22,11 +19,10 @@ import {
 } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
-import * as Haptics from 'expo-haptics';
 
 import { Text, HapticPressable } from '@/components/ui';
 import { CarCardM, CarCardMSkeleton } from '@/components/cards';
-import { Layout, Radius, Spacing, Sizes } from '@/constants/theme';
+import { Layout, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { useHomeFeed } from '@/hooks/use-home-feed';
@@ -36,79 +32,12 @@ import type { ListingCard, SearchSortOption } from '@/lib/search-api';
 // CONSTANTS
 // ============================================================================
 
-const CARD_WIDTH_RATIO = 0.84;
-const MAX_CARD_WIDTH = 380;
-
+const CARD_WIDTH_RATIO = 0.88;
+const MAX_CARD_WIDTH = 400;
 const SKELETON_COUNT = 3;
 
 // ============================================================================
-// SECTION HEADER
-// ============================================================================
-
-interface SectionHeaderProps {
-  title: string;
-  subtitle?: string;
-  eyebrow?: string;
-  onSeeAll?: () => void;
-}
-
-const SectionHeader = memo(function SectionHeader({ title, subtitle, eyebrow, onSeeAll }: SectionHeaderProps) {
-  const { colors } = useTheme();
-
-  return (
-    <View style={styles.sectionHeader}>
-      <View style={styles.sectionHeaderLeft}>
-        {eyebrow ? (
-          <Text variant="caption1Emphasized" tone="secondary" uppercase>{eyebrow}</Text>
-        ) : null}
-        <Text variant="headline">{title}</Text>
-        {subtitle ? (
-          <Text variant="subhead" tone="secondary">{subtitle}</Text>
-        ) : null}
-      </View>
-      {onSeeAll ? (
-        <HapticPressable
-          onPress={onSeeAll}
-          hitSlop={Layout.hitSlop}
-          style={styles.seeAllButton}
-        >
-          <Text variant="subheadEmphasized" style={{ color: colors.primary }}>See all</Text>
-        </HapticPressable>
-      ) : null}
-    </View>
-  );
-});
-
-// ============================================================================
-// BLK SECTION HEADER — premium dark band
-// ============================================================================
-
-interface BlkSectionHeaderProps {
-  onSeeAll: () => void;
-}
-
-const BlkSectionHeader = memo(function BlkSectionHeader({ onSeeAll }: BlkSectionHeaderProps) {
-  const { colors } = useTheme();
-
-  return (
-    <View style={styles.sectionHeader}>
-      <View style={styles.sectionHeaderLeft}>
-        <Text variant="headline">Black Cars</Text>
-        <Text variant="subhead" tone="secondary">Premium collection from the marketplace</Text>
-      </View>
-      <HapticPressable
-        onPress={onSeeAll}
-        hitSlop={Layout.hitSlop}
-        style={styles.seeAllButton}
-      >
-        <Text variant="subheadEmphasized" style={{ color: colors.primary }}>See all</Text>
-      </HapticPressable>
-    </View>
-  );
-});
-
-// ============================================================================
-// CARD ITEM — fixed-width wrapper for horizontal scroll
+// CARD ITEM
 // ============================================================================
 
 interface CardItemProps {
@@ -124,7 +53,7 @@ const CardItem = memo(function CardItem({ item, cardWidth }: CardItemProps) {
   }, [router]);
 
   return (
-    <View style={[styles.cardWrapper, { width: cardWidth }]}>
+    <View style={{ width: cardWidth }}>
       <CarCardM
         id={item.id}
         make={item.make}
@@ -151,10 +80,10 @@ const CardItem = memo(function CardItem({ item, cardWidth }: CardItemProps) {
 });
 
 // ============================================================================
-// CARD SKELETON ROW — matches FlatList padding/gap exactly
+// SKELETON ROW
 // ============================================================================
 
-function CardSkeletonRowSized({ cardWidth }: { cardWidth: number }) {
+function CardSkeletonRow({ cardWidth }: { cardWidth: number }) {
   return (
     <ScrollView
       horizontal
@@ -163,7 +92,7 @@ function CardSkeletonRowSized({ cardWidth }: { cardWidth: number }) {
       contentContainerStyle={styles.cardListContent}
     >
       {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
-        <View key={i} style={[styles.cardWrapper, { width: cardWidth }]}>
+        <View key={i} style={{ width: cardWidth }}>
           <CarCardMSkeleton />
         </View>
       ))}
@@ -172,19 +101,32 @@ function CardSkeletonRowSized({ cardWidth }: { cardWidth: number }) {
 }
 
 // ============================================================================
-// CARD SECTION — reusable horizontal listing strip
+// FEED SECTION — chrome surface container
 // ============================================================================
 
-interface CardSectionProps {
-  header: React.ReactNode;
+interface FeedSectionProps {
+  title: string;
+  description: string;
   listings: ListingCard[];
   isLoading: boolean;
   cardWidth: number;
   snapInterval: number;
+  onViewAll: () => void;
   delay?: number;
 }
 
-function CardSection({ header, listings, isLoading, cardWidth, snapInterval, delay = 0 }: CardSectionProps) {
+function FeedSection({
+  title,
+  description,
+  listings,
+  isLoading,
+  cardWidth,
+  snapInterval,
+  onViewAll,
+  delay = 0,
+}: FeedSectionProps) {
+  const { colors } = useTheme();
+
   const renderItem: ListRenderItem<ListingCard> = useCallback(
     ({ item }) => <CardItem item={item} cardWidth={cardWidth} />,
     [cardWidth],
@@ -192,24 +134,46 @@ function CardSection({ header, listings, isLoading, cardWidth, snapInterval, del
   const keyExtractor = useCallback((item: ListingCard) => item.id, []);
 
   return (
-    <Animated.View entering={FadeInDown.delay(delay).duration(320)}>
-      <View style={styles.sectionPadded}>{header}</View>
-      {isLoading ? (
-        <CardSkeletonRowSized cardWidth={cardWidth} />
-      ) : listings.length > 0 ? (
-        <FlatList
-          data={listings}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.cardListContent}
-          snapToInterval={snapInterval}
-          decelerationRate="fast"
-          snapToAlignment="start"
-          removeClippedSubviews
-        />
-      ) : null}
+    <Animated.View
+      entering={FadeInDown.delay(delay).duration(360)}
+      style={[styles.container, { backgroundColor: colors.grid }]}
+    >
+      {/* Header: title + description */}
+      <View style={styles.header}>
+        <Text variant="subheadEmphasized" style={styles.title}>
+          {title}
+        </Text>
+        <Text variant="footnote" tone="secondary" style={styles.description}>
+          {description}
+        </Text>
+      </View>
+
+      {/* Cards */}
+      <View style={styles.cardsArea}>
+        {isLoading ? (
+          <CardSkeletonRow cardWidth={cardWidth} />
+        ) : listings.length > 0 ? (
+          <FlatList
+            data={listings}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.cardListContent}
+            snapToInterval={snapInterval}
+            decelerationRate="fast"
+            snapToAlignment="start"
+            removeClippedSubviews
+          />
+        ) : null}
+      </View>
+
+      {/* View all — bottom right */}
+      <HapticPressable onPress={onViewAll} hitSlop={Layout.hitSlop} style={styles.viewAllButton}>
+        <Text variant="subheadEmphasized" style={{ color: colors.primary }}>
+          View all
+        </Text>
+      </HapticPressable>
     </Animated.View>
   );
 }
@@ -219,7 +183,6 @@ function CardSection({ header, listings, isLoading, cardWidth, snapInterval, del
 // ============================================================================
 
 export const HomeFeed = memo(function HomeFeed() {
-  const { colors } = useTheme();
   const { width } = useWindowDimensions();
   const { applySearch, applySort, clearFilterParams, resetSort, updateFilterParams } = useSearch();
   const router = useRouter();
@@ -231,7 +194,10 @@ export const HomeFeed = memo(function HomeFeed() {
     isLoadingJustListed,
     isLoadingHiddenGems,
   } = useHomeFeed();
-  const cardWidth = Math.min(MAX_CARD_WIDTH, width * CARD_WIDTH_RATIO);
+
+  // Cards are sized to the wrapper width (screen minus two gutters)
+  const wrapperWidth = width - Layout.screenPadding * 2;
+  const cardWidth = Math.min(MAX_CARD_WIDTH, wrapperWidth * CARD_WIDTH_RATIO);
   const snapInterval = cardWidth + Spacing.md;
 
   const goToBrowse = useCallback(() => {
@@ -245,78 +211,57 @@ export const HomeFeed = memo(function HomeFeed() {
   }) => {
     applySearch(options.search ?? {});
     clearFilterParams();
-
-    if (options.filters) {
-      updateFilterParams(options.filters);
-    }
-
-    if (options.sortBy) {
-      applySort(options.sortBy);
-    } else {
-      resetSort();
-    }
-
+    if (options.filters) updateFilterParams(options.filters);
+    if (options.sortBy) applySort(options.sortBy);
+    else resetSort();
     goToBrowse();
   }, [applySearch, applySort, clearFilterParams, goToBrowse, resetSort, updateFilterParams]);
 
-  const handleSeeAllBlk = useCallback(() => {
-    openBrowseWithState({ filters: { isBlkListing: true }, sortBy: 'popular' });
+  const handleViewAllBlk = useCallback(() => {
+    openBrowseWithState({ filters: { isBlkListing: true }, sortBy: 'newest' });
   }, [openBrowseWithState]);
 
-  const handleSeeAllNewArrivals = useCallback(() => {
+  const handleViewAllNewArrivals = useCallback(() => {
     openBrowseWithState({ sortBy: 'newest' });
   }, [openBrowseWithState]);
 
-  const handleSeeAllHiddenGems = useCallback(() => {
+  const handleViewAllHiddenGems = useCallback(() => {
     openBrowseWithState({ filters: { mileageMax: 60000 }, sortBy: 'price_low' });
   }, [openBrowseWithState]);
 
   return (
     <View style={styles.root}>
 
-      {/* ── Section 1: BLK Premium ──────────────────────────────────────── */}
-      <CardSection
-        header={<BlkSectionHeader onSeeAll={handleSeeAllBlk} />}
+      <FeedSection
+        title="BLK Collection"
+        description="Premium black cars from verified sellers across the UAE"
         listings={blk}
         isLoading={isLoadingBlk}
         cardWidth={cardWidth}
         snapInterval={snapInterval}
+        onViewAll={handleViewAllBlk}
         delay={0}
       />
 
-      <View style={[styles.separator, { backgroundColor: colors.separator }]} />
-
-      {/* ── Section 2: New Arrivals ─────────────────────────────────────── */}
-      <CardSection
-        header={
-          <SectionHeader
-            title="New Arrivals"
-            subtitle="Just listed, first to browse"
-            onSeeAll={handleSeeAllNewArrivals}
-          />
-        }
+      <FeedSection
+        title="New Arrivals"
+        description="Just listed — be the first to see what's fresh on the market"
         listings={justListed}
         isLoading={isLoadingJustListed}
         cardWidth={cardWidth}
         snapInterval={snapInterval}
-        delay={120}
+        onViewAll={handleViewAllNewArrivals}
+        delay={100}
       />
 
-      <View style={[styles.separator, { backgroundColor: colors.separator }]} />
-
-      {/* ── Section 3: Hidden Gems ──────────────────────────────────────── */}
-      <CardSection
-        header={
-          <SectionHeader
-            title="Hidden Gems"
-            subtitle="Low mileage · competitive price"
-            onSeeAll={handleSeeAllHiddenGems}
-          />
-        }
+      <FeedSection
+        title="Hidden Gems"
+        description="Low mileage picks priced well below market — worth a look"
         listings={hiddenGems}
         isLoading={isLoadingHiddenGems}
         cardWidth={cardWidth}
         snapInterval={snapInterval}
+        onViewAll={handleViewAllHiddenGems}
         delay={180}
       />
 
@@ -330,46 +275,44 @@ export const HomeFeed = memo(function HomeFeed() {
 
 const styles = StyleSheet.create({
   root: {
-    gap: Spacing.xl,
-  },
-
-  // ── Section layout ────────────────────────────────────────────────────────
-  sectionPadded: {
+    gap: Spacing.lg,
     paddingHorizontal: Layout.screenPadding,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    gap: Spacing.md,
-    marginBottom: Spacing.md,
+
+  // ── Section container ─────────────────────────────────────────────────────
+  container: {
+    borderRadius: Radius['2xl'],
+    borderCurve: 'continuous',
+    overflow: 'hidden',
+    paddingTop: Spacing['2xl'],
+    paddingBottom: Spacing.lg,
   },
-  sectionHeaderLeft: {
+
+  // ── Header ────────────────────────────────────────────────────────────────
+  header: {
+    paddingHorizontal: Layout.screenPadding,
     gap: Spacing.xs,
-    flex: 1,
+    marginBottom: Spacing['2xl'],
   },
-  seeAllButton: {
-    minHeight: Sizes.pillHeight,
-    paddingHorizontal: Spacing.xs,
-    paddingVertical: Spacing.xs,
-    alignItems: 'center',
-    justifyContent: 'center',
+  title: {
+    textAlign: 'center',
   },
-
-  // ── Separator ─────────────────────────────────────────────────────────────
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    marginHorizontal: Layout.screenPadding,
+  description: {
+    textAlign: 'center',
   },
 
-  // ── Make pills ────────────────────────────────────────────────────────────
-  // ── Card list ─────────────────────────────────────────────────────────────
+  // ── Cards ─────────────────────────────────────────────────────────────────
+  cardsArea: {
+    marginBottom: Spacing['2xl'],
+  },
   cardListContent: {
-    paddingHorizontal: Layout.screenPadding,
-    paddingRight: Layout.screenPadding + Spacing.md,
-    gap: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing.lg,
   },
-  cardWrapper: {
-    minWidth: 0,
+
+  // ── View all — bottom right ────────────────────────────────────────────────
+  viewAllButton: {
+    alignSelf: 'flex-end',
+    marginRight: Layout.screenPadding,
   },
 });

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { usePreventRemove } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +21,8 @@ export default function SignUpSheetScreen() {
   const insets = useSafeAreaInsets();
   const { signIn } = useAuth();
 
+  const navigation = useNavigation();
+
   const nameRef = useRef<TextInput>(null);
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
@@ -31,6 +34,19 @@ export default function SignUpSheetScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [pendingAction, setPendingAction] = useState<any>(null);
+
+  const hasProgress =
+    !showSuccess &&
+    !isLoading &&
+    (name.trim().length > 0 || email.trim().length > 0 || password.length > 0);
+
+  // usePreventRemove fires when user swipes/taps to dismiss the sheet.
+  // Setting pendingAction shows the in-sheet confirmation banner.
+  // When pendingAction !== null the hook is disabled, so navigation.dispatch goes through.
+  usePreventRemove(pendingAction === null && hasProgress, ({ data }) => {
+    setPendingAction(data.action);
+  });
 
   const canSubmit =
     name.trim().length >= 2 &&
@@ -279,6 +295,32 @@ export default function SignUpSheetScreen() {
         </HapticPressable>
       </View>
 
+      {pendingAction ? (
+        <View style={[styles.dismissBanner, { borderTopColor: colors.sheetBorder }]}>
+          <Text variant={SheetTypography.rowLabel} style={{ color: colors.sheetLabel }}>
+            Leave sign up? Your progress will be cleared.
+          </Text>
+          <View style={styles.dismissActions}>
+            <HapticPressable
+              onPress={() => setPendingAction(null)}
+              style={[styles.dismissBtn, { backgroundColor: colors.fill2, borderColor: colors.sheetBorder }]}
+            >
+              <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>
+                Keep going
+              </Text>
+            </HapticPressable>
+            <HapticPressable
+              onPress={() => navigation.dispatch(pendingAction)}
+              style={[styles.dismissBtn, { backgroundColor: colors.errorMuted, borderColor: colors.error }]}
+            >
+              <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.error }}>
+                Leave
+              </Text>
+            </HapticPressable>
+          </View>
+        </View>
+      ) : null}
+
       <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
     </View>
   );
@@ -358,5 +400,23 @@ const styles = StyleSheet.create({
   },
   stateMessage: {
     textAlign: 'center',
+  },
+  dismissBanner: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingTop: Spacing.md,
+    marginTop: Spacing.md,
+    gap: Spacing.md,
+  },
+  dismissActions: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  dismissBtn: {
+    flex: 1,
+    height: Sizes.actionButtonMd,
+    borderRadius: Radius.full,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

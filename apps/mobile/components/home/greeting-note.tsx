@@ -141,7 +141,7 @@ export function GreetingNote() {
     const selected = greetings[getDailyIndex(greetings)];
     return { 
       greeting: selected.greeting,
-      name: null, 
+      name: 'Guest', 
       subtitle: selected.subtitle,
     };
   }, [isAuthenticated, firstName, timePeriod]);

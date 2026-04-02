@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { usePreventRemove } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,12 +25,20 @@ export default function ForgotPasswordSheetScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
 
   const [email, setEmail] = useState(typeof params.email === 'string' ? params.email : '');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetSent, setResetSent] = useState(false);
   const [retryCountdown, setRetryCountdown] = useState(0);
+  const [pendingAction, setPendingAction] = useState<any>(null);
+
+  const hasProgress = !resetSent && !isLoading && email.trim().length > 0;
+
+  usePreventRemove(pendingAction === null && hasProgress, ({ data }) => {
+    setPendingAction(data.action);
+  });
 
   useEffect(() => {
     if (retryCountdown <= 0) return;
@@ -180,6 +189,32 @@ export default function ForgotPasswordSheetScreen() {
         </HapticPressable>
       </View>
 
+      {pendingAction ? (
+        <View style={[styles.dismissBanner, { borderTopColor: colors.sheetBorder }]}>
+          <Text variant={SheetTypography.rowLabel} style={{ color: colors.sheetLabel }}>
+            Leave password reset? Come back any time — your email stays saved.
+          </Text>
+          <View style={styles.dismissActions}>
+            <HapticPressable
+              onPress={() => setPendingAction(null)}
+              style={[styles.dismissBtn, { backgroundColor: colors.fill2, borderColor: colors.sheetBorder }]}
+            >
+              <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>
+                Stay
+              </Text>
+            </HapticPressable>
+            <HapticPressable
+              onPress={() => navigation.dispatch(pendingAction)}
+              style={[styles.dismissBtn, { backgroundColor: colors.errorMuted, borderColor: colors.error }]}
+            >
+              <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.error }}>
+                Leave
+              </Text>
+            </HapticPressable>
+          </View>
+        </View>
+      ) : null}
+
       <View style={{ height: insets.bottom + SheetChrome.bottomSafeAreaSpacing }} />
     </View>
   );
@@ -234,5 +269,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: Spacing['3xl'],
     gap: Spacing.md,
+  },  dismissBanner: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingTop: Spacing.md,
+    marginTop: Spacing.md,
+    gap: Spacing.md,
   },
-});
+  dismissActions: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  dismissBtn: {
+    flex: 1,
+    height: Sizes.actionButtonMd,
+    borderRadius: Radius.full,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },});
