@@ -3,9 +3,9 @@
  * Native-feeling, modular settings screen connected to API
  */
 
-import { Skeleton } from '@/components/ui';
+import { Skeleton, RequireAuthSheet } from '@/components/ui';
 import React, { useCallback } from 'react';
-import { Redirect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { StyleSheet, View, Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer, MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
@@ -54,7 +54,7 @@ export default function SettingsScreen() {
   }, []);
 
   if (!isAuthenticated) {
-    return <Redirect href={{ pathname: '/auth-prompt', params: { context: 'profile' } }} />;
+    return <RequireAuthSheet context="profile" />;
   }
 
   if (isLoading) {

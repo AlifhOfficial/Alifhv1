@@ -234,7 +234,7 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     
     // ── Accent/Primary (brand color) ──────────────────────────────────────
     primary:          palette.blue,           // Primary accent
-    primaryForeground:'#FFFFFF',                       // Text on primary
+    primaryForeground:'#000000',                       // Text on primary
     primaryMuted:     'rgba(0,122,255,0.12)',         // Subtle primary background
     
     // ── Semantic states ───────────────────────────────────────────────────

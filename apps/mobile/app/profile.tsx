@@ -3,9 +3,9 @@
  * Native-feeling, modular profile screen connected to API
  */
 
-import { Text, Skeleton, SkeletonCircle, Bubble, HapticPressable, useAlert } from '@/components/ui';
+import { Text, Skeleton, SkeletonCircle, Bubble, HapticPressable, useAlert, RequireAuthSheet } from '@/components/ui';
 import React, { useCallback } from 'react';
-import { Redirect, Stack, useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import {
   StyleSheet, View, Platform } from 'react-native';
 import { Settings2 } from 'lucide-react-native';
@@ -30,7 +30,7 @@ import {
 
 export default function ProfileScreen() {
   const colors = useProfileColors();
-  const { user, isAuthenticated, refreshSession, signOut } = useAuth();
+  const { user, isAuthenticated, refreshSession } = useAuth();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { showAlert } = useAlert();
@@ -100,19 +100,8 @@ export default function ProfileScreen() {
 
   // Handlers
   const handleSignOut = useCallback(() => {
-    showAlert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: () => signOut(),
-        },
-      ]
-    );
-  }, [showAlert, signOut]);
+    router.push('/sign-out');
+  }, [router]);
 
   const renderHeaderRight = useCallback(() => (
     <Bubble
@@ -127,19 +116,8 @@ export default function ProfileScreen() {
   const nativeHeaderOptions = {
     headerShown: false,
   };
-
-
-
-  // Unauthenticated - redirect to auth prompt
   if (!isAuthenticated) {
-    return (
-      <Redirect
-        href={{
-          pathname: '/auth-prompt',
-          params: { context: 'profile' },
-        }}
-      />
-    );
+    return <RequireAuthSheet context="profile" />;
   }
 
   // Loading state — skeleton

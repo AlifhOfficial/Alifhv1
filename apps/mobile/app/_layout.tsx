@@ -51,7 +51,7 @@ textInputWithDefaults.defaultProps = {
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { QueryClientProvider, focusManager } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
-import { AppFontFamilies, Colors } from '@/constants/theme';
+import { AppFontFamilies, Colors, Radius } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { FavoritesProvider } from '@/context/favorites-context';
@@ -156,7 +156,7 @@ if (!navLockState.installed) {
 
 function RootLayoutNav() {
   const { colorScheme } = useTheme();
-  const { showAuthFlow, closeAuthFlow, signIn } = useAuth();
+  const { showAuthFlow, closeAuthFlow, signIn, authFlowInitialScreen } = useAuth();
   const router = useRouter();
   const colors = Colors[colorScheme];
 
@@ -268,6 +268,7 @@ function RootLayoutNav() {
             gestureEnabled: true,
             gestureDirection: 'horizontal',
             animation: 'slide_from_right',
+            sheetCornerRadius: Radius.sheet,
             contentStyle: { backgroundColor: colors.background },
           }}
         >
@@ -281,6 +282,17 @@ function RootLayoutNav() {
               sheetGrabberVisible: true,
               sheetAllowedDetents: [0.44],
               headerShown: true,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="sign-in-sheet"
+            options={{
+              title: 'Sign In',
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: 'fitToContents',
+              headerShown: false,
               contentStyle: { backgroundColor: colors.sheet },
             }}
           />
@@ -404,10 +416,20 @@ function RootLayoutNav() {
               contentStyle: { backgroundColor: colors.sheet },
             }}
           />
+          <Stack.Screen
+            name="sign-out"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.42],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
           <Stack.Screen name="seller-contact/[listingId]" options={{ title: 'Contact Seller' }} />
           <Stack.Screen name="profile" options={{ title: 'Profile' }} />
           <Stack.Screen name="settings" options={{ title: 'Settings' }} />
-          <Stack.Screen name="chat/[conversationId]" options={{ title: 'Chat' }} />
+          <Stack.Screen name="chat" options={{ headerShown: false }} />
           <Stack.Screen name="inventory" options={{ title: 'Inventory' }} />
           <Stack.Screen name="bookings" options={{ title: 'Bookings' }} />
           <Stack.Screen name="saved" options={{ title: 'Saved' }} />
@@ -431,6 +453,7 @@ function RootLayoutNav() {
           <AuthFlow 
             onComplete={handleAuthComplete}
             onSkip={closeAuthFlow}
+            initialScreen={authFlowInitialScreen}
           />
         </View>
       </Modal>

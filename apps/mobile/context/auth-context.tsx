@@ -12,6 +12,7 @@ import { queryClient } from '@/lib/query-client';
 
 // Auth sheet context types
 export type AuthSheetContext = 'profile' | 'saved' | 'messages' | 'listings' | 'bookings' | 'default';
+export type AuthEntryScreen = 'welcome' | 'signin' | 'signup';
 
 export interface AuthUser {
   id: string;
@@ -52,8 +53,9 @@ interface AuthContextType {
   isSuperAdmin: boolean;
   
   // Flow control
-  openAuthFlow: () => void;
+  openAuthFlow: (initialScreen?: AuthEntryScreen) => void;
   closeAuthFlow: () => void;
+  authFlowInitialScreen: AuthEntryScreen;
   
   // Auth sheet (for unauthenticated prompts)
   showAuthSheet: (context?: AuthSheetContext) => void;
@@ -78,6 +80,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [showAuthFlow, setShowAuthFlow] = useState(false);
+  const [authFlowInitialScreen, setAuthFlowInitialScreen] = useState<AuthEntryScreen>('welcome');
   
   // Auth sheet state
   const [authSheetVisible, setAuthSheetVisible] = useState(false);
@@ -132,12 +135,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [clearAuthenticatedCaches]);
 
-  const openAuthFlow = useCallback(() => {
+  const openAuthFlow = useCallback((initialScreen: AuthEntryScreen = 'welcome') => {
+    setAuthFlowInitialScreen(initialScreen);
     setShowAuthFlow(true);
   }, []);
 
   const closeAuthFlow = useCallback(() => {
     setShowAuthFlow(false);
+    setAuthFlowInitialScreen('welcome');
   }, []);
 
   // Auth sheet controls
@@ -197,6 +202,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isSuperAdmin,
         openAuthFlow,
         closeAuthFlow,
+        authFlowInitialScreen,
         showAuthSheet: showAuthSheetFn,
         hideAuthSheet,
         authSheetVisible,

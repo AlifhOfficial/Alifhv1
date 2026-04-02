@@ -8,10 +8,11 @@
 
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import { Redirect, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/context/theme-context';
 import { MobileHeader } from '@/components/layout';
+import { RequireAuthSheet } from '@/components/ui';
 import { BookingsScreen } from '@/components/bookings/bookings-screen';
 import { Colors, Spacing } from '@/constants/theme';
 
@@ -29,9 +30,8 @@ export default function BookingsRoute() {
     headerShown: false,
   };
 
-  // Redirect unauthenticated users to auth prompt
   if (!isAuthenticated) {
-    return <Redirect href={{ pathname: '/auth-prompt', params: { context: 'bookings' } }} />;
+    return <RequireAuthSheet context="bookings" />;
   }
 
   return (

@@ -3,8 +3,9 @@ import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HapticPressable, Pill, Text } from '@/components/ui';
+import { HapticPressable, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth, type AuthSheetContext } from '@/context/auth-context';
@@ -40,6 +41,7 @@ export default function AuthPromptScreen() {
   const params = useLocalSearchParams<{ context?: string; title?: string; subtitle?: string }>();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const { hideAuthSheet, openAuthFlow } = useAuth();
 
   const context: AuthSheetContext =
@@ -71,15 +73,27 @@ export default function AuthPromptScreen() {
     };
   }, [hideAuthSheet]);
 
-  const handleSignIn = () => {
+  const handleOpenSignUp = () => {
     if (process.env.EXPO_OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
     hideAuthSheet();
     router.back();
     setTimeout(() => {
-      openAuthFlow();
+      openAuthFlow('signup');
     }, 150);
+  };
+
+  const handleSignIn = () => {
+    if (process.env.EXPO_OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+    hideAuthSheet();
+    router.replace('/sign-in-sheet');
+  };
+
+  const handleSignUp = () => {
+    handleOpenSignUp();
   };
 
   const handleDismiss = () => {
@@ -89,18 +103,8 @@ export default function AuthPromptScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <Animated.View entering={FadeInUp.delay(80).duration(360)} style={styles.textContent}>
-        <Pill style={{ backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }}>
-          <Text
-            variant={SheetTypography.supportingEmphasized}
-            style={{ color: colors.sheetLabelMuted }}
-            uppercase
-          >
-            Authentication Required
-          </Text>
-        </Pill>
-
-        <Text variant="title3" style={[styles.title, { color: colors.sheetLabel }]}> 
+      <Animated.View entering={FadeInUp.duration(220)} style={styles.content}>
+        <Text variant={SheetTypography.headerTitle} style={[styles.title, { color: colors.sheetLabel }]}> 
           {displayTitle}
         </Text>
         <Text
@@ -112,36 +116,44 @@ export default function AuthPromptScreen() {
         </Text>
       </Animated.View>
 
-      <Animated.View entering={FadeInUp.delay(160).duration(360)} style={styles.actions}>
-        <HapticPressable
-          onPress={handleSignIn}
-          style={({ pressed }) => [{
-            height: Sizes.actionButtonLg,
-            borderRadius: Radius.full,
-            alignItems: 'center' as const,
-            justifyContent: 'center' as const,
-            backgroundColor: colors.primary,
-            opacity: pressed ? 0.8 : 1,
-          }]}
-        >
-          <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.primaryForeground }}>
-            Sign In
-          </Text>
-        </HapticPressable>
+      <Animated.View
+        entering={FadeInUp.delay(60).duration(220)}
+        style={[styles.actions, { paddingBottom: insets.bottom + SheetChrome.bottomSafeAreaSpacing }]}
+      >
+        <View style={styles.actionRow}>
+          <HapticPressable
+            onPress={handleSignIn}
+            style={({ pressed }) => [
+              styles.primaryAction,
+              {
+                backgroundColor: colors.primary,
+                opacity: pressed ? 0.82 : 1,
+              },
+            ]}
+          >
+            <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.primaryForeground }}>
+              Sign In
+            </Text>
+          </HapticPressable>
 
-        <HapticPressable
-          onPress={handleDismiss}
-          style={({ pressed }) => [{
-            height: Sizes.actionButtonLg,
-            borderRadius: Radius.full,
-            alignItems: 'center' as const,
-            justifyContent: 'center' as const,
-            borderWidth: 1,
-            borderColor: colors.sheetBorder,
-            backgroundColor: colors.sheetSurface,
-            opacity: pressed ? 0.7 : 1,
-          }]}
-        >
+          <HapticPressable
+            onPress={handleSignUp}
+            style={({ pressed }) => [
+              styles.secondaryAction,
+              {
+                borderColor: colors.sheetBorder,
+                backgroundColor: colors.fill2,
+                opacity: pressed ? 0.74 : 1,
+              },
+            ]}
+          >
+            <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }}>
+              Sign Up
+            </Text>
+          </HapticPressable>
+        </View>
+
+        <HapticPressable onPress={handleDismiss} style={styles.dismissAction}>
           <Text variant={SheetTypography.rowLabel} style={{ color: colors.sheetLabelMuted }}>
             Maybe Later
           </Text>
@@ -156,14 +168,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: SheetChrome.contentPaddingHorizontal,
     paddingTop: SheetChrome.contentPaddingTop,
-    paddingBottom: SheetChrome.bottomSafeAreaSpacing,
-    overflow: 'hidden',
-    gap: Spacing['2xl'],
-    justifyContent: 'center',
+    gap: Spacing.lg,
   },
-  textContent: {
+  content: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
   title: {
     textAlign: 'center',
@@ -173,5 +184,30 @@ const styles = StyleSheet.create({
   },
   actions: {
     gap: Spacing.sm,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  primaryAction: {
+    flex: 1,
+    height: Sizes.actionButtonLg,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryAction: {
+    flex: 1,
+    height: Sizes.actionButtonLg,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dismissAction: {
+    alignSelf: 'center',
+    minHeight: Sizes.actionButtonMd,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.md,
   },
 });

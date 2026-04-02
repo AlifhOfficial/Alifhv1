@@ -10,7 +10,7 @@ import { Bookmark, Box, Calendar, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 import { useTheme } from '@/context/theme-context';
-import { useAuth } from '@/context/auth-context';
+import { useAuth, type AuthSheetContext } from '@/context/auth-context';
 import { Spacing, Radius, Layout, Sizes, Stroke } from '@/constants/theme';
 import { CreateListingFlow } from '@/components/sheets';
 
@@ -40,13 +40,35 @@ export function QuickActions() {
     router.push(`/listing/${listingId}` as any);
   }, [router]);
 
+  const handleProtectedNavigation = useCallback(
+    (route: string, context: AuthSheetContext) => {
+      if (!isAuthenticated) {
+        showAuthSheet(context);
+        return;
+      }
+
+      router.push(route as any);
+    },
+    [isAuthenticated, router, showAuthSheet],
+  );
+
   return (
     <View style={styles.root}>
       <View style={styles.grid}>
         {actions.map((action) => (
           <HapticPressable
             key={action.key}
-            onPress={action.route ? () => router.push(action.route as any) : handleCreatePress}
+            onPress={
+              action.key === 'create'
+                ? handleCreatePress
+                : action.key === 'saved'
+                  ? () => handleProtectedNavigation('/saved', 'saved')
+                  : action.key === 'inventory'
+                    ? () => handleProtectedNavigation('/inventory', 'listings')
+                    : action.key === 'bookings'
+                      ? () => handleProtectedNavigation('/bookings', 'bookings')
+                      : undefined
+            }
             style={[styles.cell, { backgroundColor: colors.surface }]}
           >
             <View style={[styles.iconCircle, { backgroundColor: colors.fill3 }]}>

@@ -46,6 +46,7 @@ export { OfflineBanner } from './offline-banner';
 
 // Empty States
 export { EmptyState, type EmptyStateProps, type EmptyStateAction, type EmptyStateIconComponent } from './empty-state';
+export { RequireAuthSheet } from './require-auth-sheet';
 
 // Themed Alert (Android-compatible)
 export { AlertProvider, useAlert } from './themed-alert';

@@ -7,10 +7,10 @@
  * - Multiple conversations with same partner/user render as collapsible groups
  */
 
-import { Text, Skeleton, SkeletonCircle, HapticRefreshControl, EmptyState } from '@/components/ui';
+import { Text, Skeleton, SkeletonCircle, HapticRefreshControl, EmptyState, RequireAuthSheet } from '@/components/ui';
 import React, { useMemo, useCallback, useRef } from 'react';
 import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
-import { Redirect, useRouter, useFocusEffect } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { MessageCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -253,7 +253,7 @@ export default function MessagesScreen() {
   }, []);
 
   if (!isAuthenticated) {
-    return <Redirect href={{ pathname: '/auth-prompt', params: { context: 'messages' } }} />;
+    return <RequireAuthSheet context="messages" />;
   }
 
   return (

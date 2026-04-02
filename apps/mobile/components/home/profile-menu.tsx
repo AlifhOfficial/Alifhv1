@@ -13,12 +13,21 @@ import { Sizes, Stroke } from '@/constants/theme';
 
 export function ProfileMenu() {
   const { colors } = useTheme();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, showAuthSheet } = useAuth();
   const router = useRouter();
+
+  const handlePress = () => {
+    if (!isAuthenticated) {
+      showAuthSheet('profile');
+      return;
+    }
+
+    router.push('/profile');
+  };
 
   return (
     <Bubble
-      onPress={() => router.push('/profile')}
+      onPress={handlePress}
       accessibilityRole="button"
       accessibilityLabel="Profile"
     >

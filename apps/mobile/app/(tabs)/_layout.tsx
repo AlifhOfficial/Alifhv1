@@ -21,6 +21,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useTheme } from '@/context/theme-context';
+import { useAuth, type AuthSheetContext } from '@/context/auth-context';
 import { useSearch } from '@/context/search-context';
 import { AppFontFamilies, BorderWidths, Colors, Radius, Shadows, Sizes, Spacing, Typography, ZIndex } from '@/constants/theme';
 
@@ -191,10 +192,15 @@ const FORM_SHEET_ROUTES = [
   '/active-filters',
 ];
 
+const PROTECTED_TABS: Partial<Record<TabConfigItem['name'], AuthSheetContext>> = {
+  '(messages)': 'messages',
+};
+
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const pathname = usePathname();
   const { colorScheme } = useTheme();
   const { triggerScrollToTop } = useSearch();
+  const { isAuthenticated, showAuthSheet } = useAuth();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const lastPressRef = useRef<{ name: string; time: number }>({ name: '', time: 0 });
@@ -283,6 +289,12 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 transparentActiveColor={chipTransparentActiveContent}
                 activeFillColor={tab.fillActive ? chipActiveContent : chipTransparentActiveContent}
                 onPress={() => {
+                  const requiredAuthContext = PROTECTED_TABS[tab.name];
+                  if (requiredAuthContext && !isAuthenticated) {
+                    showAuthSheet(requiredAuthContext);
+                    return;
+                  }
+
                   const now = Date.now();
                   const isDoubleTap =
                     focused &&

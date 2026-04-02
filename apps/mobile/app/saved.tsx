@@ -3,7 +3,7 @@
  * Native-feeling, modular saved screen connected to API
  */
 
-import { Text, HapticPressable, EmptyState } from '@/components/ui';
+import { Text, HapticPressable, EmptyState, RequireAuthSheet } from '@/components/ui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Platform, Pressable, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import Animated, {
@@ -14,7 +14,7 @@ import Animated, {
   Easing,
   runOnJS,
 } from 'react-native-reanimated';
-import { Redirect, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Heart, Sparkles, ListFilter, Check, AlertCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -126,9 +126,8 @@ export default function SavedScreen() {
 
   const FAB_SIZE = Sizes.actionButtonLg;
 
-  // Unauthenticated - redirect to auth prompt
   if (!isAuthenticated) {
-    return <Redirect href={{ pathname: '/auth-prompt', params: { context: 'saved' } }} />;
+    return <RequireAuthSheet context="saved" />;
   }
 
   // Loading state
