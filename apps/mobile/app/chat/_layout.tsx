@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router/stack';
 
-import { Colors } from '@/constants/theme';
+import { Colors, Radius } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 export default function ChatLayout() {
@@ -12,6 +12,8 @@ export default function ChatLayout() {
       screenOptions={{
         headerShown: false,
         headerTintColor: colors.label,
+        sheetCornerRadius: Radius.sheet,
+        sheetExpandsWhenScrolledToEdge: false,
         contentStyle: { backgroundColor: colors.background },
       }}
     >

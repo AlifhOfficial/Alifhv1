@@ -269,6 +269,7 @@ function RootLayoutNav() {
             gestureDirection: 'horizontal',
             animation: 'slide_from_right',
             sheetCornerRadius: Radius.sheet,
+            sheetExpandsWhenScrolledToEdge: false,
             contentStyle: { backgroundColor: colors.background },
           }}
         >

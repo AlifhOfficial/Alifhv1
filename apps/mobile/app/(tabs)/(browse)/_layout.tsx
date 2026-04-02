@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router/stack';
 import { useTheme } from '@/context/theme-context';
-import { Colors } from '@/constants/theme';
+import { Colors, Radius } from '@/constants/theme';
 
 export default function BrowseLayout() {
   const { colorScheme } = useTheme();
@@ -11,6 +11,8 @@ export default function BrowseLayout() {
       screenOptions={{
         headerShown: false,
         headerTintColor: colors.label,
+        sheetCornerRadius: Radius.sheet,
+        sheetExpandsWhenScrolledToEdge: false,
         contentStyle: { backgroundColor: colors.background },
       }}
     >
