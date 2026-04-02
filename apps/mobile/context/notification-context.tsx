@@ -1,16 +1,7 @@
-/**
- * Notification Context
- * Handles push notification registration, permissions, and incoming notifications
- * 
- * NOTE: Requires expo-notifications and expo-device to be installed:
- * bunx expo install expo-notifications expo-device
- * 
- * Also requires app.json plugin configuration (see setup instructions below)
- */
-
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/theme';
@@ -18,19 +9,6 @@ import { useAuth } from './auth-context';
 import { API_BASE } from '@/lib/config';
 import { getSession } from '@/lib/auth-api';
 import { setCurrentPushToken } from '@/lib/push-token-store';
-
-// Detect Expo Go (notifications may have limited support)
-const isExpoGo = Constants.appOwnership === 'expo';
-
-// Try to import expo-notifications regardless of Expo Go
-// It may work on some devices/Android versions even in Expo Go
-let Notifications: typeof import('expo-notifications') | null = null;
-try {
-  Notifications = require('expo-notifications');
-  console.log('[Notifications] expo-notifications loaded successfully');
-} catch (e) {
-  console.warn('[Notifications] expo-notifications not available:', e);
-}
 
 // ============================================================================
 // TYPES
@@ -59,16 +37,14 @@ const NotificationContext = createContext<NotificationContextType | null>(null);
 
 // Configure foreground notification behavior
 // Don't show notifications when app is in foreground - only when closed/background
-if (Notifications) {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldPlaySound: false,
-      shouldSetBadge: true,
-      shouldShowBanner: false,  // Don't show when app is in foreground
-      shouldShowList: false,    // Don't show in notification center when foregrounded
-    }),
-  });
-}
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: false,
+    shouldSetBadge: true,
+    shouldShowBanner: false,
+    shouldShowList: false,
+  }),
+});
 
 // ============================================================================
 // PROVIDER
@@ -87,21 +63,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   // Register for push notifications
   const registerForPushNotifications = async (): Promise<string | null> => {
-    console.log('[Notifications] Starting registration...', {
-      isExpoGo,
-      isDevice: Device.isDevice,
-      platform: Platform.OS,
-      brand: Device.brand,
-      modelName: Device.modelName,
-      osVersion: Platform.Version,
-      notificationsAvailable: !!Notifications,
-    });
-
-    if (!Notifications) {
-      console.log('[Notifications] expo-notifications module not available');
-      return null;
-    }
-
     if (!Device.isDevice) {
       console.log('[Notifications] Must use physical device for push notifications');
       return null;
@@ -178,18 +139,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       return;
     }
 
-    const deviceInfo = {
-      token: expoPushToken,
-      platform: Platform.OS as 'ios' | 'android',
-      deviceId: Device.deviceName || undefined,
-      deviceName: Device.modelName || Device.deviceName || undefined,
-      osVersion: Platform.Version,
-      brand: Device.brand,
-      isExpoGo,
-    };
-    
-    console.log('[Notifications] Registering token with device info:', JSON.stringify(deviceInfo, null, 2));
-
     try {
       const response = await fetch(`${API_BASE}/api/push-tokens`, {
         method: 'POST',
@@ -262,12 +211,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   // Initialize on mount
   useEffect(() => {
-    if (!Notifications) {
-      console.log('[Notifications] Not available (Expo Go), skipping setup');
-      return;
-    }
-
-    // Check if notifications are available
     if (!Device.isDevice) {
       console.log('[Notifications] Not a physical device, skipping setup');
       return;

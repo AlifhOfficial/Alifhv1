@@ -23,6 +23,7 @@ import Animated, {
 import { useTheme } from '@/context/theme-context';
 import { useAuth, type AuthSheetContext } from '@/context/auth-context';
 import { useSearch } from '@/context/search-context';
+import { nativeSheetVisibility } from '@/lib/native-sheet-visibility';
 import { AppFontFamilies, BorderWidths, Colors, Radius, Shadows, Sizes, Spacing, Typography, ZIndex } from '@/constants/theme';
 
 type TabConfigItem = {
@@ -170,28 +171,6 @@ function AnimatedTabChip({
   );
 }
 
-// Routes that present as formSheets — on Android the tab bar must hide
-// to avoid rendering above the native modal surface.
-const FORM_SHEET_ROUTES = [
-  '/sort',
-  '/search',
-  '/menu',
-  '/car-info',
-  '/superlike-confirmation',
-  '/superlike-exhausted',
-  '/financing',
-  '/phone-actions',
-  '/seller-description',
-  '/booking',
-  '/filter-make',
-  '/filter-model',
-  '/filter-price',
-  '/filter-year-mileage',
-  '/filter-location',
-  '/more-filters',
-  '/active-filters',
-];
-
 const PROTECTED_TABS: Partial<Record<TabConfigItem['name'], AuthSheetContext>> = {
   '(messages)': 'messages',
 };
@@ -241,10 +220,11 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     transform: [{ translateX: indicatorX.value }],
   }));
 
-  // On iOS, native formSheet windows sit above the tab bar automatically.
-  // On Android, elevation causes the tab bar to render on top, so we hide it.
+  const hideForSheet = nativeSheetVisibility.hideOverlays(pathname.split('/').filter(Boolean));
+
+  // Hide the custom tab bar on native sheets for cross-platform stability.
   // Must be AFTER all hook calls to satisfy Rules of Hooks.
-  if (Platform.OS === 'android' && FORM_SHEET_ROUTES.some((r) => pathname.endsWith(r))) {
+  if (hideForSheet) {
     return null;
   }
 

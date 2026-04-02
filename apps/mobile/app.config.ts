@@ -114,6 +114,8 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
         {
           color: '#000000',
           defaultChannel: 'messages',
+          androidMode: 'default',
+          googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
         },
       ],
       'expo-audio',
