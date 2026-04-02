@@ -34,9 +34,27 @@ function extractSessionToken(cookieHeader: string | null): string | null {
   return null;
 }
 
+function extractBearerToken(authorizationHeader: string | null): string | null {
+  if (!authorizationHeader) return null;
+
+  const match = authorizationHeader.match(/^Bearer\s+(.+)$/i);
+  return match?.[1]?.trim() || null;
+}
+
 const getCachedSessionUserByToken = unstable_cache(
-  async (_sessionToken: string, cookieHeader: string) => {
-    const requestHeaders = new Headers({ cookie: cookieHeader });
+  async (
+    _sessionToken: string,
+    cookieHeader: string | null,
+    authorizationHeader: string | null
+  ) => {
+    const requestHeaders = new Headers();
+    if (cookieHeader) {
+      requestHeaders.set("cookie", cookieHeader);
+    }
+    if (authorizationHeader) {
+      requestHeaders.set("authorization", authorizationHeader);
+    }
+
     const session = await auth.api.getSession({ headers: requestHeaders });
     return (session?.user as ExtendedUser) ?? null;
   },
@@ -54,13 +72,20 @@ export async function getSessionUser(): Promise<ExtendedUser | null> {
   try {
     const headersList = await headers();
     const cookieHeader = headersList.get("cookie");
+    const authorizationHeader = headersList.get("authorization");
     const sessionToken = extractSessionToken(cookieHeader);
+    const bearerToken = extractBearerToken(authorizationHeader);
+    const cacheKeyToken = sessionToken || bearerToken;
 
-    if (!cookieHeader || !sessionToken) {
+    if (!cacheKeyToken) {
       return null;
     }
 
-    return getCachedSessionUserByToken(sessionToken, cookieHeader);
+    return getCachedSessionUserByToken(
+      cacheKeyToken,
+      cookieHeader,
+      authorizationHeader
+    );
   } catch (error: any) {
     // Re-throw Next.js static analysis signals so routes are correctly marked dynamic
     if (error?.digest === 'DYNAMIC_SERVER_USAGE') throw error;

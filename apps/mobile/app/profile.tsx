@@ -4,7 +4,7 @@
  */
 
 import { Text, Skeleton, SkeletonCircle, Bubble, HapticPressable, useAlert, RequireAuthSheet } from '@/components/ui';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import {
   StyleSheet, View } from 'react-native';
@@ -30,11 +30,13 @@ import {
 
 export default function ProfileScreen() {
   const colors = useProfileColors();
-  const { user, isAuthenticated, refreshSession } = useAuth();
+  const { user, isAuthenticated, refreshSession, signOut } = useAuth();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { showAlert } = useAlert();
   const headerInset = getMobileHeaderContentInset(insets.top);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const hasTriggeredAutoSignOutRef = useRef(false);
 
   // Profile data from API
   const {
@@ -58,6 +60,28 @@ export default function ProfileScreen() {
     onPhoneVerified,
     error,
   } = useProfile({ isAuthenticated, userId: user?.id, onAvatarChange: refreshSession, showAlert });
+
+  const isUnauthorizedError =
+    !!error &&
+    (error.toLowerCase().includes('unauthorized') ||
+      error.toLowerCase().includes('please sign in'));
+
+  const forceSignOut = useCallback(async () => {
+    if (isSigningOut) return;
+    setIsSigningOut(true);
+    try {
+      await signOut();
+    } finally {
+      router.replace('/(tabs)/(browse)');
+      setIsSigningOut(false);
+    }
+  }, [isSigningOut, signOut, router]);
+
+  useEffect(() => {
+    if (!isUnauthorizedError || hasTriggeredAutoSignOutRef.current) return;
+    hasTriggeredAutoSignOutRef.current = true;
+    forceSignOut();
+  }, [isUnauthorizedError, forceSignOut]);
 
   // Transform profile to status format
   const profileStatus: ProfileStatus = {
@@ -184,11 +208,27 @@ export default function ProfileScreen() {
         <MobileHeader title="Profile" showBackButton />
         <View style={[styles.errorContainer, styles.centered, { backgroundColor: colors.background, paddingTop: headerInset }]}> 
           <Text variant="body" tone="error" style={styles.errorText}>
-            {error}
+            {isUnauthorizedError
+              ? 'Session expired. Signing you out...'
+              : error}
           </Text>
-          <Text variant="body" tone="primary" onPress={refresh}>
-            Tap to retry
-          </Text>
+          {isUnauthorizedError ? (
+            <HapticPressable
+              onPress={forceSignOut}
+              style={[styles.errorActionButton, { backgroundColor: colors.surface }]}
+              disabled={isSigningOut}
+              accessibilityRole="button"
+              accessibilityLabel="Sign out now"
+            >
+              <Text variant="body" style={{ color: colors.error }}>
+                {isSigningOut ? 'Signing out...' : 'Sign out now'}
+              </Text>
+            </HapticPressable>
+          ) : (
+            <Text variant="body" tone="primary" onPress={refresh}>
+              Tap to retry
+            </Text>
+          )}
         </View>
       </View>
       </>
@@ -324,6 +364,11 @@ const styles = StyleSheet.create({
   },
   errorText: {
     textAlign: 'center',
+  },
+  errorActionButton: {
+    borderRadius: Radius.xl,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
   },
   signOutRow: {
     flexDirection: 'row',
