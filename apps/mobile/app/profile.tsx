@@ -7,7 +7,7 @@ import { Text, Skeleton, SkeletonCircle, Bubble, HapticPressable, useAlert, Requ
 import React, { useCallback } from 'react';
 import { Stack, useRouter } from 'expo-router';
 import {
-  StyleSheet, View, Platform } from 'react-native';
+  StyleSheet, View } from 'react-native';
 import { Settings2 } from 'lucide-react-native';
 import { ScreenContainer, MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 

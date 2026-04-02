@@ -28,7 +28,7 @@ export default function ListingFeaturesSheetScreen() {
     trackView: false,
   });
 
-  const features = listing?.listing.extras ?? [];
+  const features = useMemo(() => listing?.listing.extras ?? [], [listing?.listing.extras]);
 
   const handleCopy = async () => {
     if (features.length === 0) return;

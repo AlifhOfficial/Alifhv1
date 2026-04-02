@@ -4,8 +4,8 @@
  */
 
 import { Text, Skeleton } from '@/components/ui';
-import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet, ActivityIndicator, Dimensions, Platform, Pressable } from 'react-native';
+import React, { useMemo, useRef, useCallback, useEffect } from 'react';
+import { View, FlatList, StyleSheet, ActivityIndicator, Dimensions, Pressable } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { Stack, useRouter } from 'expo-router';
 import Animated, {
@@ -92,7 +92,6 @@ export function ChatWindow({
   const {
     messages,
     isLoading,
-    isSending,
     isFetchingMore,
     hasMore,
     otherLastReadAt,
@@ -127,7 +126,10 @@ export function ChatWindow({
   const otherUserAvatar = avatarUrl;
   const otherUserName = displayName;
   const myLastReadAt = conversation?.myLastReadAt;
-  const myLastReadAtDate = myLastReadAt ? new Date(myLastReadAt) : null;
+  const myLastReadAtDate = useMemo(
+    () => (myLastReadAt ? new Date(myLastReadAt) : null),
+    [myLastReadAt]
+  );
   const { markAsRead } = useMarkAsRead(userId);
   
   // Track last marked message to prevent duplicate API calls
@@ -273,10 +275,8 @@ export function ChatWindow({
       userId,
       messages,
       lastReadMsgId,
-      conversation?.listing,
       otherUserAvatar,
       otherUserName,
-      colors.border,
       formatDateLabel,
     ]
   );

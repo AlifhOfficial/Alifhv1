@@ -22,14 +22,13 @@ import {
   getTabBarContentInset,
   getTabBarOverlayHeight,
 } from '@/components/layout';
-import type { BrowseViewMode as ViewMode } from '@/context/search-context';
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
 import { searchApi, type ListingCard, type SearchParams } from '@/lib/search-api';
 import { queryKeys } from '@/lib/query-client';
 import { consumeDataReady, markInteractionStart, scheduleRenderPerf } from '@/lib/config';
 import { Colors, Layout, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { useSearch, type FilterParams, type SearchParams as ContextSearchParams } from '@/context/search-context';
+import { useSearch, type FilterParams, type BrowseViewMode as ViewMode } from '@/context/search-context';
 
 // ============================================================================
 // MODULE-LEVEL PERSISTENCE (survives tab switches, no async/race conditions)
@@ -108,13 +107,10 @@ export default function BrowseScreen() {
   const { 
     // Search params (make/model/q from search sheet)
     searchParams,
-    applySearch,
-    clearSearch,
     // Sort
     sortBy,
     // Filters - THE source of truth
     filterParams,
-    updateFilterParams,
     // Scroll
     subscribeToScrollToTop, 
     // Browse menu actions
@@ -195,7 +191,10 @@ export default function BrowseScreen() {
 
   const hasMore = hasNextPage ?? false;
   const isRefreshing = (isRefetching && !isFetchingNextPage) || isRevalidatingWarmSearch;
-  const visibleListings = isRevalidatingWarmSearch ? [] : listings;
+  const visibleListings = useMemo(
+    () => (isRevalidatingWarmSearch ? [] : listings),
+    [isRevalidatingWarmSearch, listings]
+  );
   const showInitialLoading = (isLoading && visibleListings.length === 0) || isRevalidatingWarmSearch;
 
   // View mode (persisted across tab switches via module-level variable)

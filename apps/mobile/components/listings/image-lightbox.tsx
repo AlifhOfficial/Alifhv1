@@ -81,7 +81,7 @@ export function ImageLightbox({
         flatListRef.current?.scrollToIndex({ index: currentIndex, animated: false });
       }, 50);
     }
-  }, [isOpen]); // Only trigger on isOpen change, not currentIndex
+  }, [isOpen, currentIndex]);
 
   if (!isOpen || totalImages === 0) {
     return null;

@@ -15,7 +15,7 @@
 
 import { Text, HapticPressable, Skeleton, BrandAvatar, HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useCallback, useRef, useState } from 'react';
-import { View, StyleSheet, FlatList, ScrollView, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, StyleSheet, FlatList, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -77,7 +77,6 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
   
   const {
     bookings,
-    total,
     isLoading,
     isRefreshing,
     isFetchingNextPage: isLoadingMore,

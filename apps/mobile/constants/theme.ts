@@ -440,8 +440,6 @@ export const ZIndex = {
 
 const b:  TextStyle = { includeFontPadding: false };
 const bc: TextStyle = { includeFontPadding: false, textAlignVertical: 'center' };
-const androidLineHeight = (fontSize: number, lineHeight: number) =>
-  Math.max(lineHeight - 3, fontSize + 2);
 const t  = (
   fs: number,
   lh: number,
@@ -471,7 +469,6 @@ const tc = (
     ...x,
   });
 
-const R6: TextStyle['fontWeight'] = '600';
 const R7: TextStyle['fontWeight'] = '700';
 
 // ── Apple HIG — Large (default) Dynamic Type ─────────────────────────────────

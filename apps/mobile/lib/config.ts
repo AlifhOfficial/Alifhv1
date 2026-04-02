@@ -5,8 +5,6 @@
  * Uses production hosts by default to avoid local network drift.
  * Includes a global fetch interceptor to prevent native cookie leakage.
  */
-import Constants from 'expo-constants';
-
 const PROD_API_BASE = 'https://revvup.ae';
 const PROD_WS_URL = 'wss://ws.revvup.ae';
 const PROD_CDN_URL = 'https://cdn.revvup.ae';

@@ -8,7 +8,7 @@
  */
 
 import { Text, useAlert, HapticPressable, SheetFloatingCloseHandle } from '@/components/ui';
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { View, StyleSheet, BackHandler, Keyboard } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import {
@@ -178,7 +178,7 @@ export function CreateListingFlow({
       setCurrentStepIndex((i) => i + 1);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
-  }, [currentStepIndex, currentStepId, currentStep, data]);
+  }, [currentStepIndex, currentStepId, currentStep, data, showAlert]);
 
   const goToPrevStep = useCallback(() => {
     // Don't go back past the initial step (important for published edits)
@@ -226,7 +226,7 @@ export function CreateListingFlow({
         },
       ]
     );
-  }, [currentStepIndex, initialStepIndex]);
+  }, [currentStepIndex, initialStepIndex, showAlert]);
 
   // ── Success handler ──
   const handleSuccess = useCallback(

@@ -16,7 +16,6 @@ import {
   cancelBooking,
   type CancellationReason,
   type CancelBookingResult,
-  type UserBooking,
 } from '@/lib/booking-api';
 import { CANCELLATION_REASONS } from '@/components/bookings/utilities/booking-helpers';
 

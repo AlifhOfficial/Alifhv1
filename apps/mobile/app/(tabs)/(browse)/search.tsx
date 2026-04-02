@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Platform, ActivityIndicator, Keyboard, ScrollView, TextInput } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Keyboard, ScrollView, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

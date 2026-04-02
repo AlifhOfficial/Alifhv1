@@ -65,7 +65,7 @@ export function ImageGridModal({
       setSelectedIndex(currentIndex);
       setShowLightbox(false);
     }
-  }, [isOpen]);
+  }, [isOpen, currentIndex]);
 
   const handleImagePress = useCallback((index: number) => {
     Haptics.selectionAsync();
