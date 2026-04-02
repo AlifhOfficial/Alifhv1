@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Zap } from 'lucide-react-native';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useListingFavorite } from '@/context/favorites-context';
 import { Colors, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
@@ -19,9 +19,7 @@ export default function SuperlikeExhaustedScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}> 
-        <Text variant="caption1Emphasized" tone="muted" uppercase>Superlikes</Text>
-      </View>
+      <SheetHeader title="Superlikes" />
 
       <View style={styles.content}>
         <View style={styles.centeredHeader}>

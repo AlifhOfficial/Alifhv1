@@ -6,7 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import * as AuthAPI from '@/lib/auth-api';
@@ -125,14 +125,11 @@ export default function ForgotPasswordSheetScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Reset your password
-        </Text>
-        <Text variant={SheetTypography.rowLabel} style={[styles.message, { color: colors.sheetLabelMuted }]}>
-          We&apos;ll email you a reset link.
-        </Text>
-      </View>
+      <SheetHeader title="Reset your password" />
+
+      <Text variant={SheetTypography.rowLabel} style={[styles.message, { color: colors.sheetLabelMuted }]}> 
+        We&apos;ll email you a reset link.
+      </Text>
 
       <View style={styles.form}>
         <View style={[styles.inputWrap, { backgroundColor: colors.fill2, borderColor: colors.sheetBorder }]}> 

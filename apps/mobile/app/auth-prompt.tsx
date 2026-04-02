@@ -5,7 +5,7 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth, type AuthSheetContext } from '@/context/auth-context';
@@ -101,9 +101,8 @@ export default function AuthPromptScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
       <Animated.View entering={FadeInUp.duration(220)} style={styles.content}>
-        <Text variant={SheetTypography.headerTitle} style={[styles.title, { color: colors.sheetLabel }]}> 
-          {displayTitle}
-        </Text>
+        <SheetHeader title={displayTitle} />
+
         <Text
           variant={SheetTypography.rowLabel}
           style={[styles.subtitle, { color: colors.sheetLabelMuted }]}
@@ -169,12 +168,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
     gap: Spacing.sm,
-  },
-  title: {
-    textAlign: 'center',
   },
   subtitle: {
     textAlign: 'center',

@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
-import { router } from 'expo-router';
 import { Search, X } from 'lucide-react-native';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { CAR_MAKES, getModelsForMake } from '@/lib/filter-constants';
@@ -67,12 +66,10 @@ export default function FilterMakeScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}> 
-        <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.headerAction}>
-          <Text variant="subhead" tone="muted">Close</Text>
-        </HapticPressable>
-        <Text variant="caption1Emphasized" tone="muted" uppercase>Make</Text>
-        <HapticPressable onPress={clearAll} hitSlop={Spacing.md} style={styles.headerAction}>
+      <SheetHeader title="Make" />
+
+      <View style={{ alignItems: 'flex-end', marginBottom: Spacing.md }}>
+        <HapticPressable onPress={clearAll} hitSlop={Spacing.md}>
           <Text variant="subheadEmphasized" style={{ color: colors.error }}>Clear</Text>
         </HapticPressable>
       </View>

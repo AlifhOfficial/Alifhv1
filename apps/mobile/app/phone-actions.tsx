@@ -5,7 +5,7 @@ import * as Haptics from 'expo-haptics';
 import { Phone, Copy } from 'lucide-react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 
@@ -56,13 +56,7 @@ export default function PhoneActionsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}> 
-        <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.closeAction}>
-          <Text variant="subhead" tone="muted">Close</Text>
-        </HapticPressable>
-        <Text variant="headline">{safePhone}</Text>
-        <View style={styles.closeAction} />
-      </View>
+      <SheetHeader title={safePhone || 'Phone Number'} />
 
       <View style={styles.actions}>
         <HapticPressable onPress={handleCall} style={styles.actionBtn}>

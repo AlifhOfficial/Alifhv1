@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MapPin, RefreshCw, Send } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
-import { HapticPressable, Text, useAlert } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text, useAlert } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Shadows, Sizes, Spacing, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useLocation, type LocationResult } from '@/hooks/use-location';
@@ -82,11 +82,7 @@ export default function ShareLocationScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Share Location
-        </Text>
-      </View>
+      <SheetHeader title="Share Location" />
 
       <View style={[styles.mapContainer, { backgroundColor: colors.sheetSurface }]}> 
         {isLoading ? (

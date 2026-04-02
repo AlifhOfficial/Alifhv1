@@ -268,7 +268,7 @@ function RootLayoutNav() {
               presentation: 'formSheet',
               sheetGrabberVisible: true,
               sheetAllowedDetents: [0.44],
-              headerShown: true,
+              headerShown: false,
               contentStyle: { backgroundColor: colors.sheet },
             }}
           />
@@ -422,7 +422,7 @@ function RootLayoutNav() {
               presentation: 'formSheet',
               sheetGrabberVisible: true,
               sheetAllowedDetents: [0.9],
-              headerShown: true,
+              headerShown: false,
               title: 'Booking',
               contentStyle: { backgroundColor: colors.sheet },
             }}
@@ -433,7 +433,7 @@ function RootLayoutNav() {
               presentation: 'formSheet',
               sheetGrabberVisible: true,
               sheetAllowedDetents: [0.7],
-              headerShown: true,
+              headerShown: false,
               title: 'Cancel Booking',
               contentStyle: { backgroundColor: colors.sheet },
             }}

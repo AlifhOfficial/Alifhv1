@@ -1,6 +1,6 @@
 /**
  * Tab Layout - Revvup Mobile App
- * 3 tabs: Home, Messages, Browse
+ * 3 tabs: Home, Browse, Messages
  * Floating individual pill chips — no outer wrapper shell.
  */
 
@@ -35,8 +35,8 @@ type TabConfigItem = {
 
 const TAB_CONFIG = [
   { name: '(home)', icon: Store, label: 'Home', fillActive: false },
-  { name: '(messages)', icon: MessageCircle, label: 'Chats', fillActive: false },
   { name: '(browse)', icon: LayoutGrid, label: 'Browse', fillActive: false },
+  { name: '(messages)', icon: MessageCircle, label: 'Chats', fillActive: false },
 ] as const satisfies readonly TabConfigItem[];
 
 const ACTIVE_ICON_STROKE = 2.5;
@@ -316,8 +316,8 @@ export default function TabLayout() {
       screenOptions={{ headerShown: false }}
     >
       <Tabs.Screen name="(home)" />
-      <Tabs.Screen name="(messages)" />
       <Tabs.Screen name="(browse)" />
+      <Tabs.Screen name="(messages)" />
     </Tabs>
   );
 }

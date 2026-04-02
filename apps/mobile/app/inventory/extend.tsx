@@ -6,7 +6,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CalendarPlus } from 'lucide-react-native';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { extendListing } from '@/lib/sell-car-user-api';
@@ -51,11 +51,7 @@ export default function InventoryExtendScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Extend Listing
-        </Text>
-      </View>
+      <SheetHeader title="Extend Listing" />
 
       <View style={[styles.card, { backgroundColor: colors.sheetSurface }]}>
         <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }} numberOfLines={2}>

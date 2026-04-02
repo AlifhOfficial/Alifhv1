@@ -4,7 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import {
@@ -95,11 +95,7 @@ export default function InventoryActionsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Manage Listing
-        </Text>
-      </View>
+      <SheetHeader title="Manage Listing" />
 
       <View style={[styles.previewCard, { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }]}> 
         <View style={[styles.thumbnail, { backgroundColor: colors.fill2 }]}> 

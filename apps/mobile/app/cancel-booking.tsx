@@ -1,4 +1,4 @@
-import { Text, HapticPressable } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useLocalSearchParams, router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator, ScrollView, TextInput } from 'react-native';
@@ -118,6 +118,8 @@ export default function CancelBookingScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.md }]}
     > 
+        <SheetHeader title="Cancel Booking" />
+
         <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}> 
           {booking.listingThumbnail ? (
             <Image source={{ uri: getAppThumbUrl(booking.listingThumbnail)! }} style={styles.thumbnail} />

@@ -3,7 +3,7 @@ import { StyleSheet, TextInput, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Radius, Spacing, Typography } from '@/constants/theme';
 import { calculateEMI, formatPrice } from '@/components/seller-contact/utils';
@@ -40,10 +40,6 @@ export default function FinancingScreen() {
     };
   }, [downPayment, term, price, interestRate]);
 
-  const handleClose = () => {
-    router.back();
-  };
-
   const handleApply = () => {
     const dp = Math.min(90, Math.max(0, parseInt(downPayment, 10) || 0));
     const t = Math.min(84, Math.max(12, parseInt(term, 10) || 48));
@@ -53,13 +49,20 @@ export default function FinancingScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}> 
-        <HapticPressable onPress={handleClose} hitSlop={Spacing.md} style={styles.headerAction}>
-          <Text variant="subhead" tone="muted">Close</Text>
-        </HapticPressable>
-        <Text variant="caption1Emphasized" tone="muted" uppercase>Custom Financing</Text>
-        <HapticPressable onPress={handleApply} hitSlop={Spacing.md} style={styles.headerAction}>
-          <Text variant="subheadEmphasized" style={{ color: colors.primary }}>Apply</Text>
+      <SheetHeader title="Custom Financing" />
+
+      <View style={{ alignItems: 'flex-end', marginBottom: Spacing.md }}>
+        <HapticPressable
+          onPress={handleApply}
+          hitSlop={Spacing.md}
+          style={{
+            backgroundColor: colors.primary,
+            borderRadius: Radius.full,
+            paddingHorizontal: Spacing.md,
+            paddingVertical: Spacing.sm,
+          }}
+        >
+          <Text variant="subheadEmphasized" style={{ color: colors.primaryForeground }}>Apply</Text>
         </HapticPressable>
       </View>
 

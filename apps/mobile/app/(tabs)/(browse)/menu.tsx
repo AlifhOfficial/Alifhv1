@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Plus } from 'lucide-react-native';
 
-import { Text, HapticPressable } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type BrowseViewMode, type FilterPillType } from '@/context/search-context';
 import { BorderWidths, Colors, Radius, Sizes, Spacing } from '@/constants/theme';
@@ -84,11 +84,7 @@ export default function BrowseMenuScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}> 
-        <Text variant="caption1Emphasized" tone="muted" uppercase>
-          Browse Menu
-        </Text>
-      </View>
+      <SheetHeader title="Browse Menu" />
 
       <View style={styles.rows}>
         <HapticPressable style={styles.row} onPress={handleSettingsPress}>

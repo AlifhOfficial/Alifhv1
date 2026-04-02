@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { AlertTriangle, Crosshair, Flame, Info, Lightbulb, User, Zap } from 'lucide-react-native';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, Sizes, Spacing, Typography, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getListingSummary, type ListingSummary } from '@/lib/summary-api';
@@ -116,18 +116,7 @@ export default function CarInfoScreen() {
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.topBar}>
-        <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.closeAction}>
-          <Text variant="subhead" tone="muted">Close</Text>
-        </HapticPressable>
-      </View>
-
-      <View style={styles.header}>
-        <View style={styles.headerTitle}>
-          <Zap size={Sizes.iconSm} color={colors.label} fill={colors.label} />
-          <Text variant="subheadEmphasized">DarkWeave</Text>
-        </View>
-      </View>
+      <SheetHeader title="DarkWeave" />
 
       <View style={styles.carHeader}>
         {carTitle ? <Text variant="subheadEmphasized">{carTitle}</Text> : null}

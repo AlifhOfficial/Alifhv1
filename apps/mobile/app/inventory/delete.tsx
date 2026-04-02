@@ -6,7 +6,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AlertTriangle, Trash2 } from 'lucide-react-native';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { deleteListing, hardDeleteListing } from '@/lib/sell-car-user-api';
@@ -58,11 +58,7 @@ export default function InventoryDeleteScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          {hardDelete ? 'Delete Forever' : 'Delete Listing'}
-        </Text>
-      </View>
+      <SheetHeader title={hardDelete ? 'Delete Forever' : 'Delete Listing'} />
 
       {hardDelete ? (
         <View style={[styles.warningBanner, { backgroundColor: colors.errorMuted }]}> 

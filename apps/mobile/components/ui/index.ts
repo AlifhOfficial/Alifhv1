@@ -13,6 +13,7 @@ export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from '.
 export { HapticPressable, type HapticPressableProps, type HapticType } from './haptic-pressable';
 export { HapticRefreshControl, type HapticRefreshControlProps } from './haptic-refresh-control';
 export { SheetFloatingCloseHandle } from './sheet-floating-close';
+export { SheetHeader } from './sheet-header';
 export { Bubble, Pill, EdgeFade } from './chrome';
 
 // Confetti burst effect

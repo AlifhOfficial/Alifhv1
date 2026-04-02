@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import type { SavedTab } from '@/components/saved/types';
@@ -64,11 +64,7 @@ export default function SavedFiltersScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Filter Saved
-        </Text>
-      </View>
+      <SheetHeader title="Filter Saved" />
 
       <View style={styles.list}>
         {SAVED_OPTIONS.map((option) => {

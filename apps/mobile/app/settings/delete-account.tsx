@@ -5,7 +5,7 @@ import { Loader2, Trash2 } from 'lucide-react-native';
 import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HapticPressable, Text, useAlert } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text, useAlert } from '@/components/ui';
 import { Colors, InputTypography, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/context/theme-context';
@@ -64,11 +64,7 @@ export default function DeleteAccountScreen() {
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Delete Account
-        </Text>
-      </View>
+      <SheetHeader title="Delete Account" />
 
       <View style={[styles.heroCard, { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }]}> 
         <View style={[styles.heroIcon, { backgroundColor: colors.errorMuted }]}> 

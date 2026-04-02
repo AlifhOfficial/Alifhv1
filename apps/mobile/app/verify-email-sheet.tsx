@@ -6,7 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -186,14 +186,11 @@ export default function VerifyEmailSheetScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Verify your email
-        </Text>
-        <Text variant={SheetTypography.rowLabel} style={[styles.message, { color: colors.sheetLabelMuted }]}>
-          {notice}
-        </Text>
-      </View>
+      <SheetHeader title="Verify your email" />
+
+      <Text variant={SheetTypography.rowLabel} style={[styles.message, { color: colors.sheetLabelMuted }]}> 
+        {notice}
+      </Text>
 
       <View style={styles.form}>
         <View style={[styles.inputWrap, { backgroundColor: colors.fill2, borderColor: colors.sheetBorder }]}> 

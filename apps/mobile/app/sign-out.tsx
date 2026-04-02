@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { LogOut } from 'lucide-react-native';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -38,11 +38,7 @@ export default function SignOutScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Sign Out
-        </Text>
-      </View>
+      <SheetHeader title="Sign Out" />
 
       <View style={[styles.card, { backgroundColor: colors.sheetSurface }]}>
         <View style={[styles.iconWrap, { backgroundColor: colors.errorMuted }]}>

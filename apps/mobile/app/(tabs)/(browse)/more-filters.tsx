@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type BrowseViewMode } from '@/context/search-context';
 import { BODY_TYPES, FUEL_TYPES, TRANSMISSION_TYPES, SPECS_TYPES, SELLER_TYPE_OPTIONS } from '@/lib/filter-constants';
@@ -94,12 +94,10 @@ export default function MoreFiltersScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}> 
-        <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.headerAction}>
-          <Text variant="subhead" tone="muted">Close</Text>
-        </HapticPressable>
-        <Text variant="caption1Emphasized" tone="muted" uppercase>Filters</Text>
-        <HapticPressable onPress={clearAll} hitSlop={Spacing.md} style={styles.headerAction}>
+      <SheetHeader title="Filters" />
+
+      <View style={{ alignItems: 'flex-end' }}>
+        <HapticPressable onPress={clearAll} hitSlop={Spacing.md}>
           <Text variant="subheadEmphasized" style={{ color: colors.error }}>Clear</Text>
         </HapticPressable>
       </View>

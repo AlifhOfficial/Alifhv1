@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Text, HapticPressable } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Typography, Spacing, Radius, Sizes, Layout, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
@@ -429,14 +429,10 @@ export default function SearchScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={[styles.header, { borderBottomColor: colors.border }]}> 
-        <View style={styles.headerTopRow}>
-          <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.cancelButton}>
-            <Text variant="subhead" tone="muted">Cancel</Text>
-          </HapticPressable>
+      <SheetHeader title="Search" />
 
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Search</Text>
-
+      <View style={styles.controls}>
+        <View style={[styles.headerTopRow, { justifyContent: 'flex-end', marginBottom: Spacing.sm }]}>
           <HapticPressable
             style={[styles.applyButton, { backgroundColor: canApply ? colors.primary : colors.fill2 }]}
             onPress={handleApply}
@@ -666,22 +662,15 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
   },
-  header: {
-    flexShrink: 0,
+  controls: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: Spacing.md,
   },
   headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.md,
-  },
-  cancelButton: {
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.xs,
   },
   applyButton: {
     paddingVertical: Spacing.sm,

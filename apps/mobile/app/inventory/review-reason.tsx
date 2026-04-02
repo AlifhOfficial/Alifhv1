@@ -3,7 +3,7 @@ import { AlertCircle } from 'lucide-react-native';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Text } from '@/components/ui';
+import { SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getStringParam, parseAiModerationParam, type InventorySheetRouteParams } from '@/components/user-inventory-management/sub-operations/route-params';
@@ -36,11 +36,7 @@ export default function InventoryReviewReasonScreen() {
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Under Review
-        </Text>
-      </View>
+      <SheetHeader title="Under Review" />
 
       <View style={[styles.card, { backgroundColor: colors.sheetSurface }]}>
         <Text variant={SheetTypography.rowLabelSelected} style={{ color: colors.sheetLabel }} numberOfLines={2}>

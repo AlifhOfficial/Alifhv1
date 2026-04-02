@@ -1,4 +1,4 @@
-import { Text, HapticPressable, useAlert, BrandAvatar } from '@/components/ui';
+import { BrandAvatar, HapticPressable, SheetHeader, Text, useAlert } from '@/components/ui';
 import { useLocalSearchParams, router } from 'expo-router';
 import React, { useCallback } from 'react';
 import { View, StyleSheet, Linking, Platform, ScrollView, ActivityIndicator } from 'react-native';
@@ -172,6 +172,7 @@ export default function BookingDetailsScreen() {
       contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing['2xl'] }]}
       showsVerticalScrollIndicator={false}
     >
+      <SheetHeader title="Booking" />
 
         <HapticPressable
           onPress={() => {

@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { buildInventoryRouteParams, getStringParam, parseNumberParam } from '@/components/user-inventory-management/sub-operations/route-params';
@@ -52,11 +52,7 @@ export default function InventoryFiltersScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Filter Listings
-        </Text>
-      </View>
+      <SheetHeader title="Filter Listings" />
 
       <View style={styles.list}>
         {STATUS_OPTIONS.map((option) => {

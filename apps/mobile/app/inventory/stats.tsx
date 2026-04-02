@@ -4,7 +4,7 @@ import { Eye, Flame, Heart, MousePointerClick, Zap } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Text } from '@/components/ui';
+import { SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, SheetChrome, SheetTypography, Sizes, Spacing, type ColorPalette } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getStringParam, parseNumberParam, type InventorySheetRouteParams } from '@/components/user-inventory-management/sub-operations/route-params';
@@ -71,11 +71,7 @@ export default function InventoryStatsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}>
-        <Text variant={SheetTypography.headerTitle} style={{ color: colors.sheetLabel }}>
-          Insights
-        </Text>
-      </View>
+      <SheetHeader title="Insights" />
 
       <View style={[styles.previewCard, { backgroundColor: colors.sheetSurface, borderColor: colors.sheetBorder }]}> 
         <View style={[styles.previewIcon, { backgroundColor: colors.fill2 }]}> 

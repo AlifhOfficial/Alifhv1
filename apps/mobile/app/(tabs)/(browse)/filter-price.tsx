@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { Colors, Radius, Spacing } from '@/constants/theme';
@@ -38,13 +38,23 @@ export default function FilterPriceScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}> 
-        <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.headerAction}>
-          <Text variant="subhead" tone="muted">Close</Text>
+      <SheetHeader title="Price" />
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.md }}>
+        <HapticPressable onPress={clear} hitSlop={Spacing.md}>
+          <Text variant="subheadEmphasized" style={{ color: colors.error }}>Clear</Text>
         </HapticPressable>
-        <Text variant="caption1Emphasized" tone="muted" uppercase>Price</Text>
-        <HapticPressable onPress={apply} hitSlop={Spacing.md} style={styles.headerAction}>
-          <Text variant="subheadEmphasized" style={{ color: colors.primary }}>Apply</Text>
+        <HapticPressable
+          onPress={apply}
+          hitSlop={Spacing.md}
+          style={{
+            backgroundColor: colors.primary,
+            borderRadius: Radius.full,
+            paddingHorizontal: Spacing.md,
+            paddingVertical: Spacing.sm,
+          }}
+        >
+          <Text variant="subheadEmphasized" style={{ color: colors.primaryForeground }}>Apply</Text>
         </HapticPressable>
       </View>
 

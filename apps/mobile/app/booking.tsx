@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Calendar1, CheckCircle2, Clock, Users, FileText } from 'lucide-react-native';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { createBooking, getAvailableDates, getTimeSlots, type AvailableDate, type TimeSlot } from '@/lib/booking-api';
@@ -130,13 +130,7 @@ export default function BookingScreen() {
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}> 
-        <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.headerAction}>
-          <Text variant="subhead" tone="muted">Close</Text>
-        </HapticPressable>
-        <Text variant="caption1Emphasized" tone="muted" uppercase>Book Test Drive</Text>
-        <View style={styles.headerAction} />
-      </View>
+      <SheetHeader title="Book Test Drive" />
 
       {safeTitle ? <Text variant="subhead" tone="secondary">{safeTitle}</Text> : null}
 

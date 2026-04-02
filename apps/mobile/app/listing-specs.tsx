@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
-import { useLocalSearchParams, router } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { Copy } from 'lucide-react-native';
 
-import { HapticPressable, Text } from '@/components/ui';
+import { HapticPressable, SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useListingDetail } from '@/hooks/use-listing-query';
@@ -107,26 +107,23 @@ export default function ListingSpecsSheetScreen() {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      <View style={[styles.header, { borderBottomColor: colors.sheetBorder }]}> 
-        <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.headerAction}>
-          <Text variant="subhead" tone="muted">Close</Text>
-        </HapticPressable>
-
-        <Text variant="caption1Emphasized" tone="muted" uppercase>Specifications</Text>
-
-        <HapticPressable
-          onPress={handleCopy}
-          hitSlop={Spacing.md}
-          style={[styles.iconButton, { backgroundColor: colors.fill2 }]}
-          disabled={specs.length === 0}
-        >
-          {copied ? (
-            <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primary} />
-          ) : (
-            <Copy size={Sizes.iconSm} color={colors.labelSecondary} />
-          )}
-        </HapticPressable>
-      </View>
+      <SheetHeader
+        title="Specifications"
+        right={
+          <HapticPressable
+            onPress={handleCopy}
+            hitSlop={Spacing.md}
+            style={[styles.iconButton, { backgroundColor: colors.fill2 }]}
+            disabled={specs.length === 0}
+          >
+            {copied ? (
+              <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primary} />
+            ) : (
+              <Copy size={Sizes.iconSm} color={colors.labelSecondary} />
+            )}
+          </HapticPressable>
+        }
+      />
 
       <View style={styles.body}>{body}</View>
     </ScrollView>
