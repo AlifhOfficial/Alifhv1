@@ -422,7 +422,8 @@ function RootLayoutNav() {
               presentation: 'formSheet',
               sheetGrabberVisible: true,
               sheetAllowedDetents: [0.9],
-              headerShown: false,
+              headerShown: true,
+              title: 'Booking',
               contentStyle: { backgroundColor: colors.sheet },
             }}
           />
@@ -432,6 +433,27 @@ function RootLayoutNav() {
               presentation: 'formSheet',
               sheetGrabberVisible: true,
               sheetAllowedDetents: [0.7],
+              headerShown: true,
+              title: 'Cancel Booking',
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="bookings-filters"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.62],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="saved-filters"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.44],
               headerShown: false,
               contentStyle: { backgroundColor: colors.sheet },
             }}

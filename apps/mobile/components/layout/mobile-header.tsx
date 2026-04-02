@@ -127,7 +127,7 @@ export function MobileHeader({
         >
           <>
             {typeof title === 'string' ? (
-              <Text variant="title3Emphasized" numberOfLines={1} style={{ color: colors.label }}>
+              <Text variant="headline" numberOfLines={1} style={{ color: colors.label }}>
                 {title}
               </Text>
             ) : (

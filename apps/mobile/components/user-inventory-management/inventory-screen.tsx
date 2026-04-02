@@ -17,7 +17,7 @@
 
 import { Text, HapticPressable, Skeleton, HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, FlatList, Pressable, ActivityIndicator, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, StyleSheet, FlatList, ActivityIndicator, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 
 import { Image } from 'expo-image';
 import { getAppThumbUrl } from '@/lib/config';
@@ -29,8 +29,7 @@ import {
   Plus,
   Clock,
   Package,
-  ListFilter,
-  Check,
+  Package2,
   Image as ImageIcon,
   AlertCircle,
 } from 'lucide-react-native';
@@ -41,7 +40,6 @@ import { useAuth } from '@/context/auth-context';
 import {
   getListingForEdit,
   type MyListingCard,
-  type MyListingsStats,
   type MyListingsFilter,
 } from '@/lib/sell-car-user-api';
 import {
@@ -84,16 +82,15 @@ const EMIRATE_SHORT: Record<string, string> = {
 interface StatusTab {
   key: MyListingsFilter;
   label: string;
-  count: (stats: MyListingsStats | null) => number;
 }
 
 const STATUS_TABS: StatusTab[] = [
-  { key: 'all',      label: 'All',       count: (s) => s?.total ?? 0 },
-  { key: 'public',   label: 'Public',    count: (s) => s?.active ?? 0 },
-  { key: 'draft',    label: 'Drafts',    count: (s) => s?.draft ?? 0 },
-  { key: 'in_review', label: 'In Review', count: (s) => s?.pending ?? 0 },
-  { key: 'sold',     label: 'Sold',      count: (s) => s?.sold ?? 0 },
-  { key: 'archived', label: 'Archived',  count: (s) => s?.archived ?? 0 },
+  { key: 'all', label: 'All' },
+  { key: 'public', label: 'Public' },
+  { key: 'draft', label: 'Drafts' },
+  { key: 'in_review', label: 'In Review' },
+  { key: 'sold', label: 'Sold' },
+  { key: 'archived', label: 'Archived' },
 ];
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -158,17 +155,21 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   const [isPublishedEdit, setIsPublishedEdit] = useState(false);
   const handledEditNonceRef = useRef<string | null>(null);
 
-  // ── Filter Drawer State ─────────────────────────────────────────────────
-  const [showFilterDrawer, setShowFilterDrawer] = useState(false);
-
-  const openFilterDrawer = useCallback(() => {
+  const openFilterSheet = useCallback(() => {
     if (process.env.EXPO_OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setShowFilterDrawer(true);
-  }, []);
-
-  const closeFilterDrawer = useCallback(() => {
-    setShowFilterDrawer(false);
-  }, []);
+    router.push({
+      pathname: '/inventory/filters',
+      params: {
+        activeTab,
+        totalCount: String(stats?.total ?? 0),
+        activeCount: String(stats?.active ?? 0),
+        draftCount: String(stats?.draft ?? 0),
+        pendingCount: String(stats?.pending ?? 0),
+        soldCount: String(stats?.sold ?? 0),
+        archivedCount: String(stats?.archived ?? 0),
+      },
+    });
+  }, [activeTab, router, stats]);
 
   // Handler to open create flow (fresh, no initial data)
   const openCreateFlow = useCallback(() => {
@@ -191,11 +192,6 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   }, [loadMore, isLoadingMore, hasMore]);
 
   // ── Tab ──────────────────────────────────────────────────────────────────
-
-  const handleTabChange = useCallback((tab: MyListingsFilter) => {
-    if (process.env.EXPO_OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setActiveTab(tab);
-  }, []);
 
   const launchEditFlow = useCallback(
     async (listingId: string, publishedEdit: boolean) => {
@@ -478,11 +474,6 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
         />
       )}
 
-      {/* Backdrop to dismiss filter drawer */}
-      {showFilterDrawer && (
-        <Pressable style={styles.drawerBackdrop} onPress={closeFilterDrawer} />
-      )}
-
       {/* Edit Listing Flow (for drafts and editing) */}
       <CreateListingFlow
         visible={showEditFlow}
@@ -504,91 +495,27 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
         isPublishedEdit={isPublishedEdit}
       />
 
-      {showFilterDrawer && (
-        <Pressable
-          style={[styles.drawerBackdrop, { backgroundColor: colors.overlay }]}
-          onPress={closeFilterDrawer}
-        />
-      )}
-
-      {/* ─────────────────────── Filter Drawer Bubble ─────────────────────── */}
+      {/* ─────────────────────── Bottom Bubble Actions ─────────────────────── */}
       <View
-        style={[styles.fabCluster, { bottom: insets.bottom + Spacing.xl }]}
+        style={[styles.bottomBar, { bottom: insets.bottom + Spacing.xl }]}
         pointerEvents="box-none"
       >
-        {/* Popover menu */}
-        {showFilterDrawer && (
-          <View
-            style={[
-              styles.drawerContainer,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-            ]}
-          >
-            {STATUS_TABS.map((t, index) => {
-              const isActive = t.key === activeTab;
-              const isLast = index === STATUS_TABS.length - 1;
-              const count = t.count(stats);
-              return (
-                <View key={t.key}>
-                  <HapticPressable
-                    onPress={() => {
-                      handleTabChange(t.key);
-                      closeFilterDrawer();
-                    }}
-                    style={styles.drawerItem}
-                  >
-                    {({ pressed }) => (
-                      <View style={[styles.drawerItemInner, { opacity: pressed ? 0.6 : 1 }]}>
-                        <View style={styles.drawerItemLeft}>
-                          {isActive ? (
-                            <Check size={Sizes.iconSm} color={colors.primary} strokeWidth={2.5} />
-                          ) : (
-                            <View style={{ width: Sizes.iconSm }} />
-                          )}
-                          <Text
-                            variant="body"
-                            style={{
-                              color: isActive ? colors.primary : colors.label,
-                              fontWeight: isActive ? '600' : '400',
-                            }}
-                          >
-                            {t.label}
-                          </Text>
-                        </View>
-                        {count > 0 && (
-                          <View style={[styles.drawerBadge, { backgroundColor: isActive ? colors.primaryMuted : colors.surfaceSecondary }]}>
-                            <Text variant="footnoteEmphasized" style={{ color: isActive ? colors.primary : colors.labelSecondary }}>
-                              {count}
-                            </Text>
-                          </View>
-                        )}
-                      </View>
-                    )}
-                  </HapticPressable>
-                  {!isLast && (
-                    <View style={[styles.drawerDivider, { backgroundColor: colors.border }]} />
-                  )}
-                </View>
-              );
-            })}
-          </View>
-        )}
-
-        {/* FAB row: filter pill + create button */}
+        <View style={styles.bottomBarContent}>
+        {/* FAB row: filter + create */}
         <View style={styles.fabRow}>
           <HapticPressable
-            onPress={showFilterDrawer ? closeFilterDrawer : openFilterDrawer}
+            onPress={openFilterSheet}
             style={[
               styles.fabButton,
               {
-                backgroundColor: showFilterDrawer ? colors.primary : colors.surfaceSecondary,
-                borderColor: showFilterDrawer ? colors.primary : colors.border,
+                backgroundColor: activeTab !== 'all' ? colors.primary : colors.surfaceSecondary,
+                borderColor: activeTab !== 'all' ? colors.primary : colors.border,
               },
             ]}
           >
-            <ListFilter
+            <Package2
               size={Sizes.iconSm}
-              color={showFilterDrawer ? colors.primaryForeground : colors.label}
+              color={activeTab !== 'all' ? colors.primaryForeground : colors.label}
               strokeWidth={2}
             />
           </HapticPressable>
@@ -599,6 +526,7 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
           >
             <Plus size={Sizes.iconSm} color={colors.label} strokeWidth={2} />
           </HapticPressable>
+        </View>
         </View>
       </View>
     </View>
@@ -612,12 +540,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ── FAB cluster (bottom-right absolute) ──────────────────────────────
-  fabCluster: {
+  // ── Bottom action bar (centered like browse tab bar) ────────────────
+  bottomBar: {
     position: 'absolute',
-    right: Layout.screenPadding,
-    alignItems: 'flex-end',
+    left: 0,
+    right: 0,
     zIndex: ZIndex.overlay,
+  },
+  bottomBarContent: {
+    alignItems: 'center',
+    paddingHorizontal: Layout.screenPadding,
   },
   fabRow: {
     flexDirection: 'row',
@@ -632,46 +564,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     ...Shadows.md,
-  },
-  drawerBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: ZIndex.overlay,
-  },
-
-  // ── Filter Drawer popover ─────────────────────────────────────────────
-  drawerContainer: {
-    marginBottom: Spacing.sm,
-    borderRadius: Radius['3xl'],
-    borderCurve: 'continuous',
-    borderWidth: StyleSheet.hairlineWidth,
-    overflow: 'hidden',
-    minWidth: 220,
-    ...Shadows.lg,
-  } as any,
-  drawerItem: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.lg,
-  },
-  drawerItemInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  drawerItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  drawerBadge: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.lg,
-    minWidth: Sizes.iconSm + Spacing.xs,
-    alignItems: 'center',
-  },
-  drawerDivider: {
-    height: StyleSheet.hairlineWidth,
-    marginHorizontal: Spacing.lg,
   },
 
   // ── List ───────────────────────────────────────────────────────────────

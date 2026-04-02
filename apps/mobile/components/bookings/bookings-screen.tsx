@@ -14,14 +14,14 @@
  */
 
 import { Text, HapticPressable, Skeleton, BrandAvatar, HapticRefreshControl, EmptyState } from '@/components/ui';
-import React, { useCallback, useRef, useState } from 'react';
-import { View, StyleSheet, FlatList, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { View, StyleSheet, FlatList, ActivityIndicator, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Calendar1, Clock, ListFilter, Check, MoreVertical } from 'lucide-react-native';
+import { Calendar1, Clock, Package2, MoreVertical } from 'lucide-react-native';
 
 import { Colors, Fonts, Shadows, Spacing, Radius, Layout, Sizes, ZIndex, AspectRatio, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -71,9 +71,17 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
   const router = useRouter();
+  const { tab } = useLocalSearchParams<{ tab?: string }>();
+
+  const initialTab = useMemo<BookingFilter>(() => {
+    if (tab && STATUS_TABS.some((t) => t.key === tab)) {
+      return tab as BookingFilter;
+    }
+    return 'all';
+  }, [tab]);
 
   // ── Data State (via React Query) ─────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState<BookingFilter>('all');
+  const [activeTab, setActiveTab] = useState<BookingFilter>(initialTab);
   
   const {
     bookings,
@@ -88,17 +96,18 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
 
   const flatListRef = useRef<FlatList>(null);
 
-  // ── Filter Drawer State ──────────────────────────────────────────────────
-  const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
-  const openFilterDrawer = useCallback(() => {
-    if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setShowFilterDrawer(true);
-  }, []);
+  const openFilterSheet = useCallback(() => {
+    if (process.env.EXPO_OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push({ pathname: '/bookings-filters', params: { activeTab } });
+  }, [activeTab, router]);
 
-  const closeFilterDrawer = useCallback(() => {
-    setShowFilterDrawer(false);
-  }, []);
+  useEffect(() => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
+  }, [activeTab]);
 
   // ── Handlers ─────────────────────────────────────────────────────────────
 
@@ -110,15 +119,10 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
 
   // ── Tab ──────────────────────────────────────────────────────────────────
 
-  const handleTabChange = useCallback((tab: BookingFilter) => {
-    if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setActiveTab(tab);
-  }, []);
-
   // ── Card Tap → Details Sheet ─────────────────────────────────────────────
 
   const openDetails = useCallback((booking: UserBooking) => {
-    if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (process.env.EXPO_OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push({
       pathname: '/booking-details',
       params: { bookingId: booking.id },
@@ -336,85 +340,29 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
         />
       )}
 
-      {/* ─────────────────────── Filter Drawer Bubble ─────────────────────── */}
+      {/* ─────────────────────── Bottom Filter Bubble ─────────────────────── */}
       <View
-        style={[styles.fabCluster, { bottom: insets.bottom + Spacing.xl }]}
+        style={[styles.bottomBar, { bottom: insets.bottom + Spacing.xl }]}
         pointerEvents="box-none"
       >
-        {showFilterDrawer && (
-          <TouchableWithoutFeedback onPress={closeFilterDrawer}>
-            <View style={StyleSheet.absoluteFillObject} />
-          </TouchableWithoutFeedback>
-        )}
-
-        {showFilterDrawer && (
-          <View
+        <View style={styles.bottomBarContent}>
+          <HapticPressable
+            onPress={openFilterSheet}
             style={[
-              styles.drawerContainer,
-              { backgroundColor: colors.surface, borderColor: colors.border },
+              styles.fabButton,
+              {
+                backgroundColor: activeTab !== 'all' ? colors.primary : colors.surfaceSecondary,
+                borderColor: activeTab !== 'all' ? colors.primary : colors.border,
+              },
             ]}
           >
-            {STATUS_TABS.map((t, index) => {
-              const isActive = t.key === activeTab;
-              const isLast = index === STATUS_TABS.length - 1;
-              return (
-                <View key={t.key}>
-                  <HapticPressable
-                    onPress={() => {
-                      handleTabChange(t.key);
-                      closeFilterDrawer();
-                    }}
-                    style={styles.drawerItem}
-                  >
-                    {({ pressed }) => (
-                      <View style={[styles.drawerItemInner, { opacity: pressed ? 0.6 : 1 }]}>
-                        <View style={styles.drawerItemLeft}>
-                          {isActive ? (
-                            <Check size={Sizes.iconSm} color={colors.primary} strokeWidth={2.5} />
-                          ) : (
-                            <View style={{ width: Sizes.iconSm }} />
-                          )}
-                          <Text
-                            variant="body"
-                            style={{
-                              color: isActive ? colors.primary : colors.label,
-                              fontWeight: isActive ? '600' : '400',
-                            }}
-                          >
-                            {t.label}
-                          </Text>
-                        </View>
-                      </View>
-                    )}
-                  </HapticPressable>
-                  {!isLast && (
-                    <View style={[styles.drawerDivider, { backgroundColor: colors.border }]} />
-                  )}
-                </View>
-              );
-            })}
-          </View>
-        )}
-
-        <HapticPressable
-          onPress={showFilterDrawer ? closeFilterDrawer : openFilterDrawer}
-          style={[
-            styles.fabButton,
-            {
-              backgroundColor: showFilterDrawer ? colors.primary : colors.surfaceSecondary,
-              borderColor: showFilterDrawer ? colors.primary : colors.border,
-            },
-          ]}
-        >
-          {({ pressed }) => (
-            <ListFilter
+            <Package2
               size={Sizes.iconSm}
-              color={showFilterDrawer ? colors.primaryForeground : colors.label}
+              color={activeTab !== 'all' ? colors.primaryForeground : colors.label}
               strokeWidth={2}
-              style={{ opacity: pressed ? 0.7 : 1 }}
             />
-          )}
-        </HapticPressable>
+          </HapticPressable>
+        </View>
       </View>
 
     </View>
@@ -428,12 +376,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ── FAB cluster (bottom-right absolute) ──────────────────────────────
-  fabCluster: {
+  // ── Bottom action bar (centered like inventory/browse) ──────────────
+  bottomBar: {
     position: 'absolute',
-    right: Layout.screenPadding,
-    alignItems: 'flex-end',
+    left: 0,
+    right: 0,
     zIndex: ZIndex.overlay,
+  },
+  bottomBarContent: {
+    alignItems: 'center',
+    paddingHorizontal: Layout.screenPadding,
   },
   fabButton: {
     width: FAB_SIZE,
@@ -444,35 +396,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     ...Shadows.md,
   } as any,
-
-  // ── Filter Drawer popover ─────────────────────────────────────────────
-  drawerContainer: {
-    marginBottom: Spacing.sm,
-    borderRadius: Radius['3xl'],
-    borderCurve: 'continuous',
-    borderWidth: StyleSheet.hairlineWidth,
-    overflow: 'hidden',
-    minWidth: 200,
-    ...Shadows.lg,
-  } as any,
-  drawerItem: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md + 2,
-  },
-  drawerItemInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  drawerItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  drawerDivider: {
-    height: StyleSheet.hairlineWidth,
-    marginHorizontal: Spacing.lg,
-  },
 
   // ── List ───────────────────────────────────────────────────────────────
   listContent: {

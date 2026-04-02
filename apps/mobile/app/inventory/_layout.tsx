@@ -34,6 +34,16 @@ export default function InventoryLayout() {
         }}
       />
       <Stack.Screen
+        name="filters"
+        options={{
+          presentation: 'formSheet',
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.62],
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.sheet },
+        }}
+      />
+      <Stack.Screen
         name="mark-sold"
         options={{
           presentation: 'formSheet',

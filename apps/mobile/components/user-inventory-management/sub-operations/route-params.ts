@@ -14,6 +14,12 @@ export interface InventorySheetRouteParams {
   impressionCount?: string | string[];
   favouriteCount?: string | string[];
   superlikeCount?: string | string[];
+  totalCount?: string | string[];
+  activeCount?: string | string[];
+  draftCount?: string | string[];
+  pendingCount?: string | string[];
+  soldCount?: string | string[];
+  archivedCount?: string | string[];
   aiModeration?: string | string[];
   hardDelete?: string | string[];
 }

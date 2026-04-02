@@ -92,14 +92,6 @@ export default function CancelBookingScreen() {
   if (isLoading && bookingId) {
     return (
       <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-        <View collapsable={false} style={[styles.headerBar, { borderBottomColor: colors.sheetBorder }]}> 
-          <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.headerAction}>
-            <Text variant="subhead" tone="muted">Close</Text>
-          </HapticPressable>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Cancel Booking</Text>
-          <View style={styles.headerAction} />
-        </View>
-
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={colors.labelTertiary} />
         </View>
@@ -110,14 +102,6 @@ export default function CancelBookingScreen() {
   if (!booking) {
     return (
       <View style={[styles.fallbackContainer, { backgroundColor: colors.sheet }]}> 
-        <View collapsable={false} style={[styles.headerBar, { borderBottomColor: colors.sheetBorder }]}> 
-          <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.headerAction}>
-            <Text variant="subhead" tone="muted">Close</Text>
-          </HapticPressable>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Cancel Booking</Text>
-          <View style={styles.headerAction} />
-        </View>
-
         <View style={styles.fallbackBody}>
           <Text variant="subhead" tone="muted">Booking details are unavailable.</Text>
           <HapticPressable onPress={() => router.back()} style={[styles.fallbackButton, { backgroundColor: colors.fill2 }]}> 
@@ -129,20 +113,11 @@ export default function CancelBookingScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View collapsable={false} style={[styles.headerBar, { borderBottomColor: colors.sheetBorder }]}> 
-        <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.headerAction}>
-          <Text variant="subhead" tone="muted">Close</Text>
-        </HapticPressable>
-        <Text variant="caption1Emphasized" tone="muted" uppercase>Cancel Booking</Text>
-        <View style={styles.headerAction} />
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.md }]}
-      > 
+    <ScrollView
+      style={[styles.scrollView, { backgroundColor: colors.sheet }]}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.md }]}
+    > 
         <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}> 
           {booking.listingThumbnail ? (
             <Image source={{ uri: getAppThumbUrl(booking.listingThumbnail)! }} style={styles.thumbnail} />
@@ -160,7 +135,7 @@ export default function CancelBookingScreen() {
 
         <View style={styles.section}>
           <Text variant="subhead" tone="secondary" style={{ marginBottom: Spacing.sm }}>Why are you cancelling?</Text>
-          <ScrollView style={styles.reasonList} showsVerticalScrollIndicator={false}>
+          <View style={styles.reasonList}>
             {CANCELLATION_REASONS.map((reason) => {
               const isSelected = selectedReason === reason.value;
               return (
@@ -182,7 +157,7 @@ export default function CancelBookingScreen() {
                 </HapticPressable>
               );
             })}
-          </ScrollView>
+          </View>
         </View>
 
         <View style={styles.section}>
@@ -235,27 +210,13 @@ export default function CancelBookingScreen() {
             )}
           </HapticPressable>
         </View>
-      </ScrollView>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  headerBar: {
-    marginTop: Spacing.md,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
-  },
-  headerAction: {
-    minWidth: 56,
   },
   loadingContainer: {
     flex: 1,
@@ -283,6 +244,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
+    gap: Spacing.md,
   },
   previewCard: {
     flexDirection: 'row',
@@ -290,7 +252,6 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
     padding: Spacing.md,
     borderRadius: Radius.lg,
-    marginBottom: Spacing.lg,
   },
   thumbnail: {
     width: Spacing['5xl'] + Spacing.sm,
@@ -304,10 +265,10 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   section: {
-    marginBottom: Spacing.md,
+    gap: Spacing.xs,
   },
   reasonList: {
-    maxHeight: Spacing['5xl'] * 3 + Spacing['4xl'],
+    gap: Spacing.xs,
   },
   reasonItem: {
     flexDirection: 'row',
@@ -317,7 +278,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     borderRadius: Radius.md,
     borderWidth: 1,
-    marginBottom: Spacing.xs,
   },
   radioOuter: {
     width: Spacing.xl,
@@ -344,11 +304,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: Radius.md,
-    marginBottom: Spacing.md,
   },
   actions: {
     flexDirection: 'row',
     gap: Spacing.md,
+    marginTop: Spacing.xs,
   },
   secondaryBtn: {
     flex: 1,

@@ -133,14 +133,6 @@ export default function BookingDetailsScreen() {
   if (isLoading && bookingId) {
     return (
       <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-        <View collapsable={false} style={[styles.headerBar, { borderBottomColor: colors.sheetBorder }]}> 
-          <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.headerAction}>
-            <Text variant="subhead" tone="muted">Close</Text>
-          </HapticPressable>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Booking</Text>
-          <View style={styles.headerAction} />
-        </View>
-
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={colors.labelTertiary} />
         </View>
@@ -151,14 +143,6 @@ export default function BookingDetailsScreen() {
   if (!booking) {
     return (
       <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-        <View collapsable={false} style={[styles.headerBar, { borderBottomColor: colors.sheetBorder }]}> 
-          <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.headerAction}>
-            <Text variant="subhead" tone="muted">Close</Text>
-          </HapticPressable>
-          <Text variant="caption1Emphasized" tone="muted" uppercase>Booking</Text>
-          <View style={styles.headerAction} />
-        </View>
-
         <View style={styles.fallbackContainer}>
           <Text variant="subhead" tone="muted">Booking details are unavailable.</Text>
           <HapticPressable onPress={() => router.back()} style={[styles.fallbackButton, { backgroundColor: colors.fill2 }]}> 
@@ -182,21 +166,12 @@ export default function BookingDetailsScreen() {
   const isActive = booking.status === 'pending' || booking.status === 'confirmed';
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View collapsable={false} style={[styles.headerBar, { borderBottomColor: colors.sheetBorder }]}> 
-        <HapticPressable onPress={() => router.back()} hitSlop={Spacing.md} style={styles.headerAction}>
-          <Text variant="subhead" tone="muted">Close</Text>
-        </HapticPressable>
-        <Text variant="caption1Emphasized" tone="muted" uppercase>Booking</Text>
-        <View style={styles.headerAction} />
-      </View>
-
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={styles.scrollView}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing['2xl'] }]}
-        showsVerticalScrollIndicator={false}
-      >
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      style={[styles.scrollView, { backgroundColor: colors.sheet }]}
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing['2xl'] }]}
+      showsVerticalScrollIndicator={false}
+    >
 
         <HapticPressable
           onPress={() => {
@@ -468,26 +443,13 @@ export default function BookingDetailsScreen() {
         <Text variant="caption1" tone="muted" style={{ textAlign: 'center', marginTop: Spacing.md }}>
           Booked on {formatBookingDate(booking.createdAt)}
         </Text>
-      </ScrollView>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  headerBar: {
-    marginTop: Spacing.md,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerAction: {
-    minWidth: 52,
   },
   loadingContainer: {
     minHeight: Sizes.iconLg * 3,

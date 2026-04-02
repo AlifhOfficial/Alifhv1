@@ -3,24 +3,16 @@
  * Native-feeling, modular saved screen connected to API
  */
 
-import { Text, HapticPressable, EmptyState, RequireAuthSheet } from '@/components/ui';
-import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Platform, Pressable, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  interpolate,
-  Easing,
-  runOnJS,
-} from 'react-native-reanimated';
-import { Stack } from 'expo-router';
+import { HapticPressable, EmptyState, RequireAuthSheet } from '@/components/ui';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { Heart, Sparkles, ListFilter, Check, AlertCircle } from 'lucide-react-native';
+import { Package2, AlertCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 
-import { Colors, Shadows, Sizes, Spacing, Radius, Layout, ZIndex, Stroke, BorderWidths } from '@/constants/theme';
+import { Colors, Shadows, Sizes, Spacing, Layout, ZIndex, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
 import { SavedList } from '@/components/saved';
@@ -39,32 +31,16 @@ export default function SavedScreen() {
   const { isAuthenticated } = useAuth();
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
+  const router = useRouter();
+  const { tab } = useLocalSearchParams<{ tab?: string }>();
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
 
-  const [showFilterDrawer, setShowFilterDrawer] = useState(false);
-
-  const drawerProgress = useSharedValue(0);
-
-  const drawerAnimStyle = useAnimatedStyle(() => ({
-    opacity: drawerProgress.value,
-    transform: [
-      { scale: interpolate(drawerProgress.value, [0, 1], [0.96, 1]) },
-      { translateY: interpolate(drawerProgress.value, [0, 1], [6, 0]) },
-    ],
-    pointerEvents: drawerProgress.value > 0.01 ? 'box-none' : 'none',
-  }));
-
-  const openFilterDrawer = useCallback(() => {
-    if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setShowFilterDrawer(true);
-    drawerProgress.value = withTiming(1, { duration: 180, easing: Easing.out(Easing.quad) });
-  }, [drawerProgress]);
-
-  const closeFilterDrawer = useCallback(() => {
-    drawerProgress.value = withTiming(0, { duration: 140, easing: Easing.in(Easing.quad) }, (finished) => {
-      if (finished) runOnJS(setShowFilterDrawer)(false);
-    });
-  }, [drawerProgress]);
+  const initialTab = useMemo<SavedTab>(() => {
+    if (tab === 'favorites' || tab === 'superlikes') {
+      return tab;
+    }
+    return 'favorites';
+  }, [tab]);
 
   // Saved data from hook (pass isAuthenticated like profile does)
   const {
@@ -78,16 +54,28 @@ export default function SavedScreen() {
     refresh,
   } = useSaved({ isAuthenticated });
 
+  useEffect(() => {
+    if (initialTab !== activeTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab, activeTab, setActiveTab]);
+
   // Get current listings based on active tab
   const currentListings = activeTab === 'favorites' ? favorites : superlikes;
 
-  const handleTabChange = (tab: SavedTab) => {
-    if (tab === activeTab) return;
-    if (Platform.OS === 'ios') {
+  const openFilterSheet = useCallback(() => {
+    if (process.env.EXPO_OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    setActiveTab(tab);
-  };
+    router.push({
+      pathname: '/saved-filters',
+      params: {
+        activeTab,
+        favoritesCount: String(favorites.length),
+        superlikesCount: String(superlikes.length),
+      },
+    });
+  }, [activeTab, favorites.length, router, superlikes.length]);
 
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
@@ -105,19 +93,6 @@ export default function SavedScreen() {
   const nativeHeaderOptions = {
     headerShown: false,
   };
-
-  const SAVED_TABS: { key: SavedTab; label: string; icon: React.ReactNode }[] = [
-    {
-      key: 'favorites',
-      label: 'Favorites',
-      icon: <Heart size={Sizes.iconSm} color={activeTab === 'favorites' ? colors.primary : colors.labelSecondary} strokeWidth={Stroke.icon} />,
-    },
-    {
-      key: 'superlikes',
-      label: 'Superlikes',
-      icon: <Sparkles size={Sizes.iconSm} color={activeTab === 'superlikes' ? colors.primary : colors.labelSecondary} strokeWidth={Stroke.icon} />,
-    },
-  ];
 
   if (!isAuthenticated) {
     return <RequireAuthSheet context="saved" />;
@@ -172,87 +147,29 @@ export default function SavedScreen() {
         quota={quota}
       />
 
-      {showFilterDrawer && (
-        <Pressable
-          style={[styles.drawerBackdrop, { backgroundColor: colors.overlay }]}
-          onPress={closeFilterDrawer}
-        />
-      )}
-
-      {/* ── Filter Drawer Bubble ─────────────────────────────────────── */}
+      {/* ── Bottom Filter Bubble ─────────────────────────────────────── */}
       <View
-        style={[styles.fabCluster, { bottom: insets.bottom + Spacing.xl }]}
+        style={[styles.bottomBar, { bottom: insets.bottom + Spacing.xl }]}
         pointerEvents="box-none"
       >
-        {/* Drawer menu */}
-        <Animated.View
-          style={[
-            styles.drawerContainer,
-            drawerAnimStyle,
-            {
-              backgroundColor: colors.surfaceSecondary,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-            {SAVED_TABS.map((t, index) => {
-              const isActive = t.key === activeTab;
-              const isLast = index === SAVED_TABS.length - 1;
-              return (
-                <View key={t.key}>
-                  <HapticPressable
-                    onPress={() => {
-                      handleTabChange(t.key);
-                      closeFilterDrawer();
-                    }}
-                    style={styles.drawerItem}
-                  >
-                    {({ pressed }) => (
-                      <View style={[styles.drawerItemInner, { opacity: pressed ? 0.6 : 1 }]}>
-                        <View style={styles.drawerItemLeft}>
-                          {isActive ? (
-                            <Check size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
-                          ) : (
-                            <View style={{ width: Sizes.iconSm }} />
-                          )}
-                          <Text
-                            variant="body"
-                            style={{ color: isActive ? colors.primary : colors.label, fontWeight: isActive ? '600' : '400' }}
-                          >
-                            {t.label}
-                          </Text>
-                        </View>
-                      </View>
-                    )}
-                  </HapticPressable>
-                  {!isLast && (
-                    <View style={[styles.drawerDivider, { backgroundColor: colors.border }]} />
-                  )}
-                </View>
-              );
-            })}
-          </Animated.View>
-
-        {/* FAB button */}
-        <HapticPressable
-          onPress={showFilterDrawer ? closeFilterDrawer : openFilterDrawer}
-          style={[
-            styles.fabButton,
-            {
-              backgroundColor: showFilterDrawer ? colors.primary : colors.surfaceSecondary,
-              borderColor: showFilterDrawer ? colors.primary : colors.border,
-            },
-          ]}
-        >
-          {({ pressed }) => (
-            <ListFilter
+        <View style={styles.bottomBarContent}>
+          <HapticPressable
+            onPress={openFilterSheet}
+            style={[
+              styles.fabButton,
+              {
+                backgroundColor: activeTab !== 'favorites' ? colors.primary : colors.surfaceSecondary,
+                borderColor: activeTab !== 'favorites' ? colors.primary : colors.border,
+              },
+            ]}
+          >
+            <Package2
               size={Sizes.iconSm}
-              color={showFilterDrawer ? colors.primaryForeground : colors.label}
-              strokeWidth={Stroke.icon}
-              style={{ opacity: pressed ? 0.6 : 1 }}
+              color={activeTab !== 'favorites' ? colors.primaryForeground : colors.label}
+              strokeWidth={2}
             />
-          )}
-        </HapticPressable>
+          </HapticPressable>
+        </View>
       </View>
     </View>
   );
@@ -267,12 +184,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ── FAB cluster ─────────────────────────────────────────────────────
-  fabCluster: {
+  // ── Bottom action bar (centered) ───────────────────────────────────
+  bottomBar: {
     position: 'absolute',
-    right: Layout.screenPadding,
-    alignItems: 'flex-end',
+    left: 0,
+    right: 0,
     zIndex: ZIndex.overlay,
+  },
+  bottomBarContent: {
+    alignItems: 'center',
+    paddingHorizontal: Layout.screenPadding,
   },
   fabButton: {
     width: Sizes.actionButtonLg,
@@ -283,38 +204,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     ...Shadows.md,
   } as any,
-  drawerBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: ZIndex.overlay,
-  },
-
-  // ── Filter Drawer ───────────────────────────────────────────────────
-  drawerContainer: {
-    marginBottom: Spacing.sm,
-    borderRadius: Radius['3xl'],
-    borderCurve: 'continuous',
-    borderWidth: StyleSheet.hairlineWidth,
-    overflow: 'hidden',
-    minWidth: 200,
-    ...Shadows.lg,
-  } as any,
-  drawerItem: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.lg,
-  },
-  drawerItemInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  drawerItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  drawerDivider: {
-    height: StyleSheet.hairlineWidth,
-    marginHorizontal: Spacing.lg,
-  },
 
   skeletonContainer: {
     flex: 1,
