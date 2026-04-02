@@ -1,0 +1,31 @@
+# Ignore local/editor/cache state
+.git
+.vscode
+.vercel
+.turbo
+node_modules
+
+# Ignore unrelated apps and assets for the web deployment
+apps/mobile
+apps/ws
+apps/preprocessing
+
+docs
+logo
+redirect
+
+# Ignore local agent metadata
+.agents
+
+# Ignore repo-level scripts and files not needed for the web build
+Dockerfile.preprocessing
+Dockerfile.ws
+app.json
+eas.json
+fly.preprocessing.toml
+fly.ws.toml
+package.preprocessing.json
+package.ws.json
+skills-lock.json
+check-slugs.ts
+test-sitemap.ts

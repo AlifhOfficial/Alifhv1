@@ -1,5 +1,5 @@
 {
-  "installCommand": "cd ../.. && bun install",
+  "installCommand": "cd ../.. && bun install --filter='@alifh/web' --filter='@alifh/database' --filter='@alifh/ai' --filter='@alifh/shared' --frozen-lockfile",
   "rewrites": [
     {
       "source": "/",
