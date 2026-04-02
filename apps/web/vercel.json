@@ -1,5 +1,5 @@
 {
-  "installCommand": "if [ -f package.json ]; then bun install --filter='@alifh/web' --filter='@alifh/database' --filter='@alifh/ai' --filter='@alifh/shared' --frozen-lockfile; elif [ -f ../../package.json ]; then cd ../.. && bun install --filter='@alifh/web' --filter='@alifh/database' --filter='@alifh/ai' --filter='@alifh/shared' --frozen-lockfile; else echo 'Unable to locate repo root package.json for Bun install' >&2; exit 1; fi",
+  "installCommand": "bun run vercel:install:web",
   "rewrites": [
     {
       "source": "/",
