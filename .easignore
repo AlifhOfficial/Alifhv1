@@ -1,10 +1,5 @@
 # EAS Build Ignore - Monorepo optimization
-# Exclude other apps (not needed for mobile build)
-apps/web/
-apps/ws/
-
-# Exclude packages (mobile doesn't use them after we removed @alifh/database)
-packages/
+# Keep all workspace folders included so Bun frozen lockfile remains valid in cloud builds.
 
 # Exclude documentation and assets
 docs/
