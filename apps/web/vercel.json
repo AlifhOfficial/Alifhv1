@@ -1,5 +1,6 @@
 {
-  "installCommand": "cd ../.. && bun run vercel:install:web",
+  "installCommand": "cd apps/web && bun install",
+  "buildCommand": "cd apps/web && bun run build",
   "rewrites": [
     {
       "source": "/",

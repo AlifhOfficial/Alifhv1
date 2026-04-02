@@ -11,7 +11,6 @@
     "build:all": "turbo run build",
     "build:web": "turbo run build --filter=@alifh/web",
     "build:mobile": "turbo run build --filter=@alifh/mobile",
-    "vercel:install:web": "bun install --filter='@alifh/web' --filter='@alifh/database' --filter='@alifh/ai' --filter='@alifh/shared' --frozen-lockfile",
     "start": "cd apps/web && bun run start",
     "test": "turbo run test",
     "lint": "turbo run lint",
