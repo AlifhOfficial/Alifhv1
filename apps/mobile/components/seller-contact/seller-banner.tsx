@@ -6,11 +6,11 @@
  */
 
 import React, { memo } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
-import { Spacing, Radius, Timing } from '@/constants/theme';
+import { Radius, Timing } from '@/constants/theme';
 import { getAppThumbUrl } from '@/lib/config';
 import type { SellerContactColors } from './types';
 import type { SellerInfo } from '@/lib/seller-api';

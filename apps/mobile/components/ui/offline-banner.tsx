@@ -11,8 +11,6 @@ import Animated, {
   useSharedValue,
   withTiming,
   withSpring,
-  interpolate,
-  Extrapolation,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WifiOff, RefreshCw } from 'lucide-react-native';

@@ -66,6 +66,7 @@ export function useMessages({
   const conversationIdRef = useRef(conversationId);
   const userIdRef = useRef(userId);
   const otherUserIdRef = useRef(otherUserId);
+  const initialLastSeenAtRef = useRef<string | null>(initialLastSeenAt ?? null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSentRef = useRef(0);
   const watchingRef = useRef(false);
@@ -84,6 +85,9 @@ export function useMessages({
   useEffect(() => {
     otherUserIdRef.current = otherUserId;
   }, [otherUserId]);
+  useEffect(() => {
+    initialLastSeenAtRef.current = initialLastSeenAt ?? null;
+  }, [initialLastSeenAt]);
 
   // Update lastSeenAt when initial value changes (conversation refresh)
   // Only update if new value is more recent (matches web behavior)
@@ -111,7 +115,7 @@ export function useMessages({
     setIsOtherTyping(false);
     setIsOtherOnline(null);
     // Reset to initial value from DB (not undefined)
-    setOtherLastSeenAt(initialLastSeenAt ?? null);
+    setOtherLastSeenAt(initialLastSeenAtRef.current);
     watchingRef.current = false;
     conversationIdRef.current = conversationId;
     // Clear pending sends tracking
@@ -253,7 +257,7 @@ export function useMessages({
         clearTimeout(typingTimeoutRef.current);
       }
     };
-  }, [subscribe]);
+  }, [dedupeMessages, subscribe]);
 
   // Fetch messages
   const loadMessages = useCallback(
@@ -325,7 +329,7 @@ export function useMessages({
         }
       }
     },
-    [conversationId, isAuthenticated, enabled]
+    [conversationId, dedupeMessages, isAuthenticated, enabled]
   );
 
   // Load on conversation change or initial mount

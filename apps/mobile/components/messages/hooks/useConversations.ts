@@ -161,15 +161,18 @@ export function useConversations({
     }
   }, [isConnected, conversations, send]);
 
+  const cleanupWatchedUsers = useCallback(() => {
+    const watchedUsers = Array.from(watchedUsersRef.current);
+    for (const uid of watchedUsers) {
+      send({ type: 'unwatch_user', targetUserId: uid });
+    }
+    watchedUsersRef.current.clear();
+  }, [send]);
+
   // Cleanup all watched users on unmount
   useEffect(() => {
-    return () => {
-      for (const uid of watchedUsersRef.current) {
-        send({ type: 'unwatch_user', targetUserId: uid });
-      }
-      watchedUsersRef.current.clear();
-    };
-  }, [send]);
+    return cleanupWatchedUsers;
+  }, [cleanupWatchedUsers]);
 
   // Fetch conversations
   const loadConversations = useCallback(async () => {

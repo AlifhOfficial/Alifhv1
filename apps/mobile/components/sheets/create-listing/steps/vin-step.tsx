@@ -57,7 +57,7 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
       setLocalVin(data.vin);
       setStatus(data.vinVerified ? 'verified' : 'idle');
     }
-  }, [data.vin, data.vinVerified]);
+  }, [data.vin, data.vinVerified, localVin]);
 
   const verifyVin = useCallback(
     async (vin: string) => {

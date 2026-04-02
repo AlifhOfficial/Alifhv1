@@ -5,10 +5,9 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useRef, useEffect } from 'react';
-import { StyleSheet, View, TextInput, Pressable, Platform, KeyboardTypeOptions } from 'react-native';
+import { StyleSheet, View, TextInput, Platform, KeyboardTypeOptions } from 'react-native';
 import Animated, {
   FadeIn,
-  FadeOut,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,

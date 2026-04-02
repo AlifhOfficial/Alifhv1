@@ -106,24 +106,32 @@ export function useFavoriteActions(
   const favConfetti = useConfettiBurst();
   const superConfetti = useConfettiBurst();
 
+  const {
+    onFavoritePress,
+    onSuperlikePress,
+    isFavorite: controlledIsFavorite,
+    isSuperliked: controlledIsSuperliked,
+    skipHaptics = false,
+  } = options;
+
   // Determine current state (props override context)
-  const isFavorite = options.isFavorite ?? favoriteState.isFavorite;
-  const isSuperliked = options.isSuperliked ?? favoriteState.isSuperliked;
+  const isFavorite = controlledIsFavorite ?? favoriteState.isFavorite;
+  const isSuperliked = controlledIsSuperliked ?? favoriteState.isSuperliked;
   const quota = favoriteState.quota;
 
   const triggerHaptic = useCallback(() => {
-    if (options.skipHaptics) return;
+    if (skipHaptics) return;
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
-  }, [options.skipHaptics]);
+  }, [skipHaptics]);
 
   const toggleFavorite = useCallback(() => {
     triggerHaptic();
 
     // Use custom callback if provided
-    if (options.onFavoritePress) {
-      options.onFavoritePress(listingId);
+    if (onFavoritePress) {
+      onFavoritePress(listingId);
       // Still fire effects when toggling ON
       if (!isFavorite) {
         favConfetti.fire({ colors: [...FAVORITE_COLORS], count: 10 });
@@ -149,7 +157,7 @@ export function useFavoriteActions(
     });
   }, [
     listingId,
-    options.onFavoritePress,
+    onFavoritePress,
     favoriteState,
     isAuthenticated,
     showAuthSheet,
@@ -162,8 +170,8 @@ export function useFavoriteActions(
     triggerHaptic();
 
     // Use custom callback if provided
-    if (options.onSuperlikePress) {
-      options.onSuperlikePress(listingId);
+    if (onSuperlikePress) {
+      onSuperlikePress(listingId);
       if (!isSuperliked) {
         superConfetti.fire({ colors: [...SUPERLIKE_COLORS], count: 14 });
       }
@@ -198,7 +206,7 @@ export function useFavoriteActions(
     setShowConfirmSheet(true);
   }, [
     listingId,
-    options.onSuperlikePress,
+    onSuperlikePress,
     favoriteState,
     isAuthenticated,
     showAuthSheet,

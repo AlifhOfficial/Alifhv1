@@ -13,7 +13,7 @@ import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 
-import { Spacing, Colors, Layout, Radius, Sizes } from '@/constants/theme';
+import { Spacing, Layout, Radius, Sizes } from '@/constants/theme';
 import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
@@ -77,6 +77,7 @@ export default function SellerContactScreen() {
 
   // Check if this is the user's own listing
   const isOwnListing = !!(user?.id && listing?.sellerData?.userId === user.id);
+  const currentUserId = user?.id;
 
   // Handlers
   const handleBack = useCallback(() => {
@@ -115,7 +116,7 @@ export default function SellerContactScreen() {
     }
 
     // Prevent messaging yourself (own listing)
-    if (otherUserId === user?.id) {
+    if (otherUserId === currentUserId) {
       Alert.alert('Your Listing', 'You cannot message yourself on your own listing.');
       return;
     }
@@ -177,7 +178,7 @@ export default function SellerContactScreen() {
     } finally {
       setIsChatLoading(false);
     }
-  }, [listing, listingId, seller, isAuthenticated, router]);
+  }, [listing, listingId, seller, isAuthenticated, router, currentUserId]);
 
   const handleBookViewing = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -266,7 +267,6 @@ export default function SellerContactScreen() {
     [seller?.specialties, seller?.badges]
   );
   const flatListData = useMemo(() => [{ key: 'seller-contact-body' }], []);
-  const sellerContentPaddingTop = insets.top + Spacing.lg;
   const sellerContentPaddingBottom = insets.bottom + Layout.bottomGradientExtension + Spacing.xl;
 
   const sellerContent = useMemo(() => {

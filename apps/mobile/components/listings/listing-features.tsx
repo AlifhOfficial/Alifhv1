@@ -32,7 +32,6 @@ export const ListingFeatures = memo(function ListingFeatures({
 
   const hasMore = extras.length > MAX_VISIBLE_FEATURES;
   const visibleExtras = hasMore ? extras.slice(0, MAX_VISIBLE_FEATURES) : extras;
-  const remainingCount = extras.length - MAX_VISIBLE_FEATURES;
 
   return (
     <Animated.View entering={FadeInDown.delay(0).duration(350)}>

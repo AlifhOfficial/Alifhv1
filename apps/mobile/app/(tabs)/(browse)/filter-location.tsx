@@ -13,7 +13,7 @@ export default function FilterLocationScreen() {
   const colors = Colors[colorScheme];
   const { filterParams, updateFilterParams } = useSearch();
 
-  const selected = filterParams.emirate ?? [];
+  const selected = useMemo(() => filterParams.emirate ?? [], [filterParams.emirate]);
 
   const sortedOptions = useMemo(() => {
     const selectedSet = new Set(selected);

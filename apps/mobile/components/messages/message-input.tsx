@@ -19,7 +19,7 @@ import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller
 import { Send, Plus } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing, Radius, Typography, Sizes, Layout, ZIndex, Shadows, Stroke } from '@/constants/theme';
+import { Colors, Spacing, Radius, Typography, Sizes, Layout, ZIndex, Stroke } from '@/constants/theme';
 
 interface MessageInputProps {
   onSend: (text: string) => Promise<void>;
@@ -73,7 +73,7 @@ export function MessageInput({
     if (!initialText) return;
     if (text.trim().length > 0) return;
     setText(initialText);
-  }, [initialText, resetKey]);
+  }, [initialText, resetKey, text]);
 
   // Handle content size change for auto-resize
   const handleContentSizeChange = useCallback(
@@ -139,7 +139,7 @@ export function MessageInput({
     // Fire and forget
     try {
       await onSend(trimmedText);
-    } catch (error) {
+    } catch {
       // Handled silently - optimistic update already done
     }
   }, [text, disabled, onSend, onTyping]);

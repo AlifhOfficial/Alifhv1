@@ -201,7 +201,7 @@ export function ProfileAvatar({
     } else {
       loadingOpacity.value = 1;
     }
-  }, [isUploading]);
+  }, [isUploading, loadingOpacity]);
 
   const loadingTextStyle = useAnimatedStyle(() => ({
     opacity: loadingOpacity.value,

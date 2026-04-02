@@ -4,7 +4,7 @@
  */
 
 import { HapticPressable, Text } from '@/components/ui';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Search } from 'lucide-react-native';

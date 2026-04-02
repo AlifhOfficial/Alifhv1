@@ -155,7 +155,6 @@ if (!navLockState.installed) {
 
 function RootLayoutNav() {
   const { colorScheme } = useTheme();
-  const { signIn } = useAuth();
   const colors = Colors[colorScheme];
 
   // Wire TanStack Query focusManager to AppState so stale queries refetch when app comes to foreground.

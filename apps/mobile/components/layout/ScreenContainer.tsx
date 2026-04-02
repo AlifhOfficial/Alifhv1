@@ -10,8 +10,7 @@ import { StyleSheet, View, ScrollView, NativeSyntheticEvent, NativeScrollEvent }
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useTheme } from '@/context/theme-context';
-import { Colors, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { HapticRefreshControl } from '@/components/ui/haptic-refresh-control';
 import { getTabBarContentInset } from './tab-bar-metrics';
 
@@ -80,8 +79,6 @@ export const ScreenContainer = forwardRef<ScrollView, ScreenContainerProps>(
     },
     ref
   ) {
-    const { colorScheme } = useTheme();
-    const colors = Colors[colorScheme];
     const insets = useSafeAreaInsets();
     const [titleHidden, setTitleHidden] = useState(false);
 

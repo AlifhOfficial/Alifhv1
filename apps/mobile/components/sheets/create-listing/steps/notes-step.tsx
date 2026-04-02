@@ -8,7 +8,7 @@
  */
 
 import { Text, HapticPressable } from '@/components/ui';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { X, Plus } from 'lucide-react-native';
@@ -37,7 +37,7 @@ export function NotesStepContent({ data, onUpdate }: StepContentProps) {
   const colors = Colors[colorScheme];
   const [noteInput, setNoteInput] = useState('');
 
-  const notes = data.specialNotes || [];
+  const notes = useMemo(() => data.specialNotes || [], [data.specialNotes]);
 
   const addNote = useCallback(() => {
     const trimmed = noteInput.trim();

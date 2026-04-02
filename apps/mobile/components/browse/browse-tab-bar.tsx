@@ -3,7 +3,7 @@
  * Shows: back + search + sort + filters
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { MotiPressable } from 'moti/interactions';
 import * as Haptics from 'expo-haptics';

@@ -5,7 +5,7 @@
  * Conversation data can be passed via nav params to avoid fetch.
  */
 
-import { Text, EmptyState } from '@/components/ui';
+import { EmptyState } from '@/components/ui';
 import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';

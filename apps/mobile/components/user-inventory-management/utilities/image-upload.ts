@@ -17,7 +17,6 @@ import {
   uploadListingImageDirect,
   getListingUploadToken,
   deleteListingImage,
-  type DirectListingUploadResult,
 } from '@/lib/sell-car-user-api';
 import { preshrinkForUpload } from '@/lib/image-compress';
 import { CDN_BASE, API_BASE } from '@/lib/config';

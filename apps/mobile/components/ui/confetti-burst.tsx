@@ -14,18 +14,16 @@
 import React, {
   forwardRef,
   memo,
-  useCallback,
   useImperativeHandle,
   useRef,
   useState,
 } from 'react';
-import { StyleSheet, View, type LayoutRectangle } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withDelay,
-  withSequence,
   runOnJS,
   Easing,
 } from 'react-native-reanimated';
@@ -103,7 +101,7 @@ const AnimatedParticle = memo(function AnimatedParticle({
         }
       }),
     );
-  }, []);
+  }, [onDone, opacity, particle.delay, progress]);
 
   const style = useAnimatedStyle(() => {
     const dx = Math.cos(particle.angle) * particle.distance * progress.value;
@@ -149,7 +147,7 @@ export const ConfettiBurst = memo(
     const doneCount = useRef(0);
     const activeCount = useRef(0);
 
-    const fire = useCallback((opts?: ConfettiBurstOptions) => {
+    const fire = React.useCallback((opts?: ConfettiBurstOptions) => {
       const colors = opts?.colors ?? FAVORITE_COLORS;
       const count = opts?.count ?? 12;
 
@@ -175,7 +173,7 @@ export const ConfettiBurst = memo(
       setParticles(newParticles);
     }, []);
 
-    const handleParticleDone = useCallback(() => {
+    const handleParticleDone = React.useCallback(() => {
       doneCount.current += 1;
       if (doneCount.current >= activeCount.current) {
         setParticles([]);
@@ -207,7 +205,7 @@ export const ConfettiBurst = memo(
 export function useConfettiBurst() {
   const ref = useRef<ConfettiBurstRef>(null);
 
-  const fire = useCallback((opts?: ConfettiBurstOptions) => {
+  const fire = React.useCallback((opts?: ConfettiBurstOptions) => {
     ref.current?.fire(opts);
   }, []);
 

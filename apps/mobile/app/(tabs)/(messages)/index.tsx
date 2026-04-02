@@ -7,7 +7,7 @@
  * - Multiple conversations with same partner/user render as collapsible groups
  */
 
-import { Text, Skeleton, SkeletonCircle, HapticRefreshControl, EmptyState, RequireAuthSheet } from '@/components/ui';
+import { Skeleton, SkeletonCircle, HapticRefreshControl, EmptyState, RequireAuthSheet } from '@/components/ui';
 import React, { useMemo, useCallback, useRef } from 'react';
 import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';

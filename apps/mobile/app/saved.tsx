@@ -54,22 +54,17 @@ export default function SavedScreen() {
     pointerEvents: drawerProgress.value > 0.01 ? 'box-none' : 'none',
   }));
 
-  const backdropAnimStyle = useAnimatedStyle(() => ({
-    opacity: drawerProgress.value,
-    pointerEvents: drawerProgress.value > 0.01 ? 'box-none' : 'none',
-  }));
-
   const openFilterDrawer = useCallback(() => {
     if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setShowFilterDrawer(true);
     drawerProgress.value = withTiming(1, { duration: 180, easing: Easing.out(Easing.quad) });
-  }, []);
+  }, [drawerProgress]);
 
   const closeFilterDrawer = useCallback(() => {
     drawerProgress.value = withTiming(0, { duration: 140, easing: Easing.in(Easing.quad) }, (finished) => {
       if (finished) runOnJS(setShowFilterDrawer)(false);
     });
-  }, []);
+  }, [drawerProgress]);
 
   // Saved data from hook (pass isAuthenticated like profile does)
   const {
@@ -123,8 +118,6 @@ export default function SavedScreen() {
       icon: <Sparkles size={Sizes.iconSm} color={activeTab === 'superlikes' ? colors.primary : colors.labelSecondary} strokeWidth={Stroke.icon} />,
     },
   ];
-
-  const FAB_SIZE = Sizes.actionButtonLg;
 
   if (!isAuthenticated) {
     return <RequireAuthSheet context="saved" />;

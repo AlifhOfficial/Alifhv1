@@ -6,7 +6,7 @@ import { MapPin, RefreshCw, Send } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { HapticPressable, Text, useAlert } from '@/components/ui';
-import { Colors, Layout, Radius, SheetChrome, SheetTypography, Shadows, Sizes, Spacing, Stroke } from '@/constants/theme';
+import { Colors, Radius, SheetChrome, SheetTypography, Shadows, Sizes, Spacing, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useLocation, type LocationResult } from '@/hooks/use-location';
 import { sendLocationMessage } from '@/lib/messaging-api';

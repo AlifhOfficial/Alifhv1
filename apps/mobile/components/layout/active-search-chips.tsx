@@ -12,14 +12,13 @@ import { X } from 'lucide-react-native';
 import Animated, {
   useAnimatedStyle,
   withTiming,
-  withSpring,
   FadeIn,
   FadeOut,
   Layout,
 } from 'react-native-reanimated';
 
-import { useSearch, type SearchChip, type SearchParams, type FilterParams, type RemovableFilterKey } from '@/context/search-context';
-import { Colors, Shadows, Spacing, Typography, Fonts, Sizes, Radius, ZIndex } from '@/constants/theme';
+import { useSearch, type SearchChip, type SearchParams, type RemovableFilterKey } from '@/context/search-context';
+import { Colors, Shadows, Spacing, Typography, Sizes, Radius, ZIndex } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 const AnimatedView = Animated.View;
@@ -35,7 +34,7 @@ interface ActiveSearchChipsProps {
 export function ActiveSearchChips({ visible }: ActiveSearchChipsProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const { searchParams, getSearchChips, removeSearchParam, clearSearch, resetSort, sortBy, removeFilterParam, clearFilterParams, filterParams } = useSearch();
+  const { getSearchChips, removeSearchParam, clearSearch, resetSort, sortBy, removeFilterParam, clearFilterParams } = useSearch();
 
   const chips = getSearchChips();
   const hasChips = chips.length > 0;

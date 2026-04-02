@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { Loader2, Trash2 } from 'lucide-react-native';
 import { ScrollView, StyleSheet, TextInput, View } from 'react-native';

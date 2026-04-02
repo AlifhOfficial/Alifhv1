@@ -5,13 +5,13 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useRef, useEffect } from 'react';
-import { StyleSheet, View, TextInput, Pressable, Platform } from 'react-native';
+import { StyleSheet, View, TextInput, Platform } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
 import { InputTypography, Spacing, Radius, Layout } from '@/constants/theme';
 import { Section } from './Section';
-import type { ThemeColors, EditingField, ProfileFormData } from './types';
+import type { ThemeColors } from './types';
 
 const MAX_BIO_LENGTH = 2000;
 

@@ -12,7 +12,7 @@ import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 
-import { Typography, Fonts, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
+import { Typography, Colors, Spacing, Radius, Sizes} from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 
 import { StepContainer } from '../step-container';

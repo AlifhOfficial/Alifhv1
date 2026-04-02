@@ -50,10 +50,6 @@ export function SavedList({
     router.push(`/listing/${id}`);
   }, [router]);
 
-  const handleBrowse = useCallback(() => {
-    router.push('/(tabs)/(browse)');
-  }, [router]);
-
   // Empty state
   if (listings.length === 0) {
     const isFavorites = activeTab === 'favorites';

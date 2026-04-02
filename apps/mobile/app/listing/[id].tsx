@@ -5,7 +5,7 @@
  * Uses React Query for data fetching (caching, dedup, prefetch support).
  */
 
-import { Bubble, ConfettiBurst, HapticRefreshControl, Text, useFavoriteActions, EmptyState } from '@/components/ui';
+import { Bubble, ConfettiBurst, HapticRefreshControl, useFavoriteActions, EmptyState } from '@/components/ui';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { 
   View, ScrollView, StyleSheet, InteractionManager, Platform } from 'react-native';

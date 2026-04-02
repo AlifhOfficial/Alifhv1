@@ -17,8 +17,8 @@ export default function FilterModelScreen() {
   const { searchParams, applySearch, clearSearch } = useSearch();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const selectedMakes = searchParams?.make ?? [];
-  const selectedModels = searchParams?.model ?? [];
+  const selectedMakes = useMemo(() => searchParams?.make ?? [], [searchParams?.make]);
+  const selectedModels = useMemo(() => searchParams?.model ?? [], [searchParams?.model]);
 
   const allModels = useMemo<ModelOption[]>(() => {
     const result: ModelOption[] = [];

@@ -5,7 +5,7 @@
 
 import { Text } from '@/components/ui';
 import React from 'react';
-import { StyleSheet, View, Platform } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { Spacing, Radius } from '@/constants/theme';

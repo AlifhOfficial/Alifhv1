@@ -14,7 +14,6 @@ import {
   requestAccountDeletion,
   type UserProfile,
   type ProfileUpdatePayload,
-  type Passkey,
   type ProfileData,
 } from '@/lib/profile-api';
 import {

@@ -5,7 +5,7 @@
 
 import { Text, HapticPressable, useAlert } from '@/components/ui';
 import React, { useState, useEffect, useRef } from 'react';
-import { ActivityIndicator, StyleSheet, View, TextInput, Pressable, Platform } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, TextInput, Platform } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { CheckCircle2 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';

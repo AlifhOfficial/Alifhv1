@@ -15,7 +15,7 @@ export default function FilterMakeScreen() {
   const { searchParams, applySearch, clearSearch } = useSearch();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const selected = searchParams?.make ?? [];
+  const selected = useMemo(() => searchParams?.make ?? [], [searchParams?.make]);
 
   const filteredMakes = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
