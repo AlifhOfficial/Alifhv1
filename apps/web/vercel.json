@@ -1,5 +1,5 @@
 {
-  "installCommand":"bun install",
+  "installCommand": "cd ../.. && bun install --filter='@alifh/web' --filter='@alifh/database' --filter='@alifh/ai' --filter='@alifh/shared' --frozen-lockfile",
   "buildCommand": "bun run build",
   "rewrites": [
     {
