@@ -9,7 +9,7 @@
  *       – Status badge (dot + label)
  *       – Expiry countdown
  *       – Engagement stats (views / saves / superlikes)
- *       – Three-dot action menu → EditStatusSheet → sub-ops
+ *       – Three-dot action menu → native form-sheet routes
  *   • Pull-to-refresh, pagination, loading / empty / error states
  *
  * @module components/user-inventory-management/inventory-screen
@@ -17,7 +17,7 @@
 
 import { Text, HapticPressable, Skeleton, HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, StyleSheet, FlatList, Pressable, ScrollView, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, StyleSheet, FlatList, Pressable, ActivityIndicator, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 
 import { Image } from 'expo-image';
 import { getAppThumbUrl } from '@/lib/config';
@@ -43,31 +43,23 @@ import {
   type MyListingCard,
   type MyListingsStats,
   type MyListingsFilter,
-  type DeleteListingResponse,
 } from '@/lib/sell-car-user-api';
 import {
   formatListingStatus,
   getStatusColor,
   formatExpiryCountdown,
-  buildListingTitle,
   formatPrice,
   canOpenPublicListing,
 } from './utilities/listing-helpers';
-import {
-  EditStatusSheet,
-  type EditStatusAction,
-} from './sub-operations/edit-status-sheet';
-import { MarkSoldSheet } from './sub-operations/mark-sold-sheet';
-import { ExtendListingSheet } from './sub-operations/extend-listing-sheet';
-import { ArchiveListingSheet } from './sub-operations/archive-listing-sheet';
-
-import { DeleteListingSheet } from './sub-operations/delete-listing-sheet';
-import { ListingStatsSheet } from './sub-operations/listing-stats-sheet';
-import { PendingReviewReasonSheet } from './sub-operations/pending-review-reason-sheet';
 import { CreateListingFlow } from '@/components/sheets/create-listing/create-listing-flow';
 import type { CreateListingData } from '@/components/sheets/create-listing/types';
 import { useInventory } from '@/hooks/use-inventory-query';
 import { getMobileHeaderContentInset } from '@/components/layout';
+import {
+  buildInventorySheetParams,
+  getStringParam,
+  parseBooleanParam,
+} from '@/components/user-inventory-management/sub-operations/route-params';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -117,7 +109,17 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
   const router = useRouter();
-  const { tab } = useLocalSearchParams<{ tab?: string }>();
+  const {
+    tab,
+    editListingId,
+    editPublished,
+    editNonce,
+  } = useLocalSearchParams<{
+    tab?: string;
+    editListingId?: string;
+    editPublished?: string;
+    editNonce?: string;
+  }>();
 
   // Determine initial tab from URL param
   const initialTab = useMemo(() => {
@@ -134,7 +136,6 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   const {
     listings,
     stats,
-    total,
     isLoading,
     isRefreshing,
     isLoadingMore,
@@ -150,26 +151,18 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
     setActiveTab(initialTab);
   }, [initialTab]);
 
-  // ── Sheet State ──────────────────────────────────────────────────────────
-  const [selectedListing, setSelectedListing] = useState<MyListingCard | null>(null);
-  const [showEditStatus, setShowEditStatus] = useState(false);
-  const [showMarkSold, setShowMarkSold] = useState(false);
-  const [showExtend, setShowExtend] = useState(false);
-  const [showArchive, setShowArchive] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
-  const [hardDeleteMode, setHardDeleteMode] = useState(false);
-  const [showStats, setShowStats] = useState(false);
-  const [showReviewReason, setShowReviewReason] = useState(false);
+  // ── Create Flow State ────────────────────────────────────────────────────
   const [showEditFlow, setShowEditFlow] = useState(false);
   const [editInitialData, setEditInitialData] = useState<Partial<CreateListingData> | undefined>(undefined);
   const [editingListingId, setEditingListingId] = useState<string | null>(null);
   const [isPublishedEdit, setIsPublishedEdit] = useState(false);
+  const handledEditNonceRef = useRef<string | null>(null);
 
   // ── Filter Drawer State ─────────────────────────────────────────────────
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
 
   const openFilterDrawer = useCallback(() => {
-    if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (process.env.EXPO_OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setShowFilterDrawer(true);
   }, []);
 
@@ -200,104 +193,85 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
   // ── Tab ──────────────────────────────────────────────────────────────────
 
   const handleTabChange = useCallback((tab: MyListingsFilter) => {
-    if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (process.env.EXPO_OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setActiveTab(tab);
   }, []);
 
-  // ── Actions ──────────────────────────────────────────────────────────────
-
-  const openActions = useCallback((listing: MyListingCard) => {
-    if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setSelectedListing(listing);
-    setShowEditStatus(true);
-  }, []);
-
-  const handleEditStatusAction = useCallback(async (action: EditStatusAction) => {
-    switch (action) {
-      case 'edit': {
-        if (!selectedListing) break;
-        try {
-          const listing = await getListingForEdit(selectedListing.id);
-          // Check if this is a published listing (not draft)
-          // Drafts get full creation flow, published get limited edit
-          const isDraft = selectedListing.moderationStatus === 'draft';
-          
-          // Map API data to CreateListingData format
-          const initialData: Partial<CreateListingData> = {
-            vin: listing.vin || '',
-            vinVerified: true, // If they have a listing, VIN was verified
-            vinVisibility: listing.vinVisibility || 'public',
-            make: listing.make || '',
-            model: listing.model || '',
-            year: listing.year?.toString() || '',
-            trim: listing.trim || '',
-            mileage: listing.mileage?.toString() || '',
-            specs: listing.specs || 'gcc',
-            steeringSide: listing.steeringSide || 'left',
-            bodyType: listing.bodyType || '',
-            exteriorColor: listing.exteriorColor || '',
-            interiorColor: listing.interiorColor || '',
-            doors: listing.doors?.toString() || '',
-            seatingCapacity: listing.seatingCapacity?.toString() || '',
-            fuelType: listing.fuelType || '',
-            transmission: listing.transmission || '',
-            engineSize: listing.engineSize || '',
-            engineType: listing.engineType || '',
-            cylinders: listing.cylinders?.toString() || '',
-            powerRange: listing.powerRange || '',
-            fuelEconomy: listing.fuelEconomy || '',
-            torque: listing.torque || '',
-            warrantyType: listing.warrantyType || '',
-            exportStatus: listing.exportStatus || 'local_only',
-            extras: listing.extras || [],
-            tags: listing.tags || [],
-            price: listing.price?.toString() || '',
-            isNegotiable: listing.isNegotiable ?? false,
-            emirate: listing.emirate || '',
-            city: listing.city || '',
-            images: listing.images || [],
-            description: listing.description || '',
-            specialNotes: Array.isArray(listing.specialNotes) ? listing.specialNotes : [],
-          };
-          setEditInitialData(initialData);
-          setEditingListingId(selectedListing.id);
-          setIsPublishedEdit(!isDraft); // true for published, false for drafts
-          setShowEditFlow(true);
-        } catch (err) {
-          console.error('Failed to load listing for edit:', err);
-        }
-        break;
+  const launchEditFlow = useCallback(
+    async (listingId: string, publishedEdit: boolean) => {
+      try {
+        const listing = await getListingForEdit(listingId);
+        const initialData: Partial<CreateListingData> = {
+          vin: listing.vin || '',
+          vinVerified: true,
+          vinVisibility: listing.vinVisibility || 'public',
+          make: listing.make || '',
+          model: listing.model || '',
+          year: listing.year?.toString() || '',
+          trim: listing.trim || '',
+          mileage: listing.mileage?.toString() || '',
+          specs: listing.specs || 'gcc',
+          steeringSide: listing.steeringSide || 'left',
+          bodyType: listing.bodyType || '',
+          exteriorColor: listing.exteriorColor || '',
+          interiorColor: listing.interiorColor || '',
+          doors: listing.doors?.toString() || '',
+          seatingCapacity: listing.seatingCapacity?.toString() || '',
+          fuelType: listing.fuelType || '',
+          transmission: listing.transmission || '',
+          engineSize: listing.engineSize || '',
+          engineType: listing.engineType || '',
+          cylinders: listing.cylinders?.toString() || '',
+          powerRange: listing.powerRange || '',
+          fuelEconomy: listing.fuelEconomy || '',
+          torque: listing.torque || '',
+          warrantyType: listing.warrantyType || '',
+          exportStatus: listing.exportStatus || 'local_only',
+          extras: listing.extras || [],
+          tags: listing.tags || [],
+          price: listing.price?.toString() || '',
+          isNegotiable: listing.isNegotiable ?? false,
+          emirate: listing.emirate || '',
+          city: listing.city || '',
+          images: listing.images || [],
+          description: listing.description || '',
+          specialNotes: Array.isArray(listing.specialNotes) ? listing.specialNotes : [],
+        };
+        setEditInitialData(initialData);
+        setEditingListingId(listingId);
+        setIsPublishedEdit(publishedEdit);
+        setShowEditFlow(true);
+      } catch (err) {
+        console.error('Failed to load listing for edit:', err);
       }
-      case 'view_stats': setShowStats(true); break;
-      case 'view_review_reason': setShowReviewReason(true); break;
-      case 'mark_sold': setShowMarkSold(true); break;
-      case 'extend': setShowExtend(true); break;
-      case 'archive':
-      case 'unarchive': setShowArchive(true); break;
-      case 'delete': setHardDeleteMode(false); setShowDelete(true); break;
-      case 'hard_delete': setHardDeleteMode(true); setShowDelete(true); break;
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const listingId = getStringParam(editListingId);
+    const nonce = getStringParam(editNonce);
+
+    if (!listingId || !nonce || handledEditNonceRef.current === nonce) {
+      return;
     }
-  }, [selectedListing]);
 
-  const handleSubOpSuccess = useCallback(() => invalidate(), [invalidate]);
+    handledEditNonceRef.current = nonce;
+    void launchEditFlow(listingId, parseBooleanParam(editPublished));
+  }, [editListingId, editNonce, editPublished, launchEditFlow]);
 
-  /** Handle delete success: navigate to 'deleted' tab for soft-deletes */
-  const handleDeleteSuccess = useCallback((result: DeleteListingResponse) => {
-    if (result.action === 'soft_deleted' && activeTab !== 'deleted') {
-      // Navigate to deleted tab so user can see where listing went
-      setActiveTab('deleted');
-    } else {
-      // Hard delete or already on deleted tab - just refresh
-      invalidate();
-    }
-  }, [activeTab, invalidate]);
+  const openActions = useCallback(
+    (listing: MyListingCard) => {
+      if (process.env.EXPO_OS === 'ios') {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
 
-  const selectedTitle = useMemo(
-    () =>
-      selectedListing
-        ? buildListingTitle(selectedListing.year, selectedListing.make, selectedListing.model, selectedListing.trim)
-        : '',
-    [selectedListing],
+      router.push({
+        pathname: '/inventory/actions',
+        params: buildInventorySheetParams(listing, activeTab),
+      });
+    },
+    [activeTab, router],
   );
 
   // ════════════════════════════════════════════════════════════════════════
@@ -507,76 +481,6 @@ export function InventoryScreen({ onScroll }: InventoryScreenProps) {
       {/* Backdrop to dismiss filter drawer */}
       {showFilterDrawer && (
         <Pressable style={styles.drawerBackdrop} onPress={closeFilterDrawer} />
-      )}
-
-      {/* ─────────────────────── Bottom Sheets ──────────────────────────── */}
-      {selectedListing && (
-        <>
-          <EditStatusSheet
-            visible={showEditStatus}
-            onClose={() => setShowEditStatus(false)}
-            onAction={handleEditStatusAction}
-            listingId={selectedListing.id}
-            listingTitle={selectedTitle}
-            listingThumbnail={selectedListing.thumbnail}
-            moderationStatus={selectedListing.moderationStatus}
-            lifecycleStatus={selectedListing.lifecycleStatus}
-            isArchived={selectedListing.isArchived}
-            expiresAt={selectedListing.expiresAt}
-          />
-          <MarkSoldSheet
-            visible={showMarkSold}
-            onClose={() => setShowMarkSold(false)}
-            onSuccess={handleSubOpSuccess}
-            listingId={selectedListing.id}
-            listingTitle={selectedTitle}
-            listingThumbnail={selectedListing.thumbnail}
-          />
-          <ExtendListingSheet
-            visible={showExtend}
-            onClose={() => setShowExtend(false)}
-            onSuccess={handleSubOpSuccess}
-            listingId={selectedListing.id}
-            listingTitle={selectedTitle}
-            listingThumbnail={selectedListing.thumbnail}
-            expiresAt={selectedListing.expiresAt}
-          />
-          <ArchiveListingSheet
-            visible={showArchive}
-            onClose={() => setShowArchive(false)}
-            onSuccess={handleSubOpSuccess}
-            listingId={selectedListing.id}
-            listingTitle={selectedTitle}
-            listingThumbnail={selectedListing.thumbnail}
-            isArchived={selectedListing.isArchived}
-          />
-          <DeleteListingSheet
-            visible={showDelete}
-            onClose={() => setShowDelete(false)}
-            onSuccess={handleDeleteSuccess}
-            listingId={selectedListing.id}
-            listingTitle={selectedTitle}
-            listingThumbnail={selectedListing.thumbnail}
-            hardDelete={hardDeleteMode}
-          />
-          <ListingStatsSheet
-            visible={showStats}
-            onClose={() => setShowStats(false)}
-            listingTitle={selectedTitle}
-            listingThumbnail={selectedListing.thumbnail}
-            viewCount={selectedListing.viewCount ?? 0}
-            impressionCount={selectedListing.impressionCount ?? 0}
-            favouriteCount={selectedListing.favouriteCount ?? 0}
-            superlikeCount={selectedListing.superlikeCount ?? 0}
-          />
-          <PendingReviewReasonSheet
-            visible={showReviewReason}
-            onClose={() => setShowReviewReason(false)}
-            listingTitle={selectedTitle}
-            listingThumbnail={selectedListing.thumbnail}
-            aiModeration={selectedListing.aiModeration}
-          />
-        </>
       )}
 
       {/* Edit Listing Flow (for drafts and editing) */}

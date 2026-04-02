@@ -6,8 +6,9 @@
 
 import { HapticPressable } from '@/components/ui';
 import React, { useRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { Tabs } from 'expo-router/tabs';
+import { usePathname } from 'expo-router';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Store, MessageCircle, LayoutGrid } from 'lucide-react-native';
@@ -168,7 +169,30 @@ function AnimatedTabChip({
   );
 }
 
+// Routes that present as formSheets — on Android the tab bar must hide
+// to avoid rendering above the native modal surface.
+const FORM_SHEET_ROUTES = [
+  '/sort',
+  '/search',
+  '/menu',
+  '/car-info',
+  '/superlike-confirmation',
+  '/superlike-exhausted',
+  '/financing',
+  '/phone-actions',
+  '/seller-description',
+  '/booking',
+  '/filter-make',
+  '/filter-model',
+  '/filter-price',
+  '/filter-year-mileage',
+  '/filter-location',
+  '/more-filters',
+  '/active-filters',
+];
+
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
+  const pathname = usePathname();
   const { colorScheme } = useTheme();
   const { triggerScrollToTop } = useSearch();
   const colors = Colors[colorScheme];
@@ -210,6 +234,13 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     width: indicatorWidth.value,
     transform: [{ translateX: indicatorX.value }],
   }));
+
+  // On iOS, native formSheet windows sit above the tab bar automatically.
+  // On Android, elevation causes the tab bar to render on top, so we hide it.
+  // Must be AFTER all hook calls to satisfy Rules of Hooks.
+  if (Platform.OS === 'android' && FORM_SHEET_ROUTES.some((r) => pathname.endsWith(r))) {
+    return null;
+  }
 
   return (
     <View

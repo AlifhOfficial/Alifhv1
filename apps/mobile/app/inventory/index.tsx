@@ -1,0 +1,37 @@
+import React, { useCallback, useState } from 'react';
+import { NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
+import { Redirect } from 'expo-router';
+
+import { InventoryScreen } from '@/components/user-inventory-management/inventory-screen';
+import { MobileHeader } from '@/components/layout';
+import { Colors, Spacing } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
+import { useTheme } from '@/context/theme-context';
+
+export default function InventoryRoute() {
+  const { isAuthenticated } = useAuth();
+  const { colorScheme } = useTheme();
+  const colors = Colors[colorScheme];
+  const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
+
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
+  }, []);
+
+  if (!isAuthenticated) {
+    return <Redirect href={{ pathname: '/auth-prompt', params: { context: 'listings' } }} />;
+  }
+
+  return (
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <MobileHeader title="Inventory" showBackButton titleHidden={isHeaderTitleHidden} />
+      <InventoryScreen onScroll={handleScroll} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

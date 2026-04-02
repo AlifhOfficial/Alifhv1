@@ -11,13 +11,10 @@
  *   │   ├── step-vehicle-id.tsx
  *   │   ├── step-details.tsx
  *   │   └── step-media.tsx
- *   ├── sub-operations/             ← Operational bottom-sheets
+ *   ├── sub-operations/             ← Route param + action helpers
  *   │   ├── index.ts
- *   │   ├── mark-sold-sheet.tsx
- *   │   ├── extend-listing-sheet.tsx
- *   │   ├── archive-listing-sheet.tsx
- *   │   ├── delete-listing-sheet.tsx
- *   │   └── edit-status-sheet.tsx
+ *   │   ├── action-config.ts
+ *   │   └── route-params.ts
  *   └── utilities/                  ← Shared helpers
  *       ├── index.ts
  *       ├── image-upload.ts
@@ -29,20 +26,14 @@
 // Inventory screen
 export { InventoryScreen } from './inventory-screen';
 
-// Create listing flow
+// Sub-operations (route helpers)
 export {
-  CreateListingScreen,
-  type CreateListingFormData,
-  type StepProps,
-} from './create';
-
-// Sub-operations (sheets)
-export {
-  MarkSoldSheet,
-  ExtendListingSheet,
-  ArchiveListingSheet,
-  DeleteListingSheet,
-  EditStatusSheet,
+  type EditStatusAction,
+  INVENTORY_ACTION_ROWS,
+  useInventoryActionMenu,
+  buildInventoryEditTriggerParams,
+  buildInventoryRouteParams,
+  buildInventorySheetParams,
 } from './sub-operations';
 
 // Utilities

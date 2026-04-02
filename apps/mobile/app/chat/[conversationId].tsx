@@ -32,8 +32,9 @@ export default function ChatScreen() {
     conversationId: string;
     // Optional: conversation JSON passed from messages list to avoid fetch
     conversationData?: string;
+    locationRefresh?: string;
   }>();
-  const { conversationId, conversationData } = params;
+  const { conversationId, conversationData, locationRefresh } = params;
   
   const { isAuthenticated, user } = useAuth();
 
@@ -107,6 +108,7 @@ export default function ChatScreen() {
       userId={user?.id || ''}
       conversation={conversation ?? undefined}
       isAuthenticated={isAuthenticated}
+      locationRefreshToken={locationRefresh}
       onBack={handleBack}
     />
   );

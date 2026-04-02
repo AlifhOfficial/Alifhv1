@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { View, StyleSheet, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Colors, Radius, Sizes, Spacing, InputTypography } from '@/constants/theme';
@@ -28,7 +27,7 @@ export function FilterInput({
       borderColor: colors.border 
     }]}>
       <Ionicons name="search" size={Sizes.iconSm} color={colors.labelTertiary} />
-      <BottomSheetTextInput
+      <TextInput
         style={[styles.input, { color: colors.label }]}
         placeholder={placeholder}
         placeholderTextColor={colors.labelTertiary}

@@ -12,12 +12,12 @@ import { X } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes, Layout, ZIndex} from '@/constants/theme';
-import { useTheme } from '@/context/theme-context';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 interface ImageLightboxProps {
   images: string[];
   previewImages?: string[];
+  title?: string;
   currentIndex: number;
   isOpen: boolean;
   useModal?: boolean;
@@ -28,14 +28,14 @@ interface ImageLightboxProps {
 export function ImageLightbox({
   images,
   previewImages,
+  title,
   currentIndex,
   isOpen,
   useModal = true,
   onClose,
   onIndexChange,
 }: ImageLightboxProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const mediaColors = Colors.dark;
   const insets = useSafeAreaInsets();
   const flatListRef = useRef<FlatList>(null);
   const [internalIndex, setInternalIndex] = useState(currentIndex);
@@ -47,6 +47,13 @@ export function ImageLightbox({
 
   const totalImages = validImages.length;
   const safeIndex = Math.min(Math.max(0, internalIndex), Math.max(0, totalImages - 1));
+  const displayTitle = useMemo(() => {
+    if (!title) {
+      return '';
+    }
+
+    return title.replace(/^\d{4}\s+/, '').trim();
+  }, [title]);
 
   // Keep ref in sync with state
   React.useEffect(() => {
@@ -86,13 +93,27 @@ export function ImageLightbox({
       <View style={styles.container}>
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + Spacing.sm }]}>
+          <View style={styles.headerSpacer} />
+
+          <View style={styles.titleWrapper} pointerEvents="none">
+            {displayTitle ? (
+              <Text
+                variant="subhead"
+                style={styles.titleText}
+                numberOfLines={1}
+              >
+                {displayTitle}
+              </Text>
+            ) : null}
+          </View>
+
           <HapticPressable
             onPress={onClose}
-            style={styles.closeButton}
+            style={styles.backButton}
             hitSlop={Layout.hitSlop}
           >
             {({ pressed }) => (
-              <X size={Sizes.iconMd} color={colors.white} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+              <X size={Sizes.iconMd} color={mediaColors.white} strokeWidth={2.2} style={{ opacity: pressed ? 0.7 : 1 }} />
             )}
           </HapticPressable>
         </View>
@@ -184,17 +205,30 @@ const styles = StyleSheet.create({
     zIndex: ZIndex.raised,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     paddingHorizontal: Layout.screenPadding,
     paddingBottom: Spacing.md,
   },
-  closeButton: {
+  backButton: {
     width: Sizes.actionButtonMd,
     height: Sizes.actionButtonMd,
     borderRadius: Radius.full,
     backgroundColor: Colors.dark.fill,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  titleWrapper: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.md,
+  },
+  titleText: {
+    color: Colors.dark.white,
+  },
+  headerSpacer: {
+    width: Sizes.actionButtonMd,
+    height: Sizes.actionButtonMd,
   },
   counterBadge: {
     paddingHorizontal: Spacing.md,

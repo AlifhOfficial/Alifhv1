@@ -1,7 +1,6 @@
 import '../global.css';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Slot } from 'expo-router';
 
 import { Colors } from '@/constants/theme';
@@ -20,15 +19,13 @@ export default function WebLayout() {
         <SafeAreaProvider>
           <ThemeProvider>
             <NetworkProvider>
-              <BottomSheetModalProvider>
-                  <SearchProvider>
-                    <AuthProvider>
-                      <FavoritesProvider>
-                        <Slot />
-                      </FavoritesProvider>
-                    </AuthProvider>
-                  </SearchProvider>
-              </BottomSheetModalProvider>
+              <SearchProvider>
+                <AuthProvider>
+                  <FavoritesProvider>
+                    <Slot />
+                  </FavoritesProvider>
+                </AuthProvider>
+              </SearchProvider>
             </NetworkProvider>
           </ThemeProvider>
         </SafeAreaProvider>

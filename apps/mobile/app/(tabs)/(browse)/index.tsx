@@ -22,17 +22,7 @@ import {
   getTabBarContentInset,
   getTabBarOverlayHeight,
 } from '@/components/layout';
-import { 
-  MakeFilterSheet,
-  ModelFilterSheet,
-  PriceFilterSheet, 
-  YearMileageFilterSheet, 
-  LocationFilterSheet, 
-  MoreFiltersSheet,
-  type ViewMode,
-  type MoreFiltersState,
-} from '@/components/sheets';
-import { CarInfoSheet } from '@/components/sheets';
+import type { BrowseViewMode as ViewMode } from '@/context/search-context';
 import { CarCardM, CarCardMSkeleton, CarCardList, CarCardListSkeleton } from '@/components/cards';
 import { searchApi, type ListingCard, type SearchParams } from '@/lib/search-api';
 import { queryKeys } from '@/lib/query-client';
@@ -40,7 +30,6 @@ import { consumeDataReady, markInteractionStart, scheduleRenderPerf } from '@/li
 import { Colors, Layout, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useSearch, type FilterParams, type SearchParams as ContextSearchParams } from '@/context/search-context';
-import { getModelsForMake } from '@/lib/filter-constants';
 
 // ============================================================================
 // MODULE-LEVEL PERSISTENCE (survives tab switches, no async/race conditions)
@@ -128,6 +117,10 @@ export default function BrowseScreen() {
     updateFilterParams,
     // Scroll
     subscribeToScrollToTop, 
+    // Browse menu actions
+    subscribeToBrowsePill,
+    subscribeToBrowseSettings,
+    subscribeToBrowseViewMode,
   } = useSearch();
 
   // Scroll ref for auto-scroll to top
@@ -139,9 +132,6 @@ export default function BrowseScreen() {
     const hasFilters = Object.keys(filterParams).length > 0;
     return hasSearch || hasFilters || sortBy !== 'relevance';
   }, [searchParams, filterParams, sortBy]);
-
-  // Build filter context for dynamic facet fetching in sheets
-  const filterContext = useMemo(() => filtersToParams(filterParams, searchParams), [filterParams, searchParams]);
 
   const searchQueryParams = useMemo(
     () => compactSearchParams({
@@ -215,19 +205,6 @@ export default function BrowseScreen() {
     setViewModeState(mode);
   }, []);
 
-  // Filter sheets visibility
-  const [makeSheetVisible, setMakeSheetVisible] = useState(false);
-  const [modelSheetVisible, setModelSheetVisible] = useState(false);
-  const [priceSheetVisible, setPriceSheetVisible] = useState(false);
-  const [yearMileageSheetVisible, setYearMileageSheetVisible] = useState(false);
-  const [locationSheetVisible, setLocationSheetVisible] = useState(false);
-  const [settingsSheetVisible, setSettingsSheetVisible] = useState(false);
-
-  // Car info sheet state (AI summary on long-press)
-  const [infoSheetVisible, setInfoSheetVisible] = useState(false);
-  const [infoSheetListingId, setInfoSheetListingId] = useState<string | null>(null);
-  const [infoSheetMeta, setInfoSheetMeta] = useState<{ make?: string; model?: string; year?: number; price?: number; sellerName?: string }>({});
-
   // Reset scroll instantly when search/filters change (no animation)
   useEffect(() => {
     scrollRef.current?.scrollToOffset({ offset: 0, animated: false });
@@ -300,101 +277,63 @@ export default function BrowseScreen() {
   // Handle long-press on card — show AI info sheet
   const handleCardLongPress = useCallback((id: string) => {
     const listing = visibleListings.find(l => l.id === id);
-    setInfoSheetListingId(id);
-    setInfoSheetMeta({
-      make: listing?.make,
-      model: listing?.model,
-      year: listing?.year,
-      price: listing?.price,
-      sellerName: listing?.partnerName || listing?.sellerName || undefined,
+    router.push({
+      pathname: '/car-info',
+      params: {
+        listingId: id,
+        make: listing?.make,
+        model: listing?.model,
+        year: listing?.year ? String(listing.year) : undefined,
+        price: listing?.price ? String(listing.price) : undefined,
+        sellerName: listing?.partnerName || listing?.sellerName || undefined,
+      },
     });
-    setInfoSheetVisible(true);
-  }, [visibleListings]);
+  }, [router, visibleListings]);
 
   // Handle filter pill press
   const handleFilterPillPress = useCallback((type: FilterPillType) => {
     switch (type) {
       case 'make':
-        setMakeSheetVisible(true);
+        router.push('/(tabs)/(browse)/filter-make');
         break;
       case 'model':
-        setModelSheetVisible(true);
+        router.push('/(tabs)/(browse)/filter-model');
         break;
       case 'price':
-        setPriceSheetVisible(true);
+        router.push('/(tabs)/(browse)/filter-price');
         break;
       case 'yearMileage':
-        setYearMileageSheetVisible(true);
+        router.push('/(tabs)/(browse)/filter-year-mileage');
         break;
       case 'location':
-        setLocationSheetVisible(true);
+        router.push('/(tabs)/(browse)/filter-location');
         break;
     }
-  }, []);
+  }, [router]);
 
   // Stable callbacks for FilterPills (prevents ScrollView scroll-reset)
-  const handleSettingsPress = useCallback(() => setSettingsSheetVisible(true), []);
+  const handleSettingsPress = useCallback(() => {
+    router.push({ pathname: '/(tabs)/(browse)/more-filters', params: { viewMode } });
+  }, [router, viewMode]);
 
-  // Handle make filter apply — updates searchParams in context
-  const handleMakeApply = useCallback((makes: string[]) => {
-    const current: ContextSearchParams = searchParams ?? {};
-    if (makes.length > 0) {
-      // If makes changed, clear models that no longer belong
-      const currentModels = current.model ?? [];
-      const validModels = currentModels.filter((m: string) =>
-        makes.some((mk: string) => (getModelsForMake(mk) as readonly string[]).includes(m))
-      );
-      applySearch({ ...current, make: makes, model: validModels.length > 0 ? validModels : undefined });
-    } else {
-      // Clear make + model + trim
-      const { make, model, trim, ...rest } = current;
-      if (Object.keys(rest).length > 0) {
-        applySearch(rest);
-      } else {
-        clearSearch();
-      }
-    }
-  }, [searchParams, applySearch, clearSearch]);
+  // Subscribe to native browse menu actions.
+  useEffect(() => {
+    const unsubscribePill = subscribeToBrowsePill((type) => {
+      handleFilterPillPress(type);
+    });
+    const unsubscribeSettings = subscribeToBrowseSettings(() => {
+      router.push({ pathname: '/(tabs)/(browse)/more-filters', params: { viewMode } });
+    });
+    const unsubscribeViewMode = subscribeToBrowseViewMode((mode) => {
+      setViewMode(mode);
+    });
 
-  // Handle model filter apply — updates searchParams in context
-  const handleModelApply = useCallback((models: string[]) => {
-    const current: ContextSearchParams = searchParams ?? {};
-    if (models.length > 0) {
-      applySearch({ ...current, model: models });
-    } else {
-      const { model, trim, ...rest } = current;
-      if (Object.keys(rest).length > 0) {
-        applySearch(rest);
-      } else {
-        clearSearch();
-      }
-    }
-  }, [searchParams, applySearch, clearSearch]);
-
-  // Handle price filter apply - updates context (single source of truth)
-  const handlePriceApply = useCallback((priceMin?: number, priceMax?: number) => {
-    updateFilterParams({ priceMin, priceMax });
-  }, [updateFilterParams]);
-
-  // Handle year/mileage filter apply - updates context
-  const handleYearMileageApply = useCallback((values: {
-    yearMin?: number;
-    yearMax?: number;
-    mileageMin?: number;
-    mileageMax?: number;
-  }) => {
-    updateFilterParams(values);
-  }, [updateFilterParams]);
-
-  // Handle location filter apply - updates context
-  const handleLocationApply = useCallback((emirate: string[]) => {
-    updateFilterParams({ emirate: emirate.length > 0 ? emirate : undefined });
-  }, [updateFilterParams]);
-
-  // Handle more filters apply - updates context
-  const handleMoreFiltersApply = useCallback((moreFilters: MoreFiltersState) => {
-    updateFilterParams(moreFilters);
-  }, [updateFilterParams]);
+    return () => {
+      unsubscribePill();
+      unsubscribeSettings();
+      unsubscribeViewMode();
+    };
+  }, [handleFilterPillPress, router, setViewMode, subscribeToBrowsePill, subscribeToBrowseSettings, subscribeToBrowseViewMode, viewMode]);
 
   // Calculate filter counts for pills (read from context)
   const filterPillConfigs = useMemo(() => {
@@ -414,23 +353,6 @@ export default function BrowseScreen() {
       { type: 'location' as FilterPillType, label: 'Location', activeCount: locationCount },
     ];
   }, [filterParams, searchParams]);
-
-  // Build more filters state from context
-  const moreFiltersState: MoreFiltersState = useMemo(() => ({
-    condition: filterParams.condition,
-    isBlkListing: filterParams.isBlkListing,
-    isBlackTierPartner: filterParams.isBlackTierPartner,
-    isNegotiable: filterParams.isNegotiable,
-    specs: filterParams.specs,
-    bodyType: filterParams.bodyType,
-    fuelType: filterParams.fuelType,
-    transmission: filterParams.transmission,
-    exteriorColor: filterParams.exteriorColor,
-    interiorColor: filterParams.interiorColor,
-    engineSize: filterParams.engineSize,
-    sellerType: filterParams.sellerType,
-    exportStatus: filterParams.exportStatus,
-  }), [filterParams]);
 
   const moreFiltersCount = useMemo(() => {
     let count = 0;
@@ -672,65 +594,6 @@ export default function BrowseScreen() {
             onRefresh={handleRefresh}
           />
         }
-      />
-
-      {/* Filter Sheets (modals — don't affect layout) */}
-      <MakeFilterSheet
-        visible={makeSheetVisible}
-        onClose={() => setMakeSheetVisible(false)}
-        selected={searchParams?.make ?? []}
-        filterContext={filterContext}
-        onApply={handleMakeApply}
-      />
-      <ModelFilterSheet
-        visible={modelSheetVisible}
-        onClose={() => setModelSheetVisible(false)}
-        selectedMakes={searchParams?.make ?? []}
-        selected={searchParams?.model ?? []}
-        filterContext={filterContext}
-        onApply={handleModelApply}
-      />
-      <PriceFilterSheet
-        visible={priceSheetVisible}
-        onClose={() => setPriceSheetVisible(false)}
-        priceMin={filterParams.priceMin}
-        priceMax={filterParams.priceMax}
-        onApply={handlePriceApply}
-      />
-      <YearMileageFilterSheet
-        visible={yearMileageSheetVisible}
-        onClose={() => setYearMileageSheetVisible(false)}
-        yearMin={filterParams.yearMin}
-        yearMax={filterParams.yearMax}
-        mileageMin={filterParams.mileageMin}
-        mileageMax={filterParams.mileageMax}
-        onApply={handleYearMileageApply}
-      />
-      <LocationFilterSheet
-        visible={locationSheetVisible}
-        onClose={() => setLocationSheetVisible(false)}
-        selected={filterParams.emirate ?? []}
-        filterContext={filterContext}
-        onApply={handleLocationApply}
-      />
-      <MoreFiltersSheet
-        visible={settingsSheetVisible}
-        onClose={() => setSettingsSheetVisible(false)}
-        filters={moreFiltersState}
-        filterContext={filterContext}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onApply={handleMoreFiltersApply}
-      />
-      <CarInfoSheet
-        visible={infoSheetVisible}
-        onClose={() => setInfoSheetVisible(false)}
-        listingId={infoSheetListingId}
-        make={infoSheetMeta.make}
-        model={infoSheetMeta.model}
-        year={infoSheetMeta.year}
-        price={infoSheetMeta.price}
-        sellerName={infoSheetMeta.sellerName}
       />
 
       <BrowseTabBar

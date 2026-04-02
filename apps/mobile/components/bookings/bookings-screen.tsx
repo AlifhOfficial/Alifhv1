@@ -6,8 +6,8 @@
  *   • FilterPills-style floating status tabs
  *   • CarCardList-style booking cards — expo-image, proper sizing,
  *     status badge, date/time meta, countdown pill
- *   • Tap card → BookingDetailsSheet (full booking info)
- *   • Cancel booking via CancelBookingSheet
+ *   • Tap card / action bubble → route-based Booking Details form-sheet
+ *   • Cancel booking via route-based Cancel Booking form-sheet
  *   • Pull-to-refresh, pagination, loading / empty / error states
  *
  * @module components/bookings/bookings-screen
@@ -18,6 +18,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { View, StyleSheet, FlatList, ScrollView, ActivityIndicator, Platform, TouchableWithoutFeedback, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Calendar1, Clock, ListFilter, Check, MoreVertical } from 'lucide-react-native';
@@ -25,7 +26,7 @@ import { Calendar1, Clock, ListFilter, Check, MoreVertical } from 'lucide-react-
 import { Colors, Fonts, Shadows, Spacing, Radius, Layout, Sizes, ZIndex, AspectRatio, BorderWidths } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { getAppThumbUrl } from '@/lib/config';
-import { useBookings, useCancelBooking } from '@/hooks/use-booking-query';
+import { useBookings } from '@/hooks/use-booking-query';
 import { type UserBooking, type BookingFilter } from '@/lib/booking-api';
 import {
   formatBookingStatus,
@@ -34,8 +35,6 @@ import {
   formatTimeRange,
   formatBookingCountdown,
 } from './utilities/booking-helpers';
-import { CancelBookingSheet } from './cancel-booking-sheet';
-import { BookingDetailsSheet } from './booking-details-sheet';
 import { getMobileHeaderContentInset } from '@/components/layout';
 
 // ─── Constants (derived from theme for responsive scaling) ──────────────────
@@ -88,13 +87,6 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
     refresh,
   } = useBookings({ filter: activeTab });
 
-  const cancelMutation = useCancelBooking();
-
-  // ── Sheet State ──────────────────────────────────────────────────────────
-  const [selectedBooking, setSelectedBooking] = useState<UserBooking | null>(null);
-  const [showDetails, setShowDetails] = useState(false);
-  const [showCancel, setShowCancel] = useState(false);
-
   const flatListRef = useRef<FlatList>(null);
 
   // ── Filter Drawer State ──────────────────────────────────────────────────
@@ -128,28 +120,10 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
 
   const openDetails = useCallback((booking: UserBooking) => {
     if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setSelectedBooking(booking);
-    setShowDetails(true);
-  }, []);
-
-  // ── Cancel Action (from details sheet) ───────────────────────────────────
-
-  const openCancel = useCallback((booking: UserBooking) => {
-    setShowDetails(false);
-    setTimeout(() => {
-      setSelectedBooking(booking);
-      setShowCancel(true);
-    }, 300);
-  }, []);
-
-  const handleCancelSuccess = useCallback(() => {
-    setShowCancel(false);
-    // Cache is automatically invalidated by useCancelBooking mutation
-  }, []);
-
-  const handleViewListing = useCallback((listingId: string) => {
-    setShowDetails(false);
-    setTimeout(() => router.push(`/listing/${listingId}`), 200);
+    router.push({
+      pathname: '/booking-details',
+      params: { bookingId: booking.id },
+    });
   }, [router]);
 
   // ════════════════════════════════════════════════════════════════════════
@@ -165,7 +139,7 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
 
       return (
         <HapticPressable
-          onPress={() => handleViewListing(item.listingId)}
+          onPress={() => openDetails(item)}
           style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
         >
           {/* ── Image ────────────────────────────────────────────────── */}
@@ -443,29 +417,6 @@ export function BookingsScreen({ onScroll }: BookingsScreenProps) {
           )}
         </HapticPressable>
       </View>
-
-      {/* ─────────────────────── Details Sheet ─────────────────────────── */}
-      <BookingDetailsSheet
-        visible={showDetails}
-        onClose={() => setShowDetails(false)}
-        booking={selectedBooking}
-        onCancel={openCancel}
-        onViewListing={handleViewListing}
-      />
-
-      {/* ─────────────────────── Cancel Sheet ──────────────────────────── */}
-      {selectedBooking && (
-        <CancelBookingSheet
-          visible={showCancel}
-          onClose={() => setShowCancel(false)}
-          onSuccess={handleCancelSuccess}
-          bookingId={selectedBooking.id}
-          listingTitle={selectedBooking.listingTitle}
-          listingThumbnail={selectedBooking.listingThumbnail}
-          partnerName={selectedBooking.partnerName}
-          scheduledDate={selectedBooking.scheduledDate}
-        />
-      )}
 
     </View>
   );

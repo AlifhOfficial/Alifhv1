@@ -10,13 +10,12 @@ import * as Haptics from 'expo-haptics';
 import { Search, ArrowUpDown, Package2 } from 'lucide-react-native';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
-import { SearchSheet, SortSheet, ActiveFiltersSheet } from '@/components/sheets';
+import { router } from 'expo-router';
 import { Text } from '@/components/ui';
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { BorderWidths, Colors, Layout, Sizes, Spacing, Timing, ZIndex } from '@/constants/theme';
-import type { SearchSortOption } from '@/lib/search-api';
-import { BrowseDrawerSheet, type FilterPillType, type ViewMode } from '@/components/browse/browse-drawer-sheet';
+import type { FilterPillType, BrowseViewMode as ViewMode } from '@/context/search-context';
 
 interface BrowseTabBarProps {
   bottomOffset?: number;
@@ -42,84 +41,41 @@ export function BrowseTabBar({
   onViewModeChange,
 }: BrowseTabBarProps) {
   const { colorScheme } = useTheme();
-  const { applySearch, sortBy, applySort, updateFilterParams, getActiveFilterCount } = useSearch();
+  const { getActiveFilterCount } = useSearch();
   const colors = Colors[colorScheme];
   const visibilityProgress = useSharedValue(visible ? 1 : 0);
   const bubbleBackgroundColor = colorScheme === 'dark' ? colors.surfaceSecondary : colors.background;
-
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isSortOpen, setIsSortOpen] = useState(false);
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const activeFilterCount = getActiveFilterCount();
   const hasFilters = activeFilterCount > 0;
 
   const handleSearchPress = useCallback(() => {
-    if (Platform.OS === 'ios') {
+    if (process.env.EXPO_OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    setIsSearchOpen(true);
+    router.push('/(tabs)/(browse)/search');
   }, []);
-
-  const handleSearchClose = useCallback(() => {
-    setIsSearchOpen(false);
-  }, []);
-
-  const handleSearchSubmit = useCallback((params: { q?: string; make?: string[]; model?: string[]; trim?: string[]; tags?: string[]; extras?: string[]; partnerId?: string; partnerName?: string; bodyType?: string[]; fuelType?: string[]; transmission?: string[]; specs?: string[]; condition?: string; sellerType?: string }) => {
-    const { bodyType, fuelType, transmission, specs, condition, sellerType, ...searchLevel } = params;
-
-    applySearch(searchLevel);
-
-    const filterUpdates: Record<string, unknown> = {};
-    if (bodyType?.length) filterUpdates.bodyType = bodyType;
-    if (fuelType?.length) filterUpdates.fuelType = fuelType;
-    if (transmission?.length) filterUpdates.transmission = transmission;
-    if (specs?.length) filterUpdates.specs = specs;
-    if (condition) filterUpdates.condition = condition;
-    if (sellerType) filterUpdates.sellerType = sellerType;
-
-    if (Object.keys(filterUpdates).length > 0) {
-      updateFilterParams(filterUpdates);
-    }
-  }, [applySearch, updateFilterParams]);
 
   const handleSortPress = useCallback(() => {
-    if (Platform.OS === 'ios') {
+    if (process.env.EXPO_OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    setIsSortOpen(true);
+    router.push('/(tabs)/(browse)/sort');
   }, []);
-
-  const handleSortClose = useCallback(() => {
-    setIsSortOpen(false);
-  }, []);
-
-  const handleSortChange = useCallback((sort: SearchSortOption) => {
-    applySort(sort);
-  }, [applySort]);
 
   const handleFiltersPress = useCallback(() => {
     if (Platform.OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    setIsFiltersOpen(true);
-  }, []);
-
-  const handleFiltersClose = useCallback(() => {
-    setIsFiltersOpen(false);
+    router.push('/(tabs)/(browse)/active-filters');
   }, []);
 
   const handleDrawerPress = useCallback(() => {
-    if (Platform.OS === 'ios') {
+    if (process.env.EXPO_OS === 'ios') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    setIsDrawerOpen(true);
-  }, []);
-
-  const handleDrawerClose = useCallback(() => {
-    setIsDrawerOpen(false);
-  }, []);
+    router.push({ pathname: '/(tabs)/(browse)/menu', params: { viewMode } });
+  }, [viewMode]);
 
   useEffect(() => {
     visibilityProgress.value = withSpring(visible ? 1 : 0, {
@@ -249,36 +205,6 @@ export function BrowseTabBar({
           </View>
         </View>
       </AnimatedView>
-
-      <SearchSheet
-        visible={isSearchOpen}
-        onClose={handleSearchClose}
-        onSearch={handleSearchSubmit}
-      />
-
-      <SortSheet
-        visible={isSortOpen}
-        onClose={handleSortClose}
-        currentSort={sortBy}
-        onSortChange={handleSortChange}
-      />
-
-      <ActiveFiltersSheet
-        visible={isFiltersOpen}
-        onClose={handleFiltersClose}
-      />
-
-      <BrowseDrawerSheet
-        visible={isDrawerOpen}
-        onClose={handleDrawerClose}
-        pills={pills}
-        onPillPress={onPillPress}
-        onSettingsPress={onSettingsPress}
-        settingsCount={settingsCount}
-        viewMode={viewMode}
-        onViewModeChange={onViewModeChange}
-        bottomOffset={bottomOffset}
-      />
 
     </>
   );

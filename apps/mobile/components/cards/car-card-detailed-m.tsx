@@ -29,22 +29,8 @@ import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes, Stroke } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
-import { DescriptionSheet, FeaturesSheet, FinancingSheet, SpecsSheet } from '@/components/sheets';
 import { ListingDetailedData, SellerData } from '@/lib/listing-api';
-import {
-  getEnumLabel,
-  VEHICLE_CONDITIONS,
-  BODY_TYPES,
-  TRANSMISSION_TYPES,
-  FUEL_TYPES,
-  EXTERIOR_COLORS,
-  INTERIOR_COLORS,
-  STEERING_SIDES,
-  DOORS_OPTIONS,
-  SEATING_OPTIONS,
-  POWER_RANGES,
-  ENGINE_SIZES,
-} from '@/lib/listing-constants';
+import { subscribeFinancingApplied } from '@/lib/financing-events';
 
 import {
   ImageGallery,
@@ -126,34 +112,40 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
 
   const carTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
 
-  // Description sheet state
-  const [descSheetVisible, setDescSheetVisible] = useState(false);
-  const openDescSheet = useCallback(() => setDescSheetVisible(true), []);
-  const closeDescSheet = useCallback(() => setDescSheetVisible(false), []);
+  const openDescSheet = useCallback(() => {
+    router.push({ pathname: '/listing-description', params: { id: listingId } });
+  }, [router, listingId]);
 
-  // Specs sheet state
-  const [specsSheetVisible, setSpecsSheetVisible] = useState(false);
-  const openSpecsSheet = useCallback(() => setSpecsSheetVisible(true), []);
-  const closeSpecsSheet = useCallback(() => setSpecsSheetVisible(false), []);
+  const openSpecsSheet = useCallback(() => {
+    router.push({ pathname: '/listing-specs', params: { id: listingId } });
+  }, [router, listingId]);
 
-  // Features sheet state
-  const [featuresSheetVisible, setFeaturesSheetVisible] = useState(false);
-  const openFeaturesSheet = useCallback(() => setFeaturesSheetVisible(true), []);
-  const closeFeaturesSheet = useCallback(() => setFeaturesSheetVisible(false), []);
+  const openFeaturesSheet = useCallback(() => {
+    router.push({ pathname: '/listing-features', params: { id: listingId } });
+  }, [router, listingId]);
   const [showDeferredSections, setShowDeferredSections] = useState(false);
 
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
   const [loanTermMonths, setLoanTermMonths] = useState(48);
   const [interestRate] = useState(3.5);
-  const [financingSheetVisible, setFinancingSheetVisible] = useState(false);
 
   const handleCustomizeFinancing = useCallback(() => {
-    setFinancingSheetVisible(true);
-  }, []);
+    router.push({
+      pathname: '/financing',
+      params: {
+        initialDownPayment: String(downPaymentPercent),
+        initialTerm: String(loanTermMonths),
+        price: String(listing.price),
+        interestRate: String(interestRate),
+      },
+    });
+  }, [downPaymentPercent, interestRate, listing.price, loanTermMonths, router]);
 
-  const handleApplyCustomFinancing = useCallback((dp: number, term: number) => {
-    setDownPaymentPercent(dp);
-    setLoanTermMonths(term);
+  useEffect(() => {
+    return subscribeFinancingApplied(({ downPayment, term }) => {
+      setDownPaymentPercent(downPayment);
+      setLoanTermMonths(term);
+    });
   }, []);
 
   // Default EMI for price display (20% down, 48mo, 3.5% APR)
@@ -192,37 +184,6 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
       interaction.cancel();
     };
   }, [listing.id]);
-
-  const specsSheetItems = useMemo(
-    () => [
-      { label: 'Condition', value: listing.condition ? getEnumLabel(VEHICLE_CONDITIONS, listing.condition) : null },
-      { label: 'Body Type', value: listing.bodyType ? getEnumLabel(BODY_TYPES, listing.bodyType) : null },
-      { label: 'Transmission', value: listing.transmission ? getEnumLabel(TRANSMISSION_TYPES, listing.transmission) : null },
-      { label: 'Fuel Type', value: listing.fuelType ? getEnumLabel(FUEL_TYPES, listing.fuelType) : null },
-      { label: 'Engine', value: listing.engineSize ? getEnumLabel(ENGINE_SIZES, listing.engineSize) : null },
-      { label: 'Cylinders', value: listing.cylinders },
-      { label: 'Power', value: listing.powerRange ? getEnumLabel(POWER_RANGES, listing.powerRange) : null },
-      { label: 'Exterior Color', value: listing.exteriorColor ? getEnumLabel(EXTERIOR_COLORS, listing.exteriorColor) : null },
-      { label: 'Interior Color', value: listing.interiorColor ? getEnumLabel(INTERIOR_COLORS, listing.interiorColor) : null },
-      { label: 'Doors', value: listing.doors ? getEnumLabel(DOORS_OPTIONS, listing.doors) : null },
-      { label: 'Seats', value: listing.seatingCapacity ? getEnumLabel(SEATING_OPTIONS, listing.seatingCapacity) : null },
-      { label: 'Steering', value: listing.steeringSide ? getEnumLabel(STEERING_SIDES, listing.steeringSide) : null },
-    ].filter(s => s.value != null),
-    [
-      listing.bodyType,
-      listing.condition,
-      listing.cylinders,
-      listing.doors,
-      listing.engineSize,
-      listing.exteriorColor,
-      listing.fuelType,
-      listing.interiorColor,
-      listing.powerRange,
-      listing.seatingCapacity,
-      listing.steeringSide,
-      listing.transmission,
-    ]
-  );
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
@@ -352,41 +313,6 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
           </>
         ) : null}
       </View>
-
-      {/* Description Sheet — rendered at root level for proper gesture handling */}
-      {listing.description && (
-        <DescriptionSheet
-          visible={descSheetVisible}
-          onClose={closeDescSheet}
-          description={listing.description}
-        />
-      )}
-
-      {/* Specs Sheet — rendered at root level for proper gesture handling */}
-      <SpecsSheet
-        visible={specsSheetVisible}
-        onClose={closeSpecsSheet}
-        specs={specsSheetItems}
-      />
-
-      {/* Features Sheet — rendered at root level for proper gesture handling */}
-      {listing.extras.length > 0 && (
-        <FeaturesSheet
-          visible={featuresSheetVisible}
-          onClose={closeFeaturesSheet}
-          features={listing.extras}
-        />
-      )}
-
-      <FinancingSheet
-        visible={financingSheetVisible}
-        onClose={() => setFinancingSheetVisible(false)}
-        initialDownPayment={downPaymentPercent}
-        initialTerm={loanTermMonths}
-        price={listing.price}
-        interestRate={interestRate}
-        onApply={handleApplyCustomFinancing}
-      />
     </View>
   );
 });

@@ -63,6 +63,8 @@ export type SearchChip = {
 
 // Keys that can be removed - includes compound keys for range filters
 export type RemovableFilterKey = keyof FilterParams | 'price' | 'year' | 'mileage';
+export type FilterPillType = 'make' | 'model' | 'price' | 'yearMileage' | 'location';
+export type BrowseViewMode = 'grid' | 'list';
 
 interface SearchContextValue {
   /** Current search parameters */
@@ -119,6 +121,18 @@ interface SearchContextValue {
   triggerBrowseSort: () => void;
   /** Subscribe to browse sort open events */
   subscribeToBrowseSort: (callback: () => void) => () => void;
+  /** Trigger opening a specific browse filter sheet from the browse menu route */
+  triggerBrowsePill: (type: FilterPillType) => void;
+  /** Subscribe to browse pill actions */
+  subscribeToBrowsePill: (callback: (type: FilterPillType) => void) => () => void;
+  /** Trigger opening more filters/settings from the browse menu route */
+  triggerBrowseSettings: () => void;
+  /** Subscribe to browse settings actions */
+  subscribeToBrowseSettings: (callback: () => void) => () => void;
+  /** Trigger view mode change from the browse menu route */
+  triggerBrowseViewMode: (mode: BrowseViewMode) => void;
+  /** Subscribe to browse view mode changes */
+  subscribeToBrowseViewMode: (callback: (mode: BrowseViewMode) => void) => () => void;
 }
 
 const SearchContext = createContext<SearchContextValue | undefined>(undefined);
@@ -134,6 +148,9 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const scrollToTopListenersRef = useRef<Set<() => void>>(new Set());
   const browseDrawerListenersRef = useRef<Set<() => void>>(new Set());
   const browseSortListenersRef = useRef<Set<() => void>>(new Set());
+  const browsePillListenersRef = useRef<Set<(type: FilterPillType) => void>>(new Set());
+  const browseSettingsListenersRef = useRef<Set<() => void>>(new Set());
+  const browseViewModeListenersRef = useRef<Set<(mode: BrowseViewMode) => void>>(new Set());
 
   const applySearch = useCallback((params: SearchParams) => {
     setSearchParams(params);
@@ -502,6 +519,39 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const triggerBrowsePill = useCallback((type: FilterPillType) => {
+    browsePillListenersRef.current.forEach((listener) => listener(type));
+  }, []);
+
+  const subscribeToBrowsePill = useCallback((callback: (type: FilterPillType) => void) => {
+    browsePillListenersRef.current.add(callback);
+    return () => {
+      browsePillListenersRef.current.delete(callback);
+    };
+  }, []);
+
+  const triggerBrowseSettings = useCallback(() => {
+    browseSettingsListenersRef.current.forEach((listener) => listener());
+  }, []);
+
+  const subscribeToBrowseSettings = useCallback((callback: () => void) => {
+    browseSettingsListenersRef.current.add(callback);
+    return () => {
+      browseSettingsListenersRef.current.delete(callback);
+    };
+  }, []);
+
+  const triggerBrowseViewMode = useCallback((mode: BrowseViewMode) => {
+    browseViewModeListenersRef.current.forEach((listener) => listener(mode));
+  }, []);
+
+  const subscribeToBrowseViewMode = useCallback((callback: (mode: BrowseViewMode) => void) => {
+    browseViewModeListenersRef.current.add(callback);
+    return () => {
+      browseViewModeListenersRef.current.delete(callback);
+    };
+  }, []);
+
   // Lock/unlock filters (for dedicated screens like BLK)
   const lockFilter = useCallback((key: keyof FilterParams) => {
     lockedFiltersRef.current.add(key);
@@ -543,6 +593,12 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         subscribeToBrowseDrawer,
         triggerBrowseSort,
         subscribeToBrowseSort,
+        triggerBrowsePill,
+        subscribeToBrowsePill,
+        triggerBrowseSettings,
+        subscribeToBrowseSettings,
+        triggerBrowseViewMode,
+        subscribeToBrowseViewMode,
       }}
     >
       {children}

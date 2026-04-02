@@ -1,12 +1,15 @@
 /**
  * Sub-Operations — Barrel Export
- * Operational bottom-sheets for listing lifecycle management.
+ * Route helpers for inventory lifecycle actions.
  */
 
-export { MarkSoldSheet } from './mark-sold-sheet';
-export { ExtendListingSheet } from './extend-listing-sheet';
-export { ArchiveListingSheet } from './archive-listing-sheet';
-export { DeleteListingSheet } from './delete-listing-sheet';
-export { EditStatusSheet } from './edit-status-sheet';
-export { ListingStatsSheet } from './listing-stats-sheet';
-export { PendingReviewReasonSheet } from './pending-review-reason-sheet';
+export {
+	type EditStatusAction,
+	INVENTORY_ACTION_ROWS,
+	useInventoryActionMenu,
+} from '@/components/user-inventory-management/sub-operations/action-config';
+export {
+	buildInventoryEditTriggerParams,
+	buildInventoryRouteParams,
+	buildInventorySheetParams,
+} from '@/components/user-inventory-management/sub-operations/route-params';

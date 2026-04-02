@@ -5,14 +5,13 @@
 
 import { Text, HapticPressable } from '@/components/ui';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Modal, Pressable, ScrollView, Dimensions, StatusBar } from 'react-native';
+import { StyleSheet, View, Modal, ScrollView, Dimensions, StatusBar } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
-import { useTheme } from '@/context/theme-context';
 import { ImageLightbox } from './image-lightbox';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -38,11 +37,17 @@ export function ImageGridModal({
   onClose,
   onIndexChange,
 }: ImageGridModalProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const mediaColors = Colors.dark;
   const insets = useSafeAreaInsets();
   const [selectedIndex, setSelectedIndex] = useState(currentIndex);
   const [showLightbox, setShowLightbox] = useState(false);
+  const displayTitle = useMemo(() => {
+    if (!title) {
+      return '';
+    }
+
+    return title.replace(/^\d{4}\s+/, '').trim();
+  }, [title]);
 
   const validImages = useMemo(() => 
     images.filter(img => img && typeof img === 'string' && img.trim().length > 0),
@@ -273,12 +278,13 @@ export function ImageGridModal({
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle="light-content" backgroundColor={mediaColors.background} />
+      <View style={[styles.container, { backgroundColor: mediaColors.background }]}> 
         {showLightbox ? (
           <ImageLightbox
             images={validFullImages}
             previewImages={validImages}
+            title={title}
             currentIndex={selectedIndex}
             isOpen={showLightbox}
             useModal={false}
@@ -288,17 +294,28 @@ export function ImageGridModal({
         ) : (
           <>
             {/* Header */}
-            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: colors.background, borderBottomColor: colors.border }]}>
-              <Text variant="subhead" tone="secondary">
-                {totalImages} photos
-              </Text>
+            <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, backgroundColor: mediaColors.background, borderBottomColor: mediaColors.border }]}> 
+              <View style={styles.headerSpacer} />
+
+              <View style={styles.titleWrapper} pointerEvents="none">
+                {displayTitle ? (
+                  <Text variant="subhead" style={styles.titleText} numberOfLines={1}>
+                    {displayTitle}
+                  </Text>
+                ) : (
+                  <Text variant="subhead" style={styles.titleText} numberOfLines={1}>
+                    {totalImages} photos
+                  </Text>
+                )}
+              </View>
+
               <HapticPressable
                 onPress={onClose}
-                style={[styles.closeButton, { backgroundColor: colors.background, borderColor: colors.border }]}
+                style={[styles.backButton, { backgroundColor: mediaColors.fill }]}
                 hitSlop={Layout.hitSlop}
               >
                 {({ pressed }) => (
-                  <X size={Sizes.iconMd} color={colors.label} strokeWidth={2} style={{ opacity: pressed ? 0.7 : 1 }} />
+                  <X size={Sizes.iconMd} color={mediaColors.white} strokeWidth={2.2} style={{ opacity: pressed ? 0.7 : 1 }} />
                 )}
               </HapticPressable>
             </View>
@@ -306,6 +323,7 @@ export function ImageGridModal({
             {/* Image Grid */}
             <ScrollView
               style={styles.scrollView}
+              contentInsetAdjustmentBehavior="automatic"
               contentContainerStyle={[styles.grid, { paddingBottom: insets.bottom + Spacing['2xl'] }]}
               showsVerticalScrollIndicator={false}
             >
@@ -330,13 +348,25 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
     borderBottomWidth: 1,
   },
-  closeButton: {
+  backButton: {
     width: Sizes.actionButtonMd,
     height: Sizes.actionButtonMd,
     borderRadius: Radius.full,
-    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  titleWrapper: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.md,
+  },
+  titleText: {
+    color: Colors.dark.white,
+  },
+  headerSpacer: {
+    width: Sizes.actionButtonMd,
+    height: Sizes.actionButtonMd,
   },
   scrollView: {
     flex: 1,

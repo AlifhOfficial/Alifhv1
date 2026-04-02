@@ -21,7 +21,6 @@ import { useSearch } from '@/context/search-context';
 import { useListingDetail, useSellerListings } from '@/hooks/use-listing-query';
 import { normalizeSellerData, SellerInfo } from '@/lib/seller-api';
 import { createConversation } from '@/lib/messaging-api';
-import { PhoneActionSheet, BookingSheet, SellerDescriptionSheet } from '@/components/sheets';
 
 // Modular components
 import {
@@ -68,9 +67,6 @@ export default function SellerContactScreen() {
     enabled: !!sellerId && !!sellerType,
   });
 
-  const [phoneSheetVisible, setPhoneSheetVisible] = useState(false);
-  const [bookingSheetVisible, setBookingSheetVisible] = useState(false);
-  const [descriptionSheetVisible, setDescriptionSheetVisible] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
 
   // Normalize seller data
@@ -89,8 +85,12 @@ export default function SellerContactScreen() {
 
   const handleShowPhoneSheet = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setPhoneSheetVisible(true);
-  }, []);
+    if (!seller?.phone) return;
+    router.push({
+      pathname: '/phone-actions',
+      params: { phoneNumber: seller.phone },
+    });
+  }, [router, seller?.phone]);
 
   const handleChat = useCallback(async () => {
     if (!listing || !listingId) return;
@@ -98,7 +98,10 @@ export default function SellerContactScreen() {
     if (!isAuthenticated) {
       Alert.alert('Sign In Required', 'Please sign in to message the seller', [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Sign In', onPress: () => router.push('/profile') },
+        {
+          text: 'Sign In',
+          onPress: () => router.push({ pathname: '/auth-prompt', params: { context: 'messages' } }),
+        },
       ]);
       return;
     }
@@ -178,16 +181,27 @@ export default function SellerContactScreen() {
 
   const handleBookViewing = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setBookingSheetVisible(true);
-  }, []);
+    if (!isAuthenticated) {
+      Alert.alert('Sign In Required', 'Please sign in to book a test drive', [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign In',
+          onPress: () => router.push({ pathname: '/auth-prompt', params: { context: 'listings' } }),
+        },
+      ]);
+      return;
+    }
 
-  const handleBookingLoginRequired = useCallback(() => {
-    setBookingSheetVisible(false);
-    Alert.alert('Sign In Required', 'Please sign in to book a test drive', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign In', onPress: () => router.push('/profile') },
-    ]);
-  }, [router]);
+    if (!listing) return;
+
+    router.push({
+      pathname: '/booking',
+      params: {
+        listingId,
+        listingTitle: `${listing.listing.year} ${listing.listing.make} ${listing.listing.model}`,
+      },
+    });
+  }, [isAuthenticated, listing, listingId, router]);
 
   const handleViewOnMap = useCallback(async () => {
     if (!seller) return;
@@ -274,7 +288,15 @@ export default function SellerContactScreen() {
         {seller.description && (
           <SellerAbout
             description={seller.description}
-            onReadMore={() => setDescriptionSheetVisible(true)}
+            onReadMore={() => {
+              router.push({
+                pathname: '/seller-description',
+                params: {
+                  description: seller.description,
+                  sellerName: seller.name,
+                },
+              });
+            }}
             colors={colors}
           />
         )}
@@ -331,6 +353,7 @@ export default function SellerContactScreen() {
     isOwnListing,
     otherListings,
     otherListingsTotal,
+    router,
     seller,
   ]);
 
@@ -422,37 +445,6 @@ export default function SellerContactScreen() {
           />
         }
       />
-
-      {/* Phone Action Sheet */}
-      {seller.phone && (
-        <PhoneActionSheet
-          visible={phoneSheetVisible}
-          onClose={() => setPhoneSheetVisible(false)}
-          phoneNumber={seller.phone}
-        />
-      )}
-
-      {/* Booking Sheet */}
-      {listing && (
-        <BookingSheet
-          visible={bookingSheetVisible}
-          onClose={() => setBookingSheetVisible(false)}
-          listingId={listingId!}
-          listingTitle={`${listing.listing.year} ${listing.listing.make} ${listing.listing.model}`}
-          isAuthenticated={isAuthenticated}
-          onLoginRequired={handleBookingLoginRequired}
-        />
-      )}
-
-      {/* Seller Description Sheet */}
-      {seller.description && (
-        <SellerDescriptionSheet
-          visible={descriptionSheetVisible}
-          onClose={() => setDescriptionSheetVisible(false)}
-          description={seller.description}
-          sellerName={seller.name}
-        />
-      )}
     </View>
   );
 }

@@ -3,7 +3,7 @@
  * Native-feeling, modular saved screen connected to API
  */
 
-import { AuthGate, Text, HapticPressable, EmptyState } from '@/components/ui';
+import { Text, HapticPressable, EmptyState } from '@/components/ui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Platform, Pressable, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import Animated, {
@@ -14,7 +14,7 @@ import Animated, {
   Easing,
   runOnJS,
 } from 'react-native-reanimated';
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Heart, Sparkles, ListFilter, Check, AlertCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -126,21 +126,9 @@ export default function SavedScreen() {
 
   const FAB_SIZE = Sizes.actionButtonLg;
 
-  // Unauthenticated - show auth required empty state
+  // Unauthenticated - redirect to auth prompt
   if (!isAuthenticated) {
-    return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />
-        <MobileHeader title="Saved" showBackButton titleHidden={isHeaderTitleHidden} />
-        <View style={{ flex: 1, paddingTop: headerInset }}>
-        <AuthGate
-          icon={Heart}
-          title="Sign in to save."
-          subtitle="Keep track of your favorite cars on Revvup."
-        />
-        </View>
-      </View>
-    );
+    return <Redirect href={{ pathname: '/auth-prompt', params: { context: 'saved' } }} />;
   }
 
   // Loading state

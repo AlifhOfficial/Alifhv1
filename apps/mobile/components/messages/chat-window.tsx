@@ -3,7 +3,7 @@
  * Full conversation view with messages list, input, and real-time updates
  */
 
-import { Text, Skeleton, EmptyState } from '@/components/ui';
+import { Text, Skeleton } from '@/components/ui';
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, ActivityIndicator, Dimensions, Platform, Pressable } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
@@ -21,16 +21,13 @@ import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
-import { MessageCircle } from 'lucide-react-native';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
-import { LocationPickerSheet } from './location-picker-sheet';
 import { useMessages } from './hooks/useMessages';
 import { useMarkAsRead } from '@/hooks/use-messaging-query';
 import { markConversationActive, markConversationInactive } from './hooks/active-conversations';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { sendLocationMessage, type Message, type Conversation } from '@/lib/messaging-api';
-import type { LocationResult } from '@/hooks/use-location';
+import { type Message, type Conversation } from '@/lib/messaging-api';
 import {
   getLastReadOwnMessageId,
   getNewestUnreadIncomingMessageId,
@@ -44,6 +41,7 @@ interface ChatWindowProps {
   userId: string;
   conversation?: Conversation;
   isAuthenticated: boolean;
+  locationRefreshToken?: string;
   onBack?: () => void;
 }
 
@@ -52,8 +50,10 @@ export function ChatWindow({
   userId,
   conversation,
   isAuthenticated,
+  locationRefreshToken,
   onBack,
 }: ChatWindowProps) {
+  const router = useRouter();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -176,27 +176,23 @@ export function ChatWindow({
     [sendMessage, messages.length]
   );
 
-  // Location sharing with confirmation sheet
-  const [isLocationSheetOpen, setIsLocationSheetOpen] = useState(false);
-
   const handleOpenLocationSheet = useCallback(() => {
-    setIsLocationSheetOpen(true);
-  }, []);
+    router.push({
+      pathname: '/chat/share-location',
+      params: { conversationId },
+    });
+  }, [conversationId, router]);
 
-  const handleConfirmLocation = useCallback(async (location: LocationResult) => {
-    try {
-      await sendLocationMessage(conversationId, location);
-      // Use refresh to get the new message from server
-      refresh();
-      // Scroll to bottom
-      setTimeout(() => {
-        listRef.current?.scrollToOffset({ offset: 0, animated: false });
-      }, 50);
-    } catch (err) {
-      console.error('[ChatWindow] Failed to send location:', err);
-      throw err; // Re-throw so sheet knows it failed
+  useEffect(() => {
+    if (!locationRefreshToken) {
+      return;
     }
-  }, [conversationId, refresh]);
+
+    void refresh();
+    setTimeout(() => {
+      listRef.current?.scrollToOffset({ offset: 0, animated: false });
+    }, 50);
+  }, [locationRefreshToken, refresh]);
 
   // Handle infinite scroll
   const handleEndReached = useCallback(() => {
@@ -301,13 +297,18 @@ export function ChatWindow({
   // Empty state
   const ListEmptyComponent = useMemo(() => {
     return (
-      <EmptyState
-        icon={MessageCircle}
-        title="No messages yet."
-        subtitle="Say hi and start the conversation!"
-      />
+      <View style={styles.emptyContainer}>
+        <View style={styles.emptyTextBlock}>
+          <Text variant="headline" style={{ color: colors.label }}>
+            No messages yet.
+          </Text>
+          <Text variant="subhead" tone="secondary" style={styles.emptySubtitle}>
+            Say hi and start the conversation!
+          </Text>
+        </View>
+      </View>
     );
-  }, []);
+  }, [colors.label]);
 
   // Typing indicator
   const ListHeaderComponent = useMemo(() => {
@@ -341,7 +342,6 @@ export function ChatWindow({
     return null;
   }, [isOnline, lastSeenAt]);
 
-  const router = useRouter();
   const { applySearch, clearSearch, clearFilterParams } = useSearch();
 
   // Avatar + name + status as a single title node
@@ -476,11 +476,18 @@ export function ChatWindow({
                 inverted
                 contentContainerStyle={[
                   styles.messagesContent,
-                  {
-                    // In an inverted list, visual top spacing maps to paddingBottom.
-                    paddingBottom: getMobileHeaderContentInset(insets.top),
-                    paddingTop: Spacing.md,
-                  },
+                  messages.length > 0
+                    ? {
+                        // In an inverted list, visual top spacing maps to paddingBottom.
+                        paddingBottom: getMobileHeaderContentInset(insets.top),
+                        paddingTop: Spacing.md,
+                      }
+                    : {
+                        flexGrow: 1,
+                        justifyContent: 'center',
+                        paddingTop: Spacing['5xl'],
+                        paddingBottom: Spacing['5xl'],
+                      },
                 ]}
                 ListEmptyComponent={ListEmptyComponent}
                 ListHeaderComponent={ListHeaderComponent}
@@ -509,13 +516,6 @@ export function ChatWindow({
             ? `Hi ${displayName}, is the ${listingTitle || 'listing'} still available?`
             : undefined
         }
-      />
-
-      {/* Location Picker Sheet */}
-      <LocationPickerSheet
-        visible={isLocationSheetOpen}
-        onClose={() => setIsLocationSheetOpen(false)}
-        onConfirm={handleConfirmLocation}
       />
     </KeyboardAvoidingView>
   </>
@@ -557,10 +557,17 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
   },
   emptyContainer: {
-    flex: 1,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: Spacing['5xl'],
+    paddingHorizontal: Spacing['3xl'],
+  },
+  emptyTextBlock: {
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  emptySubtitle: {
+    textAlign: 'center',
   },
   skeletonContainer: {
     flex: 1,

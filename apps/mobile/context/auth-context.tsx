@@ -11,7 +11,7 @@ import { unregisterPushTokenOnLogout } from '@/lib/push-token-store';
 import { queryClient } from '@/lib/query-client';
 
 // Auth sheet context types
-export type AuthSheetContext = 'profile' | 'saved' | 'messages' | 'listings' | 'default';
+export type AuthSheetContext = 'profile' | 'saved' | 'messages' | 'listings' | 'bookings' | 'default';
 
 export interface AuthUser {
   id: string;

@@ -132,6 +132,9 @@ export interface ColorPalette {
   surfaceSecondary: string;
   surfaceTertiary: string;
   sheet: string;           // Sheet/modal background (white in light, #1A1A1A in dark)
+  sheetBorder: string;     // Subtle dividers inside sheets
+  sheetHandle: string;     // Drag handle tint
+  sheetSurface: string;    // Secondary sheet surface for inset groups
   
   // Text/Labels
   label: string;
@@ -139,6 +142,8 @@ export interface ColorPalette {
   labelTertiary: string;
   labelQuaternary: string;
   placeholder: string;
+  sheetLabel: string;      // Default sheet copy tone
+  sheetLabelMuted: string; // Quiet supporting sheet copy
   
   // Borders & Separators
   border: string;
@@ -203,7 +208,10 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     surface:          '#F0F0F0',   // Light gray card — lifts above white bg
     surfaceSecondary: '#E8E8E8',   // Deeper elevated tier
     surfaceTertiary:  '#E0E0E0',   // Soft tertiary surface
-    sheet:            '#FFFFFF',   // Sheet/modal background (always white in light)
+    sheet:            '#FFFFFF',   // Apple HIG-style sheet base in light mode
+    sheetBorder:      '#E1E1E1',   // Quiet sheet dividers
+    sheetHandle:      '#D2D2D2',   // Subtle grabber tint
+    sheetSurface:     '#F7F7F7',   // Inset rows/sections within sheets
     
     // ── Text/Labels (4-tier semantic hierarchy) ───────────────────────────
     label:           '#050505',               // Opposite of dark #FAFAFA
@@ -211,6 +219,8 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     labelTertiary:   '#737373',              // Opposite of dark #8C8C8C
     labelQuaternary: '#949494',              // Opposite of dark #6B6B6B
     placeholder:     '#737373',              // Mirrors light tertiary label
+    sheetLabel:      '#050505',              // Primary sheet text
+    sheetLabelMuted: '#737373',              // Muted sheet text
     
     // ── Borders & Separators ──────────────────────────────────────────────
     border:    'rgba(0,0,0,0.10)',     // Opposite of dark border
@@ -274,7 +284,10 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     surface:          palette.secondarySystemBackgroundDark, // Default surface
     surfaceSecondary: palette.tertiarySystemBackgroundDark,  // Elevated
     surfaceTertiary:  '#333333',                                     // Highest
-    sheet:            palette.secondarySystemBackgroundDark, // Sheet/modal background (#1A1A1A)
+    sheet:            palette.secondarySystemBackgroundDark, // Apple HIG-style sheet base (#1A1A1A)
+    sheetBorder:      palette.opaqueSeparatorDark,           // Quiet sheet dividers
+    sheetHandle:      '#474747',                             // Subtle grabber tint
+    sheetSurface:     palette.tertiarySystemBackgroundDark,  // Inset rows/sections within sheets
     
     // ── Text/Labels (4-tier semantic hierarchy) ───────────────────────────
     label:           palette.labelDark,           // Primary text (white)
@@ -282,6 +295,8 @@ export const Colors: { light: ColorPalette; dark: ColorPalette } = {
     labelTertiary:   palette.tertiaryLabelDark,   // Tertiary
     labelQuaternary: palette.quaternaryLabelDark, // Quaternary
     placeholder:     palette.tertiaryLabelDark,   // Placeholder
+    sheetLabel:      palette.labelDark,           // Primary sheet text
+    sheetLabelMuted: palette.tertiaryLabelDark,   // Muted sheet text
     
     // ── Borders & Separators ──────────────────────────────────────────────
     border:    palette.separatorDark,
@@ -494,6 +509,32 @@ export const Typography = {
   caption1Emphasized:     tc(12, 16, R7, { letterSpacing: 0.5 }),
   caption2:               ios.caption2,
   caption2Emphasized:     ios.caption2E,
+} as const;
+
+export const SheetTypography = {
+  headerAction: 'subhead',
+  headerTitle: 'subheadEmphasized',
+  rowLabel: 'subhead',
+  rowLabelSelected: 'subheadEmphasized',
+  supporting: 'footnote',
+  supportingEmphasized: 'footnoteEmphasized',
+} as const;
+
+export const SheetChrome = {
+  radius: Radius.sheet,
+  handleWidth: Sizes.bubble,
+  handleHeight: Spacing.xs,
+  contentPaddingHorizontal: Spacing.lg,
+  contentPaddingTop: Spacing.md,
+  headerPaddingBottom: Spacing.md,
+  headerMarginBottom: Spacing.md,
+  rowGap: Spacing.xs,
+  rowPaddingHorizontal: Spacing.md,
+  rowPaddingVertical: Spacing.md,
+  headerActionPaddingHorizontal: Spacing.sm,
+  headerActionPaddingVertical: Spacing.xs,
+  headerPlaceholderWidth: Spacing.xl * 3,
+  bottomSafeAreaSpacing: Spacing['3xl'],
 } as const;
 
 export const InputTypography: TextStyle = {

@@ -4,7 +4,7 @@
  * Includes grid modal and lightbox integration
  */
 
-import { Bubble, HapticPressable, Pill, Skeleton, Text } from '@/components/ui';
+import { HapticPressable, Skeleton, Text } from '@/components/ui';
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View, Dimensions, FlatList, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Image } from 'expo-image';
@@ -12,7 +12,6 @@ import { ChevronLeft, ChevronRight, Plus } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 
 import { Colors, Spacing, Radius, Sizes } from '@/constants/theme';
-import { useTheme } from '@/context/theme-context';
 import { getAppListingImageUrls } from '@/lib/config';
 import { ImageLightbox } from './image-lightbox';
 import { ImageGridModal } from './image-grid-modal';
@@ -31,8 +30,7 @@ interface ImageGalleryProps {
 }
 
 export function ImageGallery({ images, title }: ImageGalleryProps) {
-  const { colorScheme } = useTheme();
-  const colors = Colors[colorScheme];
+  const mediaColors = Colors.dark;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [gridModalOpen, setGridModalOpen] = useState(false);
@@ -102,8 +100,8 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
 
   if (allImages.length === 0) {
     return (
-      <View style={[styles.placeholder, { backgroundColor: colors.skeleton }]}>
-        <Text variant="body" tone="muted">
+      <View style={[styles.placeholder, { backgroundColor: mediaColors.backgroundSecondary }]}>
+        <Text variant="body" style={{ color: mediaColors.labelSecondary }}>
           No Images
         </Text>
       </View>
@@ -113,7 +111,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
   return (
     <View style={styles.container}>
       {/* Main Image - Swipeable, tap to open lightbox */}
-      <View style={styles.mainImageWrapper}>
+      <View style={[styles.mainImageWrapper, { backgroundColor: mediaColors.background }]}>
         <FlatList
           ref={flatListRef}
           data={allImages}
@@ -152,26 +150,27 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           <ChevronRight size={Sizes.iconMd} color={Colors.dark.white} strokeWidth={2.2} />
         </View>
         <View style={styles.bottomOverlayRow} pointerEvents="box-none">
-          <Pill
+          <View
             style={[
               styles.counterPill,
-              { backgroundColor: colors.surfaceSecondary, borderColor: colors.outline },
+              { backgroundColor: mediaColors.fill, borderColor: mediaColors.border },
             ]}
           >
-            <Text variant="caption1" style={[styles.overlayText, { color: colors.label }]}>
+            <Text variant="caption1" style={[styles.overlayText, { color: mediaColors.white }]}> 
               {currentIndex + 1}/{allImages.length}
             </Text>
-          </Pill>
+          </View>
 
-          <Bubble
-            size="sm"
-            tone="fill"
+          <HapticPressable
             onPress={onViewAllPress}
+            style={[styles.overlayButton, { backgroundColor: mediaColors.fill, borderColor: mediaColors.border }]}
             accessibilityRole="button"
             accessibilityLabel="View all photos"
           >
-            <Plus size={Sizes.iconSm} color={colors.label} strokeWidth={2.2} />
-          </Bubble>
+            {({ pressed }) => (
+              <Plus size={Sizes.iconSm} color={mediaColors.white} strokeWidth={2.2} style={{ opacity: pressed ? 0.7 : 1 }} />
+            )}
+          </HapticPressable>
         </View>
       </View>
 
@@ -192,6 +191,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
       {lightboxOpen ? (
         <ImageLightbox
           images={fullImages}
+          title={title}
           currentIndex={currentIndex}
           isOpen={lightboxOpen}
           onClose={() => setLightboxOpen(false)}
@@ -273,6 +273,16 @@ const styles = StyleSheet.create({
     minWidth: Sizes.actionButtonSm,
     height: Sizes.actionButtonSm,
     paddingHorizontal: Spacing.sm,
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  overlayButton: {
+    width: Sizes.actionButtonSm,
+    height: Sizes.actionButtonSm,
+    borderRadius: Radius.full,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

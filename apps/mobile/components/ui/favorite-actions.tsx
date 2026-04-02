@@ -16,10 +16,11 @@
  *   const { isFavorite, isSuperliked, toggleFavorite, toggleSuperlike } = useFavoriteActions(id);
  */
 
-import React, { useCallback, memo, useState } from 'react';
+import React, { useCallback, memo, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { Heart, Zap } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
 
 import { useTheme } from '@/context/theme-context';
 import { useListingFavorite } from '@/context/favorites-context';
@@ -32,11 +33,6 @@ import {
   FAVORITE_COLORS,
   SUPERLIKE_COLORS,
 } from './confetti-burst';
-// Import directly to avoid circular dependency with @/components/sheets barrel
-import {
-  SuperlikeConfirmationSheet,
-  SuperlikeQuotaExhaustedSheet,
-} from '@/components/sheets/superlike-confirmation-sheet';
 
 // ============================================================================
 // TYPES
@@ -303,16 +299,26 @@ export const SuperlikeButton = memo(function SuperlikeButton({
     isSuperliked,
     toggleSuperlike,
     superConfettiRef,
-    quota,
     showConfirmSheet,
     showExhaustedSheet,
     setShowConfirmSheet,
     setShowExhaustedSheet,
-    handleConfirmSuperlike,
   } = useFavoriteActions(listingId, {
     onSuperlikePress: onPress,
     isSuperliked: isSuperlikedProp,
   });
+
+  useEffect(() => {
+    if (!showConfirmSheet) return;
+    router.push({ pathname: '/superlike-confirmation', params: { listingId } });
+    setShowConfirmSheet(false);
+  }, [listingId, setShowConfirmSheet, showConfirmSheet]);
+
+  useEffect(() => {
+    if (!showExhaustedSheet) return;
+    router.push({ pathname: '/superlike-exhausted', params: { listingId } });
+    setShowExhaustedSheet(false);
+  }, [listingId, setShowExhaustedSheet, showExhaustedSheet]);
 
   const iconColor = isSuperliked
     ? colors.warning
@@ -329,17 +335,6 @@ export const SuperlikeButton = memo(function SuperlikeButton({
         />
       </HapticPressable>
       <ConfettiBurst ref={superConfettiRef} />
-      <SuperlikeConfirmationSheet
-        visible={showConfirmSheet}
-        onClose={() => setShowConfirmSheet(false)}
-        onConfirm={handleConfirmSuperlike}
-        quota={quota}
-      />
-      <SuperlikeQuotaExhaustedSheet
-        visible={showExhaustedSheet}
-        onClose={() => setShowExhaustedSheet(false)}
-        quota={quota}
-      />
     </View>
   );
 });

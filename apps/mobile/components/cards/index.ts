@@ -5,5 +5,4 @@ export {
   CarCardDetailedM, 
   CarCardDetailedMSkeleton, 
   type CarCardDetailedMProps,
-  type ListingData,
 } from './car-card-detailed-m';

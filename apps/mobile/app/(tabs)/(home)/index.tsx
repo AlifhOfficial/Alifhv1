@@ -11,17 +11,16 @@ import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
+  BrowseByMake,
   GreetingNote,
   QuickActions,
-  UserDashboardStatsCard,
   ProfileMenu,
+  HomeFeed,
 } from '@/components/home';
 import { Bubble, HapticRefreshControl } from '@/components/ui';
 import { MobileHeader, getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
 import { useTheme } from '@/context/theme-context';
-import { useAuth } from '@/context/auth-context';
 import { Spacing, Sizes } from '@/constants/theme';
-import { useUserDashboardStats } from '@/hooks/use-user-dashboard';
 
 // ============================================================================
 // CONSTANTS
@@ -33,19 +32,16 @@ import { useUserDashboardStats } from '@/hooks/use-user-dashboard';
 
 export default function HomeScreen() {
   const { colors, colorScheme, toggleTheme } = useTheme();
-  const { user } = useAuth();
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
-  const { stats, isLoading, refresh } = useUserDashboardStats(user?.id);
   const topSpacerHeight = getMobileHeaderContentInset(insets.top) + Spacing['5xl'] * 2 + Spacing['3xl'] * 2;
   const bottomInset = getTabBarContentInset(insets.bottom, Spacing['3xl']);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    await refresh();
     setRefreshing(false);
-  }, [refresh]);
+  }, []);
 
   const handleToggleTheme = useCallback(() => {
     if (Platform.OS === 'ios') {
@@ -95,7 +91,8 @@ export default function HomeScreen() {
           <GreetingNote />
         </View>
         <QuickActions />
-        <UserDashboardStatsCard stats={stats} isLoading={isLoading} />
+        <BrowseByMake />
+        <HomeFeed />
 
         <View style={[styles.bottomSpacer, { height: bottomInset }]} />
       </ScrollView>

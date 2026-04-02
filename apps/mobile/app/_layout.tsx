@@ -4,6 +4,7 @@
 
 import { Theme as NavTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, router as expoRouter } from 'expo-router';
+import { usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -50,7 +51,6 @@ textInputWithDefaults.defaultProps = {
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { QueryClientProvider, focusManager } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
-import { installQueryDebugLogger } from '@/lib/query-debug';
 import { AppFontFamilies, Colors } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
@@ -65,7 +65,6 @@ import { OfflineBanner } from '@/components/ui/offline-banner';
 import { AlertProvider } from '@/components/ui/themed-alert';
 import { FooterFade } from '@/components/layout';
 import { AuthFlow } from '@/components/auth';
-import { AuthSheet } from '@/components/sheets';
 
 // Prevent splash screen from auto-hiding until fonts load
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -172,10 +171,6 @@ function RootLayoutNav() {
     return () => subscription.remove();
   }, []);
 
-  useEffect(() => {
-    return installQueryDebugLogger(queryClient);
-  }, []);
-
   // Set native root view background color (fixes Android black flash during transitions)
   useEffect(() => {
     if (Platform.OS !== 'android') {
@@ -278,6 +273,137 @@ function RootLayoutNav() {
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="listing/[id]" options={{ title: 'Listing' }} />
+          <Stack.Screen
+            name="auth-prompt"
+            options={{
+              title: 'Sign In',
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.44],
+              headerShown: true,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="listing-description"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.82],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="listing-specs"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.86],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="listing-features"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.8],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="car-info"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.9],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="superlike-confirmation"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.52],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="superlike-exhausted"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.45],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="financing"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.86],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="phone-actions"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.42],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="seller-description"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.82],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="booking"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.9],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="booking-details"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.9],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
+          <Stack.Screen
+            name="cancel-booking"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.7],
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.sheet },
+            }}
+          />
           <Stack.Screen name="seller-contact/[listingId]" options={{ title: 'Contact Seller' }} />
           <Stack.Screen name="profile" options={{ title: 'Profile' }} />
           <Stack.Screen name="settings" options={{ title: 'Settings' }} />
@@ -345,20 +471,20 @@ export default function RootLayout() {
               <AlertProvider>
                 <KeyboardProvider>
                   <NetworkProvider>
-                    <BottomSheetModalProvider>
-                        <SearchProvider>
-                          <AuthProvider>
-                            <FavoritesProvider>
-                              <WebSocketWrapper>
-                                <NotificationWrapper>
-                                  <RootLayoutNav />
-                                  <OfflineBanner />
-                                </NotificationWrapper>
-                              </WebSocketWrapper>
-                            </FavoritesProvider>
-                          </AuthProvider>
-                        </SearchProvider>
-                    </BottomSheetModalProvider>
+                    <SearchProvider>
+                      <AuthProvider>
+                        <FavoritesProvider>
+                          <BottomSheetModalProvider>
+                            <WebSocketWrapper>
+                              <NotificationWrapper>
+                                <RootLayoutNav />
+                                <OfflineBanner />
+                              </NotificationWrapper>
+                            </WebSocketWrapper>
+                          </BottomSheetModalProvider>
+                        </FavoritesProvider>
+                      </AuthProvider>
+                    </SearchProvider>
                   </NetworkProvider>
                 </KeyboardProvider>
               </AlertProvider>
@@ -382,24 +508,20 @@ function WebSocketWrapper({ children }: { children: React.ReactNode }) {
 
 // Auth sheet renderer - uses auth context
 function AuthSheetRenderer() {
-  const { authSheetVisible, authSheetContext, hideAuthSheet, openAuthFlow } = useAuth();
-  
-  const handleSignIn = () => {
-    hideAuthSheet();
-    // Small delay to let sheet dismiss smoothly
-    setTimeout(() => {
-      openAuthFlow();
-    }, 150);
-  };
-  
-  return (
-    <AuthSheet
-      visible={authSheetVisible}
-      onClose={hideAuthSheet}
-      onSignIn={handleSignIn}
-      context={authSheetContext}
-    />
-  );
+  const { authSheetVisible, authSheetContext } = useAuth();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!authSheetVisible) return;
+    if (pathname === '/auth-prompt') return;
+
+    expoRouter.push({
+      pathname: '/auth-prompt',
+      params: { context: authSheetContext },
+    });
+  }, [authSheetContext, authSheetVisible, pathname]);
+
+  return null;
 }
 
 // Notification wrapper that uses auth context

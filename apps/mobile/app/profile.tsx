@@ -3,12 +3,12 @@
  * Native-feeling, modular profile screen connected to API
  */
 
-import { Text, Skeleton, SkeletonCircle, AuthGate, Bubble, HapticPressable, useAlert } from '@/components/ui';
+import { Text, Skeleton, SkeletonCircle, Bubble, HapticPressable, useAlert } from '@/components/ui';
 import React, { useCallback } from 'react';
-import { Stack, useRouter } from 'expo-router';
+import { Redirect, Stack, useRouter } from 'expo-router';
 import {
   StyleSheet, View, Platform } from 'react-native';
-import { Settings2, User } from 'lucide-react-native';
+import { Settings2 } from 'lucide-react-native';
 import { ScreenContainer, MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 
 import { Layout, Spacing, Radius, Sizes } from '@/constants/theme';
@@ -130,26 +130,15 @@ export default function ProfileScreen() {
 
 
 
-  // Unauthenticated - show auth required empty state
+  // Unauthenticated - redirect to auth prompt
   if (!isAuthenticated) {
     return (
-      <>
-        <Stack.Screen
-          options={{
-            ...nativeHeaderOptions,
-            title: 'Profile',
-            headerTintColor: colors.label,
-          }}
-        />
-        <View style={[styles.container, styles.centered, { backgroundColor: colors.background, paddingTop: headerInset }]}> 
-        <MobileHeader title="Profile" showBackButton />
-        <AuthGate
-          icon={User}
-          title="Sign in to view profile."
-          subtitle="Manage your account and listings on Revvup."
-        />
-        </View>
-      </>
+      <Redirect
+        href={{
+          pathname: '/auth-prompt',
+          params: { context: 'profile' },
+        }}
+      />
     );
   }
 

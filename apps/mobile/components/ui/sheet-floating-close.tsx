@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import type { BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 
 import { Colors, Layout, Radius, Sizes, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
@@ -12,7 +11,7 @@ interface SheetFloatingCloseButtonProps {
   disabled?: boolean;
 }
 
-interface SheetFloatingCloseHandleProps extends BottomSheetHandleProps {
+interface SheetFloatingCloseHandleProps {
   onPress: () => void;
   disabled?: boolean;
 }

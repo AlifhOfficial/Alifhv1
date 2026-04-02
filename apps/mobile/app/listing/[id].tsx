@@ -9,7 +9,7 @@ import { Bubble, ConfettiBurst, HapticRefreshControl, Text, useFavoriteActions, 
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { 
   View, ScrollView, StyleSheet, InteractionManager, Platform } from 'react-native';
-import { useLocalSearchParams, Stack } from 'expo-router';
+import { useLocalSearchParams, Stack, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Heart, Share2, Zap, AlertCircle, FileX } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -21,7 +21,6 @@ import { CarCardDetailedM, CarCardDetailedMSkeleton } from '@/components/cards';
 import { useListingDetail } from '@/hooks/use-listing-query';
 import { shareListing } from '@/lib/listing-share';
 import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
-import { SuperlikeConfirmationSheet, SuperlikeQuotaExhaustedSheet } from '@/components/sheets';
 
 export default function ListingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -94,13 +93,31 @@ export default function ListingDetailScreen() {
     toggleSuperlike,
     favConfettiRef,
     superConfettiRef,
-    quota,
     showConfirmSheet,
     showExhaustedSheet,
     setShowConfirmSheet,
     setShowExhaustedSheet,
-    handleConfirmSuperlike,
   } = useFavoriteActions(listingId);
+
+  useEffect(() => {
+    if (!showConfirmSheet) return;
+    router.push({
+      pathname: '/superlike-confirmation',
+      params: {
+        listingId,
+        listingTitle: listing?.listing
+          ? `${listing.listing.year} ${listing.listing.make} ${listing.listing.model}${listing.listing.trim ? ` ${listing.listing.trim}` : ''}`
+          : undefined,
+      },
+    });
+    setShowConfirmSheet(false);
+  }, [listing?.listing, listingId, setShowConfirmSheet, showConfirmSheet]);
+
+  useEffect(() => {
+    if (!showExhaustedSheet) return;
+    router.push({ pathname: '/superlike-exhausted', params: { listingId } });
+    setShowExhaustedSheet(false);
+  }, [listingId, setShowExhaustedSheet, showExhaustedSheet]);
 
   const headerActionsWidth = useMemo(() => {
     const actionSize = Sizes.actionButtonSm;
@@ -212,18 +229,6 @@ export default function ListingDetailScreen() {
           />
         ) : null}
       </ScrollView>
-
-      <SuperlikeConfirmationSheet
-        visible={showConfirmSheet}
-        onClose={() => setShowConfirmSheet(false)}
-        onConfirm={handleConfirmSuperlike}
-        quota={quota}
-      />
-      <SuperlikeQuotaExhaustedSheet
-        visible={showExhaustedSheet}
-        onClose={() => setShowExhaustedSheet(false)}
-        quota={quota}
-      />
 
     </View>
   );

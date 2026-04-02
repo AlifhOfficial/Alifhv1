@@ -7,10 +7,10 @@
  * - Multiple conversations with same partner/user render as collapsible groups
  */
 
-import { Text, Skeleton, SkeletonCircle, AuthGate, HapticRefreshControl, EmptyState } from '@/components/ui';
+import { Text, Skeleton, SkeletonCircle, HapticRefreshControl, EmptyState } from '@/components/ui';
 import React, { useMemo, useCallback, useRef } from 'react';
 import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { Redirect, useRouter, useFocusEffect } from 'expo-router';
 import { MessageCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -206,16 +206,6 @@ export default function MessagesScreen() {
 
   // ── Empty / loading / error component for FlatList ──────────
   const renderEmpty = useCallback(() => {
-    if (!isAuthenticated) {
-      return (
-        <AuthGate
-          icon={MessageCircle}
-          title="Sign in to message."
-          subtitle="Connect with buyers and sellers on Revvup."
-        />
-      );
-    }
-
     if ((isLoading || isRefreshing) && conversations.length === 0) {
       return (
         <View style={styles.skeletonList}>
@@ -254,13 +244,17 @@ export default function MessagesScreen() {
         style={styles.emptyState}
       />
     );
-  }, [isAuthenticated, isLoading, isRefreshing, conversations.length, error]);
+  }, [isLoading, isRefreshing, conversations.length, error]);
 
   const headerInset = getMobileHeaderContentInset(insets.top);
   const tabBarInset = getTabBarContentInset(insets.bottom);
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
   }, []);
+
+  if (!isAuthenticated) {
+    return <Redirect href={{ pathname: '/auth-prompt', params: { context: 'messages' } }} />;
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

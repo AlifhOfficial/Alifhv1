@@ -1,6 +1,6 @@
 /**
  * BrowseToolbar — Floating search trigger for the Browse screen.
- * Uses the existing SearchSheet for the full search flow.
+ * Opens native formSheet routes for search/sort flows.
  */
 
 import { HapticPressable, Text } from '@/components/ui';
@@ -8,13 +8,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Search } from 'lucide-react-native';
+import { router } from 'expo-router';
 
 import { useTheme } from '@/context/theme-context';
 import { useSearch } from '@/context/search-context';
 import { Colors, Layout, Sizes, Spacing, Shadows, ZIndex } from '@/constants/theme';
-import { SearchSheet, SortSheet } from '@/components/sheets';
-import { type SearchSortOption } from '@/lib/search-api';
-import { BrowseDrawerSheet, type FilterPillConfig, type FilterPillType, type ViewMode } from './browse-drawer-sheet';
+import type { FilterPillType, BrowseViewMode as ViewMode } from '@/context/search-context';
 
 const SEARCH_BAR_HEIGHT = Sizes.actionButtonLg + Spacing.xs;
 const SEARCH_ROW_WIDTH = Sizes.actionButtonLg * 4 + Spacing['3xl'];
@@ -22,7 +21,7 @@ const SEARCH_ROW_WIDTH = Sizes.actionButtonLg * 4 + Spacing['3xl'];
 export const BROWSE_TOOLBAR_HEIGHT = SEARCH_BAR_HEIGHT + Spacing.xs;
 
 interface BrowseToolbarProps {
-  pills?: FilterPillConfig[];
+  pills?: { type: FilterPillType; label: string; activeCount: number }[];
   onPillPress?: (type: FilterPillType) => void;
   onSettingsPress?: () => void;
   settingsCount?: number;
@@ -41,78 +40,29 @@ export function BrowseToolbar({
   bottomOffset = Layout.tabBarHeight,
 }: BrowseToolbarProps) {
   const { colorScheme } = useTheme();
-  const {
-    applySearch,
-    filterParams,
-    sortBy,
-    applySort,
-    searchParams,
-    updateFilterParams,
-    subscribeToBrowseDrawer,
-    subscribeToBrowseSort,
-  } = useSearch();
+  const { filterParams, searchParams, subscribeToBrowseDrawer, subscribeToBrowseSort } = useSearch();
   const colors = Colors[colorScheme];
 
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isSortOpen, setIsSortOpen] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
   const handleSearchPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setIsSearchOpen(true);
+    if (process.env.EXPO_OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    router.push('/(tabs)/(browse)/search');
   }, []);
-
-  const handleSearchSubmit = useCallback(
-    (params: {
-      q?: string;
-      make?: string[];
-      model?: string[];
-      trim?: string[];
-      tags?: string[];
-      extras?: string[];
-      partnerId?: string;
-      partnerName?: string;
-      bodyType?: string[];
-      fuelType?: string[];
-      transmission?: string[];
-      specs?: string[];
-      condition?: string;
-      sellerType?: string;
-    }) => {
-      const { bodyType, fuelType, transmission, specs, condition, sellerType, ...searchLevel } = params;
-      applySearch(searchLevel);
-
-      const filterUpdates: Record<string, unknown> = {};
-      if (bodyType?.length) filterUpdates.bodyType = bodyType;
-      if (fuelType?.length) filterUpdates.fuelType = fuelType;
-      if (transmission?.length) filterUpdates.transmission = transmission;
-      if (specs?.length) filterUpdates.specs = specs;
-      if (condition) filterUpdates.condition = condition;
-      if (sellerType) filterUpdates.sellerType = sellerType;
-
-      if (Object.keys(filterUpdates).length > 0) {
-        updateFilterParams(filterUpdates);
-      }
-    },
-    [applySearch, updateFilterParams],
-  );
 
   const handleSortPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setIsSortOpen(true);
+    if (process.env.EXPO_OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    router.push('/(tabs)/(browse)/sort');
   }, []);
-
-  const handleSortChange = useCallback(
-    (sort: SearchSortOption) => {
-      applySort(sort);
-    },
-    [applySort],
-  );
 
   const handleDrawerPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setIsDrawerOpen(true);
-  }, []);
+    if (process.env.EXPO_OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    router.push({ pathname: '/(tabs)/(browse)/menu', params: { viewMode } });
+  }, [viewMode]);
 
   useEffect(() => subscribeToBrowseDrawer(handleDrawerPress), [handleDrawerPress, subscribeToBrowseDrawer]);
   useEffect(() => subscribeToBrowseSort(handleSortPress), [handleSortPress, subscribeToBrowseSort]);
@@ -162,27 +112,6 @@ export function BrowseToolbar({
         </HapticPressable>
       </View>
 
-      <SearchSheet
-        visible={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        onSearch={handleSearchSubmit}
-      />
-      <SortSheet
-        visible={isSortOpen}
-        onClose={() => setIsSortOpen(false)}
-        currentSort={sortBy}
-        onSortChange={handleSortChange}
-      />
-      <BrowseDrawerSheet
-        visible={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        pills={pills}
-        onPillPress={onPillPress}
-        onSettingsPress={onSettingsPress}
-        settingsCount={settingsCount}
-        viewMode={viewMode}
-        onViewModeChange={onViewModeChange}
-      />
     </>
   );
 }

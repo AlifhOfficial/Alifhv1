@@ -7,7 +7,6 @@ export { MessagesHeader } from './messages-header';
 export { ConversationGroup } from './conversation-group';
 export { MessageBubble } from './message-bubble';
 export { LocationBubble } from './location-bubble';
-export { LocationPickerSheet } from './location-picker-sheet';
 export { MessageInput, MESSAGE_INPUT_HEIGHT } from './message-input';
 export { ChatWindow } from './chat-window';
 
