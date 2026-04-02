@@ -22,6 +22,7 @@ import { MobileHeader, getMobileHeaderContentInset, getTabBarContentInset } from
 import { Colors, Layout, Spacing, Sizes } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
+import { useSearch } from '@/context/search-context';
 import type { Conversation } from '@/lib/messaging-api';
 
 // ── List Item Type - Always grouped ─────────────────────────────
@@ -38,10 +39,12 @@ type ListItem = {
 
 export default function MessagesScreen() {
   const { colorScheme } = useTheme();
+  const { subscribeToScrollToTop } = useSearch();
   const colors = Colors[colorScheme];
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { isAuthenticated, user } = useAuth();
+  const listRef = useRef<FlatList<ListItem>>(null);
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = React.useState(false);
 
   const {
@@ -252,6 +255,14 @@ export default function MessagesScreen() {
     setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
   }, []);
 
+  React.useEffect(() => {
+    const unsubscribe = subscribeToScrollToTop(() => {
+      listRef.current?.scrollToOffset({ offset: 0, animated: true });
+    });
+
+    return unsubscribe;
+  }, [subscribeToScrollToTop]);
+
   if (!isAuthenticated) {
     return <RequireAuthSheet context="messages" />;
   }
@@ -264,6 +275,7 @@ export default function MessagesScreen() {
         fadeHeight={insets.top + Spacing['5xl']}
       />
       <FlatList
+        ref={listRef}
         data={listItems}
         renderItem={renderItem}
         keyExtractor={(item) => item.key}

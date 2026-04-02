@@ -15,15 +15,10 @@ type RevvupExpoConfig = ExpoConfig & {
 export default ({ config }: ConfigContext): RevvupExpoConfig => {
   // Production domain for associated domains
   const productionDomain = 'revvup.ae';
-  
-  // Dev domains for local testing (parsed from env or defaults)
-  // Format: comma-separated list of host:port
-  const devDomains = process.env.EXPO_PUBLIC_DEV_DOMAINS?.split(',').map(d => d.trim()) || [];
-  
+
   // Build associated domains array for iOS passkeys/webcredentials
   const associatedDomains = [
     `webcredentials:${productionDomain}`,
-    ...devDomains.map(domain => `webcredentials:${domain}`),
   ];
 
   return {
@@ -64,6 +59,7 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
     },
     android: {
       userInterfaceStyle: 'automatic',
+      googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
       adaptiveIcon: {
         backgroundColor: '#000000',
         foregroundImage: './assets/images/android-icon-foreground.png',
@@ -115,7 +111,6 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
           color: '#000000',
           defaultChannel: 'messages',
           androidMode: 'default',
-          googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
         },
       ],
       'expo-audio',
@@ -145,11 +140,10 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       eas: {
         projectId: 'cd8cffff-33b0-46d9-b584-08eb6448e6dc',
       },
-      // Expose API URLs to the app via Constants.expoConfig.extra
-      // Default to production URLs (use EXPO_PUBLIC_USE_LOCAL_DEV=true for local dev)
-      apiUrl: process.env.EXPO_PUBLIC_API_URL || 'https://revvup.ae',
-      wsUrl: process.env.EXPO_PUBLIC_WS_URL || 'wss://ws.revvup.ae',
-      cdnUrl: process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.revvup.ae',
+      // Production-only mobile endpoints.
+      apiUrl: 'https://revvup.ae',
+      wsUrl: 'wss://ws.revvup.ae',
+      cdnUrl: 'https://cdn.revvup.ae',
     },
   };
 };

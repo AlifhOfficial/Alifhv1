@@ -4,7 +4,7 @@
  * Shows greeting and quick actions.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, ScrollView, Platform, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { Sun, Moon } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -18,6 +18,7 @@ import {
 } from '@/components/home';
 import { Bubble, HapticRefreshControl } from '@/components/ui';
 import { MobileHeader, getMobileHeaderContentInset, getTabBarContentInset } from '@/components/layout';
+import { useSearch } from '@/context/search-context';
 import { useTheme } from '@/context/theme-context';
 import { Spacing, Sizes } from '@/constants/theme';
 
@@ -31,7 +32,9 @@ import { Spacing, Sizes } from '@/constants/theme';
 
 export default function HomeScreen() {
   const { colors, colorScheme, toggleTheme } = useTheme();
+  const { subscribeToScrollToTop } = useSearch();
   const insets = useSafeAreaInsets();
+  const scrollRef = useRef<ScrollView>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
   const topSpacerHeight = getMobileHeaderContentInset(insets.top) + Spacing['5xl'] * 2 + Spacing['3xl'] * 2;
@@ -55,6 +58,14 @@ export default function HomeScreen() {
     setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = subscribeToScrollToTop(() => {
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
+    });
+
+    return unsubscribe;
+  }, [subscribeToScrollToTop]);
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <MobileHeader
@@ -73,6 +84,7 @@ export default function HomeScreen() {
       />
 
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={styles.scrollContent}
         contentInsetAdjustmentBehavior="never"
         onScroll={handleScroll}

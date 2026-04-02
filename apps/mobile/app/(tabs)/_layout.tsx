@@ -5,8 +5,8 @@
  */
 
 import { HapticPressable } from '@/components/ui';
-import React, { useRef } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router/tabs';
 import { usePathname } from 'expo-router';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
@@ -41,7 +41,6 @@ const TAB_CONFIG = [
 
 const ACTIVE_ICON_STROKE = 2.5;
 const INACTIVE_ICON_STROKE = 2.5;
-const DOUBLE_TAP_MS = 320;
 const TAB_SPRING_CONFIG = { damping: 20, stiffness: 260, mass: 0.6 };
 const TAB_FADE_DURATION_MS = 210;
 
@@ -182,7 +181,6 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const { isAuthenticated, showAuthSheet } = useAuth();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const lastPressRef = useRef<{ name: string; time: number }>({ name: '', time: 0 });
   const [chipLayouts, setChipLayouts] = React.useState<Record<number, { x: number; width: number }>>({});
   const indicatorX = useSharedValue(0);
   const indicatorWidth = useSharedValue(0);
@@ -275,16 +273,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                     return;
                   }
 
-                  const now = Date.now();
-                  const isDoubleTap =
-                    focused &&
-                    tab.name === '(browse)' &&
-                    lastPressRef.current.name === tab.name &&
-                    now - lastPressRef.current.time <= DOUBLE_TAP_MS;
-
-                  lastPressRef.current = { name: tab.name, time: now };
-
-                  if (isDoubleTap) {
+                  if (focused) {
                     triggerScrollToTop();
                     return;
                   }

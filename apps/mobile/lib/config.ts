@@ -1,69 +1,32 @@
 /**
  * API Configuration
- * 
+ *
  * Centralized configuration for API endpoints.
- * Auto-detects the dev server IP in development mode.
+ * Uses production hosts by default to avoid local network drift.
  * Includes a global fetch interceptor to prevent native cookie leakage.
  */
 import Constants from 'expo-constants';
 
-// ============================================================================
-// DYNAMIC IP DETECTION
-// ============================================================================
-// In development, Expo knows the dev server IP. We use that same IP to connect
-// to our Next.js API server (running on port 3000) and WebSocket server (3001).
-// This eliminates the need to manually update env vars when your IP changes.
-// ============================================================================
-function getDevServerHost(): string | null {
-  // Works in Expo Go and development builds
-  const debuggerHost = Constants.expoGoConfig?.debuggerHost 
-    ?? Constants.expoConfig?.hostUri;
-  
-  if (debuggerHost) {
-    // debuggerHost is like "192.168.1.15:8081" - extract just the IP
-    return debuggerHost.split(':')[0];
-  }
-  return null;
-}
+const PROD_API_BASE = 'https://revvup.ae';
+const PROD_WS_URL = 'wss://ws.revvup.ae';
+const PROD_CDN_URL = 'https://cdn.revvup.ae';
 
 function getApiBaseUrl(): string {
-  // Always use production URL for now (live testing)
-  // To switch back to local dev, set USE_LOCAL_DEV=true in env
-  if (process.env.EXPO_PUBLIC_USE_LOCAL_DEV === 'true' && __DEV__) {
-    const devHost = getDevServerHost();
-    if (devHost) {
-      return `http://${devHost}:3000`;
-    }
-    return 'http://localhost:3000';
-  }
-  
-  // Use production apex domain by default.
-  // This keeps mobile aligned with the web app, EAS env defaults, and CDN cache rules.
-  return process.env.EXPO_PUBLIC_API_URL || 'https://revvup.ae';
+  // Production-only base URL across iOS and Android.
+  return PROD_API_BASE;
 }
 
 function getWsUrl(): string {
-  // Always use production URL for now (live testing)
-  // To switch back to local dev, set USE_LOCAL_DEV=true in env
-  if (process.env.EXPO_PUBLIC_USE_LOCAL_DEV === 'true' && __DEV__) {
-    const devHost = getDevServerHost();
-    if (devHost) {
-      return `ws://${devHost}:3001`;
-    }
-    return 'ws://localhost:3001';
-  }
-  
-  // Use production URL
-  return process.env.EXPO_PUBLIC_WS_URL || 'wss://ws.revvup.ae';
+  // Production-only WebSocket URL across iOS and Android.
+  return PROD_WS_URL;
 }
 
-// API URL - auto-detected in dev, from env in production
+// API URL
 export const API_BASE = getApiBaseUrl();
 
-export const PUBLIC_SITE_URL =
-  (process.env.EXPO_PUBLIC_SITE_URL || process.env.EXPO_PUBLIC_API_URL || 'https://revvup.ae').replace(/\/$/, '');
+export const PUBLIC_SITE_URL = PROD_API_BASE;
 
-// WebSocket URL - auto-detected in dev, from env in production
+// WebSocket URL
 export const WS_URL = getWsUrl();
 
 export function buildPublicUrl(path: string): string {
@@ -144,10 +107,10 @@ globalThis.fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Respo
 };
 
 // CDN for static assets (from environment or default)
-export const CDN_BASE = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.revvup.ae';
+export const CDN_BASE = PROD_CDN_URL;
 
 // CDN URL for avatars and media (R2 custom domain)
-export const R2_PUBLIC_URL = process.env.EXPO_PUBLIC_CDN_URL || 'https://cdn.revvup.ae';
+export const R2_PUBLIC_URL = PROD_CDN_URL;
 const CDN_HOSTS = new Set(
   [CDN_BASE, R2_PUBLIC_URL].map((value) => {
     try {
