@@ -1,6 +1,6 @@
 {
-  "installCommand": "cd apps/web && bun install",
-  "buildCommand": "cd apps/web && bun run build",
+  "installCommand":"bun install",
+  "buildCommand": "bun run build",
   "rewrites": [
     {
       "source": "/",
