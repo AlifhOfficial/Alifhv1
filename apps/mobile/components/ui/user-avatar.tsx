@@ -62,7 +62,7 @@ export function UserAvatar({
   src,
   name,
   size = 'md',
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   useGeneratedAvatar, // deprecated, ignored
 }: UserAvatarProps) {
   const { colorScheme } = useTheme();

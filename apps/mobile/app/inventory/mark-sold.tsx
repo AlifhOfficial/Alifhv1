@@ -11,6 +11,8 @@ import { useTheme } from '@/context/theme-context';
 import { markListingSold } from '@/lib/sell-car-user-api';
 import { getStringParam, type InventorySheetRouteParams } from '@/components/user-inventory-management/sub-operations/route-params';
 
+import React from 'react';
+
 export default function InventoryMarkSoldScreen() {
   const params = useLocalSearchParams() as InventorySheetRouteParams;
   const queryClient = useQueryClient();
@@ -102,8 +104,6 @@ export default function InventoryMarkSoldScreen() {
     </View>
   );
 }
-
-import React from 'react';
 
 const styles = StyleSheet.create({
   container: {

@@ -42,8 +42,7 @@ import {
   ListingFeatures,
   SellerCard,
   ListingTimestamp,
-} from '@/components/listings';
-import { FinancingCalculator } from '@/components/listings';
+ FinancingCalculator } from '@/components/listings';
 import { formatPrice, formatMileage, formatSpecs, formatEmirate } from '@/components/listings/types';
 import { calculateEMI } from '@/components/seller-contact/utils';
 

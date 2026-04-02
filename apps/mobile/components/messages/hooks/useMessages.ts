@@ -11,9 +11,8 @@ import {
   sendMessage as sendMessageAPI,
   type Message,
 } from '@/lib/messaging-api';
-import { getAvatarUrl } from '@/lib/config';
+import { getAvatarUrl , consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
-import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 
 interface UseMessagesOptions {
   conversationId: string;

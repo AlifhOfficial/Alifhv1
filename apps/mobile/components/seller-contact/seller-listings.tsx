@@ -21,11 +21,11 @@ export const SellerListings = memo(function SellerListings({
   onViewAll,
   colors,
 }: SellerListingsProps) {
-  if (listings.length === 0) return null;
-
   const handlePress = useCallback((id: string) => {
     onViewListing(id);
   }, [onViewListing]);
+
+  if (listings.length === 0) return null;
 
   return (
     <Animated.View entering={FadeInDown.delay(250).duration(350)} style={styles.container}>

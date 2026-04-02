@@ -3,8 +3,7 @@
  */
 
 import { Theme as NavTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
-import { Stack, router as expoRouter } from 'expo-router';
-import { usePathname } from 'expo-router';
+import { Stack, router as expoRouter , usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -16,6 +15,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState, useMemo } from 'react';
 import { View, LogBox, Platform, InteractionManager, AppState, Text as RNText, TextInput as RNTextInput } from 'react-native';
 import 'react-native-reanimated';
+
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { QueryClientProvider, focusManager } from '@tanstack/react-query';
+import { queryClient } from '@/lib/query-client';
+import { AppFontFamilies, Colors, Radius } from '@/constants/theme';
+import { ThemeProvider, useTheme } from '@/context/theme-context';
+import { AuthProvider, useAuth } from '@/context/auth-context';
+import { FavoritesProvider } from '@/context/favorites-context';
+
+import { SearchProvider } from '@/context/search-context';
+import { WebSocketProvider } from '@/context/websocket-context';
+import { NotificationProvider } from '@/context/notification-context';
+import { NetworkProvider } from '@/context/network-context';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { OfflineBanner } from '@/components/ui/offline-banner';
+import { AlertProvider } from '@/components/ui/themed-alert';
+import { FooterFade } from '@/components/layout';
+import { SimpleAuthWelcome } from '@/components/onboarding/simple-auth-welcome';
 
 // Suppress warnings from third-party dependencies that can't be fixed in user code
 // Note: These warnings come from dependencies, not our code
@@ -47,24 +64,6 @@ textInputWithDefaults.defaultProps = {
   maxFontSizeMultiplier: 1,
   style: [{ fontFamily: AppFontFamilies.regular }, textInputWithDefaults.defaultProps?.style].filter(Boolean),
 };
-
-import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { QueryClientProvider, focusManager } from '@tanstack/react-query';
-import { queryClient } from '@/lib/query-client';
-import { AppFontFamilies, Colors, Radius } from '@/constants/theme';
-import { ThemeProvider, useTheme } from '@/context/theme-context';
-import { AuthProvider, useAuth } from '@/context/auth-context';
-import { FavoritesProvider } from '@/context/favorites-context';
-
-import { SearchProvider } from '@/context/search-context';
-import { WebSocketProvider } from '@/context/websocket-context';
-import { NotificationProvider } from '@/context/notification-context';
-import { NetworkProvider } from '@/context/network-context';
-import { ErrorBoundary } from '@/components/ui/error-boundary';
-import { OfflineBanner } from '@/components/ui/offline-banner';
-import { AlertProvider } from '@/components/ui/themed-alert';
-import { FooterFade } from '@/components/layout';
-import { SimpleAuthWelcome } from '@/components/onboarding/simple-auth-welcome';
 
 // Prevent splash screen from auto-hiding until fonts load
 SplashScreen.preventAutoHideAsync().catch(() => {});

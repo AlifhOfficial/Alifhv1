@@ -179,7 +179,7 @@ export async function pickAndUploadListingImage(
 
   // 4. Preshrink images in batches to cap upload payload size (~150KB each)
   let preshrunkCount = 0;
-  const preshrunk: Array<{ uri: string; preshrunkUri: string } | { uri: string; error: string }> = [];
+  const preshrunk: ({ uri: string; preshrunkUri: string } | { uri: string; error: string })[] = [];
   const preshrinkBatchSize = 3;
 
   try {
