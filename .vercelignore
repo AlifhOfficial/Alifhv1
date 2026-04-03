@@ -14,7 +14,9 @@ apps/ws/**
 !apps/ws/
 !apps/ws/package.json
 
-apps/preprocessing
+apps/preprocessing/**
+!apps/preprocessing/
+!apps/preprocessing/package.json
 
 docs
 logo
