@@ -31,7 +31,6 @@ import { NetworkProvider } from '@/context/network-context';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { OfflineBanner } from '@/components/ui/offline-banner';
 import { AlertProvider } from '@/components/ui/themed-alert';
-import { FooterFade } from '@/components/layout';
 import { SimpleAuthWelcome } from '@/components/onboarding/simple-auth-welcome';
 
 // Suppress warnings from third-party dependencies that can't be fixed in user code
@@ -476,7 +475,6 @@ function RootLayoutNav() {
           <Stack.Screen name="bookings" options={{ title: 'Bookings' }} />
           <Stack.Screen name="saved" options={{ title: 'Saved' }} />
         </Stack>
-        <FooterFade />
       </View>
       
       {/* Auth Sheet - renders above tab bar */}

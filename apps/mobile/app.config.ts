@@ -1,7 +1,6 @@
 import type { ExpoConfig, ConfigContext } from 'expo/config';
 
 type RevvupExpoConfig = ExpoConfig & {
-  newArchEnabled?: boolean;
 };
 
 /**
@@ -36,7 +35,6 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
     icon: './assets/images/icon.png',
     scheme: 'revvup',
     userInterfaceStyle: 'automatic',
-    newArchEnabled: true,
     ios: {
       userInterfaceStyle: 'automatic',
       supportsTablet: true,
@@ -115,6 +113,7 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       ],
       'expo-audio',
       'expo-asset',
+      'expo-image',
       'expo-apple-authentication',
       [
         'expo-font',

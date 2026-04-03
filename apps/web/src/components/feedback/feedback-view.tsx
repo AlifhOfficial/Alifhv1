@@ -123,7 +123,7 @@ export function FeedbackView() {
       } else {
         toast({ title: 'Failed to submit', description: data.error || 'Please try again', variant: 'destructive' });
       }
-    } catch (_error) {
+    } catch {
       toast({ title: 'Error', description: 'An error occurred while submitting feedback', variant: 'destructive' });
     } finally {
       setIsSubmitting(false);

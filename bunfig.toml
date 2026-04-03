@@ -6,3 +6,6 @@ exact = true
 
 # Disable global disk cache
 cache = false
+
+# Prefer npm-style hoisting to avoid duplicate native packages in Expo monorepos
+linker = "hoisted"

@@ -43,7 +43,7 @@ export function UserBanNotice({ banReason, banExpires, userId: _userId }: UserBa
 
       setSubmitted(true);
       setAppealMessage('');
-    } catch (_error) {
+    } catch {
       alert('Failed to submit appeal. Please try again.');
     } finally {
       setSubmitting(false);

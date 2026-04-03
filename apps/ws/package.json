@@ -6,7 +6,7 @@
   "packageManager": "bun@1.2.5",
   "scripts": {
     "dev": "bun --watch --env-file=../../.env.local src/index.ts",
-    "build": "bun build ./src/index.ts --outdir dist",
+    "build": "bun build ./src/index.ts --outdir dist --packages external",
     "start": "bun --env-file=../../.env.local dist/index.js",
     "lint": "bun x eslint src/**/*.ts",
     "format": "bun x prettier --write src/**/*.ts"

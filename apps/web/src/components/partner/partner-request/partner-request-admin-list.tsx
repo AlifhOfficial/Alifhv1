@@ -68,7 +68,7 @@ export function PartnerRequestAdminList() {
       if (!response.ok) throw new Error('Failed to generate URL');
       const data = await response.json();
       window.open(data.url, '_blank');
-    } catch (_error) {
+    } catch {
       toast({
         title: 'Failed to open document',
         description: 'Could not generate secure URL',

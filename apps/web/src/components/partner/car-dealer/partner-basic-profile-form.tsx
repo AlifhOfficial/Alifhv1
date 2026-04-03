@@ -309,7 +309,7 @@ export function PartnerBasicProfileForm({
           }
         } catch {}
       }
-    } catch (_err) {
+    } catch {
       toast({ title: 'Failed to save', variant: 'destructive' });
     }
   };

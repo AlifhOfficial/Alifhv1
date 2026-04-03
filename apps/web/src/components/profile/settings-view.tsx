@@ -164,7 +164,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
       // Optimistically update local state and refresh from server
       setPasskeys(prev => prev.filter(p => p.id !== id));
       await refresh();
-    } catch (_err) {
+    } catch {
       toast({ title: 'Failed to delete passkey', variant: 'destructive' });
     } finally {
       setDeletingPasskeyId(null);

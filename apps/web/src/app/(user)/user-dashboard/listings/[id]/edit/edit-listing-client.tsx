@@ -29,7 +29,7 @@ export function EditListingClient({ id, userId, userRole }: EditListingClientPro
         }
         const data = await res.json();
         setListing(data.listing || data);
-      } catch (_err) {
+      } catch {
         setError('Failed to load listing');
       } finally {
         setLoading(false);

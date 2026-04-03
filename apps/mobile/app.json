@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "revvup",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "userInterfaceStyle": "automatic",
       "supportsTablet": true,

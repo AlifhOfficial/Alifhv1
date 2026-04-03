@@ -143,7 +143,7 @@ export async function GET(_request: NextRequest) {
       maxSize: MAX_SIZE,
       baseUrl: process.env.NEXT_PUBLIC_R2_PUBLIC_URL,
     });
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch info" }, { status: 500 });
   }
 }

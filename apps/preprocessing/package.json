@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "bun --watch --env-file=../../.env.local src/index.ts",
-    "build": "bun build ./src/index.ts --outdir dist --target bun",
+    "build": "bun build ./src/index.ts --outdir dist --target bun --packages external",
     "start": "bun run dist/index.js"
   },
   "dependencies": {

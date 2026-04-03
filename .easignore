@@ -8,7 +8,6 @@ logo/
 # Root config files not needed for mobile (keep package.json for monorepo)
 turbo.json
 vercel.json
-bunfig.toml
 check-slugs.ts
 test-sitemap.ts
 auto-ae-brands-full.json
@@ -16,7 +15,6 @@ auto-ae-brands-simplified.json
 
 # Git
 .git/
-.gitignore
 
 # Node modules (EAS installs fresh)
 node_modules/
