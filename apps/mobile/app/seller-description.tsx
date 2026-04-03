@@ -37,45 +37,55 @@ export default function SellerDescriptionScreen() {
   };
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={[styles.container, { backgroundColor: colors.sheet }]}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
-      <SheetHeader
-        title={`About ${safeSellerName}`}
-        right={
-          <HapticPressable
-            onPress={handleCopy}
-            hitSlop={Spacing.md}
-            style={[styles.iconButton, { backgroundColor: colors.fill2 }]}
-            disabled={!safeDescription}
-          >
-            {copied ? (
-              <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primary} />
-            ) : (
-              <Copy size={Sizes.iconSm} color={colors.labelSecondary} />
-            )}
-          </HapticPressable>
-        }
-      />
-
-      <View style={styles.body}>
-        {safeDescription ? (
-          <Text variant="subhead" tone="secondary" selectable>{safeDescription}</Text>
-        ) : (
-          <View style={styles.loadingState}>
-            <ActivityIndicator size="small" color={colors.labelTertiary} />
-          </View>
-        )}
+    <View style={[styles.container, { backgroundColor: colors.sheet }]}>
+      <View style={styles.headerWrap}>
+        <SheetHeader
+          title={`About ${safeSellerName}`}
+          right={
+            <HapticPressable
+              onPress={handleCopy}
+              hitSlop={Spacing.md}
+              style={[styles.iconButton, { backgroundColor: colors.fill2 }]}
+              disabled={!safeDescription}
+            >
+              {copied ? (
+                <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primary} />
+              ) : (
+                <Copy size={Sizes.iconSm} color={colors.labelSecondary} />
+              )}
+            </HapticPressable>
+          }
+        />
       </View>
-    </ScrollView>
+
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.body}>
+          {safeDescription ? (
+            <Text variant="subhead" tone="secondary" selectable>{safeDescription}</Text>
+          ) : (
+            <View style={styles.loadingState}>
+              <ActivityIndicator size="small" color={colors.labelTertiary} />
+            </View>
+          )}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  headerWrap: {
+    paddingHorizontal: Spacing.lg,
+  },
+  scrollView: {
     flex: 1,
   },
   content: {

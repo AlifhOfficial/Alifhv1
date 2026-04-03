@@ -101,37 +101,47 @@ export default function ListingSpecsSheetScreen() {
   }, [isLoading, colors.labelTertiary, specs]);
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={[styles.container, { backgroundColor: colors.sheet }]}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
-      <SheetHeader
-        title="Specifications"
-        right={
-          <HapticPressable
-            onPress={handleCopy}
-            hitSlop={Spacing.md}
-            style={[styles.iconButton, { backgroundColor: colors.fill2 }]}
-            disabled={specs.length === 0}
-          >
-            {copied ? (
-              <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primary} />
-            ) : (
-              <Copy size={Sizes.iconSm} color={colors.labelSecondary} />
-            )}
-          </HapticPressable>
-        }
-      />
+    <View style={[styles.container, { backgroundColor: colors.sheet }]}>
+      <View style={styles.headerWrap}>
+        <SheetHeader
+          title="Specifications"
+          right={
+            <HapticPressable
+              onPress={handleCopy}
+              hitSlop={Spacing.md}
+              style={[styles.iconButton, { backgroundColor: colors.fill2 }]}
+              disabled={specs.length === 0}
+            >
+              {copied ? (
+                <Ionicons name="checkmark" size={Sizes.iconSm} color={colors.primary} />
+              ) : (
+                <Copy size={Sizes.iconSm} color={colors.labelSecondary} />
+              )}
+            </HapticPressable>
+          }
+        />
+      </View>
 
-      <View style={styles.body}>{body}</View>
-    </ScrollView>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.body}>{body}</View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  headerWrap: {
+    paddingHorizontal: Spacing.lg,
+  },
+  scrollView: {
     flex: 1,
   },
   content: {

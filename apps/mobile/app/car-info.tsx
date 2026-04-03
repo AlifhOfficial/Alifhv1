@@ -110,13 +110,17 @@ export default function CarInfoScreen() {
   );
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      style={[styles.container, { backgroundColor: colors.sheet }]}
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-    >
-      <SheetHeader title="DarkWeave" />
+    <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
+      <View style={styles.headerWrap}>
+        <SheetHeader title="DarkWeave" />
+      </View>
+
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
 
       <View style={styles.carHeader}>
         {carTitle ? <Text variant="subheadEmphasized">{carTitle}</Text> : null}
@@ -243,12 +247,19 @@ export default function CarInfoScreen() {
           </View>
         </View>
       ) : null}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  headerWrap: {
+    paddingHorizontal: Spacing.xl,
+  },
+  scrollView: {
     flex: 1,
   },
   scrollContent: {
