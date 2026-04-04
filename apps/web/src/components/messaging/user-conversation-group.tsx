@@ -35,17 +35,35 @@ export function UserConversationGroup({
   const hasActiveConversation = conversations.some(c => c.id === activeConversationId);
   const [isExpanded, setIsExpanded] = useState(defaultExpanded || hasActiveConversation);
   
+  // Get most recent conversation (first one, already sorted by time)
+  const mostRecentConversation = conversations[0];
+  
   // Calculate total unread for the group
   const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
 
   // Get online status from any conversation with this user
   const isOnline = conversations.some(c => c.otherParticipant?.isOnline);
 
+  const handleHeaderClick = () => {
+    // If group is already expanded, clicking again selects the most recent conversation
+    if (isExpanded) {
+      if (mostRecentConversation) {
+        onSelectConversation(mostRecentConversation.id);
+      }
+    } else {
+      // If collapsed, expand it and optionally select the most recent
+      setIsExpanded(true);
+      if (mostRecentConversation && !activeConversationId) {
+        onSelectConversation(mostRecentConversation.id);
+      }
+    }
+  };
+
   return (
     <div>
-      {/* User Header - Collapsible */}
+      {/* User Header - Collapsible & Clickable to select conversation */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleHeaderClick}
         className={cn(
           'w-full py-3 px-3 text-left transition-colors duration-150 hover:bg-sidebar rounded-xl',
           'flex items-center gap-3'

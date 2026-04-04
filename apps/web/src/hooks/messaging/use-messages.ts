@@ -128,20 +128,6 @@ export function useMessages(conversationId: string, userId?: string, options: Us
 
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const watchingRef = useRef(false);
-  const prevConversationIdRef = useRef<string | null>(null);
-
-  // Invalidate and refetch messages when conversationId changes
-  // This ensures we don't get stuck with stale cached messages
-  useEffect(() => {
-    if (conversationId && prevConversationIdRef.current && prevConversationIdRef.current !== conversationId) {
-      // Conversation changed - invalidate the cache to force a fresh fetch
-      queryClient.invalidateQueries({ 
-        queryKey: queryKeys.messaging.messages(conversationId),
-        exact: true,
-      });
-    }
-    prevConversationIdRef.current = conversationId;
-  }, [conversationId, queryClient]);
 
   // Update state when initial values change (from conversation refresh)
   // Only update if the new value is MORE recent than current state
