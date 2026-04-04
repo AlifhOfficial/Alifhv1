@@ -141,6 +141,7 @@ export function ChatWindow({
   
   // Track last marked message to prevent duplicate API calls
   const lastMarkedMsgIdRef = useRef<string | null>(null);
+  const markReadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     markConversationActive(conversationId);
@@ -149,6 +150,10 @@ export function ChatWindow({
 
   useEffect(() => {
     lastMarkedMsgIdRef.current = null;
+    if (markReadTimeoutRef.current) {
+      clearTimeout(markReadTimeoutRef.current);
+      markReadTimeoutRef.current = null;
+    }
   }, [conversationId]);
 
   // Find the newest message that was read by other user (for "seen" indicator)
@@ -166,9 +171,23 @@ export function ChatWindow({
   useEffect(() => {
     if (isLoading || !newestUnreadIncomingMessageId) return;
     if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessageId) return;
-    // Mark immediately; message-id dedupe in this screen + hook prevents write spam.
-    lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
-    markAsRead(conversationId, newestUnreadIncomingMessageId);
+
+    if (markReadTimeoutRef.current) {
+      clearTimeout(markReadTimeoutRef.current);
+    }
+
+    // Debounce read-mark writes to batch rapid incoming bursts.
+    markReadTimeoutRef.current = setTimeout(() => {
+      lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
+      markAsRead(conversationId, newestUnreadIncomingMessageId);
+      markReadTimeoutRef.current = null;
+    }, 1000);
+
+    return () => {
+      if (markReadTimeoutRef.current) {
+        clearTimeout(markReadTimeoutRef.current);
+      }
+    };
   }, [conversationId, isLoading, newestUnreadIncomingMessageId, markAsRead]);
 
   // Handle sending message

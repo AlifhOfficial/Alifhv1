@@ -103,14 +103,7 @@ class WebSocketManager {
     ws.onmessage = (e) => {
       try {
         const msg = JSON.parse(e.data) as WSMessage;
-        this.handlers.forEach((h) => {
-          try {
-            h(msg);
-          } catch (err) {
-            // Isolate consumer failures so one bad handler cannot break others.
-            console.error('[WS] Handler error:', err);
-          }
-        });
+        this.handlers.forEach(h => h(msg));
       } catch { /* ignore */ }
     };
 

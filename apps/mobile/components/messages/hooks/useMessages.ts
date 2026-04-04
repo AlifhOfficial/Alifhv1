@@ -16,7 +16,6 @@ import {
 import { getAvatarUrl , consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
 import { queryKeys } from '@/lib/query-client';
-import { isConversationActive } from './active-conversations';
 
 interface UseMessagesOptions {
   conversationId: string;
@@ -265,9 +264,7 @@ export function useMessages({
           foundConversation = true;
 
           const isOwnMessage = newMessage.senderId === userIdRef.current;
-          const isActiveOpen = isConversationActive(newMessage.conversationId);
           const preview = newMessage.text?.substring(0, 100) || 'New message';
-          const shouldIncrementUnread = !isOwnMessage && !isActiveOpen;
 
           return {
             ...data,
@@ -279,12 +276,12 @@ export function useMessages({
                       ...c,
                       lastMessageAt: newMessage.createdAt,
                       lastMessagePreview: preview,
-                      messageCount: isOwnMessage ? c.messageCount || 0 : (c.messageCount || 0) + 1,
-                      unreadCount: shouldIncrementUnread ? (c.unreadCount || 0) + 1 : 0,
+                      messageCount: Math.max((c.messageCount || 0) + (isOwnMessage ? 0 : 1), c.messageCount || 0),
+                      unreadCount: isOwnMessage ? 0 : (c.unreadCount || 0) + 1,
                     }
               )
               .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()),
-            totalUnread: shouldIncrementUnread ? (data.totalUnread || 0) + 1 : data.totalUnread,
+            totalUnread: isOwnMessage ? data.totalUnread : (data.totalUnread || 0) + 1,
           };
         });
 
@@ -296,27 +293,6 @@ export function useMessages({
             // Mark stale only; avoid immediate full conversations GET while in thread.
             queryClient.invalidateQueries({ queryKey: ['conversations'] });
           }
-        }
-
-        // If the other person replied, infer they've read our messages.
-        // Their reply createdAt is a reliable lower-bound for their read position
-        // and arrives before the debounced read_receipt PATCH they send.
-        if (newMessage.senderId !== userIdRef.current) {
-          const readAt = newMessage.createdAt;
-          setOtherLastReadAt((prev) => {
-            if (!prev || new Date(readAt) > new Date(prev)) return readAt;
-            return prev;
-          });
-          queryClient.setQueryData(messagesQueryKey, (old: unknown) => {
-            const d = old as { pages: MessagesPage[]; pageParams: (string | undefined)[] } | undefined;
-            if (!d?.pages?.length) return old;
-            const current = d.pages[0].otherParticipantLastReadAt;
-            if (current && new Date(current) >= new Date(readAt)) return old;
-            return {
-              ...d,
-              pages: [{ ...d.pages[0], otherParticipantLastReadAt: readAt }, ...d.pages.slice(1)],
-            };
-          });
         }
       }
 
@@ -349,22 +325,7 @@ export function useMessages({
         msg.lastReadAt &&
         msg.userId !== userIdRef.current
       ) {
-        const readAt = msg.lastReadAt;
-        setOtherLastReadAt((prev) => {
-          if (!prev || new Date(readAt) > new Date(prev)) return readAt;
-          return prev;
-        });
-        // Persist to cache so the correct value is restored on remount
-        queryClient.setQueryData(messagesQueryKey, (old: unknown) => {
-          const d = old as { pages: MessagesPage[]; pageParams: (string | undefined)[] } | undefined;
-          if (!d?.pages?.length) return old;
-          const current = d.pages[0].otherParticipantLastReadAt;
-          if (current && new Date(current) >= new Date(readAt)) return old;
-          return {
-            ...d,
-            pages: [{ ...d.pages[0], otherParticipantLastReadAt: readAt }, ...d.pages.slice(1)],
-          };
-        });
+        setOtherLastReadAt(msg.lastReadAt);
       }
 
       // Handle presence updates for the other user

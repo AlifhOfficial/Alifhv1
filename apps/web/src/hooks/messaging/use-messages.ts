@@ -220,14 +220,7 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     const unsub = subscribe((msg) => {
       // New message
       if (msg.type === 'new_message' && msg.conversationId === conversationId) {
-        const newMsg = msg.message as Message | undefined;
-
-        // Some transports can deliver lightweight new_message payloads without full message object.
-        // In that case, refetch thread data so preview and thread cannot diverge.
-        if (!newMsg) {
-          queryClient.invalidateQueries({ queryKey: messagesQueryKey, exact: true });
-          return;
-        }
+        const newMsg = msg.message as Message;
         
         // Skip own messages delivered via WebSocket - onSuccess handler already adds them
         // This prevents duplicates caused by race between API response and WebSocket
@@ -235,13 +228,8 @@ export function useMessages(conversationId: string, userId?: string, options: Us
           return;
         }
 
-        queryClient.setQueryData(messagesQueryKey, (old: { pages: MessagesPage[]; pageParams?: (string | undefined)[] } | undefined) => {
-          if (!old?.pages?.length) {
-            return {
-              pages: [{ messages: [newMsg], hasMore: false, nextCursor: null }],
-              pageParams: [undefined],
-            };
-          }
+        queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
+          if (!old) return old;
           const first = old.pages[0];
           if (first.messages.some(m => m.id === newMsg.id)) {
             return old;
@@ -251,30 +239,6 @@ export function useMessages(conversationId: string, userId?: string, options: Us
             pages: [{ ...first, messages: [newMsg, ...first.messages] }, ...old.pages.slice(1)],
           };
         });
-
-        // Reply implies the other participant has seen all prior messages up to reply time.
-        const inferredReadAt = new Date(newMsg.createdAt);
-        if (!isNaN(inferredReadAt.getTime())) {
-          setOtherLastReadAt((prev) => {
-            if (!prev || inferredReadAt > prev) return inferredReadAt;
-            return prev;
-          });
-          queryClient.setQueryData(messagesQueryKey, (old: { pages: MessagesPage[]; pageParams?: (string | undefined)[] } | undefined) => {
-            if (!old?.pages?.length) return old;
-            const current = old.pages[0].otherParticipantLastReadAt;
-            const currentDate = current ? new Date(current) : null;
-            if (currentDate && !isNaN(currentDate.getTime()) && currentDate >= inferredReadAt) {
-              return old;
-            }
-            return {
-              ...old,
-              pages: [
-                { ...old.pages[0], otherParticipantLastReadAt: inferredReadAt.toISOString() },
-                ...old.pages.slice(1),
-              ],
-            };
-          });
-        }
       }
 
       // Typing indicator
@@ -289,27 +253,7 @@ export function useMessages(conversationId: string, userId?: string, options: Us
       // Read receipt
       if (msg.type === 'read_receipt' && msg.conversationId === conversationId && msg.userId !== userId) {
         const d = msg.lastReadAt ? new Date(msg.lastReadAt) : null;
-        if (d && !isNaN(d.getTime())) {
-          setOtherLastReadAt((prev) => {
-            if (!prev || d > prev) return d;
-            return prev;
-          });
-          queryClient.setQueryData(messagesQueryKey, (old: { pages: MessagesPage[]; pageParams?: (string | undefined)[] } | undefined) => {
-            if (!old?.pages?.length) return old;
-            const current = old.pages[0].otherParticipantLastReadAt;
-            const currentDate = current ? new Date(current) : null;
-            if (currentDate && !isNaN(currentDate.getTime()) && currentDate >= d) {
-              return old;
-            }
-            return {
-              ...old,
-              pages: [
-                { ...old.pages[0], otherParticipantLastReadAt: d.toISOString() },
-                ...old.pages.slice(1),
-              ],
-            };
-          });
-        }
+        if (d && !isNaN(d.getTime())) setOtherLastReadAt(d);
       }
 
       // Presence
@@ -326,7 +270,7 @@ export function useMessages(conversationId: string, userId?: string, options: Us
       unsub();
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
-  }, [conversationId, userId, options.otherUserId, subscribe, queryClient, messagesQueryKey]);
+  }, [conversationId, userId, options.otherUserId, subscribe, queryClient]);
 
   // Throttled typing sender
   const lastTypingSent = useRef(0);

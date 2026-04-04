@@ -164,7 +164,7 @@ export function useConversations({
                   ...conv,
                   lastMessageAt: createdAt,
                   lastMessagePreview: preview,
-                  messageCount: isOwnMessage ? conv.messageCount || 0 : (conv.messageCount || 0) + 1,
+                  messageCount: Math.max((conv.messageCount || 0) + (isOwnMessage ? 0 : 1), conv.messageCount || 0),
                   unreadCount: isOwnMessage || isActiveOpenConversation ? 0 : (conv.unreadCount || 0) + 1,
                   myLastReadAt:
                     !isOwnMessage && isActiveOpenConversation
@@ -294,7 +294,7 @@ export function useConversations({
     setIsRefreshing(false);
   }, [refresh]);
 
-  const conversationsWithLivePresence = useMemo(() => conversations.map((conversation) => {
+  const conversationsWithLivePresence = conversations.map((conversation) => {
     const otherId = conversation.otherParticipant?.id;
     if (!otherId || !conversation.otherParticipant) return conversation;
 
@@ -309,9 +309,8 @@ export function useConversations({
         lastSeenAt: livePresence.lastSeenAt ?? conversation.otherParticipant.lastSeenAt,
       },
     };
-  // presenceVersion is the signal that presenceMapRef was mutated
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [conversations, presenceVersion]);
+  });
+  void presenceVersion;
 
   const totalUnread = useMemo(
     () => conversationsWithLivePresence.reduce((sum, conversation) => sum + (conversation.unreadCount || 0), 0),
