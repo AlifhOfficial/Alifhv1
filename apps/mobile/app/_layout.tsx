@@ -12,13 +12,14 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { View, LogBox, Platform, InteractionManager, AppState, Text as RNText, TextInput as RNTextInput } from 'react-native';
 import 'react-native-reanimated';
 
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { QueryClientProvider, focusManager } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
+import { getUnreadCount } from '@/lib/messaging-api';
 import { AppFontFamilies, Colors, Radius } from '@/constants/theme';
 import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { AuthProvider, useAuth } from '@/context/auth-context';
@@ -524,6 +525,7 @@ export default function RootLayout() {
                           <BottomSheetModalProvider>
                             <WebSocketWrapper>
                               <NotificationWrapper>
+                                <MessagingUnreadBootstrap />
                                 <RootLayoutNav />
                                 <OfflineBanner />
                               </NotificationWrapper>
@@ -578,4 +580,65 @@ function NotificationWrapper({ children }: { children: React.ReactNode }) {
       {children}
     </NotificationProvider>
   );
+}
+
+function MessagingUnreadBootstrap() {
+  const { isAuthenticated, user } = useAuth();
+  const lastFetchAtRef = useRef(0);
+  const bootstrappedUserRef = useRef<string | null>(null);
+
+  const syncUnreadCount = useCallback(
+    async (force = false) => {
+      if (!isAuthenticated || !user?.id) return;
+
+      const now = Date.now();
+      if (!force && now - lastFetchAtRef.current < 15000) {
+        return;
+      }
+      lastFetchAtRef.current = now;
+
+      try {
+        const totalUnread = await getUnreadCount();
+
+        // Dedicated lightweight unread cache (used by tab badge fallback).
+        queryClient.setQueryData(['messaging-unread-count', user.id], { totalUnread });
+
+        // If conversations cache already exists, keep its list but refresh totalUnread.
+        queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
+          const data = old as { conversations?: unknown[]; totalUnread?: number } | undefined;
+          if (!data) return old;
+          return {
+            ...data,
+            totalUnread,
+          };
+        });
+      } catch {
+        // Non-blocking bootstrap; websocket/live hooks continue updates.
+      }
+    },
+    [isAuthenticated, user?.id]
+  );
+
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) {
+      bootstrappedUserRef.current = null;
+      return;
+    }
+
+    if (bootstrappedUserRef.current !== user.id) {
+      bootstrappedUserRef.current = user.id;
+      void syncUnreadCount(true);
+    }
+  }, [isAuthenticated, user?.id, syncUnreadCount]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        void syncUnreadCount(false);
+      }
+    });
+    return () => subscription.remove();
+  }, [syncUnreadCount]);
+
+  return null;
 }

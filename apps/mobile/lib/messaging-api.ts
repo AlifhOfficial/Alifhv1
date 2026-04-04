@@ -155,8 +155,16 @@ export async function fetchConversations(options?: {
  * Get total unread message count across all conversations
  */
 export async function getUnreadCount(): Promise<number> {
-  const data = await fetchConversations({ limit: 1 });
-  return data.totalUnread ?? 0;
+  const endpoint = '/api/conversations/unread-count';
+  const response = await messagingFetch(endpoint);
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Failed to fetch unread count' }));
+    throw new Error(error.error || 'Failed to fetch unread count');
+  }
+
+  const data = (await response.json()) as { unreadCount?: number; totalUnread?: number };
+  return data.unreadCount ?? data.totalUnread ?? 0;
 }
 
 /**
