@@ -20,23 +20,28 @@ import { useTheme } from '@/context/theme-context';
 import { useNetwork } from '@/context/network-context';
 
 export function OfflineBanner() {
+  // Dev-only UI preview toggle.
+  const FORCE_SHOW_IN_DEV = false;
+
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const { isOnline, isReconnecting, retry, lastOnlineAt } = useNetwork();
   const [nowTs, setNowTs] = useState(() => Date.now());
+  const shouldShowBanner = (__DEV__ && FORCE_SHOW_IN_DEV) || !isOnline;
+  const hiddenTranslateY = -(insets.top + Sizes.actionButtonLg + Spacing['4xl']);
 
-  const translateY = useSharedValue(-100);
+  const translateY = useSharedValue(hiddenTranslateY);
   const spinValue = useSharedValue(0);
 
   // Animate in/out based on online status
   useEffect(() => {
-    if (!isOnline) {
+    if (shouldShowBanner) {
       translateY.value = withSpring(0, { damping: 15, stiffness: 120 });
     } else {
-      translateY.value = withTiming(-100, { duration: 300 });
+      translateY.value = withTiming(hiddenTranslateY, { duration: 300 });
     }
-  }, [isOnline, translateY]);
+  }, [hiddenTranslateY, shouldShowBanner, translateY]);
 
   // Spin animation for reconnecting
   useEffect(() => {
@@ -54,13 +59,13 @@ export function OfflineBanner() {
   }));
 
   useEffect(() => {
-    if (!lastOnlineAt || isOnline) return;
+    if (!lastOnlineAt || !shouldShowBanner) return;
     const interval = setInterval(() => {
       setNowTs(Date.now());
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [isOnline, lastOnlineAt]);
+  }, [lastOnlineAt, shouldShowBanner]);
 
   // Format time since last online
   const getOfflineDuration = (currentTs: number) => {
@@ -81,25 +86,32 @@ export function OfflineBanner() {
     <Animated.View
       style={[
         styles.container,
-        { 
-          backgroundColor: colors.error,
+        {
           paddingTop: insets.top + Spacing.xs,
+          backgroundColor: colors.surfaceSecondary,
+          borderBottomColor: colors.outline,
         },
         animatedStyle,
       ]}
     >
-      <WifiOff size={Sizes.iconSm} color={colors.primaryForeground} strokeWidth={2} />
-      <Text variant="subhead" style={styles.text}>
+      <WifiOff size={Sizes.iconSm} color={colors.labelSecondary} strokeWidth={2} />
+      <Text variant="subhead" style={[styles.text, { color: colors.label }]}>
         {isReconnecting ? 'Reconnecting...' : 'No internet connection'}
       </Text>
       {offlineDuration && !isReconnecting && (
-        <Text variant="subhead" style={styles.duration} tone="secondary">
+        <Text variant="subhead" style={[styles.duration, { color: colors.labelSecondary }]}>
           Last online {offlineDuration}
         </Text>
       )}
-      <Pressable onPress={retry} style={styles.retryButton} hitSlop={12}>
+      <Pressable
+        onPress={retry}
+        style={styles.retryButton}
+        hitSlop={12}
+        accessibilityRole="button"
+        accessibilityLabel="Retry internet connection"
+      >
         <Animated.View style={spinStyle}>
-          <RefreshCw size={Spacing.lg} color={colors.primaryForeground} strokeWidth={2.5} />
+          <RefreshCw size={Spacing.lg} color={colors.label} strokeWidth={2.2} />
         </Animated.View>
       </Pressable>
     </Animated.View>
@@ -118,14 +130,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.sm,
     gap: Spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     zIndex: 9999,
   },
   text: {
-    color: Colors.dark.primaryForeground,
+    flexShrink: 1,
   },
-  duration: {
-    color: Colors.dark.primaryForeground,
-  },
+  duration: {},
   retryButton: {
     marginLeft: 'auto',
     padding: Spacing.xs,

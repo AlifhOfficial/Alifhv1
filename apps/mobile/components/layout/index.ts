@@ -1,8 +1,7 @@
 // Layout components
-export { HapticTab } from './haptic-tab';
 export { ScreenContainer } from './ScreenContainer';
-export { FooterFade } from './footer-fade';
 export {
+  ACTIVE_CHIPS_HEIGHT,
   getTabBarBottomPadding,
   getTabBarOverlayHeight,
   getTabBarContentInset,

@@ -1,5 +1,7 @@
 import { Layout, Sizes, Spacing } from '@/constants/theme';
 
+export const ACTIVE_CHIPS_HEIGHT = Sizes.pillHeight;
+
 export const getTabBarBottomPadding = (bottomInset: number) =>
   Math.max(bottomInset, Spacing.md);
 

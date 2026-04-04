@@ -15,8 +15,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SearchX } from 'lucide-react-native';
 
 import { BrowseTabBar, type FilterPillType } from '@/components/browse';
-import { ACTIVE_CHIPS_HEIGHT } from '@/components/layout/active-search-chips';
 import {
+  ACTIVE_CHIPS_HEIGHT,
   MobileHeader,
   getMobileHeaderContentInset,
   getTabBarContentInset,

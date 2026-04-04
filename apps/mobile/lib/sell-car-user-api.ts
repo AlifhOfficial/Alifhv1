@@ -520,6 +520,22 @@ export async function uploadListingImageDirect(
   const result = data.results?.[0];
   if (!result || result.error) throw new Error(result?.error || 'Processing failed');
 
+  if (
+    typeof result.thumbKey !== 'string' ||
+    !result.thumbKey ||
+    typeof result.fullKey !== 'string' ||
+    !result.fullKey ||
+    typeof result.thumbUrl !== 'string' ||
+    !result.thumbUrl ||
+    typeof result.fullUrl !== 'string' ||
+    !result.fullUrl
+  ) {
+    const receivedKeys = result && typeof result === 'object' ? Object.keys(result as Record<string, unknown>) : [];
+    throw new Error(
+      `Malformed preprocessing response for listing upload. Expected thumb/full keys and URLs, received: ${receivedKeys.join(', ')}`
+    );
+  }
+
   return {
     thumbKey: result.thumbKey,
     thumbUrl: result.thumbUrl,
