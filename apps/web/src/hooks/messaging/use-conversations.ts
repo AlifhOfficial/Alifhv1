@@ -111,6 +111,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
   const wasConnectedRef = useRef(false);
   const watchedUsersRef = useRef(new Set<string>());
   const presenceMapRef = useRef(new Map<string, { isOnline?: boolean; lastSeenAt?: Date | string | null }>());
+  const missingConversationRefetchAtRef = useRef(new Map<string, number>());
   
   const limit = options.limit ?? 50;
 
@@ -227,7 +228,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
 
         let foundConversation = false;
 
-        queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
+        queryClient.setQueryData(queryKey, (old: unknown) => {
           const data = old as ConversationsInfiniteData | undefined;
           if (!data?.pages) return old;
 
@@ -276,7 +277,14 @@ export function useConversations(options: UseConversationsOptions = {}) {
         });
 
         if (!foundConversation) {
-          queryClient.invalidateQueries({ queryKey: ['conversations'] });
+          const now = Date.now();
+          const lastRefetchAt = missingConversationRefetchAtRef.current.get(msg.conversationId) ?? 0;
+
+          // Throttle forced refetches per missing conversation to avoid WS bursts.
+          if (now - lastRefetchAt > 1500) {
+            missingConversationRefetchAtRef.current.set(msg.conversationId, now);
+            query.refetch();
+          }
         }
       }
       
@@ -287,7 +295,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
           lastSeenAt: msg.lastSeenAt ? new Date(msg.lastSeenAt) : null,
         });
 
-        queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
+        queryClient.setQueryData(queryKey, (old: unknown) => {
           const data = old as ConversationsInfiniteData | undefined;
           if (!data?.pages) return old;
           
@@ -312,7 +320,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
 
       // Handle read receipts - update other participant's lastReadAt
       if (msg.type === 'read_receipt' && msg.conversationId && msg.userId !== options.userId) {
-        queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
+        queryClient.setQueryData(queryKey, (old: unknown) => {
           const data = old as ConversationsInfiniteData | undefined;
           if (!data?.pages) return old;
           
@@ -336,7 +344,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
     });
 
     return unsub;
-  }, [subscribe, queryClient, options.userId]);
+  }, [subscribe, queryClient, options.userId, queryKey, query.refetch]);
 
   // Apply live presence updates to flattened conversations
   const conversations = useMemo(() => {

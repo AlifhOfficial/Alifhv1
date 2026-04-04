@@ -212,7 +212,11 @@ export function useConversations({
             ...conv.listing,
             thumbnail: getAvatarUrl(conv.listing.thumbnail),
           } : null,
-        }));
+        }))
+        .sort(
+          (a, b) =>
+            new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+        );
       
       // Merge: preserve live presence data (isOnline/lastSeenAt) from WS
       setConversations(prev => {
