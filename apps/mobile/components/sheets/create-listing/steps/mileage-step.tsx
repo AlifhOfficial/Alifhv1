@@ -7,7 +7,7 @@
  */
 
 import { Text, HapticPressable } from '@/components/ui';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
@@ -34,16 +34,11 @@ const MILEAGE_PRESETS = [
 export function MileageStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const [localMileage, setLocalMileage] = useState(data.mileage || '');
-
-  useEffect(() => {
-    setLocalMileage(data.mileage || '');
-  }, [data.mileage]);
+  const localMileage = data.mileage || '';
 
   const handleChange = useCallback(
     (text: string) => {
       const cleaned = text.replace(/[^0-9]/g, '');
-      setLocalMileage(cleaned);
       onUpdate({ mileage: cleaned });
     },
     [onUpdate]
@@ -52,7 +47,6 @@ export function MileageStepContent({ data, onUpdate }: StepContentProps) {
   const handlePreset = useCallback(
     (value: string) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      setLocalMileage(value);
       onUpdate({ mileage: value });
     },
     [onUpdate]

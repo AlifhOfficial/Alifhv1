@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { AlertTriangle, Crosshair, Flame, Info, Lightbulb, User, Zap } from 'lucide-react-native';
+import { useQuery } from '@tanstack/react-query';
 
 import { SheetHeader, Text } from '@/components/ui';
 import { Colors, Radius, Sizes, Spacing, Typography, type ColorPalette } from '@/constants/theme';
@@ -35,27 +36,17 @@ export default function CarInfoScreen() {
   const price = params.price ? Number(params.price) : undefined;
   const sellerName = params.sellerName;
 
-  const [summary, setSummary] = useState<ListingSummary | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!listingId) return;
-    setIsLoading(true);
-    setError(null);
-    setSummary(null);
-
-    getListingSummary(listingId)
-      .then((data) => {
-        setSummary(data);
-      })
-      .catch(() => {
-        setError('DarkWeave could not read this one');
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [listingId]);
+  const {
+    data: summary,
+    isLoading,
+    isError,
+  } = useQuery<ListingSummary>({
+    queryKey: ['listing-summary', listingId],
+    queryFn: () => getListingSummary(listingId as string),
+    enabled: Boolean(listingId),
+    staleTime: 60 * 1000,
+  });
+  const error = isError ? 'DarkWeave could not read this one' : null;
 
   const carTitle = [year, make, model].filter(Boolean).join(' ');
   const formattedPrice = price
@@ -110,17 +101,13 @@ export default function CarInfoScreen() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={styles.headerWrap}>
-        <SheetHeader title="DarkWeave" />
-      </View>
-
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      style={[styles.container, { backgroundColor: colors.sheet }]}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
+      <SheetHeader title="DarkWeave" />
 
       <View style={styles.carHeader}>
         {carTitle ? <Text variant="subheadEmphasized">{carTitle}</Text> : null}
@@ -247,19 +234,12 @@ export default function CarInfoScreen() {
           </View>
         </View>
       ) : null}
-      </ScrollView>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  headerWrap: {
-    paddingHorizontal: Spacing.xl,
-  },
-  scrollView: {
     flex: 1,
   },
   scrollContent: {

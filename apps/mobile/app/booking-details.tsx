@@ -166,17 +166,13 @@ export default function BookingDetailsScreen() {
   const isActive = booking.status === 'pending' || booking.status === 'confirmed';
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={styles.headerWrap}>
-        <SheetHeader title="Booking" />
-      </View>
-
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={styles.scrollView}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing['2xl'] }]}
-        showsVerticalScrollIndicator={false}
-      >
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      style={[styles.scrollView, { backgroundColor: colors.sheet }]}
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing['2xl'] }]}
+      showsVerticalScrollIndicator={false}
+    >
+      <SheetHeader title="Booking" />
 
         <HapticPressable
           onPress={() => {
@@ -448,8 +444,7 @@ export default function BookingDetailsScreen() {
         <Text variant="caption1" tone="muted" style={{ textAlign: 'center', marginTop: Spacing.md }}>
           Booked on {formatBookingDate(booking.createdAt)}
         </Text>
-      </ScrollView>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -481,9 +476,6 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-  },
-  headerWrap: {
-    paddingHorizontal: Spacing.lg,
   },
   heroCard: {
     flexDirection: 'row',

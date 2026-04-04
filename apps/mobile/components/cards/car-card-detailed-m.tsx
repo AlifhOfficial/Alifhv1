@@ -18,10 +18,6 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, StyleSheet, View, Platform, Clipboard } from 'react-native';
 import Animated, {
   FadeInDown,
-  interpolateColor,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
 } from 'react-native-reanimated';
 import { ChevronRight, MessageCircle, Copy, Check } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -62,11 +58,7 @@ export interface CarCardDetailedMProps {
 
 function TalkToSellerRow({ onPress }: { onPress: () => void }) {
   const { colors } = useTheme();
-  const bgOpacity = useSharedValue(0);
-
-  const animatedBgStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(bgOpacity.value, [0, 1], ['transparent', colors.fill]),
-  }));
+  const [isPressed, setIsPressed] = useState(false);
 
   return (
     <Animated.View entering={FadeInDown.delay(0).duration(350)}>
@@ -77,10 +69,14 @@ function TalkToSellerRow({ onPress }: { onPress: () => void }) {
         <View style={[styles.ctaDivider, { backgroundColor: colors.border }]} />
         <HapticPressable
           onPress={onPress}
-          onPressIn={() => { bgOpacity.value = withTiming(1, { duration: 100 }); }}
-          onPressOut={() => { bgOpacity.value = withTiming(0, { duration: 200 }); }}
+          onPressIn={() => {
+            setIsPressed(true);
+          }}
+          onPressOut={() => {
+            setIsPressed(false);
+          }}
         >
-          <Animated.View style={[styles.ctaRow, animatedBgStyle]}>
+          <Animated.View style={[styles.ctaRow, { backgroundColor: isPressed ? colors.fill : 'transparent' }]}>
             <View style={styles.ctaLeft}>
               <MessageCircle size={Sizes.iconSm} color={colors.primary} strokeWidth={Stroke.icon} />
               <Text variant="subhead">Talk to Seller</Text>
@@ -122,7 +118,8 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
   const openFeaturesSheet = useCallback(() => {
     router.push({ pathname: '/listing-features', params: { id: listingId } });
   }, [router, listingId]);
-  const [showDeferredSections, setShowDeferredSections] = useState(false);
+  const [deferredSectionsListingId, setDeferredSectionsListingId] = useState<string | null>(null);
+  const showDeferredSections = deferredSectionsListingId === listing.id;
 
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
   const [loanTermMonths, setLoanTermMonths] = useState(48);
@@ -173,10 +170,8 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
   }, [listing.vin]);
 
   useEffect(() => {
-    setShowDeferredSections(false);
-
     const interaction = InteractionManager.runAfterInteractions(() => {
-      setShowDeferredSections(true);
+      setDeferredSectionsListingId(listing.id);
     });
 
     return () => {

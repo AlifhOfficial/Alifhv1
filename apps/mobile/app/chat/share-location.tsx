@@ -41,7 +41,9 @@ export default function ShareLocationScreen() {
   }, [getCurrentLocation]);
 
   useEffect(() => {
-    void handleRefreshLocation();
+    queueMicrotask(() => {
+      void handleRefreshLocation();
+    });
   }, [handleRefreshLocation]);
 
   const handleConfirm = useCallback(async () => {

@@ -142,8 +142,6 @@ export default function BrowseScreen() {
     [searchQueryParams]
   );
   const searchQueryHash = useMemo(() => JSON.stringify(searchQueryKey), [searchQueryKey]);
-  const searchQueryKeyRef = useRef(searchQueryKey);
-  searchQueryKeyRef.current = searchQueryKey;
   const previousSearchQueryHashRef = useRef<string | null>(null);
   const [isRevalidatingWarmSearch, setIsRevalidatingWarmSearch] = useState(false);
 
@@ -187,7 +185,7 @@ export default function BrowseScreen() {
     }
 
     return merged;
-  }, [data?.pages]);
+  }, [data]);
 
   const hasMore = hasNextPage ?? false;
   const isRefreshing = (isRefetching && !isFetchingNextPage) || isRevalidatingWarmSearch;
@@ -218,20 +216,24 @@ export default function BrowseScreen() {
       return;
     }
 
-    const cachedState = queryClient.getQueryState(searchQueryKeyRef.current);
+    const cachedState = queryClient.getQueryState(searchQueryKey);
     if (!cachedState?.data) {
-      setIsRevalidatingWarmSearch(false);
+      queueMicrotask(() => {
+        setIsRevalidatingWarmSearch(false);
+      });
       return;
     }
 
-    setIsRevalidatingWarmSearch(true);
+    queueMicrotask(() => {
+      setIsRevalidatingWarmSearch(true);
+    });
 
     refetch()
       .catch(() => undefined)
       .finally(() => {
         setIsRevalidatingWarmSearch(false);
       });
-  }, [queryClient, refetch, searchQueryHash]);
+  }, [queryClient, refetch, searchQueryHash, searchQueryKey]);
 
   // Subscribe to scroll to top from tab bar double-tap
   useEffect(() => {

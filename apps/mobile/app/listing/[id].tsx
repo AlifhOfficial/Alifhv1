@@ -36,22 +36,20 @@ export default function ListingDetailScreen() {
     trackView: true,
   });
 
-  const [showActions, setShowActions] = useState(false);
+  const [actionsReadyListingId, setActionsReadyListingId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!listing) {
-      setShowActions(false);
-      return;
-    }
+    if (!listing?.listing.id) return;
+    const currentListingId = listing.listing.id;
 
     const interaction = InteractionManager.runAfterInteractions(() => {
-      setShowActions(true);
+      setActionsReadyListingId(currentListingId);
     });
 
     return () => {
       interaction.cancel();
     };
-  }, [listing]);
+  }, [listing?.listing.id]);
 
   useEffect(() => {
     if (!listing || !id) return;
@@ -124,7 +122,7 @@ export default function ListingDetailScreen() {
     return actionSize * 3 + Spacing.sm * 2;
   }, []);
 
-  const headerActions = listing && showActions ? (
+  const headerActions = listing && actionsReadyListingId === listing.listing.id ? (
     <View style={styles.headerActions}>
       <View style={styles.actionItem}>
         <Bubble

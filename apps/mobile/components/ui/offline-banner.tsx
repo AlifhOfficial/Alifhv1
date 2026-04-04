@@ -4,7 +4,7 @@
  */
 
 import { Text } from './text';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Pressable } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -24,6 +24,7 @@ export function OfflineBanner() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const { isOnline, isReconnecting, retry, lastOnlineAt } = useNetwork();
+  const [nowTs, setNowTs] = useState(() => Date.now());
 
   const translateY = useSharedValue(-100);
   const spinValue = useSharedValue(0);
@@ -52,10 +53,19 @@ export function OfflineBanner() {
     transform: [{ rotate: `${spinValue.value}deg` }],
   }));
 
+  useEffect(() => {
+    if (!lastOnlineAt || isOnline) return;
+    const interval = setInterval(() => {
+      setNowTs(Date.now());
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [isOnline, lastOnlineAt]);
+
   // Format time since last online
-  const getOfflineDuration = () => {
+  const getOfflineDuration = (currentTs: number) => {
     if (!lastOnlineAt) return null;
-    const diff = Date.now() - lastOnlineAt.getTime();
+    const diff = currentTs - lastOnlineAt.getTime();
     const minutes = Math.floor(diff / 60000);
     if (minutes < 1) return 'just now';
     if (minutes === 1) return '1 minute ago';
@@ -65,7 +75,7 @@ export function OfflineBanner() {
     return `${hours} hours ago`;
   };
 
-  const offlineDuration = getOfflineDuration();
+  const offlineDuration = getOfflineDuration(nowTs);
 
   return (
     <Animated.View

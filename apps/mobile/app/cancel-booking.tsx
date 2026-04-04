@@ -113,16 +113,12 @@ export default function CancelBookingScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.sheet }]}> 
-      <View style={styles.headerWrap}>
+    <ScrollView
+      style={[styles.scrollView, { backgroundColor: colors.sheet }]}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.md }]}
+    > 
         <SheetHeader title="Cancel Booking" />
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.md }]}
-      > 
 
         <View style={[styles.previewCard, { backgroundColor: colors.surfaceSecondary }]}> 
           {booking.listingThumbnail ? (
@@ -216,8 +212,7 @@ export default function CancelBookingScreen() {
             )}
           </HapticPressable>
         </View>
-      </ScrollView>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -247,9 +242,6 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-  },
-  headerWrap: {
-    paddingHorizontal: Spacing.lg,
   },
   content: {
     paddingHorizontal: Spacing.lg,

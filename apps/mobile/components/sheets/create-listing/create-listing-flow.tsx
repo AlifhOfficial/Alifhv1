@@ -129,8 +129,16 @@ export function CreateListingFlow({
   // This is critical for editing - initialData is set AFTER visible becomes true
   useEffect(() => {
     if (visible && initialData) {
-      setData({ ...EMPTY_DATA, ...initialData });
-      setCurrentStepIndex(isPublishedEdit ? 5 : 0);
+      let cancelled = false;
+      queueMicrotask(() => {
+        if (cancelled) return;
+        setData({ ...EMPTY_DATA, ...initialData });
+        setCurrentStepIndex(isPublishedEdit ? 5 : 0);
+      });
+
+      return () => {
+        cancelled = true;
+      };
     }
   }, [visible, initialData, isPublishedEdit]);
 

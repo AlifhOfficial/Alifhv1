@@ -57,22 +57,38 @@ export function MessageInput({
   // Reset state when conversation changes
   useEffect(() => {
     if (!resetKey) return;
-    setText('');
-    setInputHeight(MIN_HEIGHT);
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setText('');
+      setInputHeight(MIN_HEIGHT);
 
-    // Reset typing state
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    isTypingRef.current = false;
-    onTyping?.(false);
+      // Reset typing state
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      isTypingRef.current = false;
+      onTyping?.(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [resetKey, onTyping]);
 
   // Apply initial text
   useEffect(() => {
     if (!initialText) return;
     if (text.trim().length > 0) return;
-    setText(initialText);
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setText(initialText);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [initialText, resetKey, text]);
 
   // Handle content size change for auto-resize

@@ -8,7 +8,7 @@
  */
 
 import { Text } from '@/components/ui';
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { View, StyleSheet, ActivityIndicator, Switch } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
@@ -46,18 +46,10 @@ function getStatusColor(
 export function VinStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const [localVin, setLocalVin] = useState(data.vin || '');
+  const localVin = data.vin || '';
   const [status, setStatus] = useState<VinStatus>(data.vinVerified ? 'verified' : 'idle');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const lastChecked = useRef<string>('');
-
-  // Keep in sync with data
-  useEffect(() => {
-    if (data.vin !== localVin && data.vin) {
-      setLocalVin(data.vin);
-      setStatus(data.vinVerified ? 'verified' : 'idle');
-    }
-  }, [data.vin, data.vinVerified, localVin]);
 
   const verifyVin = useCallback(
     async (vin: string) => {
@@ -114,7 +106,6 @@ export function VinStepContent({ data, onUpdate }: StepContentProps) {
         .replace(/[^A-HJ-NPR-Z0-9]/g, '')
         .slice(0, 17);
 
-      setLocalVin(cleaned);
       onUpdate({ vin: cleaned, vinVerified: false });
 
       if (status !== 'idle' && status !== 'checking') {

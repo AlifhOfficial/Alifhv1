@@ -5,17 +5,10 @@
  */
 
 import { useAlert } from '@/components/ui';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, View, Pressable, Platform, ActionSheetIOS } from 'react-native';
 import Animated, { 
   FadeIn, 
-  useAnimatedStyle, 
-  useSharedValue,
-  withSpring,
-  withRepeat,
-  withSequence,
-  withTiming,
-  Easing,
 } from 'react-native-reanimated';
 import { Camera } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
@@ -46,20 +39,7 @@ export function ProfileAvatar({
   onPhotoSelected,
   onRemovePhoto,
 }: ProfileAvatarProps) {
-  const scale = useSharedValue(1);
   const { showAlert } = useAlert();
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.95, { damping: 15, stiffness: 300 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-  };
 
   const pickFromCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -185,35 +165,11 @@ export function ProfileAvatar({
     }
   };
 
-  // Loading animation
-  const loadingOpacity = useSharedValue(1);
-
-  useEffect(() => {
-    if (isUploading) {
-      loadingOpacity.value = withRepeat(
-        withSequence(
-          withTiming(0.4, { duration: 600, easing: Easing.inOut(Easing.ease) }),
-          withTiming(1, { duration: 600, easing: Easing.inOut(Easing.ease) })
-        ),
-        -1,
-        false
-      );
-    } else {
-      loadingOpacity.value = 1;
-    }
-  }, [isUploading, loadingOpacity]);
-
-  const loadingTextStyle = useAnimatedStyle(() => ({
-    opacity: loadingOpacity.value,
-  }));
-
   return (
     <AnimatedPressable
       onPress={showOptions}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
       disabled={isUploading}
-      style={[styles.container, animatedStyle]}
+      style={({ pressed }) => [styles.container, pressed && !isUploading ? styles.containerPressed : null]}
     >
       <UserAvatar
         src={imageUrl}
@@ -235,7 +191,6 @@ export function ProfileAvatar({
             style={[
               styles.loadingText,
               { color: colors.primaryForeground },
-              loadingTextStyle,
             ]}
           >
             Uploading
@@ -256,6 +211,9 @@ export function ProfileAvatar({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
+  },
+  containerPressed: {
+    transform: [{ scale: 0.95 }],
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,

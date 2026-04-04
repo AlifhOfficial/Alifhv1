@@ -62,8 +62,16 @@ export function ImageGridModal({
 
   useEffect(() => {
     if (isOpen) {
-      setSelectedIndex(currentIndex);
-      setShowLightbox(false);
+      let cancelled = false;
+      queueMicrotask(() => {
+        if (cancelled) return;
+        setSelectedIndex(currentIndex);
+        setShowLightbox(false);
+      });
+
+      return () => {
+        cancelled = true;
+      };
     }
   }, [isOpen, currentIndex]);
 

@@ -3,7 +3,7 @@
  * Uses smooth pulse animation for loading states
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Animated, StyleSheet, ViewStyle } from 'react-native';
 
 import { Colors, Radius, Spacing, Sizes } from '@/constants/theme';
@@ -26,7 +26,7 @@ export function Skeleton({
 }: SkeletonProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const opacity = useRef(new Animated.Value(0.4)).current;
+  const [opacity] = useState(() => new Animated.Value(0.4));
 
   useEffect(() => {
     const animation = Animated.loop(
@@ -101,7 +101,7 @@ export function SkeletonImage({
 }) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const opacity = useRef(new Animated.Value(0.4)).current;
+  const [opacity] = useState(() => new Animated.Value(0.4));
 
   useEffect(() => {
     const animation = Animated.loop(

@@ -10,7 +10,7 @@
  */
 
 import { Text } from './text';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/context/theme-context';
 import { Colors, Sizes, Spacing, Typography, Fonts } from '@/constants/theme';
@@ -68,10 +68,7 @@ export function UserAvatar({
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   
-  const [imageError, setImageError] = useState(false);
-
-  // Reset error state when src changes
-  useEffect(() => setImageError(false), [src]);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
   const pixelSize = sizes[size];
   const fontSize = fontSizes[size];
@@ -80,7 +77,7 @@ export function UserAvatar({
   const resolvedSrc = src ? getAppImageUrl(src) : null;
 
   // Show image if available, otherwise show initials
-  const showImage = resolvedSrc && !imageError;
+  const showImage = resolvedSrc && failedSrc !== resolvedSrc;
 
   // Match web styling: bg-card with border-border/40, consistent with BrandAvatar
   const containerStyle = useMemo(() => ({
@@ -101,7 +98,7 @@ export function UserAvatar({
         <Image
           source={{ uri: resolvedSrc }}
           style={[styles.image, { borderRadius: pixelSize / 2 }]}
-          onError={() => setImageError(true)}
+          onError={() => setFailedSrc(resolvedSrc)}
           resizeMode="cover"
         />
       )}

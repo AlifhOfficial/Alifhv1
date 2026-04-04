@@ -93,14 +93,10 @@ export default function SearchScreen() {
   const [selectedSellerType, setSelectedSellerType] = useState<'dealer' | 'private' | null>(null);
 
   useEffect(() => {
-    if (!query.trim()) {
-      setDebouncedQuery('');
-      return;
-    }
-
+    const trimmedQuery = query.trim();
     const timeout = setTimeout(() => {
-      setDebouncedQuery(query.trim());
-    }, SEARCH_DEBOUNCE_MS);
+      setDebouncedQuery(trimmedQuery);
+    }, trimmedQuery ? SEARCH_DEBOUNCE_MS : 0);
 
     return () => clearTimeout(timeout);
   }, [query]);
@@ -148,13 +144,29 @@ export default function SearchScreen() {
 
   useEffect(() => {
     if (selectedMakes.length > 0) return;
-    setSelectedModels([]);
-    setSelectedTrims([]);
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setSelectedModels([]);
+      setSelectedTrims([]);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedMakes.length]);
 
   useEffect(() => {
     if (selectedModels.length > 0) return;
-    setSelectedTrims([]);
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setSelectedTrims([]);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedModels.length]);
 
   const toggleMake = useCallback((value: string) => {

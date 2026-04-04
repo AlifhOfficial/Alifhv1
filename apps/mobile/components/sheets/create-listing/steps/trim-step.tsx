@@ -7,7 +7,7 @@
  */
 
 import { Text, HapticPressable } from '@/components/ui';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
@@ -27,15 +27,10 @@ const TRIM_EXAMPLES = ['Sport', 'Luxury', 'Premium', 'Base', 'Limited', 'Platinu
 export function TrimStepContent({ data, onUpdate }: StepContentProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const [localTrim, setLocalTrim] = useState(data.trim || '');
-
-  useEffect(() => {
-    setLocalTrim(data.trim || '');
-  }, [data.trim]);
+  const localTrim = data.trim || '';
 
   const handleChange = useCallback(
     (text: string) => {
-      setLocalTrim(text);
       onUpdate({ trim: text });
     },
     [onUpdate]
@@ -44,7 +39,6 @@ export function TrimStepContent({ data, onUpdate }: StepContentProps) {
   const handleQuickSelect = useCallback(
     (trim: string) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      setLocalTrim(trim);
       onUpdate({ trim });
     },
     [onUpdate]
