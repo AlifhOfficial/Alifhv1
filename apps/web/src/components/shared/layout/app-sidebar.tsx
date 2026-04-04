@@ -42,12 +42,14 @@ import {
   Phone,
 } from "lucide-react";
 import { useMemo, useState, useEffect, type ComponentType } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { BrandAvatar } from "@/components/partner/car-dealer/ui/brand-avatar";
 import { useAuth } from "@/providers/auth-provider";
-import { useConversations } from "@/hooks/messaging";
 import { SupportModal } from "@/components/shared/support/support-modal";
 import { handleSignOut } from '@/lib/auth/sign-out';
+import { useWebSocket } from "@/hooks/messaging/use-websocket";
+import { isConversationActive } from "@/hooks/messaging/active-conversations";
 import {
   Sidebar,
   SidebarContent,
@@ -317,6 +319,8 @@ function SidebarFooterContent({
 
 export function AppSidebar({ user: initialUser, items, sections, staffOverride }: AppSidebarProps) {
   const pathname = usePathname();
+  const queryClient = useQueryClient();
+  const { subscribe } = useWebSocket();
   
   // Use client-side session for reactive updates
   const { session: clientUser } = useAuth();
@@ -368,12 +372,70 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
       ? 'staff'
       : 'personal';
 
-  const { totalUnread } = useConversations({
-    userId: (user as any)?.id ?? undefined,
-    scope: messagingScope,
-    enabled: hasMessagingNav,
-    limit: 50,
+  const messagingUserId = (user as any)?.id ?? undefined;
+  const unreadCountKey = useMemo(
+    () => ['messaging-unread-count', messagingUserId, messagingScope] as const,
+    [messagingUserId, messagingScope]
+  );
+  const conversationsCacheKey = useMemo(
+    () => ['conversations', messagingUserId, messagingScope, 50] as const,
+    [messagingUserId, messagingScope]
+  );
+
+  const { data: unreadCountData } = useQuery<{ unreadCount: number }>({
+    queryKey: unreadCountKey,
+    queryFn: async () => {
+      const res = await fetch('/api/conversations/unread-count', {
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        throw new Error('Failed to fetch unread count');
+      }
+
+      const data = (await res.json()) as { unreadCount?: number };
+      return { unreadCount: data.unreadCount ?? 0 };
+    },
+    enabled: Boolean(messagingUserId && hasMessagingNav),
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
+
+  const { data: cachedConversations } = useQuery<{
+    pages?: Array<{ totalUnread?: number }>;
+  }>({
+    queryKey: conversationsCacheKey,
+    queryFn: async () => ({ pages: [] }),
+    enabled: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  const totalUnread = useMemo(() => {
+    const cachedTotal = cachedConversations?.pages?.[0]?.totalUnread;
+    if (typeof cachedTotal === 'number') {
+      return cachedTotal;
+    }
+    return unreadCountData?.unreadCount ?? 0;
+  }, [cachedConversations?.pages, unreadCountData?.unreadCount]);
+
+  useEffect(() => {
+    if (!messagingUserId || !hasMessagingNav) return;
+
+    const unsubscribe = subscribe((msg) => {
+      if (msg.type !== 'new_message') return;
+      if (msg.userId === messagingUserId) return;
+      if (!msg.conversationId || isConversationActive(msg.conversationId)) return;
+
+      queryClient.setQueryData(unreadCountKey, (old: { unreadCount: number } | undefined) => ({
+        unreadCount: Math.max(0, (old?.unreadCount ?? 0) + 1),
+      }));
+    });
+
+    return unsubscribe;
+  }, [hasMessagingNav, messagingUserId, queryClient, subscribe, unreadCountKey]);
 
   // Use session data directly - it's refreshed when profile updates
   const firstName = (user as any).firstName;

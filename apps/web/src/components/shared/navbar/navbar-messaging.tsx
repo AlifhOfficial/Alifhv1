@@ -5,12 +5,14 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { MessageCircle, ChevronRight, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { useConversations, type Conversation } from '@/hooks/messaging';
+import { useWebSocket } from '@/hooks/messaging/use-websocket';
 import { cn } from '@/utils/cn';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
@@ -23,22 +25,70 @@ interface NavbarMessagingProps {
 export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { subscribe } = useWebSocket();
+  const unreadCountKey = useMemo(
+    () => ['messaging-unread-count', userId, 'personal'] as const,
+    [userId]
+  );
+  const conversationsCacheKey = useMemo(
+    () => ['conversations', userId, 'personal', 50] as const,
+    [userId]
+  );
 
-  const { conversations: allConversations, isLoading } = useConversations({
-    userId,
-    scope: 'personal',
-    limit: 50,
+  const { data: unreadCountData } = useQuery<{ unreadCount: number }>({
+    queryKey: unreadCountKey,
+    queryFn: async () => {
+      const res = await fetch('/api/conversations/unread-count', {
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        throw new Error('Failed to fetch unread count');
+      }
+      const data = (await res.json()) as { unreadCount?: number };
+      return { unreadCount: data.unreadCount ?? 0 };
+    },
     enabled: !!userId,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
 
-  const hasUnread = allConversations.some((c) => c.unreadCount > 0);
-  const conversations = allConversations
-    .filter((c) => c.messageCount > 0)
-    .sort(
-      (a, b) =>
-        new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
-    )
-    .slice(0, 5);
+  const { data: conversationsCache } = useQuery<{
+    pages?: Array<{ totalUnread?: number }>;
+  }>({
+    queryKey: conversationsCacheKey,
+    queryFn: async () => ({ pages: [] }),
+    enabled: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  const totalUnread = useMemo(() => {
+    const cachedTotal = conversationsCache?.pages?.[0]?.totalUnread;
+    if (typeof cachedTotal === 'number') {
+      return cachedTotal;
+    }
+    return unreadCountData?.unreadCount ?? 0;
+  }, [conversationsCache?.pages, unreadCountData?.unreadCount]);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const unsubscribe = subscribe((msg) => {
+      if (msg.type !== 'new_message') return;
+      if (msg.userId === userId) return;
+
+      queryClient.setQueryData(unreadCountKey, (old: { unreadCount: number } | undefined) => ({
+        unreadCount: Math.max(0, (old?.unreadCount ?? 0) + 1),
+      }));
+    });
+
+    return unsubscribe;
+  }, [queryClient, subscribe, unreadCountKey, userId]);
+  const hasUnread = totalUnread > 0;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -58,32 +108,14 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
 
   const handleOpenChat = useCallback((conversation: Conversation) => {
     setIsOpen(false);
+    if (conversation.unreadCount > 0) {
+      queryClient.setQueryData(unreadCountKey, (old: { unreadCount: number } | undefined) => ({
+        unreadCount: Math.max(0, (old?.unreadCount ?? 0) - conversation.unreadCount),
+      }));
+    }
     if (onOpenChat) { onOpenChat(conversation); return; }
     router.push(`/user-dashboard/messaging?conversationId=${conversation.id}`);
-  }, [onOpenChat, router]);
-
-  const groups = Object.values(
-    conversations.reduce((acc, conv) => {
-      const key = conv.partner?.id || conv.otherParticipant?.id || 'unknown';
-      if (!acc[key]) {
-        acc[key] = { user: conv.partner || conv.otherParticipant, isPartner: !!conv.partner, conversations: [] };
-      }
-      acc[key].conversations.push(conv);
-      return acc;
-    }, {} as Record<string, { user: any; isPartner: boolean; conversations: Conversation[] }>)
-  )
-    .map((group) => ({
-      ...group,
-      conversations: [...group.conversations].sort(
-        (a, b) =>
-          new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
-      ),
-    }))
-    .sort((a, b) => {
-      const aLatest = a.conversations[0]?.lastMessageAt;
-      const bLatest = b.conversations[0]?.lastMessageAt;
-      return new Date(String(bLatest ?? 0)).getTime() - new Date(String(aLatest ?? 0)).getTime();
-    });
+  }, [onOpenChat, queryClient, router, unreadCountKey]);
 
   if (!userId) return null;
 
@@ -109,22 +141,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
           </div>
 
           <div className="max-h-[400px] overflow-y-auto">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-14">
-                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-              </div>
-            ) : groups.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-14 px-6 text-center gap-3">
-                <MessageCircle className="w-10 h-10 text-muted-foreground/30" />
-                <p className="text-sm font-medium text-foreground/60">No messages yet</p>
-              </div>
-            ) : (
-              <div className="py-2 px-2">
-                {groups.map((group) => (
-                  <GroupRow key={group.user?.id || 'unknown'} group={group} onSelect={handleOpenChat} />
-                ))}
-              </div>
-            )}
+            <NavbarMessagingDropdown userId={userId} onSelectConversation={handleOpenChat} />
           </div>
 
           <div className="border-t border-sidebar-border">
@@ -139,6 +156,77 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function NavbarMessagingDropdown({
+  userId,
+  onSelectConversation,
+}: {
+  userId?: string;
+  onSelectConversation: (conversation: Conversation) => void;
+}) {
+  const { conversations: allConversations, isLoading } = useConversations({
+    userId,
+    scope: 'personal',
+    limit: 50,
+    enabled: !!userId,
+  });
+
+  const conversations = allConversations
+    .filter((c) => c.messageCount > 0)
+    .sort(
+      (a, b) =>
+        new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
+    )
+    .slice(0, 5);
+
+  const groups = Object.values(
+    conversations.reduce((acc, conv) => {
+      const key = conv.partner?.id || conv.otherParticipant?.id || 'unknown';
+      if (!acc[key]) {
+        acc[key] = { user: conv.partner || conv.otherParticipant, isPartner: !!conv.partner, conversations: [] };
+      }
+      acc[key].conversations.push(conv);
+      return acc;
+    }, {} as Record<string, { user: any; isPartner: boolean; conversations: Conversation[] }>)
+  )
+    .map((group) => ({
+      ...group,
+      conversations: [...group.conversations].sort(
+        (a, b) =>
+          new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
+      ),
+    }))
+    .sort((a, b) => {
+      const aLatest = a.conversations[0]?.lastMessageAt;
+      const bLatest = b.conversations[0]?.lastMessageAt;
+      return new Date(String(bLatest ?? 0)).getTime() - new Date(String(aLatest ?? 0)).getTime();
+    });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-14">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (groups.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-14 px-6 text-center gap-3">
+        <MessageCircle className="w-10 h-10 text-muted-foreground/30" />
+        <p className="text-sm font-medium text-foreground/60">No messages yet</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="py-2 px-2">
+      {groups.map((group) => (
+        <GroupRow key={group.user?.id || 'unknown'} group={group} onSelect={onSelectConversation} />
+      ))}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { getQueryClient } from '@/lib/query-client';
 import type { FavoritesStatusData } from '@/hooks/engagement/favorites/use-favorites-unified';
+import { useRef } from 'react';
 
 interface AuthenticatedAppProvidersProps {
   children: React.ReactNode;
@@ -32,30 +33,12 @@ export function AuthenticatedAppProviders({
   initialUserId,
 }: AuthenticatedAppProvidersProps) {
   const queryClient = getQueryClient();
+  const seededRef = useRef<symbol | null>(null);
 
-  queryClient.setQueryDefaults(['favorites-status'], {
-    staleTime: Infinity,
-    gcTime: Infinity,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-  });
+  if (seededRef.current == null) {
+    seededRef.current = Symbol('seeded');
 
-  if (initialFavoritesStatus) {
-    queryClient.setQueryData(['favorites-status'], initialFavoritesStatus);
-  }
-
-  if (initialNavbarFavoriteListings && initialNavbarFavoriteIds) {
-    queryClient.setQueryData(
-      ['navbar-favorites-listings', ...initialNavbarFavoriteIds],
-      initialNavbarFavoriteListings
-    );
-  }
-
-  if (initialUserId && initialPersonalConversations) {
-    const conversationsKey = ['conversations', initialUserId, 'personal', 50] as const;
-
-    queryClient.setQueryDefaults(conversationsKey, {
+    queryClient.setQueryDefaults(['favorites-status'], {
       staleTime: Infinity,
       gcTime: Infinity,
       refetchOnMount: false,
@@ -63,10 +46,35 @@ export function AuthenticatedAppProviders({
       refetchOnWindowFocus: false,
     });
 
-    queryClient.setQueryData(conversationsKey, {
-      pages: [initialPersonalConversations],
-      pageParams: [0],
-    });
+    if (initialFavoritesStatus && queryClient.getQueryData(['favorites-status']) === undefined) {
+      queryClient.setQueryData(['favorites-status'], initialFavoritesStatus);
+    }
+
+    if (initialNavbarFavoriteListings && initialNavbarFavoriteIds) {
+      const navbarListingsKey = ['navbar-favorites-listings', ...initialNavbarFavoriteIds];
+      if (queryClient.getQueryData(navbarListingsKey) === undefined) {
+        queryClient.setQueryData(navbarListingsKey, initialNavbarFavoriteListings);
+      }
+    }
+
+    if (initialUserId && initialPersonalConversations) {
+      const conversationsKey = ['conversations', initialUserId, 'personal', 50] as const;
+
+      queryClient.setQueryDefaults(conversationsKey, {
+        staleTime: Infinity,
+        gcTime: Infinity,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+      });
+
+      if (queryClient.getQueryData(conversationsKey) === undefined) {
+        queryClient.setQueryData(conversationsKey, {
+          pages: [initialPersonalConversations],
+          pageParams: [0],
+        });
+      }
+    }
   }
 
   return <>{children}</>;  
