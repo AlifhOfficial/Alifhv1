@@ -116,7 +116,10 @@ export function useConversations(options: UseConversationsOptions = {}) {
   const limit = options.limit ?? 50;
 
   // Include limit so lightweight navbar data doesn't share cache with full inbox data
-  const queryKey = ['conversations', options.userId, options.scope, limit] as const;
+  const queryKey = useMemo(
+    () => ['conversations', options.userId, options.scope, limit] as const,
+    [options.userId, options.scope, limit]
+  );
 
   // Check for existing query state (set by QueryProvider or previous render)
   const existingQueryState = queryClient.getQueryState<ConversationsInfiniteData>(queryKey);
@@ -147,6 +150,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
     initialData: effectiveInitialData,
     initialDataUpdatedAt: effectiveInitialData ? Date.now() : undefined,
   });
+  const { refetch } = query;
 
   // Flatten all pages to get conversations and aggregate totalUnread
   const flatData = useMemo(() => {
@@ -283,7 +287,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
           // Throttle forced refetches per missing conversation to avoid WS bursts.
           if (now - lastRefetchAt > 1500) {
             missingConversationRefetchAtRef.current.set(msg.conversationId, now);
-            query.refetch();
+            refetch();
           }
         }
       }
@@ -344,7 +348,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
     });
 
     return unsub;
-  }, [subscribe, queryClient, options.userId, queryKey, query.refetch]);
+  }, [subscribe, queryClient, options.userId, queryKey, refetch]);
 
   // Apply live presence updates to flattened conversations
   const conversations = useMemo(() => {
@@ -377,7 +381,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
     isFetchingMore: query.isFetchingNextPage,
     error: query.error?.message,
     fetchMore: query.fetchNextPage,
-    refetch: query.refetch,
+    refetch,
   };
 }
 

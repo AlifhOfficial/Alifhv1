@@ -68,8 +68,6 @@ export function ConversationGroup({
   const hasUnread = totalUnread > 0;
   const latest = conversations[0];
 
-  const toggleExpanded = useCallback(() => setIsExpanded((p) => !p), []);
-
   const handlePress = useCallback(() => {
     // Always select the most recent conversation
     onSelect(latest);

@@ -110,7 +110,6 @@ export function useConversations({
     isLoading,
     isFetching,
     error: queryError,
-    refetch,
   } = query;
 
   const conversations = useMemo(
