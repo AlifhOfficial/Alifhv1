@@ -153,16 +153,38 @@ interface GroupRowProps {
 function GroupRow({ group, onSelect }: GroupRowProps) {
   const { user, isPartner, conversations } = group;
   const [isExpanded, setIsExpanded] = useState(false);
+  const latestConversation = conversations[0];
 
   const displayName = user?.name || 'User';
   const hasUnread = conversations.some((c) => c.unreadCount > 0);
   const isOnline = conversations.some((c) => c.otherParticipant?.isOnline);
 
+  const handleRowClick = () => {
+    if (latestConversation) {
+      onSelect(latestConversation);
+    }
+  };
+
+  const handleChevronClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded((v) => !v);
+  };
+
+  const handleRowKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleRowClick();
+    }
+  };
+
   return (
     <div className="mb-1">
-      <button
-        onClick={() => setIsExpanded((v) => !v)}
-        className="w-full flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-sidebar-accent/50 transition-colors text-left"
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={handleRowClick}
+        onKeyDown={handleRowKeyDown}
+        className="w-full flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-sidebar-accent/50 transition-colors text-left cursor-pointer"
       >
         <div className="relative flex-shrink-0">
           {isPartner ? (
@@ -184,12 +206,19 @@ function GroupRow({ group, onSelect }: GroupRowProps) {
 
         <div className="flex items-center gap-2 flex-shrink-0">
           {hasUnread && <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />}
-          <ChevronRight className={cn(
-            'w-4 h-4 text-muted-foreground/40 transition-transform',
-            isExpanded && 'rotate-90'
-          )} />
+          <button
+            type="button"
+            onClick={handleChevronClick}
+            className="p-1 -m-1 rounded-md hover:bg-sidebar-accent"
+            aria-label={isExpanded ? 'Collapse conversations' : 'Expand conversations'}
+          >
+            <ChevronRight className={cn(
+              'w-4 h-4 text-muted-foreground/40 transition-transform',
+              isExpanded && 'rotate-90'
+            )} />
+          </button>
         </div>
-      </button>
+      </div>
 
       {isExpanded && (
         <div className="ml-[22px] mb-2 pl-3.5 border-l border-sidebar-border/50 flex flex-col gap-1.5">
