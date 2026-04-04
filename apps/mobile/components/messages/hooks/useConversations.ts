@@ -49,7 +49,8 @@ export function useConversations({
   const watchedUsersRef = useRef<Set<string>>(new Set());
   const missingConversationRefetchAtRef = useRef(new Map<string, number>());
   const lastManualRefreshAtRef = useRef(0);
-  const wasConnectedRef = useRef(false);
+  // Initialize with current socket state to avoid mount-time reconnect refetches.
+  const wasConnectedRef = useRef(isConnected);
   const lastReconnectRefetchAtRef = useRef(0);
   const presenceMapRef = useRef(new Map<string, { isOnline?: boolean; lastSeenAt?: string | null }>());
   const [presenceVersion, setPresenceVersion] = useState(0);

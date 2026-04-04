@@ -67,7 +67,8 @@ export function useMessages({
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSentRef = useRef(0);
   const watchingRef = useRef(false);
-  const wasConnectedRef = useRef(false);
+  // Initialize with current socket state to avoid mount-time double fetches.
+  const wasConnectedRef = useRef(isConnected);
   const lastReconnectRefetchAtRef = useRef(0);
   const missingConversationRefetchAtRef = useRef(new Map<string, number>());
   
@@ -123,7 +124,7 @@ export function useMessages({
     initialPageParam: undefined as string | undefined,
     enabled: !!conversationId && !!userId && isAuthenticated && enabled,
     refetchOnWindowFocus: false,
-    // Refetch only when stale (e.g. invalidated by conversation WS updates while thread is closed).
+    // Refetch on mount only when stale (e.g. invalidated by WS while thread is closed).
     refetchOnMount: true,
     staleTime: Infinity,
     gcTime: Infinity,
@@ -310,7 +311,7 @@ export function useMessages({
           if (now - lastRefetchAt > 1500) {
             missingConversationRefetchAtRef.current.set(newMessage.conversationId, now);
             // Mark stale only; avoid immediate full conversations GET while in thread.
-            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            queryClient.invalidateQueries({ queryKey: ['conversations'], refetchType: 'none' });
           }
         }
       }

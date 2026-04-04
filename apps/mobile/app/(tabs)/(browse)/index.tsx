@@ -34,6 +34,7 @@ import { useSearch, type FilterParams, type BrowseViewMode as ViewMode } from '@
 // MODULE-LEVEL PERSISTENCE (survives tab switches, no async/race conditions)
 // ============================================================================
 let persistedViewMode: ViewMode = 'grid';
+const SEARCH_STALE_TIME = 2 * 60 * 1000;
 
 // Header height removed — native Stack header handles top inset
 
@@ -167,7 +168,7 @@ export default function BrowseScreen() {
     // Match the server-side search cache. Query key changes still create a new
     // cache entry, but revisiting the same filter set within 2 minutes can reuse
     // the cached cursor pages instead of immediately refetching.
-    staleTime: 2 * 60 * 1000,
+    staleTime: SEARCH_STALE_TIME,
   });
 
   const listings = useMemo(() => {
@@ -218,6 +219,15 @@ export default function BrowseScreen() {
 
     const cachedState = queryClient.getQueryState(searchQueryKey);
     if (!cachedState?.data) {
+      queueMicrotask(() => {
+        setIsRevalidatingWarmSearch(false);
+      });
+      return;
+    }
+
+    const dataUpdatedAt = cachedState.dataUpdatedAt ?? 0;
+    const isFresh = Date.now() - dataUpdatedAt < SEARCH_STALE_TIME;
+    if (isFresh) {
       queueMicrotask(() => {
         setIsRevalidatingWarmSearch(false);
       });

@@ -9,6 +9,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router/tabs';
 import { usePathname } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Store, MessageCircle, LayoutGrid } from 'lucide-react-native';
@@ -24,6 +25,7 @@ import { useTheme } from '@/context/theme-context';
 import { useAuth, type AuthSheetContext } from '@/context/auth-context';
 import { useSearch } from '@/context/search-context';
 import { nativeSheetVisibility } from '@/lib/native-sheet-visibility';
+import { queryKeys } from '@/lib/query-client';
 import { AppFontFamilies, BorderWidths, Colors, Radius, Shadows, Sizes, Spacing, Typography, ZIndex } from '@/constants/theme';
 
 type TabConfigItem = {
@@ -50,6 +52,7 @@ type AnimatedTabChipProps = {
   label: string;
   Icon: LucideIcon;
   focused: boolean;
+  unreadCount?: number;
   activeColor: string;
   inactiveColor: string;
   transparentActiveColor: string;
@@ -84,6 +87,7 @@ function AnimatedTabChip({
   label,
   Icon,
   focused,
+  unreadCount = 0,
   activeColor,
   inactiveColor,
   transparentActiveColor,
@@ -139,6 +143,11 @@ function AnimatedTabChip({
               fill={activeFillColor ?? activeColor}
             />
           </Animated.View>
+          {unreadCount > 0 && (
+            <View style={styles.tabBadge}>
+              <Text style={styles.tabBadgeText}>{unreadCount > 99 ? '99+' : String(unreadCount)}</Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.labelStack}>
@@ -178,7 +187,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const pathname = usePathname();
   const { colorScheme } = useTheme();
   const { triggerScrollToTop } = useSearch();
-  const { isAuthenticated, showAuthSheet } = useAuth();
+  const { isAuthenticated, user, showAuthSheet } = useAuth();
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const [chipLayouts, setChipLayouts] = React.useState<Record<number, { x: number; width: number }>>({});
@@ -199,6 +208,32 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     () => toRgbaColor(chipActiveContent, 0),
     [chipActiveContent],
   );
+
+  const conversationsQueryKey = React.useMemo(
+    () => queryKeys.conversations(user?.id, 'personal'),
+    [user?.id]
+  );
+
+  const { data: cachedConversationsData } = useQuery<{
+    conversations?: { unreadCount?: number }[];
+    totalUnread?: number;
+  }>({
+    queryKey: conversationsQueryKey,
+    queryFn: async () => ({ conversations: [], totalUnread: 0 }),
+    enabled: false,
+    staleTime: Infinity,
+  });
+
+  const unreadChats = React.useMemo(() => {
+    if (!isAuthenticated) return 0;
+    if (typeof cachedConversationsData?.totalUnread === 'number') {
+      return cachedConversationsData.totalUnread;
+    }
+    return (cachedConversationsData?.conversations ?? []).reduce(
+      (sum, c) => sum + (c.unreadCount ?? 0),
+      0
+    );
+  }, [cachedConversationsData?.conversations, cachedConversationsData?.totalUnread, isAuthenticated]);
 
   React.useEffect(() => {
     const activeLayout = chipLayouts[state.index];
@@ -262,6 +297,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 label={tab.label}
                 Icon={tab.icon}
                 focused={focused}
+                unreadCount={tab.name === '(messages)' ? unreadChats : 0}
                 activeColor={chipActiveContent}
                 inactiveColor={chipInactiveContent}
                 transparentActiveColor={chipTransparentActiveContent}
@@ -368,6 +404,24 @@ const styles = StyleSheet.create({
   iconStack: {
     width: Sizes.iconMd,
     height: Sizes.iconMd,
+  },
+  tabBadge: {
+    position: 'absolute',
+    top: -6,
+    right: -12,
+    minWidth: 16,
+    height: 16,
+    borderRadius: Radius.full,
+    backgroundColor: '#EF4444',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  tabBadgeText: {
+    fontSize: 9,
+    lineHeight: 11,
+    color: '#FFFFFF',
+    fontFamily: AppFontFamilies.bold,
   },
   overlayLayer: {
     position: 'absolute',

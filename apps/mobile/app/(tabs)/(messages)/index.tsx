@@ -10,8 +10,7 @@
 import { Skeleton, SkeletonCircle, HapticRefreshControl, EmptyState, RequireAuthSheet } from '@/components/ui';
 import React, { useMemo, useCallback, useRef } from 'react';
 import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
-import { useIsFocused } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { MessageCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -45,7 +44,6 @@ export default function MessagesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { isAuthenticated, user } = useAuth();
-  const isFocused = useIsFocused();
   const listRef = useRef<FlatList<ListItem>>(null);
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = React.useState(false);
 
@@ -54,27 +52,12 @@ export default function MessagesScreen() {
     isLoading,
     isRefreshing,
     error,
-    refresh,
     pullToRefresh,
   } = useConversations({
-    isAuthenticated: isAuthenticated && isFocused,
+    isAuthenticated,
     userId: user?.id,
     scope: 'personal',
   });
-
-  // Re-fetch conversations when this tab regains focus (not initial mount)
-  const isFirstFocus = useRef(true);
-  useFocusEffect(
-    useCallback(() => {
-      if (isFirstFocus.current) {
-        isFirstFocus.current = false;
-        return; // Skip — initial useEffect in hook already loads
-      }
-      if (isAuthenticated) {
-        refresh();
-      }
-    }, [isAuthenticated, refresh])
-  );
 
   // ── Build grouped list (matching web app logic) ─────────
   const listItems = useMemo<ListItem[]>(() => {

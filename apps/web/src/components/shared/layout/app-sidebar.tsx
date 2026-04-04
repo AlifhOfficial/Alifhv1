@@ -45,6 +45,7 @@ import { useMemo, useState, useEffect, type ComponentType } from "react";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { BrandAvatar } from "@/components/partner/car-dealer/ui/brand-avatar";
 import { useAuth } from "@/providers/auth-provider";
+import { useConversations } from "@/hooks/messaging";
 import { SupportModal } from "@/components/shared/support/support-modal";
 import { handleSignOut } from '@/lib/auth/sign-out';
 import {
@@ -354,6 +355,26 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
     return [];
   }, [items, sections]);
 
+  const hasMessagingNav = useMemo(
+    () =>
+      navSections.some((section) =>
+        section.items.some((item) => item.icon === 'message-circle' || item.href.includes('/messaging'))
+      ),
+    [navSections]
+  );
+
+  const messagingScope: 'personal' | 'staff' =
+    pathname.startsWith('/staff-dashboard') || pathname.startsWith('/partner-dashboard')
+      ? 'staff'
+      : 'personal';
+
+  const { totalUnread } = useConversations({
+    userId: (user as any)?.id ?? undefined,
+    scope: messagingScope,
+    enabled: hasMessagingNav,
+    limit: 50,
+  });
+
   // Use session data directly - it's refreshed when profile updates
   const firstName = (user as any).firstName;
   const lastName = (user as any).lastName;
@@ -440,6 +461,8 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                     const normalizedHref = item.href.replace(/\/$/, '');
                     const isActive = normalizedPathname === normalizedHref;
                     const Icon = item.icon ? iconMap[item.icon] : undefined;
+                    const isMessagesItem = item.icon === 'message-circle' || item.href.includes('/messaging');
+                    const hasUnreadMessages = isMessagesItem && totalUnread > 0;
                     
                     return (
                       <SidebarMenuItem key={item.label}>
@@ -450,7 +473,14 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                           className={`font-semibold tracking-tight ${isActive ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'hover:bg-sidebar-accent'}`}
                         >
                           <Link href={item.href}>
-                            {Icon && <Icon className="size-4" />}
+                            {Icon && (
+                              <span className="relative inline-flex">
+                                <Icon className="size-4" />
+                                {hasUnreadMessages && (
+                                  <span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-rose-500" aria-hidden="true" />
+                                )}
+                              </span>
+                            )}
                             <span>{item.label}</span>
                           </Link>
                         </SidebarMenuButton>
