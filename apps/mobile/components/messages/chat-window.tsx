@@ -5,7 +5,14 @@
 
 import { Text, Skeleton } from '@/components/ui';
 import React, { useMemo, useRef, useCallback, useEffect } from 'react';
-import { View, FlatList, StyleSheet, ActivityIndicator, Dimensions, Pressable } from 'react-native';
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+  Dimensions,
+  Pressable,
+} from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { Stack, useRouter } from 'expo-router';
 import Animated, {
@@ -58,6 +65,7 @@ export function ChatWindow({
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<Message>>(null);
+  const hasUserScrolledForPaginationRef = useRef(false);
 
   // Timestamp panel state
   const panelTranslateX = useSharedValue(PANEL_WIDTH);
@@ -118,9 +126,8 @@ export function ChatWindow({
   const avatarUrl = conversation?.partner
     ? conversation.partner.logo
     : conversation?.otherParticipant?.avatarUrl;
-  // Use live presence from useMessages (real-time via WS, initialized from DB)
-  const isOnline = isOtherOnline ?? conversation?.otherParticipant?.isOnline ?? false;
-  // otherLastSeenAt is now initialized from DB in useMessages, WS updates override
+  // Presence is websocket-only to avoid cache flicker.
+  const isOnline = isOtherOnline === true;
   const lastSeenAt = otherLastSeenAt;
   const listingTitle = conversation?.listing?.title;
   const otherUserAvatar = avatarUrl;
@@ -159,7 +166,7 @@ export function ChatWindow({
   useEffect(() => {
     if (isLoading || !newestUnreadIncomingMessageId) return;
     if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessageId) return;
-
+    // Mark immediately; message-id dedupe in this screen + hook prevents write spam.
     lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
     markAsRead(conversationId, newestUnreadIncomingMessageId);
   }, [conversationId, isLoading, newestUnreadIncomingMessageId, markAsRead]);
@@ -198,10 +205,16 @@ export function ChatWindow({
 
   // Handle infinite scroll
   const handleEndReached = useCallback(() => {
+    // Prevent auto-pagination churn on mount/rerenders in inverted lists.
+    if (!hasUserScrolledForPaginationRef.current) return;
     if (!isFetchingMore && hasMore) {
       fetchMore();
     }
   }, [isFetchingMore, hasMore, fetchMore]);
+
+  const handleScrollBeginDrag = useCallback(() => {
+    hasUserScrolledForPaginationRef.current = true;
+  }, []);
 
   // Format date label for separators
   const formatDateLabel = useCallback((date: Date): string => {
@@ -474,6 +487,7 @@ export function ChatWindow({
                 renderItem={renderMessage}
                 keyExtractor={(item) => item.id}
                 inverted
+                onScrollBeginDrag={handleScrollBeginDrag}
                 contentContainerStyle={[
                   styles.messagesContent,
                   messages.length > 0
@@ -493,7 +507,7 @@ export function ChatWindow({
                 ListHeaderComponent={ListHeaderComponent}
                 ListFooterComponent={ListFooterComponent}
                 onEndReached={handleEndReached}
-                onEndReachedThreshold={0.3}
+                onEndReachedThreshold={0.1}
                 showsVerticalScrollIndicator={false}
                 alwaysBounceVertical
                 keyboardDismissMode="interactive"

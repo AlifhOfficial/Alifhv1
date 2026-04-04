@@ -11,6 +11,7 @@ import { Skeleton, SkeletonCircle, HapticRefreshControl, EmptyState, RequireAuth
 import React, { useMemo, useCallback, useRef } from 'react';
 import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
 import { MessageCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -44,6 +45,7 @@ export default function MessagesScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { isAuthenticated, user } = useAuth();
+  const isFocused = useIsFocused();
   const listRef = useRef<FlatList<ListItem>>(null);
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = React.useState(false);
 
@@ -55,7 +57,7 @@ export default function MessagesScreen() {
     refresh,
     pullToRefresh,
   } = useConversations({
-    isAuthenticated,
+    isAuthenticated: isAuthenticated && isFocused,
     userId: user?.id,
     scope: 'personal',
   });

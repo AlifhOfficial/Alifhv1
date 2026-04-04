@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   fetchConversations,
   type Conversation,
@@ -14,6 +15,7 @@ import {
 import { getAvatarUrl , consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
 import { isConversationActive } from './active-conversations';
+import { queryKeys } from '@/lib/query-client';
 
 interface UseConversationsOptions {
   isAuthenticated: boolean;
@@ -33,19 +35,26 @@ interface UseConversationsReturn {
   pullToRefresh: () => Promise<void>;
 }
 
+const EMPTY_CONVERSATIONS: Conversation[] = [];
+
 export function useConversations({
   isAuthenticated,
   userId,
   scope,
 }: UseConversationsOptions): UseConversationsReturn {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { subscribe, send, isConnected } = useWebSocket();
-  const abortControllerRef = useRef<AbortController | null>(null);
   const watchedUsersRef = useRef<Set<string>>(new Set());
-  const loadConversationsRef = useRef<(() => Promise<void>) | null>(null);
+  const missingConversationRefetchAtRef = useRef(new Map<string, number>());
+  const lastManualRefreshAtRef = useRef(0);
+  const presenceMapRef = useRef(new Map<string, { isOnline?: boolean; lastSeenAt?: string | null }>());
+  const [presenceVersion, setPresenceVersion] = useState(0);
+  const queryKey = useMemo(
+    () => queryKeys.conversations(userId ?? undefined, scope ?? 'personal'),
+    [userId, scope]
+  );
   
   // Keep userId in a ref for WebSocket handler
   const userIdRef = useRef(userId);
@@ -53,8 +62,66 @@ export function useConversations({
     userIdRef.current = userId;
   }, [userId]);
 
+  const query = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const data = await fetchConversations({ scope, limit: 50 });
+      const conversations = data.conversations
+        .filter(c => c.messageCount > 0)
+        .map(conv => ({
+          ...conv,
+          otherParticipant: conv.otherParticipant ? {
+            ...conv.otherParticipant,
+            avatarUrl: getAvatarUrl(conv.otherParticipant.avatarUrl),
+            // Presence is websocket-driven only; do not persist server snapshot in cache.
+            isOnline: undefined,
+            lastSeenAt: null,
+          } : null,
+          listing: conv.listing ? {
+            ...conv.listing,
+            thumbnail: getAvatarUrl(conv.listing.thumbnail),
+          } : null,
+        }))
+        .sort(
+          (a, b) =>
+            new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+        );
+
+      const readyAt = consumeDataReady(`messaging:conversations:${scope ?? 'personal'}`) ?? performance.now();
+      scheduleRenderPerf('messaging.conversations-list', readyAt, {
+        scope: scope ?? 'personal',
+        count: conversations.length,
+      });
+
+      return {
+        conversations,
+        totalUnread: data.totalUnread,
+      };
+    },
+    enabled: isAuthenticated && !!userId,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  const {
+    data,
+    isLoading,
+    isFetching,
+    error: queryError,
+    refetch,
+  } = query;
+
+  const conversations = useMemo(
+    () => data?.conversations ?? EMPTY_CONVERSATIONS,
+    [data?.conversations]
+  );
+
   // Subscribe to real-time updates
   useEffect(() => {
+    if (!isAuthenticated || !userId) return;
+
     const unsubscribe = subscribe((msg) => {
       // Handle new messages - update lastMessagePreview, lastMessageAt, and unreadCount
       if (msg.type === 'new_message' && msg.conversationId) {
@@ -65,79 +132,103 @@ export function useConversations({
         const isOwnMessage = senderId === userIdRef.current;
         const isActiveOpenConversation = isConversationActive(msg.conversationId);
 
-        setConversations(prev => {
-          const exists = prev.some(c => c.id === msg.conversationId);
-          if (!exists) {
-            // Conversation not in list — trigger a refresh to fetch it
-            loadConversationsRef.current?.();
-            return prev;
-          }
+        // Keep thread cache stale only for inactive conversations.
+        // Active chat thread gets live updates via websocket + optimistic cache writes.
+        if (!isActiveOpenConversation) {
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.messages(msg.conversationId),
+            exact: true,
+          });
+        }
+
+        let foundConversation = false;
+
+        queryClient.setQueryData(queryKey, (old: unknown) => {
+          const data = old as { conversations: Conversation[]; totalUnread: number } | undefined;
+          if (!data?.conversations) return old;
+
+          const exists = data.conversations.some(c => c.id === msg.conversationId);
+          if (!exists) return old;
+          foundConversation = true;
 
           const createdAt = newMsg?.createdAt || new Date().toISOString();
 
-          return prev
-            .map(conv => {
-              if (conv.id !== msg.conversationId) return conv;
-              const preview = newMsg?.text?.substring(0, 100) || conv.lastMessagePreview || 'New message';
+          return {
+            ...data,
+            conversations: data.conversations
+              .map(conv => {
+                if (conv.id !== msg.conversationId) return conv;
+                const preview = newMsg?.text?.substring(0, 100) || conv.lastMessagePreview || 'New message';
 
-              return {
-                ...conv,
-                lastMessageAt: createdAt,
-                lastMessagePreview: preview,
-                messageCount: Math.max((conv.messageCount || 0) + (isOwnMessage ? 0 : 1), conv.messageCount || 0),
-                unreadCount: isOwnMessage || isActiveOpenConversation ? 0 : (conv.unreadCount || 0) + 1,
-                myLastReadAt:
-                  !isOwnMessage && isActiveOpenConversation
-                    ? createdAt
-                    : conv.myLastReadAt,
-              };
-            })
-            // Re-sort by lastMessageAt (most recent first)
-            .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+                return {
+                  ...conv,
+                  lastMessageAt: createdAt,
+                  lastMessagePreview: preview,
+                  messageCount: isOwnMessage ? conv.messageCount || 0 : (conv.messageCount || 0) + 1,
+                  unreadCount: isOwnMessage || isActiveOpenConversation ? 0 : (conv.unreadCount || 0) + 1,
+                  myLastReadAt:
+                    !isOwnMessage && isActiveOpenConversation
+                      ? createdAt
+                      : conv.myLastReadAt,
+                };
+              })
+              .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()),
+            totalUnread:
+              !isOwnMessage && !isActiveOpenConversation
+                ? (data.totalUnread || 0) + 1
+                : data.totalUnread,
+          };
         });
+
+        if (!foundConversation) {
+          const now = Date.now();
+          const lastRefetchAt = missingConversationRefetchAtRef.current.get(msg.conversationId) ?? 0;
+          if (now - lastRefetchAt > 1500) {
+            missingConversationRefetchAtRef.current.set(msg.conversationId, now);
+            queryClient.refetchQueries({ queryKey, exact: true });
+          }
+        }
 
       }
 
       // Handle read receipts - only update otherParticipant's lastReadAt (not self)
       if (msg.type === 'read_receipt' && msg.conversationId && msg.userId !== userIdRef.current) {
-        setConversations(prev => prev.map(conv => {
-          if (conv.id !== msg.conversationId) return conv;
-          return {
-            ...conv,
-            otherParticipant: conv.otherParticipant ? {
-              ...conv.otherParticipant,
-              lastReadAt: msg.lastReadAt || conv.otherParticipant.lastReadAt,
-            } : null,
-          };
-        }));
-      }
+        queryClient.setQueryData(queryKey, (old: unknown) => {
+          const data = old as { conversations: Conversation[]; totalUnread: number } | undefined;
+          if (!data?.conversations) return old;
 
-      // Handle presence updates
-      if (msg.type === 'presence' && msg.userId) {
-        setConversations(prev => {
-          return prev.map(conv => {
-            if (conv.otherParticipant?.id === msg.userId) {
+          return {
+            ...data,
+            conversations: data.conversations.map(conv => {
+              if (conv.id !== msg.conversationId) return conv;
               return {
                 ...conv,
                 otherParticipant: conv.otherParticipant ? {
                   ...conv.otherParticipant,
-                  isOnline: msg.isOnline,
-                  lastSeenAt: msg.lastSeenAt || conv.otherParticipant.lastSeenAt,
+                  lastReadAt: msg.lastReadAt || conv.otherParticipant.lastReadAt,
                 } : null,
               };
-            }
-            return conv;
-          });
+            }),
+          };
         });
+      }
+
+      // Handle presence updates
+      if (msg.type === 'presence' && msg.userId) {
+        presenceMapRef.current.set(msg.userId, {
+          isOnline: msg.isOnline,
+          lastSeenAt: msg.lastSeenAt || null,
+        });
+        setPresenceVersion((v) => v + 1);
       }
     });
 
     return unsubscribe;
-  }, [subscribe]);
+  }, [subscribe, queryClient, queryKey, userId, isAuthenticated]);
 
   // Watch presence for all unique other participants so the list shows live online/lastSeenAt
   useEffect(() => {
-    if (!isConnected || conversations.length === 0) return;
+    if (!isAuthenticated || !isConnected || conversations.length === 0) return;
 
     const currentOtherIds = new Set<string>();
     for (const c of conversations) {
@@ -159,7 +250,7 @@ export function useConversations({
         watchedUsersRef.current.delete(uid);
       }
     }
-  }, [isConnected, conversations, send]);
+  }, [isAuthenticated, isConnected, conversations, send]);
 
   const cleanupWatchedUsers = useCallback(() => {
     const watchedUsers = Array.from(watchedUsersRef.current);
@@ -174,140 +265,73 @@ export function useConversations({
     return cleanupWatchedUsers;
   }, [cleanupWatchedUsers]);
 
-  // Fetch conversations
-  const loadConversations = useCallback(async () => {
-    if (!isAuthenticated) {
-      setIsLoading(false);
-      return;
-    }
-
-    // Prevent concurrent loads — abort previous if still in-flight
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    // 15s timeout so we never hang forever
-    const timeout = setTimeout(() => controller.abort(), 15000);
-
-    setError(null);
-    
-    try {
-      const data = await fetchConversations({ scope, limit: 50 });
-
-      // If this call was aborted (superseded), skip state updates
-      if (controller.signal.aborted) return;
-      
-      // Filter out conversations with no messages and convert avatar URLs
-      const filteredConversations = data.conversations
-        .filter(c => c.messageCount > 0)
-        .map(conv => ({
-          ...conv,
-          otherParticipant: conv.otherParticipant ? {
-            ...conv.otherParticipant,
-            avatarUrl: getAvatarUrl(conv.otherParticipant.avatarUrl),
-          } : null,
-          listing: conv.listing ? {
-            ...conv.listing,
-            thumbnail: getAvatarUrl(conv.listing.thumbnail),
-          } : null,
-        }))
-        .sort(
-          (a, b) =>
-            new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
-        );
-      
-      // Merge: preserve live presence data (isOnline/lastSeenAt) from WS
-      setConversations(prev => {
-        const presenceMap = new Map<string, { isOnline?: boolean; lastSeenAt?: string | null }>();
-        prev.forEach(conv => {
-          if (conv.otherParticipant?.id) {
-            presenceMap.set(conv.otherParticipant.id, {
-              isOnline: conv.otherParticipant.isOnline,
-              lastSeenAt: conv.otherParticipant.lastSeenAt,
-            });
-          }
-        });
-
-        return filteredConversations.map(conv => {
-          const existing = conv.otherParticipant?.id
-            ? presenceMap.get(conv.otherParticipant.id)
-            : undefined;
-          if (existing && conv.otherParticipant) {
-            return {
-              ...conv,
-              otherParticipant: {
-                ...conv.otherParticipant,
-                isOnline: existing.isOnline ?? conv.otherParticipant.isOnline,
-                lastSeenAt: existing.lastSeenAt ?? conv.otherParticipant.lastSeenAt,
-              },
-            };
-          }
-          return conv;
-        });
-      });
-      const readyAt = consumeDataReady(`messaging:conversations:${scope ?? 'personal'}`) ?? performance.now();
-      scheduleRenderPerf('messaging.conversations-list', readyAt, {
-        scope: scope ?? 'personal',
-        count: filteredConversations.length,
-      });
-    } catch (err) {
-      // Don't set error for aborted requests
-      if (controller.signal.aborted) return;
-      console.error('[useConversations] Load error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load conversations');
-    } finally {
-      clearTimeout(timeout);
-      if (!controller.signal.aborted) {
-        setIsLoading(false);
-        setIsRefreshing(false);
-      }
-    }
-  }, [isAuthenticated, scope]);
-
-  // Keep loadConversations ref up to date for WS handler
-  useEffect(() => {
-    loadConversationsRef.current = loadConversations;
-  }, [loadConversations]);
-
-  // Cleanup abort controller on unmount
-  useEffect(() => {
-    return () => {
-      abortControllerRef.current?.abort();
-    };
-  }, []);
-
-  // Initial load
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadConversations();
-    } else {
-      setIsLoading(false);
-    }
-  }, [loadConversations, isAuthenticated]);
-
   // Silent background refresh — no RefreshControl spinner
   // Used by useFocusEffect when returning to the tab
   const refresh = useCallback(async () => {
-    await loadConversations();
-  }, [loadConversations]);
+    const now = Date.now();
+    if (now - lastManualRefreshAtRef.current < 15000) {
+      return;
+    }
+
+    const isAlreadyFetching = queryClient.isFetching({ queryKey, exact: true }) > 0;
+    if (isAlreadyFetching) {
+      return;
+    }
+
+    setError(null);
+    try {
+      lastManualRefreshAtRef.current = now;
+      await queryClient.refetchQueries({ queryKey, exact: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load conversations');
+    }
+  }, [queryClient, queryKey]);
 
   // User-initiated pull-to-refresh — shows the RefreshControl spinner
   const pullToRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await loadConversations();
-  }, [loadConversations]);
+    await refresh();
+    setIsRefreshing(false);
+  }, [refresh]);
+
+  const conversationsWithLivePresence = useMemo(() => conversations.map((conversation) => {
+    const otherId = conversation.otherParticipant?.id;
+    if (!otherId || !conversation.otherParticipant) return conversation;
+
+    const livePresence = presenceMapRef.current.get(otherId);
+    if (!livePresence) return conversation;
+
+    return {
+      ...conversation,
+      otherParticipant: {
+        ...conversation.otherParticipant,
+        isOnline: livePresence.isOnline ?? conversation.otherParticipant.isOnline,
+        lastSeenAt: livePresence.lastSeenAt ?? conversation.otherParticipant.lastSeenAt,
+      },
+    };
+  // presenceVersion is the signal that presenceMapRef was mutated
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [conversations, presenceVersion]);
 
   const totalUnread = useMemo(
-    () => conversations.reduce((sum, conversation) => sum + (conversation.unreadCount || 0), 0),
-    [conversations]
+    () => conversationsWithLivePresence.reduce((sum, conversation) => sum + (conversation.unreadCount || 0), 0),
+    [conversationsWithLivePresence]
   );
 
+  useEffect(() => {
+    if (queryError) {
+      setError(queryError instanceof Error ? queryError.message : 'Failed to load conversations');
+      return;
+    }
+    if (!isFetching) {
+      setError(null);
+    }
+  }, [queryError, isFetching]);
+
   return {
-    conversations,
+    conversations: conversationsWithLivePresence,
     totalUnread,
-    isLoading,
+    isLoading: isLoading && conversations.length === 0,
     isRefreshing,
     error,
     refresh,

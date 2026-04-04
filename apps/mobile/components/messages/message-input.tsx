@@ -53,6 +53,9 @@ export function MessageInput({
   const inputRef = useRef<TextInput>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isTypingRef = useRef(false);
+  const appliedInitialTextKeyRef = useRef<string | null>(null);
+  // Prevents stale native onChangeText events rehydrating the field after send on iOS
+  const isClearingRef = useRef(false);
 
   // Reset state when conversation changes
   useEffect(() => {
@@ -62,6 +65,7 @@ export function MessageInput({
       if (cancelled) return;
       setText('');
       setInputHeight(MIN_HEIGHT);
+      appliedInitialTextKeyRef.current = null;
 
       // Reset typing state
       if (typingTimeoutRef.current) {
@@ -79,17 +83,24 @@ export function MessageInput({
   // Apply initial text
   useEffect(() => {
     if (!initialText) return;
-    if (text.trim().length > 0) return;
+
+    const applyKey = `${resetKey ?? 'no-reset'}::${initialText}`;
+    if (appliedInitialTextKeyRef.current === applyKey) return;
+
     let cancelled = false;
     queueMicrotask(() => {
       if (cancelled) return;
-      setText(initialText);
+      setText((prev) => {
+        if (prev.trim().length > 0) return prev;
+        return initialText;
+      });
+      appliedInitialTextKeyRef.current = applyKey;
     });
 
     return () => {
       cancelled = true;
     };
-  }, [initialText, resetKey, text]);
+  }, [initialText, resetKey]);
 
   // Handle content size change for auto-resize
   const handleContentSizeChange = useCallback(
@@ -104,6 +115,9 @@ export function MessageInput({
   // Handle text change with typing indicator
   const handleChangeText = useCallback(
     (value: string) => {
+      // Guard against stale native events arriving after send on iOS
+      if (isClearingRef.current) return;
+
       setText(value);
 
       // Emit typing start
@@ -136,9 +150,15 @@ export function MessageInput({
     const trimmedText = text.trim();
     if (!trimmedText || disabled) return;
 
-    // Clear immediately for snappy UX
+    // Gate native events and flush native buffer to prevent iOS race condition
+    // where queued onChangeText events fire after setText('') and rehydrate the field
+    isClearingRef.current = true;
     setText('');
     setInputHeight(MIN_HEIGHT);
+    inputRef.current?.clear();
+    requestAnimationFrame(() => {
+      isClearingRef.current = false;
+    });
 
     // Clear typing state
     if (typingTimeoutRef.current) {
@@ -181,15 +201,14 @@ export function MessageInput({
         animatedContainerStyle,
       ]}
     >
-      <View style={styles.composerRow}>
-        <View
-          style={[
-            styles.composerShell,
-            {
-              backgroundColor: colors.background,
-            },
-          ]}
-        >
+      <View
+        style={[
+          styles.composerShell,
+          {
+            backgroundColor: colors.background,
+          },
+        ]}
+      >
         {/* Location Button */}
         {onRequestLocation && (
           <HapticPressable
@@ -261,7 +280,6 @@ export function MessageInput({
             strokeWidth={Stroke.icon}
           />
         </HapticPressable>
-        </View>
       </View>
     </Animated.View>
   );
@@ -276,11 +294,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.sm,
     zIndex: ZIndex.overlay + 1,
-  },
-  composerRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: Spacing.sm,
   },
   composerShell: {
     flexDirection: 'row',
