@@ -69,6 +69,7 @@ export function ConversationGroup({
   const latest = conversations[0];
 
   const handlePress = useCallback(() => {
+    if (!latest) return;
     // Always select the most recent conversation
     onSelect(latest);
     
@@ -161,7 +162,7 @@ export function ConversationGroup({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {latest.lastMessagePreview || 'No messages'}
+                  {latest?.lastMessagePreview || 'No messages'}
                 </Text>
               </View>
             </View>
@@ -197,7 +198,7 @@ export function ConversationGroup({
                 </View>
               ) : null}
               <Text variant="footnote" tone="secondary">
-                {formatTime(latest.lastMessageAt)}
+                {latest?.lastMessageAt ? formatTime(latest.lastMessageAt) : ''}
               </Text>
             </View>
           </View>

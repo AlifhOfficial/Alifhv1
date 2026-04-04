@@ -109,6 +109,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
   const { subscribe, send, isConnected } = useWebSocket();
   const enabled = options.enabled ?? true;
   const wasConnectedRef = useRef(false);
+  const lastReconnectRefetchAtRef = useRef(0);
   const watchedUsersRef = useRef(new Set<string>());
   const presenceMapRef = useRef(new Map<string, { isOnline?: boolean; lastSeenAt?: Date | string | null }>());
   const missingConversationRefetchAtRef = useRef(new Map<string, number>());
@@ -170,16 +171,23 @@ export function useConversations(options: UseConversationsOptions = {}) {
     return { conversations: allConversations, totalUnread };
   }, [query.data?.pages]);
 
-  // Track WebSocket connection state for presence watching
-  // NOTE: We do NOT refetch on reconnect - server-seeded data is authoritative
-  // Real-time updates come via WebSocket subscriptions below
+  // Track WebSocket connection transitions and perform a throttled refresh on reconnect.
+  // This heals any missed WS events without forcing frequent background fetches.
   useEffect(() => {
     if (!options.userId || !enabled) {
       wasConnectedRef.current = false;
       return;
     }
+
+    const wasConnected = wasConnectedRef.current;
+    const now = Date.now();
+    if (isConnected && !wasConnected && now - lastReconnectRefetchAtRef.current > 5000) {
+      lastReconnectRefetchAtRef.current = now;
+      void refetch();
+    }
+
     wasConnectedRef.current = isConnected;
-  }, [options.userId, isConnected, enabled]);
+  }, [options.userId, isConnected, enabled, refetch]);
 
   // Match mobile behavior: actively watch presence for all users shown in the conversation list
   useEffect(() => {

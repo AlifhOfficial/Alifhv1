@@ -35,9 +35,6 @@ export function UserConversationGroup({
   const hasActiveConversation = conversations.some(c => c.id === activeConversationId);
   const [isExpanded, setIsExpanded] = useState(defaultExpanded || hasActiveConversation);
   
-  // Get most recent conversation (first one, already sorted by time)
-  const mostRecentConversation = conversations[0];
-  
   // Calculate total unread for the group
   const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
 
@@ -45,9 +42,7 @@ export function UserConversationGroup({
   const isOnline = conversations.some(c => c.otherParticipant?.isOnline);
 
   const handleHeaderClick = () => {
-    if (mostRecentConversation) {
-      onSelectConversation(mostRecentConversation.id);
-    }
+    setIsExpanded((v) => !v);
   };
 
   const handleChevronClick = (e: React.MouseEvent) => {
@@ -74,6 +69,7 @@ export function UserConversationGroup({
           'w-full py-3 px-3 text-left transition-colors duration-150 hover:bg-sidebar rounded-xl cursor-pointer',
           'flex items-center gap-3'
         )}
+        aria-expanded={isExpanded}
       >
         {/* User Avatar with Online Indicator */}
         <div className="relative flex-shrink-0">

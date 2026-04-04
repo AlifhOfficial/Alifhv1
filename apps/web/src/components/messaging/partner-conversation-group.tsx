@@ -35,9 +35,6 @@ export function PartnerConversationGroup({
   const hasActiveConversation = conversations.some(c => c.id === activeConversationId);
   const [isExpanded, setIsExpanded] = useState(defaultExpanded || hasActiveConversation);
   
-  // Get most recent conversation (first one, already sorted by time)
-  const mostRecentConversation = conversations[0];
-  
   // Calculate total unread for the group
   const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
   const isOnline = conversations.some(c => c.otherParticipant?.isOnline);
@@ -47,11 +44,10 @@ export function PartnerConversationGroup({
     const convTime = new Date(c.lastMessageAt).getTime();
     return convTime > latest ? convTime : latest;
   }, 0);
+  void _mostRecentAt;
 
   const handleHeaderClick = () => {
-    if (mostRecentConversation) {
-      onSelectConversation(mostRecentConversation.id);
-    }
+    setIsExpanded((v) => !v);
   };
 
   const handleChevronClick = (e: React.MouseEvent) => {
@@ -78,6 +74,7 @@ export function PartnerConversationGroup({
           'w-full py-3 px-3 text-left transition-colors duration-150 hover:bg-sidebar rounded-xl cursor-pointer',
           'flex items-center gap-3'
         )}
+        aria-expanded={isExpanded}
       >
         {/* Partner Avatar */}
         <div className="relative flex-shrink-0">

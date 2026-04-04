@@ -165,7 +165,6 @@ export function useMessages(conversationId: string, userId?: string, options: Us
   type MessagesInfiniteData = { pages: MessagesPage[]; pageParams: (string | undefined)[] };
   const messagesQueryKey = queryKeys.messaging.messages(conversationId);
   const existingQueryState = queryClient.getQueryState<MessagesInfiniteData>(messagesQueryKey);
-  const hasExistingData = existingQueryState?.data !== undefined;
   
   // Build effective initial data from props or cache
   const effectiveInitialData = options.initialData 
@@ -178,8 +177,8 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     queryFn: ({ pageParam }) => fetchMessages(conversationId, pageParam),
     getNextPageParam: (page) => (page.hasMore ? page.nextCursor ?? undefined : undefined),
     initialPageParam: undefined as string | undefined,
-    // Skip fetch if we have cached data (from page prefetch or previous fetch)
-    enabled: !!conversationId && !!userId && !hasExistingData && !options.initialData,
+    // Keep query active so threads can recover from missed realtime events.
+    enabled: !!conversationId && !!userId,
     // Server-side prefetched data for instant display
     initialData: effectiveInitialData as MessagesInfiniteData | undefined,
     initialDataUpdatedAt: effectiveInitialData ? Date.now() : undefined,

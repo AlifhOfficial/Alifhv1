@@ -49,6 +49,8 @@ export function useConversations({
   const watchedUsersRef = useRef<Set<string>>(new Set());
   const missingConversationRefetchAtRef = useRef(new Map<string, number>());
   const lastManualRefreshAtRef = useRef(0);
+  const wasConnectedRef = useRef(false);
+  const lastReconnectRefetchAtRef = useRef(0);
   const presenceMapRef = useRef(new Map<string, { isOnline?: boolean; lastSeenAt?: string | null }>());
   const [presenceVersion, setPresenceVersion] = useState(0);
   const queryKey = useMemo(
@@ -116,6 +118,23 @@ export function useConversations({
     () => data?.conversations ?? EMPTY_CONVERSATIONS,
     [data?.conversations]
   );
+
+  // Throttled reconnect refresh to recover from missed WS events.
+  useEffect(() => {
+    if (!isAuthenticated || !userId) {
+      wasConnectedRef.current = false;
+      return;
+    }
+
+    const wasConnected = wasConnectedRef.current;
+    const now = Date.now();
+    if (isConnected && !wasConnected && now - lastReconnectRefetchAtRef.current > 5000) {
+      lastReconnectRefetchAtRef.current = now;
+      void queryClient.refetchQueries({ queryKey, exact: true });
+    }
+
+    wasConnectedRef.current = isConnected;
+  }, [isAuthenticated, userId, isConnected, queryClient, queryKey]);
 
   // Subscribe to real-time updates
   useEffect(() => {

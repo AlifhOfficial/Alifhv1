@@ -67,6 +67,8 @@ export function useMessages({
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSentRef = useRef(0);
   const watchingRef = useRef(false);
+  const wasConnectedRef = useRef(false);
+  const lastReconnectRefetchAtRef = useRef(0);
   const missingConversationRefetchAtRef = useRef(new Map<string, number>());
   
   // Track pending sends: tempId -> true (waiting for API) or realId (WS arrived first)
@@ -137,6 +139,23 @@ export function useMessages({
     fetchNextPage,
     refetch,
   } = query;
+
+  // Throttled reconnect refetch for the active thread.
+  useEffect(() => {
+    if (!conversationId || !userId || !isAuthenticated || !enabled) {
+      wasConnectedRef.current = false;
+      return;
+    }
+
+    const wasConnected = wasConnectedRef.current;
+    const now = Date.now();
+    if (isConnected && !wasConnected && now - lastReconnectRefetchAtRef.current > 5000) {
+      lastReconnectRefetchAtRef.current = now;
+      void refetch();
+    }
+
+    wasConnectedRef.current = isConnected;
+  }, [conversationId, userId, isAuthenticated, enabled, isConnected, refetch]);
 
   const dedupeMessages = useCallback((items: Message[]): Message[] => {
     const seen = new Set<string>();

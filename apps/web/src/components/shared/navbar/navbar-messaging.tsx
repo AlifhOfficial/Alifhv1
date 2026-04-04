@@ -153,16 +153,13 @@ interface GroupRowProps {
 function GroupRow({ group, onSelect }: GroupRowProps) {
   const { user, isPartner, conversations } = group;
   const [isExpanded, setIsExpanded] = useState(false);
-  const latestConversation = conversations[0];
 
   const displayName = user?.name || 'User';
   const hasUnread = conversations.some((c) => c.unreadCount > 0);
   const isOnline = conversations.some((c) => c.otherParticipant?.isOnline);
 
   const handleRowClick = () => {
-    if (latestConversation) {
-      onSelect(latestConversation);
-    }
+    setIsExpanded((v) => !v);
   };
 
   const handleChevronClick = (e: React.MouseEvent) => {
@@ -185,6 +182,7 @@ function GroupRow({ group, onSelect }: GroupRowProps) {
         onClick={handleRowClick}
         onKeyDown={handleRowKeyDown}
         className="w-full flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-sidebar-accent/50 transition-colors text-left cursor-pointer"
+        aria-expanded={isExpanded}
       >
         <div className="relative flex-shrink-0">
           {isPartner ? (
