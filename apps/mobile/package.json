@@ -98,5 +98,13 @@
     "tailwindcss": "3.4.17",
     "typescript": "~5.9.2"
   },
+  "expo": {
+    "install": {
+      "exclude": [
+        "react",
+        "react-dom"
+      ]
+    }
+  },
   "private": true
 }

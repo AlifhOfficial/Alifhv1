@@ -7,6 +7,12 @@ const workspaceRoot = path.resolve(projectRoot, '../..');
 
 const config = getDefaultConfig(projectRoot);
 
+// Expo/Metro may inject this legacy option in some versions; remove it to
+// avoid noisy "Unknown option watcher.unstable_workerThreads" warnings.
+if (config.watcher && 'unstable_workerThreads' in config.watcher) {
+  delete config.watcher.unstable_workerThreads;
+}
+
 // Keep Expo defaults and only add workspace root if needed for monorepo packages
 config.watchFolders = [...new Set([...(config.watchFolders || []), workspaceRoot])];
 
