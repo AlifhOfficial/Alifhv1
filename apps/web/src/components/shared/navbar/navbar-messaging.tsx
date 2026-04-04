@@ -34,7 +34,10 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const hasUnread = allConversations.some((c) => c.unreadCount > 0);
   const conversations = allConversations
     .filter((c) => c.messageCount > 0)
-    .sort((a, b) => (b.unreadCount > 0 ? 1 : 0) - (a.unreadCount > 0 ? 1 : 0))
+    .sort(
+      (a, b) =>
+        new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
+    )
     .slice(0, 5);
 
   useEffect(() => {
@@ -68,7 +71,19 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
       acc[key].conversations.push(conv);
       return acc;
     }, {} as Record<string, { user: any; isPartner: boolean; conversations: Conversation[] }>)
-  );
+  )
+    .map((group) => ({
+      ...group,
+      conversations: [...group.conversations].sort(
+        (a, b) =>
+          new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
+      ),
+    }))
+    .sort((a, b) => {
+      const aLatest = a.conversations[0]?.lastMessageAt;
+      const bLatest = b.conversations[0]?.lastMessageAt;
+      return new Date(String(bLatest ?? 0)).getTime() - new Date(String(aLatest ?? 0)).getTime();
+    });
 
   if (!userId) return null;
 

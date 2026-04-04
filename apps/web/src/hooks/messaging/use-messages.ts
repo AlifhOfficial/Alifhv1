@@ -344,6 +344,48 @@ export function useSendMessage() {
         };
       });
 
+      // Optimistically bump conversation preview + timestamp so list reorders immediately.
+      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
+        const data = old as {
+          pages?: Array<{
+            conversations: Array<{
+              id: string;
+              lastMessageAt?: Date | string;
+              lastMessagePreview?: string | null;
+              messageCount?: number;
+              unreadCount?: number;
+            }>;
+            totalUnread?: number;
+          }>;
+        } | undefined;
+        if (!data?.pages) return old;
+
+        const optimisticSentAt = new Date();
+
+        return {
+          ...data,
+          pages: data.pages.map((page) => ({
+            ...page,
+            conversations: page.conversations
+              .map((c) =>
+                c.id === conversationId
+                  ? {
+                      ...c,
+                      lastMessageAt: optimisticSentAt,
+                      lastMessagePreview: text,
+                      messageCount: (c.messageCount ?? 0) + 1,
+                      unreadCount: 0,
+                    }
+                  : c
+              )
+              .sort(
+                (a, b) =>
+                  new Date(b.lastMessageAt ?? 0).getTime() - new Date(a.lastMessageAt ?? 0).getTime()
+              ),
+          })),
+        };
+      });
+
       // Optimistically clear unread count for this conversation
       let unreadToRemove = 0;
       queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
@@ -383,23 +425,41 @@ export function useSendMessage() {
         };
       });
 
-      // Update conversation preview in cache optimistically
+      // Confirm conversation preview + timestamp in paginated conversation cache.
       queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-        const data2 = old as { conversations?: Array<{ id: string; lastMessageAt?: unknown; lastMessagePreview?: string }> };
-        if (!data2?.conversations) return old;
-        
-        const exists = data2.conversations.some(c => c.id === conversationId);
-        if (!exists) return old;
-        
+        const data2 = old as {
+          pages?: Array<{
+            conversations: Array<{
+              id: string;
+              lastMessageAt?: Date | string;
+              lastMessagePreview?: string | null;
+              unreadCount?: number;
+            }>;
+            totalUnread?: number;
+          }>;
+        } | undefined;
+        if (!data2?.pages) return old;
+
         return {
           ...data2,
-          conversations: data2.conversations
-            .map(c =>
-              c.id === conversationId
-                ? { ...c, lastMessageAt: data.message.createdAt, lastMessagePreview: data.message.text }
-                : c
-            )
-            .sort((a, b) => new Date(b.lastMessageAt as string).getTime() - new Date(a.lastMessageAt as string).getTime()),
+          pages: data2.pages.map((page) => ({
+            ...page,
+            conversations: page.conversations
+              .map((c) =>
+                c.id === conversationId
+                  ? {
+                      ...c,
+                      lastMessageAt: data.message.createdAt,
+                      lastMessagePreview: data.message.text,
+                      unreadCount: 0,
+                    }
+                  : c
+              )
+              .sort(
+                (a, b) =>
+                  new Date(b.lastMessageAt ?? 0).getTime() - new Date(a.lastMessageAt ?? 0).getTime()
+              ),
+          })),
         };
       });
 
