@@ -244,7 +244,6 @@ export function useMessages(conversationId: string, userId?: string, options: Us
         }
 
         queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
-        queryClient.invalidateQueries({ queryKey: ['conversations'] });
       }
 
       // Typing indicator
@@ -320,7 +319,6 @@ export function useSendMessage() {
 
     onSuccess: (_data, { conversationId }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
 
     onError: (_err, { conversationId }) => {
@@ -348,7 +346,6 @@ export function useSendLocationMessage() {
 
     onSuccess: (_data, { conversationId }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
-      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
 
     onError: (_err, { conversationId }) => {

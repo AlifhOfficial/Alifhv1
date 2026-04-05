@@ -5,9 +5,10 @@
 
 'use client';
 
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient, type InfiniteData } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { isConversationActive } from './active-conversations';
 
 // ============================================================================
 // Types
@@ -220,7 +221,67 @@ export function useConversations(options: UseConversationsOptions = {}) {
     const unsub = subscribe((msg) => {
       // Handle new messages
       if (msg.type === 'new_message' && msg.conversationId) {
-        queryClient.invalidateQueries({ queryKey });
+        let found = false;
+
+        queryClient.setQueryData<InfiniteData<ConversationsResponse>>(queryKey, (current) => {
+          if (!current) return current;
+
+          const payload = msg.message as { text?: string | null; createdAt?: string; senderId?: string } | undefined;
+          const senderId = msg.userId ?? payload?.senderId;
+          const isOwnMessage = senderId === options.userId;
+          const isActiveOpenConversation = isConversationActive(msg.conversationId!);
+          const createdAt = payload?.createdAt ?? new Date().toISOString();
+          const preview = payload?.text?.substring(0, 100) || 'New message';
+
+          const allConversations = current.pages.flatMap((page) => page.conversations);
+          const updatedConversations = allConversations.map((conversation) => {
+            if (conversation.id !== msg.conversationId) return conversation;
+
+            found = true;
+            return {
+              ...conversation,
+              lastMessageAt: createdAt,
+              lastMessagePreview: preview,
+              messageCount: Math.max(
+                (conversation.messageCount || 0) + (isOwnMessage ? 0 : 1),
+                conversation.messageCount || 0
+              ),
+              unreadCount:
+                isOwnMessage || isActiveOpenConversation
+                  ? 0
+                  : (conversation.unreadCount || 0) + 1,
+              myLastReadAt:
+                !isOwnMessage && isActiveOpenConversation
+                  ? createdAt
+                  : conversation.myLastReadAt,
+            };
+          });
+
+          if (!found) return current;
+
+          const sorted = updatedConversations.sort(
+            (a, b) => new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
+          );
+
+          const rebuiltPages = current.pages.map((page, index) => {
+            const start = current.pages.slice(0, index).reduce((sum, p) => sum + p.conversations.length, 0);
+            const end = start + page.conversations.length;
+            return {
+              ...page,
+              conversations: sorted.slice(start, end),
+            };
+          });
+
+          return {
+            ...current,
+            pages: rebuiltPages,
+          };
+        });
+
+        if (!found) {
+          // New conversation may exist but is not in current page slice.
+          queryClient.invalidateQueries({ queryKey });
+        }
       }
       
       // Handle presence updates - update isOnline/lastSeenAt for other participant
@@ -233,12 +294,32 @@ export function useConversations(options: UseConversationsOptions = {}) {
           });
           return next;
         });
-        queryClient.invalidateQueries({ queryKey });
       }
 
       // Handle read receipts - update other participant's lastReadAt
       if (msg.type === 'read_receipt' && msg.conversationId && msg.userId !== options.userId) {
-        queryClient.invalidateQueries({ queryKey });
+        queryClient.setQueryData<InfiniteData<ConversationsResponse>>(queryKey, (current) => {
+          if (!current) return current;
+
+          return {
+            ...current,
+            pages: current.pages.map((page) => ({
+              ...page,
+              conversations: page.conversations.map((conversation) => {
+                if (conversation.id !== msg.conversationId || !conversation.otherParticipant) {
+                  return conversation;
+                }
+                return {
+                  ...conversation,
+                  otherParticipant: {
+                    ...conversation.otherParticipant,
+                    lastReadAt: msg.lastReadAt || conversation.otherParticipant.lastReadAt,
+                  },
+                };
+              }),
+            })),
+          };
+        });
       }
     });
 
