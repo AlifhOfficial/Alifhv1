@@ -338,7 +338,6 @@ export const MESSAGING_ENDPOINTS = {
   CONVERSATIONS: '/api/conversations',
   MESSAGES: (conversationId: string) => `/api/conversations/${conversationId}/messages`,
   MARK_READ: (conversationId: string) => `/api/conversations/${conversationId}/read`,
-  UNREAD_COUNT: '/api/conversations/unread-count',
 } as const;
 
 type ServerTimingMetric = {

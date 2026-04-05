@@ -213,10 +213,6 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     () => queryKeys.conversations(user?.id, 'personal'),
     [user?.id]
   );
-  const unreadCountQueryKey = React.useMemo(
-    () => ['messaging-unread-count', user?.id] as const,
-    [user?.id]
-  );
 
   const { data: cachedConversationsData } = useQuery<{
     conversations?: { unreadCount?: number }[];
@@ -228,20 +224,10 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     staleTime: Infinity,
   });
 
-  const { data: cachedUnreadCountData } = useQuery<{ totalUnread?: number }>({
-    queryKey: unreadCountQueryKey,
-    queryFn: async () => ({ totalUnread: 0 }),
-    enabled: false,
-    staleTime: Infinity,
-  });
-
   const unreadChats = React.useMemo(() => {
     if (!isAuthenticated) return 0;
     if (typeof cachedConversationsData?.totalUnread === 'number') {
       return cachedConversationsData.totalUnread;
-    }
-    if (typeof cachedUnreadCountData?.totalUnread === 'number') {
-      return cachedUnreadCountData.totalUnread;
     }
     return (cachedConversationsData?.conversations ?? []).reduce(
       (sum, c) => sum + (c.unreadCount ?? 0),
@@ -250,7 +236,6 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   }, [
     cachedConversationsData?.conversations,
     cachedConversationsData?.totalUnread,
-    cachedUnreadCountData?.totalUnread,
     isAuthenticated,
   ]);
 
