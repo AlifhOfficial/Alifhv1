@@ -69,15 +69,14 @@ export function ConversationGroup({
   const latest = conversations[0];
 
   const handlePress = useCallback(() => {
-    if (!latest) return;
-    // Always select the most recent conversation
-    onSelect(latest);
-    
-    // Also expand the group if it's multi-conversation
-    if (isMulti && !isExpanded) {
-      setIsExpanded(true);
+    if (isMulti) {
+      setIsExpanded((prev) => !prev);
+      return;
     }
-  }, [isMulti, isExpanded, onSelect, latest]);
+
+    if (!latest) return;
+    onSelect(latest);
+  }, [isMulti, onSelect, latest]);
 
   return (
     <View>

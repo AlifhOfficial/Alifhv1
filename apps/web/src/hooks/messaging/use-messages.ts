@@ -167,9 +167,10 @@ export function useMessages(conversationId: string, userId?: string, options: Us
   const existingQueryState = queryClient.getQueryState<MessagesInfiniteData>(messagesQueryKey);
   
   // Build effective initial data from props or cache
-  const effectiveInitialData = options.initialData 
-    ? { pages: [options.initialData], pageParams: [undefined] }
-    : existingQueryState?.data;
+  const effectiveInitialData = existingQueryState?.data
+    ?? (options.initialData
+      ? { pages: [options.initialData], pageParams: [undefined] }
+      : undefined);
 
   // Query
   const query = useInfiniteQuery({
@@ -181,7 +182,9 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     enabled: !!conversationId && !!userId,
     // Server-side prefetched data for instant display
     initialData: effectiveInitialData as MessagesInfiniteData | undefined,
-    initialDataUpdatedAt: effectiveInitialData ? Date.now() : undefined,
+    // SSR seed data should render instantly but still refetch right away so
+    // read receipts / seen state don't get stuck on stale snapshots.
+    initialDataUpdatedAt: existingQueryState?.data ? Date.now() : 0,
   });
 
   // Update otherLastReadAt from API response (first page includes this for persistence)
