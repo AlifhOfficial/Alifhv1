@@ -8,7 +8,6 @@
 import { ArrowLeft, X } from 'lucide-react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
-import type { InitialMessagesData } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
@@ -32,7 +31,6 @@ interface ChatWindowProps {
   myLastReadAt?: Date | string | null;
   onBack?: () => void;
   className?: string;
-  initialMessages?: InitialMessagesData;
 }
 
 export function ChatWindow({
@@ -45,7 +43,6 @@ export function ChatWindow({
   myLastReadAt,
   onBack,
   className,
-  initialMessages,
 }: ChatWindowProps) {
   const controller = useChatThreadController({
     conversationId,
@@ -53,7 +50,6 @@ export function ChatWindow({
     otherParticipant,
     listing,
     myLastReadAt,
-    initialMessages,
   });
 
   // Display
@@ -97,12 +93,12 @@ export function ChatWindow({
           {partner ? (
             <Link
               href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.name)}&sort=relevance`}
-              className="text-subhead font-bold tracking-tight truncate text-foreground hover:text-primary hover:underline transition-colors block leading-snug"
+              className="text-subhead sm:text-subhead font-bold tracking-tight truncate text-foreground hover:text-primary hover:underline transition-colors block leading-snug"
             >
               {displayName}
             </Link>
           ) : (
-            <h3 className="text-subhead font-bold tracking-tight truncate text-foreground leading-snug">{displayName}</h3>
+            <h3 className="text-subhead sm:text-subhead font-bold tracking-tight truncate text-foreground leading-snug">{displayName}</h3>
           )}
           {listing && (
             <Link
@@ -116,14 +112,14 @@ export function ChatWindow({
             {controller.isOtherOnline && (
               <div className="flex items-center gap-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                <span className="text-caption2 font-semibold text-green-600 dark:text-green-400">Active</span>
+                <span className="text-caption2 sm:text-caption1 font-semibold text-green-600 dark:text-green-400">Active</span>
               </div>
             )}
             {!controller.isOtherOnline && lastActiveAt && (
-              <span className="text-caption2 font-medium text-muted-foreground/70">Last seen {getLastSeenText(lastActiveAt)}</span>
+              <span className="text-caption2 sm:text-caption1 font-medium text-muted-foreground/70">Last seen {getLastSeenText(lastActiveAt)}</span>
             )}
             {!controller.isOtherOnline && !lastActiveAt && (
-              <span className="text-caption2 font-medium text-muted-foreground/50">Away</span>
+              <span className="text-caption2 sm:text-caption1 font-medium text-muted-foreground/50">Away</span>
             )}
           </div>
         </div>

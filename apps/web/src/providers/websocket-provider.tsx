@@ -8,6 +8,8 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 
+const DEFAULT_WS_URL = 'wss://ws.revvup.ae';
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -79,18 +81,8 @@ class WebSocketManager {
 
     this.currentUserId = userId;
     
-    // Use NEXT_PUBLIC_WS_URL for production, fallback to localhost for dev
-    let url: string;
-    if (process.env.NEXT_PUBLIC_WS_URL) {
-      // Production: use configured WS URL (e.g., wss://ws.revvup.ae)
-      url = `${process.env.NEXT_PUBLIC_WS_URL}/ws?userId=${userId}`;
-    } else {
-      // Development: use same host with WS port
-      const protocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-      const port = process.env.NEXT_PUBLIC_WS_PORT || '3001';
-      url = `${protocol}//${host}:${port}/ws?userId=${userId}`;
-    }
+    const wsBaseUrl = process.env.NEXT_PUBLIC_WS_URL || DEFAULT_WS_URL;
+    const url = `${wsBaseUrl}/ws?userId=${userId}`;
 
     const ws = new WebSocket(url);
     this.ws = ws;

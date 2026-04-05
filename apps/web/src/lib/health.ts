@@ -28,7 +28,7 @@ const healthResponseCache = new Map<
 
 const WS_HEALTH_URL = process.env.NEXT_PUBLIC_WS_URL
   ? `${process.env.NEXT_PUBLIC_WS_URL.replace('ws://', 'http://').replace('wss://', 'https://')}/health`
-  : 'http://localhost:3001/health';
+  : 'https://ws.revvup.ae/health';
 
 let wsHealthCache: { result: ServiceStatus; timestamp: number } | null = null;
 const WS_CACHE_TTL = 30_000;

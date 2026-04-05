@@ -26,6 +26,14 @@ import { cn } from '@/utils/cn';
 type ConversationPartner = NonNullable<Conversation['partner']>;
 type ConversationParticipant = NonNullable<Conversation['otherParticipant']>;
 
+function lastMessageTime(value: Conversation['lastMessageAt']) {
+  return new Date(value).getTime();
+}
+
+function latestConversationTime(conversations: Conversation[]) {
+  return Math.max(...conversations.map((c) => lastMessageTime(c.lastMessageAt)));
+}
+
 interface ConversationListProps {
   inbox?: 'personal' | 'staff';
   conversations: Conversation[];
@@ -125,17 +133,15 @@ export function ConversationList({
         }
       }
 
-      // Sort user groups by most recent message
+      // Sort user groups by most recent activity
       const groups = Array.from(userMap.values()).sort((a, b) => {
-        const aLatest = Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
-        const bLatest = Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
-        return bLatest - aLatest;
+        return latestConversationTime(b.conversations) - latestConversationTime(a.conversations);
       });
 
-      // Sort conversations within each group by most recent
+      // Sort conversations within each group by most recent activity
       groups.forEach(group => {
         group.conversations.sort((a, b) => {
-          return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+          return lastMessageTime(b.lastMessageAt) - lastMessageTime(a.lastMessageAt);
         });
       });
 
@@ -173,30 +179,26 @@ export function ConversationList({
       }
     }
 
-    // Sort partner groups by most recent message
+    // Sort partner groups by most recent activity
     const partnerGroups = Array.from(partnerMap.values()).sort((a, b) => {
-      const aLatest = Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
-      const bLatest = Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
-      return bLatest - aLatest;
+      return latestConversationTime(b.conversations) - latestConversationTime(a.conversations);
     });
 
-    // Sort user groups by most recent message
+    // Sort user groups by most recent activity
     const userGroups = Array.from(userMap.values()).sort((a, b) => {
-      const aLatest = Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
-      const bLatest = Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
-      return bLatest - aLatest;
+      return latestConversationTime(b.conversations) - latestConversationTime(a.conversations);
     });
 
-    // Sort conversations within each group by most recent
+    // Sort conversations within each group by most recent activity
     partnerGroups.forEach(group => {
       group.conversations.sort((a, b) => {
-        return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+        return lastMessageTime(b.lastMessageAt) - lastMessageTime(a.lastMessageAt);
       });
     });
 
     userGroups.forEach(group => {
       group.conversations.sort((a, b) => {
-        return new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime();
+        return lastMessageTime(b.lastMessageAt) - lastMessageTime(a.lastMessageAt);
       });
     });
 
@@ -239,9 +241,7 @@ export function ConversationList({
 
     // Sort by most recent activity
     items.sort((a, b) => {
-      const aTime = Math.max(...a.conversations.map(c => new Date(c.lastMessageAt).getTime()));
-      const bTime = Math.max(...b.conversations.map(c => new Date(c.lastMessageAt).getTime()));
-      return bTime - aTime;
+      return latestConversationTime(b.conversations) - latestConversationTime(a.conversations);
     });
 
     return { type: 'grouped' as const, items };
@@ -256,7 +256,7 @@ export function ConversationList({
       {/* Header */}
       <div className="p-3 sm:p-4 flex-shrink-0">
         <div className="flex items-center justify-between mb-2.5 sm:mb-3">
-          <h1 className="text-headline font-semibold text-foreground">Messages</h1>
+          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Messages</h1>
           <div className="flex items-center gap-2 sm:gap-3">
             {totalUnread > 0 && (
               <span className="w-2 h-2 bg-red-500 rounded-full" />
@@ -285,7 +285,7 @@ export function ConversationList({
               placeholder="Search..."
               value={searchInput}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 text-subhead font-medium bg-muted/50 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:bg-muted rounded-lg transition-colors"
+              className="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 text-caption1 sm:text-subhead font-medium bg-muted/50 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:bg-muted rounded-lg transition-colors"
             />
           </div>
         )}
@@ -312,7 +312,7 @@ export function ConversationList({
               <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-sidebar flex items-center justify-center">
                 <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground/40" />
               </div>
-              <p className="text-subhead font-medium text-muted-foreground/70">
+              <p className="text-caption1 sm:text-subhead font-medium text-muted-foreground/70">
                 {searchQuery ? 'No results' : 'No messages'}
               </p>
             </div>

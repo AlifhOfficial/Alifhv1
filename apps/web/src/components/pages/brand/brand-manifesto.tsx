@@ -201,7 +201,7 @@ function LogoVariantsInfographic() {
                 className="h-full w-auto invert"
               />
             </div>
-            <span className="text-[10px] sm:text-caption1 lg:text-subhead text-black/40 font-medium mt-4 sm:mt-6">Light backgrounds</span>
+            <span className="text-caption2 sm:text-caption1 lg:text-subhead text-black/40 font-medium mt-4 sm:mt-6">Light backgrounds</span>
           </div>
 
           {/* Dark variant */}
@@ -213,7 +213,7 @@ function LogoVariantsInfographic() {
                 className="h-full w-auto"
               />
             </div>
-            <span className="text-[10px] sm:text-caption1 lg:text-subhead text-white/40 font-medium mt-4 sm:mt-6">Dark backgrounds</span>
+            <span className="text-caption2 sm:text-caption1 lg:text-subhead text-white/40 font-medium mt-4 sm:mt-6">Dark backgrounds</span>
           </div>
       </MacOSWindow>
     </div>

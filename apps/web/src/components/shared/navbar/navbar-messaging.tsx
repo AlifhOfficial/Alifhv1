@@ -96,7 +96,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
       >
         <MessageCircle className="size-4" />
         {hasUnread && (
-          <span className="absolute top-1 right-1 size-2 rounded-full bg-rose-500" />
+          <span className="absolute top-1 right-1 size-2.5 rounded-full bg-favorite border-2 border-background" />
         )}
       </button>
 
@@ -155,6 +155,7 @@ function GroupRow({ group, onSelect }: GroupRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const displayName = user?.name || 'User';
+  const totalUnread = conversations.reduce((sum, c) => sum + c.unreadCount, 0);
   const hasUnread = conversations.some((c) => c.unreadCount > 0);
   const isOnline = conversations.some((c) => c.otherParticipant?.isOnline);
 
@@ -170,8 +171,13 @@ function GroupRow({ group, onSelect }: GroupRowProps) {
           ) : (
             <UserAvatar src={user?.avatarUrl} name={displayName} size="md" className="w-9 h-9" />
           )}
+          {totalUnread > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-favorite text-primary-foreground border-2 border-sidebar inline-flex items-center justify-center text-caption2 font-semibold leading-none tabular-nums">
+              {totalUnread > 99 ? '99' : totalUnread}
+            </span>
+          )}
           {isOnline && (
-            <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border-2 border-sidebar" />
+            <span className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full border-2 border-sidebar bg-success" />
           )}
         </div>
 
@@ -183,7 +189,6 @@ function GroupRow({ group, onSelect }: GroupRowProps) {
         </span>
 
         <div className="flex items-center gap-2 flex-shrink-0">
-          {hasUnread && <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />}
           <ChevronRight className={cn(
             'w-4 h-4 text-muted-foreground/40 transition-transform',
             isExpanded && 'rotate-90'

@@ -96,7 +96,7 @@ export function VideoUpload({
                 </button>
               </div>
               {hasSavedVideo && (
-                <p className="text-[10px] text-white/70 text-center px-4">
+                <p className="text-caption2 text-white/70 text-center px-4">
                   Replacing will delete the current video
                 </p>
               )}
@@ -104,11 +104,11 @@ export function VideoUpload({
             {/* Status badge */}
             <div className="absolute bottom-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded bg-success/90 backdrop-blur-sm">
               <CheckCircle2 className="w-3 h-3 text-white" />
-              <span className="text-[10px] text-white font-medium uppercase tracking-wider">Saved</span>
+              <span className="text-caption2 text-white font-medium uppercase tracking-wider">Saved</span>
             </div>
             {/* Hover to preview hint */}
             <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-[10px] text-white/80">Hover to preview</span>
+              <span className="text-caption2 text-white/80">Hover to preview</span>
             </div>
           </>
         ) : (
@@ -125,15 +125,15 @@ export function VideoUpload({
                     <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="2" fill="none" className="opacity-20" />
                     <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="2" fill="none" strokeDasharray={100.5} strokeDashoffset={100.5 - (100.5 * (uploadProgress || 0)) / 100} className="text-primary transition-all duration-300" />
                   </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium">{uploadProgress || 0}%</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-caption2 font-medium">{uploadProgress || 0}%</span>
                 </div>
-                <p className="text-[10px]">Uploading...</p>
+                <p className="text-caption2">Uploading...</p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-1 text-muted-foreground">
                 <Upload className="w-5 h-5" />
                 <span className="text-caption1">{label}</span>
-                <span className="text-[10px] text-muted-foreground/50">Max 50MB • 720p/1080p</span>
+                <span className="text-caption2 text-muted-foreground/50">Max 50MB • 720p/1080p</span>
               </div>
             )}
           </button>

@@ -735,7 +735,7 @@ export function PartnerBookingsClient({
                       )}
 
                       {/* Metadata Footer */}
-                      <div className="pt-3 border-t border-border/30 flex items-center justify-between text-[10px] text-muted-foreground/60">
+                      <div className="pt-3 border-t border-border/30 flex items-center justify-between text-caption2 text-muted-foreground/60">
                         <span>
                           Booked {new Date(booking.createdAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric', year: 'numeric' })}
                           {booking.source && ` via ${booking.source}`}

@@ -240,7 +240,7 @@ function WhyQualityInfographic() {
       <div className="flex flex-col-reverse md:flex-row">
         {/* Left - Others: macOS window with paid rankings (80%) */}
         <div className="w-full md:w-[75%] lg:w-[80%] flex flex-col items-center justify-center md:border-r border-t md:border-t-0 border-border/20 p-2 sm:p-4 lg:p-8">
-          <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-muted-foreground/60 mb-2 sm:mb-4 lg:mb-6">Others</span>
+          <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-muted-foreground/60 mb-2 sm:mb-4 lg:mb-6">Others</span>
           
           {/* macOS Window Frame */}
           <div className="relative w-full max-w-sm sm:max-w-xl lg:max-w-3xl">
@@ -270,7 +270,7 @@ function WhyQualityInfographic() {
         
         {/* Right - Revvup: Quality-based (20%) */}
         <div className="w-full md:w-[25%] lg:w-[20%] flex flex-col items-center justify-center py-4 md:py-4 px-3 sm:p-4 lg:p-6">
-          <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-primary mb-2 sm:mb-3 lg:mb-4">Revvup</span>
+          <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-primary mb-2 sm:mb-3 lg:mb-4">Revvup</span>
           
           <div className="flex flex-col items-center text-center">
             <div 
@@ -279,11 +279,11 @@ function WhyQualityInfographic() {
             >
               <CheckCircle2 className="w-6 h-6 sm:w-10 sm:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14" />
             </div>
-            <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-primary/80 font-medium mt-1.5 sm:mt-2 lg:mt-3">Quality</span>
+            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-primary/80 font-medium mt-1.5 sm:mt-2 lg:mt-3">Quality</span>
             <span className="text-[8px] sm:text-[9px] lg:text-caption1 text-primary/60 mt-0.5">ranks</span>
           </div>
           
-          <p className="text-[7px] sm:text-[8px] lg:text-[10px] text-primary/50 mt-2 sm:mt-4 lg:mt-6">Earn visibility</p>
+          <p className="text-[7px] sm:text-[8px] lg:text-caption2 text-primary/50 mt-2 sm:mt-4 lg:mt-6">Earn visibility</p>
         </div>
       </div>
     </div>

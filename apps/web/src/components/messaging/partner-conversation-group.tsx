@@ -63,8 +63,13 @@ export function PartnerConversationGroup({
             size="sm"
             className="w-9 h-9"
           />
+          {totalUnread > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-favorite text-primary-foreground border-2 border-sidebar inline-flex items-center justify-center text-caption2 font-semibold leading-none tabular-nums">
+              {totalUnread > 99 ? '99' : totalUnread}
+            </span>
+          )}
           {isOnline && (
-            <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border-2 border-sidebar rounded-full" />
+            <span className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full border-2 border-sidebar bg-success" />
           )}
         </div>
 
@@ -80,9 +85,8 @@ export function PartnerConversationGroup({
           {partner.name}
         </Link>
 
-        {/* Right side: unread dot + chevron */}
+        {/* Right side: chevron */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          {totalUnread > 0 && <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />}
           <ChevronRight className={cn(
             'w-4 h-4 text-muted-foreground/40 transition-transform',
             isExpanded && 'rotate-90'

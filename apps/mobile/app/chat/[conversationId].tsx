@@ -1,12 +1,12 @@
 /**
  * Chat Screen - Full conversation view
  * 
- * Uses React Query for data fetching with cache support.
- * Conversation data can be passed via nav params to avoid fetch.
+ * Uses direct client-side API fetching.
+ * Conversation data can be passed via nav params for immediate render.
  */
 
 import { EmptyState } from '@/components/ui';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -15,8 +15,8 @@ import { MobileHeader, getMobileHeaderContentInset } from '@/components/layout';
 import { Colors, Spacing } from '@/constants/theme';
 import { useTheme } from '@/context/theme-context';
 import { useAuth } from '@/context/auth-context';
-import { useConversation } from '@/hooks/use-messaging-query';
-import type { Conversation } from '@/lib/messaging-api';
+import { getAvatarUrl } from '@/lib/config';
+import { fetchConversation, type Conversation } from '@/lib/messaging-api';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MessageCircleOff, AlertCircle, ArrowLeft } from 'lucide-react-native';
 
@@ -50,13 +50,51 @@ export default function ChatScreen() {
     return undefined;
   }, [conversationData]);
 
-  // React Query hook - uses cache + initialData from nav params
-  const { conversation, error } = useConversation({
-    userId: user?.id,
-    conversationId,
-    initialData: initialConversation,
-    enabled: isAuthenticated,
-  });
+  const [conversation, setConversation] = useState<Conversation | undefined>(initialConversation);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    setConversation(initialConversation);
+    setError(null);
+
+    if (!isAuthenticated || !user?.id || !conversationId) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadConversation = async () => {
+      try {
+        const conv = await fetchConversation(conversationId);
+        if (cancelled) return;
+
+        setConversation({
+          ...conv,
+          otherParticipant: conv.otherParticipant
+            ? {
+                ...conv.otherParticipant,
+                avatarUrl: getAvatarUrl(conv.otherParticipant.avatarUrl),
+              }
+            : null,
+          listing: conv.listing
+            ? {
+                ...conv.listing,
+                thumbnail: getAvatarUrl(conv.listing.thumbnail),
+              }
+            : null,
+        });
+      } catch (err) {
+        if (cancelled) return;
+        setError(err instanceof Error ? err : new Error('Failed to load conversation'));
+      }
+    };
+
+    void loadConversation();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [conversationId, initialConversation, isAuthenticated, user?.id]);
 
   const handleBack = () => {
     router.back();

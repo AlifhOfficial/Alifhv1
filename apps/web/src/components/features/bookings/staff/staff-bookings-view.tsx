@@ -687,7 +687,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                         <div className="p-3 rounded-lg bg-muted/30 border border-border/40 space-y-2">
                           <div className="flex items-start justify-between gap-2">
                             <p className="text-subhead text-foreground line-clamp-1 min-w-0">{lookedUpBooking.listingTitle}</p>
-                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap ${
+                            <span className={`text-caption2 font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap ${
                               lookedUpBooking.status === 'pending' ? 'bg-warning-muted text-warning' :
                               lookedUpBooking.status === 'confirmed' ? 'bg-success-muted text-success' :
                               lookedUpBooking.status === 'completed' ? 'bg-primary-muted text-primary' :
@@ -703,7 +703,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                               timeZone: 'Asia/Dubai'
                             })}
                           </p>
-                          <p className="text-[10px] font-mono text-muted-foreground/60">{lookedUpBooking.confirmationToken}</p>
+                          <p className="text-caption2 font-mono text-muted-foreground/60">{lookedUpBooking.confirmationToken}</p>
                         </div>
                         
                         {/* Valid actions */}

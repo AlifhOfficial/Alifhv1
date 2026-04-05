@@ -506,13 +506,13 @@ export function DealerInventory({
                       <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2">
                         {/* Price */}
                         <div>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Price</p>
+                          <p className="text-caption2 uppercase tracking-wider text-muted-foreground/60 mb-0.5">Price</p>
                           <p className="text-subhead text-foreground">{listing.price.toLocaleString()} AED</p>
                         </div>
 
                         {/* Assigned To */}
                         <div>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Assigned To</p>
+                          <p className="text-caption2 uppercase tracking-wider text-muted-foreground/60 mb-0.5">Assigned To</p>
                           <p className={cn("text-subhead", (listing.staffMember?.displayName || listing.postedByDisplayName) ? 'text-foreground' : 'text-muted-foreground/60', teamMember?.status === 'left' && 'opacity-50')}>
                             {listing.staffMember?.displayName || listing.postedByDisplayName || 'Unassigned'}
                           </p>

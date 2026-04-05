@@ -45,7 +45,7 @@ function ProblemInfographic() {
       <MacOSWindow url="car-marketplace.ae" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1] overflow-visible">
         {/* Left - Others: Cluttered fees */}
         <div className="flex-1 p-4 sm:p-8 lg:p-16 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5 min-h-[200px] sm:min-h-0 overflow-visible">
-          <span className="text-[10px] sm:text-caption1 text-white/30 mb-4 sm:mb-8 lg:mb-10">Others</span>
+          <span className="text-caption2 sm:text-caption1 text-white/30 mb-4 sm:mb-8 lg:mb-10">Others</span>
           
           <div className="relative flex items-center justify-center gap-1 sm:gap-2 lg:gap-4 w-full max-w-full py-4 px-6 sm:px-4">
             {/* Left car image - hidden on mobile */}
@@ -64,7 +64,7 @@ function ProblemInfographic() {
             </div>
             
             {/* Fee badges */}
-            <div className="absolute -top-2 sm:-top-3 lg:-top-4 right-4 sm:right-2 lg:-right-2 px-1.5 sm:px-3 lg:px-4 py-0.5 sm:py-1 lg:py-2 rounded-md bg-destructive text-[7px] sm:text-[10px] lg:text-caption1 font-bold text-white shadow-xl rotate-3 z-20">
+            <div className="absolute -top-2 sm:-top-3 lg:-top-4 right-4 sm:right-2 lg:-right-2 px-1.5 sm:px-3 lg:px-4 py-0.5 sm:py-1 lg:py-2 rounded-md bg-destructive text-[7px] sm:text-caption2 lg:text-caption1 font-bold text-white shadow-xl rotate-3 z-20">
               AED 999
               {/* Chaotic cursor - near AED 999 */}
               <div 
@@ -86,12 +86,12 @@ function ProblemInfographic() {
             </div>
           </div>
           
-          <p className="text-[9px] sm:text-[10px] lg:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-10">Pay for everything</p>
+          <p className="text-[9px] sm:text-caption2 lg:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-10">Pay for everything</p>
         </div>
         
         {/* Right - Revvup: Clean proposition */}
         <div className="w-full md:w-[200px] lg:w-[280px] xl:w-[360px] p-6 sm:p-10 lg:p-16 flex flex-col items-center justify-center min-h-[180px] sm:min-h-0">
-          <span className="text-[10px] sm:text-caption1 text-primary mb-4 sm:mb-6 lg:mb-10">Revvup</span>
+          <span className="text-caption2 sm:text-caption1 text-primary mb-4 sm:mb-6 lg:mb-10">Revvup</span>
           
           <div className="flex flex-col items-center">
             {/* Giant zero */}
@@ -104,7 +104,7 @@ function ProblemInfographic() {
             <span className="text-caption1 sm:text-subhead lg:text-callout text-primary/80 font-medium mt-1 sm:mt-2">fees</span>
           </div>
           
-          <p className="text-[9px] sm:text-[10px] lg:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-10">Just list</p>
+          <p className="text-[9px] sm:text-caption2 lg:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-10">Just list</p>
         </div>
       </MacOSWindow>
     </>

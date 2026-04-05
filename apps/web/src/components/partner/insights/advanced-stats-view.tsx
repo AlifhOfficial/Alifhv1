@@ -738,7 +738,7 @@ function PriceDistributionChart({ data }: PriceDistributionChartProps) {
               style={{ backgroundColor: DONUT_COLORS[i % DONUT_COLORS.length] }}
             />
             <p className="text-headline font-bold tabular-nums">{item.value}</p>
-            <p className="text-[10px] text-muted-foreground/70 leading-tight">{item.name}</p>
+            <p className="text-caption2 text-muted-foreground/70 leading-tight">{item.name}</p>
           </div>
         ))}
       </div>

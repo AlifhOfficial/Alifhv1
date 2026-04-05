@@ -44,7 +44,7 @@ export function ListingsPagination({
         </button>
 
         <div className="flex min-w-[84px] flex-col items-center justify-center px-2 text-center">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <span className="text-caption2 font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Page
           </span>
           <span className="text-callout font-semibold text-foreground">

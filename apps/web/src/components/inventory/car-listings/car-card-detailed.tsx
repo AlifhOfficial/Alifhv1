@@ -233,7 +233,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
                 className="relative w-16 h-12 flex-shrink-0 rounded-md bg-muted/80 hover:bg-muted transition-colors flex flex-col items-center justify-center gap-0.5"
               >
                 <Grid3X3 className="w-4 h-4 text-muted-foreground" />
-                <span className="text-[10px] font-bold text-muted-foreground">+{remainingCount}</span>
+                <span className="text-caption2 font-bold text-muted-foreground">+{remainingCount}</span>
               </button>
             )}
             
@@ -244,7 +244,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
                 className="relative w-16 h-12 flex-shrink-0 rounded-md bg-muted/80 hover:bg-muted transition-colors flex flex-col items-center justify-center gap-0.5"
               >
                 <Grid3X3 className="w-4 h-4 text-muted-foreground" />
-                <span className="text-[10px] font-bold text-muted-foreground">All</span>
+                <span className="text-caption2 font-bold text-muted-foreground">All</span>
               </button>
             )}
           </div>
@@ -426,7 +426,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
           {/* Actions */}
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {showBlkBadge && (
-              <span className="inline-flex items-center px-1.5 h-5 text-[10px] font-black tracking-wider bg-black text-white">
+              <span className="inline-flex items-center px-1.5 h-5 text-caption2 font-black tracking-wider bg-black text-white">
                 BLK
               </span>
             )}

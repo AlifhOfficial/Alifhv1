@@ -24,10 +24,9 @@ import { Colors, Spacing, Radius, Sizes, Layout } from '@/constants/theme';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { useMessages } from './hooks/useMessages';
-import { useMarkAsRead } from '@/hooks/use-messaging-query';
 import { markConversationActive, markConversationInactive } from './hooks/active-conversations';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { type Message, type Conversation } from '@/lib/messaging-api';
+import { markConversationAsRead, type Message, type Conversation } from '@/lib/messaging-api';
 import {
   getLastReadOwnMessageId,
   getNewestUnreadIncomingMessageId,
@@ -95,7 +94,6 @@ export function ChatWindow({
     isFetchingMore,
     hasMore,
     otherLastReadAt,
-    otherLastReadMessageId,
     isOtherTyping,
     isOtherOnline,
     otherLastSeenAt,
@@ -131,7 +129,6 @@ export function ChatWindow({
     () => (myLastReadAt ? new Date(myLastReadAt) : null),
     [myLastReadAt]
   );
-  const { markAsRead } = useMarkAsRead(userId);
   
   // Track last marked message to prevent duplicate API calls
   const lastMarkedMsgIdRef = useRef<string | null>(null);
@@ -147,16 +144,8 @@ export function ChatWindow({
 
   // Find the newest message that was read by other user (for "seen" indicator)
   const lastReadMsgId = useMemo(
-    () => {
-      if (otherLastReadMessageId) {
-        const matched = messages.find(
-          (m) => m.id === otherLastReadMessageId && m.senderId === userId && !m.id.startsWith('temp-')
-        );
-        if (matched) return matched.id;
-      }
-      return getLastReadOwnMessageId(messages, userId, otherLastReadAt);
-    },
-    [messages, otherLastReadAt, otherLastReadMessageId, userId]
+    () => getLastReadOwnMessageId(messages, userId, otherLastReadAt),
+    [messages, otherLastReadAt, userId]
   );
 
   const newestUnreadIncomingMessageId = useMemo(
@@ -170,8 +159,8 @@ export function ChatWindow({
     if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessageId) return;
 
     lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
-    markAsRead(conversationId, newestUnreadIncomingMessageId);
-  }, [conversationId, isLoading, newestUnreadIncomingMessageId, markAsRead]);
+    void markConversationAsRead(conversationId, newestUnreadIncomingMessageId);
+  }, [conversationId, isLoading, newestUnreadIncomingMessageId]);
 
   // Handle sending message
   const handleSend = useCallback(

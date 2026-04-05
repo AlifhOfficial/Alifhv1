@@ -9,7 +9,6 @@ import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-q
 import { useWebSocket } from './use-websocket';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { queryKeys } from '@/lib/query-keys';
-import { getMessagesPageAction } from '@/actions/messaging';
 
 // ============================================================================
 // Types
@@ -47,7 +46,26 @@ interface MessagesPage {
 // ============================================================================
 
 async function fetchMessages(conversationId: string, cursor?: string): Promise<MessagesPage> {
-  return getMessagesPageAction(conversationId, cursor, 50);
+  const params = new URLSearchParams({
+    limit: '50',
+  });
+  if (cursor) {
+    params.set('cursor', cursor);
+  }
+
+  const res = await fetch(
+    `/api/conversations/${encodeURIComponent(conversationId)}/messages?${params.toString()}`,
+    {
+      credentials: 'include',
+      cache: 'no-store',
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch messages');
+  }
+
+  return res.json();
 }
 
 async function postMessage(conversationId: string, text: string): Promise<{ message: Message }> {
@@ -103,7 +121,6 @@ interface UseMessagesOptions {
   otherUserId?: string | null;
   initialLastReadAt?: Date | string | null;
   initialLastSeenAt?: Date | string | null;
-  initialData?: InitialMessagesData;
 }
 
 export function useMessages(conversationId: string, userId?: string, options: UseMessagesOptions = {}) {
@@ -129,6 +146,10 @@ export function useMessages(conversationId: string, userId?: string, options: Us
 
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const watchingRef = useRef(false);
+
+  useEffect(() => {
+    setOtherLastReadMessageId(null);
+  }, [conversationId]);
 
   // Update state when initial values change (from conversation refresh)
   // Only update if the new value is MORE recent than current state
@@ -163,12 +184,6 @@ export function useMessages(conversationId: string, userId?: string, options: Us
   }, [options.initialLastReadAt]);
 
   const messagesQueryKey = queryKeys.messaging.messages(conversationId);
-  type MessagesInfiniteData = { pages: MessagesPage[]; pageParams: (string | undefined)[] };
-
-  // Use server-prefetched data for instant paint, but still allow background refetch.
-  const effectiveInitialData = options.initialData
-    ? { pages: [options.initialData], pageParams: [undefined] }
-    : undefined;
 
   // Query
   const query = useInfiniteQuery({
@@ -176,15 +191,13 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     queryFn: ({ pageParam }) => fetchMessages(conversationId, pageParam),
     getNextPageParam: (page) => (page.hasMore ? page.nextCursor ?? undefined : undefined),
     initialPageParam: undefined as string | undefined,
-    // Always enable while chat is open so stale cache can refresh in background.
     enabled: !!conversationId && !!userId,
-    // Messaging threads must always verify fresh state when opened.
+    // Disable client caching for messaging and always refresh from network.
     staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: true,
     refetchOnMount: 'always',
-    // Server-side prefetched data for instant display
-    initialData: effectiveInitialData as MessagesInfiniteData | undefined,
-    // Mark server-provided initial data stale so mount immediately refreshes.
-    initialDataUpdatedAt: effectiveInitialData ? 0 : undefined,
+    refetchOnReconnect: true,
   });
 
   // Update otherLastReadAt from API response (first page includes this for persistence)
@@ -230,17 +243,8 @@ export function useMessages(conversationId: string, userId?: string, options: Us
           return;
         }
 
-        queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
-          if (!old) return old;
-          const first = old.pages[0];
-          if (first.messages.some(m => m.id === newMsg.id)) {
-            return old;
-          }
-          return {
-            ...old,
-            pages: [{ ...first, messages: [newMsg, ...first.messages] }, ...old.pages.slice(1)],
-          };
-        });
+        queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+        queryClient.invalidateQueries({ queryKey: ['conversations'] });
       }
 
       // Typing indicator
@@ -314,165 +318,13 @@ export function useSendMessage() {
     mutationFn: ({ conversationId, text }: { conversationId: string; senderId: string; text: string }) =>
       postMessage(conversationId, text),
 
-    onMutate: async ({ conversationId, senderId, text }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
-      const previous = queryClient.getQueryData(queryKeys.messaging.messages(conversationId));
-
-      // Optimistic message
-      const tempMsg: Message = {
-        id: `temp-${Date.now()}`,
-        conversationId,
-        senderId,
-        text,
-        mediaUrl: null,
-        mediaType: null,
-        mediaThumbnail: null,
-        mediaMetadata: null,
-        isSystemMessage: false,
-        systemMessageType: null,
-        deliveredAt: null,
-        readAt: null,
-        isEdited: false,
-        editedAt: null,
-        isDeleted: false,
-        createdAt: new Date(),
-        sender: { id: senderId, name: null, avatarUrl: null },
-      };
-
-      queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
-        if (!old) return old;
-        return {
-          ...old,
-          pages: [
-            { ...old.pages[0], messages: [tempMsg, ...old.pages[0].messages] },
-            ...old.pages.slice(1),
-          ],
-        };
-      });
-
-      // Optimistically bump conversation preview + timestamp so list reorders immediately.
-      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-        const data = old as {
-          pages?: Array<{
-            conversations: Array<{
-              id: string;
-              lastMessageAt?: Date | string;
-              lastMessagePreview?: string | null;
-              messageCount?: number;
-              unreadCount?: number;
-            }>;
-            totalUnread?: number;
-          }>;
-        } | undefined;
-        if (!data?.pages) return old;
-
-        const optimisticSentAt = new Date();
-
-        return {
-          ...data,
-          pages: data.pages.map((page) => ({
-            ...page,
-            conversations: page.conversations
-              .map((c) =>
-                c.id === conversationId
-                  ? {
-                      ...c,
-                      lastMessageAt: optimisticSentAt,
-                      lastMessagePreview: text,
-                      messageCount: (c.messageCount ?? 0) + 1,
-                      unreadCount: 0,
-                    }
-                  : c
-              )
-              .sort(
-                (a, b) =>
-                  new Date(b.lastMessageAt ?? 0).getTime() - new Date(a.lastMessageAt ?? 0).getTime()
-              ),
-          })),
-        };
-      });
-
-      // Optimistically clear unread count for this conversation
-      let unreadToRemove = 0;
-      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-        const data = old as { pages?: Array<{ conversations: Array<{ id: string; unreadCount?: number }>; totalUnread?: number }> } | undefined;
-        if (!data?.pages) return old;
-
-        return {
-          ...data,
-          pages: data.pages.map((page, idx) => {
-            const conv = page.conversations.find(c => c.id === conversationId);
-            unreadToRemove = Math.max(unreadToRemove, conv?.unreadCount || 0);
-
-            return {
-              ...page,
-              conversations: page.conversations.map(c =>
-                c.id === conversationId ? { ...c, unreadCount: 0 } : c
-              ),
-              totalUnread: idx === 0
-                ? Math.max(0, (page.totalUnread || 0) - unreadToRemove)
-                : page.totalUnread,
-            };
-          }),
-        };
-      });
-
-      return { previous };
+    onSuccess: (_data, { conversationId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
 
-    onSuccess: (data, { conversationId }) => {
-      // Replace temp with real
-      queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
-        if (!old) return old;
-        const filtered = old.pages[0].messages.filter(m => !m.id.startsWith('temp-') && m.id !== data.message.id);
-        return {
-          ...old,
-          pages: [{ ...old.pages[0], messages: [data.message, ...filtered] }, ...old.pages.slice(1)],
-        };
-      });
-
-      // Confirm conversation preview + timestamp in paginated conversation cache.
-      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-        const data2 = old as {
-          pages?: Array<{
-            conversations: Array<{
-              id: string;
-              lastMessageAt?: Date | string;
-              lastMessagePreview?: string | null;
-              unreadCount?: number;
-            }>;
-            totalUnread?: number;
-          }>;
-        } | undefined;
-        if (!data2?.pages) return old;
-
-        return {
-          ...data2,
-          pages: data2.pages.map((page) => ({
-            ...page,
-            conversations: page.conversations
-              .map((c) =>
-                c.id === conversationId
-                  ? {
-                      ...c,
-                      lastMessageAt: data.message.createdAt,
-                      lastMessagePreview: data.message.text,
-                      unreadCount: 0,
-                    }
-                  : c
-              )
-              .sort(
-                (a, b) =>
-                  new Date(b.lastMessageAt ?? 0).getTime() - new Date(a.lastMessageAt ?? 0).getTime()
-              ),
-          })),
-        };
-      });
-
-    },
-
-    onError: (_err, { conversationId }, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(queryKeys.messaging.messages(conversationId), ctx.previous);
+    onError: (_err, { conversationId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
     },
   });
 
@@ -494,88 +346,13 @@ export function useSendLocationMessage() {
     mutationFn: ({ conversationId, location }: { conversationId: string; senderId: string; location: LocationData }) =>
       postLocationMessage(conversationId, location),
 
-    onMutate: async ({ conversationId, senderId, location }) => {
-      await queryClient.cancelQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
-      const previous = queryClient.getQueryData(queryKeys.messaging.messages(conversationId));
-
-      // Optimistic message
-      const tempMsg: Message = {
-        id: `temp-${Date.now()}`,
-        conversationId,
-        senderId,
-        text: location.address || 'Shared location',
-        mediaUrl: null,
-        mediaType: 'location',
-        mediaThumbnail: null,
-        mediaMetadata: {
-          latitude: location.latitude,
-          longitude: location.longitude,
-          address: location.address,
-          placeName: location.placeName,
-        },
-        isSystemMessage: false,
-        systemMessageType: null,
-        deliveredAt: null,
-        readAt: null,
-        isEdited: false,
-        editedAt: null,
-        isDeleted: false,
-        createdAt: new Date(),
-        sender: { id: senderId, name: null, avatarUrl: null },
-      };
-
-      queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
-        if (!old) return old;
-        return {
-          ...old,
-          pages: [
-            { ...old.pages[0], messages: [tempMsg, ...old.pages[0].messages] },
-            ...old.pages.slice(1),
-          ],
-        };
-      });
-
-      return { previous };
+    onSuccess: (_data, { conversationId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
 
-    onSuccess: (data, { conversationId }) => {
-      // Replace temp with real
-      queryClient.setQueryData(queryKeys.messaging.messages(conversationId), (old: { pages: MessagesPage[] } | undefined) => {
-        if (!old) return old;
-        const filtered = old.pages[0].messages.filter(m => !m.id.startsWith('temp-') && m.id !== data.message.id);
-        return {
-          ...old,
-          pages: [{ ...old.pages[0], messages: [data.message, ...filtered] }, ...old.pages.slice(1)],
-        };
-      });
-
-      // Update conversation preview in cache optimistically
-      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-        const data2 = old as { conversations?: Array<{ id: string; lastMessageAt?: unknown; lastMessagePreview?: string }> };
-        if (!data2?.conversations) return old;
-        
-        const exists = data2.conversations.some(c => c.id === conversationId);
-        if (!exists) {
-          // Conversation not in cache, return unchanged (will refetch below)
-          return old;
-        }
-        
-        return {
-          ...data2,
-          conversations: data2.conversations
-            .map(c =>
-              c.id === conversationId
-                ? { ...c, lastMessageAt: data.message.createdAt, lastMessagePreview: '📍 Location' }
-                : c
-            )
-            .sort((a, b) => new Date(b.lastMessageAt as string).getTime() - new Date(a.lastMessageAt as string).getTime()),
-        };
-      });
-
-    },
-
-    onError: (_err, { conversationId }, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(queryKeys.messaging.messages(conversationId), ctx.previous);
+    onError: (_err, { conversationId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
     },
   });
 

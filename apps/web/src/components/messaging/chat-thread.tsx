@@ -12,7 +12,6 @@ import {
   useMessages,
   useSendLocationMessage,
   useSendMessage,
-  type InitialMessagesData,
 } from '@/hooks/messaging';
 import { markConversationActive, markConversationInactive } from '@/hooks/messaging/active-conversations';
 import { cn } from '@/utils/cn';
@@ -69,7 +68,6 @@ interface UseChatThreadControllerOptions {
   otherParticipant?: ChatThreadParticipant;
   listing?: ChatThreadListing;
   myLastReadAt?: Date | string | null;
-  initialMessages?: InitialMessagesData;
   active?: boolean;
 }
 
@@ -79,7 +77,6 @@ export function useChatThreadController({
   otherParticipant,
   listing,
   myLastReadAt,
-  initialMessages,
   active = true,
 }: UseChatThreadControllerOptions): ChatThreadController {
   const {
@@ -98,7 +95,6 @@ export function useChatThreadController({
     initialLastReadAt: otherParticipant?.lastReadAt ?? null,
     initialLastSeenAt: otherParticipant?.lastSeenAt ?? null,
     otherUserId: otherParticipant?.id ?? null,
-    initialData: initialMessages,
   });
 
   const { sendMessage, isSending } = useSendMessage();

@@ -217,7 +217,7 @@ export function ListingsHeader({
                 <button className="relative flex items-center justify-center h-10 w-10 bg-sidebar border border-sidebar-border rounded-full text-muted-foreground active:text-foreground shadow-sm transition-colors touch-manipulation shrink-0">
                   <SlidersHorizontal className="h-4 w-4" />
                   {activeFilterCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 text-[10px] font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 text-caption2 font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                       {activeFilterCount}
                     </span>
                   )}
@@ -262,7 +262,7 @@ export function ListingsHeader({
                     {/* Make Quick-Select */}
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Makes</p>
+                        <p className="text-caption2 font-bold uppercase tracking-wider text-muted-foreground/60">Makes</p>
                         {(facets?.make ?? []).length > 8 && (
                           <Popover>
                             <PopoverTrigger asChild>
@@ -343,7 +343,7 @@ export function ListingsHeader({
                     {params.make?.length && (facets?.model ?? []).length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Models</p>
+                          <p className="text-caption2 font-bold uppercase tracking-wider text-muted-foreground/60">Models</p>
                           {(facets?.model ?? []).length > 8 && (
                             <Popover>
                               <PopoverTrigger asChild>
@@ -425,7 +425,7 @@ export function ListingsHeader({
                     {params.make?.length && params.model?.length && (facets?.trim ?? []).length > 0 && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Trims</p>
+                          <p className="text-caption2 font-bold uppercase tracking-wider text-muted-foreground/60">Trims</p>
                           {(facets?.trim ?? []).length > 8 && (
                             <Popover>
                               <PopoverTrigger asChild>
@@ -506,7 +506,7 @@ export function ListingsHeader({
 
                   {/* All Filters */}
                   <div className="px-4 py-4">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-3">All Filters</p>
+                    <p className="text-caption2 font-bold uppercase tracking-wider text-muted-foreground/60 mb-3">All Filters</p>
                     <FilterSidebar
                       params={params}
                       facets={facets}
@@ -614,14 +614,14 @@ export function ListingsHeader({
                   <button
                     key={chip.key}
                     onClick={() => handleChipRemove(chip.key)}
-                    className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium bg-muted/50 text-foreground/80 active:bg-muted/70 rounded-full transition-colors whitespace-nowrap shrink-0 touch-manipulation"
+                    className="flex items-center gap-1 px-2 py-0.5 text-caption2 font-medium bg-muted/50 text-foreground/80 active:bg-muted/70 rounded-full transition-colors whitespace-nowrap shrink-0 touch-manipulation"
                   >
                     <span className="max-w-[60px] truncate">{chip.label}</span>
                     <X className="h-2.5 w-2.5" />
                   </button>
                 ))}
                 {activeChips.filter(c => !['make', 'model', 'trim'].includes(c.key)).length > 2 && (
-                  <span className="text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
+                  <span className="text-caption2 text-muted-foreground whitespace-nowrap shrink-0">
                     +{activeChips.filter(c => !['make', 'model', 'trim'].includes(c.key)).length - 2}
                   </span>
                 )}
@@ -632,7 +632,7 @@ export function ListingsHeader({
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className="ml-auto shrink-0 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground active:text-foreground rounded-full transition-colors touch-manipulation"
+                className="ml-auto shrink-0 px-2 py-0.5 text-caption2 font-semibold text-muted-foreground active:text-foreground rounded-full transition-colors touch-manipulation"
               >
                 Clear
               </button>
@@ -665,7 +665,7 @@ export function ListingsHeader({
                 <button className="lg:hidden relative p-2.5 -ml-1 text-muted-foreground hover:text-foreground active:text-foreground transition-colors touch-manipulation">
                   <SlidersHorizontal className="h-4 w-4" />
                   {activeFilterCount > 0 && (
-                    <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] px-1 text-[10px] font-bold bg-foreground text-background rounded-full flex items-center justify-center">
+                    <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] px-1 text-caption2 font-bold bg-foreground text-background rounded-full flex items-center justify-center">
                       {activeFilterCount}
                     </span>
                   )}

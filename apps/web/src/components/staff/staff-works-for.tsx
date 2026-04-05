@@ -134,7 +134,7 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
               {profile.status}
             </div>
             {tier && (
-              <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide rounded ${
+              <span className={`px-2 py-0.5 text-caption2 font-semibold uppercase tracking-wide rounded ${
                 isBlackTier
                   ? 'bg-foreground/10 text-foreground'
                   : 'bg-primary-muted text-primary'
@@ -173,31 +173,31 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
             <div className="space-y-4">
               {location && (
                 <div className="pb-4 border-b border-border/20">
-                  <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Location</p>
+                  <p className="text-caption2 font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Location</p>
                   <p className="text-subhead text-foreground">{location}</p>
                 </div>
               )}
               {profile.address && (
                 <div className="pb-4 border-b border-border/20">
-                  <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Address</p>
+                  <p className="text-caption2 font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Address</p>
                   <p className="text-subhead text-foreground">{profile.address}</p>
                 </div>
               )}
               {profile.phone && (
                 <div className="pb-4 border-b border-border/20">
-                  <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Phone</p>
+                  <p className="text-caption2 font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Phone</p>
                   <p className="text-subhead text-foreground">{profile.phone}</p>
                 </div>
               )}
               {profile.email && (
                 <div className="pb-4 border-b border-border/20">
-                  <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Email</p>
+                  <p className="text-caption2 font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Email</p>
                   <p className="text-subhead text-foreground">{profile.email}</p>
                 </div>
               )}
               {profile.website && (
                 <div>
-                  <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Website</p>
+                  <p className="text-caption2 font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Website</p>
                   <Link
                     href={profile.website}
                     target="_blank"
@@ -222,13 +222,13 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
                 <div className="space-y-4">
                   {profile.experienceYears && (
                     <div className="pb-4 border-b border-border/20">
-                      <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Experience</p>
+                      <p className="text-caption2 font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Experience</p>
                       <p className="text-subhead text-foreground">{profile.experienceYears}+ years in business</p>
                     </div>
                   )}
                   {profile.googleRating && (
                     <div>
-                      <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Google Rating</p>
+                      <p className="text-caption2 font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Google Rating</p>
                       <p className="text-subhead text-foreground flex items-center gap-1.5">
                         <Star className="w-3.5 h-3.5 text-warning fill-amber-500" />
                         {profile.googleRating} ({profile.googleReviewCount ?? 0} reviews)

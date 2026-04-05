@@ -81,7 +81,7 @@ function ComparisonInfographic() {
       <MacOSWindow url="car-listings.com" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]">
         {/* Left - Others: Cluttered feed with media */}
         <div className="w-full md:w-[40%] flex flex-col border-b md:border-b-0 md:border-r border-white/5 p-4 sm:p-6 lg:p-12">
-          <span className="text-[10px] sm:text-caption1 text-white/40 mb-3 sm:mb-4 lg:mb-6">Elsewhere</span>
+          <span className="text-caption2 sm:text-caption1 text-white/40 mb-3 sm:mb-4 lg:mb-6">Elsewhere</span>
           
           <div className="flex-1 flex items-center justify-center overflow-hidden">
             <div 
@@ -90,7 +90,7 @@ function ComparisonInfographic() {
             >
               {/* Ad banner */}
               <div className="h-6 sm:h-7 lg:h-8 rounded-md sm:rounded-lg bg-warning/15 border border-warning/30 flex items-center justify-center">
-                <span className="text-[7px] sm:text-[8px] lg:text-[10px] text-warning/70 font-medium tracking-wide">SPONSORED</span>
+                <span className="text-[7px] sm:text-[8px] lg:text-caption2 text-warning/70 font-medium tracking-wide">SPONSORED</span>
               </div>
               
               {/* Listing with image */}
@@ -124,7 +124,7 @@ function ComparisonInfographic() {
         
         {/* Right - Revvup: Clean "No Noise" */}
         <div className="w-full md:w-[60%] flex flex-col p-4 sm:p-6 lg:p-12 min-h-[180px] sm:min-h-0">
-          <span className="text-[10px] sm:text-caption1 text-primary mb-3 sm:mb-4 lg:mb-6">Revvup</span>
+          <span className="text-caption2 sm:text-caption1 text-primary mb-3 sm:mb-4 lg:mb-6">Revvup</span>
           
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">

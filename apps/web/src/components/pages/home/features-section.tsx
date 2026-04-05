@@ -95,7 +95,7 @@ function BuiltInDubaiInfographic() {
       contentClassName="flex flex-col md:flex-row items-stretch p-6 sm:p-10 lg:p-16 gap-8 lg:gap-12 aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]"
     >
       <div className="w-full md:w-[20%] flex-shrink-0 flex flex-col justify-center">
-        <span className="block text-[9px] sm:text-[10px] font-medium text-white/40 mb-4 sm:mb-5 uppercase tracking-wider">
+        <span className="block text-[9px] sm:text-caption2 font-medium text-white/40 mb-4 sm:mb-5 uppercase tracking-wider">
           Not here
         </span>
 

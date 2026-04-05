@@ -244,7 +244,7 @@ export default function FAQPage() {
                               <AccordionTrigger className="px-5 py-4 text-left hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:text-muted-foreground/50 [&[data-state=open]]:bg-muted/20">
                                 <div className="flex items-center gap-3 pr-2">
                                   <span className="text-subhead text-foreground">{item.question}</span>
-                                  <span className="shrink-0 text-[10px] font-medium text-muted-foreground/60 bg-muted/50 px-2 py-0.5 rounded uppercase tracking-wide">
+                                  <span className="shrink-0 text-caption2 font-medium text-muted-foreground/60 bg-muted/50 px-2 py-0.5 rounded uppercase tracking-wide">
                                     {item.category}
                                   </span>
                                 </div>

@@ -480,7 +480,7 @@ export function MyListingsView({
           <div className="flex items-center gap-2">
             {listingType === 'work' && blackQuota && (
               <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
-                <span className="text-[10px] sm:text-caption1">
+                <span className="text-caption2 sm:text-caption1">
                   {blackQuota.blackListingQuota - blackQuota.activeBlackListingsCount} of {blackQuota.blackListingQuota} BLK
                 </span>
               </div>

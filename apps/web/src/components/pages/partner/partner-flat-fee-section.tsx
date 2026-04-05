@@ -115,7 +115,7 @@ function UnlimitedListingsInfographic() {
       <MacOSWindow url="revvup.ae/dashboard" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]">
           {/* Left - Your inventory with car cards */}
           <div className="flex-1 p-3 sm:p-6 lg:p-12 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5">
-            <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-white/30 mb-3 sm:mb-4 lg:mb-6">Your inventory</span>
+            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-white/30 mb-3 sm:mb-4 lg:mb-6">Your inventory</span>
             
             <div className="grid grid-cols-3 gap-1.5 sm:gap-3 lg:gap-6 w-full max-w-3xl">
               {/* Card 1 */}
@@ -127,7 +127,7 @@ function UnlimitedListingsInfographic() {
                   <div className="min-w-0 flex-1">
                     <p className="text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold truncate text-white">Landcruiser</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
-                      <p className="text-[5px] sm:text-[7px] lg:text-[10px] xl:text-caption1 text-white/50 truncate">IS Motors</p>
+                      <p className="text-[5px] sm:text-[7px] lg:text-caption2 xl:text-caption1 text-white/50 truncate">IS Motors</p>
                       <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-primary" />
                     </div>
                   </div>
@@ -144,7 +144,7 @@ function UnlimitedListingsInfographic() {
                   <div className="min-w-0 flex-1">
                     <p className="text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold truncate text-white">Lexus</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
-                      <p className="text-[5px] sm:text-[7px] lg:text-[10px] xl:text-caption1 text-white/50 truncate">IS Motors</p>
+                      <p className="text-[5px] sm:text-[7px] lg:text-caption2 xl:text-caption1 text-white/50 truncate">IS Motors</p>
                       <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-primary" />
                     </div>
                   </div>
@@ -161,7 +161,7 @@ function UnlimitedListingsInfographic() {
                   <div className="min-w-0 flex-1">
                     <p className="text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold truncate text-white">McLaren</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
-                      <p className="text-[5px] sm:text-[7px] lg:text-[10px] xl:text-caption1 text-white/50 truncate">IS Motors</p>
+                      <p className="text-[5px] sm:text-[7px] lg:text-caption2 xl:text-caption1 text-white/50 truncate">IS Motors</p>
                       <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-primary" />
                     </div>
                   </div>
@@ -171,14 +171,14 @@ function UnlimitedListingsInfographic() {
             </div>
             
             {/* Typing animated text below cards */}
-            <p className="typing-text mt-3 sm:mt-6 lg:mt-8 text-[10px] sm:text-subhead lg:text-callout xl:text-headline text-primary font-medium">
+            <p className="typing-text mt-3 sm:mt-6 lg:mt-8 text-caption2 sm:text-subhead lg:text-callout xl:text-headline text-primary font-medium">
               + ∞ more listings included
             </p>
           </div>
           
           {/* Right - One subscription */}
           <div className="w-full md:w-[200px] lg:w-[280px] xl:w-[360px] p-6 sm:p-10 lg:p-16 flex flex-col items-center justify-center min-h-[160px] sm:min-h-0">
-            <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-primary mb-4 sm:mb-6 lg:mb-10">Your cost</span>
+            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-primary mb-4 sm:mb-6 lg:mb-10">Your cost</span>
             
             <div className="flex flex-col items-center">
               {/* Giant one */}
@@ -191,7 +191,7 @@ function UnlimitedListingsInfographic() {
               <span className="text-caption1 sm:text-subhead lg:text-callout text-primary/80 font-medium mt-1 sm:mt-2">subscription</span>
             </div>
             
-            <p className="text-[8px] sm:text-[9px] lg:text-[10px] xl:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-10">per month</p>
+            <p className="text-[8px] sm:text-[9px] lg:text-caption2 xl:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-10">per month</p>
           </div>
       </MacOSWindow>
     </>

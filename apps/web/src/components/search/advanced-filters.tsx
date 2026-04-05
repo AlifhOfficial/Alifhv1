@@ -249,7 +249,7 @@ export function AdvancedFilters({
             >
               <span>More</span>
               {advancedCount > 0 && (
-                <span className="min-w-[18px] h-[18px] px-1 text-[10px] font-bold bg-primary-foreground text-primary rounded-full flex items-center justify-center">
+                <span className="min-w-[18px] h-[18px] px-1 text-caption2 font-bold bg-primary-foreground text-primary rounded-full flex items-center justify-center">
                   {advancedCount}
                 </span>
               )}
@@ -334,7 +334,7 @@ export function AdvancedFilters({
             <SlidersHorizontal className="h-4 w-4" />
             <span>More Filters</span>
             {advancedCount > 0 && (
-              <span className="min-w-[18px] h-[18px] px-1 text-[10px] font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+              <span className="min-w-[18px] h-[18px] px-1 text-caption2 font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                 {advancedCount}
               </span>
             )}

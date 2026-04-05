@@ -31,7 +31,6 @@ interface UseMessagesReturn {
   isFetchingMore: boolean;
   hasMore: boolean;
   otherLastReadAt: string | null;
-  otherLastReadMessageId: string | null;
   isOtherTyping: boolean;
   isOtherOnline: boolean | null;
   otherLastSeenAt: string | null;
@@ -56,7 +55,6 @@ export function useMessages({
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [otherLastReadAt, setOtherLastReadAt] = useState<string | null>(null);
-  const [otherLastReadMessageId, setOtherLastReadMessageId] = useState<string | null>(null);
   const [isOtherTyping, setIsOtherTyping] = useState(false);
   const [isOtherOnline, setIsOtherOnline] = useState<boolean | null>(null);
   // Initialize from DB snapshot, WS updates override it
@@ -114,7 +112,6 @@ export function useMessages({
     setHasMore(false);
     setNextCursor(null);
     setOtherLastReadAt(null);
-    setOtherLastReadMessageId(null);
     setIsOtherTyping(false);
     setIsOtherOnline(null);
     // Reset to initial value from DB (not undefined)
@@ -226,9 +223,6 @@ export function useMessages({
         msg.lastReadAt &&
         msg.userId !== userIdRef.current
       ) {
-        if (typeof msg.messageId === 'string') {
-          setOtherLastReadMessageId(msg.messageId);
-        }
         setOtherLastReadAt(msg.lastReadAt);
       }
 
@@ -472,7 +466,6 @@ export function useMessages({
     isFetchingMore,
     hasMore,
     otherLastReadAt,
-    otherLastReadMessageId,
     isOtherTyping,
     isOtherOnline,
     otherLastSeenAt,

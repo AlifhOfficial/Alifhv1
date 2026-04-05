@@ -180,7 +180,7 @@ function FuelPricesBanner({
           >
             <div className="text-caption2 text-muted-foreground mb-0.5">{fuel.name}</div>
             <div className="text-subhead font-bold">{fuel.price.toFixed(2)}</div>
-            <div className="text-[10px] text-muted-foreground">AED/L</div>
+            <div className="text-caption2 text-muted-foreground">AED/L</div>
           </button>
         ))}
       </div>
@@ -778,15 +778,15 @@ export function FuelCostCalculator() {
                               <p className="text-subhead font-semibold">
                                 -{formatAED(suggestion.potentialSaving)}
                               </p>
-                              <p className="text-[10px] text-muted-foreground">/month</p>
+                              <p className="text-caption2 text-muted-foreground">/month</p>
                             </div>
                           )}
                         </div>
                         <div className="flex gap-2 mt-3">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
+                          <span className="px-2 py-0.5 rounded text-caption2 font-medium bg-muted text-muted-foreground">
                             {suggestion.difficulty}
                           </span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
+                          <span className="px-2 py-0.5 rounded text-caption2 font-medium bg-muted text-muted-foreground">
                             {suggestion.category}
                           </span>
                         </div>

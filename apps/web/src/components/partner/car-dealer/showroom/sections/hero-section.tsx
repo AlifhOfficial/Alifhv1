@@ -98,7 +98,7 @@ export function HeroSection({
                 placeholder="https://wa.me/971... or your website"
                 type="url"
               />
-              <p className="text-[10px] text-muted-foreground/60">Leave empty → scrolls to contact section</p>
+              <p className="text-caption2 text-muted-foreground/60">Leave empty → scrolls to contact section</p>
             </div>
             <div className="space-y-3">
               <EditableField
@@ -115,7 +115,7 @@ export function HeroSection({
                 placeholder="https://yourwebsite.com/cars"
                 type="url"
               />
-              <p className="text-[10px] text-muted-foreground/60">Leave empty → links to your inventory page</p>
+              <p className="text-caption2 text-muted-foreground/60">Leave empty → links to your inventory page</p>
             </div>
           </div>
         </div>

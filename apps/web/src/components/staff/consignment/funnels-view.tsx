@@ -204,7 +204,7 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
       {!isLoading && data?.funnels && data.funnels.length > 0 && (
         <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-10">
           <div>
-            <span className="text-[10px] sm:text-caption1 text-muted-foreground">Funnels</span>
+            <span className="text-caption2 sm:text-caption1 text-muted-foreground">Funnels</span>
             <p className="text-callout sm:text-headline lg:text-title3 font-semibold tracking-tight mt-0.5 sm:mt-1 text-primary">{data.funnels.length}</p>
           </div>
         </div>
@@ -387,15 +387,15 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
             <div className="flex flex-wrap gap-1 sm:gap-1.5 ml-5 sm:ml-7">
               {filterTags.length > 0 ? (
                 filterTags.slice(0, 5).map((tag, i) => (
-                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
+                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
                     {tag}
                   </span>
                 ))
               ) : (
-                <span className="text-[10px] sm:text-caption1 text-muted-foreground/40 italic">All vehicles</span>
+                <span className="text-caption2 sm:text-caption1 text-muted-foreground/40 italic">All vehicles</span>
               )}
               {filterTags.length > 5 && (
-                <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
+                <span className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
                   +{filterTags.length - 5} more
                 </span>
               )}
@@ -405,7 +405,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
           {/* Right: Active Badge + Actions */}
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <span className={cn(
-              'shrink-0 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-caption1 font-semibold rounded-full mr-1 sm:mr-2',
+              'shrink-0 px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 font-semibold rounded-full mr-1 sm:mr-2',
               funnel.isActive 
                 ? 'bg-success-muted text-success' 
                 : 'bg-muted/50 text-muted-foreground'
@@ -453,7 +453,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
         ) : !previewData?.listings || previewData.listings.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-center">
             <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground/20 mb-2" />
-            <p className="text-[10px] sm:text-caption1 text-muted-foreground/50">No matching vehicles yet</p>
+            <p className="text-caption2 sm:text-caption1 text-muted-foreground/50">No matching vehicles yet</p>
           </div>
         ) : (
           <>

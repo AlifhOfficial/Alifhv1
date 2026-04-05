@@ -44,7 +44,7 @@ function StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="text-[10px] sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium inline-flex items-center gap-1 cursor-help group">
+          <span className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium inline-flex items-center gap-1 cursor-help group">
             {label}
             <Info className="w-3 h-3 opacity-40 group-hover:opacity-70 transition-opacity" />
           </span>
@@ -134,7 +134,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
         {/* Engagement */}
         <div className="lg:col-span-8 rounded-lg border border-border/20 bg-muted/5 p-4 sm:p-5 flex flex-col">
-          <p className="text-[10px] sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Engagement</p>
+          <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Engagement</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 content-start">
             <div className="flex flex-col justify-center">
               <p className="text-caption1 text-muted-foreground/60 mb-1">Total views</p>
@@ -231,7 +231,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
 
         {/* Membership */}
         <div className="lg:col-span-4 rounded-lg border border-border/20 bg-muted/5 p-4 sm:p-5 flex flex-col">
-          <p className="text-[10px] sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Membership</p>
+          <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Membership</p>
           <div className="flex flex-col gap-3 flex-1 justify-center">
             <div className="flex items-center justify-between">
               <span className="text-caption1 sm:text-subhead text-muted-foreground">Member for</span>
@@ -256,7 +256,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
           className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
         >
           <div className="flex items-center justify-between">
-            <p className="text-[10px] sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">My Listings</p>
+            <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">My Listings</p>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
           </div>
           <span className="text-title3 font-semibold text-primary">{stats?.activeListings ?? 0}<span className="text-caption1 text-muted-foreground font-normal ml-1">active</span></span>
@@ -266,7 +266,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
           className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
         >
           <div className="flex items-center justify-between">
-            <p className="text-[10px] sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Saved Items</p>
+            <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Saved Items</p>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
           </div>
           <span className="text-title3 font-semibold text-favorite">{stats?.mySaves ?? 0}<span className="text-caption1 text-muted-foreground font-normal ml-1">items</span></span>
@@ -276,7 +276,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
           className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
         >
           <div className="flex items-center justify-between">
-            <p className="text-[10px] sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Messages</p>
+            <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Messages</p>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
           </div>
           <span className="text-subhead text-muted-foreground">Open inbox</span>
@@ -286,7 +286,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
           className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
         >
           <div className="flex items-center justify-between">
-            <p className="text-[10px] sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Create</p>
+            <p className="text-caption2 sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Create</p>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
           </div>
           <span className="text-subhead text-muted-foreground">New listing</span>

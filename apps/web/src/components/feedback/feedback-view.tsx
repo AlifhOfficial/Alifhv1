@@ -157,7 +157,7 @@ export function FeedbackView() {
                   maxLength={100}
                   className="w-full h-11 bg-background border border-border/40 rounded-lg px-3.5 text-subhead text-foreground outline-none focus:border-foreground/40 transition-colors placeholder:text-muted-foreground/40"
                 />
-                <p className="text-[10px] text-muted-foreground/50 tabular-nums text-right">{title.length}/100</p>
+                <p className="text-caption2 text-muted-foreground/50 tabular-nums text-right">{title.length}/100</p>
               </div>
 
               <div className="space-y-3">
@@ -173,7 +173,7 @@ export function FeedbackView() {
                   rows={6}
                   className="w-full bg-background border border-border/40 rounded-lg px-3.5 py-3 text-subhead text-foreground outline-none focus:border-foreground/40 transition-colors resize-none placeholder:text-muted-foreground/40 leading-relaxed"
                 />
-                <p className="text-[10px] text-muted-foreground/50 tabular-nums text-right">{content.length}/2000</p>
+                <p className="text-caption2 text-muted-foreground/50 tabular-nums text-right">{content.length}/2000</p>
               </div>
 
               <button

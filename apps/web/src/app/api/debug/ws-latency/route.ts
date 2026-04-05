@@ -10,10 +10,10 @@ import { NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const WS_BROADCAST_URL = process.env.WS_BROADCAST_URL || 'http://localhost:3001/broadcast';
+const WS_BROADCAST_URL = process.env.WS_BROADCAST_URL || 'https://ws.revvup.ae/broadcast';
 const WS_HEALTH_URL = process.env.NEXT_PUBLIC_WS_URL 
   ? `${process.env.NEXT_PUBLIC_WS_URL.replace('ws://', 'http://').replace('wss://', 'https://')}/health`
-  : 'http://localhost:3001/health';
+  : 'https://ws.revvup.ae/health';
 
 export async function GET() {
   const results: Record<string, unknown> = {

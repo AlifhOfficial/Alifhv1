@@ -109,7 +109,7 @@ function HumanFirstInfographic() {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-10 lg:gap-20 w-full max-w-5xl">
           {/* Quality Checklist - Left */}
           <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 w-full lg:w-auto">
-            <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-white/40 mb-1 sm:mb-2">What ranks you higher</span>
+            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-white/40 mb-1 sm:mb-2">What ranks you higher</span>
             
             <div 
               className="flex items-center gap-2 sm:gap-3 lg:gap-4"

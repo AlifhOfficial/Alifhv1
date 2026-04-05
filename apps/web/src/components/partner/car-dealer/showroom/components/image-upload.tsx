@@ -83,7 +83,7 @@ export function ImageUpload({
           {isUploading ? (
             <div className="flex flex-col items-center gap-1">
               <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
-              <span className="text-[10px] text-muted-foreground">Processing...</span>
+              <span className="text-caption2 text-muted-foreground">Processing...</span>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-1 text-muted-foreground">

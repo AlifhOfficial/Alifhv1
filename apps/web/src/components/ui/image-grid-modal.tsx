@@ -85,7 +85,7 @@ export function ImageGridModal({
             >
               <img src={mainImg} alt={`Photo ${baseIndex + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-              <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-caption1 font-bold rounded">{baseIndex + 1}</div>
+              <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{baseIndex + 1}</div>
             </button>
             <div className="col-span-2 sm:col-span-1 grid grid-cols-2 sm:flex sm:flex-col gap-1.5 sm:gap-2">
               {[1, 2].map((offset) => {
@@ -100,7 +100,7 @@ export function ImageGridModal({
                   >
                     <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                    <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
+                    <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
                   </button>
                 );
               })}
@@ -127,7 +127,7 @@ export function ImageGridModal({
                 >
                   <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                  <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
+                  <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
                 </button>
               );
             })}
@@ -145,7 +145,7 @@ export function ImageGridModal({
             >
               <img src={mainImg} alt={`Photo ${baseIndex + 3}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-              <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-caption1 font-bold rounded">{baseIndex + 3}</div>
+              <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{baseIndex + 3}</div>
             </button>
             <div className="col-span-2 sm:col-span-1 sm:order-1 grid grid-cols-2 sm:flex sm:flex-col gap-1.5 sm:gap-2">
               {[0, 1].map((offset) => {
@@ -160,7 +160,7 @@ export function ImageGridModal({
                   >
                     <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                    <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
+                    <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
                   </button>
                 );
               })}
@@ -184,7 +184,7 @@ export function ImageGridModal({
                 >
                   <img src={img} alt={`Photo ${imgIdx + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                  <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
+                  <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{imgIdx + 1}</div>
                 </button>
               );
             })}
@@ -202,7 +202,7 @@ export function ImageGridModal({
             >
               <img src={img} alt={`Photo ${baseIndex + 1}`} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-              <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-[10px] sm:text-caption1 font-bold rounded">{baseIndex + 1}</div>
+              <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 px-1.5 sm:px-2 py-0.5 bg-black/60 text-white text-caption2 sm:text-caption1 font-bold rounded">{baseIndex + 1}</div>
             </button>
           </div>
         );
@@ -245,7 +245,7 @@ export function ImageGridModal({
         <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3">
           <div>
             <h2 className="text-subhead sm:text-callout font-bold text-foreground">{title}</h2>
-            <p className="text-[10px] sm:text-caption1 text-muted-foreground">{totalImages} images</p>
+            <p className="text-caption2 sm:text-caption1 text-muted-foreground">{totalImages} images</p>
           </div>
         </div>
       </div>

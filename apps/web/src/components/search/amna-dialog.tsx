@@ -150,7 +150,7 @@ export function AmnaDialog({ open, onOpenChange }: AmnaDialogProps) {
 
         {/* ── Quick Suggestions ── */}
         <div className="px-5 pb-3">
-          <p className="text-[10px] font-medium text-muted-foreground/40 mb-1.5 uppercase tracking-wider">Try asking</p>
+          <p className="text-caption2 font-medium text-muted-foreground/40 mb-1.5 uppercase tracking-wider">Try asking</p>
           <div className="flex flex-wrap gap-1.5">
             {QUICK_SUGGESTIONS.map((s) => (
               <button
@@ -177,7 +177,7 @@ export function AmnaDialog({ open, onOpenChange }: AmnaDialogProps) {
 
         {/* ── Submit Bar ── */}
         <div className="flex items-center justify-between px-5 py-3 border-t border-border/20">
-          <span className="text-[10px] text-muted-foreground/40">
+          <span className="text-caption2 text-muted-foreground/40">
             Enter to send
           </span>
           <button

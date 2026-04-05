@@ -94,7 +94,7 @@ function MarketplaceGameInfographic() {
       <MacOSWindow url="car-marketplace.ae" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1] overflow-visible">
           {/* Left - Others: Cluttered fees with stacked cars */}
           <div className="flex-1 p-4 sm:p-6 lg:p-14 pt-6 sm:pt-8 lg:pt-16 pb-6 sm:pb-8 lg:pb-16 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5 overflow-visible">
-            <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-white/30 mb-4 sm:mb-6 lg:mb-8">Others</span>
+            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-white/30 mb-4 sm:mb-6 lg:mb-8">Others</span>
             
             <div className="relative w-full max-w-3xl py-3 sm:py-4">
               {/* 3 car cards - stacked/overlapping */}
@@ -140,12 +140,12 @@ function MarketplaceGameInfographic() {
               </div>
             </div>
             
-            <p className="text-[8px] sm:text-[9px] lg:text-[10px] xl:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-8">Click this. Pay that.</p>
+            <p className="text-[8px] sm:text-[9px] lg:text-caption2 xl:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-8">Click this. Pay that.</p>
           </div>
           
           {/* Right - Revvup: Clean proposition */}
           <div className="w-full md:w-[200px] lg:w-[280px] xl:w-[360px] p-6 sm:p-10 lg:p-16 flex flex-col items-center justify-center min-h-[160px] sm:min-h-0">
-            <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-primary mb-4 sm:mb-6 lg:mb-10">Revvup</span>
+            <span className="text-[9px] sm:text-caption2 lg:text-caption1 text-primary mb-4 sm:mb-6 lg:mb-10">Revvup</span>
             
             <div className="flex flex-col items-center">
               {/* Giant zero */}
@@ -158,7 +158,7 @@ function MarketplaceGameInfographic() {
               <span className="text-caption1 sm:text-subhead lg:text-callout text-primary/80 font-medium mt-1 sm:mt-2">paid visibility</span>
             </div>
             
-            <p className="text-[8px] sm:text-[9px] lg:text-[10px] xl:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-10">Quality ranks higher</p>
+            <p className="text-[8px] sm:text-[9px] lg:text-caption2 xl:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-10">Quality ranks higher</p>
           </div>
       </MacOSWindow>
     </>

@@ -664,7 +664,7 @@ export function PartnerBasicProfileForm({
           <div className="flex items-center gap-2">
             <h1 className="text-headline sm:text-title3 font-semibold tracking-tight truncate">{profile.brandName}</h1>
             {profile.tier === 'black' ? (
-              <span className="inline-flex items-center px-1.5 h-5 text-[10px] font-black tracking-wider bg-black text-white">
+              <span className="inline-flex items-center px-1.5 h-5 text-caption2 font-black tracking-wider bg-black text-white">
                 BLK
               </span>
             ) : profile.isVerified ? (

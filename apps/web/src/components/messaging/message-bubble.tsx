@@ -5,7 +5,6 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { cn } from '@/utils/cn';
 import { getAppThumbUrl } from '@/utils/storage';
@@ -42,11 +41,6 @@ export function MessageBubble({
   compact = false,
 }: MessageBubbleProps) {
   const { sender, text, mediaUrl, mediaType, mediaMetadata, createdAt, isEdited, isSystemMessage } = message;
-  const [isClientMounted, setIsClientMounted] = useState(false);
-
-  useEffect(() => {
-    setIsClientMounted(true);
-  }, []);
   
   // Check if this is a temporary optimistic message
   const isOptimistic = message.id.startsWith('temp-');
@@ -116,7 +110,7 @@ export function MessageBubble({
               <div className="w-full aspect-[4/3] bg-muted/40" />
             )}
             <div className="p-2 sm:p-2.5 bg-card">
-              <p className="text-subhead font-bold text-foreground line-clamp-2">
+              <p className="text-caption1 sm:text-subhead font-bold text-foreground line-clamp-2">
                 {listing.title}
               </p>
             </div>
@@ -195,7 +189,7 @@ export function MessageBubble({
               isOptimistic && 'opacity-0' // Hide timestamp for optimistic messages
             )}
           >
-            {isClientMounted ? formatDistanceToNow(new Date(createdAt), { addSuffix: true }) : ''}
+            {formatDistanceToNow(new Date(createdAt), { addSuffix: true })}
           </small>
         </div>
 

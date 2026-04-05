@@ -62,7 +62,7 @@ export function VideoEmbedPreview({ url, aspectRatio = 'aspect-video' }: VideoEm
         <div className="flex flex-col items-center gap-2 text-muted-foreground text-center px-4">
           <Video className="w-5 h-5" />
           <span className="text-caption1">Paste a YouTube or Vimeo URL to preview</span>
-          <span className="text-[10px] text-muted-foreground/60">e.g. youtube.com/watch?v=... or vimeo.com/...</span>
+          <span className="text-caption2 text-muted-foreground/60">e.g. youtube.com/watch?v=... or vimeo.com/...</span>
         </div>
       </div>
     );
@@ -78,7 +78,7 @@ export function VideoEmbedPreview({ url, aspectRatio = 'aspect-video' }: VideoEm
         allowFullScreen
       />
       <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm">
-        <span className="text-[10px] text-white/80 uppercase tracking-wider">
+        <span className="text-caption2 text-white/80 uppercase tracking-wider">
           {platform === 'youtube' ? 'YouTube' : 'Vimeo'}
         </span>
       </div>

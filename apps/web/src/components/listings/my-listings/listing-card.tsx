@@ -206,7 +206,7 @@ export function ListingCard({
 
             {isExpiringSoon && daysRemaining !== null && (
               <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-warning text-white">
-                <span className="text-[10px] font-bold">{daysRemaining}d left</span>
+                <span className="text-caption2 font-bold">{daysRemaining}d left</span>
               </div>
             )}
           </Link>
@@ -232,7 +232,7 @@ export function ListingCard({
 
             {isExpiringSoon && daysRemaining !== null && (
               <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-warning text-white">
-                <span className="text-[10px] font-bold">{daysRemaining}d left</span>
+                <span className="text-caption2 font-bold">{daysRemaining}d left</span>
               </div>
             )}
           </div>

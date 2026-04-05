@@ -230,7 +230,7 @@ export function MacOSWindow({
               </svg>
               
               {/* URL text */}
-              <span className="text-[10px] sm:text-caption1 text-white/50 font-medium truncate min-w-0">{url}</span>
+              <span className="text-caption2 sm:text-caption1 text-white/50 font-medium truncate min-w-0">{url}</span>
             </button>
           </div>
         )}
