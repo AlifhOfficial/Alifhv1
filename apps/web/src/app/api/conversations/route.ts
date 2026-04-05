@@ -9,7 +9,7 @@ import { getSessionUser } from '@/lib/auth/session-context';
 import {
   createOrGetConversation,
   getUserConversations,
-  getScopedUnreadCount,
+  getTotalUnreadCount,
 } from '@alifh/database';
 
 export const runtime = 'nodejs';
@@ -56,11 +56,9 @@ export async function GET(req: NextRequest) {
     });
 
     const totalUnread =
-      await getScopedUnreadCount(user.id, {
-        includeArchived,
-        partnerIds,
-        partnerScope,
-      });
+      scope === 'staff' || scope === 'personal'
+        ? conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0)
+        : await getTotalUnreadCount(user.id);
 
     return NextResponse.json({
       conversations,

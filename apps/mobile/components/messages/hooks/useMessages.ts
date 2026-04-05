@@ -5,17 +5,14 @@
  * Includes real-time updates, typing indicators, and read receipts.
  */
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   fetchMessages,
   sendMessage as sendMessageAPI,
   type Message,
-  type Conversation,
 } from '@/lib/messaging-api';
 import { getAvatarUrl , consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
-import { queryKeys } from '@/lib/query-client';
 
 interface UseMessagesOptions {
   conversationId: string;
@@ -23,7 +20,7 @@ interface UseMessagesOptions {
   otherUserId?: string | null;
   isAuthenticated: boolean;
   enabled?: boolean;
-  /** Deprecated: presence is websocket-only to avoid cache flicker */
+  /** Initial lastSeenAt from conversation snapshot (DB) - used before WS responds */
   initialLastSeenAt?: string | null;
 }
 
@@ -34,6 +31,7 @@ interface UseMessagesReturn {
   isFetchingMore: boolean;
   hasMore: boolean;
   otherLastReadAt: string | null;
+  otherLastReadMessageId: string | null;
   isOtherTyping: boolean;
   isOtherOnline: boolean | null;
   otherLastSeenAt: string | null;
@@ -52,25 +50,29 @@ export function useMessages({
   enabled = true,
   initialLastSeenAt,
 }: UseMessagesOptions): UseMessagesReturn {
-  const queryClient = useQueryClient();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [otherLastReadAt, setOtherLastReadAt] = useState<string | null>(null);
+  const [otherLastReadMessageId, setOtherLastReadMessageId] = useState<string | null>(null);
   const [isOtherTyping, setIsOtherTyping] = useState(false);
   const [isOtherOnline, setIsOtherOnline] = useState<boolean | null>(null);
-  const [otherLastSeenAt, setOtherLastSeenAt] = useState<string | null>(null);
+  // Initialize from DB snapshot, WS updates override it
+  const [otherLastSeenAt, setOtherLastSeenAt] = useState<string | null>(initialLastSeenAt ?? null);
   const [error, setError] = useState<string | null>(null);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
   const { subscribe, send, isConnected } = useWebSocket();
   
   const conversationIdRef = useRef(conversationId);
   const userIdRef = useRef(userId);
   const otherUserIdRef = useRef(otherUserId);
+  const initialLastSeenAtRef = useRef<string | null>(initialLastSeenAt ?? null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSentRef = useRef(0);
   const watchingRef = useRef(false);
-  // Initialize with current socket state to avoid mount-time double fetches.
-  const wasConnectedRef = useRef(isConnected);
-  const lastReconnectRefetchAtRef = useRef(0);
-  const missingConversationRefetchAtRef = useRef(new Map<string, number>());
+  const abortControllerRef = useRef<AbortController | null>(null);
   
   // Track pending sends: tempId -> true (waiting for API) or realId (WS arrived first)
   // This prevents race conditions when WS and API responses arrive out of order
@@ -85,102 +87,41 @@ export function useMessages({
   useEffect(() => {
     otherUserIdRef.current = otherUserId;
   }, [otherUserId]);
-  void initialLastSeenAt;
+  useEffect(() => {
+    initialLastSeenAtRef.current = initialLastSeenAt ?? null;
+  }, [initialLastSeenAt]);
 
-  const messagesQueryKey = useMemo(
-    () => queryKeys.messages(conversationId),
-    [conversationId]
-  );
-
-  type MessagesPage = {
-    messages: Message[];
-    hasMore: boolean;
-    nextCursor: string | null;
-    otherParticipantLastReadAt?: string | null;
-  };
-
-  const query = useInfiniteQuery({
-    queryKey: messagesQueryKey,
-    queryFn: async ({ pageParam }: { pageParam: string | undefined }) => {
-      const data = await fetchMessages(conversationId, {
-        limit: 50,
-        cursor: pageParam,
+  // Update lastSeenAt when initial value changes (conversation refresh)
+  // Only update if new value is more recent (matches web behavior)
+  useEffect(() => {
+    if (initialLastSeenAt) {
+      setOtherLastSeenAt(prev => {
+        if (!prev) return initialLastSeenAt;
+        // Only update if new value is more recent
+        return new Date(initialLastSeenAt) > new Date(prev) ? initialLastSeenAt : prev;
       });
-
-      const messagesWithUrls = data.messages.map(msg => ({
-        ...msg,
-        sender: {
-          ...msg.sender,
-          avatarUrl: getAvatarUrl(msg.sender.avatarUrl),
-        },
-      }));
-
-      return {
-        ...data,
-        messages: messagesWithUrls,
-      };
-    },
-    getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.nextCursor ?? undefined : undefined),
-    initialPageParam: undefined as string | undefined,
-    enabled: !!conversationId && !!userId && isAuthenticated && enabled,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: true,
-    refetchOnMount: true,
-    staleTime: 60_000,
-    gcTime: Infinity,
-  });
-
-  const {
-    data,
-    error: queryError,
-    isFetching,
-    isLoading,
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
-    refetch,
-  } = query;
-
-  // Throttled reconnect refetch for the active thread.
-  useEffect(() => {
-    if (!conversationId || !userId || !isAuthenticated || !enabled) {
-      wasConnectedRef.current = false;
-      return;
     }
+  }, [initialLastSeenAt]);
 
-    const wasConnected = wasConnectedRef.current;
-    const now = Date.now();
-    if (isConnected && !wasConnected && now - lastReconnectRefetchAtRef.current > 5000) {
-      lastReconnectRefetchAtRef.current = now;
-      void refetch();
-    }
-
-    wasConnectedRef.current = isConnected;
-  }, [conversationId, userId, isAuthenticated, enabled, isConnected, refetch]);
-
-  const dedupeMessages = useCallback((items: Message[]): Message[] => {
-    const seen = new Set<string>();
-    return items.filter((m) => {
-      if (seen.has(m.id)) return false;
-      seen.add(m.id);
-      return true;
-    });
-  }, []);
-
-  const messages = useMemo(() => {
-    const flat = data?.pages.flatMap((p) => p.messages) ?? [];
-    return dedupeMessages(flat);
-  }, [data?.pages, dedupeMessages]);
-
-  // Reset per-conversation transient state and trackers
+  // Reset state when conversation changes
+  // MUST be declared BEFORE the watch effect — React runs effects in declaration
+  // order, so reset clears state first, then watch re-subscribes to presence.
   useEffect(() => {
+    // Reset all state for new conversation
+    setMessages([]);
+    setIsLoading(true);
     setError(null);
+    setHasMore(false);
+    setNextCursor(null);
     setOtherLastReadAt(null);
+    setOtherLastReadMessageId(null);
     setIsOtherTyping(false);
     setIsOtherOnline(null);
-    setOtherLastSeenAt(null);
+    // Reset to initial value from DB (not undefined)
+    setOtherLastSeenAt(initialLastSeenAtRef.current);
     watchingRef.current = false;
     conversationIdRef.current = conversationId;
+    // Clear pending sends tracking
     pendingSendsRef.current.clear();
   }, [conversationId]);
 
@@ -198,16 +139,15 @@ export function useMessages({
     };
   }, [isConnected, otherUserId, send]);
 
-  // Keep other participant last-read time in sync from first page response
-  useEffect(() => {
-    const first = data?.pages[0]?.otherParticipantLastReadAt;
-    if (!first) return;
-
-    setOtherLastReadAt((prev) => {
-      if (!prev) return first;
-      return new Date(first) > new Date(prev) ? first : prev;
+  // Helper to deduplicate messages array by ID (keeps first occurrence)
+  const dedupeMessages = useCallback((messages: Message[]): Message[] => {
+    const seen = new Set<string>();
+    return messages.filter(m => {
+      if (seen.has(m.id)) return false;
+      seen.add(m.id);
+      return true;
     });
-  }, [data?.pages]);
+  }, []);
 
   // Subscribe to real-time messages
   useEffect(() => {
@@ -217,14 +157,9 @@ export function useMessages({
         const newMessage = msg.message as Message;
 
         // Check if message already exists (avoid duplicates)
-        queryClient.setQueryData(messagesQueryKey, (old: unknown) => {
-          const data = old as { pages: MessagesPage[]; pageParams: (string | undefined)[] } | undefined;
-          if (!data?.pages?.length) return old;
-
-          const firstPage = data.pages[0];
-          const prev = firstPage.messages;
+        setMessages(prev => {
           if (prev.some(m => m.id === newMessage.id)) {
-            return old;
+            return prev;
           }
 
           const messageWithAvatar = {
@@ -253,67 +188,13 @@ export function useMessages({
               const updated = prev.map(m => 
                 m.id === oldestTempId ? messageWithAvatar : m
               );
-              return {
-                ...data,
-                pages: [
-                  { ...firstPage, messages: dedupeMessages(updated) },
-                  ...data.pages.slice(1),
-                ],
-              };
+              return dedupeMessages(updated);
             }
           }
 
           // Message from other user or no pending temp found - just add it
-          return {
-            ...data,
-            pages: [
-              { ...firstPage, messages: dedupeMessages([messageWithAvatar, ...prev]) },
-              ...data.pages.slice(1),
-            ],
-          };
+          return dedupeMessages([messageWithAvatar, ...prev]);
         });
-
-        // Keep conversations cache in sync for list ordering/preview.
-        let foundConversation = false;
-        queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-          const data = old as { conversations?: Conversation[]; totalUnread?: number } | undefined;
-          if (!data?.conversations) return old;
-
-          const exists = data.conversations.some((c) => c.id === newMessage.conversationId);
-          if (!exists) return old;
-          foundConversation = true;
-
-          const isOwnMessage = newMessage.senderId === userIdRef.current;
-          const preview = newMessage.text?.substring(0, 100) || 'New message';
-
-          return {
-            ...data,
-            conversations: data.conversations
-              .map((c) =>
-                c.id !== newMessage.conversationId
-                  ? c
-                  : {
-                      ...c,
-                      lastMessageAt: newMessage.createdAt,
-                      lastMessagePreview: preview,
-                      messageCount: Math.max((c.messageCount || 0) + (isOwnMessage ? 0 : 1), c.messageCount || 0),
-                      unreadCount: isOwnMessage ? 0 : (c.unreadCount || 0) + 1,
-                    }
-              )
-              .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()),
-            totalUnread: isOwnMessage ? data.totalUnread : (data.totalUnread || 0) + 1,
-          };
-        });
-
-        if (!foundConversation) {
-          const now = Date.now();
-          const lastRefetchAt = missingConversationRefetchAtRef.current.get(newMessage.conversationId) ?? 0;
-          if (now - lastRefetchAt > 1500) {
-            missingConversationRefetchAtRef.current.set(newMessage.conversationId, now);
-            // Mark stale only; avoid immediate full conversations GET while in thread.
-            queryClient.invalidateQueries({ queryKey: ['conversations'], refetchType: 'none' });
-          }
-        }
       }
 
       // Handle typing indicator — only from OTHER user
@@ -345,11 +226,10 @@ export function useMessages({
         msg.lastReadAt &&
         msg.userId !== userIdRef.current
       ) {
-        const nextLastReadAt = msg.lastReadAt;
-        setOtherLastReadAt((prev) => {
-          if (!prev) return nextLastReadAt;
-          return new Date(nextLastReadAt) > new Date(prev) ? nextLastReadAt : prev;
-        });
+        if (typeof msg.messageId === 'string') {
+          setOtherLastReadMessageId(msg.messageId);
+        }
+        setOtherLastReadAt(msg.lastReadAt);
       }
 
       // Handle presence updates for the other user
@@ -383,38 +263,104 @@ export function useMessages({
         clearTimeout(typingTimeoutRef.current);
       }
     };
-  }, [dedupeMessages, subscribe, queryClient, messagesQueryKey]);
+  }, [dedupeMessages, subscribe]);
 
-  useEffect(() => {
-    if (queryError) {
-      setError(queryError instanceof Error ? queryError.message : 'Failed to load messages');
-      return;
-    }
-    if (!isFetching) {
+  // Fetch messages
+  const loadMessages = useCallback(
+    async (cursor?: string) => {
+      if (!isAuthenticated || !enabled) {
+        setIsLoading(false);
+        return;
+      }
+
+      // Abort previous in-flight request (prevents stale data on rapid switching)
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       setError(null);
-    }
-  }, [queryError, isFetching]);
+      
+      try {
+        const data = await fetchMessages(conversationId, {
+          limit: 50,
+          cursor,
+        });
 
+        // If this request was superseded, skip state updates
+        if (controller.signal.aborted) return;
+        
+        // Convert avatar URLs in messages
+        const messagesWithUrls = data.messages.map(msg => ({
+          ...msg,
+          sender: {
+            ...msg.sender,
+            avatarUrl: getAvatarUrl(msg.sender.avatarUrl),
+          },
+        }));
+        
+        if (cursor) {
+          // Appending older messages - dedupe to handle any overlap
+          setMessages(prev => dedupeMessages([...prev, ...messagesWithUrls]));
+        } else {
+          // Initial load or refresh
+          setMessages(dedupeMessages(messagesWithUrls));
+          
+          // Set other participant's last read time (only on first page)
+          if (data.otherParticipantLastReadAt) {
+            setOtherLastReadAt(data.otherParticipantLastReadAt);
+          }
+        }
+
+        if (!cursor) {
+          const readyAt = consumeDataReady(`messaging:messages:${conversationId}`) ?? performance.now();
+          scheduleRenderPerf('messaging.messages-thread', readyAt, {
+            conversationId,
+            count: messagesWithUrls.length,
+          });
+        }
+        
+        setHasMore(data.hasMore);
+        setNextCursor(data.nextCursor);
+      } catch (err) {
+        // Don't set error for aborted requests
+        if (controller.signal.aborted) return;
+        console.error('[useMessages] Load error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load messages');
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+          setIsFetchingMore(false);
+        }
+      }
+    },
+    [conversationId, dedupeMessages, isAuthenticated, enabled]
+  );
+
+  // Load on conversation change or initial mount
   useEffect(() => {
-    if (!data?.pages?.length) return;
-    const firstCount = data.pages[0]?.messages?.length ?? 0;
-    const readyAt = consumeDataReady(`messaging:messages:${conversationId}`) ?? performance.now();
-    scheduleRenderPerf('messaging.messages-thread', readyAt, {
-      conversationId,
-      count: firstCount,
-    });
-  }, [conversationId, data?.pages]);
+    if (isAuthenticated && enabled) {
+      loadMessages();
+    }
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, [conversationId, isAuthenticated, enabled, loadMessages]);
 
   // Refresh handler
   const refresh = useCallback(async () => {
-    await refetch();
-  }, [refetch]);
+    setIsLoading(true);
+    await loadMessages();
+  }, [loadMessages]);
 
   // Fetch more (pagination)
   const fetchMore = useCallback(async () => {
-    if (!hasNextPage || isFetchingNextPage) return;
-    await fetchNextPage();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+    if (!hasMore || isFetchingMore || !nextCursor) return;
+    
+    setIsFetchingMore(true);
+    await loadMessages(nextCursor);
+  }, [hasMore, isFetchingMore, nextCursor, loadMessages]);
 
   // Send message
   const sendMessage = useCallback(
@@ -454,51 +400,8 @@ export function useMessages({
         sender: { id: currentUserId, name: 'You', avatarUrl: null },
       };
 
-      // Add optimistic message to first page
-      queryClient.setQueryData(messagesQueryKey, (old: unknown) => {
-        const data = old as { pages: MessagesPage[]; pageParams: (string | undefined)[] } | undefined;
-        if (!data?.pages?.length) {
-          return {
-            pages: [{ messages: [optimisticMessage], hasMore: false, nextCursor: null }],
-            pageParams: [undefined],
-          };
-        }
-
-        return {
-          ...data,
-          pages: [
-            {
-              ...data.pages[0],
-              messages: dedupeMessages([optimisticMessage, ...data.pages[0].messages]),
-            },
-            ...data.pages.slice(1),
-          ],
-        };
-      });
-
-      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-        const data = old as { conversations?: Conversation[]; totalUnread?: number } | undefined;
-        if (!data?.conversations) return old;
-
-        const optimisticSentAt = new Date().toISOString();
-
-        return {
-          ...data,
-          conversations: data.conversations
-            .map((c) =>
-              c.id === conversationId
-                ? {
-                    ...c,
-                    lastMessageAt: optimisticSentAt,
-                    lastMessagePreview: text.trim(),
-                    messageCount: (c.messageCount ?? 0) + 1,
-                    unreadCount: 0,
-                  }
-                : c
-            )
-            .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()),
-        };
-      });
+      // Add optimistic message to list
+      setMessages(prev => [optimisticMessage, ...prev]);
 
       try {
         const response = await sendMessageAPI(conversationId, { text: text.trim() });
@@ -507,22 +410,12 @@ export function useMessages({
         const pendingValue = pendingSendsRef.current.get(tempId);
         
         // Replace optimistic message with real one
-        queryClient.setQueryData(messagesQueryKey, (old: unknown) => {
-          const data = old as { pages: MessagesPage[]; pageParams: (string | undefined)[] } | undefined;
-          if (!data?.pages?.length) return old;
-          const prev = data.pages[0].messages;
-
+        setMessages(prev => {
           // If WS already replaced temp (pendingValue is the real ID), just dedupe
           if (typeof pendingValue === 'string') {
             // WS handled it - the real message should already be in state
             // Just ensure no duplicates
-            return {
-              ...data,
-              pages: [
-                { ...data.pages[0], messages: dedupeMessages(prev) },
-                ...data.pages.slice(1),
-              ],
-            };
+            return dedupeMessages(prev);
           }
           
           // API arrived first - replace temp with real message
@@ -530,48 +423,14 @@ export function useMessages({
           if (!hasTemp) {
             // Temp was somehow removed, add real message if not exists
             if (prev.some(m => m.id === response.message.id)) {
-              return old;
+              return prev;
             }
-            return {
-              ...data,
-              pages: [
-                { ...data.pages[0], messages: dedupeMessages([response.message, ...prev]) },
-                ...data.pages.slice(1),
-              ],
-            };
+            return dedupeMessages([response.message, ...prev]);
           }
           
-          return {
-            ...data,
-            pages: [
-              {
-                ...data.pages[0],
-                messages: dedupeMessages(prev.map(msg => (msg.id === tempId ? response.message : msg))),
-              },
-              ...data.pages.slice(1),
-            ],
-          };
-        });
-
-        queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-          const data = old as { conversations?: Conversation[]; totalUnread?: number } | undefined;
-          if (!data?.conversations) return old;
-
-          return {
-            ...data,
-            conversations: data.conversations
-              .map((c) =>
-                c.id === conversationId
-                  ? {
-                      ...c,
-                      lastMessageAt: response.message.createdAt,
-                      lastMessagePreview: response.message.text,
-                      unreadCount: 0,
-                    }
-                  : c
-              )
-              .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()),
-          };
+          return dedupeMessages(
+            prev.map(msg => (msg.id === tempId ? response.message : msg))
+          );
         });
         
         // Clean up tracking
@@ -582,26 +441,12 @@ export function useMessages({
         
         // Remove optimistic message and tracking on error
         pendingSendsRef.current.delete(tempId);
-        queryClient.setQueryData(messagesQueryKey, (old: unknown) => {
-          const data = old as { pages: MessagesPage[]; pageParams: (string | undefined)[] } | undefined;
-          if (!data?.pages?.length) return old;
-
-          return {
-            ...data,
-            pages: [
-              {
-                ...data.pages[0],
-                messages: data.pages[0].messages.filter(msg => msg.id !== tempId),
-              },
-              ...data.pages.slice(1),
-            ],
-          };
-        });
+        setMessages(prev => prev.filter(msg => msg.id !== tempId));
       } finally {
         setIsSending(false);
       }
     },
-    [conversationId, dedupeMessages, messagesQueryKey, queryClient]
+    [conversationId, dedupeMessages]
   );
 
   // Throttled typing indicator sender
@@ -622,11 +467,12 @@ export function useMessages({
 
   return {
     messages,
-    isLoading: messages.length === 0 && (isLoading || isFetching),
+    isLoading,
     isSending,
-    isFetchingMore: isFetchingNextPage,
-    hasMore: hasNextPage ?? false,
+    isFetchingMore,
+    hasMore,
     otherLastReadAt,
+    otherLastReadMessageId,
     isOtherTyping,
     isOtherOnline,
     otherLastSeenAt,

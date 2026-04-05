@@ -97,17 +97,17 @@ export function ChatWindow({
           {partner ? (
             <Link
               href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.name)}&sort=relevance`}
-              className="text-subhead sm:text-subhead font-bold tracking-tight truncate text-foreground hover:text-primary hover:underline transition-colors block leading-snug"
+              className="text-subhead font-bold tracking-tight truncate text-foreground hover:text-primary hover:underline transition-colors block leading-snug"
             >
               {displayName}
             </Link>
           ) : (
-            <h3 className="text-subhead sm:text-subhead font-bold tracking-tight truncate text-foreground leading-snug">{displayName}</h3>
+            <h3 className="text-subhead font-bold tracking-tight truncate text-foreground leading-snug">{displayName}</h3>
           )}
           {listing && (
             <Link
               href={`/listings/${listing.id}`}
-              className="text-caption1 text-muted-foreground/70 truncate hover:text-primary hover:underline transition-colors block leading-snug"
+              className="text-caption1 font-medium text-muted-foreground/70 truncate hover:text-primary hover:underline transition-colors block leading-snug"
             >
               {listing.title}
             </Link>
@@ -115,15 +115,15 @@ export function ChatWindow({
           <div className="flex items-center gap-1.5">
             {controller.isOtherOnline && (
               <div className="flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-success" />
-                <span className="text-[10px] sm:text-caption1 font-semibold text-success">Active</span>
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                <span className="text-caption2 font-semibold text-green-600 dark:text-green-400">Active</span>
               </div>
             )}
             {!controller.isOtherOnline && lastActiveAt && (
-              <span className="text-[10px] sm:text-caption1 text-muted-foreground/70">Last seen {getLastSeenText(lastActiveAt)}</span>
+              <span className="text-caption2 font-medium text-muted-foreground/70">Last seen {getLastSeenText(lastActiveAt)}</span>
             )}
             {!controller.isOtherOnline && !lastActiveAt && (
-              <span className="text-[10px] sm:text-caption1 text-muted-foreground/50">Away</span>
+              <span className="text-caption2 font-medium text-muted-foreground/50">Away</span>
             )}
           </div>
         </div>

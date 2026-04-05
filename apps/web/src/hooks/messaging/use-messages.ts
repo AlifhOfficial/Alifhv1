@@ -119,6 +119,7 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     const d = v instanceof Date ? v : new Date(v);
     return isNaN(d.getTime()) ? null : d;
   });
+  const [otherLastReadMessageId, setOtherLastReadMessageId] = useState<string | null>(null);
   const [otherLastSeenAt, setOtherLastSeenAt] = useState<Date | null>(() => {
     const v = options.initialLastSeenAt;
     if (!v) return null;
@@ -161,16 +162,13 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     }
   }, [options.initialLastReadAt]);
 
-  // Check for existing query state (set by page prefetch or previous render)
-  type MessagesInfiniteData = { pages: MessagesPage[]; pageParams: (string | undefined)[] };
   const messagesQueryKey = queryKeys.messaging.messages(conversationId);
-  const existingQueryState = queryClient.getQueryState<MessagesInfiniteData>(messagesQueryKey);
-  
-  // Build effective initial data from props or cache
-  const effectiveInitialData = existingQueryState?.data
-    ?? (options.initialData
-      ? { pages: [options.initialData], pageParams: [undefined] }
-      : undefined);
+  type MessagesInfiniteData = { pages: MessagesPage[]; pageParams: (string | undefined)[] };
+
+  // Use server-prefetched data for instant paint, but still allow background refetch.
+  const effectiveInitialData = options.initialData
+    ? { pages: [options.initialData], pageParams: [undefined] }
+    : undefined;
 
   // Query
   const query = useInfiniteQuery({
@@ -178,16 +176,15 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     queryFn: ({ pageParam }) => fetchMessages(conversationId, pageParam),
     getNextPageParam: (page) => (page.hasMore ? page.nextCursor ?? undefined : undefined),
     initialPageParam: undefined as string | undefined,
-    // Keep query active so threads can recover from missed realtime events.
+    // Always enable while chat is open so stale cache can refresh in background.
     enabled: !!conversationId && !!userId,
+    // Messaging threads must always verify fresh state when opened.
+    staleTime: 0,
+    refetchOnMount: 'always',
     // Server-side prefetched data for instant display
     initialData: effectiveInitialData as MessagesInfiniteData | undefined,
-    // SSR seed data should render instantly but still refetch right away so
-    // read receipts / seen state don't get stuck on stale snapshots.
-    initialDataUpdatedAt: existingQueryState?.dataUpdatedAt ?? (options.initialData ? 0 : undefined),
-    refetchOnMount: true,
-    refetchOnReconnect: true,
-    staleTime: 60_000,
+    // Mark server-provided initial data stale so mount immediately refreshes.
+    initialDataUpdatedAt: effectiveInitialData ? 0 : undefined,
   });
 
   // Update otherLastReadAt from API response (first page includes this for persistence)
@@ -257,10 +254,11 @@ export function useMessages(conversationId: string, userId?: string, options: Us
 
       // Read receipt
       if (msg.type === 'read_receipt' && msg.conversationId === conversationId && msg.userId !== userId) {
-        const d = msg.lastReadAt ? new Date(msg.lastReadAt) : null;
-        if (d && !isNaN(d.getTime())) {
-          setOtherLastReadAt((prev) => (!prev || d > prev ? d : prev));
+        if (typeof msg.messageId === 'string') {
+          setOtherLastReadMessageId(msg.messageId);
         }
+        const d = msg.lastReadAt ? new Date(msg.lastReadAt) : null;
+        if (d && !isNaN(d.getTime())) setOtherLastReadAt(d);
       }
 
       // Presence
@@ -299,6 +297,7 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     isOtherTyping,
     isOtherOnline,
     otherLastReadAt,
+    otherLastReadMessageId,
     otherLastSeenAt,
     sendTyping,
   };
@@ -552,32 +551,24 @@ export function useSendLocationMessage() {
 
       // Update conversation preview in cache optimistically
       queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-        const data2 = old as {
-          pages?: Array<{
-            conversations: Array<{
-              id: string;
-              lastMessageAt?: Date | string;
-              lastMessagePreview?: string | null;
-            }>;
-          }>;
-        } | undefined;
-        if (!data2?.pages) return old;
-
+        const data2 = old as { conversations?: Array<{ id: string; lastMessageAt?: unknown; lastMessagePreview?: string }> };
+        if (!data2?.conversations) return old;
+        
+        const exists = data2.conversations.some(c => c.id === conversationId);
+        if (!exists) {
+          // Conversation not in cache, return unchanged (will refetch below)
+          return old;
+        }
+        
         return {
           ...data2,
-          pages: data2.pages.map((page) => ({
-            ...page,
-            conversations: page.conversations
-              .map((c) =>
-                c.id === conversationId
-                  ? { ...c, lastMessageAt: data.message.createdAt, lastMessagePreview: 'Location' }
-                  : c
-              )
-              .sort(
-                (a, b) =>
-                  new Date(b.lastMessageAt ?? 0).getTime() - new Date(a.lastMessageAt ?? 0).getTime()
-              ),
-          })),
+          conversations: data2.conversations
+            .map(c =>
+              c.id === conversationId
+                ? { ...c, lastMessageAt: data.message.createdAt, lastMessagePreview: '📍 Location' }
+                : c
+            )
+            .sort((a, b) => new Date(b.lastMessageAt as string).getTime() - new Date(a.lastMessageAt as string).getTime()),
         };
       });
 

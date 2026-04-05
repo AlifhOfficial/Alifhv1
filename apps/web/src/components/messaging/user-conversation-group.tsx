@@ -41,35 +41,15 @@ export function UserConversationGroup({
   // Get online status from any conversation with this user
   const isOnline = conversations.some(c => c.otherParticipant?.isOnline);
 
-  const handleHeaderClick = () => {
-    setIsExpanded((v) => !v);
-  };
-
-  const handleChevronClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsExpanded((v) => !v);
-  };
-
-  const handleHeaderKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleHeaderClick();
-    }
-  };
-
   return (
     <div>
-      {/* User Header - Collapsible & Clickable to select conversation */}
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={handleHeaderClick}
-        onKeyDown={handleHeaderKeyDown}
+      {/* User Header - Collapsible */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
-          'w-full py-3 px-3 text-left transition-colors duration-150 hover:bg-sidebar rounded-xl cursor-pointer',
+          'w-full py-3 px-3 text-left transition-colors duration-150 hover:bg-sidebar rounded-xl',
           'flex items-center gap-3'
         )}
-        aria-expanded={isExpanded}
       >
         {/* User Avatar with Online Indicator */}
         <div className="relative flex-shrink-0">
@@ -80,7 +60,7 @@ export function UserConversationGroup({
             className="w-9 h-9"
           />
           {isOnline && (
-            <span className="absolute bottom-0 right-0 w-2 h-2 bg-success border-2 border-sidebar rounded-full" />
+            <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border-2 border-sidebar rounded-full" />
           )}
         </div>
 
@@ -94,20 +74,13 @@ export function UserConversationGroup({
 
         {/* Right side: unread dot + chevron */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          {totalUnread > 0 && <span className="w-1.5 h-1.5 bg-favorite rounded-full" />}
-          <button
-            type="button"
-            onClick={handleChevronClick}
-            className="p-1 -m-1 rounded-md hover:bg-sidebar/70"
-            aria-label={isExpanded ? 'Collapse conversations' : 'Expand conversations'}
-          >
-            <ChevronRight className={cn(
-              'w-4 h-4 text-muted-foreground/40 transition-transform',
-              isExpanded && 'rotate-90'
-            )} />
-          </button>
+          {totalUnread > 0 && <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />}
+          <ChevronRight className={cn(
+            'w-4 h-4 text-muted-foreground/40 transition-transform',
+            isExpanded && 'rotate-90'
+          )} />
         </div>
-      </div>
+      </button>
       
       {/* Nested Conversations */}
       {isExpanded && (

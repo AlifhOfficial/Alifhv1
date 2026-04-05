@@ -152,6 +152,14 @@ export async function fetchConversations(options?: {
 }
 
 /**
+ * Get total unread message count across all conversations
+ */
+export async function getUnreadCount(): Promise<number> {
+  const data = await fetchConversations({ limit: 1 });
+  return data.totalUnread ?? 0;
+}
+
+/**
  * Fetch a single conversation by ID (for newly created convos not yet in list)
  */
 export async function fetchConversation(conversationId: string): Promise<Conversation> {
@@ -243,7 +251,7 @@ export async function markConversationAsRead(conversationId: string, messageId?:
   const requestStartedAt = performance.now();
   const response = await messagingFetch(endpoint, {
     method: 'PATCH',
-    body: messageId ? { messageId } : {},
+    body: { messageId },
   });
   
   if (!response.ok) {
@@ -251,7 +259,7 @@ export async function markConversationAsRead(conversationId: string, messageId?:
     throw new Error(error.error || 'Failed to mark as read');
   }
   await parseJsonWithPerf<unknown>('messaging.mark-read', url, response, requestStartedAt, {
-    meta: { conversationId, messageId: messageId ?? null },
+    meta: { conversationId },
   }).catch(() => ({ data: null }));
 }
 

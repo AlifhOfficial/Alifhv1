@@ -5,6 +5,7 @@
 
 'use client';
 
+import { useEffect, useState } from 'react';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { cn } from '@/utils/cn';
 import { getAppThumbUrl } from '@/utils/storage';
@@ -41,6 +42,11 @@ export function MessageBubble({
   compact = false,
 }: MessageBubbleProps) {
   const { sender, text, mediaUrl, mediaType, mediaMetadata, createdAt, isEdited, isSystemMessage } = message;
+  const [isClientMounted, setIsClientMounted] = useState(false);
+
+  useEffect(() => {
+    setIsClientMounted(true);
+  }, []);
   
   // Check if this is a temporary optimistic message
   const isOptimistic = message.id.startsWith('temp-');
@@ -110,7 +116,7 @@ export function MessageBubble({
               <div className="w-full aspect-[4/3] bg-muted/40" />
             )}
             <div className="p-2 sm:p-2.5 bg-card">
-              <p className="text-caption1 sm:text-subhead font-bold text-foreground line-clamp-2">
+              <p className="text-subhead font-bold text-foreground line-clamp-2">
                 {listing.title}
               </p>
             </div>
@@ -125,7 +131,7 @@ export function MessageBubble({
               'break-words transition-all duration-200',
               compact ? 'rounded-xl px-3 py-2' : 'rounded-2xl sm:rounded-[18px] px-3 sm:px-4 py-2 sm:py-2.5',
               isOwn
-                ? 'bg-primary text-white rounded-br-md'
+                ? 'bg-blue-500 text-white rounded-br-md'
                 : 'bg-sidebar border border-border/30 text-foreground rounded-bl-md',
               isOptimistic && 'opacity-70'
             )}
@@ -189,14 +195,14 @@ export function MessageBubble({
               isOptimistic && 'opacity-0' // Hide timestamp for optimistic messages
             )}
           >
-            {formatDistanceToNow(new Date(createdAt), { addSuffix: true })}
+            {isClientMounted ? formatDistanceToNow(new Date(createdAt), { addSuffix: true }) : ''}
           </small>
         </div>
 
         {/* Failed indicator - only show X if message failed to send */}
         {isOwn && !isOptimistic && !message.deliveredAt && !message.createdAt && (
           <div className="mt-1 px-2 flex items-center justify-end">
-            <X className="h-3 w-3 text-destructive" aria-label="Failed to send" />
+            <X className="h-3 w-3 text-red-500" aria-label="Failed to send" />
           </div>
         )}
 

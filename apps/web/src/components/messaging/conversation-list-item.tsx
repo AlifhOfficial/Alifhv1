@@ -83,7 +83,7 @@ export function ConversationListItem({
               className="w-11 h-11"
             />
             {isOnline && (
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-success border-2 border-background rounded-full" />
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
             )}
           </div>
         ) : (
@@ -95,7 +95,7 @@ export function ConversationListItem({
               className="w-11 h-11"
             />
             {isOnline && (
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-success border-2 border-background rounded-full" />
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
             )}
           </div>
         )}
@@ -111,7 +111,7 @@ export function ConversationListItem({
             >
               {displayName}
             </h3>
-            <span className="text-caption1 text-muted-foreground/50 ml-2 flex-shrink-0">
+            <span className="text-caption1 font-medium text-muted-foreground/50 ml-2 flex-shrink-0">
               {lastMessageDate ? formatDistanceToNow(lastMessageDate, { addSuffix: false }) : ''}
             </span>
           </div>
@@ -121,7 +121,7 @@ export function ConversationListItem({
             <Link
               href={`/listings/${listing.id}`}
               onClick={(e) => e.stopPropagation()}
-              className="text-caption1 text-muted-foreground/50 mb-0.5 truncate block hover:text-primary hover:underline transition-colors"
+              className="text-caption1 font-medium text-muted-foreground/50 mb-0.5 truncate block hover:text-primary hover:underline transition-colors"
             >
               Re: {listing.title}
             </Link>
@@ -139,7 +139,7 @@ export function ConversationListItem({
               {lastMessagePreview || 'No messages yet'}
             </p>
             {unreadCount > 0 && !isNested && (
-              <span className="w-1.5 h-1.5 flex-shrink-0 bg-favorite rounded-full" />
+              <span className="w-1.5 h-1.5 flex-shrink-0 bg-rose-500 rounded-full" />
             )}
           </div>
         </div>

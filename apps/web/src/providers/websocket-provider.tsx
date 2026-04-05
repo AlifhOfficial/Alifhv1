@@ -14,7 +14,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 
 export type WSMessageType = 
   | 'connected' | 'ping' | 'pong' 
-  | 'new_message' | 'read_receipt' | 'typing' | 'presence' | 'mark_read';
+  | 'new_message' | 'read_receipt' | 'typing' | 'presence';
 
 export interface WSMessage {
   type: WSMessageType;

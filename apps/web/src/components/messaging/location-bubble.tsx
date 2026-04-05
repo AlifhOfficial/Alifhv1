@@ -73,7 +73,7 @@ export function LocationBubble({
           'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
           'w-6 h-6 rounded-full flex items-center justify-center',
           'shadow-lg',
-          isOwn ? 'bg-primary' : 'bg-foreground'
+          isOwn ? 'bg-blue-500' : 'bg-foreground'
         )}>
           <MapPin className={cn(
             'w-3.5 h-3.5',
@@ -86,7 +86,7 @@ export function LocationBubble({
       <div className={cn(
         'flex items-center gap-2',
         compact ? 'px-2 py-1.5' : 'px-3 py-2',
-        isOwn ? 'bg-primary text-white' : 'bg-sidebar border-x border-b border-border/30'
+        isOwn ? 'bg-blue-500 text-white' : 'bg-sidebar border-x border-b border-border/30'
       )}>
         <div className="flex-1 min-w-0">
           {placeName && (
@@ -101,7 +101,7 @@ export function LocationBubble({
           {address && (
             <p className={cn(
               'truncate',
-              compact ? 'text-[10px]' : 'text-caption1',
+              compact ? 'text-caption2' : 'text-caption1',
               isOwn ? 'text-white/80' : 'text-muted-foreground'
             )}>
               {address}
@@ -109,7 +109,7 @@ export function LocationBubble({
           )}
           {!placeName && !address && (
             <p className={cn(
-              compact ? 'text-[10px]' : 'text-caption1',
+              compact ? 'text-caption2' : 'text-caption1',
               isOwn ? 'text-white/80' : 'text-muted-foreground'
             )}>
               {latitude.toFixed(6)}, {longitude.toFixed(6)}

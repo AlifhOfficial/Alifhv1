@@ -7,9 +7,8 @@
 
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { getConversationsAction } from '@/actions/messaging';
-import { queryKeys } from '@/lib/query-keys';
 import { isConversationActive } from './active-conversations';
 
 // ============================================================================
@@ -49,9 +48,6 @@ export interface ConversationsResponse {
   hasMore: boolean;
 }
 
-const recentReadMarks = new Map<string, number>();
-const READ_MARK_DEDUPE_MS = 60_000;
-
 // ============================================================================
 // API
 // ============================================================================
@@ -69,7 +65,7 @@ async function markAsReadAPI(conversationId: string, messageId?: string): Promis
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify(messageId ? { messageId } : {}),
+    body: JSON.stringify({ messageId }),
   });
   if (!res.ok) throw new Error('Failed to mark as read');
 }
@@ -111,8 +107,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
   const queryClient = useQueryClient();
   const { subscribe, send, isConnected } = useWebSocket();
   const enabled = options.enabled ?? true;
-  const wasConnectedRef = useRef(isConnected);
-  const lastReconnectRefetchAtRef = useRef(0);
+  const wasConnectedRef = useRef(false);
   const watchedUsersRef = useRef(new Set<string>());
   const presenceMapRef = useRef(new Map<string, { isOnline?: boolean; lastSeenAt?: Date | string | null }>());
   const missingConversationRefetchAtRef = useRef(new Map<string, number>());
@@ -120,13 +115,11 @@ export function useConversations(options: UseConversationsOptions = {}) {
   const limit = options.limit ?? 50;
 
   // Include limit so lightweight navbar data doesn't share cache with full inbox data
-  const queryKey = useMemo(
-    () => ['conversations', options.userId, options.scope, limit] as const,
-    [options.userId, options.scope, limit]
-  );
+  const queryKey = ['conversations', options.userId, options.scope, limit] as const;
 
   // Check for existing query state (set by QueryProvider or previous render)
   const existingQueryState = queryClient.getQueryState<ConversationsInfiniteData>(queryKey);
+  const hasExistingData = existingQueryState?.data !== undefined;
   
   // Build effective initial data for infinite query structure
   const effectiveInitialData: ConversationsInfiniteData | undefined = options.initialData 
@@ -143,55 +136,45 @@ export function useConversations(options: UseConversationsOptions = {}) {
       return totalLoaded;
     },
     initialPageParam: 0,
-    enabled: !!options.userId && enabled,
+    // Skip fetch if we have cached data (from QueryProvider seed or previous fetch)
+    enabled: !!options.userId && enabled && !hasExistingData && !options.initialData,
     refetchOnWindowFocus: false,
-    refetchOnMount: true,
-    refetchOnReconnect: true,
-    staleTime: 60_000,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
     gcTime: Infinity,
     initialData: effectiveInitialData,
-    initialDataUpdatedAt: options.initialData
-      ? 0
-      : existingQueryState?.dataUpdatedAt,
+    initialDataUpdatedAt: effectiveInitialData ? Date.now() : undefined,
   });
-  const { refetch } = query;
-  const pages = query.data?.pages;
 
   // Flatten all pages to get conversations and aggregate totalUnread
   const flatData = useMemo(() => {
-    if (!pages) return { conversations: [], totalUnread: 0 };
+    if (!query.data?.pages) return { conversations: [], totalUnread: 0 };
     
     const allConversations: Conversation[] = [];
     let totalUnread = 0;
     
-    for (const page of pages) {
+    for (const page of query.data.pages) {
       allConversations.push(...page.conversations);
       // Only use totalUnread from first page (represents total count)
-      if (page === pages[0]) {
+      if (page === query.data.pages[0]) {
         totalUnread = page.totalUnread;
       }
     }
     
     return { conversations: allConversations, totalUnread };
-  }, [pages]);
+  }, [query.data?.pages]);
 
-  // Track WebSocket connection transitions and perform a throttled refresh on reconnect.
-  // This heals any missed WS events without forcing frequent background fetches.
+  // Track WebSocket connection state for presence watching
+  // NOTE: We do NOT refetch on reconnect - server-seeded data is authoritative
+  // Real-time updates come via WebSocket subscriptions below
   useEffect(() => {
     if (!options.userId || !enabled) {
       wasConnectedRef.current = false;
       return;
     }
-
-    const wasConnected = wasConnectedRef.current;
-    const now = Date.now();
-    if (isConnected && !wasConnected && now - lastReconnectRefetchAtRef.current > 5000) {
-      lastReconnectRefetchAtRef.current = now;
-      void refetch();
-    }
-
     wasConnectedRef.current = isConnected;
-  }, [options.userId, isConnected, enabled, refetch]);
+  }, [options.userId, isConnected, enabled]);
 
   // Match mobile behavior: actively watch presence for all users shown in the conversation list
   useEffect(() => {
@@ -299,7 +282,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
           // Throttle forced refetches per missing conversation to avoid WS bursts.
           if (now - lastRefetchAt > 1500) {
             missingConversationRefetchAtRef.current.set(msg.conversationId, now);
-            refetch();
+            query.refetch();
           }
         }
       }
@@ -349,15 +332,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
                   ...c,
                   otherParticipant: c.otherParticipant ? {
                     ...c.otherParticipant,
-                    lastReadAt: (() => {
-                      if (!msg.lastReadAt) return c.otherParticipant.lastReadAt;
-                      const next = new Date(msg.lastReadAt);
-                      const prev = c.otherParticipant.lastReadAt
-                        ? new Date(c.otherParticipant.lastReadAt)
-                        : null;
-                      if (Number.isNaN(next.getTime())) return c.otherParticipant.lastReadAt;
-                      return !prev || next > prev ? next : c.otherParticipant.lastReadAt;
-                    })(),
+                    lastReadAt: msg.lastReadAt ? new Date(msg.lastReadAt) : c.otherParticipant.lastReadAt,
                   } : c.otherParticipant,
                 }
               ),
@@ -368,20 +343,40 @@ export function useConversations(options: UseConversationsOptions = {}) {
     });
 
     return unsub;
-  }, [subscribe, queryClient, options.userId, queryKey, refetch]);
+  }, [subscribe, queryClient, options.userId, queryKey, query.refetch]);
+
+  // Apply live presence updates to flattened conversations
+  const conversations = useMemo(() => {
+    return flatData.conversations.map((conversation) => {
+      const otherId = conversation.otherParticipant?.id;
+      if (!otherId || !conversation.otherParticipant) return conversation;
+
+      const livePresence = presenceMapRef.current.get(otherId);
+      if (!livePresence) return conversation;
+
+      return {
+        ...conversation,
+        otherParticipant: {
+          ...conversation.otherParticipant,
+          isOnline: livePresence.isOnline ?? conversation.otherParticipant.isOnline,
+          lastSeenAt: livePresence.lastSeenAt ?? conversation.otherParticipant.lastSeenAt,
+        },
+      };
+    });
+  }, [flatData.conversations]);
 
   // Check if more pages can be loaded
   const hasMore = query.hasNextPage ?? false;
 
   return {
-    conversations: flatData.conversations,
+    conversations,
     totalUnread: flatData.totalUnread,
     hasMore,
     isLoading: query.isLoading,
     isFetchingMore: query.isFetchingNextPage,
     error: query.error?.message,
     fetchMore: query.fetchNextPage,
-    refetch,
+    refetch: query.refetch,
   };
 }
 
@@ -391,49 +386,22 @@ export function useConversations(options: UseConversationsOptions = {}) {
 
 export function useMarkAsRead() {
   const queryClient = useQueryClient();
-  const { isConnected, send } = useWebSocket();
-  const markedRef = useRef(new Set<string>()); // Prevent duplicate calls within 5 seconds
+  const markedRef = useRef(new Set<string>()); // Prevent concurrent duplicate calls per conversation
 
   const mutation = useMutation({
     mutationFn: async ({ conversationId, messageId }: { conversationId: string; messageId?: string }) => {
-      const dedupeKey = messageId ? `${conversationId}:${messageId}` : conversationId;
-      const lastMarkedAt = recentReadMarks.get(dedupeKey);
-      if (lastMarkedAt && Date.now() - lastMarkedAt < READ_MARK_DEDUPE_MS) {
-        return;
-      }
-      recentReadMarks.set(dedupeKey, Date.now());
-      if (isConnected) {
-        send({ type: 'mark_read', conversationId, messageId });
-        return;
-      }
       await markAsReadAPI(conversationId, messageId);
     },
 
-    onMutate: async ({ conversationId, messageId }) => {
-      const dedupeKey = messageId ? `${conversationId}:${messageId}` : conversationId;
-      const lastMarkedAt = recentReadMarks.get(dedupeKey);
-      if (lastMarkedAt && Date.now() - lastMarkedAt < READ_MARK_DEDUPE_MS) {
+    onMutate: async ({ conversationId }) => {
+      if (markedRef.current.has(conversationId)) {
         return { skipped: true };
       }
 
-      // Skip optimistic update if already marked recently, but still allow API call
-      if (markedRef.current.has(conversationId)) return;
       markedRef.current.add(conversationId);
 
       await queryClient.cancelQueries({ queryKey: ['conversations'] });
       let unreadToRemove = 0;
-      const messageQueryData = queryClient.getQueryData<{ pages?: Array<{ messages?: Array<{ id: string; createdAt?: Date | string | null }> }> }>(
-        queryKeys.messaging.messages(conversationId)
-      );
-      const optimisticReadAt = (() => {
-        if (!messageId) return new Date();
-        const match = messageQueryData?.pages
-          ?.flatMap((page) => page.messages ?? [])
-          .find((message) => message.id === messageId);
-        if (!match?.createdAt) return new Date();
-        const date = match.createdAt instanceof Date ? match.createdAt : new Date(String(match.createdAt));
-        return Number.isNaN(date.getTime()) ? new Date() : date;
-      })();
 
       queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
         const data = old as ConversationsInfiniteData | undefined;
@@ -448,14 +416,7 @@ export function useMarkAsRead() {
             return {
               ...page,
               conversations: page.conversations.map(c =>
-                c.id === conversationId ? {
-                  ...c,
-                  unreadCount: 0,
-                  myLastReadAt: (() => {
-                    const prev = c.myLastReadAt ? new Date(c.myLastReadAt) : null;
-                    return !prev || optimisticReadAt > prev ? optimisticReadAt : c.myLastReadAt;
-                  })(),
-                } : c
+                c.id === conversationId ? { ...c, unreadCount: 0 } : c
               ),
               totalUnread: idx === 0
                 ? Math.max(0, (page.totalUnread || 0) - unreadToRemove)
@@ -467,30 +428,19 @@ export function useMarkAsRead() {
 
     },
 
-    onError: (_error, variables) => {
-      const dedupeKey = variables.messageId ? `${variables.conversationId}:${variables.messageId}` : variables.conversationId;
-      recentReadMarks.delete(dedupeKey);
+    onError: (_error) => {
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
 
     onSettled: (_, __, variables) => {
-      const conversationId = variables.conversationId;
-      setTimeout(() => markedRef.current.delete(conversationId), 5000);
+      markedRef.current.delete(variables.conversationId);
     },
   });
 
-  const { mutate, isPending } = mutation;
-
-  const markAsRead = useCallback(
-    (conversationId: string, messageId?: string) => {
-      mutate({ conversationId, messageId });
-    },
-    [mutate]
-  );
-
   return {
-    markAsRead,
-    isMarking: isPending,
+    markAsRead: (conversationId: string, messageId?: string) =>
+      mutation.mutate({ conversationId, messageId }),
+    isMarking: mutation.isPending,
   };
 }
 

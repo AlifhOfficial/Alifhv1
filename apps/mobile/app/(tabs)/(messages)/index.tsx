@@ -10,8 +10,7 @@
 import { Skeleton, SkeletonCircle, HapticRefreshControl, EmptyState, RequireAuthSheet } from '@/components/ui';
 import React, { useMemo, useCallback, useRef } from 'react';
 import { StyleSheet, View, FlatList, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { MessageCircle } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -44,7 +43,7 @@ export default function MessagesScreen() {
   const colors = Colors[colorScheme];
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const listRef = useRef<FlatList<ListItem>>(null);
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = React.useState(false);
 
@@ -52,15 +51,28 @@ export default function MessagesScreen() {
     conversations,
     isLoading,
     isRefreshing,
-    hasLoadedOnce,
     error,
-    pullToRefresh,
     refresh,
+    pullToRefresh,
   } = useConversations({
     isAuthenticated,
     userId: user?.id,
     scope: 'personal',
   });
+
+  // Re-fetch conversations when this tab regains focus (not initial mount)
+  const isFirstFocus = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (isFirstFocus.current) {
+        isFirstFocus.current = false;
+        return; // Skip — initial useEffect in hook already loads
+      }
+      if (isAuthenticated) {
+        refresh();
+      }
+    }, [isAuthenticated, refresh])
+  );
 
   // ── Build grouped list (matching web app logic) ─────────
   const listItems = useMemo<ListItem[]>(() => {
@@ -77,7 +89,6 @@ export default function MessagesScreen() {
       string,
       { user: NonNullable<Conversation['otherParticipant']>; conversations: Conversation[] }
     >();
-    const fallbackItems: ListItem[] = [];
 
     for (const conv of validConversations) {
       if (conv.partnerId && conv.partner) {
@@ -103,15 +114,6 @@ export default function MessagesScreen() {
             conversations: [conv],
           });
         }
-      } else {
-        fallbackItems.push({
-          key: `conversation-${conv.id}`,
-          name: conv.subject || conv.listing?.title || 'Conversation',
-          avatarUrl: conv.partner?.logo || conv.listing?.thumbnail || null,
-          isOnline: false,
-          lastSeenAt: null,
-          conversations: [conv],
-        });
       }
     }
 
@@ -165,8 +167,6 @@ export default function MessagesScreen() {
       });
     }
 
-    items.push(...fallbackItems);
-
     // Sort by most recent
     items.sort((a, b) => {
       const getLatest = (item: ListItem) =>
@@ -209,26 +209,7 @@ export default function MessagesScreen() {
 
   // ── Empty / loading / error component for FlatList ──────────
   const renderEmpty = useCallback(() => {
-    if ((isAuthLoading || isLoading || isRefreshing) && conversations.length === 0) {
-      return (
-        <View style={styles.skeletonList}>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <View key={i} style={styles.skeletonRow}>
-              <SkeletonCircle size={Sizes.avatarLg} />
-              <View style={styles.skeletonRowContent}>
-                <View style={styles.skeletonRowTop}>
-                  <Skeleton width={120} height={14} />
-                  <Skeleton width={40} height={12} />
-                </View>
-                <Skeleton width={200} height={12} />
-              </View>
-            </View>
-          ))}
-        </View>
-      );
-    }
-
-    if (!hasLoadedOnce && conversations.length === 0) {
+    if ((isLoading || isRefreshing) && conversations.length === 0) {
       return (
         <View style={styles.skeletonList}>
           {Array.from({ length: 6 }).map((_, i) => (
@@ -266,7 +247,7 @@ export default function MessagesScreen() {
         style={styles.emptyState}
       />
     );
-  }, [isAuthLoading, isLoading, isRefreshing, hasLoadedOnce, conversations.length, error]);
+  }, [isLoading, isRefreshing, conversations.length, error]);
 
   const headerInset = getMobileHeaderContentInset(insets.top);
   const tabBarInset = getTabBarContentInset(insets.bottom);
@@ -282,18 +263,7 @@ export default function MessagesScreen() {
     return unsubscribe;
   }, [subscribeToScrollToTop]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (!isAuthenticated || !user?.id) {
-        return undefined;
-      }
-
-      void refresh();
-      return undefined;
-    }, [isAuthenticated, refresh, user?.id])
-  );
-
-  if (!isAuthLoading && !isAuthenticated) {
+  if (!isAuthenticated) {
     return <RequireAuthSheet context="messages" />;
   }
 

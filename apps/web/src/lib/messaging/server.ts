@@ -1,7 +1,7 @@
 import {
   getConversationParticipants,
   getMessages,
-  getScopedUnreadCount,
+  getTotalUnreadCount,
   getUserConversations,
 } from '@alifh/database';
 
@@ -47,11 +47,9 @@ export async function getSerializedConversationsForUser(
   });
 
   const totalUnread =
-    await getScopedUnreadCount(user.id, {
-      includeArchived,
-      partnerIds,
-      partnerScope,
-    });
+    options.scope === 'staff' || options.scope === 'personal'
+      ? conversations.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0)
+      : await getTotalUnreadCount(user.id);
 
   return {
     conversations: conversations.map((conversation) => ({

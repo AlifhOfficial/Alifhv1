@@ -203,7 +203,7 @@ const server = Bun.serve<WSData>({
       return req.json().then((body: unknown) => {
         const { channel, message } =
           body && typeof body === "object"
-            ? body as { channel?: unknown; message?: unknown }
+            ? (body as { channel?: unknown; message?: unknown })
             : {};
 
         if (!channel || !message) {
@@ -264,17 +264,18 @@ const server = Bun.serve<WSData>({
 
           case "mark_read":
             if (data.conversationId) {
+              const lastReadAt = new Date();
               markConversationAsRead(
                 data.conversationId,
-                userId,
-                typeof data.messageId === "string" ? data.messageId : undefined
+                userId
               )
-                .then(async (lastReadAt) => {
+                .then(async () => {
                   const participants = await getConversationParticipants(data.conversationId);
                   const payload = JSON.stringify({
                     type: "read_receipt",
                     conversationId: data.conversationId,
                     userId,
+                    messageId: typeof data.messageId === "string" ? data.messageId : undefined,
                     lastReadAt: lastReadAt.toISOString(),
                   });
 

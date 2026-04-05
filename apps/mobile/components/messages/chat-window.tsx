@@ -4,15 +4,8 @@
  */
 
 import { Text, Skeleton } from '@/components/ui';
-import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
-import {
-  View,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-  Dimensions,
-  Pressable,
-} from 'react-native';
+import React, { useMemo, useRef, useCallback, useEffect } from 'react';
+import { View, FlatList, StyleSheet, ActivityIndicator, Dimensions, Pressable } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { Stack, useRouter } from 'expo-router';
 import Animated, {
@@ -65,7 +58,6 @@ export function ChatWindow({
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<Message>>(null);
-  const hasUserScrolledForPaginationRef = useRef(false);
 
   // Timestamp panel state
   const panelTranslateX = useSharedValue(PANEL_WIDTH);
@@ -103,6 +95,7 @@ export function ChatWindow({
     isFetchingMore,
     hasMore,
     otherLastReadAt,
+    otherLastReadMessageId,
     isOtherTyping,
     isOtherOnline,
     otherLastSeenAt,
@@ -126,29 +119,22 @@ export function ChatWindow({
   const avatarUrl = conversation?.partner
     ? conversation.partner.logo
     : conversation?.otherParticipant?.avatarUrl;
-  // Presence is websocket-only to avoid cache flicker.
-  const isOnline = isOtherOnline === true;
+  // Use live presence from useMessages (real-time via WS, initialized from DB)
+  const isOnline = isOtherOnline ?? conversation?.otherParticipant?.isOnline ?? false;
+  // otherLastSeenAt is now initialized from DB in useMessages, WS updates override
   const lastSeenAt = otherLastSeenAt;
   const listingTitle = conversation?.listing?.title;
   const otherUserAvatar = avatarUrl;
   const otherUserName = displayName;
   const myLastReadAt = conversation?.myLastReadAt;
-  const [localMyLastReadAt, setLocalMyLastReadAt] = useState<Date | null>(() => {
-    if (!myLastReadAt) return null;
-    const date = new Date(myLastReadAt);
-    return Number.isNaN(date.getTime()) ? null : date;
-  });
-  const myLastReadAtDate = useMemo(() => {
-    if (localMyLastReadAt) return localMyLastReadAt;
-    if (!myLastReadAt) return null;
-    const date = new Date(myLastReadAt);
-    return Number.isNaN(date.getTime()) ? null : date;
-  }, [localMyLastReadAt, myLastReadAt]);
+  const myLastReadAtDate = useMemo(
+    () => (myLastReadAt ? new Date(myLastReadAt) : null),
+    [myLastReadAt]
+  );
   const { markAsRead } = useMarkAsRead(userId);
   
   // Track last marked message to prevent duplicate API calls
   const lastMarkedMsgIdRef = useRef<string | null>(null);
-  const markReadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     markConversationActive(conversationId);
@@ -157,61 +143,35 @@ export function ChatWindow({
 
   useEffect(() => {
     lastMarkedMsgIdRef.current = null;
-    setLocalMyLastReadAt(() => {
-      if (!myLastReadAt) return null;
-      const date = new Date(myLastReadAt);
-      return Number.isNaN(date.getTime()) ? null : date;
-    });
-    if (markReadTimeoutRef.current) {
-      clearTimeout(markReadTimeoutRef.current);
-      markReadTimeoutRef.current = null;
-    }
-  }, [conversationId, myLastReadAt]);
-
-  useEffect(() => {
-    if (!myLastReadAt) return;
-    const date = new Date(myLastReadAt);
-    if (Number.isNaN(date.getTime())) return;
-    setLocalMyLastReadAt((prev) => (!prev || date > prev ? date : prev));
-  }, [myLastReadAt]);
+  }, [conversationId]);
 
   // Find the newest message that was read by other user (for "seen" indicator)
   const lastReadMsgId = useMemo(
-    () => getLastReadOwnMessageId(messages, userId, otherLastReadAt),
-    [messages, otherLastReadAt, userId]
+    () => {
+      if (otherLastReadMessageId) {
+        const matched = messages.find(
+          (m) => m.id === otherLastReadMessageId && m.senderId === userId && !m.id.startsWith('temp-')
+        );
+        if (matched) return matched.id;
+      }
+      return getLastReadOwnMessageId(messages, userId, otherLastReadAt);
+    },
+    [messages, otherLastReadAt, otherLastReadMessageId, userId]
   );
 
-  const newestUnreadIncomingMessage = useMemo(
-    () => messages.find((message) => message.id === getNewestUnreadIncomingMessageId(messages, userId, myLastReadAtDate)) ?? null,
+  const newestUnreadIncomingMessageId = useMemo(
+    () => getNewestUnreadIncomingMessageId(messages, userId, myLastReadAtDate),
     [messages, userId, myLastReadAtDate]
   );
 
   // Mark conversation as read when viewing messages from other user
   useEffect(() => {
-    if (isLoading || !newestUnreadIncomingMessage) return;
-    if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessage.id) return;
+    if (isLoading || !newestUnreadIncomingMessageId) return;
+    if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessageId) return;
 
-    if (markReadTimeoutRef.current) {
-      clearTimeout(markReadTimeoutRef.current);
-    }
-
-    // Debounce read-mark writes to batch rapid incoming bursts.
-    markReadTimeoutRef.current = setTimeout(() => {
-      const readAt = new Date(newestUnreadIncomingMessage.createdAt);
-      if (!Number.isNaN(readAt.getTime())) {
-        setLocalMyLastReadAt((prev) => (!prev || readAt > prev ? readAt : prev));
-      }
-      lastMarkedMsgIdRef.current = newestUnreadIncomingMessage.id;
-      markAsRead(conversationId, newestUnreadIncomingMessage.id);
-      markReadTimeoutRef.current = null;
-    }, 1000);
-
-    return () => {
-      if (markReadTimeoutRef.current) {
-        clearTimeout(markReadTimeoutRef.current);
-      }
-    };
-  }, [conversationId, isLoading, newestUnreadIncomingMessage, markAsRead]);
+    lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
+    markAsRead(conversationId, newestUnreadIncomingMessageId);
+  }, [conversationId, isLoading, newestUnreadIncomingMessageId, markAsRead]);
 
   // Handle sending message
   const handleSend = useCallback(
@@ -247,16 +207,10 @@ export function ChatWindow({
 
   // Handle infinite scroll
   const handleEndReached = useCallback(() => {
-    // Prevent auto-pagination churn on mount/rerenders in inverted lists.
-    if (!hasUserScrolledForPaginationRef.current) return;
     if (!isFetchingMore && hasMore) {
       fetchMore();
     }
   }, [isFetchingMore, hasMore, fetchMore]);
-
-  const handleScrollBeginDrag = useCallback(() => {
-    hasUserScrolledForPaginationRef.current = true;
-  }, []);
 
   // Format date label for separators
   const formatDateLabel = useCallback((date: Date): string => {
@@ -398,7 +352,6 @@ export function ChatWindow({
   }, [isOnline, lastSeenAt]);
 
   const { applySearch, clearSearch, clearFilterParams } = useSearch();
-  const showThreadLoading = isLoading || (!conversation && messages.length === 0);
 
   // Avatar + name + status as a single title node
   const titleNode = useMemo(() => {
@@ -485,7 +438,7 @@ export function ChatWindow({
       {/* Messages List with horizontal swipe for timestamps */}
       <GestureDetector gesture={swipeGesture}>
         <View style={styles.messagesArea}>
-          {showThreadLoading ? (
+          {isLoading ? (
             <View style={styles.skeletonContainer}>
               {/* Simulate a chat thread with alternating left/right skeleton bubbles */}
               {[...Array(12)].map((_, i) => {
@@ -530,7 +483,6 @@ export function ChatWindow({
                 renderItem={renderMessage}
                 keyExtractor={(item) => item.id}
                 inverted
-                onScrollBeginDrag={handleScrollBeginDrag}
                 contentContainerStyle={[
                   styles.messagesContent,
                   messages.length > 0
@@ -550,7 +502,7 @@ export function ChatWindow({
                 ListHeaderComponent={ListHeaderComponent}
                 ListFooterComponent={ListFooterComponent}
                 onEndReached={handleEndReached}
-                onEndReachedThreshold={0.1}
+                onEndReachedThreshold={0.3}
                 showsVerticalScrollIndicator={false}
                 alwaysBounceVertical
                 keyboardDismissMode="interactive"
@@ -569,7 +521,7 @@ export function ChatWindow({
         disabled={false}
         resetKey={conversationId}
         initialText={
-          !showThreadLoading && messages.length === 0 && conversation?.listing
+          !isLoading && messages.length === 0 && conversation?.listing
             ? `Hi ${displayName}, is the ${listingTitle || 'listing'} still available?`
             : undefined
         }

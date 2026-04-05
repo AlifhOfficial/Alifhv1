@@ -5,14 +5,14 @@
 
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { MessageCircle, PanelLeft } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
 import { ConversationList } from './conversation-list';
 import { ChatWindow } from './chat-window';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useConversations } from '@/hooks/messaging';
+import { useConversations, useMarkAsRead } from '@/hooks/messaging';
+import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { cn } from '@/utils/cn';
 import type { Conversation, InitialMessagesData } from '@/hooks/messaging';
@@ -36,19 +36,20 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const queryClient = useQueryClient();
   const urlConversationId = searchParams?.get('conversationId');
   
   // Derive selected ID from URL, with local override for user selection
   const [localSelectedId, setLocalSelectedId] = useState<string | undefined>(undefined);
   const [showMobileOverride, setShowMobileOverride] = useState<boolean | null>(null);
   const [listOpen, setListOpen] = useState(true);
-  const [selectionVersion, setSelectionVersion] = useState(0);
   // Track which IDs we've already tried to refetch (prevent infinite loop)
   const [refetchedIds, setRefetchedIds] = useState<Set<string>>(new Set());
+  const lastOpenedConversationRef = useRef<string | null>(null);
+  const queryClient = useQueryClient();
+  const { markAsRead } = useMarkAsRead();
   
-  // URL takes precedence, but allow local selection to override
-  const selectedId = urlConversationId || localSelectedId;
+  // Local click should win immediately, URL follows via router.replace.
+  const selectedId = localSelectedId ?? urlConversationId ?? undefined;
   // Show mobile if URL has conversation OR user manually selected one
   const showMobile = showMobileOverride ?? !!selectedId;
 
@@ -72,6 +73,29 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
   }, [selectedId, conversations, isLoading, refetch, refetchedIds]);
 
   const selected = conversations.find(c => c.id === selectedId);
+
+  // On open/switch (including URL navigation), force a fresh thread load
+  // rather than relying on potentially stale in-memory cache.
+  useEffect(() => {
+    if (!selectedId || !userId) return;
+
+    if (lastOpenedConversationRef.current === selectedId) return;
+    lastOpenedConversationRef.current = selectedId;
+
+    queryClient.removeQueries({
+      queryKey: queryKeys.messaging.messages(selectedId),
+      exact: true,
+    });
+
+    void queryClient.refetchQueries({
+      queryKey: queryKeys.messaging.messages(selectedId),
+      exact: true,
+      type: 'active',
+    });
+
+    // Dedupe logic in useMarkAsRead prevents noisy duplicate network calls.
+    markAsRead(selectedId);
+  }, [selectedId, userId, queryClient, markAsRead]);
 
   const handleClose = () => {
     setLocalSelectedId(undefined);
@@ -102,12 +126,6 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
           listOpen={listOpen}
           onListToggle={setListOpen}
           onSelectConversation={(id) => {
-            setSelectionVersion((v) => v + 1);
-            queryClient.invalidateQueries({
-              queryKey: queryKeys.messaging.messages(id),
-              exact: true,
-              refetchType: 'none',
-            });
             setLocalSelectedId(id);
             setShowMobileOverride(true);
             // Update URL for consistency (back button, refresh, sharing)
@@ -139,7 +157,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
           )}
           {selected ? (
             <ChatWindow
-              key={`${selected.id}:${selectionVersion}`}
+              key={selected.id}
               conversationId={selected.id}
               userId={userId}
               conversationType={selected.type}
@@ -177,8 +195,8 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
                   <MessageCircle className="w-7 h-7 sm:w-9 sm:h-9 text-muted-foreground/50 stroke-[1.5]" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-subhead sm:text-callout font-semibold text-foreground/80">No conversation selected</p>
-                  <p className="text-caption1 sm:text-subhead text-muted-foreground/60">Choose a conversation from the list to start chatting</p>
+                  <p className="text-callout font-semibold text-foreground/80">No conversation selected</p>
+                  <p className="text-subhead font-medium text-muted-foreground/60">Choose a conversation from the list to start chatting</p>
                 </div>
               </div>
             </div>

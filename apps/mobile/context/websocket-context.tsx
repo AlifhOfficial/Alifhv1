@@ -15,7 +15,7 @@ import { WS_URL } from '@/lib/config';
 
 export type WSMessageType =
   | 'connected' | 'ping' | 'pong'
-  | 'new_message' | 'read_receipt' | 'typing' | 'presence' | 'mark_read';
+  | 'new_message' | 'read_receipt' | 'typing' | 'presence';
 
 export interface WSMessage {
   type: WSMessageType;

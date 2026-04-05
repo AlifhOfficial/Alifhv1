@@ -68,15 +68,15 @@ export function ConversationGroup({
   const hasUnread = totalUnread > 0;
   const latest = conversations[0];
 
+  const toggleExpanded = useCallback(() => setIsExpanded((p) => !p), []);
+
   const handlePress = useCallback(() => {
     if (isMulti) {
-      setIsExpanded((prev) => !prev);
-      return;
+      toggleExpanded();
+    } else {
+      onSelect(conversations[0]);
     }
-
-    if (!latest) return;
-    onSelect(latest);
-  }, [isMulti, onSelect, latest]);
+  }, [isMulti, toggleExpanded, onSelect, conversations]);
 
   return (
     <View>
@@ -161,7 +161,7 @@ export function ConversationGroup({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {latest?.lastMessagePreview || 'No messages'}
+                  {latest.lastMessagePreview || 'No messages'}
                 </Text>
               </View>
             </View>
@@ -197,7 +197,7 @@ export function ConversationGroup({
                 </View>
               ) : null}
               <Text variant="footnote" tone="secondary">
-                {latest?.lastMessageAt ? formatTime(latest.lastMessageAt) : ''}
+                {formatTime(latest.lastMessageAt)}
               </Text>
             </View>
           </View>

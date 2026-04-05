@@ -6,10 +6,9 @@
  */
 
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { queryKeys } from '@/lib/query-client';
-import { useWebSocket } from '@/context/websocket-context';
 import {
   fetchConversation,
   fetchConversations,
@@ -17,18 +16,6 @@ import {
   type Conversation,
 } from '@/lib/messaging-api';
 import { getAvatarUrl } from '@/lib/config';
-
-const recentReadMarks = new Map<string, number>();
-const READ_MARK_DEDUPE_MS = 60_000;
-
-type MessagesQueryData = {
-  pages?: Array<{
-    messages?: Array<{
-      id: string;
-      createdAt?: string | null;
-    }>;
-  }>;
-};
 
 // ============================================================================
 // TYPES
@@ -127,9 +114,6 @@ export function useConversation(options: UseConversationOptions): UseConversatio
     enabled: enabled && !!userId && !!conversationId,
     // Use initial data from navigation params
     initialData,
-    // Navigation-passed conversation data is only for first paint.
-    // We still want a fresh fetch on mount so read/seen metadata is current.
-    initialDataUpdatedAt: initialData ? 0 : undefined,
     // Conversations are fairly stable
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
@@ -229,79 +213,40 @@ export function useConversationsQuery(options: UseConversationsQueryOptions = {}
  */
 export function useMarkAsRead(userId?: string) {
   const queryClient = useQueryClient();
-  const { isConnected, send } = useWebSocket();
   const markedRef = useRef(new Set<string>());
 
   const mutation = useMutation({
     mutationFn: async ({ conversationId, messageId }: { conversationId: string; messageId?: string }) => {
-      const dedupeKey = messageId ? `${conversationId}:${messageId}` : conversationId;
-      const lastMarkedAt = recentReadMarks.get(dedupeKey);
-      if (lastMarkedAt && Date.now() - lastMarkedAt < READ_MARK_DEDUPE_MS) {
-        return conversationId;
-      }
-
-      recentReadMarks.set(dedupeKey, Date.now());
-      if (isConnected) {
-        send({ type: 'mark_read', conversationId, messageId });
-        return conversationId;
-      }
       await markReadApi(conversationId, messageId);
       return conversationId;
     },
-    onMutate: async ({ conversationId, messageId }) => {
-      const dedupeKey = messageId ? `${conversationId}:${messageId}` : conversationId;
-      const lastMarkedAt = recentReadMarks.get(dedupeKey);
-      if (lastMarkedAt && Date.now() - lastMarkedAt < READ_MARK_DEDUPE_MS) {
+    onMutate: async ({ conversationId }) => {
+      if (markedRef.current.has(conversationId)) {
         return { skipped: true };
       }
-
-      if (markedRef.current.has(conversationId)) return;
       markedRef.current.add(conversationId);
 
       // Optimistically update conversations cache
       await queryClient.cancelQueries({ queryKey: ['conversations'] });
-      const messageQueryData = queryClient.getQueryData<MessagesQueryData>(
-        queryKeys.messages(conversationId)
-      );
-      const optimisticReadAt = (() => {
-        if (!messageId) return new Date().toISOString();
-        const match = messageQueryData?.pages
-          ?.flatMap((page) => page.messages ?? [])
-          .find((message) => message.id === messageId);
-        const createdAt = match?.createdAt ? new Date(match.createdAt) : null;
-        return createdAt && !Number.isNaN(createdAt.getTime())
-          ? createdAt.toISOString()
-          : new Date().toISOString();
-      })();
+      const now = new Date().toISOString();
       
-      const previousConversationLists = queryClient.getQueriesData<{ conversations: Conversation[]; totalUnread: number }>({
-        queryKey: ['conversations'],
-      });
-
-      queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-        const data = old as { conversations?: Conversation[]; totalUnread?: number } | undefined;
-        if (!data?.conversations) return old;
-
-        const conv = data.conversations.find((c) => c.id === conversationId);
+      // Get current data
+      const previousData = queryClient.getQueryData<{ conversations: Conversation[]; totalUnread: number }>(
+        queryKeys.conversations(userId, 'personal')
+      );
+      
+      if (previousData) {
+        const conv = previousData.conversations.find(c => c.id === conversationId);
         const unreadToRemove = conv?.unreadCount ?? 0;
-
-        return {
-          ...data,
-          conversations: data.conversations.map((c) =>
-            c.id === conversationId
-              ? {
-                  ...c,
-                  unreadCount: 0,
-                  myLastReadAt:
-                    !c.myLastReadAt || new Date(optimisticReadAt) > new Date(c.myLastReadAt)
-                      ? optimisticReadAt
-                      : c.myLastReadAt,
-                }
-              : c
+        
+        queryClient.setQueryData(queryKeys.conversations(userId, 'personal'), {
+          ...previousData,
+          conversations: previousData.conversations.map(c =>
+            c.id === conversationId ? { ...c, unreadCount: 0, myLastReadAt: now } : c
           ),
-          totalUnread: Math.max(0, (data.totalUnread ?? 0) - unreadToRemove),
-        };
-      });
+          totalUnread: Math.max(0, previousData.totalUnread - unreadToRemove),
+        });
+      }
 
       const previousConversation = queryClient.getQueryData<Conversation>(
         queryKeys.conversation(userId, conversationId)
@@ -311,48 +256,31 @@ export function useMarkAsRead(userId?: string) {
         queryClient.setQueryData(queryKeys.conversation(userId, conversationId), {
           ...previousConversation,
           unreadCount: 0,
-          myLastReadAt:
-            !previousConversation.myLastReadAt || new Date(optimisticReadAt) > new Date(previousConversation.myLastReadAt)
-              ? optimisticReadAt
-              : previousConversation.myLastReadAt,
+          myLastReadAt: now,
         });
       }
       
-      return { previousConversationLists, previousConversation };
+      return { previousData, previousConversation };
     },
     onError: (_err, variables, context) => {
       // Rollback on error
-      const dedupeKey = variables.messageId ? `${variables.conversationId}:${variables.messageId}` : variables.conversationId;
-      recentReadMarks.delete(dedupeKey);
-      if (context?.previousConversationLists) {
-        for (const [key, data] of context.previousConversationLists) {
-          queryClient.setQueryData(key, data);
-        }
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKeys.conversations(userId, 'personal'), context.previousData);
       }
       if (context?.previousConversation) {
         queryClient.setQueryData(queryKeys.conversation(userId, variables.conversationId), context.previousConversation);
       }
     },
     onSettled: (_data, _error, variables) => {
-      setTimeout(() => {
-        markedRef.current.delete(variables.conversationId);
-      }, 5000);
+      markedRef.current.delete(variables.conversationId);
     }
   });
 
-  const { mutate, isPending } = mutation;
-
-  const markAsRead = useCallback(
-    (conversationId: string, messageId?: string) => {
-      mutate({ conversationId, messageId });
-    },
-    [mutate]
-  );
-
-  return useMemo(() => ({
-    markAsRead,
-    isMarking: isPending,
-  }), [markAsRead, isPending]);
+  return {
+    markAsRead: (conversationId: string, messageId?: string) =>
+      mutation.mutate({ conversationId, messageId }),
+    isMarking: mutation.isPending,
+  };
 }
 
 // ============================================================================

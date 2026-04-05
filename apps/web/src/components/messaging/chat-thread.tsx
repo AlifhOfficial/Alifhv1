@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,7 +18,6 @@ import { markConversationActive, markConversationInactive } from '@/hooks/messag
 import { cn } from '@/utils/cn';
 import type { LocationResult } from '@/hooks/use-location';
 import {
-  getLastReadOwnMessageId,
   getNewestUnreadIncomingMessageId,
 } from '@alifh/shared';
 
@@ -55,6 +54,7 @@ export interface ChatThreadController {
   fetchMore: ReturnType<typeof useMessages>['fetchMore'];
   isOtherTyping: boolean;
   otherLastReadAt: ReturnType<typeof useMessages>['otherLastReadAt'];
+  otherLastReadMessageId: ReturnType<typeof useMessages>['otherLastReadMessageId'];
   otherLastSeenAt: ReturnType<typeof useMessages>['otherLastSeenAt'];
   isOtherOnline: ReturnType<typeof useMessages>['isOtherOnline'];
   sendTyping: ReturnType<typeof useMessages>['sendTyping'];
@@ -90,6 +90,7 @@ export function useChatThreadController({
     fetchMore,
     isOtherTyping,
     otherLastReadAt,
+    otherLastReadMessageId,
     otherLastSeenAt,
     isOtherOnline,
     sendTyping,
@@ -104,55 +105,16 @@ export function useChatThreadController({
   const { sendLocationMessage } = useSendLocationMessage();
   const { markAsRead } = useMarkAsRead();
 
-  const [isDocumentActive, setIsDocumentActive] = useState(true);
-  const [localMyLastReadAt, setLocalMyLastReadAt] = useState<Date | null>(() => {
-    if (!myLastReadAt) return null;
-    const date = myLastReadAt instanceof Date ? myLastReadAt : new Date(String(myLastReadAt));
-    return Number.isNaN(date.getTime()) ? null : date;
-  });
-
   const lastMarkedMsgIdRef = useRef<string | null>(null);
   const myLastReadAtDate = useMemo(() => {
-    if (localMyLastReadAt) return localMyLastReadAt;
     if (!myLastReadAt) return null;
     const date = myLastReadAt instanceof Date ? myLastReadAt : new Date(String(myLastReadAt));
     return Number.isNaN(date.getTime()) ? null : date;
-  }, [localMyLastReadAt, myLastReadAt]);
-
-  useEffect(() => {
-    if (typeof document === 'undefined' || typeof window === 'undefined') return;
-
-    const updateActivity = () => {
-      setIsDocumentActive(document.visibilityState === 'visible' && document.hasFocus());
-    };
-
-    updateActivity();
-    document.addEventListener('visibilitychange', updateActivity);
-    window.addEventListener('focus', updateActivity);
-    window.addEventListener('blur', updateActivity);
-
-    return () => {
-      document.removeEventListener('visibilitychange', updateActivity);
-      window.removeEventListener('focus', updateActivity);
-      window.removeEventListener('blur', updateActivity);
-    };
-  }, []);
+  }, [myLastReadAt]);
 
   useEffect(() => {
     lastMarkedMsgIdRef.current = null;
-    setLocalMyLastReadAt(() => {
-      if (!myLastReadAt) return null;
-      const date = myLastReadAt instanceof Date ? myLastReadAt : new Date(String(myLastReadAt));
-      return Number.isNaN(date.getTime()) ? null : date;
-    });
   }, [conversationId]);
-
-  useEffect(() => {
-    if (!myLastReadAt) return;
-    const date = myLastReadAt instanceof Date ? myLastReadAt : new Date(String(myLastReadAt));
-    if (Number.isNaN(date.getTime())) return;
-    setLocalMyLastReadAt((prev) => (!prev || date > prev ? date : prev));
-  }, [myLastReadAt]);
 
   useEffect(() => {
     if (!active) return;
@@ -160,31 +122,22 @@ export function useChatThreadController({
     return () => markConversationInactive(conversationId);
   }, [conversationId, active]);
 
-  const newestUnreadIncomingMessage = useMemo(
-    () => messages.find((message) => message.id === getNewestUnreadIncomingMessageId(messages, userId, myLastReadAtDate)) ?? null,
+  const newestUnreadIncomingMessageId = useMemo(
+    () => getNewestUnreadIncomingMessageId(messages, userId, myLastReadAtDate),
     [messages, userId, myLastReadAtDate]
   );
 
   useEffect(() => {
-    if (!active || isLoading || !isDocumentActive || !newestUnreadIncomingMessage) return;
-    if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessage.id) return;
+    if (!active || isLoading || !newestUnreadIncomingMessageId) return;
+    if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessageId) return;
 
-    const readAt = newestUnreadIncomingMessage.createdAt instanceof Date
-      ? newestUnreadIncomingMessage.createdAt
-      : new Date(String(newestUnreadIncomingMessage.createdAt));
-
-    if (!Number.isNaN(readAt.getTime())) {
-      setLocalMyLastReadAt((prev) => (!prev || readAt > prev ? readAt : prev));
-    }
-
-    lastMarkedMsgIdRef.current = newestUnreadIncomingMessage.id;
-    markAsRead(conversationId, newestUnreadIncomingMessage.id);
+    lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
+    markAsRead(conversationId, newestUnreadIncomingMessageId);
   }, [
     active,
     conversationId,
     isLoading,
-    isDocumentActive,
-    newestUnreadIncomingMessage,
+    newestUnreadIncomingMessageId,
     markAsRead,
   ]);
 
@@ -200,6 +153,7 @@ export function useChatThreadController({
     fetchMore,
     isOtherTyping,
     otherLastReadAt,
+    otherLastReadMessageId,
     otherLastSeenAt,
     isOtherOnline,
     sendTyping,
@@ -226,6 +180,7 @@ export function ChatThread({
     fetchMore,
     isOtherTyping,
     otherLastReadAt,
+    otherLastReadMessageId,
     sendTyping,
     isSending,
     sendMessage,
@@ -238,6 +193,7 @@ export function ChatThread({
   const paginationSnapshotRef = useRef<{ scrollHeight: number; scrollTop: number } | null>(null);
   const lastNewestMessageIdRef = useRef<string | null>(null);
   const hasAutoScrolledInitiallyRef = useRef(false);
+  const forceScrollToBottomRef = useRef(true);
   const orderedMessages = useMemo(() => [...messages].reverse(), [messages]);
 
   const updateScrollState = useCallback(() => {
@@ -252,6 +208,7 @@ export function ChatThread({
     paginationSnapshotRef.current = null;
     lastNewestMessageIdRef.current = null;
     hasAutoScrolledInitiallyRef.current = false;
+    forceScrollToBottomRef.current = true;
   }, [conversationId]);
 
   useEffect(() => {
@@ -274,13 +231,22 @@ export function ChatThread({
     paginationSnapshotRef.current = null;
   }, [orderedMessages]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (orderedMessages.length === 0 || isLoading) return;
 
     const container = containerRef.current;
     if (!container) return;
 
     const newestMessageId = messages[0]?.id ?? null;
+
+    if (forceScrollToBottomRef.current) {
+      container.scrollTop = container.scrollHeight;
+      forceScrollToBottomRef.current = false;
+      hasAutoScrolledInitiallyRef.current = true;
+      lastNewestMessageIdRef.current = newestMessageId;
+      updateScrollState();
+      return;
+    }
 
     if (!hasAutoScrolledInitiallyRef.current) {
       container.scrollTop = container.scrollHeight;
@@ -299,10 +265,38 @@ export function ChatThread({
     }
   }, [messages, orderedMessages.length, isLoading, updateScrollState]);
 
-  const lastReadMsgId = useMemo(
-    () => getLastReadOwnMessageId(messages, userId, otherLastReadAt),
-    [messages, userId, otherLastReadAt]
-  );
+  const lastReadMsgId = useMemo(() => {
+    if (otherLastReadMessageId) {
+      const matched = messages.find(
+        (m) => m.id === otherLastReadMessageId && m.senderId === userId && !m.id.startsWith('temp-')
+      );
+      if (matched) return matched.id;
+    }
+
+    if (!otherLastReadAt) return null;
+
+    const readCutoff = otherLastReadAt instanceof Date
+      ? otherLastReadAt.getTime()
+      : new Date(otherLastReadAt).getTime();
+
+    if (Number.isNaN(readCutoff)) return null;
+
+    let candidate: { id: string; createdAt: number } | null = null;
+
+    // Order-independent: always pick the latest own message that is at or before read cutoff.
+    for (const message of messages) {
+      if (message.senderId !== userId || message.id.startsWith('temp-')) continue;
+
+      const createdAt = new Date(message.createdAt).getTime();
+      if (Number.isNaN(createdAt) || createdAt > readCutoff) continue;
+
+      if (!candidate || createdAt >= candidate.createdAt) {
+        candidate = { id: message.id, createdAt };
+      }
+    }
+
+    return candidate?.id ?? null;
+  }, [messages, userId, otherLastReadAt, otherLastReadMessageId]);
 
   const handleScroll = useCallback(() => {
     const el = containerRef.current;
@@ -358,7 +352,7 @@ export function ChatThread({
         ) : messages.length === 0 ? (
           compact ? (
             <div className="flex items-center justify-center h-full">
-              <p className="text-footnote text-muted-foreground/70">No messages yet</p>
+              <p className="text-footnote font-medium text-muted-foreground/70">No messages yet</p>
             </div>
           ) : (
             <div className="flex items-center justify-center flex-1">
@@ -366,7 +360,7 @@ export function ChatThread({
                 <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-sidebar flex items-center justify-center">
                   <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground/40" />
                 </div>
-                <p className="text-caption1 sm:text-subhead text-muted-foreground/70">Start a conversation</p>
+                <p className="text-subhead font-medium text-muted-foreground/70">Start a conversation</p>
               </div>
             </div>
           )
@@ -390,7 +384,7 @@ export function ChatThread({
                       <span
                         className={cn(
                           'rounded-full bg-muted/60 text-muted-foreground/70 font-semibold',
-                          compact ? 'text-caption2 px-2.5 py-0.5' : 'text-[10px] sm:text-caption1 px-2.5 sm:px-3 py-0.5 sm:py-1',
+                          compact ? 'text-caption2 px-2.5 py-0.5' : 'text-caption2 px-2.5 sm:px-3 py-0.5 sm:py-1',
                         )}
                       >
                         {format(messageDate, compact ? 'MMM d' : 'EEE, MMM d')}

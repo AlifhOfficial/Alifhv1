@@ -53,7 +53,6 @@ export function MessageInput({
   const inputRef = useRef<TextInput>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isTypingRef = useRef(false);
-  const appliedInitialTextKeyRef = useRef<string | null>(null);
 
   // Reset state when conversation changes
   useEffect(() => {
@@ -63,7 +62,6 @@ export function MessageInput({
       if (cancelled) return;
       setText('');
       setInputHeight(MIN_HEIGHT);
-      appliedInitialTextKeyRef.current = null;
 
       // Reset typing state
       if (typingTimeoutRef.current) {
@@ -81,24 +79,17 @@ export function MessageInput({
   // Apply initial text
   useEffect(() => {
     if (!initialText) return;
-
-    const applyKey = `${resetKey ?? 'no-reset'}::${initialText}`;
-    if (appliedInitialTextKeyRef.current === applyKey) return;
-
+    if (text.trim().length > 0) return;
     let cancelled = false;
     queueMicrotask(() => {
       if (cancelled) return;
-      setText((prev) => {
-        if (prev.trim().length > 0) return prev;
-        return initialText;
-      });
-      appliedInitialTextKeyRef.current = applyKey;
+      setText(initialText);
     });
 
     return () => {
       cancelled = true;
     };
-  }, [initialText, resetKey]);
+  }, [initialText, resetKey, text]);
 
   // Handle content size change for auto-resize
   const handleContentSizeChange = useCallback(

@@ -28,11 +28,15 @@ export async function PATCH(
       );
     }
 
-
     const { id } = await params;
-    const body = await req.json().catch(() => ({})) as { messageId?: unknown };
-    const messageId = typeof body.messageId === 'string' ? body.messageId : undefined;
-    const lastReadAt = (await markConversationAsRead(id, user.id, messageId)).toISOString();
+    const body = await req.json().catch(() => ({}));
+    const messageId =
+      body && typeof body === 'object' && typeof (body as { messageId?: unknown }).messageId === 'string'
+        ? (body as { messageId: string }).messageId
+        : undefined;
+
+    const lastReadAt = new Date().toISOString();
+    await markConversationAsRead(id, user.id);
 
     const response = NextResponse.json({ success: true, lastReadAt });
 
@@ -53,6 +57,7 @@ export async function PATCH(
                   type: 'read_receipt',
                   conversationId: id,
                   userId: user.id,
+                  messageId,
                   lastReadAt,
                 },
               }),
