@@ -98,9 +98,8 @@ export async function sendMessage(params: SendMessageParams): Promise<MessageWit
     ? `Sent a ${mediaType}`
     : 'Sent a message';
 
-  // Execute ALL operations in parallel for maximum speed
-  const [participantCheck, , senderInfo] = await Promise.all([
-    // 1. Quick participant check (single query, indexed)
+  // Validate access before mutating conversation state.
+  const [participantCheck, senderInfo] = await Promise.all([
     db
       .select({ id: conversationParticipant.id })
       .from(conversationParticipant)
@@ -112,24 +111,6 @@ export async function sendMessage(params: SendMessageParams): Promise<MessageWit
         )
       )
       .limit(1),
-    
-    // 2. Insert message (don't wait for participant check - will fail naturally if FK violated)
-    db.insert(message).values({
-      id: messageId,
-      conversationId,
-      senderId,
-      text: text || null,
-      mediaUrl: mediaUrl || null,
-      mediaType: mediaType || null,
-      mediaThumbnail: mediaThumbnail || null,
-      mediaMetadata: mediaMetadata || null,
-      isSystemMessage,
-      systemMessageType: systemMessageType || null,
-      deliveredAt: now,
-      createdAt: now,
-    }),
-    
-    // 3. Get sender info (with profile avatar fallback)
     db
       .select({
         id: user.id,
@@ -139,8 +120,32 @@ export async function sendMessage(params: SendMessageParams): Promise<MessageWit
       .from(user)
       .leftJoin(userProfile, eq(userProfile.userId, user.id))
       .where(eq(user.id, senderId)),
-    
-    // 4. Update conversation metadata
+  ]);
+
+  if (participantCheck.length === 0) {
+    throw new Error('User is not a participant in this conversation');
+  }
+
+  if (senderInfo.length === 0) {
+    throw new Error('Sender not found');
+  }
+
+  await db.insert(message).values({
+    id: messageId,
+    conversationId,
+    senderId,
+    text: text || null,
+    mediaUrl: mediaUrl || null,
+    mediaType: mediaType || null,
+    mediaThumbnail: mediaThumbnail || null,
+    mediaMetadata: mediaMetadata || null,
+    isSystemMessage,
+    systemMessageType: systemMessageType || null,
+    deliveredAt: now,
+    createdAt: now,
+  });
+
+  await Promise.all([
     db
       .update(conversation)
       .set({
@@ -150,8 +155,7 @@ export async function sendMessage(params: SendMessageParams): Promise<MessageWit
         messageCount: sql`${conversation.messageCount} + 1`,
       })
       .where(eq(conversation.id, conversationId)),
-    
-    // 5. Increment unread count for all participants except sender
+
     db
       .update(conversationParticipant)
       .set({
@@ -163,8 +167,7 @@ export async function sendMessage(params: SendMessageParams): Promise<MessageWit
           sql`${conversationParticipant.userId} != ${senderId}`
         )
       ),
-    
-    // 6. Mark conversation as read for sender (they're actively sending)
+
     db
       .update(conversationParticipant)
       .set({
@@ -177,22 +180,12 @@ export async function sendMessage(params: SendMessageParams): Promise<MessageWit
           eq(conversationParticipant.userId, senderId)
         )
       ),
-    
-    // 7. Update sender's lastActiveAt timestamp
+
     db
       .update(userProfile)
       .set({ lastActiveAt: now })
       .where(eq(userProfile.userId, senderId)),
   ]);
-
-  // Validate after parallel execution
-  if (participantCheck.length === 0) {
-    throw new Error('User is not a participant in this conversation');
-  }
-
-  if (senderInfo.length === 0) {
-    throw new Error('Sender not found');
-  }
 
   // Construct and return message
   return {

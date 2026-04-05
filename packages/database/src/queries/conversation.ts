@@ -7,6 +7,7 @@ import { db } from '../index';
 import { conversation, conversationParticipant, user, carListing, partner, userProfile, partnerStaff, message } from '../schema';
 import { eq, and, desc, or, sql, inArray, isNull, not } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
+import { createHash } from 'crypto';
 
 // ============================================================================
 // Types
@@ -61,6 +62,23 @@ export interface ConversationParticipantWithProfile {
   name: string | null;
   avatarUrl: string | null;
   lastReadAt: Date | null;
+}
+
+function buildConversationKey(params: {
+  initiatedBy: string;
+  otherUserId: string;
+  listingId?: string;
+  partnerId?: string;
+  type: string;
+}): string {
+  const participants = [params.initiatedBy, params.otherUserId].sort().join(':');
+  const scope = params.listingId
+    ? `listing:${params.listingId}`
+    : params.partnerId
+      ? `partner:${params.partnerId}`
+      : `type:${params.type}`;
+  const digest = createHash('sha256').update(`${scope}|${participants}`).digest('hex').slice(0, 24);
+  return `conv_${digest}`;
 }
 
 // ============================================================================
@@ -156,8 +174,15 @@ export async function createOrGetConversation(params: {
     }
   }
 
-  // Create new conversation
-  const conversationId = createId();
+  // Create new conversation with deterministic ID so concurrent creates collapse
+  // onto the same logical thread even without DB transactions.
+  const conversationId = buildConversationKey({
+    initiatedBy,
+    otherUserId,
+    listingId,
+    partnerId: derivedPartnerId,
+    type: conversationType,
+  });
 
   // Note: neon-http does not support transactions. We perform inserts sequentially and
   // best-effort cleanup if participant insertion fails.
@@ -195,6 +220,15 @@ export async function createOrGetConversation(params: {
       },
     ]);
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (
+      message.includes('duplicate key') ||
+      message.includes('unique constraint') ||
+      message.includes('conversation_pkey')
+    ) {
+      return conversationId;
+    }
+
     if (conversationInserted) {
       try {
         await db
@@ -629,17 +663,51 @@ export async function getConversationParticipantsWithProfiles(
  * Get total unread count for user across all conversations
  */
 export async function getTotalUnreadCount(userId: string): Promise<number> {
+  return getScopedUnreadCount(userId);
+}
+
+export async function getScopedUnreadCount(
+  userId: string,
+  options: {
+    includeArchived?: boolean;
+    partnerIds?: string[];
+    partnerScope?: 'only' | 'exclude';
+  } = {}
+): Promise<number> {
+  const { includeArchived = false, partnerIds, partnerScope } = options;
+
+  const whereConditions = [eq(conversationParticipant.userId, userId), isNull(conversationParticipant.leftAt)];
+
+  if (!includeArchived) {
+    whereConditions.push(eq(conversationParticipant.isArchived, false));
+  }
+
+  if (partnerScope === 'only' && partnerIds?.length) {
+    whereConditions.push(
+      or(
+        inArray(conversation.partnerId, partnerIds),
+        inArray(carListing.partnerId, partnerIds)
+      )
+    );
+  }
+
+  if (partnerScope === 'exclude' && partnerIds?.length) {
+    whereConditions.push(
+      and(
+        or(isNull(conversation.partnerId), not(inArray(conversation.partnerId, partnerIds))),
+        or(isNull(carListing.partnerId), not(inArray(carListing.partnerId, partnerIds)))
+      )
+    );
+  }
+
   const result = await db
     .select({
       total: sql<number>`sum(${conversationParticipant.unreadCount})::int`,
     })
     .from(conversationParticipant)
-    .where(
-      and(
-        eq(conversationParticipant.userId, userId),
-        eq(conversationParticipant.isArchived, false)
-      )
-    );
+    .innerJoin(conversation, eq(conversation.id, conversationParticipant.conversationId))
+    .leftJoin(carListing, eq(carListing.id, conversation.listingId))
+    .where(and(...whereConditions));
 
   return result[0]?.total || 0;
 }

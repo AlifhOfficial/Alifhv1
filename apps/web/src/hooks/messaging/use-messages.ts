@@ -184,7 +184,10 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     initialData: effectiveInitialData as MessagesInfiniteData | undefined,
     // SSR seed data should render instantly but still refetch right away so
     // read receipts / seen state don't get stuck on stale snapshots.
-    initialDataUpdatedAt: existingQueryState?.data ? Date.now() : 0,
+    initialDataUpdatedAt: existingQueryState?.dataUpdatedAt ?? (options.initialData ? 0 : undefined),
+    refetchOnMount: true,
+    refetchOnReconnect: true,
+    staleTime: 60_000,
   });
 
   // Update otherLastReadAt from API response (first page includes this for persistence)
@@ -549,24 +552,32 @@ export function useSendLocationMessage() {
 
       // Update conversation preview in cache optimistically
       queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
-        const data2 = old as { conversations?: Array<{ id: string; lastMessageAt?: unknown; lastMessagePreview?: string }> };
-        if (!data2?.conversations) return old;
-        
-        const exists = data2.conversations.some(c => c.id === conversationId);
-        if (!exists) {
-          // Conversation not in cache, return unchanged (will refetch below)
-          return old;
-        }
-        
+        const data2 = old as {
+          pages?: Array<{
+            conversations: Array<{
+              id: string;
+              lastMessageAt?: Date | string;
+              lastMessagePreview?: string | null;
+            }>;
+          }>;
+        } | undefined;
+        if (!data2?.pages) return old;
+
         return {
           ...data2,
-          conversations: data2.conversations
-            .map(c =>
-              c.id === conversationId
-                ? { ...c, lastMessageAt: data.message.createdAt, lastMessagePreview: '📍 Location' }
-                : c
-            )
-            .sort((a, b) => new Date(b.lastMessageAt as string).getTime() - new Date(a.lastMessageAt as string).getTime()),
+          pages: data2.pages.map((page) => ({
+            ...page,
+            conversations: page.conversations
+              .map((c) =>
+                c.id === conversationId
+                  ? { ...c, lastMessageAt: data.message.createdAt, lastMessagePreview: 'Location' }
+                  : c
+              )
+              .sort(
+                (a, b) =>
+                  new Date(b.lastMessageAt ?? 0).getTime() - new Date(a.lastMessageAt ?? 0).getTime()
+              ),
+          })),
         };
       });
 

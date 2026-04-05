@@ -127,7 +127,6 @@ export function useConversations(options: UseConversationsOptions = {}) {
 
   // Check for existing query state (set by QueryProvider or previous render)
   const existingQueryState = queryClient.getQueryState<ConversationsInfiniteData>(queryKey);
-  const hasExistingData = existingQueryState?.data !== undefined;
   
   // Build effective initial data for infinite query structure
   const effectiveInitialData: ConversationsInfiniteData | undefined = options.initialData 
@@ -144,35 +143,37 @@ export function useConversations(options: UseConversationsOptions = {}) {
       return totalLoaded;
     },
     initialPageParam: 0,
-    // Skip fetch if we have cached data (from QueryProvider seed or previous fetch)
-    enabled: !!options.userId && enabled && !hasExistingData && !options.initialData,
+    enabled: !!options.userId && enabled,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
+    staleTime: 60_000,
     gcTime: Infinity,
     initialData: effectiveInitialData,
-    initialDataUpdatedAt: effectiveInitialData ? Date.now() : undefined,
+    initialDataUpdatedAt: options.initialData
+      ? 0
+      : existingQueryState?.dataUpdatedAt,
   });
   const { refetch } = query;
+  const pages = query.data?.pages;
 
   // Flatten all pages to get conversations and aggregate totalUnread
   const flatData = useMemo(() => {
-    if (!query.data?.pages) return { conversations: [], totalUnread: 0 };
+    if (!pages) return { conversations: [], totalUnread: 0 };
     
     const allConversations: Conversation[] = [];
     let totalUnread = 0;
     
-    for (const page of query.data.pages) {
+    for (const page of pages) {
       allConversations.push(...page.conversations);
       // Only use totalUnread from first page (represents total count)
-      if (page === query.data.pages[0]) {
+      if (page === pages[0]) {
         totalUnread = page.totalUnread;
       }
     }
     
     return { conversations: allConversations, totalUnread };
-  }, [query.data?.pages]);
+  }, [pages]);
 
   // Track WebSocket connection transitions and perform a throttled refresh on reconnect.
   // This heals any missed WS events without forcing frequent background fetches.
@@ -369,31 +370,11 @@ export function useConversations(options: UseConversationsOptions = {}) {
     return unsub;
   }, [subscribe, queryClient, options.userId, queryKey, refetch]);
 
-  // Apply live presence updates to flattened conversations
-  const conversations = useMemo(() => {
-    return flatData.conversations.map((conversation) => {
-      const otherId = conversation.otherParticipant?.id;
-      if (!otherId || !conversation.otherParticipant) return conversation;
-
-      const livePresence = presenceMapRef.current.get(otherId);
-      if (!livePresence) return conversation;
-
-      return {
-        ...conversation,
-        otherParticipant: {
-          ...conversation.otherParticipant,
-          isOnline: livePresence.isOnline ?? conversation.otherParticipant.isOnline,
-          lastSeenAt: livePresence.lastSeenAt ?? conversation.otherParticipant.lastSeenAt,
-        },
-      };
-    });
-  }, [flatData.conversations]);
-
   // Check if more pages can be loaded
   const hasMore = query.hasNextPage ?? false;
 
   return {
-    conversations,
+    conversations: flatData.conversations,
     totalUnread: flatData.totalUnread,
     hasMore,
     isLoading: query.isLoading,

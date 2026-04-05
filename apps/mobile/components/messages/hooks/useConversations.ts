@@ -28,6 +28,7 @@ interface UseConversationsReturn {
   totalUnread: number;
   isLoading: boolean;
   isRefreshing: boolean;
+  hasLoadedOnce: boolean;
   error: string | null;
   /** Silent background refresh (no RefreshControl spinner) */
   refresh: () => Promise<void>;
@@ -65,47 +66,51 @@ export function useConversations({
     userIdRef.current = userId;
   }, [userId]);
 
+  const fetchConversationsList = useCallback(async () => {
+    const data = await fetchConversations({ scope, limit: 50 });
+    const conversations = data.conversations
+      .filter(c => c.messageCount > 0)
+      .map(conv => ({
+        ...conv,
+        otherParticipant: conv.otherParticipant ? {
+          ...conv.otherParticipant,
+          avatarUrl: getAvatarUrl(conv.otherParticipant.avatarUrl),
+          // Presence is websocket-driven only; do not persist server snapshot in cache.
+          isOnline: undefined,
+          lastSeenAt: null,
+        } : null,
+        listing: conv.listing ? {
+          ...conv.listing,
+          thumbnail: getAvatarUrl(conv.listing.thumbnail),
+        } : null,
+      }))
+      .sort(
+        (a, b) =>
+          new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+      );
+
+    const readyAt = consumeDataReady(`messaging:conversations:${scope ?? 'personal'}`) ?? performance.now();
+    scheduleRenderPerf('messaging.conversations-list', readyAt, {
+      scope: scope ?? 'personal',
+      count: conversations.length,
+    });
+
+    return {
+      conversations,
+      totalUnread: data.totalUnread,
+    };
+  }, [scope]);
+
   const query = useQuery({
     queryKey,
-    queryFn: async () => {
-      const data = await fetchConversations({ scope, limit: 50 });
-      const conversations = data.conversations
-        .filter(c => c.messageCount > 0)
-        .map(conv => ({
-          ...conv,
-          otherParticipant: conv.otherParticipant ? {
-            ...conv.otherParticipant,
-            avatarUrl: getAvatarUrl(conv.otherParticipant.avatarUrl),
-            // Presence is websocket-driven only; do not persist server snapshot in cache.
-            isOnline: undefined,
-            lastSeenAt: null,
-          } : null,
-          listing: conv.listing ? {
-            ...conv.listing,
-            thumbnail: getAvatarUrl(conv.listing.thumbnail),
-          } : null,
-        }))
-        .sort(
-          (a, b) =>
-            new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
-        );
-
-      const readyAt = consumeDataReady(`messaging:conversations:${scope ?? 'personal'}`) ?? performance.now();
-      scheduleRenderPerf('messaging.conversations-list', readyAt, {
-        scope: scope ?? 'personal',
-        count: conversations.length,
-      });
-
-      return {
-        conversations,
-        totalUnread: data.totalUnread,
-      };
-    },
+    queryFn: fetchConversationsList,
     enabled: isAuthenticated && !!userId,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
+    // Recover even if a cached snapshot exists but is wrong or incomplete.
+    refetchOnMount: 'always',
+    staleTime: 60_000,
     gcTime: Infinity,
+    placeholderData: (previousData) => previousData,
   });
 
   const {
@@ -113,6 +118,7 @@ export function useConversations({
     isLoading,
     isFetching,
     error: queryError,
+    dataUpdatedAt,
   } = query;
 
   const conversations = useMemo(
@@ -296,7 +302,8 @@ export function useConversations({
   // Used by useFocusEffect when returning to the tab
   const refresh = useCallback(async () => {
     const now = Date.now();
-    if (now - lastManualRefreshAtRef.current < 15000) {
+    const hasCachedConversations = (queryClient.getQueryData<{ conversations?: Conversation[] }>(queryKey)?.conversations?.length ?? 0) > 0;
+    if (hasCachedConversations && now - lastManualRefreshAtRef.current < 15000) {
       return;
     }
 
@@ -308,11 +315,15 @@ export function useConversations({
     setError(null);
     try {
       lastManualRefreshAtRef.current = now;
-      await queryClient.refetchQueries({ queryKey, exact: true });
+      await queryClient.fetchQuery({
+        queryKey,
+        queryFn: fetchConversationsList,
+        staleTime: 0,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load conversations');
     }
-  }, [queryClient, queryKey]);
+  }, [fetchConversationsList, queryClient, queryKey]);
 
   // User-initiated pull-to-refresh — shows the RefreshControl spinner
   const pullToRefresh = useCallback(async () => {
@@ -359,6 +370,7 @@ export function useConversations({
     totalUnread,
     isLoading: isLoading && conversations.length === 0,
     isRefreshing,
+    hasLoadedOnce: dataUpdatedAt > 0 || !!queryError,
     error,
     refresh,
     pullToRefresh,

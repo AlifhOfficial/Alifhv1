@@ -124,9 +124,9 @@ export function useMessages({
     initialPageParam: undefined as string | undefined,
     enabled: !!conversationId && !!userId && isAuthenticated && enabled,
     refetchOnWindowFocus: false,
-    // Refetch on mount only when stale (e.g. invalidated by WS while thread is closed).
+    refetchOnReconnect: true,
     refetchOnMount: true,
-    staleTime: Infinity,
+    staleTime: 60_000,
     gcTime: Infinity,
   });
 
