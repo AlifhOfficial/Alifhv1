@@ -345,7 +345,11 @@ export function useMessages({
         msg.lastReadAt &&
         msg.userId !== userIdRef.current
       ) {
-        setOtherLastReadAt(msg.lastReadAt);
+        const nextLastReadAt = msg.lastReadAt;
+        setOtherLastReadAt((prev) => {
+          if (!prev) return nextLastReadAt;
+          return new Date(nextLastReadAt) > new Date(prev) ? nextLastReadAt : prev;
+        });
       }
 
       // Handle presence updates for the other user

@@ -4,7 +4,7 @@
  */
 
 import { Text, Skeleton } from '@/components/ui';
-import React, { useMemo, useRef, useCallback, useEffect } from 'react';
+import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import {
   View,
   FlatList,
@@ -133,10 +133,17 @@ export function ChatWindow({
   const otherUserAvatar = avatarUrl;
   const otherUserName = displayName;
   const myLastReadAt = conversation?.myLastReadAt;
-  const myLastReadAtDate = useMemo(
-    () => (myLastReadAt ? new Date(myLastReadAt) : null),
-    [myLastReadAt]
-  );
+  const [localMyLastReadAt, setLocalMyLastReadAt] = useState<Date | null>(() => {
+    if (!myLastReadAt) return null;
+    const date = new Date(myLastReadAt);
+    return Number.isNaN(date.getTime()) ? null : date;
+  });
+  const myLastReadAtDate = useMemo(() => {
+    if (localMyLastReadAt) return localMyLastReadAt;
+    if (!myLastReadAt) return null;
+    const date = new Date(myLastReadAt);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }, [localMyLastReadAt, myLastReadAt]);
   const { markAsRead } = useMarkAsRead(userId);
   
   // Track last marked message to prevent duplicate API calls
@@ -150,11 +157,23 @@ export function ChatWindow({
 
   useEffect(() => {
     lastMarkedMsgIdRef.current = null;
+    setLocalMyLastReadAt(() => {
+      if (!myLastReadAt) return null;
+      const date = new Date(myLastReadAt);
+      return Number.isNaN(date.getTime()) ? null : date;
+    });
     if (markReadTimeoutRef.current) {
       clearTimeout(markReadTimeoutRef.current);
       markReadTimeoutRef.current = null;
     }
-  }, [conversationId]);
+  }, [conversationId, myLastReadAt]);
+
+  useEffect(() => {
+    if (!myLastReadAt) return;
+    const date = new Date(myLastReadAt);
+    if (Number.isNaN(date.getTime())) return;
+    setLocalMyLastReadAt((prev) => (!prev || date > prev ? date : prev));
+  }, [myLastReadAt]);
 
   // Find the newest message that was read by other user (for "seen" indicator)
   const lastReadMsgId = useMemo(
@@ -162,15 +181,15 @@ export function ChatWindow({
     [messages, otherLastReadAt, userId]
   );
 
-  const newestUnreadIncomingMessageId = useMemo(
-    () => getNewestUnreadIncomingMessageId(messages, userId, myLastReadAtDate),
+  const newestUnreadIncomingMessage = useMemo(
+    () => messages.find((message) => message.id === getNewestUnreadIncomingMessageId(messages, userId, myLastReadAtDate)) ?? null,
     [messages, userId, myLastReadAtDate]
   );
 
   // Mark conversation as read when viewing messages from other user
   useEffect(() => {
-    if (isLoading || !newestUnreadIncomingMessageId) return;
-    if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessageId) return;
+    if (isLoading || !newestUnreadIncomingMessage) return;
+    if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessage.id) return;
 
     if (markReadTimeoutRef.current) {
       clearTimeout(markReadTimeoutRef.current);
@@ -178,8 +197,12 @@ export function ChatWindow({
 
     // Debounce read-mark writes to batch rapid incoming bursts.
     markReadTimeoutRef.current = setTimeout(() => {
-      lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
-      markAsRead(conversationId, newestUnreadIncomingMessageId);
+      const readAt = new Date(newestUnreadIncomingMessage.createdAt);
+      if (!Number.isNaN(readAt.getTime())) {
+        setLocalMyLastReadAt((prev) => (!prev || readAt > prev ? readAt : prev));
+      }
+      lastMarkedMsgIdRef.current = newestUnreadIncomingMessage.id;
+      markAsRead(conversationId, newestUnreadIncomingMessage.id);
       markReadTimeoutRef.current = null;
     }, 1000);
 
@@ -188,7 +211,7 @@ export function ChatWindow({
         clearTimeout(markReadTimeoutRef.current);
       }
     };
-  }, [conversationId, isLoading, newestUnreadIncomingMessageId, markAsRead]);
+  }, [conversationId, isLoading, newestUnreadIncomingMessage, markAsRead]);
 
   // Handle sending message
   const handleSend = useCallback(

@@ -224,7 +224,15 @@ export function useConversations({
                 ...conv,
                 otherParticipant: conv.otherParticipant ? {
                   ...conv.otherParticipant,
-                  lastReadAt: msg.lastReadAt || conv.otherParticipant.lastReadAt,
+                  lastReadAt: (() => {
+                    if (!msg.lastReadAt) return conv.otherParticipant.lastReadAt;
+                    const prev = conv.otherParticipant.lastReadAt
+                      ? new Date(conv.otherParticipant.lastReadAt)
+                      : null;
+                    const next = new Date(msg.lastReadAt);
+                    if (Number.isNaN(next.getTime())) return conv.otherParticipant.lastReadAt;
+                    return !prev || next > prev ? msg.lastReadAt : conv.otherParticipant.lastReadAt;
+                  })(),
                 } : null,
               };
             }),

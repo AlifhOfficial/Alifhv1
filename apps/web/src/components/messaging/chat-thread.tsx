@@ -105,13 +105,19 @@ export function useChatThreadController({
   const { markAsRead } = useMarkAsRead();
 
   const [isDocumentActive, setIsDocumentActive] = useState(true);
-
-  const lastMarkedMsgIdRef = useRef<string | null>(null);
-  const myLastReadAtDate = useMemo(() => {
+  const [localMyLastReadAt, setLocalMyLastReadAt] = useState<Date | null>(() => {
     if (!myLastReadAt) return null;
     const date = myLastReadAt instanceof Date ? myLastReadAt : new Date(String(myLastReadAt));
     return Number.isNaN(date.getTime()) ? null : date;
-  }, [myLastReadAt]);
+  });
+
+  const lastMarkedMsgIdRef = useRef<string | null>(null);
+  const myLastReadAtDate = useMemo(() => {
+    if (localMyLastReadAt) return localMyLastReadAt;
+    if (!myLastReadAt) return null;
+    const date = myLastReadAt instanceof Date ? myLastReadAt : new Date(String(myLastReadAt));
+    return Number.isNaN(date.getTime()) ? null : date;
+  }, [localMyLastReadAt, myLastReadAt]);
 
   useEffect(() => {
     if (typeof document === 'undefined' || typeof window === 'undefined') return;
@@ -134,7 +140,19 @@ export function useChatThreadController({
 
   useEffect(() => {
     lastMarkedMsgIdRef.current = null;
+    setLocalMyLastReadAt(() => {
+      if (!myLastReadAt) return null;
+      const date = myLastReadAt instanceof Date ? myLastReadAt : new Date(String(myLastReadAt));
+      return Number.isNaN(date.getTime()) ? null : date;
+    });
   }, [conversationId]);
+
+  useEffect(() => {
+    if (!myLastReadAt) return;
+    const date = myLastReadAt instanceof Date ? myLastReadAt : new Date(String(myLastReadAt));
+    if (Number.isNaN(date.getTime())) return;
+    setLocalMyLastReadAt((prev) => (!prev || date > prev ? date : prev));
+  }, [myLastReadAt]);
 
   useEffect(() => {
     if (!active) return;
@@ -142,23 +160,31 @@ export function useChatThreadController({
     return () => markConversationInactive(conversationId);
   }, [conversationId, active]);
 
-  const newestUnreadIncomingMessageId = useMemo(
-    () => getNewestUnreadIncomingMessageId(messages, userId, myLastReadAtDate),
+  const newestUnreadIncomingMessage = useMemo(
+    () => messages.find((message) => message.id === getNewestUnreadIncomingMessageId(messages, userId, myLastReadAtDate)) ?? null,
     [messages, userId, myLastReadAtDate]
   );
 
   useEffect(() => {
-    if (!active || isLoading || !isDocumentActive || !newestUnreadIncomingMessageId) return;
-    if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessageId) return;
+    if (!active || isLoading || !isDocumentActive || !newestUnreadIncomingMessage) return;
+    if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessage.id) return;
 
-    lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
-    markAsRead(conversationId, newestUnreadIncomingMessageId);
+    const readAt = newestUnreadIncomingMessage.createdAt instanceof Date
+      ? newestUnreadIncomingMessage.createdAt
+      : new Date(String(newestUnreadIncomingMessage.createdAt));
+
+    if (!Number.isNaN(readAt.getTime())) {
+      setLocalMyLastReadAt((prev) => (!prev || readAt > prev ? readAt : prev));
+    }
+
+    lastMarkedMsgIdRef.current = newestUnreadIncomingMessage.id;
+    markAsRead(conversationId, newestUnreadIncomingMessage.id);
   }, [
     active,
     conversationId,
     isLoading,
     isDocumentActive,
-    newestUnreadIncomingMessageId,
+    newestUnreadIncomingMessage,
     markAsRead,
   ]);
 

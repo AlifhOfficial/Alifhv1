@@ -9,6 +9,7 @@ import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-q
 import { useWebSocket } from './use-websocket';
 import { useEffect, useMemo, useRef } from 'react';
 import { getConversationsAction } from '@/actions/messaging';
+import { queryKeys } from '@/lib/query-keys';
 import { isConversationActive } from './active-conversations';
 
 // ============================================================================
@@ -347,7 +348,15 @@ export function useConversations(options: UseConversationsOptions = {}) {
                   ...c,
                   otherParticipant: c.otherParticipant ? {
                     ...c.otherParticipant,
-                    lastReadAt: msg.lastReadAt ? new Date(msg.lastReadAt) : c.otherParticipant.lastReadAt,
+                    lastReadAt: (() => {
+                      if (!msg.lastReadAt) return c.otherParticipant.lastReadAt;
+                      const next = new Date(msg.lastReadAt);
+                      const prev = c.otherParticipant.lastReadAt
+                        ? new Date(c.otherParticipant.lastReadAt)
+                        : null;
+                      if (Number.isNaN(next.getTime())) return c.otherParticipant.lastReadAt;
+                      return !prev || next > prev ? next : c.otherParticipant.lastReadAt;
+                    })(),
                   } : c.otherParticipant,
                 }
               ),
@@ -432,7 +441,18 @@ export function useMarkAsRead() {
 
       await queryClient.cancelQueries({ queryKey: ['conversations'] });
       let unreadToRemove = 0;
-      const now = new Date();
+      const messageQueryData = queryClient.getQueryData<{ pages?: Array<{ messages?: Array<{ id: string; createdAt?: Date | string | null }> }> }>(
+        queryKeys.messaging.messages(conversationId)
+      );
+      const optimisticReadAt = (() => {
+        if (!messageId) return new Date();
+        const match = messageQueryData?.pages
+          ?.flatMap((page) => page.messages ?? [])
+          .find((message) => message.id === messageId);
+        if (!match?.createdAt) return new Date();
+        const date = match.createdAt instanceof Date ? match.createdAt : new Date(String(match.createdAt));
+        return Number.isNaN(date.getTime()) ? new Date() : date;
+      })();
 
       queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
         const data = old as ConversationsInfiniteData | undefined;
@@ -447,7 +467,14 @@ export function useMarkAsRead() {
             return {
               ...page,
               conversations: page.conversations.map(c =>
-                c.id === conversationId ? { ...c, unreadCount: 0, myLastReadAt: now } : c
+                c.id === conversationId ? {
+                  ...c,
+                  unreadCount: 0,
+                  myLastReadAt: (() => {
+                    const prev = c.myLastReadAt ? new Date(c.myLastReadAt) : null;
+                    return !prev || optimisticReadAt > prev ? optimisticReadAt : c.myLastReadAt;
+                  })(),
+                } : c
               ),
               totalUnread: idx === 0
                 ? Math.max(0, (page.totalUnread || 0) - unreadToRemove)

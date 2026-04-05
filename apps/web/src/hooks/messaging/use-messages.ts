@@ -255,7 +255,9 @@ export function useMessages(conversationId: string, userId?: string, options: Us
       // Read receipt
       if (msg.type === 'read_receipt' && msg.conversationId === conversationId && msg.userId !== userId) {
         const d = msg.lastReadAt ? new Date(msg.lastReadAt) : null;
-        if (d && !isNaN(d.getTime())) setOtherLastReadAt(d);
+        if (d && !isNaN(d.getTime())) {
+          setOtherLastReadAt((prev) => (!prev || d > prev ? d : prev));
+        }
       }
 
       // Presence
