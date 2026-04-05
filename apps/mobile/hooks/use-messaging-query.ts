@@ -6,7 +6,7 @@
  */
 
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { queryKeys } from '@/lib/query-client';
 import { useWebSocket } from '@/context/websocket-context';
@@ -340,11 +340,19 @@ export function useMarkAsRead(userId?: string) {
     }
   });
 
-  return {
-    markAsRead: (conversationId: string, messageId?: string) =>
-      mutation.mutate({ conversationId, messageId }),
-    isMarking: mutation.isPending,
-  };
+  const { mutate, isPending } = mutation;
+
+  const markAsRead = useCallback(
+    (conversationId: string, messageId?: string) => {
+      mutate({ conversationId, messageId });
+    },
+    [mutate]
+  );
+
+  return useMemo(() => ({
+    markAsRead,
+    isMarking: isPending,
+  }), [markAsRead, isPending]);
 }
 
 // ============================================================================

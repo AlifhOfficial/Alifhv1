@@ -622,7 +622,7 @@ export function useMessages({
 
   return {
     messages,
-    isLoading: isLoading && messages.length === 0,
+    isLoading: messages.length === 0 && (isLoading || isFetching),
     isSending,
     isFetchingMore: isFetchingNextPage,
     hasMore: hasNextPage ?? false,

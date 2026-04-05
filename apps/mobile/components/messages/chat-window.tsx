@@ -398,6 +398,7 @@ export function ChatWindow({
   }, [isOnline, lastSeenAt]);
 
   const { applySearch, clearSearch, clearFilterParams } = useSearch();
+  const showThreadLoading = isLoading || (!conversation && messages.length === 0);
 
   // Avatar + name + status as a single title node
   const titleNode = useMemo(() => {
@@ -484,7 +485,7 @@ export function ChatWindow({
       {/* Messages List with horizontal swipe for timestamps */}
       <GestureDetector gesture={swipeGesture}>
         <View style={styles.messagesArea}>
-          {isLoading ? (
+          {showThreadLoading ? (
             <View style={styles.skeletonContainer}>
               {/* Simulate a chat thread with alternating left/right skeleton bubbles */}
               {[...Array(12)].map((_, i) => {
@@ -568,7 +569,7 @@ export function ChatWindow({
         disabled={false}
         resetKey={conversationId}
         initialText={
-          !isLoading && messages.length === 0 && conversation?.listing
+          !showThreadLoading && messages.length === 0 && conversation?.listing
             ? `Hi ${displayName}, is the ${listingTitle || 'listing'} still available?`
             : undefined
         }

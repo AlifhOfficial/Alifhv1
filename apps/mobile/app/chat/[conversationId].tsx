@@ -36,7 +36,7 @@ export default function ChatScreen() {
   }>();
   const { conversationId, conversationData, locationRefresh } = params;
   
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
 
   // Parse initial conversation data from nav params (avoids fetch if available)
   const initialConversation = useMemo<Conversation | undefined>(() => {
@@ -80,6 +80,15 @@ export default function ChatScreen() {
             action={{ label: 'Go Back', onPress: handleBack, icon: ArrowLeft }}
           />
         </View>
+      </View>
+    );
+  }
+
+  if (isAuthLoading) {
+    return (
+      <View style={[styles.screen, { backgroundColor: colors.background }]}>
+        <Stack.Screen options={{ ...nativeHeaderOptions, headerStyle: { backgroundColor: colors.background }, headerTintColor: colors.label, title: '' }} />
+        <MobileHeader title="Chat" showBackButton onBackPress={handleBack} />
       </View>
     );
   }

@@ -7,7 +7,7 @@
 
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { getConversationsAction } from '@/actions/messaging';
 import { queryKeys } from '@/lib/query-keys';
 import { isConversationActive } from './active-conversations';
@@ -498,10 +498,18 @@ export function useMarkAsRead() {
     },
   });
 
+  const { mutate, isPending } = mutation;
+
+  const markAsRead = useCallback(
+    (conversationId: string, messageId?: string) => {
+      mutate({ conversationId, messageId });
+    },
+    [mutate]
+  );
+
   return {
-    markAsRead: (conversationId: string, messageId?: string) =>
-      mutation.mutate({ conversationId, messageId }),
-    isMarking: mutation.isPending,
+    markAsRead,
+    isMarking: isPending,
   };
 }
 
