@@ -47,11 +47,11 @@ export function PartnerApplicationFeedbackModal({
           
           {/* Content */}
           <div className="text-center space-y-1">
-            <h2 className="text-base font-semibold tracking-tight text-foreground">
+            <h2 className="text-callout font-semibold tracking-tight text-foreground">
               {isError ? "Submission failed" : success ? "Application submitted" : "Submitting..."}
             </h2>
             
-            <p className="text-sm text-muted-foreground">
+            <p className="text-subhead text-muted-foreground">
               {isError ? error : success ? "We'll review and get back to you." : "Please wait"}
             </p>
           </div>
@@ -60,7 +60,7 @@ export function PartnerApplicationFeedbackModal({
           {(success || isError) && onClose && (
             <button
               onClick={onClose}
-              className="w-full py-2.5 rounded-lg bg-muted text-sm font-medium text-foreground hover:bg-muted/80 transition-colors"
+              className="w-full py-2.5 rounded-lg bg-muted text-subhead font-medium text-foreground hover:bg-muted/80 transition-colors"
             >
               {success ? "Done" : "Try again"}
             </button>

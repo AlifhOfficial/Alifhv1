@@ -133,20 +133,20 @@ export function BlackShowroomCard({ showroom, priority = false, index: _index }:
                 )}
                 
                 {/* Brand Name */}
-                <h2 className="text-base font-semibold tracking-tight text-foreground">
+                <h2 className="text-callout font-semibold tracking-tight text-foreground">
                   {partner.brandName}
                 </h2>
                 
                 {/* Tagline */}
                 {showroom.heroTagline && (
-                  <p className="text-sm text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">
+                  <p className="text-subhead text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">
                     {showroom.heroTagline}
                   </p>
                 )}
                 
                 {/* Stats */}
                 {(hasRating || hasYears || hasSold) && (
-                  <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-4 mt-3 text-subhead text-muted-foreground">
                     {hasRating && (
                       <span>Rated {partner.googleRating!.toFixed(1)}</span>
                     )}
@@ -188,12 +188,12 @@ export function BlackShowroomCard({ showroom, priority = false, index: _index }:
           {/* Footer: Location + Experience CTA */}
           <div className="flex items-center justify-between pt-4 mt-4 border-t border-border/40">
             {/* Location */}
-            <span className="text-sm text-muted-foreground">
+            <span className="text-subhead text-muted-foreground">
               {location || 'UAE'}
             </span>
             
             {/* Experience CTA */}
-            <span className="flex items-center gap-1.5 text-sm font-medium text-primary transition-colors">
+            <span className="flex items-center gap-1.5 text-subhead font-medium text-primary transition-colors">
               Visit
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </span>

@@ -87,7 +87,7 @@ export function DashboardLayout({ children, enableRightPanel = false }: Dashboar
               {rightPanelOpen && (
                 <div className="flex flex-col h-full">
                   <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-                    <h2 className="text-lg font-semibold text-foreground">{rightPanelTitle}</h2>
+                    <h2 className="text-headline font-semibold text-foreground">{rightPanelTitle}</h2>
                     <button
                       onClick={closeRightPanel}
                       className="p-2 hover:bg-muted rounded-xl transition-colors text-muted-foreground hover:text-foreground"
@@ -165,7 +165,7 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
         
         {/* Right side actions */}
         <div className="ml-auto flex items-center gap-1">
-          <Button variant="ghost" asChild className="h-8 px-3 text-[15px] font-semibold tracking-tight">
+          <Button variant="ghost" asChild className="h-8 px-3 text-subhead font-semibold tracking-tight">
             <Link href="/">
               Home
             </Link>
@@ -173,7 +173,7 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
           <Button 
             variant="ghost" 
             onClick={onSignOut}
-            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-3 gap-1.5 text-[15px] font-semibold tracking-tight"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-3 gap-1.5 font-semibold tracking-tight"
           >
             <LogOut className="h-3.5 w-3.5" />
             Sign Out

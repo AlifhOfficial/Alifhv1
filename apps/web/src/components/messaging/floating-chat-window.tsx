@@ -125,28 +125,28 @@ export function FloatingChatWindow({
             className="flex-1 min-w-0 text-left hover:opacity-80 transition-opacity"
           >
             <div className="flex items-center gap-2">
-              <h4 className="text-sm font-bold tracking-tight truncate text-sidebar-foreground leading-snug">
+              <h4 className="text-subhead font-bold tracking-tight truncate text-sidebar-foreground leading-snug">
                 {displayName}
               </h4>
               {/* Activity indicator */}
               {controller.isOtherOnline ? (
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                  <span className="text-xs font-semibold text-green-500">now</span>
+                  <span className="text-caption1 font-semibold text-green-500">now</span>
                 </div>
               ) : lastActiveAt ? (
-                <span className="text-xs font-medium text-muted-foreground/70 flex-shrink-0">
+                <span className="text-caption1 font-medium text-muted-foreground/70 flex-shrink-0">
                   {formatTimeAgo(lastActiveAt)}
                 </span>
               ) : (
-                <span className="text-xs font-medium text-muted-foreground/50 flex-shrink-0">away</span>
+                <span className="text-caption1 font-medium text-muted-foreground/50 flex-shrink-0">away</span>
               )}
             </div>
             {!isMinimized && listing && (
               <Link
                 href={`/listings/${listing.id}`}
                 onClick={(e) => e.stopPropagation()}
-                className="text-xs font-medium text-muted-foreground/70 truncate mt-1 block hover:text-primary hover:underline transition-colors leading-snug"
+                className="text-caption1 font-medium text-muted-foreground/70 truncate mt-1 block hover:text-primary hover:underline transition-colors leading-snug"
               >
                 {listing.title}
               </Link>

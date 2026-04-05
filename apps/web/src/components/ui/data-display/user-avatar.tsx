@@ -58,11 +58,11 @@ interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const sizeClasses: Record<NonNullable<UserAvatarProps["size"]>, string> = {
-  xs: "h-6 w-6 text-xs",
-  sm: "h-8 w-8 text-xs",
-  md: "h-10 w-10 text-sm",
-  lg: "h-12 w-12 text-base",
-  xl: "h-16 w-16 text-lg",
+  xs: "h-6 w-6 text-caption1",
+  sm: "h-8 w-8 text-caption1",
+  md: "h-10 w-10 text-subhead",
+  lg: "h-12 w-12 text-callout",
+  xl: "h-16 w-16 text-headline",
 };
 
 /** Generate initials from a name */

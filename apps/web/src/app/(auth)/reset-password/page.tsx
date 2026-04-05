@@ -72,10 +72,10 @@ function ResetPasswordForm() {
             </div>
             
             <div className="text-center space-y-1">
-              <h1 className="text-base font-semibold text-foreground tracking-tight">
+              <h1 className="text-callout font-semibold text-foreground tracking-tight">
                 Invalid reset link
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-subhead text-muted-foreground">
                 This link is invalid or has expired.
               </p>
             </div>
@@ -83,7 +83,7 @@ function ResetPasswordForm() {
             <button
               onClick={() => router.push("/")}
               className={cn(
-                "w-full h-10 rounded-lg text-sm font-semibold transition-colors",
+                "w-full h-10 rounded-lg text-subhead font-semibold transition-colors",
                 "bg-muted/30 text-foreground hover:bg-muted/50",
                 "flex items-center justify-center gap-2"
               )}
@@ -111,10 +111,10 @@ function ResetPasswordForm() {
           </button>
 
           <div className="pt-6">
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">
+            <h1 className="text-title3 font-semibold tracking-tight text-foreground">
               Reset password
             </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
+            <p className="text-subhead text-muted-foreground mt-0.5">
               Enter your new password
             </p>
           </div>
@@ -125,14 +125,14 @@ function ResetPasswordForm() {
           {/* Error */}
           {error && (
             <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-              <p className="text-sm text-destructive">{error}</p>
+              <p className="text-subhead text-destructive">{error}</p>
             </div>
           )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label htmlFor="password" className="text-sm font-semibold text-muted-foreground/70">
+              <label htmlFor="password" className="text-subhead font-semibold text-muted-foreground/70">
                 New password
               </label>
               <div className="relative">
@@ -141,7 +141,7 @@ function ResetPasswordForm() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full h-10 px-3 pr-10 bg-muted/20 border border-border/40 rounded-lg text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
+                  className="w-full h-10 px-3 pr-10 bg-muted/20 border border-border/40 rounded-lg text-subhead font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
                   placeholder="••••••••"
                   required
                   disabled={isLoading}
@@ -156,7 +156,7 @@ function ResetPasswordForm() {
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-caption1 text-muted-foreground">
                 Minimum 8 characters
               </p>
             </div>
@@ -165,7 +165,7 @@ function ResetPasswordForm() {
               type="submit"
               disabled={!password || isLoading}
               className={cn(
-                "w-full h-10 rounded-lg text-sm font-semibold transition-colors",
+                "w-full h-10 rounded-lg text-subhead font-semibold transition-colors",
                 "bg-primary text-primary-foreground hover:bg-primary/90",
                 "disabled:opacity-50 disabled:cursor-not-allowed"
               )}

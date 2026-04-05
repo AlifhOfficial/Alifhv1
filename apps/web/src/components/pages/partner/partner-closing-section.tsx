@@ -29,7 +29,7 @@ function FoundingProgramButton() {
     <>
       <button
         onClick={handleClick}
-        className="w-full sm:w-auto h-12 px-10 bg-primary text-primary-foreground text-base font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+        className="w-full sm:w-auto h-12 px-10 bg-primary text-primary-foreground text-callout font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
       >
         Apply for Founding Program
       </button>
@@ -50,10 +50,10 @@ export function PartnerClosingSection() {
 
         {/* Header */}
         <div className="text-center mb-16 space-y-5">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Ready?
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Join the Founding Program.
             <br />
             <span className="text-muted-foreground">Limited spots. Shape the platform.</span>
@@ -81,7 +81,7 @@ function JoinRevvupInfographic() {
   return (
     <MacOSWindow url="revvup.ae/partners" contentClassName="flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[560px] xl:min-h-[680px] p-4 sm:p-8 lg:p-16">
       <div className="text-center">
-        <p className="text-3xl sm:text-5xl lg:text-7xl xl:text-9xl font-bold text-white tracking-tight">
+        <p className="text-title1 sm:text-display1 lg:text-display3 xl:text-display5 font-bold text-white tracking-tight">
           Your Move.
         </p>
       </div>

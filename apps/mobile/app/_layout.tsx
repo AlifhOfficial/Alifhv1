@@ -12,7 +12,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { View, LogBox, Platform, AppState, Text as RNText, TextInput as RNTextInput } from 'react-native';
 import 'react-native-reanimated';
 

@@ -88,7 +88,7 @@ export function ImageUpload({
           ) : (
             <div className="flex flex-col items-center gap-1 text-muted-foreground">
               <Upload className="w-5 h-5" />
-              <span className="text-xs">{label}</span>
+              <span className="text-caption1">{label}</span>
             </div>
           )}
         </button>

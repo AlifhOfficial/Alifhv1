@@ -87,8 +87,8 @@ export function BuyingChecklist() {
       {/* Progress */}
       <div className="rounded-lg border border-border/50 p-4">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-[13px] font-medium">Progress</span>
-          <span className="text-[12px] text-muted-foreground">
+          <span className="text-footnote font-medium">Progress</span>
+          <span className="text-caption1 text-muted-foreground">
             {checkedCount}/{totalItems}
           </span>
         </div>
@@ -104,7 +104,7 @@ export function BuyingChecklist() {
       <div className="space-y-3">
         {checklistSections.map((section) => (
           <div key={section.title} className="rounded-lg border border-border/50 p-4">
-            <h3 className="text-[13px] font-medium mb-3">{section.title}</h3>
+            <h3 className="text-footnote font-medium mb-3">{section.title}</h3>
             <div className="space-y-2">
               {section.items.map((item, index) => {
                 const key = `${section.title}-${index}`
@@ -134,7 +134,7 @@ export function BuyingChecklist() {
                       checked={isChecked}
                       onChange={() => toggleItem(key)}
                     />
-                    <span className={`text-[13px] ${isChecked ? 'line-through text-muted-foreground' : 'text-foreground/80'}`}>
+                    <span className={`text-footnote ${isChecked ? 'line-through text-muted-foreground' : 'text-foreground/80'}`}>
                       {item}
                     </span>
                   </label>
@@ -149,13 +149,13 @@ export function BuyingChecklist() {
       <div className="flex gap-2 pt-2">
         <button
           onClick={() => setCheckedItems({})}
-          className="flex-1 px-3 py-2 text-[13px] font-medium rounded-md border border-border/50 hover:bg-muted/50 transition-colors"
+          className="flex-1 px-3 py-2 text-footnote font-medium rounded-md border border-border/50 hover:bg-muted/50 transition-colors"
         >
           Reset
         </button>
         <button
           onClick={() => window.print()}
-          className="flex-1 px-3 py-2 text-[13px] font-medium rounded-md bg-foreground text-background hover:bg-foreground/90 transition-colors"
+          className="flex-1 px-3 py-2 text-footnote font-medium rounded-md bg-foreground text-background hover:bg-foreground/90 transition-colors"
         >
           Print
         </button>

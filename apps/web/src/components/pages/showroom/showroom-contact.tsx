@@ -42,10 +42,10 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
         
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             Contact
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             {showroom.appointmentCtaText || 'Get in Touch'}
           </h2>
         </div>
@@ -79,13 +79,13 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-semibold text-foreground mb-1">
+                  <h3 className="text-callout font-semibold text-foreground mb-1">
                     Location
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed break-words">
+                  <p className="text-subhead text-muted-foreground leading-relaxed break-words">
                     {fullAddress}
                   </p>
-                  <p className="text-sm text-muted-foreground/70 mt-2 group-hover:text-primary transition-colors">
+                  <p className="text-subhead text-muted-foreground/70 mt-2 group-hover:text-primary transition-colors">
                     View on Map →
                   </p>
                 </div>
@@ -102,13 +102,13 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
                   <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-semibold text-foreground mb-1">
+                  <h3 className="text-callout font-semibold text-foreground mb-1">
                     Phone
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-subhead text-muted-foreground leading-relaxed">
                     {displayPhone}
                   </p>
-                  <p className="text-sm text-muted-foreground/70 mt-2 group-hover:text-primary transition-colors">
+                  <p className="text-subhead text-muted-foreground/70 mt-2 group-hover:text-primary transition-colors">
                     Call Now →
                   </p>
                 </div>
@@ -118,7 +118,7 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
         </div>
 
         {/* Description - Below Map/Cards */}
-        <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+        <p className="text-callout text-muted-foreground max-w-2xl leading-relaxed">
           We're here when you're ready.
         </p>
 

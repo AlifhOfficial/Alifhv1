@@ -54,31 +54,31 @@ export function ServiceCard({ service, onUpdate, onRemove, onImageUpload, isUplo
                 </label>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">Service image (optional)</p>
+            <p className="text-caption1 text-muted-foreground">Service image (optional)</p>
           </div>
           <input
             value={form.title}
             onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
             placeholder="Service title"
-            className="w-full h-8 bg-muted/20 rounded px-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
+            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
           <textarea
             value={form.description || ''}
             onChange={(e) => setForm(f => ({ ...f, description: e.target.value || null }))}
             placeholder="Description..."
             rows={2}
-            className="w-full bg-muted/20 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none"
+            className="w-full bg-muted/20 rounded p-2 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none"
           />
           <div className="flex gap-2">
             <button
               onClick={() => { onUpdate(form); setIsEditing(false); }}
-              className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+              className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
             >
               Save
             </button>
             <button
               onClick={() => { setForm(service); setIsEditing(false); }}
-              className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+              className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
             >
               Cancel
             </button>
@@ -95,9 +95,9 @@ export function ServiceCard({ service, onUpdate, onRemove, onImageUpload, isUplo
               </div>
             )}
             <div>
-              <p className="text-sm font-semibold text-foreground">{service.title}</p>
+              <p className="text-subhead font-semibold text-foreground">{service.title}</p>
               {service.description && (
-                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{service.description}</p>
+                <p className="text-caption1 text-muted-foreground mt-1 line-clamp-2">{service.description}</p>
               )}
             </div>
           </div>

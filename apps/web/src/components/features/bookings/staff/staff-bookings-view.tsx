@@ -553,8 +553,8 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
         <div className="flex items-center justify-between">
           {/* Left: Title */}
           <div>
-            <h1 className="text-base sm:text-lg font-semibold text-foreground">Bookings</h1>
-            <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">
+            <h1 className="text-callout sm:text-headline font-semibold text-foreground">Bookings</h1>
+            <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">
               Manage test drive bookings
             </p>
           </div>
@@ -603,7 +603,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                       setSearchQuery(e.target.value);
                       handleSearchChange(e.target.value);
                     }}
-                    className="w-full h-9 sm:h-10 pl-9 sm:pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+                    className="w-full h-9 sm:h-10 pl-9 sm:pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
                   />
                   {searchQuery && (
                     <button
@@ -623,7 +623,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                   setError(null);
                   updateRoute({ sort: v as BookingSort, page: 1 });
                 }}>
-                  <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-xs sm:text-sm shrink-0">
+                  <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-caption1 sm:text-subhead shrink-0">
                     <SelectValue placeholder="Sort" />
                   </SelectTrigger>
                   <SelectContent>
@@ -638,7 +638,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                   if (!open) resetQuickAction();
                 }}>
                   <PopoverTrigger asChild>
-                    <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 transition-colors flex-shrink-0">
+                    <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-caption1 sm:text-subhead font-medium flex items-center gap-1.5 sm:gap-2 transition-colors flex-shrink-0">
                       <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       <span className="hidden sm:inline">Quick Action</span>
                       <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -651,28 +651,28 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                   collisionPadding={16}
                 >
                   <div className="p-3 border-b border-border/40">
-                    <p className="text-sm font-semibold text-foreground">Quick Action</p>
-                    <p className="text-xs text-muted-foreground/70 mt-0.5">Enter booking code to update status</p>
+                    <p className="text-subhead font-semibold text-foreground">Quick Action</p>
+                    <p className="text-caption1 text-muted-foreground/70 mt-0.5">Enter booking code to update status</p>
                   </div>
                   
                   <div className="p-3 space-y-3">
                     {/* Code Input */}
                     {!lookedUpBooking && (
                       <div className="space-y-1.5">
-                        <label className="text-xs font-semibold text-muted-foreground/70">Booking Code</label>
+                        <label className="text-caption1 font-semibold text-muted-foreground/70">Booking Code</label>
                         <div className="flex gap-2">
                           <input
                             value={verifyCode}
                             onChange={(e) => setVerifyCode(e.target.value.toUpperCase())}
                             placeholder="e.g. W5ZC2CD6"
-                            className="flex-1 min-w-0 h-10 px-3 bg-muted/30 border border-border/40 rounded-lg focus:ring-1 focus:ring-primary/30 focus:border-primary/40 outline-none transition-all text-sm font-mono placeholder:text-muted-foreground/50"
+                            className="flex-1 min-w-0 h-10 px-3 bg-muted/30 border border-border/40 rounded-lg focus:ring-1 focus:ring-primary/30 focus:border-primary/40 outline-none transition-all text-subhead font-mono placeholder:text-muted-foreground/50"
                             onKeyDown={(e) => e.key === 'Enter' && handleLookupByCode()}
                             autoFocus
                           />
                           <button
                             onClick={handleLookupByCode}
                             disabled={isLookingUp || !verifyCode.trim()}
-                            className="h-10 px-3 sm:px-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors disabled:opacity-50 flex-shrink-0"
+                            className="h-10 px-3 sm:px-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-subhead font-medium transition-colors disabled:opacity-50 flex-shrink-0"
                           >
                             {isLookingUp ? '...' : 'Go'}
                           </button>
@@ -686,7 +686,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                         {/* Booking summary */}
                         <div className="p-3 rounded-lg bg-muted/30 border border-border/40 space-y-2">
                           <div className="flex items-start justify-between gap-2">
-                            <p className="text-sm font-medium text-foreground line-clamp-1 min-w-0">{lookedUpBooking.listingTitle}</p>
+                            <p className="text-subhead font-medium text-foreground line-clamp-1 min-w-0">{lookedUpBooking.listingTitle}</p>
                             <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap ${
                               lookedUpBooking.status === 'pending' ? 'bg-yellow-500/10 text-yellow-600' :
                               lookedUpBooking.status === 'confirmed' ? 'bg-green-500/10 text-green-600' :
@@ -696,8 +696,8 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                               {lookedUpBooking.status.toUpperCase()}
                             </span>
                           </div>
-                          <p className="text-xs text-muted-foreground truncate">{lookedUpBooking.userName}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-caption1 text-muted-foreground truncate">{lookedUpBooking.userName}</p>
+                          <p className="text-caption1 text-muted-foreground">
                             {new Date(lookedUpBooking.scheduledStartTime).toLocaleDateString('en-AE', {
                               weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
                               timeZone: 'Asia/Dubai'
@@ -709,14 +709,14 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                         {/* Valid actions */}
                         {getValidActions(lookedUpBooking.status).length > 0 ? (
                           <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-muted-foreground/70">Actions</label>
+                            <label className="text-caption1 font-semibold text-muted-foreground/70">Actions</label>
                             <div className="flex flex-wrap gap-1.5">
                               {getValidActions(lookedUpBooking.status).map((actionItem) => (
                                 <button
                                   key={actionItem.action}
                                   onClick={() => handleApplyQuickAction(actionItem.action)}
                                   disabled={isApplyingAction}
-                                  className={`h-8 px-3 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 ${actionItem.color}`}
+                                  className={`h-8 px-3 rounded-lg text-caption1 font-semibold transition-colors disabled:opacity-50 ${actionItem.color}`}
                                 >
                                   {actionItem.label}
                                 </button>
@@ -724,13 +724,13 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                             </div>
                           </div>
                         ) : (
-                          <p className="text-xs text-muted-foreground text-center py-2">No actions available for this status</p>
+                          <p className="text-caption1 text-muted-foreground text-center py-2">No actions available for this status</p>
                         )}
                         
                         {/* Reset button */}
                         <button
                           onClick={resetQuickAction}
-                          className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+                          className="w-full text-caption1 text-muted-foreground hover:text-foreground transition-colors"
                         >
                           ← Look up another booking
                         </button>
@@ -741,7 +741,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                   {/* Success message */}
                   {verifyMessage && (
                     <div className="p-3 border-t border-border/40 bg-emerald-500/5">
-                      <div className="flex items-center justify-center gap-1.5 text-xs text-emerald-500 font-medium">
+                      <div className="flex items-center justify-center gap-1.5 text-caption1 text-emerald-500 font-medium">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         {verifyMessage}
                       </div>
@@ -772,7 +772,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                           setError(null);
                           updateRoute({ status: tab.key, page: 1 });
                         }}
-                        className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all capitalize whitespace-nowrap ${
+                        className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all capitalize whitespace-nowrap ${
                           isActive
                             ? 'bg-background text-foreground shadow-sm'
                             : 'text-muted-foreground hover:text-foreground'
@@ -805,7 +805,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button
-                            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all flex items-center gap-1 whitespace-nowrap ${
+                            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
                               isSecondarySelected
                                 ? 'bg-background text-foreground shadow-sm'
                                 : 'text-muted-foreground hover:text-foreground'
@@ -830,7 +830,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                                 setError(null);
                                 updateRoute({ status: tab.key, page: 1 });
                               }}
-                              className={`text-xs cursor-pointer ${
+                              className={`text-caption1 cursor-pointer ${
                                 selectedStatus === tab.key ? 'bg-secondary' : ''
                               }`}
                             >
@@ -848,7 +848,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
 
             {/* Error Alert */}
             {error && (
-              <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm">
+              <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead">
                 {error}
               </div>
             )}
@@ -869,21 +869,21 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
               
               return (
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-border/30">
-                  <p className="text-[11px] sm:text-xs text-muted-foreground">
+                  <p className="text-caption2 sm:text-caption1 text-muted-foreground">
                     Page {currentPage} of {totalPages} · {totalBookings} booking{totalBookings !== 1 ? 's' : ''}
                   </p>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                       disabled={currentPage === 1 || isLoading}
-                      className="px-3 py-1.5 text-[11px] sm:text-xs font-medium rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="px-3 py-1.5 text-caption2 sm:text-caption1 font-medium rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       Previous
                     </button>
                     <button
                       onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                       disabled={currentPage === totalPages || isLoading}
-                      className="px-3 py-1.5 text-[11px] sm:text-xs font-medium rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="px-3 py-1.5 text-caption2 sm:text-caption1 font-medium rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
                     </button>
@@ -899,14 +899,14 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
           <div className="pb-24 sm:pb-32">
             <button
               onClick={() => setActiveTab('bookings')}
-              className="text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-4"
+              className="text-caption1 sm:text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors mb-4"
             >
               ← Back to bookings
             </button>
 
             {/* Error Alert */}
             {error && (
-              <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm">
+              <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead">
                 {error}
               </div>
             )}

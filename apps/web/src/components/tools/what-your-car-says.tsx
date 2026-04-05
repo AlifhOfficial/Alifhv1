@@ -91,11 +91,11 @@ export function WhatYourCarSays() {
   return (
     <div className="space-y-6">
       <div className="border rounded-lg p-6">
-        <label className="block text-sm font-medium mb-3">
+        <label className="block text-subhead font-medium mb-3">
           What car do you drive?
         </label>
         <select
-          className="w-full px-4 py-3 border rounded-lg text-lg mb-6"
+          className="w-full px-4 py-3 border rounded-lg text-headline mb-6"
           value={selectedCar}
           onChange={(e) => setSelectedCar(e.target.value)}
         >
@@ -119,21 +119,21 @@ export function WhatYourCarSays() {
       {result && (
         <div className="border rounded-lg p-8 bg-gradient-to-br from-primary/5 to-primary/10">
           <div className="text-center mb-6">
-            <div className="text-6xl mb-4">{result.emoji}</div>
-            <h2 className="text-3xl font-bold mb-2">{result.title}</h2>
+            <div className="text-display2 mb-4">{result.emoji}</div>
+            <h2 className="text-title1 font-bold mb-2">{result.title}</h2>
           </div>
 
-          <p className="text-lg leading-relaxed mb-6 text-center">
+          <p className="text-headline leading-relaxed mb-6 text-center">
             {result.description}
           </p>
 
           <div className="mt-6">
-            <p className="text-sm font-medium text-center mb-3">Your Personality Traits:</p>
+            <p className="text-subhead font-medium text-center mb-3">Your Personality Traits:</p>
             <div className="flex gap-2 justify-center flex-wrap">
               {result.traits.map((trait) => (
                 <span
                   key={trait}
-                  className="px-4 py-2 bg-background border rounded-full text-sm font-medium"
+                  className="px-4 py-2 bg-background border rounded-full text-subhead font-medium"
                 >
                   {trait}
                 </span>

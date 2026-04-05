@@ -60,7 +60,7 @@ function GalleryImage({
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
           <div className="text-center text-white">
             <Images className="h-8 w-8 mx-auto mb-2" />
-            <span className="text-lg">+{showCount} more</span>
+            <span className="text-headline">+{showCount} more</span>
           </div>
         </div>
       )}
@@ -113,17 +113,17 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
           {/* Header - Above Media */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
             <div>
-              <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+              <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
                 The Space
               </span>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+              <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
                 Our Showroom
               </h2>
             </div>
             {allImages.length > 1 && (
               <button
                 onClick={() => handleImageClick(0)}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                className="text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
               >
                 <Images className="h-4 w-4" />
                 View all {allImages.length}
@@ -169,7 +169,7 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
                   />
                 ) : null}
               </div>
-              <p className="text-center mt-3 text-sm text-muted-foreground">
+              <p className="text-center mt-3 text-subhead text-muted-foreground">
                 Virtual Showroom Tour
               </p>
             </div>
@@ -195,7 +195,7 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
           )}
 
           {/* Description - Below Media */}
-          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed mt-8">
+          <p className="text-callout text-muted-foreground max-w-2xl leading-relaxed mt-8">
             Where every detail is crafted with care.
           </p>
         </div>

@@ -122,7 +122,7 @@ function SortableGalleryImage({ id, url, index, onRemove }: SortableGalleryImage
       </button>
       
       {/* Position badge */}
-      <div className="absolute bottom-2 left-2 px-1.5 py-0.5 bg-black/50 text-white text-xs font-medium rounded">
+      <div className="absolute bottom-2 left-2 px-1.5 py-0.5 bg-black/50 text-white text-caption1 font-medium rounded">
         {index + 1}
       </div>
     </div>
@@ -238,7 +238,7 @@ export function GallerySection({
   return (
     <div className="space-y-6">
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Section Media</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Section Media</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
           <ImageUpload
             value={form.gallerySectionImage || null}
@@ -265,10 +265,10 @@ export function GallerySection({
       {/* Gallery Grid */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Showroom Gallery</h3>
+          <h3 className="text-subhead font-bold tracking-tight text-foreground">Showroom Gallery</h3>
           <div className="text-right">
-            <span className="text-sm text-muted-foreground">{form.showroomImages?.length || 0}/12</span>
-            <p className="text-[11px] text-muted-foreground/70">Drag images to reorder</p>
+            <span className="text-subhead text-muted-foreground">{form.showroomImages?.length || 0}/12</span>
+            <p className="text-caption2 text-muted-foreground/70">Drag images to reorder</p>
           </div>
         </div>
 
@@ -344,11 +344,11 @@ export function GallerySection({
                   }}
                 />
                 {imageUploading === 'showroomImages' ? (
-                  <span className="text-xs text-muted-foreground">Uploading…</span>
+                  <span className="text-caption1 text-muted-foreground">Uploading…</span>
                 ) : (
                   <>
                     <Plus className="w-5 h-5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">Add photos</span>
+                    <span className="text-caption1 text-muted-foreground">Add photos</span>
                   </>
                 )}
               </label>
@@ -360,11 +360,11 @@ export function GallerySection({
           {/* Progress bar — shown while gallery images are uploading */}
           {isGalleryUploading && (
             <div className="mt-4 space-y-2">
-              <p className="text-sm font-medium text-foreground transition-all duration-500">
+              <p className="text-subhead font-medium text-foreground transition-all duration-500">
                 {getGalleryMessage(galleryDisplayProgress)}
               </p>
               <Progress value={galleryDisplayProgress} className="h-1.5" />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-caption1 text-muted-foreground">
                 {galleryDisplayProgress < 40 ? 'Preparing…' : `${galleryDisplayProgress}% complete`}
               </p>
             </div>
@@ -374,7 +374,7 @@ export function GallerySection({
 
       {/* Virtual Tour */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Virtual Tour</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Virtual Tour</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
           <EditableField
             {...getEditableFieldProps('showroomVideoTourUrl')}
@@ -390,7 +390,7 @@ export function GallerySection({
                 onClick={async () => {
                   await updateShowroom({ showroomVideoTourUrl: null });
                 }}
-                className="text-xs text-destructive hover:text-destructive/80 transition-colors"
+                className="text-caption1 text-destructive hover:text-destructive/80 transition-colors"
               >
                 Remove tour
               </button>

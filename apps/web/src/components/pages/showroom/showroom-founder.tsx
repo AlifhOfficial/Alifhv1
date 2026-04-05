@@ -41,14 +41,14 @@ export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
           <div className={`p-8 sm:p-12 rounded-xl ${founderImageUrl ? 'lg:rounded-l-none' : ''} bg-sidebar border border-border/40 ${founderImageUrl ? 'lg:border-l-0' : ''} flex flex-col justify-center`}>
             
             {/* Label */}
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
               Leadership
             </span>
             
             {/* Quote */}
             {showroom.founderQuote && (
               <blockquote className="mb-6">
-                <p className="text-lg sm:text-xl font-semibold text-foreground leading-relaxed">
+                <p className="text-headline sm:text-title3 font-semibold text-foreground leading-relaxed">
                   "{showroom.founderQuote}"
                 </p>
               </blockquote>
@@ -56,11 +56,11 @@ export function ShowroomFounder({ showroom }: ShowroomFounderProps) {
             
             {/* Founder Info */}
             <div className="mt-auto pt-6 border-t border-border/40">
-              <p className="text-base font-semibold text-foreground">
+              <p className="text-callout font-semibold text-foreground">
                 {showroom.founderName}
               </p>
               {showroom.founderTitle && (
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-subhead text-muted-foreground mt-1">
                   {showroom.founderTitle}
                 </p>
               )}

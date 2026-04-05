@@ -388,7 +388,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-sm font-semibold text-muted-foreground/70">{label}</p>
+              <p className="text-subhead font-semibold text-muted-foreground/70">{label}</p>
               {suffix}
             </div>
             {isEditing ? (
@@ -399,7 +399,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                   value={String(value || '')}
                   onChange={(e) => updateField({ [field as string]: e.target.value })}
                   placeholder={placeholder}
-                  className="w-full h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') saveField(field);
                     if (e.key === 'Escape') cancelEdit();
@@ -408,21 +408,21 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                 <div className="flex items-center justify-end gap-3">
                   <button
                     onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-                    className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                    className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); saveField(field); }}
                     disabled={saving}
-                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                    className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                   >
                     {saving ? '...' : 'Save'}
                   </button>
                 </div>
               </div>
             ) : (
-              <p className={cn("text-sm font-medium text-foreground", disabled && "text-foreground/70")}>
+              <p className={cn("text-subhead font-medium text-foreground", disabled && "text-foreground/70")}>
                 {value || <span className="text-muted-foreground/50">{disabled ? '—' : 'Tap to add'}</span>}
               </p>
             )}
@@ -544,7 +544,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
           
           <div className="flex-1 min-w-0 pt-1 sm:pt-2">
             <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate">{displayName}</h1>
+              <h1 className="text-headline sm:text-title3 font-semibold tracking-tight truncate">{displayName}</h1>
               {profile?.kycVerified && !isKycExpired && (
                 <CheckCircle2 className={cn(
                   "w-5 h-5 text-blue-500 transition-opacity",
@@ -552,10 +552,10 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                 )} />
               )}
             </div>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 truncate">
+            <p className="text-caption1 sm:text-subhead text-muted-foreground mt-0.5 truncate">
               {user?.email}
             </p>
-            <p className="text-xs sm:text-sm text-muted-foreground/70 mt-0.5">
+            <p className="text-caption1 sm:text-subhead text-muted-foreground/70 mt-0.5">
               Member since {memberSinceYear ?? '—'}
             </p>
           </div>
@@ -566,7 +566,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
             <div>
               <p className={cn(
-                "text-sm font-semibold",
+                "text-subhead font-semibold",
                 profile?.kycVerified && !isKycExpired ? "text-foreground" :
                 isKycExpired || profile?.kycStatus === 'rejected' ? "text-red-500" :
                 profile?.kycStatus === 'pending' ? "text-amber-500" :
@@ -579,7 +579,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                  'Identity Not Verified'}
               </p>
               <p className={cn(
-                "text-xs font-medium mt-0.5",
+                "text-caption1 font-medium mt-0.5",
                 isExpiringSoon ? "text-amber-500" : "text-muted-foreground/70"
               )}>
                 {profile?.kycVerified && !isKycExpired && kycExpiryDate ? (
@@ -600,7 +600,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
             {(!profile?.kycVerified || isKycExpired || profile?.kycStatus === 'rejected' || showResubmit) && profile?.kycStatus !== 'pending' && (
               <button 
                 onClick={() => setKycModalOpen(true)}
-                className="text-xs text-blue-500 hover:text-blue-600 font-semibold px-4 py-2 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors w-full sm:w-auto text-center"
+                className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold px-4 py-2 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors w-full sm:w-auto text-center"
               >
                 {isKycExpired || profile?.kycStatus === 'rejected' ? 'Try Again' : 
                  showResubmit ? 'Renew' : 'Verify'}
@@ -612,22 +612,22 @@ export function ProfileView({ initialData }: ProfileViewProps) {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 border border-border/40 bg-sidebar rounded-xl overflow-hidden">
           <div className="p-4 sm:p-5 flex flex-col gap-1 border-r border-b md:border-b-0 border-border/40">
-            <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Listings</span>
-            <span className="text-lg sm:text-xl font-bold text-foreground">{stats?.listingsCount ?? '—'}</span>
+            <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Listings</span>
+            <span className="text-headline sm:text-title3 font-bold text-foreground">{stats?.listingsCount ?? '—'}</span>
           </div>
           <div className="p-4 sm:p-5 flex flex-col gap-1 border-b md:border-b-0 md:border-r border-border/40">
-            <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Sold</span>
-            <span className="text-lg sm:text-xl font-bold text-foreground">{stats?.soldCount ?? '—'}</span>
+            <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Sold</span>
+            <span className="text-headline sm:text-title3 font-bold text-foreground">{stats?.soldCount ?? '—'}</span>
           </div>
           <div className="p-4 sm:p-5 flex flex-col gap-1 border-r border-border/40">
-            <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Response</span>
-            <span className="text-lg sm:text-xl font-bold text-foreground">
+            <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Response</span>
+            <span className="text-headline sm:text-title3 font-bold text-foreground">
               {stats?.responseRate !== null && stats?.responseRate !== undefined ? `${stats.responseRate}%` : '—'}
             </span>
           </div>
           <div className="p-4 sm:p-5 flex flex-col gap-1">
-            <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Rating</span>
-            <span className="text-lg sm:text-xl font-bold text-foreground">
+            <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Rating</span>
+            <span className="text-headline sm:text-title3 font-bold text-foreground">
               {profile?.platformRating ? (
                 <span className="flex items-center gap-1.5">
                   <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
@@ -640,7 +640,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
 
         {/* Awards & Badges */}
         <section>
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Awards & Badges</h3>
+          <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Awards & Badges</h3>
           
           <div className="rounded-xl border border-border/40 bg-sidebar p-5">
             {profile?.badges && profile.badges.length > 0 ? (
@@ -648,7 +648,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                 {profile.badges.map((badge, i) => (
                   <span 
                     key={i} 
-                    className="px-4 py-2 rounded-lg bg-muted/30 text-foreground text-sm font-semibold border border-border/40"
+                    className="px-4 py-2 rounded-lg bg-muted/30 text-foreground text-subhead font-semibold border border-border/40"
                   >
                     {badge}
                   </span>
@@ -656,10 +656,10 @@ export function ProfileView({ initialData }: ProfileViewProps) {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <p className="text-[15px] font-medium text-muted-foreground/60 mb-2">No badges earned yet</p>
+                <p className="text-subhead font-medium text-muted-foreground/60 mb-2">No badges earned yet</p>
                 <a 
                   href="/badges" 
-                  className="text-sm text-primary hover:text-primary/80 font-semibold transition-colors"
+                  className="text-subhead text-primary hover:text-primary/80 font-semibold transition-colors"
                 >
                   Learn more about badges
                 </a>
@@ -670,7 +670,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
 
         {/* Personal Information */}
         <section>
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Personal Information</h3>
+          <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Personal Information</h3>
           
           <div className="rounded-xl border border-border/40 bg-sidebar p-5">
             <EditableField 
@@ -702,7 +702,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
               ) : (
                 <a 
                   href="/verify-email" 
-                  className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                  className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                   onClick={(e) => e.stopPropagation()}
                 >
                   Verify
@@ -713,13 +713,13 @@ export function ProfileView({ initialData }: ProfileViewProps) {
             {/* Phone Number - Custom inline with +971 prefix */}
             <div className="py-3 border-b border-border/20 last:border-0">
               <div className="flex items-center justify-between mb-1">
-                <p className="text-sm font-semibold text-muted-foreground/70">Phone Number</p>
+                <p className="text-subhead font-semibold text-muted-foreground/70">Phone Number</p>
                 {(profile?.phoneNumberVerified || phoneJustVerified) ? (
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
                 ) : form.phone && phoneVerifyStep === 'idle' ? (
                   <button
                     onClick={sendPhoneOTP}
-                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                    className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                   >
                     Verify
                   </button>
@@ -729,7 +729,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
               {phoneVerifyStep === 'otp' ? (
                 // OTP input step
                 <div className="space-y-3">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-caption1 text-muted-foreground">
                     Enter the 6-digit code sent to +971{form.phone}
                   </p>
                   <div className="flex items-center gap-2">
@@ -740,7 +740,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/[^\d]/g, '').slice(0, 6))}
                       placeholder="000000"
-                      className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-center text-lg font-mono tracking-widest focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                      className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-center text-headline font-mono tracking-widest focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                       maxLength={6}
                     />
                   </div>
@@ -748,7 +748,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                     <button
                       onClick={otpCountdown > 0 ? undefined : sendPhoneOTP}
                       disabled={otpCountdown > 0}
-                      className="text-xs text-muted-foreground hover:text-foreground disabled:cursor-not-allowed"
+                      className="text-caption1 text-muted-foreground hover:text-foreground disabled:cursor-not-allowed"
                     >
                       {otpCountdown > 0 ? `Resend in ${otpCountdown}s` : 'Resend code'}
                     </button>
@@ -756,13 +756,13 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                       <button
                         onClick={verifyPhoneOTP}
                         disabled={otp.length !== 6}
-                        className="text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+                        className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
                       >
                         Verify
                       </button>
                       <button
                         onClick={cancelPhoneVerify}
-                        className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                        className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
                       >
                         Cancel
                       </button>
@@ -773,13 +773,13 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                 // Loading state
                 <div className="flex items-center gap-2 h-10">
                   <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Sending...</span>
+                  <span className="text-subhead text-muted-foreground">Sending...</span>
                 </div>
               ) : editingField === 'phone' ? (
                 // Edit phone number
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-muted-foreground shrink-0">+971</span>
+                    <span className="text-subhead font-medium text-muted-foreground shrink-0">+971</span>
                     <input
                       autoFocus
                       type="tel"
@@ -787,7 +787,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                       value={form.phone}
                       onChange={(e) => updateField({ phone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
                       placeholder="50 000 0000"
-                      className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                      className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                       maxLength={9}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') saveField('phone');
@@ -798,14 +798,14 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                   <div className="flex items-center justify-end gap-3">
                     <button
                       onClick={cancelEdit}
-                      className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                      className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={() => saveField('phone')}
                       disabled={saving}
-                      className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                      className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                     >
                       {saving ? '...' : 'Save'}
                     </button>
@@ -831,7 +831,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                     }
                   }}
                 >
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="text-subhead font-medium text-foreground">
                     {form.phone ? `+971 ${form.phone}` : <span className="text-muted-foreground/50">Tap to add</span>}
                   </p>
                 </div>
@@ -842,7 +842,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
 
         {/* Bio */}
         <section>
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Bio</h3>
+          <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Bio</h3>
           
           <div className="rounded-xl border border-border/40 bg-sidebar p-5">
             <div 
@@ -870,18 +870,18 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                     }}
                   />
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between">
-                    <p className={cn("text-xs", form.bio.length >= 2000 ? "text-destructive" : "text-muted-foreground/70")}>{form.bio.length}/2000 characters</p>
+                    <p className={cn("text-caption1", form.bio.length >= 2000 ? "text-destructive" : "text-muted-foreground/70")}>{form.bio.length}/2000 characters</p>
                     <div className="flex items-center justify-end gap-3">
                       <button
                         onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-                        className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                        className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
                       >
                         Cancel
                       </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); saveField('bio'); }}
                         disabled={saving}
-                        className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                        className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                       >
                         {saving ? '...' : 'Save'}
                       </button>
@@ -890,11 +890,11 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                 </div>
               ) : (
                 <>
-                  <p className="text-sm font-medium text-foreground whitespace-pre-wrap">
+                  <p className="text-subhead font-medium text-foreground whitespace-pre-wrap">
                     {form.bio || <span className="text-muted-foreground/50">Tap to add bio</span>}
                   </p>
                   {form.bio && (
-                    <p className="text-xs text-muted-foreground/70 mt-2">{form.bio.length}/2000 characters</p>
+                    <p className="text-caption1 text-muted-foreground/70 mt-2">{form.bio.length}/2000 characters</p>
                   )}
                 </>
               )}
@@ -905,8 +905,8 @@ export function ProfileView({ initialData }: ProfileViewProps) {
         {/* Tags */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[15px] font-bold tracking-tight text-foreground">Tags</h3>
-            <span className="text-sm font-semibold text-muted-foreground/70">{form.tags.length}/3 selected</span>
+            <h3 className="text-subhead font-bold tracking-tight text-foreground">Tags</h3>
+            <span className="text-subhead font-semibold text-muted-foreground/70">{form.tags.length}/3 selected</span>
           </div>
           
           <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
@@ -918,7 +918,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                     key={tag}
                     onClick={() => toggleTag(tag)}
                     className={cn(
-                      "px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all border inline-flex items-center gap-1.5 sm:gap-2 cursor-pointer",
+                      "px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-caption1 sm:text-subhead font-semibold transition-all border inline-flex items-center gap-1.5 sm:gap-2 cursor-pointer",
                       isSelected 
                         ? "bg-muted/40 text-foreground border-border/60" 
                         : "bg-muted/30 text-foreground/90 border-border/40 hover:border-primary/40 hover:bg-muted/40"

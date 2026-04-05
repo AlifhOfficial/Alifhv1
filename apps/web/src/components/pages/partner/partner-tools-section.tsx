@@ -16,10 +16,10 @@ export function PartnerToolsSection() {
         
         {/* Header */}
         <div className="text-center mb-16 space-y-5">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Your toolkit
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             What you need.
             <br />
             <span className="text-muted-foreground">Nothing you don't.</span>
@@ -32,7 +32,7 @@ export function PartnerToolsSection() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mb-16">
+        <p className="text-callout text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mb-16">
           Every chat tied to a car. Same customer, two cars? Two clean threads. No chaos.
         </p>
 
@@ -57,8 +57,8 @@ export function PartnerToolsSection() {
           {/* Highlighted Card */}
           <div className="p-6 rounded-xl bg-primary text-primary-foreground">
             <BarChart3 className="w-5 h-5 text-white/70 mb-3" />
-            <h3 className="text-base font-semibold mb-1">Analytics</h3>
-            <p className="text-sm text-white/60">
+            <h3 className="text-callout font-semibold mb-1">Analytics</h3>
+            <p className="text-subhead text-white/60">
               Numbers that help you act.
             </p>
           </div>
@@ -83,8 +83,8 @@ function ToolCard({ icon: Icon, title, description }: ToolCardProps) {
   return (
     <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
       <Icon className="w-5 h-5 text-primary/80 mb-3" />
-      <h3 className="text-base font-semibold mb-1">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
+      <h3 className="text-callout font-semibold mb-1">{title}</h3>
+      <p className="text-subhead text-muted-foreground">{description}</p>
     </div>
   );
 }

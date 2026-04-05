@@ -37,10 +37,10 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
         
         {/* Header - Above Image */}
         <div className="px-4 sm:px-6 lg:px-8 mb-8">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {showroom.teamSectionTitle || 'Our Team'}
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Meet The Team
           </h2>
         </div>
@@ -72,7 +72,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
 
         {/* Description - Below Image */}
         <div className="px-4 sm:px-6 lg:px-8 mb-8">
-          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-2xl leading-relaxed">
             The people behind every experience.
           </p>
         </div>
@@ -103,7 +103,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-lg font-semibold text-muted-foreground">
+                          <span className="text-headline font-semibold text-muted-foreground">
                             {member.name.charAt(0)}
                           </span>
                         </div>
@@ -112,14 +112,14 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
 
                     {/* Content */}
                     <div className="overflow-hidden">
-                      <h3 className="text-base font-semibold text-foreground">
+                      <h3 className="text-callout font-semibold text-foreground">
                         {member.name}
                       </h3>
-                      <p className="text-sm text-muted-foreground mt-0.5">
+                      <p className="text-subhead text-muted-foreground mt-0.5">
                         {member.role}
                       </p>
                       {member.bio && (
-                        <p className="text-sm text-muted-foreground/70 mt-2 line-clamp-2">
+                        <p className="text-subhead text-muted-foreground/70 mt-2 line-clamp-2">
                           {member.bio}
                         </p>
                       )}
@@ -140,7 +140,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                           />
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-xl font-semibold text-muted-foreground">
+                            <span className="text-title3 font-semibold text-muted-foreground">
                               {member.name.charAt(0)}
                             </span>
                           </div>
@@ -148,12 +148,12 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
                       </div>
                       <div>
                         <DialogTitle>{member.name}</DialogTitle>
-                        <p className="text-sm text-muted-foreground mt-0.5">{member.role}</p>
+                        <p className="text-subhead text-muted-foreground mt-0.5">{member.role}</p>
                       </div>
                     </div>
                   </DialogHeader>
                   {member.bio && (
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-subhead text-muted-foreground leading-relaxed">
                       {member.bio}
                     </p>
                   )}

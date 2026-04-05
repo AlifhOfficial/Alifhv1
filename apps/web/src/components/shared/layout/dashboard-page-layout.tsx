@@ -30,7 +30,7 @@ export function DashboardPageLayout({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         {/* Header */}
         <header className="flex items-center justify-between mb-4 sm:mb-6 pb-4 sm:pb-6 border-b border-border">
-          <div className="text-lg sm:text-xl lg:text-2xl font-semibold tracking-tight">{title}</div>
+          <div className="text-headline sm:text-title3 lg:text-title2 font-semibold tracking-tight">{title}</div>
           {headerActions && <div>{headerActions}</div>}
         </header>
 

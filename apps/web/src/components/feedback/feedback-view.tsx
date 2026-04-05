@@ -136,8 +136,8 @@ export function FeedbackView() {
 
         {/* Header */}
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Feedback</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Share your thoughts and help us improve</p>
+          <h1 className="text-title3 font-semibold tracking-tight">Feedback</h1>
+          <p className="text-subhead text-muted-foreground mt-0.5">Share your thoughts and help us improve</p>
         </div>
 
         {/* Submit Form */}
@@ -145,7 +145,7 @@ export function FeedbackView() {
           <div className="rounded-xl border border-border/40 bg-sidebar p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-3">
-                <label className="text-xs font-medium text-muted-foreground">
+                <label className="text-caption1 font-medium text-muted-foreground">
                   Subject
                 </label>
                 <input
@@ -155,13 +155,13 @@ export function FeedbackView() {
                   placeholder="Brief summary of your feedback"
                   required
                   maxLength={100}
-                  className="w-full h-11 bg-background border border-border/40 rounded-lg px-3.5 text-sm text-foreground outline-none focus:border-foreground/40 transition-colors placeholder:text-muted-foreground/40"
+                  className="w-full h-11 bg-background border border-border/40 rounded-lg px-3.5 text-subhead text-foreground outline-none focus:border-foreground/40 transition-colors placeholder:text-muted-foreground/40"
                 />
                 <p className="text-[10px] text-muted-foreground/50 tabular-nums text-right">{title.length}/100</p>
               </div>
 
               <div className="space-y-3">
-                <label className="text-xs font-medium text-muted-foreground">
+                <label className="text-caption1 font-medium text-muted-foreground">
                   Message
                 </label>
                 <textarea
@@ -171,7 +171,7 @@ export function FeedbackView() {
                   required
                   maxLength={2000}
                   rows={6}
-                  className="w-full bg-background border border-border/40 rounded-lg px-3.5 py-3 text-sm text-foreground outline-none focus:border-foreground/40 transition-colors resize-none placeholder:text-muted-foreground/40 leading-relaxed"
+                  className="w-full bg-background border border-border/40 rounded-lg px-3.5 py-3 text-subhead text-foreground outline-none focus:border-foreground/40 transition-colors resize-none placeholder:text-muted-foreground/40 leading-relaxed"
                 />
                 <p className="text-[10px] text-muted-foreground/50 tabular-nums text-right">{content.length}/2000</p>
               </div>
@@ -179,7 +179,7 @@ export function FeedbackView() {
               <button
                 type="submit"
                 disabled={isSubmitting || !title.trim() || !content.trim()}
-                className="h-11 px-6 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold tracking-tight transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="h-11 px-6 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-subhead font-semibold tracking-tight transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <>
@@ -201,8 +201,8 @@ export function FeedbackView() {
         <section>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-[15px] font-bold tracking-tight text-foreground">Submission History</h3>
-              <span className="text-xs font-medium tabular-nums text-muted-foreground/60 bg-muted/50 px-2.5 py-1 rounded-full">
+              <h3 className="text-subhead font-bold tracking-tight text-foreground">Submission History</h3>
+              <span className="text-caption1 font-medium tabular-nums text-muted-foreground/60 bg-muted/50 px-2.5 py-1 rounded-full">
                 {feedbackList.length}
               </span>
             </div>
@@ -214,7 +214,7 @@ export function FeedbackView() {
             ) : feedbackList.length === 0 ? (
               <div className="text-center py-12 rounded-xl border border-border/40 bg-sidebar">
                 <Send className="w-8 h-8 mx-auto mb-2 text-muted-foreground/30" />
-                <p className="text-sm text-muted-foreground/60">No feedback submitted yet</p>
+                <p className="text-subhead text-muted-foreground/60">No feedback submitted yet</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -226,10 +226,10 @@ export function FeedbackView() {
                     {/* Header */}
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0 space-y-1">
-                        <h4 className="text-sm font-semibold tracking-tight text-foreground">
+                        <h4 className="text-subhead font-semibold tracking-tight text-foreground">
                           {feedback.title}
                         </h4>
-                        <p className="text-[11px] text-muted-foreground/60">
+                        <p className="text-caption2 text-muted-foreground/60">
                           {new Date(feedback.createdAt).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric',
@@ -239,24 +239,24 @@ export function FeedbackView() {
                           })}
                         </p>
                       </div>
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 text-[11px] font-medium text-muted-foreground flex-shrink-0">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 text-caption2 font-medium text-muted-foreground flex-shrink-0">
                         {getStatusIcon(feedback.status)}
                         {getStatusLabel(feedback.status)}
                       </div>
                     </div>
 
                     {/* Content */}
-                    <p className="text-sm text-muted-foreground/80 leading-relaxed">
+                    <p className="text-subhead text-muted-foreground/80 leading-relaxed">
                       {feedback.content}
                     </p>
 
                     {/* Response */}
                     {(feedback.adminNote || feedback.status === 'reviewed') && (
                       <div className="pt-3 border-t border-border/20 space-y-2">
-                        <p className="text-[11px] uppercase tracking-wider font-medium text-muted-foreground/60">
+                        <p className="text-caption2 uppercase tracking-wider font-medium text-muted-foreground/60">
                           Response
                         </p>
-                        <p className="text-sm text-foreground/80 leading-relaxed">
+                        <p className="text-subhead text-foreground/80 leading-relaxed">
                           {feedback.adminNote || DEFAULT_RESPONSE}
                         </p>
                       </div>

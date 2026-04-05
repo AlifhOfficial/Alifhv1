@@ -28,10 +28,10 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
         
         {/* Header - Above Media */}
         <div className="px-4 sm:px-6 lg:px-8 mb-8">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {showroom.brandStoryTitle || 'Our Story'}
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             The Story Behind
             <br />
             <span className="text-muted-foreground">{partner?.brandName}</span>
@@ -51,7 +51,7 @@ export function ShowroomStory({ showroom }: ShowroomStoryProps) {
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="space-y-4">
             {showroom.brandStoryContent.split('\n\n').slice(0, 3).map((paragraph, idx) => (
-              <p key={idx} className="text-base text-muted-foreground leading-relaxed">{paragraph}</p>
+              <p key={idx} className="text-callout text-muted-foreground leading-relaxed">{paragraph}</p>
             ))}
           </div>
         </div>

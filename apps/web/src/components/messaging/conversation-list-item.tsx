@@ -105,13 +105,13 @@ export function ConversationListItem({
           <div className="flex items-center justify-between mb-0.5 overflow-hidden">
             <h3
               className={cn(
-                'text-sm font-bold truncate flex-1',
+                'text-subhead font-bold truncate flex-1',
                 unreadCount > 0 ? 'text-foreground' : 'text-foreground/90'
               )}
             >
               {displayName}
             </h3>
-            <span className="text-xs font-medium text-muted-foreground/50 ml-2 flex-shrink-0">
+            <span className="text-caption1 font-medium text-muted-foreground/50 ml-2 flex-shrink-0">
               {lastMessageDate ? formatDistanceToNow(lastMessageDate, { addSuffix: false }) : ''}
             </span>
           </div>
@@ -121,7 +121,7 @@ export function ConversationListItem({
             <Link
               href={`/listings/${listing.id}`}
               onClick={(e) => e.stopPropagation()}
-              className="text-xs font-medium text-muted-foreground/50 mb-0.5 truncate block hover:text-primary hover:underline transition-colors"
+              className="text-caption1 font-medium text-muted-foreground/50 mb-0.5 truncate block hover:text-primary hover:underline transition-colors"
             >
               Re: {listing.title}
             </Link>
@@ -130,7 +130,7 @@ export function ConversationListItem({
           <div className="flex items-center justify-between overflow-hidden gap-2">
             <p
               className={cn(
-                'text-sm truncate min-w-0 flex-1',
+                'text-subhead truncate min-w-0 flex-1',
                 unreadCount > 0
                   ? 'text-foreground/80 font-semibold'
                   : 'text-muted-foreground/70 font-medium'

@@ -39,7 +39,7 @@ export function StorySection({
     <div className="space-y-6">
       {/* Brand Story */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Brand Story</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Brand Story</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
           <ImageUpload
             value={form.brandStoryImage || null}
@@ -74,7 +74,7 @@ export function StorySection({
 
           {/* YouTube / Vimeo embed only — no raw video upload */}
           <div className="pt-2 space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground/70">Story Video (YouTube URL)</p>
+            <p className="text-caption1 font-semibold text-muted-foreground/70">Story Video (YouTube URL)</p>
             <EditableField
               {...getEditableFieldProps('brandStoryVideoUrl')}
               label="YouTube / Vimeo URL"
@@ -89,7 +89,7 @@ export function StorySection({
                   onClick={async () => {
                     await updateShowroom({ brandStoryVideoUrl: null });
                   }}
-                  className="text-xs text-destructive hover:text-destructive/80 transition-colors"
+                  className="text-caption1 text-destructive hover:text-destructive/80 transition-colors"
                 >
                   Remove video
                 </button>
@@ -101,7 +101,7 @@ export function StorySection({
 
       {/* Founder */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Founder</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Founder</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0">

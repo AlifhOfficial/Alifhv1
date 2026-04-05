@@ -94,7 +94,7 @@ export function CarCardMinimal({
         <div className="min-w-0 flex-1 space-y-1">
           {/* Make/Model */}
           <p className={cn(
-            "text-sm font-bold truncate",
+            "text-subhead font-bold truncate",
             isBlkListing ? "text-zinc-900 dark:text-white" : "text-foreground"
           )}>
             {make} {model}
@@ -103,7 +103,7 @@ export function CarCardMinimal({
           {/* Seller row */}
           <div className="flex items-center gap-1.5">
             <p className={cn(
-              "text-xs font-semibold truncate",
+              "text-caption1 font-semibold truncate",
               isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground"
             )}>
               {displaySellerName}

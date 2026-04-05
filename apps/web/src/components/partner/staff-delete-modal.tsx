@@ -53,10 +53,10 @@ export function StaffDeleteModal({
 
           {/* Content */}
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold">
+            <h2 className="text-title3 font-semibold">
               {error ? 'Deletion Failed' : 'Remove Team Member?'}
             </h2>
-            <p className="text-sm text-muted-foreground/70 max-w-sm">
+            <p className="text-subhead text-muted-foreground/70 max-w-sm">
               {error ? (
                 error
               ) : (
@@ -72,7 +72,7 @@ export function StaffDeleteModal({
             <button
               onClick={onClose}
               disabled={isLoading}
-              className="flex-1 px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-sm font-medium transition-colors disabled:opacity-50"
+              className="flex-1 px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-subhead font-medium transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
@@ -80,7 +80,7 @@ export function StaffDeleteModal({
               <button
                 onClick={onConfirm}
                 disabled={isLoading}
-                className="flex-1 px-6 py-3 rounded-full bg-destructive hover:bg-destructive/90 text-destructive-foreground text-sm font-medium transition-colors disabled:opacity-50"
+                className="flex-1 px-6 py-3 rounded-full bg-destructive hover:bg-destructive/90 text-destructive-foreground text-subhead font-medium transition-colors disabled:opacity-50"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">

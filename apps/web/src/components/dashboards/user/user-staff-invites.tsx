@@ -130,13 +130,13 @@ export function UserStaffInvites({ initialInvites }: UserStaffInvitesProps) {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Staff Invitations</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Manage team invites</p>
+          <h1 className="text-title3 font-semibold tracking-tight">Staff Invitations</h1>
+          <p className="text-subhead text-muted-foreground mt-0.5">Manage team invites</p>
         </div>
         
         <div className="rounded-xl border border-border/40 bg-sidebar p-8 text-center">
-          <p className="text-sm font-medium text-muted-foreground/60 mb-1">No pending invitations</p>
-          <p className="text-xs text-muted-foreground/40">
+          <p className="text-subhead font-medium text-muted-foreground/60 mb-1">No pending invitations</p>
+          <p className="text-caption1 text-muted-foreground/40">
             Team invites will appear here
           </p>
         </div>
@@ -153,8 +153,8 @@ export function UserStaffInvites({ initialInvites }: UserStaffInvitesProps) {
       
       {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Staff Invitations</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
+        <h1 className="text-title3 font-semibold tracking-tight">Staff Invitations</h1>
+        <p className="text-subhead text-muted-foreground mt-0.5">
           {invites.length} pending invitation{invites.length !== 1 ? 's' : ''}
         </p>
       </div>
@@ -178,22 +178,22 @@ export function UserStaffInvites({ initialInvites }: UserStaffInvitesProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">
+                    <p className="text-subhead font-semibold text-foreground truncate">
                       {invite.partnerName}
                     </p>
-                    <p className="text-xs text-muted-foreground/70 mt-0.5">
+                    <p className="text-caption1 text-muted-foreground/70 mt-0.5">
                       {invite.partnerEmail}
                     </p>
                   </div>
                   
                   {/* Role Badge */}
-                  <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold flex-shrink-0">
+                  <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-caption1 font-semibold flex-shrink-0">
                     {formatRole(invite.role)}
                   </span>
                 </div>
 
                 {/* Meta info */}
-                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground/70">
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-caption1 text-muted-foreground/70">
                   {invite.title && (
                     <span className="font-medium text-foreground/80">{invite.title}</span>
                   )}
@@ -212,13 +212,13 @@ export function UserStaffInvites({ initialInvites }: UserStaffInvitesProps) {
                 <div className="mt-4 flex gap-3">
                   <button
                     onClick={() => handleOpenModal(invite, 'accept')}
-                    className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
+                    className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-subhead font-medium hover:bg-primary/90 transition-colors shadow-sm"
                   >
                     Accept
                   </button>
                   <button
                     onClick={() => handleOpenModal(invite, 'reject')}
-                    className="px-5 py-2.5 rounded-lg bg-muted text-foreground text-sm font-medium hover:bg-muted/80 transition-colors"
+                    className="px-5 py-2.5 rounded-lg bg-muted text-foreground text-subhead font-medium hover:bg-muted/80 transition-colors"
                   >
                     Decline
                   </button>

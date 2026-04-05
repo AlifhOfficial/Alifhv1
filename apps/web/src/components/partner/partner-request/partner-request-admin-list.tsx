@@ -144,7 +144,7 @@ export function PartnerRequestAdminList() {
             {statusFilter && (
               <button
                 onClick={() => setStatusFilter(undefined)}
-                className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+                className="text-subhead text-primary hover:text-primary/80 transition-colors font-medium"
               >
                 Clear filter
               </button>
@@ -171,7 +171,7 @@ export function PartnerRequestAdminList() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-3 mb-2">
                           <h3 className="text-foreground">{request.companyNameLegal}</h3>
-                          <span className={`px-3 py-1 text-xs rounded-full ${
+                          <span className={`px-3 py-1 text-caption1 rounded-full ${
                             request.status === 'pending' ? 'text-yellow-600 bg-yellow-500/10' :
                             request.status === 'approved' ? 'text-green-600 bg-green-500/10' :
                             'text-red-600 bg-red-500/10'
@@ -180,11 +180,11 @@ export function PartnerRequestAdminList() {
                           </span>
                         </div>
                         <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2 text-subhead text-muted-foreground">
                             <Mail className="w-3.5 h-3.5" />
                             {user?.email}
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2 text-subhead text-muted-foreground">
                             <Calendar className="w-3.5 h-3.5" />
                             Applied {new Date(request.createdAt).toLocaleDateString('en-AE', {
                               month: 'long',
@@ -202,30 +202,30 @@ export function PartnerRequestAdminList() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {/* Company Info */}
                       <div className="space-y-4">
-                        <h3 className="text-sm text-muted-foreground">Company Information</h3>
+                        <h3 className="text-subhead text-muted-foreground">Company Information</h3>
                         <div className="space-y-3">
                           <div className="space-y-1">
                             <small className="text-muted-foreground">Type</small>
-                            <p className="text-sm text-foreground capitalize">{request.partnerType.replace('_', ' ')}</p>
+                            <p className="text-subhead text-foreground capitalize">{request.partnerType.replace('_', ' ')}</p>
                           </div>
                           <div className="space-y-1">
                             <small className="text-muted-foreground">Company Size</small>
-                            <p className="text-sm text-foreground capitalize">{request.companySize}</p>
+                            <p className="text-subhead text-foreground capitalize">{request.companySize}</p>
                           </div>
                         </div>
                       </div>
 
                       {/* Legal Info */}
                       <div className="space-y-4">
-                        <h3 className="text-sm text-muted-foreground">Legal Documents</h3>
+                        <h3 className="text-subhead text-muted-foreground">Legal Documents</h3>
                         <div className="space-y-3">
                           <div className="space-y-1">
                             <small className="text-muted-foreground">Trade License</small>
-                            <p className="text-sm text-foreground font-mono">{request.tradeLicense}</p>
+                            <p className="text-subhead text-foreground font-mono">{request.tradeLicense}</p>
                           </div>
                           <div className="space-y-1">
                             <small className="text-muted-foreground">Expiry Date</small>
-                            <p className="text-sm text-foreground">
+                            <p className="text-subhead text-foreground">
                               {new Date(request.tradeLicenseExpiry).toLocaleDateString('en-AE', {
                                 month: 'long',
                                 day: 'numeric',
@@ -235,7 +235,7 @@ export function PartnerRequestAdminList() {
                           </div>
                           <div className="space-y-1">
                             <small className="text-muted-foreground">VAT Number</small>
-                            <p className="text-sm text-foreground font-mono">{request.vatNumber}</p>
+                            <p className="text-subhead text-foreground font-mono">{request.vatNumber}</p>
                           </div>
                         </div>
                       </div>
@@ -244,7 +244,7 @@ export function PartnerRequestAdminList() {
                     {/* Document */}
                     {request.tradeLicenseDocumentUrl && (
                       <div className="pt-6 border-t border-border/40">
-                        <h3 className="text-sm text-muted-foreground mb-4">Uploaded Documents</h3>
+                        <h3 className="text-subhead text-muted-foreground mb-4">Uploaded Documents</h3>
                         <button
                           onClick={() => viewDocument(request.tradeLicenseDocumentUrl)}
                           className="group flex items-center gap-4 p-4 rounded-xl border border-border/40 hover:bg-secondary/30 transition-all w-full md:w-auto"
@@ -253,7 +253,7 @@ export function PartnerRequestAdminList() {
                             <FileText className="w-4 h-4 text-muted-foreground" />
                           </div>
                           <div className="text-left flex-1 min-w-0">
-                            <p className="text-sm font-medium text-foreground mb-0.5">Trade License Document</p>
+                            <p className="text-subhead font-medium text-foreground mb-0.5">Trade License Document</p>
                             <small className="text-muted-foreground">Click to view</small>
                           </div>
                           <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
@@ -267,14 +267,14 @@ export function PartnerRequestAdminList() {
                         <button
                           onClick={() => setApprovingId(request.id)}
                           disabled={isReviewing}
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-all disabled:opacity-50"
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white text-subhead font-medium transition-all disabled:opacity-50"
                         >
                           <CheckCircle2 className="w-4 h-4" />
                           Approve Application
                         </button>
                         <button
                           onClick={() => setRejectingId(request.id)}
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-border/40 hover:border-red-500/30 hover:bg-red-500/10 text-foreground hover:text-red-500 text-sm font-medium transition-all"
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-border/40 hover:border-red-500/30 hover:bg-red-500/10 text-foreground hover:text-red-500 text-subhead font-medium transition-all"
                         >
                           <XCircle className="w-4 h-4" />
                           Reject
@@ -286,7 +286,7 @@ export function PartnerRequestAdminList() {
                     {rejectingId === request.id && (
                       <div className="space-y-4 pt-6 border-t border-border/40">
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">Rejection Reason</label>
+                          <label className="text-subhead font-medium text-foreground">Rejection Reason</label>
                           <textarea
                             value={rejectionReason}
                             onChange={(e) => setRejectionReason(e.target.value)}
@@ -305,7 +305,7 @@ export function PartnerRequestAdminList() {
                               }
                             }}
                             disabled={isReviewing || !rejectionReason.trim()}
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-all disabled:opacity-50"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-red-500 hover:bg-red-600 text-white text-subhead font-medium transition-all disabled:opacity-50"
                           >
                             {isReviewing && <Loader2 className="w-4 h-4 animate-spin" />}
                             Confirm Rejection
@@ -315,7 +315,7 @@ export function PartnerRequestAdminList() {
                               setRejectingId(null);
                               setRejectionReason('');
                             }}
-                            className="px-6 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                            className="px-6 py-3 text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors"
                           >
                             Cancel
                           </button>
@@ -327,8 +327,8 @@ export function PartnerRequestAdminList() {
                     {approvingId === request.id && (
                       <div className="space-y-4 pt-6 border-t border-border/40">
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">Founding Access Period</label>
-                          <p className="text-xs text-muted-foreground">
+                          <label className="text-subhead font-medium text-foreground">Founding Access Period</label>
+                          <p className="text-caption1 text-muted-foreground">
                             Select how many months of founding access to grant on Revvup Flow
                           </p>
                           <div className="flex flex-wrap gap-2 mt-3">
@@ -337,7 +337,7 @@ export function PartnerRequestAdminList() {
                                 key={months}
                                 type="button"
                                 onClick={() => setTrialMonths(months)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                                className={`px-4 py-2 rounded-lg text-subhead font-medium transition-all ${
                                   trialMonths === months
                                     ? 'bg-green-500 text-white'
                                     : 'bg-secondary/50 text-foreground hover:bg-secondary'
@@ -348,7 +348,7 @@ export function PartnerRequestAdminList() {
                             ))}
                           </div>
                           {trialMonths > 0 && (
-                            <p className="text-xs text-green-500 mt-2">
+                            <p className="text-caption1 text-green-500 mt-2">
                               Partner will get {trialMonths} month{trialMonths > 1 ? 's' : ''} free access to Revvup Flow (no credit card required)
                             </p>
                           )}
@@ -357,7 +357,7 @@ export function PartnerRequestAdminList() {
                           <button
                             onClick={() => handleReview(request.id, 'approved', undefined, trialMonths)}
                             disabled={isReviewing}
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-all disabled:opacity-50"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white text-subhead font-medium transition-all disabled:opacity-50"
                           >
                             {isReviewing && <Loader2 className="w-4 h-4 animate-spin" />}
                             Confirm Approval
@@ -367,7 +367,7 @@ export function PartnerRequestAdminList() {
                               setApprovingId(null);
                               setTrialMonths(3);
                             }}
-                            className="px-6 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                            className="px-6 py-3 text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors"
                           >
                             Cancel
                           </button>
@@ -379,7 +379,7 @@ export function PartnerRequestAdminList() {
                     {request.status === 'rejected' && request.rejectionReason && (
                       <div className="space-y-2 pt-6 border-t border-border/40">
                         <small className="text-muted-foreground">Rejection Reason</small>
-                        <p className="text-sm text-foreground">{request.rejectionReason}</p>
+                        <p className="text-subhead text-foreground">{request.rejectionReason}</p>
                       </div>
                     )}
                   </div>

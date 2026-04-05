@@ -124,19 +124,19 @@ export function BookingCard({
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-sm sm:text-base font-semibold text-foreground tracking-tight line-clamp-1">
+              <p className="text-subhead sm:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
                 {booking.listingTitle}
               </p>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <User className="w-3.5 h-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">{booking.userName}</span>
+                <span className="text-caption1 text-muted-foreground">{booking.userName}</span>
                 {booking.numberOfAttendees > 1 && (
-                  <span className="text-xs text-muted-foreground/60">+{booking.numberOfAttendees - 1}</span>
+                  <span className="text-caption1 text-muted-foreground/60">+{booking.numberOfAttendees - 1}</span>
                 )}
               </div>
             </div>
             <span className={cn(
-              "text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0",
+              "text-caption1 font-medium px-2 py-0.5 rounded-full flex-shrink-0",
               STATUS_CONFIG[booking.status]?.bg || 'bg-muted',
               STATUS_CONFIG[booking.status]?.text || 'text-muted-foreground'
             )}>
@@ -145,7 +145,7 @@ export function BookingCard({
           </div>
 
           {/* Date & Time */}
-          <div className="flex items-center gap-3 text-xs mt-2">
+          <div className="flex items-center gap-3 text-caption1 mt-2">
             <span className="flex items-center gap-1.5 text-muted-foreground">
               <Calendar className="w-3.5 h-3.5" />
               <span className="font-medium text-foreground">{formatDate(booking.scheduledStartTime)}</span>
@@ -164,7 +164,7 @@ export function BookingCard({
                   e.stopPropagation();
                   copyCode();
                 }}
-                className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center gap-1.5 text-caption1 font-mono text-muted-foreground hover:text-foreground transition-colors"
                 title="Copy booking code"
               >
                 <span>#{booking.confirmationToken}</span>
@@ -182,7 +182,7 @@ export function BookingCard({
       {/* Details Toggle */}
       <button
         onClick={onToggleExpand}
-        className="w-full flex items-center justify-center gap-1.5 py-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+        className="w-full flex items-center justify-center gap-1.5 py-3 text-caption1 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
       >
         <span>{isExpanded ? 'Hide details' : 'View details'}</span>
         <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", isExpanded && "rotate-180")} />
@@ -194,25 +194,25 @@ export function BookingCard({
           <div className="grid md:grid-cols-2 gap-6">
             {/* Contact Info */}
             <div className="space-y-3">
-              <p className="text-xs font-medium text-muted-foreground">Contact</p>
+              <p className="text-caption1 font-medium text-muted-foreground">Contact</p>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm font-medium text-foreground">{booking.userName}</span>
+                  <span className="text-subhead font-medium text-foreground">{booking.userName}</span>
                   {booking.numberOfAttendees > 1 && (
-                    <span className="text-xs text-muted-foreground">(+{booking.numberOfAttendees - 1} guests)</span>
+                    <span className="text-caption1 text-muted-foreground">(+{booking.numberOfAttendees - 1} guests)</span>
                   )}
                 </div>
                 <a 
                   href={`mailto:${booking.userEmail}`}
-                  className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
+                  className="flex items-center gap-2 text-subhead text-foreground hover:text-primary transition-colors"
                 >
                   <Mail className="w-4 h-4 text-muted-foreground" />
                   {booking.userEmail}
                 </a>
                 <a 
                   href={`tel:${booking.userPhone}`}
-                  className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
+                  className="flex items-center gap-2 text-subhead text-foreground hover:text-primary transition-colors"
                 >
                   <Phone className="w-4 h-4 text-muted-foreground" />
                   {booking.userPhone}
@@ -222,13 +222,13 @@ export function BookingCard({
 
             {/* Booking Info */}
             <div className="space-y-3">
-              <p className="text-xs font-medium text-muted-foreground">Booking Info</p>
+              <p className="text-caption1 font-medium text-muted-foreground">Booking Info</p>
               <div className="space-y-2">
                 <div>
-                  <p className="text-xs text-muted-foreground mb-0.5">Code</p>
+                  <p className="text-caption1 text-muted-foreground mb-0.5">Code</p>
                   <button
                     onClick={copyCode}
-                    className="flex items-center gap-1.5 text-sm font-mono font-medium text-foreground hover:text-primary transition-colors"
+                    className="flex items-center gap-1.5 text-subhead font-mono font-medium text-foreground hover:text-primary transition-colors"
                   >
                     {booking.confirmationToken}
                     {copied ? (
@@ -240,8 +240,8 @@ export function BookingCard({
                 </div>
                 {booking.checkInTime && (
                   <div>
-                    <p className="text-xs text-muted-foreground mb-0.5">Checked In</p>
-                    <p className="text-sm font-medium text-foreground">{formatTime(booking.checkInTime)}</p>
+                    <p className="text-caption1 text-muted-foreground mb-0.5">Checked In</p>
+                    <p className="text-subhead font-medium text-foreground">{formatTime(booking.checkInTime)}</p>
                   </div>
                 )}
               </div>
@@ -253,14 +253,14 @@ export function BookingCard({
             <div className="space-y-4">
               {booking.notes && (
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Notes</p>
-                  <p className="text-sm text-foreground leading-relaxed">{booking.notes}</p>
+                  <p className="text-caption1 font-medium text-muted-foreground mb-1">Notes</p>
+                  <p className="text-subhead text-foreground leading-relaxed">{booking.notes}</p>
                 </div>
               )}
               {booking.specialRequests && (
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Special Requests</p>
-                  <p className="text-sm text-foreground leading-relaxed">{booking.specialRequests}</p>
+                  <p className="text-caption1 font-medium text-muted-foreground mb-1">Special Requests</p>
+                  <p className="text-subhead text-foreground leading-relaxed">{booking.specialRequests}</p>
                 </div>
               )}
             </div>
@@ -269,8 +269,8 @@ export function BookingCard({
           {/* Cancellation Reason */}
           {(booking.cancellationReason || booking.cancellationNotes) && (
             <div className="p-4 rounded-lg bg-destructive/5">
-              <p className="text-xs font-medium text-destructive mb-1">Cancellation Reason</p>
-              <p className="text-sm text-foreground">
+              <p className="text-caption1 font-medium text-destructive mb-1">Cancellation Reason</p>
+              <p className="text-subhead text-foreground">
                 {booking.cancellationNotes || booking.cancellationReason?.replace(/_/g, ' ')}
               </p>
             </div>
@@ -279,8 +279,8 @@ export function BookingCard({
           {/* Rejection Reason */}
           {booking.rejectionReason && (
             <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
-              <p className="text-xs font-medium text-red-500 mb-1">Rejection Reason</p>
-              <p className="text-sm text-foreground">{booking.rejectionReason}</p>
+              <p className="text-caption1 font-medium text-red-500 mb-1">Rejection Reason</p>
+              <p className="text-subhead text-foreground">{booking.rejectionReason}</p>
             </div>
           )}
 
@@ -292,7 +292,7 @@ export function BookingCard({
                   <button
                     onClick={() => onAction('confirm')}
                     disabled={isActionLoading}
-                    className="h-9 px-4 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                    className="h-9 px-4 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-subhead font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
                   >
                     {isActionLoading && <div className="w-3.5 h-3.5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />}
                     Confirm
@@ -300,7 +300,7 @@ export function BookingCard({
                   <button
                     onClick={() => onAction('reject')}
                     disabled={isActionLoading}
-                    className="h-9 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-sm font-medium transition-colors disabled:opacity-50"
+                    className="h-9 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-subhead font-medium transition-colors disabled:opacity-50"
                   >
                     Reject
                   </button>
@@ -311,7 +311,7 @@ export function BookingCard({
                 <button
                   onClick={() => onAction('cancel')}
                   disabled={isActionLoading}
-                  className="h-9 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                  className="h-9 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-subhead font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
                 >
                   {isActionLoading && <div className="w-3.5 h-3.5 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" />}
                   Cancel
@@ -323,7 +323,7 @@ export function BookingCard({
                   <button
                     onClick={() => onAction('complete')}
                     disabled={isActionLoading}
-                    className="h-9 px-4 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                    className="h-9 px-4 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-subhead font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
                   >
                     {isActionLoading && <div className="w-3.5 h-3.5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />}
                     Complete
@@ -332,7 +332,7 @@ export function BookingCard({
                     <button
                       onClick={() => onAction('noShow', { noShowReason: 'Customer did not show up' })}
                       disabled={isActionLoading}
-                      className="h-9 px-4 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 text-sm font-medium transition-colors disabled:opacity-50"
+                      className="h-9 px-4 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 text-subhead font-medium transition-colors disabled:opacity-50"
                     >
                       No-show
                     </button>

@@ -139,7 +139,7 @@ export function ProfileMenu({
     
     return (
       <div className="relative flex items-center gap-2.5" data-menu-container>
-        <span className="text-[15px] font-bold tracking-tight text-foreground hidden sm:inline">
+        <span className="text-subhead font-bold tracking-tight text-foreground hidden sm:inline">
           {firstName}
         </span>
         
@@ -176,7 +176,7 @@ export function ProfileMenu({
                       <>
                         <button
                           onClick={() => toggleExpanded(item.label)}
-                          className={`w-full flex items-center justify-between px-3 py-2 text-[15px] font-semibold tracking-tight transition-colors ${
+                          className={`w-full flex items-center justify-between px-3 py-2 text-subhead font-semibold tracking-tight transition-colors ${
                             pathname === item.href
                               ? "text-sidebar-foreground bg-sidebar-accent"
                               : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent"
@@ -194,7 +194,7 @@ export function ProfileMenu({
                           <div className="py-1 pl-4 space-y-0.5 bg-sidebar-accent/30">
                             {item.submenu.map((section) => (
                               <div key={section.title} className="py-1">
-                                <div className="px-3 py-1 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                                <div className="px-3 py-1 text-caption1 font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
                                   {section.title}
                                 </div>
                                 {section.items.map((subItem) => (
@@ -205,7 +205,7 @@ export function ProfileMenu({
                                       onNavigate?.();
                                       onToggleMenu();
                                     }}
-                                    className="block px-3 py-1.5 text-[14px] font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                                    className="block px-3 py-1.5 text-subhead font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
                                   >
                                     {subItem.label}
                                   </Link>
@@ -222,7 +222,7 @@ export function ProfileMenu({
                           onNavigate?.();
                           onToggleMenu();
                         }}
-                        className={`block px-3 py-2 text-[15px] font-semibold tracking-tight transition-colors ${
+                        className={`block px-3 py-2 text-subhead font-semibold tracking-tight transition-colors ${
                           pathname === item.href
                             ? "text-sidebar-foreground bg-sidebar-accent"
                             : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent"
@@ -243,7 +243,7 @@ export function ProfileMenu({
                 <button
                   key={dashboard.path}
                   onClick={() => handleDashboardNavigation(dashboard.path)}
-                  className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                  className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
                 >
                   {dashboard.name}
                 </button>
@@ -258,7 +258,7 @@ export function ProfileMenu({
                   router.push('/user-dashboard/listings/my-listings');
                   onToggleMenu();
                 }}
-                className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
               >
                 My Listings
               </button>
@@ -267,7 +267,7 @@ export function ProfileMenu({
                   router.push('/user-dashboard/bookings');
                   onToggleMenu();
                 }}
-                className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
               >
                 Bookings
               </button>
@@ -281,7 +281,7 @@ export function ProfileMenu({
                   router.push('/user-dashboard/profile');
                   onToggleMenu();
                 }}
-                className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
               >
                 Profile
               </button>
@@ -290,7 +290,7 @@ export function ProfileMenu({
                   router.push('/user-dashboard/settings');
                   onToggleMenu();
                 }}
-                className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
               >
                 Settings
               </button>
@@ -301,7 +301,7 @@ export function ProfileMenu({
               {/* Sign Out */}
               <button
                 onClick={onSignOut}
-                className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-destructive hover:bg-destructive/10 transition-colors flex items-center gap-2.5"
+                className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-destructive hover:bg-destructive/10 transition-colors flex items-center gap-2.5"
               >
                 <LogOut size={16} strokeWidth={2} className="text-destructive" />
                 Sign out
@@ -342,7 +342,7 @@ export function ProfileMenu({
                     <>
                       <button
                         onClick={() => toggleExpanded(item.label)}
-                        className={`w-full flex items-center justify-between px-3 py-2 text-[15px] font-semibold tracking-tight transition-colors ${
+                        className={`w-full flex items-center justify-between px-3 py-2 text-subhead font-semibold tracking-tight transition-colors ${
                           pathname === item.href
                             ? "text-sidebar-foreground bg-sidebar-accent"
                             : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent"
@@ -360,7 +360,7 @@ export function ProfileMenu({
                         <div className="py-1 pl-4 space-y-0.5 bg-sidebar-accent/30">
                           {item.submenu.map((section) => (
                             <div key={section.title} className="py-1">
-                              <div className="px-3 py-1 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                              <div className="px-3 py-1 text-caption1 font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
                                 {section.title}
                               </div>
                               {section.items.map((subItem) => (
@@ -371,7 +371,7 @@ export function ProfileMenu({
                                     onNavigate?.();
                                     onToggleMenu();
                                   }}
-                                  className="block px-3 py-1.5 text-[14px] font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                                  className="block px-3 py-1.5 text-subhead font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
                                 >
                                   {subItem.label}
                                 </Link>
@@ -388,7 +388,7 @@ export function ProfileMenu({
                         onNavigate?.();
                         onToggleMenu();
                       }}
-                      className={`block px-3 py-2 text-[15px] font-semibold tracking-tight transition-colors ${
+                      className={`block px-3 py-2 text-subhead font-semibold tracking-tight transition-colors ${
                         pathname === item.href
                           ? "text-sidebar-foreground bg-sidebar-accent"
                           : "text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent"
@@ -405,13 +405,13 @@ export function ProfileMenu({
           <div className="py-1.5">
             <button
               onClick={onSignIn}
-              className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
             >
               Sign in
             </button>
             <button
               onClick={onSignUp}
-              className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
             >
               Create account
             </button>

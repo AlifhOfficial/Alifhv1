@@ -104,7 +104,7 @@ export function LocationPickerDialog({
           <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
             <div>
               <h3 className="font-bold text-foreground">Share Location</h3>
-              <p className="text-xs text-muted-foreground">Send your current location</p>
+              <p className="text-caption1 text-muted-foreground">Send your current location</p>
             </div>
             <button
               onClick={onClose}
@@ -119,15 +119,15 @@ export function LocationPickerDialog({
             {isLoading ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mt-2">Getting your location...</p>
+                <p className="text-subhead text-muted-foreground mt-2">Getting your location...</p>
               </div>
             ) : error ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
                 <MapPin className="w-10 h-10 text-muted-foreground/50" />
-                <p className="text-sm text-muted-foreground mt-2 text-center">{error}</p>
+                <p className="text-subhead text-muted-foreground mt-2 text-center">{error}</p>
                 <button
                   onClick={handleRefreshLocation}
-                  className="mt-3 px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors"
+                  className="mt-3 px-4 py-2 bg-blue-500 text-white text-subhead font-medium rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   Try Again
                 </button>
@@ -159,11 +159,11 @@ export function LocationPickerDialog({
                   </p>
                 )}
                 {location.address ? (
-                  <p className="text-sm text-muted-foreground truncate">
+                  <p className="text-subhead text-muted-foreground truncate">
                     {location.address}
                   </p>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-subhead text-muted-foreground">
                     {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
                   </p>
                 )}

@@ -63,7 +63,7 @@ export function AdminDashboardNav() {
   return (
     <nav className="flex flex-col h-full bg-gray-900 text-white">
       <div className="p-6 border-b border-gray-800">
-        <h2 className="text-lg font-semibold">Admin Panel</h2>
+        <h2 className="text-headline font-semibold">Admin Panel</h2>
       </div>
       
       <div className="flex-1 px-3 py-4">
@@ -75,7 +75,7 @@ export function AdminDashboardNav() {
                 <Link
                   href={item.href}
                   className={cn(
-                    'group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    'group flex items-center px-3 py-2 text-subhead font-medium rounded-md transition-colors',
                     isActive
                       ? 'bg-blue-600 text-white'
                       : 'text-gray-300 hover:bg-gray-800 hover:text-white'
@@ -100,11 +100,11 @@ export function AdminDashboardNav() {
       <div className="p-4 border-t border-gray-800">
         <div className="flex items-center">
           <div className="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center">
-            <span className="text-sm font-medium text-white">A</span>
+            <span className="text-subhead font-medium text-white">A</span>
           </div>
           <div className="ml-3">
-            <p className="text-sm font-medium text-white">Admin Portal</p>
-            <p className="text-xs text-gray-400">Full Access</p>
+            <p className="text-subhead font-medium text-white">Admin Portal</p>
+            <p className="text-caption1 text-gray-400">Full Access</p>
           </div>
         </div>
       </div>

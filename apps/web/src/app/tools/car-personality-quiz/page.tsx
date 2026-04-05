@@ -13,8 +13,8 @@ export default function CarPersonalityQuizPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">🚗 Car Personality Quiz</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="text-display font-bold mb-4">🚗 Car Personality Quiz</h1>
+          <p className="text-headline text-muted-foreground">
             Discover which car brand matches your personality
           </p>
         </div>
@@ -24,7 +24,7 @@ export default function CarPersonalityQuizPage() {
 
         {/* Share Section */}
         <div className="mt-16 text-center p-8 border rounded-lg bg-muted/50">
-          <h2 className="text-2xl font-bold mb-2">Love your result?</h2>
+          <h2 className="text-title2 font-bold mb-2">Love your result?</h2>
           <p className="text-muted-foreground mb-6">
             Share it with friends and see what car brand matches them!
           </p>

@@ -73,7 +73,7 @@ export function HeroSection({
     <div className="space-y-6">
       {/* Tagline & CTA — Primary content */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Tagline & CTA</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Tagline & CTA</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
           <EditableField
             {...getEditableFieldProps('heroTagline')}
@@ -123,7 +123,7 @@ export function HeroSection({
 
       {/* Background — single choice, no fallbacks */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Background</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Background</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar overflow-hidden">
           {/* Tab bar */}
           <div className="flex border-b border-border/40">
@@ -136,7 +136,7 @@ export function HeroSection({
                 key={id}
                 onClick={() => switchTab(id)}
                 className={cn(
-                  "flex-1 py-2.5 text-xs font-semibold transition-colors border-b-2 -mb-px",
+                  "flex-1 py-2.5 text-caption1 font-semibold transition-colors border-b-2 -mb-px",
                   activeTab === id
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
@@ -192,7 +192,7 @@ export function HeroSection({
                           await updateShowroom({ heroVideoUrl: null });
                           updateField('heroVideoUrl', null);
                         }}
-                        className="text-xs text-destructive hover:text-destructive/80 transition-colors"
+                        className="text-caption1 text-destructive hover:text-destructive/80 transition-colors"
                       >
                         Remove
                       </button>

@@ -86,7 +86,7 @@ export function UserConversationGroup({
 
         {/* User Name */}
         <span className={cn(
-          'flex-1 text-sm truncate',
+          'flex-1 text-subhead truncate',
           totalUnread > 0 ? 'font-semibold text-foreground' : 'font-medium text-foreground/90'
         )}>
           {user.name || 'Unknown User'}

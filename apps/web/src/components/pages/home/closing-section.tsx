@@ -14,10 +14,10 @@ export function ClosingSection() {
           
           {/* Header */}
           <div className="text-center mb-12 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Built by car people
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               We get it.
             </h2>
           </div>
@@ -28,7 +28,7 @@ export function ClosingSection() {
           </div>
 
           {/* Description */}
-          <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
             We built the marketplace we wished existed in Dubai. Free for private sellers, built for new and used cars, with no fees, no clutter, just cars.
           </p>
 
@@ -36,11 +36,11 @@ export function ClosingSection() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/listings"
-              className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+              className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
             >
               Browse Cars
             </Link>
-            <PublicSellButton className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center">
+            <PublicSellButton className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center">
               Sell Your Car
             </PublicSellButton>
           </div>

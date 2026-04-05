@@ -24,7 +24,7 @@ const years = Array.from({ length: currentYear - 1900 + 2 }, (_, i) => currentYe
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <h3 className="text-[15px] font-bold tracking-tight text-foreground">{title}</h3>
+    <h3 className="text-subhead font-bold tracking-tight text-foreground">{title}</h3>
   )
 }
 
@@ -42,12 +42,12 @@ function FieldWrapper({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between">
-        <label className="text-sm font-semibold text-muted-foreground/70">
+        <label className="text-subhead font-semibold text-muted-foreground/70">
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
         {hint && (
-          <span className="text-xs text-muted-foreground/70">{hint}</span>
+          <span className="text-caption1 text-muted-foreground/70">{hint}</span>
         )}
       </div>
       {children}
@@ -203,7 +203,7 @@ export function CarValuationTool() {
           type="button"
           onClick={() => onChange(opt.value)}
           className={cn(
-            "h-11 px-3 rounded-lg text-sm font-medium transition-colors",
+            "h-11 px-3 rounded-lg text-subhead font-medium transition-colors",
             value === opt.value
               ? 'bg-foreground text-background'
               : 'bg-muted text-muted-foreground hover:text-foreground'
@@ -220,8 +220,8 @@ export function CarValuationTool() {
       
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight mb-1">Car Valuation</h1>
-        <p className="text-sm text-muted-foreground/70">
+        <h1 className="text-title2 font-bold tracking-tight mb-1">Car Valuation</h1>
+        <p className="text-subhead text-muted-foreground/70">
           Get an accurate market estimate in minutes
         </p>
       </div>
@@ -284,7 +284,7 @@ export function CarValuationTool() {
           <button
             onClick={() => setStep(2)}
             disabled={!isStep1Valid}
-            className="w-full py-3.5 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors disabled:opacity-40"
+            className="w-full py-3.5 rounded-full bg-foreground text-background text-subhead font-semibold hover:bg-foreground/90 transition-colors disabled:opacity-40"
           >
             Continue
           </button>
@@ -337,14 +337,14 @@ export function CarValuationTool() {
           <div className="flex gap-3">
             <button
               onClick={() => setStep(1)}
-              className="flex-1 py-3.5 rounded-full bg-muted text-muted-foreground text-sm font-semibold hover:text-foreground transition-colors"
+              className="flex-1 py-3.5 rounded-full bg-muted text-muted-foreground text-subhead font-semibold hover:text-foreground transition-colors"
             >
               Back
             </button>
             <button
               onClick={() => setStep(3)}
               disabled={!isStep2Valid}
-              className="flex-[2] py-3.5 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors disabled:opacity-40"
+              className="flex-[2] py-3.5 rounded-full bg-foreground text-background text-subhead font-semibold hover:bg-foreground/90 transition-colors disabled:opacity-40"
             >
               Continue
             </button>
@@ -368,11 +368,11 @@ export function CarValuationTool() {
                   placeholder="45,000"
                   className={cn(
                     "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-foreground",
-                    "outline-none transition-colors px-0 pr-12 text-sm font-medium",
+                    "outline-none transition-colors px-0 pr-12 text-subhead font-medium",
                     "placeholder:text-muted-foreground/40"
                   )}
                 />
-                <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/70">
+                <span className="absolute right-0 top-1/2 -translate-y-1/2 text-caption1 text-muted-foreground/70">
                   km
                 </span>
               </div>
@@ -437,14 +437,14 @@ export function CarValuationTool() {
           <div className="flex gap-3">
             <button
               onClick={() => setStep(2)}
-              className="flex-1 py-3.5 rounded-full bg-muted text-muted-foreground text-sm font-semibold hover:text-foreground transition-colors"
+              className="flex-1 py-3.5 rounded-full bg-muted text-muted-foreground text-subhead font-semibold hover:text-foreground transition-colors"
             >
               Back
             </button>
             <button
               onClick={() => setStep(4)}
               disabled={!isStep3Valid}
-              className="flex-[2] py-3.5 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors disabled:opacity-40"
+              className="flex-[2] py-3.5 rounded-full bg-foreground text-background text-subhead font-semibold hover:bg-foreground/90 transition-colors disabled:opacity-40"
             >
               Continue
             </button>
@@ -486,7 +486,7 @@ export function CarValuationTool() {
                         : 'bg-muted text-muted-foreground hover:text-foreground'
                     )}
                   >
-                    <span className="text-sm font-medium">{opt.label}</span>
+                    <span className="text-subhead font-medium">{opt.label}</span>
                     {formData.warranty === opt.value && (
                       <CheckCircle2 className="w-4 h-4" />
                     )}
@@ -498,21 +498,21 @@ export function CarValuationTool() {
 
           {/* Summary */}
           <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-            <p className="text-xs text-muted-foreground/70 mb-2">Your car</p>
-            <p className="text-base font-bold text-foreground">
+            <p className="text-caption1 text-muted-foreground/70 mb-2">Your car</p>
+            <p className="text-callout font-bold text-foreground">
               {formData.year} {formData.make} {formData.model}
             </p>
             <div className="flex flex-wrap gap-2 mt-3">
-              <span className="px-3 py-1.5 rounded-lg bg-muted text-xs font-medium text-muted-foreground">
+              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 font-medium text-muted-foreground">
                 {formData.mileage} km
               </span>
-              <span className="px-3 py-1.5 rounded-lg bg-muted text-xs font-medium text-muted-foreground capitalize">
+              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 font-medium text-muted-foreground capitalize">
                 {formData.condition}
               </span>
-              <span className="px-3 py-1.5 rounded-lg bg-muted text-xs font-medium text-muted-foreground capitalize">
+              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 font-medium text-muted-foreground capitalize">
                 {formData.fuelType?.replace('_', ' ')}
               </span>
-              <span className="px-3 py-1.5 rounded-lg bg-muted text-xs font-medium text-muted-foreground uppercase">
+              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 font-medium text-muted-foreground uppercase">
                 {formData.specs}
               </span>
             </div>
@@ -521,13 +521,13 @@ export function CarValuationTool() {
           <div className="flex gap-3">
             <button
               onClick={() => setStep(3)}
-              className="flex-1 py-3.5 rounded-full bg-muted text-muted-foreground text-sm font-semibold hover:text-foreground transition-colors"
+              className="flex-1 py-3.5 rounded-full bg-muted text-muted-foreground text-subhead font-semibold hover:text-foreground transition-colors"
             >
               Back
             </button>
             <button
               onClick={handleCalculate}
-              className="flex-[2] py-3.5 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors"
+              className="flex-[2] py-3.5 rounded-full bg-foreground text-background text-subhead font-semibold hover:bg-foreground/90 transition-colors"
             >
               Calculate Value
             </button>
@@ -536,26 +536,26 @@ export function CarValuationTool() {
           {/* Result */}
           {result && (
             <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-6 space-y-4">
-              <p className="text-center text-sm font-semibold text-muted-foreground/70">
+              <p className="text-center text-subhead font-semibold text-muted-foreground/70">
                 Estimated Market Value
               </p>
               
               {/* Value Range */}
               <div className="flex items-end justify-center gap-6">
                 <div className="text-center">
-                  <p className="text-xs text-muted-foreground/70 mb-1">Low</p>
-                  <p className="text-lg font-semibold text-muted-foreground">
+                  <p className="text-caption1 text-muted-foreground/70 mb-1">Low</p>
+                  <p className="text-headline font-semibold text-muted-foreground">
                     {result.low.toLocaleString()}
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-bold tracking-tight text-green-500">
+                  <p className="text-title1 font-bold tracking-tight text-green-500">
                     AED {result.mid.toLocaleString()}
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-muted-foreground/70 mb-1">High</p>
-                  <p className="text-lg font-semibold text-muted-foreground">
+                  <p className="text-caption1 text-muted-foreground/70 mb-1">High</p>
+                  <p className="text-headline font-semibold text-muted-foreground">
                     {result.high.toLocaleString()}
                   </p>
                 </div>
@@ -564,7 +564,7 @@ export function CarValuationTool() {
               {/* Factors */}
               {result.factors.length > 0 && (
                 <div className="border-t border-border/40 pt-4 mt-4">
-                  <p className="text-xs font-semibold text-muted-foreground/70 mb-3">Value Factors</p>
+                  <p className="text-caption1 font-semibold text-muted-foreground/70 mb-3">Value Factors</p>
                   <div className="flex flex-wrap gap-2">
                     {result.factors.map((f, i) => (
                       <div
@@ -579,7 +579,7 @@ export function CarValuationTool() {
                           f.positive ? 'text-green-500' : 'text-red-500'
                         )} />
                         <span className={cn(
-                          "text-xs font-medium",
+                          "text-caption1 font-medium",
                           f.positive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                         )}>
                           {f.label} {f.impact}
@@ -590,7 +590,7 @@ export function CarValuationTool() {
                 </div>
               )}
 
-              <p className="text-center text-xs text-muted-foreground/70 mt-4">
+              <p className="text-center text-caption1 text-muted-foreground/70 mt-4">
                 Based on UAE market data. Actual value may vary.
               </p>
             </div>

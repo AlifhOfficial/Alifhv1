@@ -58,29 +58,29 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove, onImageUpload
                 </label>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">Customer photo (optional)</p>
+            <p className="text-caption1 text-muted-foreground">Customer photo (optional)</p>
           </div>
           <input
             value={form.customerName}
             onChange={(e) => setForm(f => ({ ...f, customerName: e.target.value }))}
             placeholder="Customer name"
-            className="w-full h-8 bg-muted/20 rounded px-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
+            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
           <input
             value={form.customerTitle || ''}
             onChange={(e) => setForm(f => ({ ...f, customerTitle: e.target.value || null }))}
             placeholder="Title (e.g. CEO at Company)"
-            className="w-full h-8 bg-muted/20 rounded px-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30"
+            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
           <textarea
             value={form.content}
             onChange={(e) => setForm(f => ({ ...f, content: e.target.value }))}
             placeholder="Testimonial content..."
             rows={3}
-            className="w-full bg-muted/20 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none"
+            className="w-full bg-muted/20 rounded p-2 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none"
           />
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Rating:</span>
+            <span className="text-caption1 text-muted-foreground">Rating:</span>
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
@@ -97,18 +97,18 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove, onImageUpload
             value={form.vehiclePurchased || ''}
             onChange={(e) => setForm(f => ({ ...f, vehiclePurchased: e.target.value || null }))}
             placeholder="Vehicle purchased (optional)"
-            className="w-full h-8 bg-muted/20 rounded px-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30"
+            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
           <div className="flex gap-2">
             <button
               onClick={() => { onUpdate(form); setIsEditing(false); }}
-              className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+              className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
             >
               Save
             </button>
             <button
               onClick={() => { setForm(testimonial); setIsEditing(false); }}
-              className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+              className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
             >
               Cancel
             </button>
@@ -131,16 +131,16 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove, onImageUpload
                 />
               ))}
             </div>
-            <p className="text-sm text-foreground/90 line-clamp-2 italic">"{testimonial.content}"</p>
-            <p className="text-xs font-semibold text-foreground mt-2">{testimonial.customerName}</p>
+            <p className="text-subhead text-foreground/90 line-clamp-2 italic">"{testimonial.content}"</p>
+            <p className="text-caption1 font-semibold text-foreground mt-2">{testimonial.customerName}</p>
             {testimonial.customerTitle && (
-              <p className="text-xs text-muted-foreground">{testimonial.customerTitle}</p>
+              <p className="text-caption1 text-muted-foreground">{testimonial.customerTitle}</p>
             )}
             {testimonial.vehiclePurchased && (
-              <p className="text-xs text-muted-foreground/70 mt-1">Purchased: {testimonial.vehiclePurchased}</p>
+              <p className="text-caption1 text-muted-foreground/70 mt-1">Purchased: {testimonial.vehiclePurchased}</p>
             )}
             {isGoogleReview && (
-              <p className="text-xs text-muted-foreground/60 mt-1">via Google Reviews</p>
+              <p className="text-caption1 text-muted-foreground/60 mt-1">via Google Reviews</p>
             )}
             </div>
           </div>

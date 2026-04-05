@@ -53,7 +53,7 @@ export default function FAQPage() {
               <div className="mb-6">
                 <div className="flex items-center gap-3 mb-4">
                   <LifeBuoy className="w-6 h-6 text-muted-foreground" />
-                  <h1 className="text-xl font-bold tracking-tight text-foreground">Help Center</h1>
+                  <h1 className="text-title3 font-bold tracking-tight text-foreground">Help Center</h1>
                 </div>
                 
                 {/* Search Bar - Desktop */}
@@ -67,7 +67,7 @@ export default function FAQPage() {
                       setSearchQuery(e.target.value);
                       if (e.target.value) setActiveCategory(null);
                     }}
-                    className="w-full h-9 pl-9 pr-8 rounded-lg border border-sidebar-border bg-sidebar text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 transition-all"
+                    className="w-full h-9 pl-9 pr-8 rounded-lg border border-sidebar-border bg-sidebar text-subhead placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 transition-all"
                   />
                   {searchQuery && (
                     <button
@@ -92,14 +92,14 @@ export default function FAQPage() {
                     setSearchQuery('');
                   }}
                   className={cn(
-                    "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                    "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-subhead font-medium transition-colors",
                     activeCategory === null && !isSearching
                       ? "bg-sidebar text-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                   )}
                 >
                   <span>All Questions</span>
-                  <span className="text-xs tabular-nums text-muted-foreground/50">
+                  <span className="text-caption1 tabular-nums text-muted-foreground/50">
                     {faqData.reduce((acc, c) => acc + c.items.length, 0)}
                   </span>
                 </button>
@@ -113,14 +113,14 @@ export default function FAQPage() {
                       setSearchQuery('');
                     }}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                      "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-subhead font-medium transition-colors",
                       activeCategory === category.id && !isSearching
                         ? "bg-sidebar text-foreground"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                     )}
                   >
                     <span>{category.title}</span>
-                    <span className="text-xs tabular-nums text-muted-foreground/50">
+                    <span className="text-caption1 tabular-nums text-muted-foreground/50">
                       {category.items.length}
                     </span>
                   </button>
@@ -128,10 +128,10 @@ export default function FAQPage() {
               </nav>
 
               <div>
-                <p className="text-xs text-muted-foreground/60 mb-3">Can&apos;t find an answer?</p>
+                <p className="text-caption1 text-muted-foreground/60 mb-3">Can&apos;t find an answer?</p>
                 <Link 
                   href="/contact" 
-                  className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
+                  className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-lg bg-blue-600 text-white text-subhead font-semibold hover:bg-blue-700 transition-colors"
                 >
                   Contact Support
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -146,7 +146,7 @@ export default function FAQPage() {
             <div className="lg:hidden px-4 sm:px-6 pt-8 pb-6">
               <div className="flex items-center gap-3 mb-4">
                 <LifeBuoy className="w-5 h-5 text-muted-foreground" />
-                <h1 className="text-lg font-bold tracking-tight text-foreground">Help Center</h1>
+                <h1 className="text-headline font-bold tracking-tight text-foreground">Help Center</h1>
               </div>
               
               <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4">
@@ -157,7 +157,7 @@ export default function FAQPage() {
                     setSearchQuery('');
                   }}
                   className={cn(
-                    "shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors",
+                    "shrink-0 px-3 py-1.5 rounded-full text-caption1 font-semibold transition-colors",
                     activeCategory === null && !isSearching
                       ? "bg-foreground text-background"
                       : "bg-muted/50 text-muted-foreground"
@@ -174,7 +174,7 @@ export default function FAQPage() {
                       setSearchQuery('');
                     }}
                     className={cn(
-                      "shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors",
+                      "shrink-0 px-3 py-1.5 rounded-full text-caption1 font-semibold transition-colors",
                       activeCategory === category.id && !isSearching
                         ? "bg-foreground text-background"
                         : "bg-muted/50 text-muted-foreground"
@@ -198,7 +198,7 @@ export default function FAQPage() {
                     setSearchQuery(e.target.value);
                     if (e.target.value) setActiveCategory(null);
                   }}
-                  className="w-full h-10 pl-11 pr-10 rounded-lg border border-sidebar-border bg-sidebar text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 transition-all"
+                  className="w-full h-10 pl-11 pr-10 rounded-lg border border-sidebar-border bg-sidebar text-subhead placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/10 transition-all"
                 />
                 {searchQuery && (
                   <button
@@ -224,10 +224,10 @@ export default function FAQPage() {
                   {searchResults && searchResults.length > 0 ? (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-semibold text-foreground">
+                        <p className="text-subhead font-semibold text-foreground">
                           Results for &quot;{searchQuery}&quot;
                         </p>
-                        <span className="text-xs text-muted-foreground/60 tabular-nums">
+                        <span className="text-caption1 text-muted-foreground/60 tabular-nums">
                           {searchResults.length} found
                         </span>
                       </div>
@@ -243,14 +243,14 @@ export default function FAQPage() {
                             >
                               <AccordionTrigger className="px-5 py-4 text-left hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:text-muted-foreground/50 [&[data-state=open]]:bg-muted/20">
                                 <div className="flex items-center gap-3 pr-2">
-                                  <span className="text-sm font-medium text-foreground">{item.question}</span>
+                                  <span className="text-subhead font-medium text-foreground">{item.question}</span>
                                   <span className="shrink-0 text-[10px] font-medium text-muted-foreground/60 bg-muted/50 px-2 py-0.5 rounded uppercase tracking-wide">
                                     {item.category}
                                   </span>
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-5 pb-5 pt-0">
-                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                <p className="text-subhead text-muted-foreground leading-relaxed">
                                   {item.answer}
                                 </p>
                               </AccordionContent>
@@ -261,15 +261,15 @@ export default function FAQPage() {
                     </div>
                   ) : (
                     <div className="rounded-xl border border-sidebar-border bg-sidebar p-8 text-center">
-                      <p className="text-sm font-medium text-foreground mb-2">
+                      <p className="text-subhead font-medium text-foreground mb-2">
                         No results for &quot;{searchQuery}&quot;
                       </p>
-                      <p className="text-xs text-muted-foreground/70 mb-4">
+                      <p className="text-caption1 text-muted-foreground/70 mb-4">
                         Try different keywords or browse categories
                       </p>
                       <Link 
                         href="/contact" 
-                        className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
+                        className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-lg bg-blue-600 text-white text-subhead font-semibold hover:bg-blue-700 transition-colors"
                       >
                         Contact Support
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -285,8 +285,8 @@ export default function FAQPage() {
                   {filteredCategories.map((category) => (
                     <section key={category.id}>
                       <div className="mb-4">
-                        <h2 className="text-base font-bold tracking-tight text-foreground">{category.title}</h2>
-                        <p className="text-sm text-muted-foreground/70 mt-0.5">{category.description}</p>
+                        <h2 className="text-callout font-bold tracking-tight text-foreground">{category.title}</h2>
+                        <p className="text-subhead text-muted-foreground/70 mt-0.5">{category.description}</p>
                       </div>
                       
                       <div className="rounded-xl border border-sidebar-border bg-sidebar overflow-hidden">
@@ -299,12 +299,12 @@ export default function FAQPage() {
                               className="scroll-mt-28 border-b border-sidebar-border/50 last:border-0"
                             >
                               <AccordionTrigger className="px-5 py-4 text-left hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:text-muted-foreground/50 [&[data-state=open]]:bg-muted/20">
-                                <span className="text-sm font-medium text-foreground pr-4">
+                                <span className="text-subhead font-medium text-foreground pr-4">
                                   {item.question}
                                 </span>
                               </AccordionTrigger>
                               <AccordionContent className="px-5 pb-5 pt-0">
-                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                <p className="text-subhead text-muted-foreground leading-relaxed">
                                   {item.answer}
                                 </p>
                               </AccordionContent>
@@ -319,10 +319,10 @@ export default function FAQPage() {
 
               {/* Mobile Contact CTA */}
               <div className="lg:hidden mt-10 pt-6">
-                <p className="text-xs text-muted-foreground/60 mb-3">Can&apos;t find an answer?</p>
+                <p className="text-caption1 text-muted-foreground/60 mb-3">Can&apos;t find an answer?</p>
                 <Link 
                   href="/contact" 
-                  className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
+                  className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-lg bg-blue-600 text-white text-subhead font-semibold hover:bg-blue-700 transition-colors"
                 >
                   Contact Support
                   <ChevronRight className="w-3.5 h-3.5" />

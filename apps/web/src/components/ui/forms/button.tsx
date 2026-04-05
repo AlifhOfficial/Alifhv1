@@ -5,7 +5,7 @@ import { cn } from "@/utils";
  * 
  * Follows Revvup Design Philosophy:
  * - Height: h-10 (40px)
- * - Text: text-sm font-medium
+ * - Text: text-subhead font-medium
  * - Corners: rounded-lg
  * - No icons in buttons (text only)
  * - Smooth transitions with transition-colors
@@ -16,7 +16,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-subhead font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed",
   {
     variants: {
       variant: {

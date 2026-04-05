@@ -60,18 +60,18 @@ function ServiceCard({ service }: { service: Service }) {
       {/* Service Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-foreground">
+          <span className="text-subhead font-semibold text-foreground">
             {service.displayName}
           </span>
           {service.currentLatency > 0 && (
-            <span className="text-xs text-muted-foreground">
+            <span className="text-caption1 text-muted-foreground">
               {service.currentLatency}ms
             </span>
           )}
         </div>
         <div className="flex items-center gap-2">
           <Icon className={`w-4 h-4 ${config.textClass}`} />
-          <span className={`text-sm font-medium ${config.textClass}`}>
+          <span className={`text-subhead font-medium ${config.textClass}`}>
             {config.label}
           </span>
         </div>
@@ -89,7 +89,7 @@ function ServiceCard({ service }: { service: Service }) {
                 title={`${day.date}: ${day.uptimePercent}% uptime`}
               >
                 {/* Tooltip */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-popover border border-border rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-popover border border-border rounded text-caption1 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                   <div className="font-medium">{day.date}</div>
                   <div className="text-muted-foreground">{day.uptimePercent}% uptime</div>
                 </div>
@@ -98,13 +98,13 @@ function ServiceCard({ service }: { service: Service }) {
           })
         ) : (
           <div className="flex-1 rounded-[2px] bg-muted opacity-50 flex items-center justify-center">
-            <span className="text-xs text-muted-foreground">No data yet</span>
+            <span className="text-caption1 text-muted-foreground">No data yet</span>
           </div>
         )}
       </div>
 
       {/* Footer Stats */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
+      <div className="flex items-center justify-between text-caption1 text-muted-foreground">
         <span>90 days ago</span>
         <span className="font-medium">{service.uptimePercent90d ?? 100}% uptime</span>
         <span>Today</span>
@@ -120,10 +120,10 @@ export function StatusServicesSection({ services }: StatusServicesSectionProps) 
         
         {/* Header */}
         <div className="mb-6">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground/70 mb-3">
+          <p className="text-caption1 uppercase tracking-widest text-muted-foreground/70 mb-3">
             Services
           </p>
-          <h2 className="text-xl font-semibold text-foreground tracking-tight">
+          <h2 className="text-title3 font-semibold text-foreground tracking-tight">
             Current Status
           </h2>
         </div>

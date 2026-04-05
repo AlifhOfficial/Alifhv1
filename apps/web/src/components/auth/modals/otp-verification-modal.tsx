@@ -192,10 +192,10 @@ export function OTPVerificationModal({
         </div>
 
         <div className="flex flex-col items-center text-center">
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-title3 font-semibold tracking-tight text-foreground">
             Verify your email
           </h2>
-          <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+          <p className="text-footnote text-muted-foreground mt-2 mb-6">
             We sent a code to{" "}
             <span className="font-medium text-foreground">{email}</span>
           </p>
@@ -215,7 +215,7 @@ export function OTPVerificationModal({
                 onPaste={handlePaste}
                 disabled={isLoading}
                 className={cn(
-                  "w-10 h-12 text-center text-base font-semibold",
+                  "w-10 h-12 text-center text-callout font-semibold",
                   "bg-muted/30 border border-border/50 rounded-xl",
                   "text-foreground placeholder:text-muted-foreground/50",
                   "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
@@ -230,11 +230,11 @@ export function OTPVerificationModal({
           {/* Error Message */}
           {error && (
             <div className="w-full rounded-xl border border-destructive/30 bg-destructive/5 p-3 mb-4">
-              <p className="text-[13px] text-destructive text-center">{error}</p>
+              <p className="text-footnote text-destructive text-center">{error}</p>
             </div>
           )}
 
-          <p className="text-[12px] text-muted-foreground mb-4">
+          <p className="text-caption1 text-muted-foreground mb-4">
             {attemptsRemaining > 0
               ? `${attemptsRemaining} attempt${attemptsRemaining === 1 ? '' : 's'} remaining`
               : countdown > 0
@@ -247,7 +247,7 @@ export function OTPVerificationModal({
             <button
               onClick={handleSubmit}
               disabled={isLoading || otp.join("").length !== 6 || attemptsRemaining <= 0}
-              className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-xl text-subhead font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -265,7 +265,7 @@ export function OTPVerificationModal({
             onClick={handleResend}
             disabled={countdown > 0 || isResending}
             className={cn(
-              "mt-5 text-[13px] transition-colors",
+              "mt-5 text-footnote transition-colors",
               countdown > 0 || isResending
                 ? "text-muted-foreground/60 cursor-not-allowed"
                 : "text-muted-foreground/60 hover:text-muted-foreground"

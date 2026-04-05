@@ -37,7 +37,7 @@ export function HealthStatus({
   if (isLoading) {
     return (
       <div className="flex items-center gap-2">
-        <span className="text-xs text-muted-foreground/60">Loading...</span>
+        <span className="text-caption1 text-muted-foreground/60">Loading...</span>
       </div>
     );
   }
@@ -46,7 +46,7 @@ export function HealthStatus({
     return (
       <div className="flex items-center gap-2">
         <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-        <span className="text-xs text-muted-foreground/60">System offline</span>
+        <span className="text-caption1 text-muted-foreground/60">System offline</span>
       </div>
     );
   }
@@ -66,12 +66,12 @@ export function HealthStatus({
                     'w-1.5 h-1.5 rounded-full',
                     statusColor
                   )} />
-                  <span className="text-[11px] text-muted-foreground/50 uppercase tracking-wider font-medium">
+                  <span className="text-caption2 text-muted-foreground/50 uppercase tracking-wider font-medium">
                     {label}
                   </span>
                 </div>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">
+              <TooltipContent side="bottom" className="text-caption1">
                 <div className="space-y-1">
                   <div className="font-semibold">{label}</div>
                   <div className="text-muted-foreground">

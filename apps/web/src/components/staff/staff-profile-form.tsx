@@ -330,7 +330,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-sm text-muted-foreground">Unable to load profile</p>
+          <p className="text-subhead text-muted-foreground">Unable to load profile</p>
         </div>
       </div>
     );
@@ -344,8 +344,8 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
 
       {/* Header */}
       <div>
-        <h1 className="text-lg sm:text-xl font-semibold tracking-tight">Work Profile</h1>
-        <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+        <h1 className="text-headline sm:text-title3 font-semibold tracking-tight">Work Profile</h1>
+        <p className="text-caption1 sm:text-subhead text-muted-foreground mt-0.5">
           {profile.partner.brandName}
         </p>
       </div>
@@ -354,7 +354,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
       <div className="rounded-xl border border-border/40 bg-blue-500/5 p-3 sm:p-4">
         <div className="flex gap-3">
           <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-muted-foreground">
+          <p className="text-subhead text-muted-foreground">
             Your work profile keeps your personal info private. Clients see your display name and work phone instead.
           </p>
         </div>
@@ -362,7 +362,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
 
       {/* Display Name */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Display Name</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Display Name</h3>
         
         <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
           <div 
@@ -372,7 +372,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
             )}
             onClick={() => editingField !== 'displayName' && setEditingField('displayName')}
           >
-            <p className="text-xs font-medium text-muted-foreground/70 mb-1">Name shown to clients</p>
+            <p className="text-caption1 font-medium text-muted-foreground/70 mb-1">Name shown to clients</p>
             {editingField === 'displayName' ? (
               <div className="space-y-2">
                 <input
@@ -381,7 +381,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                   value={form.displayName}
                   onChange={(e) => updateField({ displayName: e.target.value })}
                   placeholder="e.g. Ahmed, Alex, Sarah"
-                  className="w-full h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  className="w-full h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') saveField('displayName');
                     if (e.key === 'Escape') cancelEdit();
@@ -390,21 +390,21 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                 <div className="flex items-center justify-end gap-2 sm:gap-3">
                   <button
                     onClick={(e) => { e.stopPropagation(); cancelEdit(); }}
-                    className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                    className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); saveField('displayName'); }}
                     disabled={saving}
-                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                    className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                   >
                     {saving ? '...' : 'Save'}
                   </button>
                 </div>
               </div>
             ) : (
-              <p className="text-sm font-medium text-foreground">
+              <p className="text-subhead font-medium text-foreground">
                 {form.displayName || <span className="text-muted-foreground/50">Tap to add</span>}
               </p>
             )}
@@ -414,7 +414,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
 
       {/* Work Phone */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Work Phone</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Work Phone</h3>
         
         <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5 space-y-3 sm:space-y-4">
           
@@ -432,12 +432,12 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                 onClick={toggleUsePersonalPhone}
               >
                 <div>
-                  <p className="text-sm font-medium text-foreground">Use my personal phone</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-subhead font-medium text-foreground">Use my personal phone</p>
+                  <p className="text-caption1 text-muted-foreground mt-0.5">
                     +971 {personalPhone} {isPersonalPhoneVerified && '(verified)'}
                   </p>
                   {!canToggle && (
-                    <p className="text-xs text-muted-foreground/60 mt-1">
+                    <p className="text-caption1 text-muted-foreground/60 mt-1">
                       Verify a work phone to toggle
                     </p>
                   )}
@@ -463,7 +463,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
           {/* Work phone input - always show so they can add/verify a work phone */}
           <div className="py-2 sm:py-3">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-medium text-muted-foreground/70">
+              <p className="text-caption1 font-medium text-muted-foreground/70">
                 {form.usePersonalPhone ? 'Or add a separate work number' : 'Separate work number'}
               </p>
               {(profile?.workPhoneVerified || phoneJustVerified) ? (
@@ -471,7 +471,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
               ) : form.workPhone && phoneVerifyStep === 'idle' ? (
                 <button
                   onClick={sendPhoneOTP}
-                  className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                  className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                 >
                   Verify
                 </button>
@@ -481,7 +481,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
             {phoneVerifyStep === 'otp' ? (
               // OTP input step
               <div className="space-y-3">
-                <p className="text-xs text-muted-foreground">
+                <p className="text-caption1 text-muted-foreground">
                   Enter the 6-digit code sent to +971{form.workPhone}
                 </p>
                 <div className="flex items-center gap-2">
@@ -492,7 +492,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/[^\d]/g, '').slice(0, 6))}
                     placeholder="000000"
-                    className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-center text-lg font-mono tracking-widest focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                    className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-center text-headline font-mono tracking-widest focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                     maxLength={6}
                   />
                 </div>
@@ -500,7 +500,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                   <button
                     onClick={otpCountdown > 0 ? undefined : sendPhoneOTP}
                     disabled={otpCountdown > 0}
-                    className="text-xs text-muted-foreground hover:text-foreground disabled:cursor-not-allowed"
+                    className="text-caption1 text-muted-foreground hover:text-foreground disabled:cursor-not-allowed"
                   >
                     {otpCountdown > 0 ? `Resend in ${otpCountdown}s` : 'Resend code'}
                   </button>
@@ -508,13 +508,13 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                     <button
                       onClick={verifyPhoneOTP}
                       disabled={otp.length !== 6}
-                      className="text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+                      className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
                     >
                       Verify
                     </button>
                     <button
                       onClick={cancelPhoneVerify}
-                      className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                      className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
                     >
                       Cancel
                     </button>
@@ -525,13 +525,13 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
               // Loading state
               <div className="flex items-center gap-2 h-10">
                 <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Sending...</span>
+                <span className="text-subhead text-muted-foreground">Sending...</span>
               </div>
             ) : editingField === 'workPhone' ? (
               // Edit phone number
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-muted-foreground shrink-0">+971</span>
+                  <span className="text-subhead font-medium text-muted-foreground shrink-0">+971</span>
                   <input
                     autoFocus
                     type="tel"
@@ -539,7 +539,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                     value={form.workPhone}
                     onChange={(e) => updateField({ workPhone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
                     placeholder="50 000 0000"
-                    className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                    className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                     maxLength={9}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') saveField('workPhone');
@@ -550,14 +550,14 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                 <div className="flex items-center justify-end gap-2 sm:gap-3">
                   <button
                     onClick={cancelEdit}
-                    className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                    className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => saveField('workPhone')}
                     disabled={saving}
-                    className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                    className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                   >
                     {saving ? '...' : 'Save'}
                   </button>
@@ -569,7 +569,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                 className="cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 py-1 transition-colors rounded"
                 onClick={() => setEditingField('workPhone')}
               >
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-subhead font-medium text-foreground">
                   {form.workPhone ? `+971 ${form.workPhone}` : <span className="text-muted-foreground/50">Tap to add</span>}
                 </p>
               </div>
@@ -577,7 +577,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
           </div>
 
           {/* Note about phone usage */}
-          <p className="text-xs text-muted-foreground border-t border-border/20 pt-3">
+          <p className="text-caption1 text-muted-foreground border-t border-border/20 pt-3">
             Clients will call or WhatsApp this number for inquiries
           </p>
         </div>

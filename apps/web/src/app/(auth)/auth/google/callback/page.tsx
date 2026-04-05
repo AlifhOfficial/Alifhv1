@@ -124,9 +124,9 @@ export default function GoogleCallbackPage() {
 
         {/* Message */}
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">{message}</p>
+          <p className="text-subhead text-muted-foreground">{message}</p>
           {status === 'loading' && (
-            <p className="text-xs text-muted-foreground/70">This window will close automatically</p>
+            <p className="text-caption1 text-muted-foreground/70">This window will close automatically</p>
           )}
         </div>
       </div>

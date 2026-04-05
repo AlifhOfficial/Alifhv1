@@ -11,10 +11,10 @@ export default function OfflinePage() {
         
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-muted-foreground">
             Offline
           </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             You're offline.
             <br />
             <span className="text-muted-foreground">Check your connection and try again.</span>
@@ -25,7 +25,7 @@ export default function OfflinePage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
             onClick={() => window.location.reload()}
-            className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+            className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
           >
             Try Again
           </button>

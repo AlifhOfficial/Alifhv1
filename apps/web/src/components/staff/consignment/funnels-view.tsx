@@ -157,8 +157,8 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base sm:text-lg font-semibold text-foreground">Lead Funnels</h1>
-          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">
+          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Lead Funnels</h1>
+          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">
             Create saved searches to find consignment leads
           </p>
         </div>
@@ -191,7 +191,7 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
           <button
             type="button"
             onClick={() => setIsCreateOpen(true)}
-            className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-medium transition-colors hover:bg-primary/90 flex items-center gap-1.5 sm:gap-2"
+            className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-medium transition-colors hover:bg-primary/90 flex items-center gap-1.5 sm:gap-2"
           >
             <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">New Funnel</span>
@@ -204,8 +204,8 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
       {!isLoading && data?.funnels && data.funnels.length > 0 && (
         <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-10">
           <div>
-            <span className="text-[10px] sm:text-xs text-muted-foreground">Funnels</span>
-            <p className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight mt-0.5 sm:mt-1 text-blue-500">{data.funnels.length}</p>
+            <span className="text-[10px] sm:text-caption1 text-muted-foreground">Funnels</span>
+            <p className="text-callout sm:text-headline lg:text-title3 font-semibold tracking-tight mt-0.5 sm:mt-1 text-blue-500">{data.funnels.length}</p>
           </div>
         </div>
       )}
@@ -253,7 +253,7 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
 
       {/* Error State */}
       {error && (
-        <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm">
+        <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead">
           Failed to load funnels. Please try again.
         </div>
       )}
@@ -263,14 +263,14 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
         <div className="flex items-center justify-center min-h-[40vh]">
           <div className="text-center max-w-xs">
             <Inbox className="w-8 h-8 mx-auto text-muted-foreground/20 mb-4" strokeWidth={1.5} />
-            <h3 className="text-sm font-semibold text-foreground mb-1">No Lead Funnels Yet</h3>
-            <p className="text-xs text-muted-foreground/60 leading-relaxed mb-4">
+            <h3 className="text-subhead font-semibold text-foreground mb-1">No Lead Funnels Yet</h3>
+            <p className="text-caption1 text-muted-foreground/60 leading-relaxed mb-4">
               Create a funnel to discover consignment leads
             </p>
             <button
               type="button"
               onClick={() => setIsCreateOpen(true)}
-              className="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-medium transition-colors hover:bg-primary/90"
+              className="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-medium transition-colors hover:bg-primary/90"
             >
               Create Funnel
             </button>
@@ -374,11 +374,11 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
                 "w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
                 !isExpanded && "-rotate-90"
               )} />
-              <h3 className="text-sm sm:text-base font-semibold tracking-tight truncate">{funnel.name}</h3>
+              <h3 className="text-subhead sm:text-callout font-semibold tracking-tight truncate">{funnel.name}</h3>
             </div>
             
             {funnel.description && (
-              <p className="text-[11px] sm:text-xs text-muted-foreground/60 line-clamp-1 mb-2 ml-5 sm:ml-7">
+              <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 line-clamp-1 mb-2 ml-5 sm:ml-7">
                 {funnel.description}
               </p>
             )}
@@ -387,15 +387,15 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
             <div className="flex flex-wrap gap-1 sm:gap-1.5 ml-5 sm:ml-7">
               {filterTags.length > 0 ? (
                 filterTags.slice(0, 5).map((tag, i) => (
-                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium bg-secondary text-muted-foreground rounded-md">
+                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-caption1 font-medium bg-secondary text-muted-foreground rounded-md">
                     {tag}
                   </span>
                 ))
               ) : (
-                <span className="text-[10px] sm:text-xs text-muted-foreground/40 italic">All vehicles</span>
+                <span className="text-[10px] sm:text-caption1 text-muted-foreground/40 italic">All vehicles</span>
               )}
               {filterTags.length > 5 && (
-                <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium bg-secondary text-muted-foreground rounded-md">
+                <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-caption1 font-medium bg-secondary text-muted-foreground rounded-md">
                   +{filterTags.length - 5} more
                 </span>
               )}
@@ -405,7 +405,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
           {/* Right: Active Badge + Actions */}
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <span className={cn(
-              'shrink-0 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-semibold rounded-full mr-1 sm:mr-2',
+              'shrink-0 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-caption1 font-semibold rounded-full mr-1 sm:mr-2',
               funnel.isActive 
                 ? 'bg-green-500/10 text-green-600' 
                 : 'bg-muted/50 text-muted-foreground'
@@ -453,7 +453,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
         ) : !previewData?.listings || previewData.listings.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-center">
             <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground/20 mb-2" />
-            <p className="text-[10px] sm:text-xs text-muted-foreground/50">No matching vehicles yet</p>
+            <p className="text-[10px] sm:text-caption1 text-muted-foreground/50">No matching vehicles yet</p>
           </div>
         ) : (
           <>
@@ -484,10 +484,10 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
                     </div>
                     {/* Info */}
                     <div className="p-2 sm:p-2.5">
-                      <p className="text-xs sm:text-sm font-semibold truncate">
+                      <p className="text-caption1 sm:text-subhead font-semibold truncate">
                         {listing.year} {listing.make} {listing.model}
                       </p>
-                      <p className="text-xs sm:text-sm font-bold text-blue-500">
+                      <p className="text-caption1 sm:text-subhead font-bold text-blue-500">
                         AED {listing.price.toLocaleString()}
                       </p>
                     </div>
@@ -501,7 +501,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
               <button
                 type="button"
                 onClick={onViewAll}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-caption1 sm:text-subhead font-semibold text-primary hover:bg-primary/5 rounded-lg transition-colors"
               >
                 View All →
               </button>
@@ -611,8 +611,8 @@ function DeleteConfirmModal({ open, funnelName, onClose, onConfirm, isDeleting }
           <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
             <AlertTriangle className="w-6 h-6 text-destructive" />
           </div>
-          <h2 className="text-lg font-semibold mb-1">Delete Funnel</h2>
-          <p className="text-sm text-muted-foreground/60">
+          <h2 className="text-headline font-semibold mb-1">Delete Funnel</h2>
+          <p className="text-subhead text-muted-foreground/60">
             Are you sure you want to delete <span className="font-medium text-foreground">&ldquo;{funnelName}&rdquo;</span>? This action cannot be undone.
           </p>
         </div>
@@ -623,7 +623,7 @@ function DeleteConfirmModal({ open, funnelName, onClose, onConfirm, isDeleting }
             type="button"
             onClick={onClose}
             disabled={isDeleting}
-            className="flex-1 h-10 px-4 border border-border text-foreground text-sm font-medium rounded-lg hover:bg-secondary/50 disabled:opacity-50 transition-colors"
+            className="flex-1 h-10 px-4 border border-border text-foreground text-subhead font-medium rounded-lg hover:bg-secondary/50 disabled:opacity-50 transition-colors"
           >
             Cancel
           </button>
@@ -631,7 +631,7 @@ function DeleteConfirmModal({ open, funnelName, onClose, onConfirm, isDeleting }
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="flex-1 h-10 px-4 bg-destructive text-destructive-foreground text-sm font-medium rounded-lg hover:bg-destructive/90 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 h-10 px-4 bg-destructive text-destructive-foreground text-subhead font-medium rounded-lg hover:bg-destructive/90 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
           >
             {isDeleting ? (
               <>

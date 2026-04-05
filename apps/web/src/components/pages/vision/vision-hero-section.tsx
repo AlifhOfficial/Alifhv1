@@ -15,10 +15,10 @@ export function VisionHeroSection() {
         
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Inspired by We the UAE 2031
           </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Towards New Peaks.
             <br />
             <span className="text-muted-foreground">In Automotive.</span>
@@ -38,7 +38,7 @@ export function VisionHeroSection() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+        <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
           'We the UAE 2031' represents a national plan to continue the UAE's development path. 
           As a private sector company, we're inspired by this vision.
         </p>
@@ -46,18 +46,18 @@ export function VisionHeroSection() {
         {/* Stats */}
         <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-primary">4</div>
-            <div className="text-sm text-muted-foreground">Pillars</div>
+            <div className="text-title2 font-bold tracking-tight text-primary">4</div>
+            <div className="text-subhead text-muted-foreground">Pillars</div>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-primary">2031</div>
-            <div className="text-sm text-muted-foreground">Target Year</div>
+            <div className="text-title2 font-bold tracking-tight text-primary">2031</div>
+            <div className="text-subhead text-muted-foreground">Target Year</div>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-primary">3T</div>
-            <div className="text-sm text-muted-foreground">AED GDP Goal</div>
+            <div className="text-title2 font-bold tracking-tight text-primary">3T</div>
+            <div className="text-subhead text-muted-foreground">AED GDP Goal</div>
           </div>
         </div>
 

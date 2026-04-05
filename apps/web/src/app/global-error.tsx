@@ -29,19 +29,19 @@ export default function GlobalError({
             
             {/* Header */}
             <div className="text-center mb-12 space-y-4">
-              <p className="wordmark-geom text-lg text-neutral-900 dark:text-white">
+              <p className="wordmark-geom text-headline text-neutral-900 dark:text-white">
                 Revvup
               </p>
-              <span className="text-sm font-semibold uppercase tracking-wider text-red-600 dark:text-red-500">
+              <span className="text-subhead font-semibold uppercase tracking-wider text-red-600 dark:text-red-500">
                 Critical Error
               </span>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white">
+              <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight text-neutral-900 dark:text-white">
                 Something went wrong.
                 <br />
                 <span className="text-neutral-500 dark:text-neutral-400">Let's try that again.</span>
               </h1>
               {error.digest && (
-                <p className="text-xs text-neutral-400 dark:text-neutral-600 font-mono">
+                <p className="text-caption1 text-neutral-400 dark:text-neutral-600 font-mono">
                   {error.digest}
                 </p>
               )}
@@ -51,13 +51,13 @@ export default function GlobalError({
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 onClick={reset}
-                className="w-full sm:w-auto h-11 px-8 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-sm font-semibold rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors flex items-center justify-center"
+                className="w-full sm:w-auto h-11 px-8 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-subhead font-semibold rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors flex items-center justify-center"
               >
                 Try Again
               </button>
               <Link
                 href="/"
-                className="w-full sm:w-auto h-11 px-8 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white text-sm font-semibold rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center"
+                className="w-full sm:w-auto h-11 px-8 bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white text-subhead font-semibold rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center"
               >
                 Back to Home
               </Link>

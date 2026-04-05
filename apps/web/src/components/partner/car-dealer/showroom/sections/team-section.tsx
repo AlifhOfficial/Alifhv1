@@ -72,7 +72,7 @@ export function TeamSection({
   return (
     <div className="space-y-6">
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Section Media</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Section Media</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
           <ImageUpload
             value={form.teamSectionImage || null}
@@ -99,11 +99,11 @@ export function TeamSection({
       {/* Team Members */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Team Members</h3>
+          <h3 className="text-subhead font-bold tracking-tight text-foreground">Team Members</h3>
           <button
             onClick={addTeamMember}
             disabled={(form.teamMembers?.length || 0) >= 6}
-            className="inline-flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
           >
             <Plus className="w-3.5 h-3.5" />
             Add member
@@ -139,10 +139,10 @@ export function TeamSection({
           {(form.teamMembers?.length || 0) === 0 && (
             <div className="rounded-xl border border-dashed border-border/40 p-8 text-center">
               <Users className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No team members yet</p>
+              <p className="text-subhead text-muted-foreground">No team members yet</p>
               <button
                 onClick={addTeamMember}
-                className="text-xs text-blue-500 hover:text-blue-600 font-semibold mt-2"
+                className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold mt-2"
               >
                 Add your first team member
               </button>
@@ -153,7 +153,7 @@ export function TeamSection({
 
       {/* Section Title */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Display</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Display</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <EditableField
             {...getEditableFieldProps('teamSectionTitle')}

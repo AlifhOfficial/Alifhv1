@@ -41,8 +41,8 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-2.5 sm:mb-3">
-      <h3 className="text-sm sm:text-[15px] font-bold tracking-tight text-foreground">{title}</h3>
-      {subtitle && <p className="text-[11px] sm:text-xs text-muted-foreground/70 mt-0.5">{subtitle}</p>}
+      <h3 className="text-subhead sm:text-subhead font-bold tracking-tight text-foreground">{title}</h3>
+      {subtitle && <p className="text-caption2 sm:text-caption1 text-muted-foreground/70 mt-0.5">{subtitle}</p>}
     </div>
   );
 }
@@ -63,7 +63,7 @@ function StatusPill({
 
   return (
     <span className={cn(
-      "px-2.5 py-1 rounded-full text-xs font-semibold",
+      "px-2.5 py-1 rounded-full text-caption1 font-semibold",
       styles[status]
     )}>
       {label}
@@ -90,8 +90,8 @@ function ActionRow({
       (onClick || href) && "hover:bg-muted/30 cursor-pointer"
     )}>
       <div className="flex-1 min-w-0">
-        <p className="text-xs sm:text-sm font-medium text-foreground">{title}</p>
-        {description && <p className="text-[11px] sm:text-xs text-muted-foreground/70 mt-0.5">{description}</p>}
+        <p className="text-caption1 sm:text-subhead font-medium text-foreground">{title}</p>
+        {description && <p className="text-caption2 sm:text-caption1 text-muted-foreground/70 mt-0.5">{description}</p>}
       </div>
       {trailing}
     </div>
@@ -166,7 +166,7 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-4 sm:space-y-6">
           <button 
             onClick={() => setView('overview')} 
-            className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            className="text-caption1 sm:text-subhead font-semibold text-muted-foreground hover:text-foreground transition-colors"
           >
             ← Back
           </button>
@@ -182,7 +182,7 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-4 sm:space-y-6">
           <button 
             onClick={() => setView('overview')} 
-            className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            className="text-caption1 sm:text-subhead font-semibold text-muted-foreground hover:text-foreground transition-colors"
           >
             ← Back
           </button>
@@ -228,7 +228,7 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
           description={partnerMembership.partnerName}
           href="/partner-dashboard/insights"
           trailing={
-            <span className="text-sm font-medium text-primary">Open →</span>
+            <span className="text-subhead font-medium text-primary">Open →</span>
           }
         />
       );
@@ -242,7 +242,7 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
           description="List vehicles and grow your business"
           onClick={() => setView('apply')}
           trailing={
-            <span className="text-sm font-medium text-primary">Apply →</span>
+            <span className="text-subhead font-medium text-primary">Apply →</span>
           }
         />
       );
@@ -254,14 +254,14 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
         <div className="space-y-3 sm:space-y-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <p className="text-xs sm:text-sm font-semibold text-foreground">Application Under Review</p>
+              <p className="text-caption1 sm:text-subhead font-semibold text-foreground">Application Under Review</p>
               <StatusPill status="warning" label="Pending" />
             </div>
-            <p className="text-[11px] sm:text-xs text-muted-foreground/70">{partnerRequest.companyNameLegal}</p>
+            <p className="text-caption2 sm:text-caption1 text-muted-foreground/70">{partnerRequest.companyNameLegal}</p>
           </div>
           
           <div className="rounded-lg bg-muted/20 p-3 sm:p-4">
-            <div className="flex items-center justify-between text-[11px] sm:text-xs mb-2.5 sm:mb-3">
+            <div className="flex items-center justify-between text-caption2 sm:text-caption1 mb-2.5 sm:mb-3">
               <span className="font-medium text-muted-foreground/70">Submitted</span>
               <span className="font-semibold text-foreground">
                 {new Date(partnerRequest.createdAt).toLocaleDateString('en-AE', { 
@@ -278,7 +278,7 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
             </div>
           </div>
           
-          <p className="text-[11px] sm:text-xs text-muted-foreground/60 text-center">
+          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 text-center">
             We typically respond within 2-3 business days
           </p>
           
@@ -287,27 +287,27 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
             {!confirmCancel ? (
               <button
                 onClick={() => setConfirmCancel(true)}
-                className="w-full py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-muted-foreground hover:text-red-500 transition-colors"
+                className="w-full py-2 sm:py-2.5 text-caption1 sm:text-subhead font-medium text-muted-foreground hover:text-red-500 transition-colors"
               >
                 Cancel Application
               </button>
             ) : (
               <div className="space-y-2.5 sm:space-y-3">
-                <p className="text-[11px] sm:text-xs text-center text-muted-foreground">
+                <p className="text-caption2 sm:text-caption1 text-center text-muted-foreground">
                   Are you sure? You'll need to reapply if you cancel.
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setConfirmCancel(false)}
                     disabled={isCancelling}
-                    className="flex-1 py-2 sm:py-2.5 rounded-lg bg-muted text-xs sm:text-sm font-medium text-foreground hover:bg-muted/80 transition-colors"
+                    className="flex-1 py-2 sm:py-2.5 rounded-lg bg-muted text-caption1 sm:text-subhead font-medium text-foreground hover:bg-muted/80 transition-colors"
                   >
                     Keep it
                   </button>
                   <button
                     onClick={() => cancel()}
                     disabled={isCancelling}
-                    className="flex-1 py-2 sm:py-2.5 rounded-lg bg-red-500 text-xs sm:text-sm font-medium text-white hover:bg-red-600 transition-colors disabled:opacity-50"
+                    className="flex-1 py-2 sm:py-2.5 rounded-lg bg-red-500 text-caption1 sm:text-subhead font-medium text-white hover:bg-red-600 transition-colors disabled:opacity-50"
                   >
                     {isCancelling ? 'Cancelling...' : 'Yes, cancel'}
                   </button>
@@ -324,8 +324,8 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
       return (
         <div className="space-y-3 sm:space-y-4">
           <div className="text-center py-3 sm:py-4">
-            <p className="text-base sm:text-lg font-semibold text-foreground mb-1">Application Not Approved</p>
-            <p className="text-xs sm:text-sm text-muted-foreground">
+            <p className="text-callout sm:text-headline font-semibold text-foreground mb-1">Application Not Approved</p>
+            <p className="text-caption1 sm:text-subhead text-muted-foreground">
               {partnerRequest.rejectionReason || "Unfortunately, we couldn't approve your application at this time."}
             </p>
           </div>
@@ -335,10 +335,10 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
             className="flex items-center justify-between w-full py-2.5 sm:py-3 -mx-4 sm:-mx-5 px-4 sm:px-5 rounded-lg hover:bg-muted/30 transition-colors text-left"
           >
             <div>
-              <p className="text-xs sm:text-sm font-medium text-foreground">Try Again</p>
-              <p className="text-[11px] sm:text-xs text-muted-foreground/70">Submit a new application</p>
+              <p className="text-caption1 sm:text-subhead font-medium text-foreground">Try Again</p>
+              <p className="text-caption2 sm:text-caption1 text-muted-foreground/70">Submit a new application</p>
             </div>
-            <span className="text-xs sm:text-sm font-medium text-primary">Apply →</span>
+            <span className="text-caption1 sm:text-subhead font-medium text-primary">Apply →</span>
           </button>
         </div>
       );
@@ -349,8 +349,8 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
       return (
         <div className="space-y-3 sm:space-y-4">
           <div className="text-center py-3 sm:py-4">
-            <p className="text-base sm:text-lg font-semibold text-foreground mb-1">Welcome to Revvup Partners</p>
-            <p className="text-xs sm:text-sm text-muted-foreground">Your application was approved. You're all set.</p>
+            <p className="text-callout sm:text-headline font-semibold text-foreground mb-1">Welcome to Revvup Partners</p>
+            <p className="text-caption1 sm:text-subhead text-muted-foreground">Your application was approved. You're all set.</p>
           </div>
           
           <Link
@@ -358,10 +358,10 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
             className="flex items-center justify-between py-2.5 sm:py-3 -mx-4 sm:-mx-5 px-4 sm:px-5 rounded-lg hover:bg-muted/30 transition-colors"
           >
             <div>
-              <p className="text-xs sm:text-sm font-medium text-foreground">{partnerMembership.partnerName}</p>
-              <p className="text-[11px] sm:text-xs text-muted-foreground/70">Partner Dashboard</p>
+              <p className="text-caption1 sm:text-subhead font-medium text-foreground">{partnerMembership.partnerName}</p>
+              <p className="text-caption2 sm:text-caption1 text-muted-foreground/70">Partner Dashboard</p>
             </div>
-            <span className="text-xs sm:text-sm font-medium text-primary">Open →</span>
+            <span className="text-caption1 sm:text-subhead font-medium text-primary">Open →</span>
           </Link>
         </div>
       );
@@ -380,8 +380,8 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
 
         {/* Header */}
         <div>
-          <h1 className="text-lg sm:text-xl font-semibold tracking-tight">Requests</h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-headline sm:text-title3 font-semibold tracking-tight">Requests</h1>
+          <p className="text-caption1 sm:text-subhead text-muted-foreground mt-0.5">
             Partner applications and team invitations
           </p>
         </div>
@@ -389,16 +389,16 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 border border-border/40 divide-x divide-border/40 bg-sidebar rounded-xl">
           <div className="p-3.5 sm:p-5 flex flex-col gap-0.5 sm:gap-1">
-            <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Partner Status</span>
-            <span className="text-xs sm:text-sm font-bold text-foreground">
+            <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Partner Status</span>
+            <span className="text-caption1 sm:text-subhead font-bold text-foreground">
               {partnerMembership ? 'Active' : 
                partnerRequest?.status === 'pending' ? 'Pending' :
                partnerRequest?.status === 'rejected' ? 'Not Approved' : 'Not Applied'}
             </span>
           </div>
           <div className="p-3.5 sm:p-5 flex flex-col gap-0.5 sm:gap-1">
-            <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Invitations</span>
-            <span className="text-xs sm:text-sm font-bold text-foreground">
+            <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Invitations</span>
+            <span className="text-caption1 sm:text-subhead font-bold text-foreground">
               {inviteCount > 0 ? `${inviteCount} pending` : 'None'}
             </span>
           </div>
@@ -427,13 +427,13 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
                 description="You've been invited to join a partner team"
                 onClick={() => setView('invites')}
                 trailing={
-                  <span className="text-xs sm:text-sm font-medium text-primary">View</span>
+                  <span className="text-caption1 sm:text-subhead font-medium text-primary">View</span>
                 }
               />
             ) : (
               <div className="py-4 sm:py-6 text-center">
-                <p className="text-xs sm:text-sm font-medium text-muted-foreground/60 mb-1">No pending invitations</p>
-                <p className="text-[11px] sm:text-xs text-muted-foreground/40">
+                <p className="text-caption1 sm:text-subhead font-medium text-muted-foreground/60 mb-1">No pending invitations</p>
+                <p className="text-caption2 sm:text-caption1 text-muted-foreground/40">
                   Team invites will appear here
                 </p>
               </div>

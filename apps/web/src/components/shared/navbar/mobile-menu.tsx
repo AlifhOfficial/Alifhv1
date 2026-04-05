@@ -48,7 +48,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn: _onSignIn
                 <>
                   <button
                     onClick={() => toggleExpanded(item.label)}
-                    className={`w-full flex items-center justify-between px-3 py-3 text-[15px] font-semibold tracking-tight transition-colors rounded-lg ${
+                    className={`w-full flex items-center justify-between px-3 py-3 text-subhead font-semibold tracking-tight transition-colors rounded-lg ${
                       pathname === item.href
                         ? "text-foreground bg-muted/50"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
@@ -66,7 +66,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn: _onSignIn
                     <div className="mt-3 mb-4 space-y-6 border-l border-border/40 ml-3 pl-5">
                       {item.submenu.map((section) => (
                         <div key={section.title}>
-                          <div className="text-sm font-semibold text-foreground mb-3">
+                          <div className="text-subhead font-semibold text-foreground mb-3">
                             {section.title}
                           </div>
                           <div className="space-y-2.5">
@@ -75,7 +75,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn: _onSignIn
                                 key={subItem.href}
                                 href={subItem.href}
                                 onClick={onNavigate}
-                                className="block text-[14px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                                className="block text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors"
                               >
                                 {subItem.label}
                               </Link>
@@ -90,7 +90,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn: _onSignIn
                 <Link
                   href={item.href}
                   onClick={onNavigate}
-                  className={`block px-3 py-3 text-[15px] font-semibold tracking-tight transition-colors rounded-lg ${
+                  className={`block px-3 py-3 text-subhead font-semibold tracking-tight transition-colors rounded-lg ${
                     pathname === item.href
                       ? "text-foreground bg-muted/50"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/30"

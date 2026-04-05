@@ -111,7 +111,7 @@ export function NavbarFavorites({ userId }: NavbarFavoritesProps) {
         <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-14 sm:top-full sm:mt-3 sm:w-96 bg-sidebar border border-sidebar-border rounded-2xl shadow-xl z-[70] overflow-hidden">
           {/* Header */}
           <div className="px-4 py-3.5 border-b border-sidebar-border">
-            <h3 className="text-[15px] font-semibold tracking-tight text-sidebar-foreground">
+            <h3 className="text-subhead font-semibold tracking-tight text-sidebar-foreground">
               Favorites
             </h3>
           </div>
@@ -125,8 +125,8 @@ export function NavbarFavorites({ userId }: NavbarFavoritesProps) {
             ) : count === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                 <Heart className="w-12 h-12 text-muted-foreground/40 mb-3" />
-                <p className="text-[15px] font-semibold text-foreground/80">No favorites yet</p>
-                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                <p className="text-subhead font-semibold text-foreground/80">No favorites yet</p>
+                <p className="text-subhead text-muted-foreground mt-1.5 leading-relaxed">
                   Your dream garage awaits
                 </p>
               </div>
@@ -143,8 +143,8 @@ export function NavbarFavorites({ userId }: NavbarFavoritesProps) {
             ) : (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                 <Heart className="w-12 h-12 text-muted-foreground/40 mb-3" />
-                <p className="text-[15px] font-semibold text-foreground/80">No favorites yet</p>
-                <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                <p className="text-subhead font-semibold text-foreground/80">No favorites yet</p>
+                <p className="text-subhead text-muted-foreground mt-1.5 leading-relaxed">
                   Your dream garage awaits
                 </p>
               </div>
@@ -157,7 +157,7 @@ export function NavbarFavorites({ userId }: NavbarFavoritesProps) {
               <Link
                 href="/user-dashboard/favorites"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center gap-2 px-4 py-3.5 text-sm font-semibold text-primary hover:bg-sidebar-accent transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-3.5 text-subhead font-semibold text-primary hover:bg-sidebar-accent transition-colors"
               >
                 View all favorites
                 <ChevronRight className="w-4 h-4" />
@@ -211,10 +211,10 @@ function FavoritePreviewItem({ listing, onClose }: FavoritePreviewItemProps) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-semibold text-sidebar-foreground truncate">
+        <h4 className="text-subhead font-semibold text-sidebar-foreground truncate">
           {title}
         </h4>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <p className="text-caption1 text-muted-foreground mt-0.5">
           {priceText}
         </p>
       </div>

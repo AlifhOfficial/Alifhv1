@@ -130,7 +130,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              <span className="text-xs">No image</span>
+              <span className="text-caption1">No image</span>
             </div>
           )}
         </div>
@@ -142,7 +142,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
               <Link
                 href={`/listings/${listing.id}`}
                 target="_blank"
-                className="text-sm font-medium hover:text-blue-500 transition-colors"
+                className="text-subhead font-medium hover:text-blue-500 transition-colors"
               >
                 {listing.year} {listing.make} {listing.model}
                 {listing.trim && ` ${listing.trim}`}
@@ -150,25 +150,25 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
               
               <div className="flex items-center gap-2 mt-2">
                 {/* Status Badge */}
-                <span className={`px-3 py-1 rounded-md text-xs font-medium ${status.className}`}>
+                <span className={`px-3 py-1 rounded-md text-caption1 font-medium ${status.className}`}>
                   {status.label}
                 </span>
 
                 {/* AI Moderated Badge */}
                 {isAutoApproved && (
-                  <span className="px-3 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-500 flex items-center gap-1.5">
+                  <span className="px-3 py-1 rounded-md text-caption1 font-medium bg-emerald-500/10 text-emerald-500 flex items-center gap-1.5">
                     <Bot className="w-3 h-3" />
                     AI Auto-Approved
                   </span>
                 )}
                 {isAutoRejected && (
-                  <span className="px-3 py-1 rounded-md text-xs font-medium bg-red-500/10 text-red-500 flex items-center gap-1.5">
+                  <span className="px-3 py-1 rounded-md text-caption1 font-medium bg-red-500/10 text-red-500 flex items-center gap-1.5">
                     <Bot className="w-3 h-3" />
                     AI Auto-Rejected
                   </span>
                 )}
                 {isAIModerated && !isAutoApproved && !isAutoRejected && (
-                  <span className="px-3 py-1 rounded-md text-xs font-medium bg-purple-500/10 text-purple-500 flex items-center gap-1.5">
+                  <span className="px-3 py-1 rounded-md text-caption1 font-medium bg-purple-500/10 text-purple-500 flex items-center gap-1.5">
                     <Zap className="w-3 h-3" />
                     AI Reviewed
                   </span>
@@ -176,7 +176,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
 
                 {/* Listing Type Badge */}
                 <span
-                  className={`px-3 py-1 rounded-md text-xs font-medium ${
+                  className={`px-3 py-1 rounded-md text-caption1 font-medium ${
                     isUserListing
                       ? 'bg-secondary/50 text-muted-foreground'
                       : 'bg-blue-500/10 text-blue-500'
@@ -193,17 +193,17 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
 
             {/* Price */}
             <div className="text-right">
-              <p className="text-base font-medium text-foreground">
+              <p className="text-callout font-medium text-foreground">
                 {formatPrice(listing.price)}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-caption1 text-muted-foreground mt-1">
                 {listing.emirate} • {(listing.mileage / 1000).toFixed(0)}k km
               </p>
             </div>
           </div>
 
           {/* User/Partner Info & Stats Row */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center justify-between text-caption1 text-muted-foreground">
             <div className="flex items-center gap-4">
               {/* Owner Info */}
               <div className="flex items-center gap-1.5">
@@ -254,8 +254,8 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
             <div className="flex items-start gap-2 p-3 border border-yellow-500/20 rounded-xl">
               <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-xs font-medium text-yellow-500">Suspension Reason</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{listing.suspensionReason}</p>
+                <p className="text-caption1 font-medium text-yellow-500">Suspension Reason</p>
+                <p className="text-caption1 text-muted-foreground mt-0.5">{listing.suspensionReason}</p>
               </div>
             </div>
           )}
@@ -263,8 +263,8 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
             <div className="flex items-start gap-2 p-3 border border-red-500/20 rounded-xl">
               <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-xs font-medium text-red-500">Rejection Reason</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{listing.rejectionReason}</p>
+                <p className="text-caption1 font-medium text-red-500">Rejection Reason</p>
+                <p className="text-caption1 text-muted-foreground mt-0.5">{listing.rejectionReason}</p>
               </div>
             </div>
           )}
@@ -275,18 +275,18 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
               <Bot className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-xs font-medium text-purple-500">AI Moderation</p>
-                  <span className="text-xs text-muted-foreground">
+                  <p className="text-caption1 font-medium text-purple-500">AI Moderation</p>
+                  <span className="text-caption1 text-muted-foreground">
                     {(aiModeration.confidence * 100).toFixed(0)}% confidence
                   </span>
                 </div>
-                <p className="text-xs text-muted-foreground">{aiModeration.reasoning}</p>
+                <p className="text-caption1 text-muted-foreground">{aiModeration.reasoning}</p>
                 {aiModeration.flags && aiModeration.flags.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {aiModeration.flags.map((flag, i) => (
                       <span 
                         key={i} 
-                        className={`px-2 py-0.5 rounded text-xs ${
+                        className={`px-2 py-0.5 rounded text-caption1 ${
                           flag.severity === 'high' 
                             ? 'bg-red-500/10 text-red-500' 
                             : flag.severity === 'medium'
@@ -308,7 +308,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
             <Link 
               href={`/listings/${listing.id}`} 
               target="_blank"
-              className="px-4 py-2 rounded-full border border-border hover:bg-secondary/10 text-xs transition-colors"
+              className="px-4 py-2 rounded-full border border-border hover:bg-secondary/10 text-caption1 transition-colors"
             >
               View
             </Link>
@@ -318,13 +318,13 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
               <>
                 <button 
                   onClick={onApprove}
-                  className="px-4 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-xs transition-colors"
+                  className="px-4 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-caption1 transition-colors"
                 >
                   Approve
                 </button>
                 <button 
                   onClick={onReject}
-                  className="px-4 py-2 rounded-full border border-border hover:bg-secondary/10 text-xs transition-colors"
+                  className="px-4 py-2 rounded-full border border-border hover:bg-secondary/10 text-caption1 transition-colors"
                 >
                   Reject
                 </button>
@@ -335,7 +335,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
             {!isDeepInventory && !isPending && (
               <button 
                 onClick={onSuspend} 
-                className="px-4 py-2 rounded-full border border-yellow-500/40 text-yellow-500 hover:bg-yellow-500/10 text-xs transition-colors"
+                className="px-4 py-2 rounded-full border border-yellow-500/40 text-yellow-500 hover:bg-yellow-500/10 text-caption1 transition-colors"
               >
                 Suspend
               </button>
@@ -345,7 +345,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
             {!isDeleted && (
               <button 
                 onClick={onDelete} 
-                className="px-4 py-2 rounded-full border border-red-500/40 text-red-500 hover:bg-red-500/10 text-xs transition-colors"
+                className="px-4 py-2 rounded-full border border-red-500/40 text-red-500 hover:bg-red-500/10 text-caption1 transition-colors"
               >
                 Delete
               </button>

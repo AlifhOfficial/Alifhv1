@@ -65,7 +65,7 @@ export function PageLoader({ message, compact = false }: PageLoaderProps) {
         {/* Optional message with fade */}
         {message && (
           <p className={cn(
-            'text-[13px] text-muted-foreground/50 font-medium tracking-tight transition-opacity duration-500 delay-200',
+            'text-footnote text-muted-foreground/50 font-medium tracking-tight transition-opacity duration-500 delay-200',
             showContent ? 'opacity-100' : 'opacity-0'
           )}>
             {message}

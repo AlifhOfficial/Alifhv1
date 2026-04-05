@@ -251,7 +251,7 @@ export function Navbar() {
                   >
                     <Link
                       href={item.href}
-                      className={`inline-flex items-baseline rounded-md px-4 py-2.5 text-[15px] font-semibold leading-none tracking-tight transition-colors ${
+                      className={`inline-flex items-baseline rounded-md px-4 py-2.5 text-subhead font-semibold leading-none tracking-tight transition-colors ${
                         pathname === item.href
                           ? "text-foreground"
                           : "text-muted-foreground hover:text-foreground"
@@ -295,7 +295,7 @@ export function Navbar() {
                           }}
                           className={cn(
                             'w-full text-left px-3 py-2 rounded-md touch-manipulation',
-                            'text-[14px] font-medium tracking-tight transition-colors duration-100',
+                            'text-subhead font-medium tracking-tight transition-colors duration-100',
                             theme === themeOption.value
                               ? 'bg-sidebar-accent text-sidebar-foreground font-semibold'
                               : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'

@@ -358,7 +358,7 @@ export function ChatThread({
         ) : messages.length === 0 ? (
           compact ? (
             <div className="flex items-center justify-center h-full">
-              <p className="text-[13px] font-medium text-muted-foreground/70">No messages yet</p>
+              <p className="text-footnote font-medium text-muted-foreground/70">No messages yet</p>
             </div>
           ) : (
             <div className="flex items-center justify-center flex-1">
@@ -366,7 +366,7 @@ export function ChatThread({
                 <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-sidebar flex items-center justify-center">
                   <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground/40" />
                 </div>
-                <p className="text-xs sm:text-sm font-medium text-muted-foreground/70">Start a conversation</p>
+                <p className="text-caption1 sm:text-subhead font-medium text-muted-foreground/70">Start a conversation</p>
               </div>
             </div>
           )
@@ -390,7 +390,7 @@ export function ChatThread({
                       <span
                         className={cn(
                           'rounded-full bg-muted/60 text-muted-foreground/70 font-semibold',
-                          compact ? 'text-[11px] px-2.5 py-0.5' : 'text-[10px] sm:text-xs px-2.5 sm:px-3 py-0.5 sm:py-1',
+                          compact ? 'text-caption2 px-2.5 py-0.5' : 'text-[10px] sm:text-caption1 px-2.5 sm:px-3 py-0.5 sm:py-1',
                         )}
                       >
                         {format(messageDate, compact ? 'MMM d' : 'EEE, MMM d')}
@@ -421,7 +421,7 @@ export function ChatThread({
                   compact ? 'mt-1 ml-[30px]' : 'mt-1.5 ml-8 sm:ml-10',
                 )}
               >
-                <span className={cn('font-medium text-muted-foreground/70 whitespace-nowrap', compact ? 'text-[13px] leading-snug' : 'text-sm leading-relaxed')}>
+                <span className={cn('font-medium text-muted-foreground/70 whitespace-nowrap', compact ? 'text-footnote leading-snug' : 'text-subhead leading-relaxed')}>
                   typing...
                 </span>
               </div>

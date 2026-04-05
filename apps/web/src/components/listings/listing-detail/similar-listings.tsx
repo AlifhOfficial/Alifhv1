@@ -71,7 +71,7 @@ export function SimilarListings({
     <section className={cn('py-8 border-t border-border', className)}>
       {/* Section Header with Nav Buttons */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold tracking-tight text-foreground">
+        <h2 className="text-headline font-bold tracking-tight text-foreground">
           Similar Price Range
         </h2>
         

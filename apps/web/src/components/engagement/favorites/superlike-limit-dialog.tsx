@@ -62,20 +62,20 @@ export function SuperlikeLimitDialog({
         <div className="flex items-center gap-3 mb-4">
           <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
           <div className="flex-1">
-            <h2 className="text-[15px] font-semibold text-foreground">No superlikes left</h2>
-            <p className="text-[13px] text-muted-foreground">Resets {resetDateStr}</p>
+            <h2 className="text-subhead font-semibold text-foreground">No superlikes left</h2>
+            <p className="text-footnote text-muted-foreground">Resets {resetDateStr}</p>
           </div>
         </div>
 
         {/* Info */}
-        <p className="text-[13px] text-muted-foreground mb-5">
+        <p className="text-footnote text-muted-foreground mb-5">
           You can still save unlimited favorites to track cars you like.
         </p>
 
         {/* Action */}
         <button
           onClick={onClose}
-          className="w-full h-10 rounded-xl text-[14px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+          className="w-full h-10 rounded-xl text-subhead font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           Got it
         </button>

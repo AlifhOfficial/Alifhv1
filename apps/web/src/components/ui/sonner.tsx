@@ -35,12 +35,12 @@ function Toaster({ ...props }: ToasterProps) {
         classNames: {
           toast:
             'group toast group-[.toaster]:bg-sidebar group-[.toaster]:text-sidebar-foreground group-[.toaster]:border-sidebar-border group-[.toaster]:shadow-lg group-[.toaster]:rounded-xl',
-          title: 'group-[.toast]:text-sm group-[.toast]:font-semibold',
-          description: 'group-[.toast]:text-sm group-[.toast]:text-muted-foreground',
+          title: 'group-[.toast]:text-subhead group-[.toast]:font-semibold',
+          description: 'group-[.toast]:text-subhead group-[.toast]:text-muted-foreground',
           actionButton:
-            'group-[.toast]:bg-sidebar-primary group-[.toast]:text-sidebar-primary-foreground group-[.toast]:rounded-md group-[.toast]:text-xs group-[.toast]:font-medium',
+            'group-[.toast]:bg-sidebar-primary group-[.toast]:text-sidebar-primary-foreground group-[.toast]:rounded-md group-[.toast]:text-caption1 group-[.toast]:font-medium',
           cancelButton:
-            'group-[.toast]:bg-sidebar-accent group-[.toast]:text-sidebar-accent-foreground group-[.toast]:rounded-md group-[.toast]:text-xs group-[.toast]:font-medium',
+            'group-[.toast]:bg-sidebar-accent group-[.toast]:text-sidebar-accent-foreground group-[.toast]:rounded-md group-[.toast]:text-caption1 group-[.toast]:font-medium',
           closeButton:
             'group-[.toast]:bg-sidebar group-[.toast]:text-muted-foreground group-[.toast]:border-sidebar-border group-[.toast]:hover:bg-sidebar-accent group-[.toast]:hover:text-sidebar-accent-foreground',
           success:

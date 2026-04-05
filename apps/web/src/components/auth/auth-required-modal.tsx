@@ -114,11 +114,11 @@ export function AuthRequiredModal({
       >
         <div className="flex flex-col items-center text-center">
           {/* Welcome Text */}
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-title3 font-semibold tracking-tight text-foreground">
             {title || "Welcome"}
           </h2>
           
-          <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+          <p className="text-footnote text-muted-foreground mt-2 mb-6">
             {description || `Sign in to ${feature}`}
           </p>
 
@@ -126,14 +126,14 @@ export function AuthRequiredModal({
           <div className="w-full space-y-3">
             <button
               onClick={handleSignIn}
-              className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="w-full h-11 rounded-xl text-subhead font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               Sign in
             </button>
             
             <button
               onClick={handleSignUp}
-              className="w-full h-11 rounded-xl text-[15px] font-semibold border border-border/50 bg-muted/20 text-foreground hover:bg-muted/40 transition-colors"
+              className="w-full h-11 rounded-xl text-subhead font-semibold border border-border/50 bg-muted/20 text-foreground hover:bg-muted/40 transition-colors"
             >
               Create account
             </button>
@@ -142,7 +142,7 @@ export function AuthRequiredModal({
           {/* Dismiss */}
           <button
             onClick={onClose}
-            className="mt-5 text-[13px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+            className="mt-5 text-footnote text-muted-foreground/60 hover:text-muted-foreground transition-colors"
           >
             Not now
           </button>

@@ -296,12 +296,12 @@ function StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium inline-flex items-center gap-1 cursor-help group">
+          <span className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium inline-flex items-center gap-1 cursor-help group">
             {label}
             <Info className="w-3 h-3 opacity-40 group-hover:opacity-70 transition-opacity" />
           </span>
         </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-[200px] text-xs">
+        <TooltipContent side="top" className="max-w-[200px] text-caption1">
           {tooltip}
         </TooltipContent>
       </Tooltip>
@@ -347,14 +347,14 @@ export function PartnerInsightsView({
           <header>
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-3">
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground/90">
+                <h1 className="text-title2 font-semibold tracking-tight text-foreground/90">
                   {getGreeting(currentHour)}, {firstName}
                 </h1>
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-subhead text-muted-foreground">
                     {partnerName ? `${partnerName} overview` : 'Business overview'} · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground/55">
+                  <div className="flex items-center gap-1.5 text-caption1 text-muted-foreground/55">
                     <Clock className="h-3.5 w-3.5" />
                     <span>
                       Last updated {new Date(stats.generatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · Use alongside your own records
@@ -376,7 +376,7 @@ export function PartnerInsightsView({
                 label="Active" 
                 tooltip="Number of listings currently live and visible to buyers" 
               />
-              <span className="text-2xl font-semibold text-blue-500">
+              <span className="text-title2 font-semibold text-blue-500">
                 {inventory.activeCount}
               </span>
             </div>
@@ -385,7 +385,7 @@ export function PartnerInsightsView({
                 label="Views" 
                 tooltip="Total listing views across all your active inventory" 
               />
-              <span className="text-2xl font-semibold text-purple-500">
+              <span className="text-title2 font-semibold text-purple-500">
                 {formatNumber(engagement.totalViewsThisMonth)}
               </span>
             </div>
@@ -394,7 +394,7 @@ export function PartnerInsightsView({
                 label="Favorites" 
                 tooltip="How many times users have saved your listings to favorites" 
               />
-              <span className="text-2xl font-semibold text-amber-500">
+              <span className="text-title2 font-semibold text-amber-500">
                 {formatNumber(engagement.totalFavorites ?? 0)}
               </span>
             </div>
@@ -403,7 +403,7 @@ export function PartnerInsightsView({
                 label="Sold" 
                 tooltip="Vehicles sold this month" 
               />
-              <span className="text-2xl font-semibold text-green-500">
+              <span className="text-title2 font-semibold text-green-500">
                 {sales.soldThisMonth}
               </span>
             </div>
@@ -415,21 +415,21 @@ export function PartnerInsightsView({
             <div className="col-span-12 lg:col-span-8 rounded-lg border border-border/20 bg-muted/5 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-2">Total Views</p>
+                  <p className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-2">Total Views</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-semibold text-purple-500 tabular-nums">
+                    <span className="text-title1 font-semibold text-purple-500 tabular-nums">
                       {formatNumber(engagement.totalViewsThisMonth)}
                     </span>
                   </div>
                 </div>
                 <div className="text-right space-y-2">
                   <div>
-                    <p className="text-xs text-muted-foreground/60">Impressions</p>
-                    <p className="text-sm font-semibold text-foreground/90 tabular-nums">{formatNumber(engagement.totalImpressions ?? 0)}</p>
+                    <p className="text-caption1 text-muted-foreground/60">Impressions</p>
+                    <p className="text-subhead font-semibold text-foreground/90 tabular-nums">{formatNumber(engagement.totalImpressions ?? 0)}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground/60">Avg / Listing</p>
-                    <p className="text-sm font-semibold text-foreground/90 tabular-nums">{Math.round(engagement.avgViewsPerListing)}</p>
+                    <p className="text-caption1 text-muted-foreground/60">Avg / Listing</p>
+                    <p className="text-subhead font-semibold text-foreground/90 tabular-nums">{Math.round(engagement.avgViewsPerListing)}</p>
                   </div>
                 </div>
               </div>
@@ -439,16 +439,16 @@ export function PartnerInsightsView({
             <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
               {/* Revenue Info */}
               <div className="rounded-lg border border-border/20 bg-muted/5 p-5 flex-1">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Revenue</p>
+                <p className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Revenue</p>
                 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">This month</span>
-                    <span className="text-sm font-semibold text-green-500">{formatCurrency(sales.revenueThisMonth)}</span>
+                    <span className="text-subhead text-muted-foreground">This month</span>
+                    <span className="text-subhead font-semibold text-green-500">{formatCurrency(sales.revenueThisMonth)}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Total value</span>
-                    <span className="text-sm font-semibold text-cyan-500">{formatCurrency(inventory.totalValue)}</span>
+                    <span className="text-subhead text-muted-foreground">Total value</span>
+                    <span className="text-subhead font-semibold text-cyan-500">{formatCurrency(inventory.totalValue)}</span>
                   </div>
                 </div>
               </div>
@@ -460,14 +460,14 @@ export function PartnerInsightsView({
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm font-semibold text-muted-foreground/70">Bookings</span>
+                    <span className="text-subhead font-semibold text-muted-foreground/70">Bookings</span>
                   </div>
                 </div>
                 <div>
-                  <span className="text-2xl font-bold text-blue-500">{bookings.pendingBookings}</span>
-                  <span className="text-sm text-muted-foreground/60 ml-1.5">pending</span>
+                  <span className="text-title2 font-bold text-blue-500">{bookings.pendingBookings}</span>
+                  <span className="text-subhead text-muted-foreground/60 ml-1.5">pending</span>
                 </div>
-                <p className="text-xs text-muted-foreground/50 mt-1">{bookings.confirmedBookings} confirmed · {bookings.completedThisMonth} completed</p>
+                <p className="text-caption1 text-muted-foreground/50 mt-1">{bookings.confirmedBookings} confirmed · {bookings.completedThisMonth} completed</p>
               </div>
             </div>
           </div>
@@ -476,38 +476,38 @@ export function PartnerInsightsView({
           <div className="grid grid-cols-12 gap-4">
             {/* Inventory Summary */}
             <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-lg border border-border/20 bg-muted/5 p-5">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Inventory</p>
+              <p className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Inventory</p>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Active</span>
-                  <span className="text-sm font-semibold text-blue-500">{inventory.activeCount}</span>
+                  <span className="text-subhead text-muted-foreground">Active</span>
+                  <span className="text-subhead font-semibold text-blue-500">{inventory.activeCount}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Total value</span>
-                  <span className="text-sm font-semibold text-cyan-500">{formatCurrency(inventory.totalValue)}</span>
+                  <span className="text-subhead text-muted-foreground">Total value</span>
+                  <span className="text-subhead font-semibold text-cyan-500">{formatCurrency(inventory.totalValue)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Avg price</span>
-                  <span className="text-sm font-semibold text-foreground/90">{formatCurrency(inventory.avgPrice)}</span>
+                  <span className="text-subhead text-muted-foreground">Avg price</span>
+                  <span className="text-subhead font-semibold text-foreground/90">{formatCurrency(inventory.avgPrice)}</span>
                 </div>
               </div>
             </div>
 
             {/* Sales Performance */}
             <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-lg border border-border/20 bg-muted/5 p-5">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Sales</p>
+              <p className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium mb-4">Sales</p>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">This month</span>
-                  <span className="text-sm font-semibold text-green-500">{sales.soldThisMonth}</span>
+                  <span className="text-subhead text-muted-foreground">This month</span>
+                  <span className="text-subhead font-semibold text-green-500">{sales.soldThisMonth}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Revenue</span>
-                  <span className="text-sm font-semibold text-emerald-500">{formatCurrency(sales.revenueThisMonth)}</span>
+                  <span className="text-subhead text-muted-foreground">Revenue</span>
+                  <span className="text-subhead font-semibold text-emerald-500">{formatCurrency(sales.revenueThisMonth)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Avg days to sell</span>
-                  <span className="text-sm font-semibold text-amber-500">{sales.avgDaysToSell ?? '—'}</span>
+                  <span className="text-subhead text-muted-foreground">Avg days to sell</span>
+                  <span className="text-subhead font-semibold text-amber-500">{sales.avgDaysToSell ?? '—'}</span>
                 </div>
               </div>
             </div>
@@ -517,11 +517,11 @@ export function PartnerInsightsView({
               className="col-span-12 sm:col-span-6 lg:col-span-4 block rounded-lg border border-border/20 bg-muted/5 p-5"
             >
               <div className="flex items-center justify-between mb-3">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium">Engagement</p>
+                <p className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Engagement</p>
               </div>
               <div>
-                <span className="text-2xl font-semibold text-rose-500">{engagement.totalFavorites ?? 0}</span>
-                <span className="text-sm text-muted-foreground ml-1.5">favorites</span>
+                <span className="text-title2 font-semibold text-rose-500">{engagement.totalFavorites ?? 0}</span>
+                <span className="text-subhead text-muted-foreground ml-1.5">favorites</span>
               </div>
             </div>
           </div>
@@ -529,39 +529,39 @@ export function PartnerInsightsView({
           {/* Business Snapshot - Full Width */}
           <div className="rounded-xl border border-border/40 bg-sidebar p-5">
             <div className="mb-5">
-              <span className="text-sm font-semibold text-muted-foreground/70">Business Snapshot</span>
+              <span className="text-subhead font-semibold text-muted-foreground/70">Business Snapshot</span>
             </div>
             
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xl font-bold tracking-tight text-foreground">{trends.listingsAddedThisMonth}</span>
+                  <span className="text-title3 font-bold tracking-tight text-foreground">{trends.listingsAddedThisMonth}</span>
                   <TrendBadge value={trends.listingsAddedDelta} />
                 </div>
-                <p className="text-sm font-medium text-muted-foreground/70">New listings</p>
-                <p className="text-xs text-muted-foreground/50">vs {trends.listingsAddedLastMonth} last month</p>
+                <p className="text-subhead font-medium text-muted-foreground/70">New listings</p>
+                <p className="text-caption1 text-muted-foreground/50">vs {trends.listingsAddedLastMonth} last month</p>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xl font-bold tracking-tight text-foreground">{formatNumber(engagement.totalViewsThisMonth)}</span>
+                  <span className="text-title3 font-bold tracking-tight text-foreground">{formatNumber(engagement.totalViewsThisMonth)}</span>
                 </div>
-                <p className="text-sm font-medium text-muted-foreground/70">Total views</p>
-                <p className="text-xs text-muted-foreground/50">{formatNumber(engagement.totalImpressions ?? 0)} impressions tracked</p>
+                <p className="text-subhead font-medium text-muted-foreground/70">Total views</p>
+                <p className="text-caption1 text-muted-foreground/50">{formatNumber(engagement.totalImpressions ?? 0)} impressions tracked</p>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xl font-bold tracking-tight text-foreground">{trends.salesThisMonth}</span>
+                  <span className="text-title3 font-bold tracking-tight text-foreground">{trends.salesThisMonth}</span>
                   <TrendBadge value={trends.salesDelta} />
                 </div>
-                <p className="text-sm font-medium text-muted-foreground/70">Sales</p>
-                <p className="text-xs text-muted-foreground/50">vs {trends.salesLastMonth} last month</p>
+                <p className="text-subhead font-medium text-muted-foreground/70">Sales</p>
+                <p className="text-caption1 text-muted-foreground/50">vs {trends.salesLastMonth} last month</p>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xl font-bold tracking-tight text-foreground">{sales.sellThroughRate}%</span>
+                  <span className="text-title3 font-bold tracking-tight text-foreground">{sales.sellThroughRate}%</span>
                 </div>
-                <p className="text-sm font-medium text-muted-foreground/70">Sell-through</p>
-                <p className="text-xs text-muted-foreground/50">of listed inventory</p>
+                <p className="text-subhead font-medium text-muted-foreground/70">Sell-through</p>
+                <p className="text-caption1 text-muted-foreground/50">of listed inventory</p>
               </div>
             </div>
           </div>

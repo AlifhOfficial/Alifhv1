@@ -228,7 +228,7 @@ export function MessageInput({
             tabIndex={0}
             className={cn(
               'w-full bg-transparent text-foreground placeholder:text-muted-foreground/50 resize-none overflow-hidden focus:outline-none focus:ring-0 font-medium',
-              compact ? 'max-h-16 text-[13px]' : 'max-h-20 sm:max-h-24 lg:max-h-32 text-[13px] sm:text-sm'
+              compact ? 'max-h-16 text-footnote' : 'max-h-20 sm:max-h-24 lg:max-h-32 text-footnote sm:text-subhead'
             )}
             style={{
               minHeight: '20px',
@@ -257,7 +257,7 @@ export function MessageInput({
 
       {/* Hint - hide in compact mode and on mobile */}
       {!compact && (
-        <p className="hidden sm:block text-xs font-medium text-muted-foreground/50 mt-1.5 sm:mt-2 px-1">
+        <p className="hidden sm:block text-caption1 font-medium text-muted-foreground/50 mt-1.5 sm:mt-2 px-1">
           Enter to send · Shift+Enter for new line
         </p>
       )}

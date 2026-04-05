@@ -40,11 +40,11 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
             
             {/* Brand */}
             <div className="lg:max-w-sm space-y-4">
-              <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+              <p className="text-title2 sm:text-title1 font-semibold tracking-tight text-foreground">
                 {partner.brandName}
               </p>
               {showroom.heroTagline && (
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-subhead text-muted-foreground leading-relaxed">
                   {showroom.heroTagline}
                 </p>
               )}
@@ -55,27 +55,27 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
               
               {/* Quick Links */}
               <div className="space-y-4">
-                <p className="text-sm font-semibold text-foreground">Quick Links</p>
+                <p className="text-subhead font-semibold text-foreground">Quick Links</p>
                 <div className="flex flex-col gap-3">
-                  <a href="#showroom-story" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Our Story</a>
-                  <a href="#showroom-gallery" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Gallery</a>
-                  <a href="#inventory" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Inventory</a>
-                  <a href="#showroom-contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</a>
+                  <a href="#showroom-story" className="text-subhead text-muted-foreground hover:text-foreground transition-colors">Our Story</a>
+                  <a href="#showroom-gallery" className="text-subhead text-muted-foreground hover:text-foreground transition-colors">Gallery</a>
+                  <a href="#inventory" className="text-subhead text-muted-foreground hover:text-foreground transition-colors">Inventory</a>
+                  <a href="#showroom-contact" className="text-subhead text-muted-foreground hover:text-foreground transition-colors">Contact</a>
                 </div>
               </div>
               
               {/* Contact */}
               <div className="space-y-4">
-                <p className="text-sm font-semibold text-foreground">Contact</p>
+                <p className="text-subhead font-semibold text-foreground">Contact</p>
                 <div className="flex flex-col gap-3">
                   {displayPhone && (
-                    <a href={`tel:${displayPhone}`} className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                    <a href={`tel:${displayPhone}`} className="text-subhead text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
                       <Phone className="w-3.5 h-3.5" />
                       {displayPhone}
                     </a>
                   )}
                   {fullAddress && (
-                    <span className="text-sm text-muted-foreground flex items-start gap-2">
+                    <span className="text-subhead text-muted-foreground flex items-start gap-2">
                       <MapPin className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                       <span>{fullAddress}</span>
                     </span>
@@ -86,14 +86,14 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
               {/* Follow */}
               {hasSocials && (
                 <div className="space-y-4">
-                  <p className="text-sm font-semibold text-foreground">Follow</p>
+                  <p className="text-subhead font-semibold text-foreground">Follow</p>
                   <div className="flex flex-col gap-3">
                     {showroom.instagramHandle && (
                       <a
                         href={showroom.instagramHandle}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                        className="text-subhead text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
                       >
                         <InstagramIcon />
                         Instagram
@@ -104,7 +104,7 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
                         href={showroom.youtubeChannelUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                        className="text-subhead text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
                       >
                         <YouTubeIcon />
                         YouTube
@@ -115,7 +115,7 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
                         href={showroom.linkedinUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                        className="text-subhead text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
                       >
                         <LinkedInIcon />
                         LinkedIn
@@ -126,7 +126,7 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
                         href={showroom.tiktokHandle}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                        className="text-subhead text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
                       >
                         <TikTokIcon />
                         TikTok
@@ -141,10 +141,10 @@ export function ShowroomFooter({ showroom }: ShowroomFooterProps) {
 
         {/* Bottom Bar */}
         <div className="py-6 border-t border-border/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-caption1 text-muted-foreground">
             © {new Date().getFullYear()} {partner.brandName}
           </p>
-          <Link href="/" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/" className="text-caption1 text-muted-foreground hover:text-foreground transition-colors">
             Powered by Revvup
           </Link>
         </div>

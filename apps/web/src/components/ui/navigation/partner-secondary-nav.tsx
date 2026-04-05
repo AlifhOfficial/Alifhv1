@@ -66,8 +66,8 @@ export function PartnerSecondaryNav({ currentSection, onActionSelect }: PartnerS
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64">
       <div className="p-4 border-b border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-900">Quick Actions</h3>
-        <p className="text-xs text-gray-500 mt-1">
+        <h3 className="text-subhead font-semibold text-gray-900">Quick Actions</h3>
+        <p className="text-caption1 text-gray-500 mt-1">
           {currentSection ? `for ${currentSection}` : 'Select an item'}
         </p>
       </div>
@@ -81,14 +81,14 @@ export function PartnerSecondaryNav({ currentSection, onActionSelect }: PartnerS
                 key={action.action}
                 onClick={() => onActionSelect?.(action.action)}
                 className={cn(
-                  'w-full flex items-center px-3 py-2 text-sm rounded-md transition-colors text-left',
+                  'w-full flex items-center px-3 py-2 text-subhead rounded-md transition-colors text-left',
                   'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                 )}
               >
                 <action.icon className="mr-3 h-4 w-4 text-gray-400" />
                 <div>
                   <div className="font-medium">{action.name}</div>
-                  <div className="text-xs text-gray-500">{action.description}</div>
+                  <div className="text-caption1 text-gray-500">{action.description}</div>
                 </div>
               </button>
             ))}
@@ -97,7 +97,7 @@ export function PartnerSecondaryNav({ currentSection, onActionSelect }: PartnerS
         
         {/* Recent Activity */}
         <div className="border-t border-gray-200 p-3">
-          <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wide mb-3">
+          <h4 className="text-caption1 font-semibold text-gray-900 uppercase tracking-wide mb-3">
             Recent Activity
           </h4>
           <div className="space-y-2">
@@ -105,8 +105,8 @@ export function PartnerSecondaryNav({ currentSection, onActionSelect }: PartnerS
               <div key={index} className="flex items-start space-x-2">
                 <ClockIcon className="h-3 w-3 text-gray-400 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-xs text-gray-700">{activity.action}</p>
-                  <p className="text-xs text-gray-500">{activity.time}</p>
+                  <p className="text-caption1 text-gray-700">{activity.action}</p>
+                  <p className="text-caption1 text-gray-500">{activity.time}</p>
                 </div>
               </div>
             ))}
@@ -115,10 +115,10 @@ export function PartnerSecondaryNav({ currentSection, onActionSelect }: PartnerS
         
         {/* Context Info */}
         <div className="border-t border-gray-200 p-3">
-          <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wide mb-3">
+          <h4 className="text-caption1 font-semibold text-gray-900 uppercase tracking-wide mb-3">
             Context
           </h4>
-          <div className="text-xs text-gray-600 space-y-1">
+          <div className="text-caption1 text-gray-600 space-y-1">
             <p>Active partnerships: 12</p>
             <p>Pending requests: 3</p>
             <p>Monthly users: 1.2K</p>

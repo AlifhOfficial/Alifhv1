@@ -76,31 +76,31 @@ export function TeamMemberCard({ member, onUpdate, onRemove, onImageUpload, isUp
                 value={form.name}
                 onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="Name"
-                className="w-full h-8 bg-muted/20 rounded px-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
+                className="w-full h-8 bg-muted/20 rounded px-2 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
               />
               <input
                 value={form.role}
                 onChange={(e) => setForm(f => ({ ...f, role: e.target.value }))}
                 placeholder="Role"
-                className="w-full h-8 bg-muted/20 rounded px-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30"
+                className="w-full h-8 bg-muted/20 rounded px-2 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30"
               />
               <textarea
                 value={form.bio || ''}
                 onChange={(e) => setForm(f => ({ ...f, bio: e.target.value || null }))}
                 placeholder="Short bio..."
                 rows={2}
-                className="w-full bg-muted/20 rounded p-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none"
+                className="w-full bg-muted/20 rounded p-2 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none"
               />
               <div className="flex gap-2">
                 <button
                   onClick={() => { onUpdate(form); setIsEditing(false); }}
-                  className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                  className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                 >
                   Save
                 </button>
                 <button
                   onClick={() => { setForm(member); setIsEditing(false); }}
-                  className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                  className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
                 >
                   Cancel
                 </button>
@@ -108,10 +108,10 @@ export function TeamMemberCard({ member, onUpdate, onRemove, onImageUpload, isUp
             </div>
           ) : (
             <div onClick={() => setIsEditing(true)} className="cursor-pointer">
-              <p className="text-sm font-semibold text-foreground">{member.name}</p>
-              <p className="text-xs text-muted-foreground">{member.role}</p>
+              <p className="text-subhead font-semibold text-foreground">{member.name}</p>
+              <p className="text-caption1 text-muted-foreground">{member.role}</p>
               {member.bio && (
-                <p className="text-xs text-muted-foreground/70 mt-1 line-clamp-2">{member.bio}</p>
+                <p className="text-caption1 text-muted-foreground/70 mt-1 line-clamp-2">{member.bio}</p>
               )}
             </div>
           )}

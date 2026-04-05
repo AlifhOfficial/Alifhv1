@@ -86,13 +86,13 @@ export function AuthErrorView() {
       {/* Background content - shown when modal is closed */}
       <div className="pt-32 px-4 max-w-md mx-auto text-center">
         <div className="space-y-2">
-          <p className="wordmark-geom text-lg text-foreground">
+          <p className="wordmark-geom text-headline text-foreground">
             Revvup
           </p>
-          <h1 className="text-xl font-semibold text-foreground">
+          <h1 className="text-title3 font-semibold text-foreground">
             Authentication Error
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-subhead text-muted-foreground">
             We encountered a problem during authentication.
           </p>
         </div>

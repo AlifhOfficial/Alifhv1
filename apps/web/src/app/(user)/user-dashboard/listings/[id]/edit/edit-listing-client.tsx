@@ -122,7 +122,7 @@ export function EditListingClient({ id, userId, userRole }: EditListingClientPro
   if (error || !listing) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <h1 className="text-2xl font-semibold">Listing Not Found</h1>
+        <h1 className="text-title2 font-semibold">Listing Not Found</h1>
         <p className="text-muted-foreground">{error || 'The listing you are looking for does not exist.'}</p>
         <a 
           href="/user-dashboard/listings/my-listings" 

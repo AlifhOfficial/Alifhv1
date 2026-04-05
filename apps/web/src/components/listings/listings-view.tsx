@@ -56,25 +56,24 @@ export function ListingsView({
 }: ListingsViewProps) {
   const pathname = usePathname();
   const shouldPersistPublicSidebar = pathname === '/listings' && !embedded;
-  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(VIEW_MODE_KEY);
-      if (saved === 'grid' || saved === 'list' || saved === 'minimal') {
-        return saved;
-      }
-    }
-    return 'grid';
-  });
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'minimal'>('grid');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(() => {
-    if (typeof window === 'undefined') return defaultFiltersOpen;
-    if (!shouldPersistPublicSidebar) return defaultFiltersOpen;
+  const [sidebarOpen, setSidebarOpen] = useState(defaultFiltersOpen);
 
+  // Hydrate view mode + sidebar from storage after mount (avoids SSR/client mismatch)
+  useEffect(() => {
+    const saved = localStorage.getItem(VIEW_MODE_KEY);
+    if (saved === 'grid' || saved === 'list' || saved === 'minimal') {
+      setViewMode(saved);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!shouldPersistPublicSidebar) return;
     const saved = window.sessionStorage.getItem(PUBLIC_LISTINGS_SIDEBAR_KEY);
-    if (saved === 'true') return true;
-    if (saved === 'false') return false;
-    return defaultFiltersOpen;
-  });
+    if (saved === 'true') setSidebarOpen(true);
+    else if (saved === 'false') setSidebarOpen(false);
+  }, [shouldPersistPublicSidebar]);
 
   const updateSidebarOpen = useCallback((open: boolean) => {
     setSidebarOpen(open);

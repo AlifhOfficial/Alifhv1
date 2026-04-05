@@ -58,8 +58,8 @@ export function UserBanNotice({ banReason, banExpires, userId: _userId }: UserBa
           <AlertCircle className="w-5 h-5 text-red-500" />
         </div>
         <div className="space-y-3">
-          <h2 className="text-xl font-semibold text-foreground">Account Suspended</h2>
-          <p className="text-sm text-muted-foreground/70 max-w-md">
+          <h2 className="text-title3 font-semibold text-foreground">Account Suspended</h2>
+          <p className="text-subhead text-muted-foreground/70 max-w-md">
             Your account has been temporarily restricted
           </p>
         </div>
@@ -67,16 +67,16 @@ export function UserBanNotice({ banReason, banExpires, userId: _userId }: UserBa
 
       <div className="space-y-6 mb-8">
         <div className="space-y-2">
-          <p className="text-xs text-muted-foreground/70">Reason</p>
-          <p className="text-sm text-foreground">
+          <p className="text-caption1 text-muted-foreground/70">Reason</p>
+          <p className="text-subhead text-foreground">
             {banReason}
           </p>
         </div>
 
         {isTemporary && banExpires && (
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground/70">Expires</p>
-            <p className="text-sm text-foreground">
+            <p className="text-caption1 text-muted-foreground/70">Expires</p>
+            <p className="text-subhead text-foreground">
               {new Date(banExpires).toLocaleDateString('en-AE', {
                 year: 'numeric',
                 month: 'long',
@@ -88,7 +88,7 @@ export function UserBanNotice({ banReason, banExpires, userId: _userId }: UserBa
 
         {!isTemporary && (
           <div className="space-y-2">
-            <p className="text-sm text-foreground">This is a permanent suspension.</p>
+            <p className="text-subhead text-foreground">This is a permanent suspension.</p>
           </div>
         )}
       </div>
@@ -97,7 +97,7 @@ export function UserBanNotice({ banReason, banExpires, userId: _userId }: UserBa
         <div className="flex justify-center pt-6 border-t border-border/40">
           <button
             onClick={() => setShowAppealForm(true)}
-            className="text-xs text-muted-foreground/70 hover:text-foreground transition-colors"
+            className="text-caption1 text-muted-foreground/70 hover:text-foreground transition-colors"
           >
             Submit an appeal
           </button>
@@ -107,7 +107,7 @@ export function UserBanNotice({ banReason, banExpires, userId: _userId }: UserBa
       {showAppealForm && !submitted && (
         <div className="space-y-6 pt-6 border-t border-border/40">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Your Appeal</label>
+            <label className="text-subhead font-medium text-foreground">Your Appeal</label>
             <textarea
               value={appealMessage}
               onChange={(e) => setAppealMessage(e.target.value)}
@@ -121,7 +121,7 @@ export function UserBanNotice({ banReason, banExpires, userId: _userId }: UserBa
             <button
               onClick={handleAppeal}
               disabled={submitting || !appealMessage.trim()}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-all disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-subhead font-medium transition-all disabled:opacity-50"
             >
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
               Submit Appeal
@@ -132,7 +132,7 @@ export function UserBanNotice({ banReason, banExpires, userId: _userId }: UserBa
                 setAppealMessage('');
               }}
               disabled={submitting}
-              className="px-6 py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="px-6 py-3 text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Cancel
             </button>
@@ -142,7 +142,7 @@ export function UserBanNotice({ banReason, banExpires, userId: _userId }: UserBa
 
       {submitted && (
         <div className="space-y-2 pt-6 border-t border-border/40">
-          <p className="text-sm text-green-500">
+          <p className="text-subhead text-green-500">
             Appeal submitted successfully. Our team will review your case within 24-48 hours.
           </p>
         </div>

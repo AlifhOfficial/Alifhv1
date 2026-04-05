@@ -10,10 +10,10 @@ export function FeaturesSection() {
         
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Made for UAE
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Fast. Simple.
             <br />
             <span className="text-muted-foreground">Done right.</span>
@@ -26,7 +26,7 @@ export function FeaturesSection() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground max-w-md mx-auto text-center mb-12 leading-relaxed">
+        <p className="text-callout text-muted-foreground max-w-md mx-auto text-center mb-12 leading-relaxed">
           Built in Dubai. For Dubai. By people tired of overpriced car sites.
         </p>
 
@@ -53,8 +53,8 @@ export function FeaturesSection() {
           {/* Highlighted Card */}
           <div className="p-6 rounded-xl bg-primary text-primary-foreground">
             <Timer className="w-5 h-5 text-primary-foreground/70 mb-3" />
-            <h3 className="text-base font-semibold mb-1.5">Fresh listings only</h3>
-            <p className="text-sm text-primary-foreground/70 leading-relaxed">
+            <h3 className="text-callout font-semibold mb-1.5">Fresh listings only</h3>
+            <p className="text-subhead text-primary-foreground/70 leading-relaxed">
               Old listings auto-expire. No more sold cars.
             </p>
           </div>
@@ -78,8 +78,8 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
   return (
     <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
       <Icon className="w-5 h-5 text-primary/80 mb-3" />
-      <h3 className="text-base font-semibold mb-1.5">{title}</h3>
-      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+      <h3 className="text-callout font-semibold mb-1.5">{title}</h3>
+      <p className="text-subhead text-muted-foreground leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -107,7 +107,7 @@ function BuiltInDubaiInfographic() {
           <NoiseRow label="Pay-to-rank" />
         </div>
 
-        <p className="mt-5 sm:mt-6 text-xs sm:text-sm font-medium text-white/70">
+        <p className="mt-5 sm:mt-6 text-caption1 sm:text-subhead font-medium text-white/70">
           No noise.
         </p>
       </div>
@@ -128,8 +128,8 @@ function BuiltInDubaiInfographic() {
 function NoiseRow({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-2 sm:gap-3 text-white/55">
-      <span className="text-xs sm:text-sm leading-none">✕</span>
-      <span className="text-xs sm:text-sm">{label}</span>
+      <span className="text-caption1 sm:text-subhead leading-none">✕</span>
+      <span className="text-caption1 sm:text-subhead">{label}</span>
     </div>
   );
 }

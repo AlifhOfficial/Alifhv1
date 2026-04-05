@@ -468,10 +468,10 @@ export function MyListingsView({
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-base sm:text-lg font-semibold text-foreground">
+            <h1 className="text-callout sm:text-headline font-semibold text-foreground">
               {listingType === 'work' ? 'Inventory' : 'My Listings'}
             </h1>
-            <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">
+            <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">
               {listingType === 'work' 
                 ? 'Manage your dealership inventory' 
                 : 'Manage your personal car listings'}
@@ -480,7 +480,7 @@ export function MyListingsView({
           <div className="flex items-center gap-2">
             {listingType === 'work' && blackQuota && (
               <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
-                <span className="text-[10px] sm:text-xs font-medium">
+                <span className="text-[10px] sm:text-caption1 font-medium">
                   {blackQuota.blackListingQuota - blackQuota.activeBlackListingsCount} of {blackQuota.blackListingQuota} BLK
                 </span>
               </div>
@@ -509,7 +509,7 @@ export function MyListingsView({
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full h-9 sm:h-10 pl-9 sm:pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+              className="w-full h-9 sm:h-10 pl-9 sm:pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
             />
             {searchQuery && (
               <button
@@ -523,7 +523,7 @@ export function MyListingsView({
 
           {/* Sort */}
           <Select value={sort} onValueChange={(v) => handleSortChange(v as ListingsSort)}>
-            <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-xs sm:text-sm shrink-0">
+            <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-caption1 sm:text-subhead shrink-0">
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
             <SelectContent>
@@ -536,7 +536,7 @@ export function MyListingsView({
 
           {/* New Listing */}
           <Link href={newListingUrl}>
-            <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-medium transition-colors hover:bg-primary/90 flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-medium transition-colors hover:bg-primary/90 flex items-center gap-1.5 sm:gap-2 shrink-0">
               <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden xs:inline">New</span>
             </button>
@@ -553,7 +553,7 @@ export function MyListingsView({
                 <button
                   key={tab.key}
                   onClick={() => handleStatusChange(tab.key)}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs transition-all capitalize whitespace-nowrap ${
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all capitalize whitespace-nowrap ${
                     isActive
                       ? 'bg-background text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -572,7 +572,7 @@ export function MyListingsView({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs transition-all flex items-center gap-1 whitespace-nowrap ${
+                    className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
                       isSecondaryStatusSelected
                         ? 'bg-background text-foreground shadow-sm'
                         : 'text-muted-foreground hover:text-foreground'
@@ -594,7 +594,7 @@ export function MyListingsView({
                     <DropdownMenuItem
                       key={tab.key}
                       onClick={() => handleStatusChange(tab.key)}
-                      className={`text-xs cursor-pointer ${
+                      className={`text-caption1 cursor-pointer ${
                         selectedStatus === tab.key ? 'bg-secondary' : ''
                       }`}
                     >
@@ -611,7 +611,7 @@ export function MyListingsView({
 
       {/* Count & Actions */}
       <div className="flex items-center justify-between mb-3 sm:mb-6">
-        <p className="text-[11px] sm:text-xs text-muted-foreground">
+        <p className="text-caption2 sm:text-caption1 text-muted-foreground">
           {totalListings} listing{totalListings !== 1 ? 's' : ''}
           {hasActiveFilters && <span className="hidden xs:inline"> (filtered)</span>}
           {totalPages > 1 && <span className="ml-2 hidden sm:inline">· Page {currentPage} of {totalPages}</span>}
@@ -622,7 +622,7 @@ export function MyListingsView({
          ['sold', 'archived', 'expired', 'rejected', 'suspended'].includes(selectedStatus) && (
           <button
             onClick={handleBulkClear}
-            className="text-[11px] sm:text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="text-caption2 sm:text-caption1 text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear all
           </button>
@@ -631,7 +631,7 @@ export function MyListingsView({
 
       {/* Error */}
       {error && (
-        <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm">
+        <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead">
           {error}
         </div>
       )}
@@ -657,10 +657,10 @@ export function MyListingsView({
         <div className="flex items-center justify-center min-h-[40vh]">
           <div className="text-center max-w-xs">
             <Package className="w-8 h-8 mx-auto text-muted-foreground/20 mb-4" strokeWidth={1.5} />
-            <h3 className="text-sm font-semibold text-foreground mb-1">No listings yet</h3>
-            <p className="text-xs text-muted-foreground/60 leading-relaxed mb-4">Create your first listing to get started</p>
+            <h3 className="text-subhead font-semibold text-foreground mb-1">No listings yet</h3>
+            <p className="text-caption1 text-muted-foreground/60 leading-relaxed mb-4">Create your first listing to get started</p>
             <Link href={newListingUrl}>
-              <button className="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-medium transition-colors hover:bg-primary/90">
+              <button className="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-medium transition-colors hover:bg-primary/90">
                 Create Listing
               </button>
             </Link>
@@ -679,8 +679,8 @@ export function MyListingsView({
           <div className="flex items-center justify-center min-h-[40vh]">
             <div className="text-center max-w-xs">
               <Icon className={`w-8 h-8 mx-auto mb-4 ${debouncedSearch ? 'text-muted-foreground/20' : config.color}`} strokeWidth={1.5} />
-              <h3 className="text-sm font-semibold text-foreground mb-1">{config.message}</h3>
-              <p className="text-xs text-muted-foreground/60 leading-relaxed">{config.subMessage}</p>
+              <h3 className="text-subhead font-semibold text-foreground mb-1">{config.message}</h3>
+              <p className="text-caption1 text-muted-foreground/60 leading-relaxed">{config.subMessage}</p>
             </div>
           </div>
         );
@@ -715,17 +715,17 @@ export function MyListingsView({
                 <button
                   onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 rounded-md sm:rounded-lg text-caption2 sm:text-caption1 bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
                   Previous
                 </button>
-                <span className="text-[11px] sm:text-xs text-muted-foreground tabular-nums">
+                <span className="text-caption2 sm:text-caption1 text-muted-foreground tabular-nums">
                   {currentPage} / {totalPages}
                 </span>
                 <button
                   onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 rounded-md sm:rounded-lg text-[11px] sm:text-xs bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 rounded-md sm:rounded-lg text-caption2 sm:text-caption1 bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                 </button>
@@ -756,10 +756,10 @@ export function MyListingsView({
 
             {/* Title & Description */}
             <div className="space-y-1">
-              <DialogTitle className="text-base font-semibold text-foreground">
+              <DialogTitle className="text-callout font-semibold text-foreground">
                 {confirmModal.title}
               </DialogTitle>
-              <DialogDescription className="text-sm text-muted-foreground">
+              <DialogDescription className="text-subhead text-muted-foreground">
                 {confirmModal.description}
               </DialogDescription>
             </div>
@@ -769,7 +769,7 @@ export function MyListingsView({
               <button
                 onClick={executeConfirmedAction}
                 disabled={isConfirming}
-                className={`w-full h-10 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 ${
+                className={`w-full h-10 rounded-lg text-subhead font-semibold transition-colors disabled:opacity-50 ${
                   confirmModal.variant === 'destructive' 
                     ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' 
                     : confirmModal.variant === 'warning'
@@ -784,7 +784,7 @@ export function MyListingsView({
               <button 
                 onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}
                 disabled={isConfirming}
-                className="w-full h-10 rounded-lg text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
+                className="w-full h-10 rounded-lg text-subhead font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>

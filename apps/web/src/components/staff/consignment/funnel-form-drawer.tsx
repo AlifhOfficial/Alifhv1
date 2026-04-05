@@ -187,7 +187,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
       <SheetContent side="right" className="w-80 sm:w-[420px] p-0 flex flex-col bg-sidebar text-sidebar-foreground border-sidebar-border">
         {/* Fixed Header */}
         <SheetHeader className="flex-shrink-0 p-6 pb-4 border-b border-sidebar-border/50">
-          <SheetTitle className="text-xl font-bold tracking-tight">
+          <SheetTitle className="text-title3 font-bold tracking-tight">
             {isEditing ? 'Edit Funnel' : 'New Funnel'}
           </SheetTitle>
         </SheetHeader>
@@ -197,7 +197,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
           
           {/* Funnel Name */}
           <div className="space-y-2">
-            <label className="text-[15px] font-bold tracking-tight">Funnel Name</label>
+            <label className="text-subhead font-bold tracking-tight">Funnel Name</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -209,7 +209,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
 
           {/* Description */}
           <div className="space-y-2">
-            <label className="text-[15px] font-bold tracking-tight">Description</label>
+            <label className="text-subhead font-bold tracking-tight">Description</label>
             <Input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -222,8 +222,8 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
           {/* Active Toggle */}
           <div className="flex items-center justify-between py-2">
             <div>
-              <span className="text-[15px] font-bold tracking-tight">Active</span>
-              <p className="text-xs text-sidebar-foreground/60 mt-0.5">Show in your funnels list</p>
+              <span className="text-subhead font-bold tracking-tight">Active</span>
+              <p className="text-caption1 text-sidebar-foreground/60 mt-0.5">Show in your funnels list</p>
             </div>
             <Switch
               checked={isActive}
@@ -235,12 +235,12 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
 
           {/* Filter Criteria Header */}
           <div className="flex items-center justify-between">
-            <h3 className="text-[15px] font-bold tracking-tight">Filter Criteria</h3>
+            <h3 className="text-subhead font-bold tracking-tight">Filter Criteria</h3>
             {filterCount > 0 && (
               <button
                 type="button"
                 onClick={handleReset}
-                className="text-sm font-semibold text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
+                className="text-subhead font-semibold text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
               >
                 Reset all
               </button>
@@ -302,7 +302,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
                 max={currentYear + 1}
                 className="flex-1 h-10 bg-sidebar-accent/30 border-sidebar-border/50"
               />
-              <span className="text-sidebar-foreground/30 text-sm font-medium">–</span>
+              <span className="text-sidebar-foreground/30 text-subhead font-medium">–</span>
               <Input
                 type="number"
                 value={filters.maxYear || ''}
@@ -327,7 +327,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
                 step={10000}
                 className="flex-1 h-10 bg-sidebar-accent/30 border-sidebar-border/50"
               />
-              <span className="text-sidebar-foreground/30 text-sm font-medium">–</span>
+              <span className="text-sidebar-foreground/30 text-subhead font-medium">–</span>
               <Input
                 type="number"
                 value={filters.maxPrice || ''}
@@ -379,7 +379,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
               type="button"
               onClick={onClose}
               disabled={isPending}
-              className="flex-1 px-4 py-2.5 text-[15px] font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-full border border-sidebar-border/50 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 text-subhead font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-full border border-sidebar-border/50 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
@@ -387,7 +387,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
               type="button"
               onClick={handleSubmit}
               disabled={!name.trim() || isPending}
-              className="flex-1 px-4 py-2.5 text-[15px] font-semibold bg-[#2563eb] text-white hover:bg-[#1d4ed8] rounded-full transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2.5 text-subhead font-semibold bg-[#2563eb] text-white hover:bg-[#1d4ed8] rounded-full transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               {isEditing ? 'Save Changes' : 'Create Funnel'}
@@ -411,7 +411,7 @@ interface FilterSectionProps {
 function FilterSection({ title, children }: FilterSectionProps) {
   return (
     <Collapsible defaultOpen className="group/collapsible">
-      <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-[15px] hover:bg-sidebar-accent/50 rounded-lg px-2 -mx-2 transition-colors">
+      <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-subhead hover:bg-sidebar-accent/50 rounded-lg px-2 -mx-2 transition-colors">
         <span className="font-bold tracking-tight">{title}</span>
         <ChevronDown className="h-4 w-4 text-sidebar-foreground/60 transition-transform group-data-[state=closed]/collapsible:-rotate-90" />
       </CollapsibleTrigger>
@@ -458,11 +458,11 @@ function SearchableFilterGroup({
 
   return (
     <Collapsible defaultOpen className="group/collapsible">
-      <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-[15px] hover:bg-sidebar-accent/50 rounded-lg px-2 -mx-2 transition-colors">
+      <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-subhead hover:bg-sidebar-accent/50 rounded-lg px-2 -mx-2 transition-colors">
         <span className="font-bold tracking-tight">{title}</span>
         <div className="flex items-center gap-2">
           {selected.length > 0 && (
-            <span className="w-5 h-5 text-xs font-semibold bg-sidebar-accent text-sidebar-foreground rounded-full flex items-center justify-center">
+            <span className="w-5 h-5 text-caption1 font-semibold bg-sidebar-accent text-sidebar-foreground rounded-full flex items-center justify-center">
               {selected.length}
             </span>
           )}
@@ -484,7 +484,7 @@ function SearchableFilterGroup({
                 if (!expanded && e.target.value) setExpanded(true);
               }}
               placeholder={searchPlaceholder}
-              className="h-10 pl-9 pr-9 bg-sidebar-accent/30 border-sidebar-border/50 text-[15px]"
+              className="h-10 pl-9 pr-9 bg-sidebar-accent/30 border-sidebar-border/50 text-subhead"
             />
             {searchQuery && (
               <button
@@ -499,7 +499,7 @@ function SearchableFilterGroup({
 
           {/* Filtered Results */}
           {filteredOptions.length === 0 ? (
-            <div className="px-3 py-6 text-center text-sm text-sidebar-foreground/50">
+            <div className="px-3 py-6 text-center text-subhead text-sidebar-foreground/50">
               No matches found
             </div>
           ) : (
@@ -513,7 +513,7 @@ function SearchableFilterGroup({
                     onClick={() => onChange(option.value)}
                     className={cn(
                       'flex items-center justify-between w-full px-3 py-2 rounded-lg transition-colors',
-                      'text-[15px] text-left',
+                      'text-subhead text-left',
                       isSelected
                         ? 'bg-sidebar-accent text-sidebar-foreground'
                         : 'text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
@@ -533,7 +533,7 @@ function SearchableFilterGroup({
                 <button
                   type="button"
                   onClick={() => setExpanded(true)}
-                  className="text-sm text-[#2563eb] hover:text-[#1d4ed8] font-semibold transition-colors mt-2 px-3"
+                  className="text-subhead text-[#2563eb] hover:text-[#1d4ed8] font-semibold transition-colors mt-2 px-3"
                 >
                   Show {filteredOptions.length - 3} more
                 </button>

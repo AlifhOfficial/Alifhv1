@@ -36,17 +36,17 @@ function FieldWrapper({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between">
-        <label className="text-sm font-semibold text-sidebar-foreground/70">
+        <label className="text-subhead font-semibold text-sidebar-foreground/70">
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
         {hint && !error && (
-          <span className="text-xs text-sidebar-foreground/70">{hint}</span>
+          <span className="text-caption1 text-sidebar-foreground/70">{hint}</span>
         )}
       </div>
       {children}
       {error && (
-        <p className="text-xs font-semibold text-red-500">{error}</p>
+        <p className="text-caption1 font-semibold text-red-500">{error}</p>
       )}
     </div>
   );
@@ -126,7 +126,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
     <div className="space-y-8">
       {/* VIN Entry Section */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground mb-3">
+        <h3 className="text-subhead font-bold tracking-tight text-sidebar-foreground mb-3">
           VIN
           <span className="text-red-500 ml-0.5">*</span>
         </h3>
@@ -146,7 +146,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
           {/* VIN Visibility Toggle */}
           <div className="flex items-center justify-between pt-3 border-t border-border/20">
             <div>
-              <p className="text-sm font-medium text-sidebar-foreground">
+              <p className="text-subhead font-medium text-sidebar-foreground">
                 Public VIN
               </p>
             </div>
@@ -170,7 +170,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
           </div>
           
           {/* Info */}
-          <p className="text-xs text-sidebar-foreground/50 flex items-center gap-1.5">
+          <p className="text-caption1 text-sidebar-foreground/50 flex items-center gap-1.5">
             <Info className="w-3 h-3 flex-shrink-0" />
             Verifies specs & protects buyers. Visibility setting is permanent.
           </p>
@@ -180,7 +180,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
       {/* Decoded Vehicle Preview */}
       {vinDecoded && data.make && (
         <section>
-          <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground mb-3">Decoded Information</h3>
+          <h3 className="text-subhead font-bold tracking-tight text-sidebar-foreground mb-3">Decoded Information</h3>
           
           <div className="rounded-xl bg-green-500/5 p-5 space-y-5">
             {/* Success indicator */}
@@ -189,10 +189,10 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
                 <CheckCircle2 className="w-5 h-5 text-green-500" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-sidebar-foreground">
+                <p className="text-subhead font-semibold text-sidebar-foreground">
                   {data.model ? 'Vehicle identified' : 'Partial match'}
                 </p>
-                <p className="text-xs text-sidebar-foreground/70">
+                <p className="text-caption1 text-sidebar-foreground/70">
                   {data.model
                     ? `${data.year} ${data.make} ${data.model}`
                     : `${data.year} ${data.make} — select model below`}
@@ -205,10 +205,10 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 pt-3 border-t border-border/20">
                 {decodedFields.map(({ label, value }) => (
                   <div key={label} className="space-y-1">
-                    <p className="text-[11px] font-semibold text-sidebar-foreground/70 uppercase tracking-wider">
+                    <p className="text-caption2 font-semibold text-sidebar-foreground/70 uppercase tracking-wider">
                       {label}
                     </p>
-                    <p className="text-sm font-medium text-sidebar-foreground capitalize">
+                    <p className="text-subhead font-medium text-sidebar-foreground capitalize">
                       {value}
                     </p>
                   </div>
@@ -221,7 +221,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
       
       {/* Manual Entry Fields */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground mb-3">
+        <h3 className="text-subhead font-bold tracking-tight text-sidebar-foreground mb-3">
           {vinDecoded ? 'Verify Details' : 'Enter Manually'}
         </h3>
 
@@ -269,7 +269,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               min={1990}
               max={new Date().getFullYear() + 1}
               className={cn(
-                "w-full h-12 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "w-full h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -284,7 +284,7 @@ export function VINStep({ data, updateField, errors, excludeListingId }: StepPro
               onChange={(e) => updateField('trim', e.target.value)}
               placeholder="Sport, Limited, GT"
               className={cn(
-                "w-full h-12 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "w-full h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}

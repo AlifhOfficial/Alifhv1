@@ -91,7 +91,7 @@ export function MultiSelect({
                 <Badge
                   key={i}
                   variant="secondary"
-                  className="text-xs font-normal shrink-0"
+                  className="text-caption1 font-normal shrink-0"
                 >
                   {label}
                   <button
@@ -104,7 +104,7 @@ export function MultiSelect({
                 </Badge>
               ))
             ) : (
-              <Badge variant="secondary" className="text-xs font-normal">
+              <Badge variant="secondary" className="text-caption1 font-normal">
                 {selected.length} selected
               </Badge>
             )}

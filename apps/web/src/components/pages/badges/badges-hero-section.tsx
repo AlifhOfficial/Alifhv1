@@ -13,10 +13,10 @@ export function BadgesHeroSection() {
         
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Recognition
           </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Badges at Revvup.
             <br />
             <span className="text-muted-foreground">Earned. Not bought.</span>
@@ -36,7 +36,7 @@ export function BadgesHeroSection() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mt-8 leading-relaxed">
+        <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center mt-8 leading-relaxed">
           Hand-picked by Team Revvup. Recognition for those who embody our values.
         </p>
 

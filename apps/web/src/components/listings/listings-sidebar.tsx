@@ -52,7 +52,7 @@ export function ListingsSidebar({
       {/* Header - Fixed */}
       <div className="flex items-center justify-between py-4 pr-6 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <h2 className="text-base font-bold tracking-tight text-foreground">Filters</h2>
+          <h2 className="text-callout font-bold tracking-tight text-foreground">Filters</h2>
         </div>
         <button
           onClick={() => onSidebarToggle(false)}

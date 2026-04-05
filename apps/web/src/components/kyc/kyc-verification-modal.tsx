@@ -199,8 +199,8 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
                 <X className="w-4 h-4" />
               </button>
               
-              <h2 className="text-xl font-semibold tracking-tight text-foreground">Identity Verification</h2>
-              <p className="text-sm text-muted-foreground mt-0.5">
+              <h2 className="text-title3 font-semibold tracking-tight text-foreground">Identity Verification</h2>
+              <p className="text-subhead text-muted-foreground mt-0.5">
                 Get verified in less than 2 minutes
               </p>
             </div>
@@ -210,23 +210,23 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
               {/* Steps */}
               <div className="rounded-xl border border-border/40 bg-sidebar p-5">
                 <div className="py-3 border-b border-border/20">
-                  <p className="text-sm font-semibold text-foreground">Scan your ID</p>
-                  <p className="text-xs text-muted-foreground/70 mt-0.5">Emirates ID, Passport, or License</p>
+                  <p className="text-subhead font-semibold text-foreground">Scan your ID</p>
+                  <p className="text-caption1 text-muted-foreground/70 mt-0.5">Emirates ID, Passport, or License</p>
                 </div>
                 <div className="py-3 border-b border-border/20">
-                  <p className="text-sm font-semibold text-foreground">Quick selfie</p>
-                  <p className="text-xs text-muted-foreground/70 mt-0.5">We'll match it to your ID photo</p>
+                  <p className="text-subhead font-semibold text-foreground">Quick selfie</p>
+                  <p className="text-caption1 text-muted-foreground/70 mt-0.5">We'll match it to your ID photo</p>
                 </div>
                 <div className="py-3">
-                  <p className="text-sm font-semibold text-foreground">Instant verification</p>
-                  <p className="text-xs text-muted-foreground/70 mt-0.5">AI-powered by Didit</p>
+                  <p className="text-subhead font-semibold text-foreground">Instant verification</p>
+                  <p className="text-caption1 text-muted-foreground/70 mt-0.5">AI-powered by Didit</p>
                 </div>
               </div>
 
               <button
                 onClick={startVerification}
                 className={cn(
-                  "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
+                  "w-full h-10 px-4 rounded-lg text-subhead font-semibold transition-colors",
                   "bg-primary text-primary-foreground hover:bg-primary/90",
                   "flex items-center justify-center gap-2"
                 )}
@@ -238,7 +238,7 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
 
             {/* Footer */}
             <div className="border-t border-border/40 p-6">
-              <p className="text-xs text-muted-foreground/70 text-center">
+              <p className="text-caption1 text-muted-foreground/70 text-center">
                 Your data is encrypted end-to-end with AES-256
               </p>
             </div>
@@ -253,10 +253,10 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
                 <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
               </div>
               <div className="text-center space-y-1">
-                <h2 className="text-base font-semibold tracking-tight text-foreground">
+                <h2 className="text-callout font-semibold tracking-tight text-foreground">
                   Preparing
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-subhead text-muted-foreground">
                   Setting up secure connection...
                 </p>
               </div>
@@ -272,17 +272,17 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
                 <X className="w-6 h-6 text-destructive" />
               </div>
               <div className="text-center space-y-1">
-                <h2 className="text-base font-semibold tracking-tight text-foreground">
+                <h2 className="text-callout font-semibold tracking-tight text-foreground">
                   Document Already Used
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-subhead text-muted-foreground">
                   {error || 'This ID is linked to another account'}
                 </p>
               </div>
               <button
                 onClick={onClose}
                 className={cn(
-                  "w-full h-9 px-4 rounded-lg text-sm font-semibold transition-colors",
+                  "w-full h-9 px-4 rounded-lg text-subhead font-semibold transition-colors",
                   "bg-muted/30 text-foreground hover:bg-muted/50"
                 )}
               >
@@ -297,7 +297,7 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
           <div className="relative h-full flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-border/40">
-              <h2 className="text-[15px] font-semibold tracking-tight">Identity Verification</h2>
+              <h2 className="text-subhead font-semibold tracking-tight">Identity Verification</h2>
               <button
                 onClick={handleClose}
                 className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
@@ -324,10 +324,10 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
                   <div className="bg-card rounded-xl border border-border/40 shadow-xl p-6 max-w-xs w-full">
                     <div className="flex flex-col items-center space-y-4">
                       <div className="text-center space-y-1">
-                        <h2 className="text-base font-semibold tracking-tight text-foreground">
+                        <h2 className="text-callout font-semibold tracking-tight text-foreground">
                           Cancel verification?
                         </h2>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-subhead text-muted-foreground">
                           Your progress will be lost
                         </p>
                       </div>
@@ -335,7 +335,7 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
                         <button
                           onClick={resumeVerification}
                           className={cn(
-                            "flex-1 h-9 px-4 rounded-lg text-sm font-semibold transition-colors",
+                            "flex-1 h-9 px-4 rounded-lg text-subhead font-semibold transition-colors",
                             "bg-muted/30 text-foreground hover:bg-muted/50"
                           )}
                         >
@@ -344,7 +344,7 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
                         <button
                           onClick={confirmCancel}
                           className={cn(
-                            "flex-1 h-9 px-4 rounded-lg text-sm font-semibold transition-colors",
+                            "flex-1 h-9 px-4 rounded-lg text-subhead font-semibold transition-colors",
                             "bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           )}
                         >
@@ -367,10 +367,10 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
                 <CheckCircle2 className="w-6 h-6 text-green-500" />
               </div>
               <div className="text-center space-y-1">
-                <h2 className="text-base font-semibold tracking-tight text-foreground">
+                <h2 className="text-callout font-semibold tracking-tight text-foreground">
                   Verified
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-subhead text-muted-foreground">
                   Your profile now has a verified badge
                 </p>
               </div>
@@ -386,17 +386,17 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
                 <Clock className="w-6 h-6 text-amber-500" />
               </div>
               <div className="text-center space-y-1">
-                <h2 className="text-base font-semibold tracking-tight text-foreground">
+                <h2 className="text-callout font-semibold tracking-tight text-foreground">
                   Under Review
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-subhead text-muted-foreground">
                   We'll notify you once it's complete
                 </p>
               </div>
               <button
                 onClick={onClose}
                 className={cn(
-                  "w-full h-9 px-4 rounded-lg text-sm font-semibold transition-colors",
+                  "w-full h-9 px-4 rounded-lg text-subhead font-semibold transition-colors",
                   "bg-muted/30 text-foreground hover:bg-muted/50"
                 )}
               >
@@ -414,17 +414,17 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
                 <X className="w-6 h-6 text-destructive" />
               </div>
               <div className="text-center space-y-1">
-                <h2 className="text-base font-semibold tracking-tight text-foreground">
+                <h2 className="text-callout font-semibold tracking-tight text-foreground">
                   Verification Failed
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-subhead text-muted-foreground">
                   {error || 'Please try again with a valid ID'}
                 </p>
               </div>
               <button
                 onClick={cancelAndRetry}
                 className={cn(
-                  "w-full h-9 px-4 rounded-lg text-sm font-semibold transition-colors",
+                  "w-full h-9 px-4 rounded-lg text-subhead font-semibold transition-colors",
                   "bg-muted/30 text-foreground hover:bg-muted/50"
                 )}
               >

@@ -239,9 +239,9 @@ export function ListingsHeader({
                 <div className="px-4 pb-3 shrink-0">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-bold tracking-tight">Filters</h3>
+                      <h3 className="text-headline font-bold tracking-tight">Filters</h3>
                       {activeFilterCount > 0 && (
-                        <p className="text-sm text-muted-foreground mt-0.5">
+                        <p className="text-subhead text-muted-foreground mt-0.5">
                           {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} applied
                         </p>
                       )}
@@ -266,7 +266,7 @@ export function ListingsHeader({
                         {(facets?.make ?? []).length > 8 && (
                           <Popover>
                             <PopoverTrigger asChild>
-                              <button className="text-xs font-medium text-primary active:text-primary/80 touch-manipulation">
+                              <button className="text-caption1 font-medium text-primary active:text-primary/80 touch-manipulation">
                                 View all ({(facets?.make ?? []).length})
                               </button>
                             </PopoverTrigger>
@@ -276,9 +276,9 @@ export function ListingsHeader({
                               sideOffset={8}
                             >
                               <Command className="bg-transparent">
-                                <CommandInput placeholder="Search makes..." className="h-12 border-b border-sidebar-border text-base px-4" />
+                                <CommandInput placeholder="Search makes..." className="h-12 border-b border-sidebar-border text-callout px-4" />
                                 <CommandList className="max-h-[50vh]">
-                                  <CommandEmpty className="py-6 text-center text-base text-muted-foreground">No makes found.</CommandEmpty>
+                                  <CommandEmpty className="py-6 text-center text-callout text-muted-foreground">No makes found.</CommandEmpty>
                                   <CommandGroup className="p-2">
                                     {(facets?.make ?? []).map((make) => {
                                       const isSelected = params.make?.includes(make.value) ?? false;
@@ -294,12 +294,12 @@ export function ListingsHeader({
                                             }
                                           }}
                                           className={cn(
-                                            "flex items-center justify-between gap-3 px-4 py-3 text-base font-medium tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
+                                            "flex items-center justify-between gap-3 px-4 py-3 text-callout font-medium tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
                                             isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                           )}
                                         >
                                           <span className="flex-1 truncate">{make.label}</span>
-                                          <span className="text-sm text-muted-foreground/60 tabular-nums shrink-0">{make.count}</span>
+                                          <span className="text-subhead text-muted-foreground/60 tabular-nums shrink-0">{make.count}</span>
                                         </CommandItem>
                                       );
                                     })}
@@ -318,7 +318,7 @@ export function ListingsHeader({
                             <button
                               key={makeValue}
                               onClick={() => toggleMake(makeValue)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-foreground/10 rounded-full transition-all touch-manipulation"
+                              className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-semibold text-foreground bg-foreground/10 rounded-full transition-all touch-manipulation"
                             >
                               <span>{makeData?.label ?? makeValue}</span>
                               <X className="size-3.5" />
@@ -330,10 +330,10 @@ export function ListingsHeader({
                           <button
                             key={make.value}
                             onClick={() => toggleMake(make.value)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
                           >
                             <span>{make.label}</span>
-                            <span className="text-xs text-muted-foreground tabular-nums">{make.count}</span>
+                            <span className="text-caption1 text-muted-foreground tabular-nums">{make.count}</span>
                           </button>
                         ))}
                       </div>
@@ -347,7 +347,7 @@ export function ListingsHeader({
                           {(facets?.model ?? []).length > 8 && (
                             <Popover>
                               <PopoverTrigger asChild>
-                                <button className="text-xs font-medium text-primary active:text-primary/80 touch-manipulation">
+                                <button className="text-caption1 font-medium text-primary active:text-primary/80 touch-manipulation">
                                   View all ({(facets?.model ?? []).length})
                                 </button>
                               </PopoverTrigger>
@@ -357,9 +357,9 @@ export function ListingsHeader({
                                 sideOffset={8}
                               >
                                 <Command className="bg-transparent">
-                                  <CommandInput placeholder="Search models..." className="h-12 border-b border-sidebar-border text-base px-4" />
+                                  <CommandInput placeholder="Search models..." className="h-12 border-b border-sidebar-border text-callout px-4" />
                                   <CommandList className="max-h-[50vh]">
-                                    <CommandEmpty className="py-6 text-center text-base text-muted-foreground">No models found.</CommandEmpty>
+                                    <CommandEmpty className="py-6 text-center text-callout text-muted-foreground">No models found.</CommandEmpty>
                                     <CommandGroup className="p-2">
                                       {(facets?.model ?? []).map((model) => {
                                         const isSelected = params.model?.includes(model.value) ?? false;
@@ -375,12 +375,12 @@ export function ListingsHeader({
                                               }
                                             }}
                                             className={cn(
-                                              "flex items-center justify-between gap-3 px-4 py-3 text-base font-medium tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
+                                              "flex items-center justify-between gap-3 px-4 py-3 text-callout font-medium tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
                                               isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                             )}
                                           >
                                             <span className="flex-1 truncate">{model.label}</span>
-                                            <span className="text-sm text-muted-foreground/60 tabular-nums shrink-0">{model.count}</span>
+                                            <span className="text-subhead text-muted-foreground/60 tabular-nums shrink-0">{model.count}</span>
                                           </CommandItem>
                                         );
                                       })}
@@ -399,7 +399,7 @@ export function ListingsHeader({
                               <button
                                 key={modelValue}
                                 onClick={() => toggleModel(modelValue)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-foreground/10 rounded-full transition-all touch-manipulation"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-semibold text-foreground bg-foreground/10 rounded-full transition-all touch-manipulation"
                               >
                                 <span>{modelData?.label ?? modelValue}</span>
                                 <X className="size-3.5" />
@@ -411,10 +411,10 @@ export function ListingsHeader({
                             <button
                               key={model.value}
                               onClick={() => toggleModel(model.value)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
+                              className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
                             >
                               <span>{model.label}</span>
-                              <span className="text-xs text-muted-foreground tabular-nums">{model.count}</span>
+                              <span className="text-caption1 text-muted-foreground tabular-nums">{model.count}</span>
                             </button>
                           ))}
                         </div>
@@ -429,7 +429,7 @@ export function ListingsHeader({
                           {(facets?.trim ?? []).length > 8 && (
                             <Popover>
                               <PopoverTrigger asChild>
-                                <button className="text-xs font-medium text-primary active:text-primary/80 touch-manipulation">
+                                <button className="text-caption1 font-medium text-primary active:text-primary/80 touch-manipulation">
                                   View all ({(facets?.trim ?? []).length})
                                 </button>
                               </PopoverTrigger>
@@ -439,9 +439,9 @@ export function ListingsHeader({
                                 sideOffset={8}
                               >
                                 <Command className="bg-transparent">
-                                  <CommandInput placeholder="Search trims..." className="h-12 border-b border-sidebar-border text-base px-4" />
+                                  <CommandInput placeholder="Search trims..." className="h-12 border-b border-sidebar-border text-callout px-4" />
                                   <CommandList className="max-h-[50vh]">
-                                    <CommandEmpty className="py-6 text-center text-base text-muted-foreground">No trims found.</CommandEmpty>
+                                    <CommandEmpty className="py-6 text-center text-callout text-muted-foreground">No trims found.</CommandEmpty>
                                     <CommandGroup className="p-2">
                                       {(facets?.trim ?? []).map((trim) => {
                                         const isSelected = params.trim?.includes(trim.value) ?? false;
@@ -457,12 +457,12 @@ export function ListingsHeader({
                                               }
                                             }}
                                             className={cn(
-                                              "flex items-center justify-between gap-3 px-4 py-3 text-base font-medium tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
+                                              "flex items-center justify-between gap-3 px-4 py-3 text-callout font-medium tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
                                               isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                             )}
                                           >
                                             <span className="flex-1 truncate">{trim.label}</span>
-                                            <span className="text-sm text-muted-foreground/60 tabular-nums shrink-0">{trim.count}</span>
+                                            <span className="text-subhead text-muted-foreground/60 tabular-nums shrink-0">{trim.count}</span>
                                           </CommandItem>
                                         );
                                       })}
@@ -481,7 +481,7 @@ export function ListingsHeader({
                               <button
                                 key={trimValue}
                                 onClick={() => toggleTrim(trimValue)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-foreground/10 rounded-full transition-all touch-manipulation"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-semibold text-foreground bg-foreground/10 rounded-full transition-all touch-manipulation"
                               >
                                 <span>{trimData?.label ?? trimValue}</span>
                                 <X className="size-3.5" />
@@ -493,10 +493,10 @@ export function ListingsHeader({
                             <button
                               key={trim.value}
                               onClick={() => toggleTrim(trim.value)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
+                              className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
                             >
                               <span>{trim.label}</span>
-                              <span className="text-xs text-muted-foreground tabular-nums">{trim.count}</span>
+                              <span className="text-caption1 text-muted-foreground tabular-nums">{trim.count}</span>
                             </button>
                           ))}
                         </div>
@@ -532,14 +532,14 @@ export function ListingsHeader({
                     {activeFilterCount > 0 && (
                       <button
                         onClick={clearFilters}
-                        className="h-12 px-4 text-sm font-semibold text-muted-foreground hover:text-foreground border border-sidebar-border rounded-2xl transition-colors touch-manipulation"
+                        className="h-12 px-4 text-subhead font-semibold text-muted-foreground hover:text-foreground border border-sidebar-border rounded-2xl transition-colors touch-manipulation"
                       >
                         Clear all
                       </button>
                     )}
                     <button
                       onClick={() => setMobileSearchOpen(false)}
-                      className="flex-1 h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-[background-color,transform] will-change-transform touch-manipulation shadow-lg"
+                      className="flex-1 h-12 bg-primary text-primary-foreground font-semibold text-callout rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-[background-color,transform] will-change-transform touch-manipulation shadow-lg"
                     >
                       Apply filters
                     </button>
@@ -575,7 +575,7 @@ export function ListingsHeader({
                     key={option.value}
                     onClick={() => setSort(option.value)}
                     className={cn(
-                      "text-[15px] font-medium tracking-tight cursor-pointer rounded-md px-3 py-2 transition-colors duration-100",
+                      "text-subhead font-medium tracking-tight cursor-pointer rounded-md px-3 py-2 transition-colors duration-100",
                       (params.sortBy || 'relevance') === option.value
                         ? "bg-muted text-foreground font-semibold"
                         : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -597,7 +597,7 @@ export function ListingsHeader({
                     <div key={item.href} className="flex items-center gap-0.5">
                       {index > 0 && <ChevronRight className="size-3 text-muted-foreground/40 shrink-0" />}
                       <span className={cn(
-                        "text-xs whitespace-nowrap",
+                        "text-caption1 whitespace-nowrap",
                         index === arr.length - 1 ? "font-bold text-foreground" : "font-medium text-muted-foreground"
                       )}>
                         {item.label}
@@ -687,9 +687,9 @@ export function ListingsHeader({
                 <div className="px-5 pb-4 border-b border-border shrink-0">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-bold tracking-tight">Filters</h3>
+                      <h3 className="text-headline font-bold tracking-tight">Filters</h3>
                       {activeFilterCount > 0 && (
-                        <p className="text-sm text-muted-foreground mt-0.5">
+                        <p className="text-subhead text-muted-foreground mt-0.5">
                           {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} applied
                         </p>
                       )}
@@ -698,7 +698,7 @@ export function ListingsHeader({
                       {activeFilterCount > 0 && (
                         <button
                           onClick={clearFilters}
-                          className="text-sm font-semibold text-muted-foreground hover:text-foreground touch-manipulation px-3 py-1.5 rounded-lg hover:bg-muted transition-colors"
+                          className="text-subhead font-semibold text-muted-foreground hover:text-foreground touch-manipulation px-3 py-1.5 rounded-lg hover:bg-muted transition-colors"
                         >
                           Reset
                         </button>
@@ -729,7 +729,7 @@ export function ListingsHeader({
                 <div className="shrink-0 px-5 py-4 border-t border-border bg-background/95 backdrop-blur-sm pb-safe">
                   <button
                     onClick={() => onMobileFiltersToggle(false)}
-                    className="w-full h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-[background-color,transform] will-change-transform touch-manipulation shadow-lg"
+                    className="w-full h-12 bg-primary text-primary-foreground font-semibold text-callout rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-[background-color,transform] will-change-transform touch-manipulation shadow-lg"
                   >
                     Apply filters
                   </button>
@@ -753,7 +753,7 @@ export function ListingsHeader({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button 
-                    className="relative flex items-center gap-1.5 h-9 px-3 sm:px-4 bg-sidebar border border-sidebar-border rounded-full text-sm font-semibold text-muted-foreground hover:text-foreground shadow-sm transition-colors touch-manipulation"
+                    className="relative flex items-center gap-1.5 h-9 px-3 sm:px-4 bg-sidebar border border-sidebar-border rounded-full text-subhead font-semibold text-muted-foreground hover:text-foreground shadow-sm transition-colors touch-manipulation"
                   >
                     <span>Sort</span>
                     <ChevronDown className="size-3.5" />
@@ -765,7 +765,7 @@ export function ListingsHeader({
                       key={option.value}
                       onClick={() => setSort(option.value)}
                       className={cn(
-                        "text-[15px] font-medium tracking-tight cursor-pointer rounded-md px-3 py-2 transition-colors duration-100",
+                        "text-subhead font-medium tracking-tight cursor-pointer rounded-md px-3 py-2 transition-colors duration-100",
                         (params.sortBy || 'relevance') === option.value
                           ? "bg-muted text-foreground font-semibold"
                           : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -835,7 +835,7 @@ export function ListingsHeader({
                 {/* Make Quick-Select */}
                 {(facets?.make ?? []).length > 0 && (
                   <>
-                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                    <span className="text-caption1 font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                       Makes
                     </span>
                     {/* Selected makes as removable pills */}
@@ -845,7 +845,7 @@ export function ListingsHeader({
                         <button
                           key={makeValue}
                           onClick={() => toggleMake(makeValue)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
                         >
                           <span>{makeData?.label ?? makeValue}</span>
                           <X className="size-3.5" />
@@ -857,10 +857,10 @@ export function ListingsHeader({
                       <button
                         key={make.value}
                         onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
                       >
                         <span>{make.label}</span>
-                        <span className="text-xs text-muted-foreground tabular-nums">{make.count}</span>
+                        <span className="text-caption1 text-muted-foreground tabular-nums">{make.count}</span>
                       </button>
                     ))}
                   </>
@@ -869,7 +869,7 @@ export function ListingsHeader({
                 {/* Model Quick-Select - when make selected */}
                 {params.make?.length && (facets?.model ?? []).length > 0 && (
                   <>
-                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                    <span className="text-caption1 font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                       Models
                     </span>
                     {/* Selected models as removable pills */}
@@ -879,7 +879,7 @@ export function ListingsHeader({
                         <button
                           key={modelValue}
                           onClick={() => toggleModel(modelValue)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
                         >
                           <span>{modelData?.label ?? modelValue}</span>
                           <X className="size-3.5" />
@@ -891,10 +891,10 @@ export function ListingsHeader({
                       <button
                         key={model.value}
                         onClick={() => setFilters({ model: [model.value], trim: undefined })}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
                       >
                         <span>{model.label}</span>
-                        <span className="text-xs text-muted-foreground tabular-nums">{model.count}</span>
+                        <span className="text-caption1 text-muted-foreground tabular-nums">{model.count}</span>
                       </button>
                     ))}
                   </>
@@ -903,7 +903,7 @@ export function ListingsHeader({
                 {/* Trim Quick-Select - when make & model selected */}
                 {params.make?.length && params.model?.length && (facets?.trim ?? []).length > 0 && (
                   <>
-                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                    <span className="text-caption1 font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                       Trims
                     </span>
                     {/* Selected trims as removable pills */}
@@ -913,7 +913,7 @@ export function ListingsHeader({
                         <button
                           key={trimValue}
                           onClick={() => toggleTrim(trimValue)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all whitespace-nowrap shrink-0"
                         >
                           <span>{trimData?.label ?? trimValue}</span>
                           <X className="size-3.5" />
@@ -925,10 +925,10 @@ export function ListingsHeader({
                       <button
                         key={trim.value}
                         onClick={() => setFilters({ trim: [trim.value] })}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
                       >
                         <span>{trim.label}</span>
-                        <span className="text-xs text-muted-foreground tabular-nums">{trim.count}</span>
+                        <span className="text-caption1 text-muted-foreground tabular-nums">{trim.count}</span>
                       </button>
                     ))}
                   </>
@@ -939,7 +939,7 @@ export function ListingsHeader({
                   <button
                     key={chip.key}
                     onClick={() => handleChipRemove(chip.key)}
-                    className="group flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-muted/50 text-foreground/80 hover:bg-muted/70 hover:text-foreground rounded-full transition-colors whitespace-nowrap shrink-0"
+                    className="group flex items-center gap-1.5 px-3 py-1.5 text-caption1 font-semibold bg-muted/50 text-foreground/80 hover:bg-muted/70 hover:text-foreground rounded-full transition-colors whitespace-nowrap shrink-0"
                   >
                     <span>{chip.label}</span>
                     <X className="h-3 w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
@@ -950,7 +950,7 @@ export function ListingsHeader({
               {/* View More button */}
               <button
                 onClick={() => setIslandExpanded(true)}
-                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all"
+                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-subhead font-semibold text-muted-foreground hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all"
               >
                 <span>View more</span>
                 <ChevronDown className="size-3.5" />
@@ -961,7 +961,7 @@ export function ListingsHeader({
                 {activeFilterCount > 0 && (
                   <button
                     onClick={clearFilters}
-                    className="px-2.5 py-1 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors"
+                    className="px-2.5 py-1 text-caption1 font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full transition-colors"
                   >
                     Clear all
                   </button>
@@ -976,20 +976,20 @@ export function ListingsHeader({
               {/* Header with collapse button */}
               <div className="flex items-center justify-between pb-2">
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-foreground">Refine your search</span>
+                  <span className="text-subhead font-semibold text-foreground">Refine your search</span>
                 </div>
                 <div className="flex items-center gap-2">
                   {activeFilterCount > 0 && (
                     <button
                       onClick={clearFilters}
-                      className="px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                      className="px-2 py-1 text-caption1 font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
                       Clear all
                     </button>
                   )}
                   <button
                     onClick={() => setIslandExpanded(false)}
-                    className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground rounded transition-colors"
+                    className="flex items-center gap-1.5 px-2 py-1 text-caption1 font-medium text-muted-foreground hover:text-foreground rounded transition-colors"
                   >
                     <span>Collapse</span>
                     <ChevronDown className="size-3.5 rotate-180" />
@@ -998,7 +998,7 @@ export function ListingsHeader({
               </div>
               {/* Makes Row */}
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                <span className="text-caption1 font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                   Makes
                 </span>
                 <>
@@ -1009,7 +1009,7 @@ export function ListingsHeader({
                         <button
                           key={makeValue}
                           onClick={() => toggleMake(makeValue)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all"
                         >
                           <span>{makeData?.label ?? makeValue}</span>
                           <X className="size-3.5" />
@@ -1021,17 +1021,17 @@ export function ListingsHeader({
                       <button
                         key={make.value}
                         onClick={() => toggleMake(make.value)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
                       >
                         <span>{make.label}</span>
-                        <span className="text-xs text-muted-foreground/60 tabular-nums">{make.count}</span>
+                        <span className="text-caption1 text-muted-foreground/60 tabular-nums">{make.count}</span>
                       </button>
                     ))}
                     {/* View all button */}
                     {(facets?.make ?? []).length > 8 && (
                       <Popover open={makesOpen} onOpenChange={setMakesOpen}>
                         <PopoverTrigger asChild>
-                          <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
+                          <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
                             <span>View all ({(facets?.make ?? []).length})</span>
                             <ChevronDown className={cn("size-3.5 transition-transform", makesOpen && "rotate-180")} />
                           </button>
@@ -1042,9 +1042,9 @@ export function ListingsHeader({
                           sideOffset={8}
                         >
                           <Command className="bg-transparent">
-                            <CommandInput placeholder="Search makes..." className="h-10 border-b border-sidebar-border text-[15px]" />
+                            <CommandInput placeholder="Search makes..." className="h-10 border-b border-sidebar-border text-subhead" />
                             <CommandList className="max-h-[280px]">
-                              <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No makes found.</CommandEmpty>
+                              <CommandEmpty className="py-4 text-center text-subhead text-muted-foreground">No makes found.</CommandEmpty>
                               <CommandGroup className="p-1.5">
                                 {(facets?.make ?? []).map((make) => {
                                   const isSelected = params.make?.includes(make.value) ?? false;
@@ -1054,12 +1054,12 @@ export function ListingsHeader({
                                       value={make.label}
                                       onSelect={() => toggleMake(make.value)}
                                       className={cn(
-                                        "flex items-center justify-between gap-3 px-3 py-2.5 text-[15px] font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
+                                        "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
                                         isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                       )}
                                     >
                                       <span className="flex-1 truncate">{make.label}</span>
-                                      <span className="text-xs text-muted-foreground/60 tabular-nums shrink-0">{make.count}</span>
+                                      <span className="text-caption1 text-muted-foreground/60 tabular-nums shrink-0">{make.count}</span>
                                     </CommandItem>
                                   );
                                 })}
@@ -1073,7 +1073,7 @@ export function ListingsHeader({
                   {(params.make?.length ?? 0) > 0 && (
                     <button
                       onClick={() => setFilters({ make: undefined, model: undefined, trim: undefined })}
-                      className="text-xs font-medium text-muted-foreground hover:text-foreground px-2"
+                      className="text-caption1 font-medium text-muted-foreground hover:text-foreground px-2"
                     >
                       Clear
                     </button>
@@ -1084,7 +1084,7 @@ export function ListingsHeader({
               {/* Models Row - Only show when makes selected */}
               {params.make?.length && (
                 <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-sidebar-border/50">
-                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                  <span className="text-caption1 font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                     Models
                   </span>
                   {(facets?.model ?? []).length > 0 ? (
@@ -1096,7 +1096,7 @@ export function ListingsHeader({
                           <button
                             key={modelValue}
                             onClick={() => toggleModel(modelValue)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all"
                           >
                             <span>{modelData?.label ?? modelValue}</span>
                             <X className="size-3.5" />
@@ -1108,17 +1108,17 @@ export function ListingsHeader({
                         <button
                           key={model.value}
                           onClick={() => toggleModel(model.value)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
                         >
                           <span>{model.label}</span>
-                          <span className="text-xs text-muted-foreground/60 tabular-nums">{model.count}</span>
+                          <span className="text-caption1 text-muted-foreground/60 tabular-nums">{model.count}</span>
                         </button>
                       ))}
                       {/* View all button */}
                       {(facets?.model ?? []).length > 8 && (
                         <Popover open={modelsOpen} onOpenChange={setModelsOpen}>
                           <PopoverTrigger asChild>
-                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
+                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
                               <span>View all ({(facets?.model ?? []).length})</span>
                               <ChevronDown className={cn("size-3.5 transition-transform", modelsOpen && "rotate-180")} />
                             </button>
@@ -1129,9 +1129,9 @@ export function ListingsHeader({
                             sideOffset={8}
                           >
                             <Command className="bg-transparent">
-                              <CommandInput placeholder="Search models..." className="h-10 border-b border-sidebar-border text-[15px]" />
+                              <CommandInput placeholder="Search models..." className="h-10 border-b border-sidebar-border text-subhead" />
                               <CommandList className="max-h-[280px]">
-                                <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No models found.</CommandEmpty>
+                                <CommandEmpty className="py-4 text-center text-subhead text-muted-foreground">No models found.</CommandEmpty>
                                 <CommandGroup className="p-1.5">
                                   {(facets?.model ?? []).map((model) => {
                                     const isSelected = params.model?.includes(model.value) ?? false;
@@ -1141,12 +1141,12 @@ export function ListingsHeader({
                                         value={model.label}
                                         onSelect={() => toggleModel(model.value)}
                                         className={cn(
-                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-[15px] font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
+                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
                                           isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                         )}
                                       >
                                         <span className="flex-1 truncate">{model.label}</span>
-                                        <span className="text-xs text-muted-foreground/60 tabular-nums shrink-0">{model.count}</span>
+                                        <span className="text-caption1 text-muted-foreground/60 tabular-nums shrink-0">{model.count}</span>
                                       </CommandItem>
                                     );
                                   })}
@@ -1160,14 +1160,14 @@ export function ListingsHeader({
                       {(params.model?.length ?? 0) > 0 && (
                         <button
                           onClick={() => setFilters({ model: undefined, trim: undefined })}
-                          className="text-xs font-medium text-muted-foreground hover:text-foreground px-2"
+                          className="text-caption1 font-medium text-muted-foreground hover:text-foreground px-2"
                         >
                           Clear
                         </button>
                       )}
                     </>
                   ) : (
-                    <span className="text-sm text-muted-foreground/50">No models available</span>
+                    <span className="text-subhead text-muted-foreground/50">No models available</span>
                   )}
                 </div>
               )}
@@ -1175,7 +1175,7 @@ export function ListingsHeader({
               {/* Trims Row - Only show when makes and models selected */}
               {params.make?.length && params.model?.length && (
                 <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-sidebar-border/50">
-                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
+                  <span className="text-caption1 font-bold uppercase tracking-wider text-muted-foreground/60 whitespace-nowrap shrink-0">
                     Trims
                   </span>
                   {(facets?.trim ?? []).length > 0 ? (
@@ -1187,7 +1187,7 @@ export function ListingsHeader({
                           <button
                             key={trimValue}
                             onClick={() => toggleTrim(trimValue)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-semibold text-foreground bg-muted hover:bg-muted/70 rounded-full transition-all"
                           >
                             <span>{trimData?.label ?? trimValue}</span>
                             <X className="size-3.5" />
@@ -1199,17 +1199,17 @@ export function ListingsHeader({
                         <button
                           key={trim.value}
                           onClick={() => toggleTrim(trim.value)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
                         >
                           <span>{trim.label}</span>
-                          <span className="text-xs text-muted-foreground/60 tabular-nums">{trim.count}</span>
+                          <span className="text-caption1 text-muted-foreground/60 tabular-nums">{trim.count}</span>
                         </button>
                       ))}
                       {/* View all button */}
                       {(facets?.trim ?? []).length > 8 && (
                         <Popover open={trimsOpen} onOpenChange={setTrimsOpen}>
                           <PopoverTrigger asChild>
-                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
+                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
                               <span>View all ({(facets?.trim ?? []).length})</span>
                               <ChevronDown className={cn("size-3.5 transition-transform", trimsOpen && "rotate-180")} />
                             </button>
@@ -1220,9 +1220,9 @@ export function ListingsHeader({
                             sideOffset={8}
                           >
                             <Command className="bg-transparent">
-                              <CommandInput placeholder="Search trims..." className="h-10 border-b border-sidebar-border text-[15px]" />
+                              <CommandInput placeholder="Search trims..." className="h-10 border-b border-sidebar-border text-subhead" />
                               <CommandList className="max-h-[280px]">
-                                <CommandEmpty className="py-4 text-center text-[15px] text-muted-foreground">No trims found.</CommandEmpty>
+                                <CommandEmpty className="py-4 text-center text-subhead text-muted-foreground">No trims found.</CommandEmpty>
                                 <CommandGroup className="p-1.5">
                                   {(facets?.trim ?? []).map((trim) => {
                                     const isSelected = params.trim?.includes(trim.value) ?? false;
@@ -1232,12 +1232,12 @@ export function ListingsHeader({
                                         value={trim.label}
                                         onSelect={() => toggleTrim(trim.value)}
                                         className={cn(
-                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-[15px] font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
+                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
                                           isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                         )}
                                       >
                                         <span className="flex-1 truncate">{trim.label}</span>
-                                        <span className="text-xs text-muted-foreground/60 tabular-nums shrink-0">{trim.count}</span>
+                                        <span className="text-caption1 text-muted-foreground/60 tabular-nums shrink-0">{trim.count}</span>
                                       </CommandItem>
                                     );
                                   })}
@@ -1251,14 +1251,14 @@ export function ListingsHeader({
                       {(params.trim?.length ?? 0) > 0 && (
                         <button
                           onClick={() => setFilters({ trim: undefined })}
-                          className="text-xs font-medium text-muted-foreground hover:text-foreground px-2"
+                          className="text-caption1 font-medium text-muted-foreground hover:text-foreground px-2"
                         >
                           Clear
                         </button>
                       )}
                     </>
                   ) : (
-                    <span className="text-sm text-muted-foreground/50">No trims available</span>
+                    <span className="text-subhead text-muted-foreground/50">No trims available</span>
                   )}
                 </div>
               )}

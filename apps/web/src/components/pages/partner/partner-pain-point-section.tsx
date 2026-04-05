@@ -15,10 +15,10 @@ export function PartnerPainPointSection() {
         
         {/* Header */}
         <div className="text-center mb-16 space-y-5">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             The marketplace game
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Commission. Credits. Upsells.
             <br />
             <span className="text-muted-foreground">Sound familiar?</span>
@@ -29,7 +29,7 @@ export function PartnerPainPointSection() {
         <MarketplaceGameInfographic />
 
         {/* Description */}
-        <p className="text-base text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mt-12 mb-16">
+        <p className="text-callout text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mt-12 mb-16">
           You shouldn't have to pay the platform that competes against you. They sell cars. Then charge you to be seen. That's not partnership.
         </p>
 
@@ -38,7 +38,7 @@ export function PartnerPainPointSection() {
           
           {/* Others */}
           <div className="p-8 bg-sidebar">
-            <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/60 mb-8">Typical platforms</p>
+            <p className="text-subhead font-semibold uppercase tracking-wider text-muted-foreground/60 mb-8">Typical platforms</p>
             <div className="space-y-5">
               {[
                 { label: 'Commission', value: '3-5% per sale' },
@@ -48,8 +48,8 @@ export function PartnerPainPointSection() {
                 { label: 'Your profile', value: 'Name + phone' },
               ].map((item, i) => (
                 <div key={i} className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">{item.label}</span>
-                  <span className="text-sm text-foreground/60">{item.value}</span>
+                  <span className="text-subhead text-muted-foreground">{item.label}</span>
+                  <span className="text-subhead text-foreground/60">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -57,7 +57,7 @@ export function PartnerPainPointSection() {
 
           {/* Revvup */}
           <div className="p-8 bg-primary text-primary-foreground">
-            <p className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-8">Revvup</p>
+            <p className="text-subhead font-semibold uppercase tracking-wider text-white/60 mb-8">Revvup</p>
             <div className="space-y-5">
               {[
                 { label: 'Commission', value: 'Zero. Forever.' },
@@ -67,15 +67,15 @@ export function PartnerPainPointSection() {
                 { label: 'Your profile', value: 'Full brand page' },
               ].map((item, i) => (
                 <div key={i} className="flex justify-between items-center">
-                  <span className="text-sm text-white/70">{item.label}</span>
+                  <span className="text-subhead text-white/70">{item.label}</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold">{item.value}</span>
+                    <span className="text-subhead font-semibold">{item.value}</span>
                     <CheckCircle2 className="w-4 h-4 text-white/60" />
                   </div>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-white/50 mt-6">*Based on listing quality, response time, and buyer engagement.</p>
+            <p className="text-caption1 text-white/50 mt-6">*Based on listing quality, response time, and buyer engagement.</p>
           </div>
         </div>
 
@@ -94,7 +94,7 @@ function MarketplaceGameInfographic() {
       <MacOSWindow url="car-marketplace.ae" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1] overflow-visible">
           {/* Left - Others: Cluttered fees with stacked cars */}
           <div className="flex-1 p-4 sm:p-6 lg:p-14 pt-6 sm:pt-8 lg:pt-16 pb-6 sm:pb-8 lg:pb-16 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5 overflow-visible">
-            <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-white/30 mb-4 sm:mb-6 lg:mb-8">Others</span>
+            <span className="text-[9px] sm:text-[10px] lg:text-caption1 font-medium text-white/30 mb-4 sm:mb-6 lg:mb-8">Others</span>
             
             <div className="relative w-full max-w-3xl py-3 sm:py-4">
               {/* 3 car cards - stacked/overlapping */}
@@ -129,36 +129,36 @@ function MarketplaceGameInfographic() {
               </div>
               
               {/* Fee badges - floating around the cards */}
-              <div className="absolute top-0 sm:top-1 lg:top-0 left-4 sm:left-6 lg:left-10 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-red-500 text-[7px] sm:text-[9px] lg:text-xs xl:text-sm font-bold text-white shadow-lg -rotate-6 z-20">
+              <div className="absolute top-0 sm:top-1 lg:top-0 left-4 sm:left-6 lg:left-10 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-red-500 text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-bold text-white shadow-lg -rotate-6 z-20">
                 Premium 299
               </div>
-              <div className="absolute top-0 sm:top-1 lg:top-0 right-4 sm:right-6 lg:right-10 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-orange-500 text-[7px] sm:text-[9px] lg:text-xs xl:text-sm font-semibold text-white shadow-lg rotate-6 z-20">
+              <div className="absolute top-0 sm:top-1 lg:top-0 right-4 sm:right-6 lg:right-10 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-orange-500 text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold text-white shadow-lg rotate-6 z-20">
                 Boost 149
               </div>
-              <div className="absolute bottom-0 sm:bottom-1 lg:bottom-0 left-1/2 -translate-x-1/2 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-rose-600 text-[7px] sm:text-[9px] lg:text-xs xl:text-sm font-semibold text-white shadow-lg z-20">
+              <div className="absolute bottom-0 sm:bottom-1 lg:bottom-0 left-1/2 -translate-x-1/2 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-rose-600 text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold text-white shadow-lg z-20">
                 5% commission
               </div>
             </div>
             
-            <p className="text-[8px] sm:text-[9px] lg:text-[10px] xl:text-xs text-white/30 mt-4 sm:mt-6 lg:mt-8">Click this. Pay that.</p>
+            <p className="text-[8px] sm:text-[9px] lg:text-[10px] xl:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-8">Click this. Pay that.</p>
           </div>
           
           {/* Right - Revvup: Clean proposition */}
           <div className="w-full md:w-[200px] lg:w-[280px] xl:w-[360px] p-6 sm:p-10 lg:p-16 flex flex-col items-center justify-center min-h-[160px] sm:min-h-0">
-            <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-primary mb-4 sm:mb-6 lg:mb-10">Revvup</span>
+            <span className="text-[9px] sm:text-[10px] lg:text-caption1 font-medium text-primary mb-4 sm:mb-6 lg:mb-10">Revvup</span>
             
             <div className="flex flex-col items-center">
               {/* Giant zero */}
               <div 
-                className="text-5xl sm:text-6xl lg:text-8xl xl:text-9xl font-bold text-primary leading-none"
+                className="text-display1 sm:text-display2 lg:text-display4 xl:text-display5 font-bold text-primary leading-none"
                 style={{ animation: 'glow-zero 3s ease-in-out infinite' }}
               >
                 0
               </div>
-              <span className="text-xs sm:text-sm lg:text-base text-primary/80 font-medium mt-1 sm:mt-2">paid visibility</span>
+              <span className="text-caption1 sm:text-subhead lg:text-callout text-primary/80 font-medium mt-1 sm:mt-2">paid visibility</span>
             </div>
             
-            <p className="text-[8px] sm:text-[9px] lg:text-[10px] xl:text-xs text-white/30 mt-4 sm:mt-6 lg:mt-10">Quality ranks higher</p>
+            <p className="text-[8px] sm:text-[9px] lg:text-[10px] xl:text-caption1 text-white/30 mt-4 sm:mt-6 lg:mt-10">Quality ranks higher</p>
           </div>
       </MacOSWindow>
     </>

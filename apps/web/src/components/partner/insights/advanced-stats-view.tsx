@@ -333,7 +333,7 @@ function CompositionDonutCard({ data, title, icon: Icon, colorPalette = DONUT_CO
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-muted-foreground" />
-          <span className="text-[15px] font-bold tracking-tight">{title}</span>
+          <span className="text-subhead font-bold tracking-tight">{title}</span>
         </div>
       </div>
       
@@ -342,7 +342,7 @@ function CompositionDonutCard({ data, title, icon: Icon, colorPalette = DONUT_CO
         <div className="relative">
           <MiniDonutChart data={donutData} size={90} innerRadius={28} />
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-lg font-bold">{total}</span>
+            <span className="text-headline font-bold">{total}</span>
           </div>
         </div>
         
@@ -356,14 +356,14 @@ function CompositionDonutCard({ data, title, icon: Icon, colorPalette = DONUT_CO
                   className="w-2.5 h-2.5 rounded-full shrink-0" 
                   style={{ backgroundColor: colorPalette[i % colorPalette.length] }}
                 />
-                <span className="text-sm text-foreground/80 capitalize flex-1 truncate">{item.name}</span>
-                <span className="text-sm font-bold tabular-nums">{item.value}</span>
-                <span className="text-xs text-muted-foreground/50 tabular-nums w-8">{percentage}%</span>
+                <span className="text-subhead text-foreground/80 capitalize flex-1 truncate">{item.name}</span>
+                <span className="text-subhead font-bold tabular-nums">{item.value}</span>
+                <span className="text-caption1 text-muted-foreground/50 tabular-nums w-8">{percentage}%</span>
               </div>
             );
           })}
           {data.length > 4 && (
-            <span className="text-xs text-muted-foreground/50">+{data.length - 4} more</span>
+            <span className="text-caption1 text-muted-foreground/50">+{data.length - 4} more</span>
           )}
         </div>
       </div>
@@ -380,12 +380,12 @@ function _StatLabel({ label, tooltip }: { label: string; tooltip: string }) {
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="text-xs uppercase tracking-wider text-muted-foreground/60 font-medium inline-flex items-center gap-1 cursor-help group">
+          <span className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium inline-flex items-center gap-1 cursor-help group">
             {label}
             <Info className="w-3 h-3 opacity-40 group-hover:opacity-70 transition-opacity" />
           </span>
         </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-[200px] text-xs">
+        <TooltipContent side="top" className="max-w-[200px] text-caption1">
           {tooltip}
         </TooltipContent>
       </Tooltip>
@@ -516,9 +516,9 @@ interface SectionHeaderProps {
 function SectionHeader({ title, description }: SectionHeaderProps) {
   return (
     <div className="mb-4">
-      <span className="text-[15px] font-bold tracking-tight text-foreground">{title}</span>
+      <span className="text-subhead font-bold tracking-tight text-foreground">{title}</span>
       {description && (
-        <p className="text-sm font-medium text-muted-foreground/70 mt-1">{description}</p>
+        <p className="text-subhead font-medium text-muted-foreground/70 mt-1">{description}</p>
       )}
     </div>
   );
@@ -542,16 +542,16 @@ function _StatCard({ icon: Icon, label, value, subtext, trend, iconColor = 'text
     <div className="p-5 sm:p-6 flex flex-col gap-1.5">
       <div className="flex items-center gap-2">
         <Icon className={cn("w-4 h-4", iconColor)} />
-        <span className="text-sm font-semibold text-muted-foreground/70">{label}</span>
+        <span className="text-subhead font-semibold text-muted-foreground/70">{label}</span>
       </div>
       <div className="flex items-baseline gap-2">
-        <span className="text-xl font-bold text-foreground">
+        <span className="text-title3 font-bold text-foreground">
           {typeof value === 'number' ? value.toLocaleString() : value}
         </span>
         {trend !== undefined && <TrendBadge value={trend} />}
       </div>
       {subtext && (
-        <span className="text-xs text-muted-foreground/60">{subtext}</span>
+        <span className="text-caption1 text-muted-foreground/60">{subtext}</span>
       )}
     </div>
   );
@@ -575,16 +575,16 @@ function _SimpleListChart({ data, title, icon: Icon }: SimpleListChartProps) {
     <div className="rounded-xl border border-border/40 bg-sidebar p-5">
       <div className="flex items-center gap-2 mb-4">
         <Icon className="w-4 h-4 text-muted-foreground" />
-        <span className="text-[15px] font-bold tracking-tight text-foreground">{title}</span>
+        <span className="text-subhead font-bold tracking-tight text-foreground">{title}</span>
       </div>
       <div className="space-y-3">
         {data.map((item, i) => (
           <div key={i} className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-foreground/80">{item.name}</span>
+              <span className="text-subhead text-foreground/80">{item.name}</span>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-foreground tabular-nums">{item.value}</span>
-                <span className="text-xs text-muted-foreground/60 tabular-nums">
+                <span className="text-subhead font-medium text-foreground tabular-nums">{item.value}</span>
+                <span className="text-caption1 text-muted-foreground/60 tabular-nums">
                   {total > 0 ? Math.round((item.value / total) * 100) : 0}%
                 </span>
               </div>
@@ -619,16 +619,16 @@ function _HorizontalBarChartCard({ data, title, icon: Icon }: HorizontalBarChart
     <div className="rounded-xl border border-border/40 bg-sidebar p-5">
       <div className="flex items-center gap-2 mb-4">
         <Icon className="w-4 h-4 text-muted-foreground" />
-        <span className="text-[15px] font-bold tracking-tight text-foreground">{title}</span>
+        <span className="text-subhead font-bold tracking-tight text-foreground">{title}</span>
       </div>
       <div className="space-y-3">
         {data.map((item, i) => (
           <div key={i} className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-foreground/80 truncate max-w-[160px]">
+              <span className="text-subhead text-foreground/80 truncate max-w-[160px]">
                 {item.name}
               </span>
-              <span className="text-sm font-medium text-foreground tabular-nums">{item.value}</span>
+              <span className="text-subhead font-medium text-foreground tabular-nums">{item.value}</span>
             </div>
             <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
               <div 
@@ -660,16 +660,16 @@ function _VerticalBarChartCard({ data, title, icon: Icon }: VerticalBarChartProp
     <div className="rounded-xl border border-border/40 bg-sidebar p-5">
       <div className="flex items-center gap-2 mb-4">
         <Icon className="w-4 h-4 text-muted-foreground" />
-        <span className="text-[15px] font-bold tracking-tight text-foreground">{title}</span>
+        <span className="text-subhead font-bold tracking-tight text-foreground">{title}</span>
       </div>
       <div className="space-y-3">
         {data.map((item, i) => (
           <div key={i} className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-foreground/80 truncate max-w-[140px]">
+              <span className="text-subhead text-foreground/80 truncate max-w-[140px]">
                 {item.name}
               </span>
-              <span className="text-sm font-medium text-foreground tabular-nums">{item.value}</span>
+              <span className="text-subhead font-medium text-foreground tabular-nums">{item.value}</span>
             </div>
             <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
               <div 
@@ -708,9 +708,9 @@ function PriceDistributionChart({ data }: PriceDistributionChartProps) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Banknote className="w-4 h-4 text-emerald-500" />
-          <span className="text-[15px] font-bold tracking-tight">Price Distribution</span>
+          <span className="text-subhead font-bold tracking-tight">Price Distribution</span>
         </div>
-        <span className="text-xs text-muted-foreground/60">{total} listings</span>
+        <span className="text-caption1 text-muted-foreground/60">{total} listings</span>
       </div>
       
       {/* Visual Bar Chart */}
@@ -737,7 +737,7 @@ function PriceDistributionChart({ data }: PriceDistributionChartProps) {
               className="w-3 h-3 rounded-full mx-auto"
               style={{ backgroundColor: DONUT_COLORS[i % DONUT_COLORS.length] }}
             />
-            <p className="text-lg font-bold tabular-nums">{item.value}</p>
+            <p className="text-headline font-bold tabular-nums">{item.value}</p>
             <p className="text-[10px] text-muted-foreground/70 leading-tight">{item.name}</p>
           </div>
         ))}
@@ -766,14 +766,14 @@ function _TrendComparison({ title, metrics }: TrendComparisonProps) {
     <div className="rounded-xl border border-border/40 bg-sidebar p-5">
       <div className="flex items-center gap-2 mb-4">
         <TrendingUp className="w-4 h-4 text-emerald-500" />
-        <span className="text-[15px] font-bold tracking-tight text-foreground">{title}</span>
+        <span className="text-subhead font-bold tracking-tight text-foreground">{title}</span>
       </div>
       <div className="space-y-0 divide-y divide-border/40">
         {metrics.map((metric, i) => (
           <div key={i} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
             <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground/70">{metric.label}</span>
-              <p className="text-xl font-bold text-foreground">
+              <span className="text-subhead font-medium text-muted-foreground/70">{metric.label}</span>
+              <p className="text-title3 font-bold text-foreground">
                 {metric.format === 'currency' 
                   ? formatCurrency(metric.current)
                   : metric.current.toLocaleString()
@@ -782,7 +782,7 @@ function _TrendComparison({ title, metrics }: TrendComparisonProps) {
             </div>
             <div className="text-right space-y-1">
               <TrendBadge value={metric.delta} />
-              <span className="text-sm text-muted-foreground/60">
+              <span className="text-subhead text-muted-foreground/60">
                 vs {metric.format === 'currency' 
                   ? formatCurrency(metric.previous)
                   : metric.previous.toLocaleString()
@@ -813,35 +813,35 @@ function _BookingFunnel({ pending, confirmed, completed, noShowRate, cancellatio
     <div className="rounded-xl border border-border/40 bg-sidebar p-5">
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="w-4 h-4 text-muted-foreground" />
-        <span className="text-[15px] font-bold tracking-tight text-foreground">Bookings</span>
+        <span className="text-subhead font-bold tracking-tight text-foreground">Bookings</span>
       </div>
       
       <div className="grid grid-cols-3 gap-4 mb-5">
         <div className="text-center space-y-1">
-          <span className="text-2xl font-bold text-amber-500 tabular-nums">
+          <span className="text-title2 font-bold text-amber-500 tabular-nums">
             {pending}
           </span>
-          <span className="text-sm font-medium text-muted-foreground/70 block">Pending</span>
+          <span className="text-subhead font-medium text-muted-foreground/70 block">Pending</span>
         </div>
         <div className="text-center space-y-1">
-          <span className="text-2xl font-bold text-blue-500 tabular-nums">
+          <span className="text-title2 font-bold text-blue-500 tabular-nums">
             {confirmed}
           </span>
-          <span className="text-sm font-medium text-muted-foreground/70 block">Confirmed</span>
+          <span className="text-subhead font-medium text-muted-foreground/70 block">Confirmed</span>
         </div>
         <div className="text-center space-y-1">
-          <span className="text-2xl font-bold text-emerald-500 tabular-nums">
+          <span className="text-title2 font-bold text-emerald-500 tabular-nums">
             {completed}
           </span>
-          <span className="text-sm font-medium text-muted-foreground/70 block">Completed</span>
+          <span className="text-subhead font-medium text-muted-foreground/70 block">Completed</span>
         </div>
       </div>
       
       <div className="space-y-3 pt-4 border-t border-border/40">
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground/70">Cancellation</span>
-            <span className="text-sm font-bold tabular-nums text-amber-500">
+            <span className="text-subhead font-medium text-muted-foreground/70">Cancellation</span>
+            <span className="text-subhead font-bold tabular-nums text-amber-500">
               {cancellationRate}%
             </span>
           </div>
@@ -855,8 +855,8 @@ function _BookingFunnel({ pending, confirmed, completed, noShowRate, cancellatio
         
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground/70">No-Show</span>
-            <span className="text-sm font-bold tabular-nums text-rose-500">
+            <span className="text-subhead font-medium text-muted-foreground/70">No-Show</span>
+            <span className="text-subhead font-bold tabular-nums text-rose-500">
               {noShowRate}%
             </span>
           </div>
@@ -889,8 +889,8 @@ function _AlertBanner({ listing }: AlertBannerProps) {
     <div className="flex items-center gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/20">
       <Clock className="w-4 h-4 text-amber-600 dark:text-amber-500 flex-shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-amber-900 dark:text-amber-100 truncate">{listing.title}</p>
-        <p className="text-xs text-amber-700 dark:text-amber-300">
+        <p className="text-subhead font-medium text-amber-900 dark:text-amber-100 truncate">{listing.title}</p>
+        <p className="text-caption1 text-amber-700 dark:text-amber-300">
           {listing.daysSincePublished} days — consider updating
         </p>
       </div>
@@ -936,8 +936,8 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
           <header>
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
-              <p className="text-[15px] font-medium text-muted-foreground/70">
+              <h1 className="text-title2 font-bold tracking-tight">Analytics</h1>
+              <p className="text-subhead font-medium text-muted-foreground/70">
                 Detailed performance metrics
               </p>
             </div>
@@ -947,8 +947,8 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             <div className="w-12 h-12 rounded-full bg-muted/30 flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-5 h-5 text-muted-foreground" />
             </div>
-            <p className="text-sm font-medium text-foreground mb-1">Unable to load analytics</p>
-            <p className="text-xs text-muted-foreground">Please try again later</p>
+            <p className="text-subhead font-medium text-foreground mb-1">Unable to load analytics</p>
+            <p className="text-caption1 text-muted-foreground">Please try again later</p>
           </div>
         </div>
       </div>
@@ -989,9 +989,9 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-base sm:text-lg font-semibold text-foreground">Analytics</h1>
-            <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Detailed performance metrics and insights</p>
-            <div className="mt-2 flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground/55">
+            <h1 className="text-callout sm:text-headline font-semibold text-foreground">Analytics</h1>
+            <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">Detailed performance metrics and insights</p>
+            <div className="mt-2 flex items-center gap-1.5 text-caption2 sm:text-caption1 text-muted-foreground/55">
               <Clock className="h-3.5 w-3.5" />
               <span>
                 Last updated {new Date(stats.generatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · Use alongside your own records
@@ -1007,27 +1007,27 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-sm font-semibold text-muted-foreground/70">Total Views</h3>
+                <h3 className="text-subhead font-semibold text-muted-foreground/70">Total Views</h3>
               </div>
             </div>
             <div className="flex items-baseline gap-3">
-              <span className="text-4xl font-bold text-blue-500 tabular-nums">
+              <span className="text-display font-bold text-blue-500 tabular-nums">
                 {formatNumber(engagement.totalViewsThisMonth)}
               </span>
-              <span className="text-sm text-muted-foreground/60">views</span>
+              <span className="text-subhead text-muted-foreground/60">views</span>
             </div>
             <div className="mt-6 pt-4 border-t border-border/40 grid grid-cols-3 gap-4">
               <div>
-                <p className="text-xs text-muted-foreground/60">Favorites</p>
-                <p className="text-lg font-bold tabular-nums">{formatNumber(engagement.totalFavorites)}</p>
+                <p className="text-caption1 text-muted-foreground/60">Favorites</p>
+                <p className="text-headline font-bold tabular-nums">{formatNumber(engagement.totalFavorites)}</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground/60">Impressions</p>
-                <p className="text-lg font-bold tabular-nums">{formatNumber(engagement.totalImpressions)}</p>
+                <p className="text-caption1 text-muted-foreground/60">Impressions</p>
+                <p className="text-headline font-bold tabular-nums">{formatNumber(engagement.totalImpressions)}</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground/60">Avg per Listing</p>
-                <p className="text-lg font-bold tabular-nums">{engagement.avgViewsPerListing}</p>
+                <p className="text-caption1 text-muted-foreground/60">Avg per Listing</p>
+                <p className="text-headline font-bold tabular-nums">{engagement.avgViewsPerListing}</p>
               </div>
             </div>
           </div>
@@ -1038,24 +1038,24 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
               <div className="flex items-center gap-2 mb-3">
                 <Banknote className="w-4 h-4 text-emerald-500" />
-                <span className="text-sm font-semibold text-muted-foreground/70">Total Revenue</span>
+                <span className="text-subhead font-semibold text-muted-foreground/70">Total Revenue</span>
               </div>
-              <span className="text-2xl font-bold text-emerald-500">
+              <span className="text-title2 font-bold text-emerald-500">
                 {formatCurrency(sales.revenueAllTime)}
               </span>
-              <p className="text-xs text-muted-foreground/60 mt-1">{sales.totalSoldAllTime} vehicles sold all time</p>
+              <p className="text-caption1 text-muted-foreground/60 mt-1">{sales.totalSoldAllTime} vehicles sold all time</p>
             </div>
 
             {/* Favorites Card */}
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
               <div className="flex items-center gap-2 mb-3">
                 <Heart className="w-4 h-4 text-rose-500" />
-                <span className="text-sm font-semibold text-muted-foreground/70">Favorites</span>
+                <span className="text-subhead font-semibold text-muted-foreground/70">Favorites</span>
               </div>
-              <span className="text-2xl font-bold text-rose-500">
+              <span className="text-title2 font-bold text-rose-500">
                 {engagement.totalFavorites}
               </span>
-              <p className="text-xs text-muted-foreground/60 mt-1">{engagement.viewToFavoriteRate}% of views convert to favorites</p>
+              <p className="text-caption1 text-muted-foreground/60 mt-1">{engagement.viewToFavoriteRate}% of views convert to favorites</p>
             </div>
           </div>
         </div>
@@ -1066,20 +1066,20 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
             <div className="flex items-center gap-2 mb-4">
               <Package className="w-4 h-4 text-blue-500" />
-              <span className="text-sm font-semibold text-muted-foreground/70">Active Inventory</span>
+              <span className="text-subhead font-semibold text-muted-foreground/70">Active Inventory</span>
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground/70">Listings</span>
-                <span className="text-lg font-bold">{inventory.activeCount}</span>
+                <span className="text-subhead text-muted-foreground/70">Listings</span>
+                <span className="text-headline font-bold">{inventory.activeCount}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground/70">Total Value</span>
-                <span className="text-lg font-bold text-blue-500">{formatCurrency(inventory.totalValue)}</span>
+                <span className="text-subhead text-muted-foreground/70">Total Value</span>
+                <span className="text-headline font-bold text-blue-500">{formatCurrency(inventory.totalValue)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground/70">Avg Price</span>
-                <span className="text-sm font-bold">{formatCurrency(inventory.avgPrice)}</span>
+                <span className="text-subhead text-muted-foreground/70">Avg Price</span>
+                <span className="text-subhead font-bold">{formatCurrency(inventory.avgPrice)}</span>
               </div>
             </div>
           </div>
@@ -1088,24 +1088,24 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="w-4 h-4 text-emerald-500" />
-              <span className="text-sm font-semibold text-muted-foreground/70">Sales This Month</span>
+              <span className="text-subhead font-semibold text-muted-foreground/70">Sales This Month</span>
             </div>
             <div className="mb-4">
-              <span className="text-2xl font-bold text-emerald-500">{sales.soldThisMonth}</span>
-              <span className="text-sm text-muted-foreground/70 ml-1.5">sold</span>
+              <span className="text-title2 font-bold text-emerald-500">{sales.soldThisMonth}</span>
+              <span className="text-subhead text-muted-foreground/70 ml-1.5">sold</span>
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground/70">Revenue</span>
-                <span className="text-sm font-bold text-emerald-500">{formatCurrency(sales.revenueThisMonth)}</span>
+                <span className="text-subhead text-muted-foreground/70">Revenue</span>
+                <span className="text-subhead font-bold text-emerald-500">{formatCurrency(sales.revenueThisMonth)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground/70">Avg Days to Sell</span>
-                <span className="text-sm font-bold">{sales.avgDaysToSell ?? '—'}</span>
+                <span className="text-subhead text-muted-foreground/70">Avg Days to Sell</span>
+                <span className="text-subhead font-bold">{sales.avgDaysToSell ?? '—'}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground/70">Fastest Sale</span>
-                <span className="text-sm font-bold">{sales.fastestSale ?? '—'} days</span>
+                <span className="text-subhead text-muted-foreground/70">Fastest Sale</span>
+                <span className="text-subhead font-bold">{sales.fastestSale ?? '—'} days</span>
               </div>
             </div>
           </div>
@@ -1114,7 +1114,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           <div className="col-span-12 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
             <div className="flex items-center gap-2 mb-4">
               <Calendar className="w-4 h-4 text-emerald-500" />
-              <span className="text-[15px] font-bold tracking-tight">Bookings</span>
+              <span className="text-subhead font-bold tracking-tight">Bookings</span>
             </div>
             <div className="flex items-center gap-5">
               <MiniDonutChart 
@@ -1130,34 +1130,34 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <span className="text-sm text-foreground/80">Completed</span>
+                    <span className="text-subhead text-foreground/80">Completed</span>
                   </div>
-                  <span className="text-sm font-bold tabular-nums">{bookings.completedThisMonth}</span>
+                  <span className="text-subhead font-bold tabular-nums">{bookings.completedThisMonth}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                    <span className="text-sm text-foreground/80">Cancelled</span>
+                    <span className="text-subhead text-foreground/80">Cancelled</span>
                   </div>
-                  <span className="text-sm font-bold tabular-nums">{bookings.cancelledCount}</span>
+                  <span className="text-subhead font-bold tabular-nums">{bookings.cancelledCount}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                    <span className="text-sm text-foreground/80">No Show</span>
+                    <span className="text-subhead text-foreground/80">No Show</span>
                   </div>
-                  <span className="text-sm font-bold tabular-nums">{bookings.noShowCount}</span>
+                  <span className="text-subhead font-bold tabular-nums">{bookings.noShowCount}</span>
                 </div>
               </div>
             </div>
             <div className="mt-4 pt-3 border-t border-border/40 grid grid-cols-2 gap-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground/70">Pending</span>
-                <span className="text-sm font-bold text-blue-500">{bookings.pendingBookings}</span>
+                <span className="text-caption1 text-muted-foreground/70">Pending</span>
+                <span className="text-subhead font-bold text-blue-500">{bookings.pendingBookings}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground/70">Confirmed</span>
-                <span className="text-sm font-bold text-sky-500">{bookings.confirmedBookings}</span>
+                <span className="text-caption1 text-muted-foreground/70">Confirmed</span>
+                <span className="text-subhead font-bold text-sky-500">{bookings.confirmedBookings}</span>
               </div>
             </div>
           </div>
@@ -1171,31 +1171,31 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-5">
               <div className="flex items-center gap-2 mb-5">
                 <TrendingUp className="w-4 h-4 text-emerald-500" />
-                <span className="text-sm font-semibold text-muted-foreground/70">Month over Month</span>
+                <span className="text-subhead font-semibold text-muted-foreground/70">Month over Month</span>
               </div>
               <div className="grid grid-cols-3 gap-6">
                 <div className="space-y-1">
-                  <span className="text-xs text-muted-foreground/60">Sales</span>
+                  <span className="text-caption1 text-muted-foreground/60">Sales</span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold">{trends.salesThisMonth}</span>
+                    <span className="text-title2 font-bold">{trends.salesThisMonth}</span>
                     <TrendBadge value={trends.salesDelta} />
                   </div>
-                  <span className="text-xs text-muted-foreground/50">vs {trends.salesLastMonth} last month</span>
+                  <span className="text-caption1 text-muted-foreground/50">vs {trends.salesLastMonth} last month</span>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-xs text-muted-foreground/60">Listings Added</span>
+                  <span className="text-caption1 text-muted-foreground/60">Listings Added</span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold">{trends.listingsAddedThisMonth}</span>
+                    <span className="text-title2 font-bold">{trends.listingsAddedThisMonth}</span>
                     <TrendBadge value={trends.listingsAddedDelta} />
                   </div>
-                  <span className="text-xs text-muted-foreground/50">vs {trends.listingsAddedLastMonth} last month</span>
+                  <span className="text-caption1 text-muted-foreground/50">vs {trends.listingsAddedLastMonth} last month</span>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-xs text-muted-foreground/60">Views</span>
+                  <span className="text-caption1 text-muted-foreground/60">Views</span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold">{formatNumber(engagement.totalViewsThisMonth)}</span>
+                    <span className="text-title2 font-bold">{formatNumber(engagement.totalViewsThisMonth)}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground/50">{formatNumber(engagement.totalImpressions)} impressions tracked</span>
+                  <span className="text-caption1 text-muted-foreground/50">{formatNumber(engagement.totalImpressions)} impressions tracked</span>
                 </div>
               </div>
             </div>
@@ -1203,14 +1203,14 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             {/* Sell-Through & Speed */}
             <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
               <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
-                <span className="text-xs text-muted-foreground/60">Sell-Through Rate</span>
-                <p className="text-3xl font-bold text-emerald-500 mt-2">{sales.sellThroughRate}%</p>
-                <p className="text-xs text-muted-foreground/50 mt-1">of listings sold this month</p>
+                <span className="text-caption1 text-muted-foreground/60">Sell-Through Rate</span>
+                <p className="text-title1 font-bold text-emerald-500 mt-2">{sales.sellThroughRate}%</p>
+                <p className="text-caption1 text-muted-foreground/50 mt-1">of listings sold this month</p>
               </div>
               <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
-                <span className="text-xs text-muted-foreground/60">Avg Days to Sell</span>
-                <p className="text-3xl font-bold mt-2">{sales.avgDaysToSell ?? '—'}</p>
-                <p className="text-xs text-muted-foreground/50 mt-1">from published to sold</p>
+                <span className="text-caption1 text-muted-foreground/60">Avg Days to Sell</span>
+                <p className="text-title1 font-bold mt-2">{sales.avgDaysToSell ?? '—'}</p>
+                <p className="text-caption1 text-muted-foreground/50 mt-1">from published to sold</p>
               </div>
             </div>
           </div>
@@ -1260,32 +1260,32 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             <div className="col-span-12 lg:col-span-8 rounded-xl border border-border/40 bg-sidebar p-5">
               <div className="flex items-center gap-2 mb-5">
                 <Zap className="w-4 h-4 text-violet-500" />
-                <span className="text-sm font-semibold text-muted-foreground/70">Engagement Metrics</span>
+                <span className="text-subhead font-semibold text-muted-foreground/70">Engagement Metrics</span>
               </div>
               <div className="grid grid-cols-4 gap-4">
                 <div className="text-center space-y-1">
-                  <p className="text-2xl font-bold text-violet-500 tabular-nums">
+                  <p className="text-title2 font-bold text-violet-500 tabular-nums">
                     {formatNumber(engagement.totalImpressions)}
                   </p>
-                  <p className="text-xs text-muted-foreground/60">Impressions</p>
+                  <p className="text-caption1 text-muted-foreground/60">Impressions</p>
                 </div>
                 <div className="text-center space-y-1">
-                  <p className="text-2xl font-bold text-blue-500 tabular-nums">
+                  <p className="text-title2 font-bold text-blue-500 tabular-nums">
                     {engagement.avgViewsPerListing}
                   </p>
-                  <p className="text-xs text-muted-foreground/60">Avg Views</p>
+                  <p className="text-caption1 text-muted-foreground/60">Avg Views</p>
                 </div>
                 <div className="text-center space-y-1">
-                  <p className="text-2xl font-bold text-rose-500 tabular-nums">
+                  <p className="text-title2 font-bold text-rose-500 tabular-nums">
                     {engagement.totalSuperlikes}
                   </p>
-                  <p className="text-xs text-muted-foreground/60">Superlikes</p>
+                  <p className="text-caption1 text-muted-foreground/60">Superlikes</p>
                 </div>
                 <div className="text-center space-y-1">
-                  <p className="text-2xl font-bold text-pink-500 tabular-nums">
+                  <p className="text-title2 font-bold text-pink-500 tabular-nums">
                     {engagement.totalFavorites}
                   </p>
-                  <p className="text-xs text-muted-foreground/60">Favorites</p>
+                  <p className="text-caption1 text-muted-foreground/60">Favorites</p>
                 </div>
               </div>
               {engagement.avgQiScore !== null && (
@@ -1304,7 +1304,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             <div className="col-span-12 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Activity className="w-4 h-4 text-blue-500" />
-                <span className="text-[15px] font-bold tracking-tight">Top Performing</span>
+                <span className="text-subhead font-bold tracking-tight">Top Performing</span>
               </div>
               <TopListings
                 title=""
@@ -1320,7 +1320,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
               {engagement.topViewedListings.length > visibleTopListings && (
                 <button
                   onClick={() => setVisibleTopListings(prev => prev + 4)}
-                  className="w-full mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors py-2 rounded-lg hover:bg-accent/50"
+                  className="w-full mt-3 text-caption1 text-muted-foreground hover:text-foreground transition-colors py-2 rounded-lg hover:bg-accent/50"
                 >
                   Load more ({engagement.topViewedListings.length - visibleTopListings} remaining)
                 </button>
@@ -1344,18 +1344,18 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           <SectionHeader title="Inventory Summary" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-              <span className="text-xs text-muted-foreground/60">Avg Model Year</span>
+              <span className="text-caption1 text-muted-foreground/60">Avg Model Year</span>
               <div className="flex items-end justify-between mt-2">
-                <span className="text-xl font-bold tabular-nums">{composition.avgYear ?? '—'}</span>
+                <span className="text-title3 font-bold tabular-nums">{composition.avgYear ?? '—'}</span>
                 <div className="h-6 w-10 text-blue-500 opacity-40">
                   <MiniBarChart className="text-blue-500" />
                 </div>
               </div>
             </div>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-              <span className="text-xs text-muted-foreground/60">Avg Mileage</span>
+              <span className="text-caption1 text-muted-foreground/60">Avg Mileage</span>
               <div className="flex items-end justify-between mt-2">
-                <span className="text-xl font-bold tabular-nums">
+                <span className="text-title3 font-bold tabular-nums">
                   {composition.avgMileage ? `${Math.round(composition.avgMileage / 1000)}K km` : '—'}
                 </span>
                 <div className="h-6 w-10 text-amber-500 opacity-40">
@@ -1364,9 +1364,9 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
               </div>
             </div>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-              <span className="text-xs text-muted-foreground/60">Avg List Price</span>
+              <span className="text-caption1 text-muted-foreground/60">Avg List Price</span>
               <div className="flex items-end justify-between mt-2">
-                <span className="text-xl font-bold text-blue-500 tabular-nums">
+                <span className="text-title3 font-bold text-blue-500 tabular-nums">
                   {formatCurrency(inventory.avgPrice)}
                 </span>
                 <div className="h-6 w-10 text-blue-500 opacity-40">
@@ -1375,9 +1375,9 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
               </div>
             </div>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-              <span className="text-xs text-muted-foreground/60">Avg Sold Price</span>
+              <span className="text-caption1 text-muted-foreground/60">Avg Sold Price</span>
               <div className="flex items-end justify-between mt-2">
-                <span className="text-xl font-bold text-emerald-500 tabular-nums">
+                <span className="text-title3 font-bold text-emerald-500 tabular-nums">
                   {sales.avgSoldPrice ? formatCurrency(sales.avgSoldPrice) : '—'}
                 </span>
                 <div className="h-6 w-10 text-emerald-500 opacity-40">
@@ -1394,27 +1394,27 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             <SectionHeader title="Status" />
             <div className="flex flex-wrap gap-2">
               {inventory.staleCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-sidebar border border-border/40 text-amber-500">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 font-medium bg-sidebar border border-border/40 text-amber-500">
                   {inventory.staleCount} stale
                 </span>
               )}
               {inventory.expiringCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-sidebar border border-border/40 text-rose-500">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 font-medium bg-sidebar border border-border/40 text-rose-500">
                   {inventory.expiringCount} expiring
                 </span>
               )}
               {inventory.pendingApprovalCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-sidebar border border-border/40 text-blue-500">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 font-medium bg-sidebar border border-border/40 text-blue-500">
                   {inventory.pendingApprovalCount} pending
                 </span>
               )}
               {inventory.draftCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-sidebar border border-border/40 text-muted-foreground/70">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 font-medium bg-sidebar border border-border/40 text-muted-foreground/70">
                   {inventory.draftCount} drafts
                 </span>
               )}
               {inventory.reservedCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-sidebar border border-border/40 text-violet-500">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 font-medium bg-sidebar border border-border/40 text-violet-500">
                   {inventory.reservedCount} reserved
                 </span>
               )}

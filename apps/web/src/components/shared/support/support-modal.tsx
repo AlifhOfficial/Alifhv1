@@ -63,10 +63,10 @@ export function SupportModal({ isOpen, onClose }: SupportModalProps) {
           
           {/* Content */}
           <div className="text-center space-y-1">
-            <h2 className="text-base font-semibold tracking-tight text-foreground">
+            <h2 className="text-callout font-semibold tracking-tight text-foreground">
               Contact Support
             </h2>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-subhead text-muted-foreground leading-relaxed">
               We're here to help with any questions
             </p>
           </div>
@@ -85,8 +85,8 @@ export function SupportModal({ isOpen, onClose }: SupportModalProps) {
                 <Mail className="w-4 h-4 text-primary" />
               </div>
               <div className="text-left">
-                <p className="text-sm font-semibold text-foreground">Email us</p>
-                <p className="text-xs text-muted-foreground">support@revvup.ae</p>
+                <p className="text-subhead font-semibold text-foreground">Email us</p>
+                <p className="text-caption1 text-muted-foreground">support@revvup.ae</p>
               </div>
             </a>
 
@@ -96,14 +96,14 @@ export function SupportModal({ isOpen, onClose }: SupportModalProps) {
                 <Clock className="w-4 h-4 text-muted-foreground" />
               </div>
               <div className="text-left">
-                <p className="text-sm font-semibold text-foreground">Response time</p>
-                <p className="text-xs text-muted-foreground">Usually within 24-48 hours</p>
+                <p className="text-subhead font-semibold text-foreground">Response time</p>
+                <p className="text-caption1 text-muted-foreground">Usually within 24-48 hours</p>
               </div>
             </div>
           </div>
 
           {/* Urgent Note */}
-          <p className="text-xs text-muted-foreground/80 text-center px-2">
+          <p className="text-caption1 text-muted-foreground/80 text-center px-2">
             For urgent matters, include <span className="font-semibold text-foreground">"URGENT"</span> in the subject
           </p>
 
@@ -111,7 +111,7 @@ export function SupportModal({ isOpen, onClose }: SupportModalProps) {
           <button
             onClick={onClose}
             className={cn(
-              "w-full h-10 px-4 rounded-lg text-sm font-semibold transition-colors",
+              "w-full h-10 px-4 rounded-lg text-subhead font-semibold transition-colors",
               "bg-muted/30 text-foreground hover:bg-muted/50"
             )}
           >

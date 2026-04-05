@@ -303,15 +303,15 @@ export function DealerInventory({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base sm:text-lg font-semibold text-foreground">Inventory</h1>
-          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Manage your dealership listings</p>
+          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Inventory</h1>
+          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">Manage your dealership listings</p>
         </div>
         <div className="flex items-center gap-2">
           {/* BLK Quota Badge */}
           {blackQuota && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
               <Crown className="w-3 h-3" />
-              <span className="text-xs font-medium">
+              <span className="text-caption1 font-medium">
                 {blackQuota.blackListingQuota - blackQuota.activeBlackListingsCount} of {blackQuota.blackListingQuota} BLK
               </span>
             </div>
@@ -339,7 +339,7 @@ export function DealerInventory({
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
@@ -378,7 +378,7 @@ export function DealerInventory({
               <button
                 key={status}
                 onClick={() => handleStatusTabChange(status)}
-                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all capitalize whitespace-nowrap ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all capitalize whitespace-nowrap ${
                   isActive
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
@@ -397,7 +397,7 @@ export function DealerInventory({
 
       {/* Error */}
       {error && (
-        <div className="mb-8 p-4 rounded-xl bg-secondary/50 text-sm">
+        <div className="mb-8 p-4 rounded-xl bg-secondary/50 text-subhead">
           {error}
         </div>
       )}
@@ -437,7 +437,7 @@ export function DealerInventory({
           {/* Count */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-caption1 text-muted-foreground">
                 {totalItems} listing{totalItems !== 1 ? 's' : ''}
                 {selectedStaffFilter !== 'all' && ` by ${activeStaff.find(s => s.userId === selectedStaffFilter)?.displayName}`}
               </p>
@@ -446,7 +446,7 @@ export function DealerInventory({
               )}
             </div>
             {totalPages > 1 && (
-              <p className="text-xs text-muted-foreground">{currentPage} / {totalPages}</p>
+              <p className="text-caption1 text-muted-foreground">{currentPage} / {totalPages}</p>
             )}
           </div>
 
@@ -492,12 +492,12 @@ export function DealerInventory({
                       {/* Title + Status Row */}
                       <div className="flex items-start justify-between gap-3">
                         <Link href={`/listings/${listing.id}`} className="hover:underline min-w-0">
-                          <p className="text-sm sm:text-base font-semibold tracking-tight truncate">
+                          <p className="text-subhead sm:text-callout font-semibold tracking-tight truncate">
                             {listing.year} {listing.make} {listing.model}
                             {listing.trim && ` ${listing.trim}`}
                           </p>
                         </Link>
-                        <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap flex-shrink-0 ${statusBadge.bg} ${statusBadge.color}`}>
+                        <span className={`px-2.5 py-1 rounded-lg text-caption1 font-semibold whitespace-nowrap flex-shrink-0 ${statusBadge.bg} ${statusBadge.color}`}>
                           {statusBadge.label}
                         </span>
                       </div>
@@ -507,13 +507,13 @@ export function DealerInventory({
                         {/* Price */}
                         <div>
                           <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Price</p>
-                          <p className="text-sm font-medium text-foreground">{listing.price.toLocaleString()} AED</p>
+                          <p className="text-subhead font-medium text-foreground">{listing.price.toLocaleString()} AED</p>
                         </div>
 
                         {/* Assigned To */}
                         <div>
                           <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Assigned To</p>
-                          <p className={cn("text-sm", (listing.staffMember?.displayName || listing.postedByDisplayName) ? 'text-foreground' : 'text-muted-foreground/60', teamMember?.status === 'left' && 'opacity-50')}>
+                          <p className={cn("text-subhead", (listing.staffMember?.displayName || listing.postedByDisplayName) ? 'text-foreground' : 'text-muted-foreground/60', teamMember?.status === 'left' && 'opacity-50')}>
                             {listing.staffMember?.displayName || listing.postedByDisplayName || 'Unassigned'}
                           </p>
                         </div>
@@ -530,7 +530,7 @@ export function DealerInventory({
                         if (listing.lifecycleStatus !== 'active' || daysRemaining === null || msRemaining === null || msRemaining <= 0) return null;
                         return (
                           <span className={cn(
-                            "flex items-center gap-1 text-xs font-medium",
+                            "flex items-center gap-1 text-caption1 font-medium",
                             isExpiringSoon ? "text-amber-500" : "text-muted-foreground"
                           )}>
                             <Clock className="w-3 h-3" />
@@ -540,7 +540,7 @@ export function DealerInventory({
                       })()}
                       <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         <Link href={`/listings/${listing.id}`}>
-                          <button className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs font-medium transition-colors">
+                          <button className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-caption1 font-medium transition-colors">
                             View
                           </button>
                         </Link>
@@ -549,7 +549,7 @@ export function DealerInventory({
                             <DropdownMenuTrigger asChild>
                               <button 
                                 disabled={reassigningListingId === listing.id}
-                                className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs font-medium transition-colors flex items-center gap-1 disabled:opacity-50"
+                                className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-caption1 font-medium transition-colors flex items-center gap-1 disabled:opacity-50"
                               >
                                 {reassigningListingId === listing.id ? 'Reassigning...' : 'Reassign'}
                                 <ChevronDown className="w-3 h-3" />
@@ -611,7 +611,7 @@ export function DealerInventory({
                   <button
                     key={pageNum}
                     onClick={() => updateRoute({ page: pageNum })}
-                    className={`w-8 h-8 rounded-lg text-sm transition-colors ${
+                    className={`w-8 h-8 rounded-lg text-subhead transition-colors ${
                       currentPage === pageNum
                         ? 'bg-secondary text-foreground font-medium'
                         : 'text-muted-foreground hover:bg-secondary/50'
@@ -638,8 +638,8 @@ export function DealerInventory({
       {!isLoading && !error && listings.length === 0 && !hasActiveFilters && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
           <ShoppingCart className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-lg font-medium tracking-tight">No listings yet</h3>
-          <p className="text-sm text-muted-foreground mt-1">Staff can create listings from Work Listings</p>
+          <h3 className="text-headline font-medium tracking-tight">No listings yet</h3>
+          <p className="text-subhead text-muted-foreground mt-1">Staff can create listings from Work Listings</p>
         </div>
       )}
 
@@ -647,11 +647,11 @@ export function DealerInventory({
       {!isLoading && !error && listings.length === 0 && hasActiveFilters && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
           <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-lg font-medium tracking-tight">No results</h3>
-          <p className="text-sm text-muted-foreground mt-1">Try a different search or filter</p>
+          <h3 className="text-headline font-medium tracking-tight">No results</h3>
+          <p className="text-subhead text-muted-foreground mt-1">Try a different search or filter</p>
           <button
             onClick={clearFilters}
-            className="mt-4 text-sm text-foreground hover:underline"
+            className="mt-4 text-subhead text-foreground hover:underline"
           >
             Clear filters
           </button>

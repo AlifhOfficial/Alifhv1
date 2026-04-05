@@ -10,15 +10,15 @@ export function BadgesClosingSection() {
         
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             How it works
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Assigned by Team Revvup.
             <br />
             <span className="text-muted-foreground">Not algorithms.</span>
           </h2>
-          <p className="text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-md mx-auto leading-relaxed">
             We look for people who embody our values: transparency, integrity, and genuine care.
           </p>
         </div>
@@ -33,7 +33,7 @@ export function BadgesClosingSection() {
           ].map((item, i) => (
             <div key={i} className="flex items-center gap-3 p-4 rounded-xl border border-border/40 bg-sidebar">
               <div className="w-2 h-2 rounded-full bg-primary" />
-              <span className="text-sm">{item}</span>
+              <span className="text-subhead">{item}</span>
             </div>
           ))}
         </div>

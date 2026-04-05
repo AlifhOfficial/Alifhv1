@@ -13,8 +13,8 @@ export default function OwnershipCostCalculatorPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Total Ownership Cost Calculator</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="text-display font-bold mb-4">Total Ownership Cost Calculator</h1>
+          <p className="text-headline text-muted-foreground">
             Calculate the true 5-year cost of owning a car in UAE
           </p>
         </div>

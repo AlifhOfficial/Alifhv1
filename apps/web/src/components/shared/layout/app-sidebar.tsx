@@ -237,9 +237,9 @@ function SidebarFooterContent({
                     )}
                   </div>
                   <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                    <span className="truncate font-bold text-sm tracking-tight">{displayName}</span>
+                    <span className="truncate font-bold text-subhead tracking-tight">{displayName}</span>
                     {isStaffMode && (
-                      <span className="truncate text-xs font-medium text-sidebar-foreground/70">
+                      <span className="truncate text-caption1 font-medium text-sidebar-foreground/70">
                         {staffOverride?.companyName}
                       </span>
                     )}
@@ -261,14 +261,14 @@ function SidebarFooterContent({
                   <Link
                     href="/"
                     onClick={() => setShowFooterMenu(false)}
-                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
+                    className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
                   >
                     Home
                   </Link>
                   <Link
                     href="/listings"
                     onClick={() => setShowFooterMenu(false)}
-                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
+                    className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
                   >
                     Listings
                   </Link>
@@ -279,14 +279,14 @@ function SidebarFooterContent({
                   <Link
                     href="/faq"
                     onClick={() => setShowFooterMenu(false)}
-                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
+                    className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
                   >
                     Support
                   </Link>
                   <Link
                     href={pathname.startsWith('/partner-dashboard') ? '/partner-dashboard/feedback' : pathname.startsWith('/staff-dashboard') ? '/staff-dashboard/feedback' : '/user-dashboard/feedback'}
                     onClick={() => setShowFooterMenu(false)}
-                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
+                    className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors block"
                   >
                     Feedback
                   </Link>
@@ -299,7 +299,7 @@ function SidebarFooterContent({
                       setShowFooterMenu(false);
                       await handleSignOut();
                     }}
-                    className="w-full text-left px-3 py-2 text-[15px] font-semibold tracking-tight text-destructive hover:bg-destructive/10 transition-colors"
+                    className="w-full text-left px-3 py-2 text-subhead font-semibold tracking-tight text-destructive hover:bg-destructive/10 transition-colors"
                   >
                     Sign out
                   </button>
@@ -511,7 +511,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
           return (
             <SidebarGroup key={sectionKey}>
               {section.title && (
-                <SidebarGroupLabel className="text-xs uppercase tracking-wider font-semibold text-sidebar-foreground/70">
+                <SidebarGroupLabel className="text-caption1 uppercase tracking-wider font-semibold text-sidebar-foreground/70">
                   {section.title}
                 </SidebarGroupLabel>
               )}

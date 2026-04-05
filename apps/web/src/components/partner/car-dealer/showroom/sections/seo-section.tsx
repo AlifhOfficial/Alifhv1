@@ -41,7 +41,7 @@ export function SeoSection({
 
       {/* SEO */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">SEO</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">SEO</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
           <EditableField
             {...getEditableFieldProps('seoTitle')}
@@ -60,8 +60,8 @@ export function SeoSection({
           
           {/* SEO Image / Open Graph */}
           <div className="pt-2">
-            <p className="text-sm font-semibold text-muted-foreground/70 mb-2">Social Share Image (OG Image)</p>
-            <div className="text-xs text-muted-foreground/60 mb-3 space-y-1">
+            <p className="text-subhead font-semibold text-muted-foreground/70 mb-2">Social Share Image (OG Image)</p>
+            <div className="text-caption1 text-muted-foreground/60 mb-3 space-y-1">
               <p>This image appears when your showroom link is shared on:</p>
               <ul className="list-disc list-inside pl-1 space-y-0.5">
                 <li>WhatsApp, iMessage, Telegram</li>

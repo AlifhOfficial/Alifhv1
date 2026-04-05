@@ -40,8 +40,8 @@ import type { StepProps } from './types';
 function SectionHeader({ title, optional }: { title: string; optional?: boolean }) {
   return (
     <div className="flex items-baseline justify-between">
-      <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground">{title}</h3>
-      {optional && <span className="text-xs text-sidebar-foreground/70">Optional</span>}
+      <h3 className="text-subhead font-bold tracking-tight text-sidebar-foreground">{title}</h3>
+      {optional && <span className="text-caption1 text-sidebar-foreground/70">Optional</span>}
     </div>
   );
 }
@@ -59,13 +59,13 @@ function FieldWrapper({
 }) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-semibold text-sidebar-foreground/70">
+      <label className="text-subhead font-semibold text-sidebar-foreground/70">
         {label}
         {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       {children}
       {error && (
-        <p className="text-xs font-semibold text-red-500">{error}</p>
+        <p className="text-caption1 font-semibold text-red-500">{error}</p>
       )}
     </div>
   );
@@ -88,7 +88,7 @@ function _TogglePill({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200',
+        'inline-flex items-center gap-2 px-4 py-2 rounded-full text-subhead font-semibold transition-all duration-200',
         pressed
           ? 'bg-primary text-primary-foreground'
           : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 hover:text-foreground',
@@ -195,12 +195,12 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                 placeholder="45,000"
                 min={0}
                 className={cn(
-                  "w-full h-12 bg-transparent px-0 pr-12 text-sm font-medium text-sidebar-foreground",
+                  "w-full h-12 bg-transparent px-0 pr-12 text-subhead font-medium text-sidebar-foreground",
                   "outline-none transition-colors",
                   "placeholder:text-sidebar-foreground/40"
                 )}
               />
-              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-sidebar-foreground/70">
+              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-caption1 text-sidebar-foreground/70">
                 km
               </span>
             </div>
@@ -338,7 +338,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               min={0}
               max={16}
               className={cn(
-                "w-full h-12 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "w-full h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -361,7 +361,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               onChange={(e) => updateField('fuelEconomy', e.target.value)}
               placeholder="12 km/L"
               className={cn(
-                "w-full h-12 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "w-full h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -375,7 +375,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               onChange={(e) => updateField('torque', e.target.value)}
               placeholder="350 Nm"
               className={cn(
-                "w-full h-12 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "w-full h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -430,7 +430,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                   updateField('extras', next);
                 }}
                 className={cn(
-                  "px-3.5 py-2 rounded-lg text-sm transition-colors duration-100",
+                  "px-3.5 py-2 rounded-lg text-subhead transition-colors duration-100",
                   isSelected 
                     ? "bg-sidebar-accent text-sidebar-foreground font-semibold" 
                     : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
@@ -450,7 +450,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                   const next = selectedExtras.filter((v) => v !== customExtra);
                   updateField('extras', next);
                 }}
-                className="px-3.5 py-2 rounded-lg text-sm bg-sidebar-accent text-sidebar-foreground font-semibold transition-colors duration-100"
+                className="px-3.5 py-2 rounded-lg text-subhead bg-sidebar-accent text-sidebar-foreground font-semibold transition-colors duration-100"
               >
                 {customExtra}
               </button>
@@ -463,7 +463,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               type="text"
               placeholder="Add custom extra..."
               className={cn(
-                "flex-1 h-10 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "flex-1 h-10 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -479,7 +479,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                 }
               }}
             />
-            <span className="text-xs text-sidebar-foreground/50">Press Enter to add</span>
+            <span className="text-caption1 text-sidebar-foreground/50">Press Enter to add</span>
           </div>
         </div>
       </section>
@@ -488,7 +488,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
       <section>
         <div className="flex items-baseline justify-between mb-3">
           <SectionHeader title="Tags" />
-          <span className="text-xs font-semibold text-sidebar-foreground/70">{MAX_LISTING_TAGS} max</span>
+          <span className="text-caption1 font-semibold text-sidebar-foreground/70">{MAX_LISTING_TAGS} max</span>
         </div>
         
         <div className="rounded-xl bg-sidebar-accent/30 p-5">
@@ -511,7 +511,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                   }
                 }}
                 className={cn(
-                  "px-3.5 py-2 rounded-lg text-sm transition-colors duration-100",
+                  "px-3.5 py-2 rounded-lg text-subhead transition-colors duration-100",
                   isSelected 
                     ? "bg-sidebar-accent text-sidebar-foreground font-semibold" 
                     : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
@@ -523,7 +523,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
             );
           })}
           </div>
-          {errors.tags && <p className="text-xs font-semibold text-red-500 mt-3">{errors.tags}</p>}
+          {errors.tags && <p className="text-caption1 font-semibold text-red-500 mt-3">{errors.tags}</p>}
         </div>
       </section>
     </div>

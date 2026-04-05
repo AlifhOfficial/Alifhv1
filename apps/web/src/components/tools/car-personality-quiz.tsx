@@ -110,16 +110,16 @@ export function CarPersonalityQuiz() {
     return (
       <div className="space-y-6">
         <div className="text-center p-8 border rounded-lg bg-primary/5">
-          <div className="text-6xl mb-4">{brandData.emoji}</div>
-          <h2 className="text-3xl font-bold mb-2">{brandData.name}</h2>
-          <p className="text-xl text-muted-foreground mb-6">{brandData.personality}</p>
-          <p className="text-base leading-relaxed mb-6">{brandData.description}</p>
+          <div className="text-display2 mb-4">{brandData.emoji}</div>
+          <h2 className="text-title1 font-bold mb-2">{brandData.name}</h2>
+          <p className="text-title3 text-muted-foreground mb-6">{brandData.personality}</p>
+          <p className="text-callout leading-relaxed mb-6">{brandData.description}</p>
           
           <div className="mt-6 p-4 bg-muted rounded-lg">
-            <p className="text-sm font-medium mb-2">Your {brandData.name} matches:</p>
+            <p className="text-subhead font-medium mb-2">Your {brandData.name} matches:</p>
             <div className="flex gap-2 justify-center flex-wrap">
               {brandData.cars.map((car) => (
-                <span key={car} className="px-3 py-1 bg-background border rounded-full text-sm">
+                <span key={car} className="px-3 py-1 bg-background border rounded-full text-subhead">
                   {car}
                 </span>
               ))}
@@ -144,7 +144,7 @@ export function CarPersonalityQuiz() {
     <div className="space-y-6">
       {/* Progress Bar */}
       <div>
-        <div className="flex justify-between text-sm text-muted-foreground mb-2">
+        <div className="flex justify-between text-subhead text-muted-foreground mb-2">
           <span>Question {currentQuestion + 1} of {questions.length}</span>
           <span>{Math.round(progress)}%</span>
         </div>
@@ -158,7 +158,7 @@ export function CarPersonalityQuiz() {
 
       {/* Question */}
       <div className="border rounded-lg p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">{question.question}</h2>
+        <h2 className="text-title2 font-bold mb-6 text-center">{question.question}</h2>
         <div className="space-y-3">
           {question.options.map((option, index) => (
             <button

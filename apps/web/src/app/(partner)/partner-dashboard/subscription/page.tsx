@@ -113,7 +113,7 @@ const StatusBadge = ({ status }: { status: string }) => {
   const { bg, text, icon } = config[status] || config.inactive;
   
   return (
-    <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium', bg, text)}>
+    <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption1 font-medium', bg, text)}>
       {icon}
       {status.replace('_', ' ').toUpperCase()}
     </span>
@@ -236,8 +236,8 @@ export default function PartnerBillingPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base sm:text-lg font-semibold text-foreground">Billing</h1>
-          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">
+          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Billing</h1>
+          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">
             Manage your subscription, view invoices, and update payment methods
           </p>
         </div>
@@ -311,11 +311,11 @@ export default function PartnerBillingPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h2 className="text-lg font-semibold text-foreground">{subData.planDisplayName}</h2>
+                  <h2 className="text-headline font-semibold text-foreground">{subData.planDisplayName}</h2>
                   <StatusBadge status={subData.status} />
                 </div>
-                <p className="text-2xl font-bold text-foreground">
-                  {subData.priceAED.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">AED/month</span>
+                <p className="text-title2 font-bold text-foreground">
+                  {subData.priceAED.toLocaleString()} <span className="text-subhead font-normal text-muted-foreground">AED/month</span>
                 </p>
               </div>
             </div>
@@ -326,28 +326,28 @@ export default function PartnerBillingPage() {
               {subData.status === 'trialing' && daysRemaining !== null && (
                 <div className="space-y-3">
                   {subData.trialMonths && (
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-2 gap-4 text-subhead">
                       <span className="text-muted-foreground">Agreed trial</span>
                       <span className="font-medium text-foreground text-right">
                         {subData.trialMonths} month{subData.trialMonths > 1 ? 's' : ''} free
                       </span>
                     </div>
                   )}
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-2 gap-4 text-subhead">
                     <span className="text-muted-foreground">Current charge</span>
                     <span className="font-semibold text-green-500 text-right">0 AED</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-2 gap-4 text-subhead">
                     <span className="text-muted-foreground">Founding access ends</span>
                     <span className="font-medium text-foreground text-right">{formatDate(subData.trialEnd)}</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-2 gap-4 text-subhead">
                     <span className="text-muted-foreground">First charge</span>
                     <span className="font-medium text-foreground text-right">
                       {subData.priceAED.toLocaleString()} AED
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-blue-500 pt-1">
+                  <div className="flex items-center gap-2 text-caption1 text-blue-500 pt-1">
                     <Clock className="w-3 h-3" />
                     <span>{daysRemaining} days remaining in founding period</span>
                   </div>
@@ -357,11 +357,11 @@ export default function PartnerBillingPage() {
               {/* Active subscription info */}
               {subData.status === 'active' && subData.currentPeriodEnd && !subData.cancelAtPeriodEnd && (
                 <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-2 gap-4 text-subhead">
                     <span className="text-muted-foreground">Next billing</span>
                     <span className="font-medium text-foreground text-right">{formatDate(subData.currentPeriodEnd)}</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-2 gap-4 text-subhead">
                     <span className="text-muted-foreground">Amount</span>
                     <span className="font-medium text-foreground text-right">{subData.priceAED.toLocaleString()} AED</span>
                   </div>
@@ -371,11 +371,11 @@ export default function PartnerBillingPage() {
               {/* Cancellation notice */}
               {subData.cancelAtPeriodEnd && (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-yellow-500">
+                  <div className="flex items-center gap-2 text-subhead text-yellow-500">
                     <AlertCircle className="w-4 h-4" />
                     <span>Subscription ends {formatDate(subData.cancelAt || subData.currentPeriodEnd)}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-caption1 text-muted-foreground">
                     You&apos;ll lose access after this date
                   </p>
                 </div>
@@ -383,11 +383,11 @@ export default function PartnerBillingPage() {
               
               {/* Payment Method Display */}
               {subData.paymentMethod && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mt-3">
+                <div className="flex items-center gap-2 text-subhead text-muted-foreground mt-3">
                   <CreditCard className="w-4 h-4" />
                   <span className="capitalize">{subData.paymentMethod.brand}</span>
                   <span>•••• {subData.paymentMethod.last4}</span>
-                  <span className="text-xs">
+                  <span className="text-caption1">
                     ({subData.paymentMethod.expMonth}/{subData.paymentMethod.expYear})
                   </span>
                 </div>
@@ -402,7 +402,7 @@ export default function PartnerBillingPage() {
                   <button
                     onClick={() => handleCheckout('flow')}
                     disabled={checkoutPlan !== null}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-subhead font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
                   >
                     {checkoutPlan === 'flow' ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
@@ -414,7 +414,7 @@ export default function PartnerBillingPage() {
                   <button
                     onClick={() => handleCheckout('black')}
                     disabled={checkoutPlan !== null}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-800 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-zinc-900 text-white text-subhead font-medium hover:bg-zinc-800 transition-colors disabled:opacity-50"
                   >
                     {checkoutPlan === 'black' ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
@@ -431,7 +431,7 @@ export default function PartnerBillingPage() {
                 <button
                   onClick={handleOpenPortal}
                   disabled={portalLoading}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-subhead font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
                   {portalLoading ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />
@@ -451,13 +451,13 @@ export default function PartnerBillingPage() {
                 <div className="flex items-center gap-3">
                   <Calendar className="w-5 h-5 text-blue-500" />
                   <div>
-                    <p className="text-sm font-medium text-foreground">Upcoming Payment</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-subhead font-medium text-foreground">Upcoming Payment</p>
+                    <p className="text-caption1 text-muted-foreground">
                       {formatDate(upcomingInvoice.dueDate)}
                     </p>
                   </div>
                 </div>
-                <p className="text-lg font-semibold text-foreground">
+                <p className="text-headline font-semibold text-foreground">
                   {formatAED(upcomingInvoice.amount)}
                 </p>
               </div>
@@ -469,24 +469,24 @@ export default function PartnerBillingPage() {
             <div className="p-4">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-muted-foreground" />
-                <h3 className="text-sm font-medium text-foreground">Invoices</h3>
+                <h3 className="text-subhead font-medium text-foreground">Invoices</h3>
               </div>
             </div>
 
             {invoices.length === 0 ? (
               <div className="p-8 text-center">
                 <FileText className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No invoices yet</p>
+                <p className="text-subhead text-muted-foreground">No invoices yet</p>
               </div>
             ) : (
               <Table>
                 <TableHeader className="[&_tr]:border-0">
                   <TableRow className="hover:bg-transparent border-0">
-                    <TableHead className="text-xs">Invoice</TableHead>
-                    <TableHead className="text-xs">Date</TableHead>
-                    <TableHead className="text-xs">Amount</TableHead>
-                    <TableHead className="text-xs">Status</TableHead>
-                    <TableHead className="text-xs text-right">Actions</TableHead>
+                    <TableHead className="text-caption1">Invoice</TableHead>
+                    <TableHead className="text-caption1">Date</TableHead>
+                    <TableHead className="text-caption1">Amount</TableHead>
+                    <TableHead className="text-caption1">Status</TableHead>
+                    <TableHead className="text-caption1 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody className="[&_tr]:border-0">
@@ -494,14 +494,14 @@ export default function PartnerBillingPage() {
                     <TableRow key={invoice.id} className="border-0">
                       <TableCell className="font-medium">
                         <div>
-                          <p className="text-sm">{invoice.number || invoice.id.slice(0, 8)}</p>
-                          <p className="text-xs text-muted-foreground">{invoice.description}</p>
+                          <p className="text-subhead">{invoice.number || invoice.id.slice(0, 8)}</p>
+                          <p className="text-caption1 text-muted-foreground">{invoice.description}</p>
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="text-subhead text-muted-foreground">
                         {formatDate(invoice.created || invoice.paidAt)}
                       </TableCell>
-                      <TableCell className="text-sm font-medium">
+                      <TableCell className="text-subhead font-medium">
                         {formatAED(invoice.amount)}
                       </TableCell>
                       <TableCell>

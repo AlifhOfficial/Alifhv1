@@ -92,7 +92,7 @@ export function LocationBubble({
           {placeName && (
             <p className={cn(
               'font-semibold truncate',
-              compact ? 'text-xs' : 'text-sm',
+              compact ? 'text-caption1' : 'text-subhead',
               isOwn ? 'text-white' : 'text-foreground'
             )}>
               {placeName}
@@ -101,7 +101,7 @@ export function LocationBubble({
           {address && (
             <p className={cn(
               'truncate',
-              compact ? 'text-[10px]' : 'text-xs',
+              compact ? 'text-[10px]' : 'text-caption1',
               isOwn ? 'text-white/80' : 'text-muted-foreground'
             )}>
               {address}
@@ -109,7 +109,7 @@ export function LocationBubble({
           )}
           {!placeName && !address && (
             <p className={cn(
-              compact ? 'text-[10px]' : 'text-xs',
+              compact ? 'text-[10px]' : 'text-caption1',
               isOwn ? 'text-white/80' : 'text-muted-foreground'
             )}>
               {latitude.toFixed(6)}, {longitude.toFixed(6)}

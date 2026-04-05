@@ -102,7 +102,7 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
   return (
     <div className="space-y-3">
       {/* Label */}
-      <label className="text-sm font-semibold text-sidebar-foreground/70">
+      <label className="text-subhead font-semibold text-sidebar-foreground/70">
         Vehicle Identification Number
       </label>
       
@@ -115,13 +115,13 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
           disabled={disabled}
           placeholder="Enter 17-character VIN"
           className={cn(
-            "w-full h-14 bg-transparent text-lg font-mono tracking-[0.15em] uppercase px-0 pr-12 text-sidebar-foreground",
+            "w-full h-14 bg-transparent text-headline font-mono tracking-[0.15em] uppercase px-0 pr-12 text-sidebar-foreground",
             "transition-all duration-200 outline-none",
             status === 'available' && "text-green-500",
             (status === 'taken' || status === 'invalid' || error) && "text-red-500",
             status === 'error' && "text-yellow-500",
             disabled && "opacity-50 cursor-not-allowed",
-            "placeholder:text-sidebar-foreground/30 placeholder:tracking-normal placeholder:text-base"
+            "placeholder:text-sidebar-foreground/30 placeholder:tracking-normal placeholder:text-callout"
           )}
         />
         
@@ -143,12 +143,12 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
       
       {/* Footer - Character count & status message */}
       <div className="flex items-center justify-between">
-        <p className="text-[11px] font-semibold text-sidebar-foreground/70 tabular-nums">
+        <p className="text-caption2 font-semibold text-sidebar-foreground/70 tabular-nums">
           {value.length}/17
         </p>
         {(message || error) && (
           <p className={cn(
-            "text-xs font-semibold",
+            "text-caption1 font-semibold",
             status === 'available' && "text-green-500",
             (status === 'taken' || status === 'invalid' || error) && "text-red-500",
             status === 'error' && "text-yellow-500"

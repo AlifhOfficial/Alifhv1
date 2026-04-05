@@ -13,7 +13,7 @@ export function PricingCompareSection() {
         {/* Simple inline comparison */}
         <div className="max-w-2xl mx-auto">
           
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary text-center mb-8 block">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary text-center mb-8 block">
             What's different
           </span>
 
@@ -26,11 +26,11 @@ export function PricingCompareSection() {
               { label: 'Contracts', others: 'Lock-ins', alifh: 'Month-to-month' },
             ].map((row, i) => (
               <div key={i} className="grid grid-cols-[1fr,1fr,1fr] gap-4 items-center py-3 border-b border-border/30 last:border-0">
-                <span className="text-sm text-muted-foreground">{row.label}</span>
-                <span className="text-sm text-muted-foreground/60 line-through">{row.others}</span>
+                <span className="text-subhead text-muted-foreground">{row.label}</span>
+                <span className="text-subhead text-muted-foreground/60 line-through">{row.others}</span>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-sm font-medium">{row.alifh}</span>
+                  <span className="text-subhead font-medium">{row.alifh}</span>
                 </div>
               </div>
             ))}

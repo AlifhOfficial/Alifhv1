@@ -228,8 +228,8 @@ export function PartnerLeadFunnelsView({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base sm:text-lg font-semibold text-foreground">Lead Funnels</h1>
-          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">View all lead funnels across {partnerName}</p>
+          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Lead Funnels</h1>
+          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">View all lead funnels across {partnerName}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -247,16 +247,16 @@ export function PartnerLeadFunnelsView({
         {!isLoading && stats && (
           <div className="flex flex-wrap items-center gap-6 sm:gap-10">
             <div>
-              <span className="text-xs text-muted-foreground">Total Funnels</span>
-              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.total}</p>
+              <span className="text-caption1 text-muted-foreground">Total Funnels</span>
+              <p className="text-headline sm:text-title3 font-semibold tracking-tight mt-1 text-blue-500">{stats.total}</p>
             </div>
             <div>
-              <span className="text-xs text-muted-foreground">Active</span>
-              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.active}</p>
+              <span className="text-caption1 text-muted-foreground">Active</span>
+              <p className="text-headline sm:text-title3 font-semibold tracking-tight mt-1 text-green-500">{stats.active}</p>
             </div>
             <div>
-              <span className="text-xs text-muted-foreground">Staff Members</span>
-              <p className="text-lg sm:text-xl font-semibold tracking-tight mt-1">{stats.staffCount}</p>
+              <span className="text-caption1 text-muted-foreground">Staff Members</span>
+              <p className="text-headline sm:text-title3 font-semibold tracking-tight mt-1">{stats.staffCount}</p>
             </div>
           </div>
         )}
@@ -271,7 +271,7 @@ export function PartnerLeadFunnelsView({
             placeholder="Search funnels..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
@@ -300,7 +300,7 @@ export function PartnerLeadFunnelsView({
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="text-caption1 text-muted-foreground hover:text-foreground transition-colors"
           >
             Reset
           </button>
@@ -310,10 +310,10 @@ export function PartnerLeadFunnelsView({
       {/* Error */}
       {error && (
         <div className="flex flex-col items-center justify-center py-16 sm:py-20">
-          <p className="text-xs sm:text-sm text-destructive font-medium">Failed to load funnels</p>
+          <p className="text-caption1 sm:text-subhead text-destructive font-medium">Failed to load funnels</p>
           <button
             onClick={handleRefresh}
-            className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="mt-3 text-caption1 text-muted-foreground hover:text-foreground transition-colors"
           >
             Try again
           </button>
@@ -357,7 +357,7 @@ export function PartnerLeadFunnelsView({
           {/* Count */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-caption1 text-muted-foreground">
                 {totalItems} funnel{totalItems !== 1 ? 's' : ''}
                 {selectedStaffFilter !== 'all' && ` by ${staffList.find(s => s.staffId === selectedStaffFilter)?.staffName}`}
               </p>
@@ -366,7 +366,7 @@ export function PartnerLeadFunnelsView({
               )}
             </div>
             {totalPages > 1 && (
-              <p className="text-xs text-muted-foreground">{currentPage} / {totalPages}</p>
+              <p className="text-caption1 text-muted-foreground">{currentPage} / {totalPages}</p>
             )}
           </div>
 
@@ -410,7 +410,7 @@ export function PartnerLeadFunnelsView({
                   <button
                     key={pageNum}
                     onClick={() => updateRoute({ page: pageNum })}
-                    className={`w-8 h-8 rounded-lg text-sm transition-colors ${
+                    className={`w-8 h-8 rounded-lg text-subhead transition-colors ${
                       currentPage === pageNum
                         ? 'bg-secondary text-foreground font-medium'
                         : 'text-muted-foreground hover:bg-secondary/50'
@@ -439,8 +439,8 @@ export function PartnerLeadFunnelsView({
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Filter className="w-4 h-4 text-muted-foreground/40" />
           </div>
-          <p className="text-sm font-medium text-foreground">No lead funnels yet</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">Staff members haven't created any funnels</p>
+          <p className="text-subhead font-medium text-foreground">No lead funnels yet</p>
+          <p className="text-caption1 text-muted-foreground/60 mt-1">Staff members haven't created any funnels</p>
         </div>
       )}
 
@@ -450,11 +450,11 @@ export function PartnerLeadFunnelsView({
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Search className="w-4 h-4 text-muted-foreground/40" />
           </div>
-          <p className="text-sm font-medium text-foreground">No results found</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">Try a different search or filter</p>
+          <p className="text-subhead font-medium text-foreground">No results found</p>
+          <p className="text-caption1 text-muted-foreground/60 mt-1">Try a different search or filter</p>
           <button
             onClick={clearFilters}
-            className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="mt-3 text-caption1 text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear filters
           </button>
@@ -516,16 +516,16 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
                 "w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/50 transition-transform flex-shrink-0",
                 !isExpanded && "-rotate-90"
               )} />
-              <h3 className="text-sm sm:text-base md:text-lg font-bold tracking-tight truncate">{funnel.name}</h3>
+              <h3 className="text-subhead sm:text-callout md:text-headline font-bold tracking-tight truncate">{funnel.name}</h3>
             </div>
             
             {funnel.description && (
-              <p className="text-xs sm:text-sm text-muted-foreground/60 line-clamp-1 mb-1.5 sm:mb-2 ml-5 sm:ml-7">
+              <p className="text-caption1 sm:text-subhead text-muted-foreground/60 line-clamp-1 mb-1.5 sm:mb-2 ml-5 sm:ml-7">
                 {funnel.description}
               </p>
             )}
 
-            <p className="text-[11px] sm:text-xs text-muted-foreground ml-5 sm:ml-7 mb-1.5 sm:mb-2">
+            <p className="text-caption2 sm:text-caption1 text-muted-foreground ml-5 sm:ml-7 mb-1.5 sm:mb-2">
               {funnel.staffName || 'Staff member'} · {new Date(funnel.createdAt).toLocaleDateString()}
             </p>
 
@@ -533,15 +533,15 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
             <div className="flex flex-wrap gap-1 sm:gap-1.5 ml-5 sm:ml-7">
               {filterTags.length > 0 ? (
                 filterTags.slice(0, 5).map((tag, i) => (
-                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-[11px] sm:text-xs font-medium bg-secondary text-muted-foreground rounded-md">
+                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 font-medium bg-secondary text-muted-foreground rounded-md">
                     {tag}
                   </span>
                 ))
               ) : (
-                <span className="text-[11px] sm:text-xs text-muted-foreground/40 italic">All vehicles</span>
+                <span className="text-caption2 sm:text-caption1 text-muted-foreground/40 italic">All vehicles</span>
               )}
               {filterTags.length > 5 && (
-                <span className="px-1.5 sm:px-2 py-0.5 text-[11px] sm:text-xs font-medium bg-secondary text-muted-foreground rounded-md">
+                <span className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 font-medium bg-secondary text-muted-foreground rounded-md">
                   +{filterTags.length - 5} more
                 </span>
               )}
@@ -551,7 +551,7 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
           {/* Right: Active Badge */}
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className={cn(
-              'shrink-0 px-1.5 sm:px-2 py-0.5 text-[11px] sm:text-xs font-semibold rounded-full',
+              'shrink-0 px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 font-semibold rounded-full',
               funnel.isActive 
                 ? 'bg-green-500/10 text-green-600' 
                 : 'bg-muted/50 text-muted-foreground'
@@ -589,7 +589,7 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
               <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center mb-2">
                 <ImageIcon className="w-3.5 h-3.5 text-muted-foreground/40" />
               </div>
-              <p className="text-xs text-muted-foreground/50">No matching listings</p>
+              <p className="text-caption1 text-muted-foreground/50">No matching listings</p>
             </div>
           )}
 
@@ -623,10 +623,10 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
                     </div>
                     {/* Info */}
                     <div className="p-2">
-                      <p className="text-xs sm:text-sm font-semibold truncate">
+                      <p className="text-caption1 sm:text-subhead font-semibold truncate">
                         {listing.year} {listing.make}
                       </p>
-                      <p className="text-xs sm:text-sm font-bold text-blue-600">
+                      <p className="text-caption1 sm:text-subhead font-bold text-blue-600">
                         AED {listing.price.toLocaleString()}
                       </p>
                     </div>
@@ -640,7 +640,7 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
               <button
                 type="button"
                 onClick={onViewAll}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-caption1 sm:text-subhead font-semibold text-primary hover:bg-primary/5 rounded-lg transition-colors"
               >
                 View All →
               </button>

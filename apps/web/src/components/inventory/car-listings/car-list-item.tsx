@@ -248,7 +248,7 @@ export function CarListItem({
           <Link href={`/listings/${id}`} prefetch={false} className="group/title flex-1 min-w-0">
             <div className="flex items-baseline gap-2">
               <h3 className={cn(
-                "text-lg lg:text-[15px] font-bold tracking-tight transition-colors line-clamp-1",
+                "text-headline lg:text-subhead font-bold tracking-tight transition-colors line-clamp-1",
                 isBlkListing 
                   ? "text-zinc-900 dark:text-white group-hover/title:text-zinc-600 dark:group-hover/title:text-zinc-300" 
                   : "text-foreground group-hover/title:text-primary"
@@ -256,7 +256,7 @@ export function CarListItem({
                 {make} {model}
               </h3>
               <span className={cn(
-                "text-sm lg:text-xs font-semibold tabular-nums flex-shrink-0",
+                "text-subhead lg:text-caption1 font-semibold tabular-nums flex-shrink-0",
                 isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
               )}>
                 {year}
@@ -264,7 +264,7 @@ export function CarListItem({
             </div>
             {trim && (
               <p className={cn(
-                "text-xs line-clamp-1 mt-0.5",
+                "text-caption1 line-clamp-1 mt-0.5",
                 isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
               )}>
                 {trim}
@@ -272,7 +272,7 @@ export function CarListItem({
             )}
           </Link>
           <p className={cn(
-            "text-xl lg:text-lg font-black tracking-tight leading-none whitespace-nowrap",
+            "text-title3 lg:text-headline font-black tracking-tight leading-none whitespace-nowrap",
             isBlkListing ? "text-zinc-900 dark:text-white" : "text-blue-600 dark:text-blue-500"
           )}>
             {formatPrice(price)}
@@ -280,7 +280,7 @@ export function CarListItem({
         </div>
 
         {/* Specs Row */}
-        <div className="flex items-center gap-2 lg:gap-1.5 text-sm">
+        <div className="flex items-center gap-2 lg:gap-1.5 text-subhead">
           <span className={cn(
             "font-semibold",
             isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
@@ -360,7 +360,7 @@ export function CarListItem({
               />
             )}
             <span className={cn(
-              "text-sm lg:text-[13px] font-medium",
+              "text-subhead lg:text-footnote font-medium",
               isBlkListing ? "text-zinc-700 dark:text-zinc-200" : "text-foreground"
             )}>
               {displaySellerName}

@@ -11,10 +11,10 @@ export function DifferentiatorsSection() {
         
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             How It Works
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Quality wins.
             <br />
             <span className="text-muted-foreground">Not money.</span>
@@ -27,7 +27,7 @@ export function DifferentiatorsSection() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-6 leading-relaxed">
+        <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center mb-6 leading-relaxed">
           Good photos + honest description = higher rank. No paid boosts. Better listings win.
         </p>
 
@@ -35,7 +35,7 @@ export function DifferentiatorsSection() {
         <div className="text-center mb-12">
           <Link
             href="/how-ranking-works"
-            className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+            className="text-subhead text-primary hover:text-primary/80 transition-colors font-medium"
           >
             See how ranking works →
           </Link>
@@ -64,8 +64,8 @@ export function DifferentiatorsSection() {
           {/* Highlighted Card */}
           <div className="p-6 rounded-xl bg-primary text-primary-foreground">
             <Layout className="w-5 h-5 text-primary-foreground/70 mb-3" />
-            <h3 className="text-base font-semibold mb-1.5">No ads anywhere</h3>
-            <p className="text-sm text-primary-foreground/70 leading-relaxed">
+            <h3 className="text-callout font-semibold mb-1.5">No ads anywhere</h3>
+            <p className="text-subhead text-primary-foreground/70 leading-relaxed">
               Clean pages. Fast loading. Just cars.
             </p>
           </div>
@@ -90,8 +90,8 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
   return (
     <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
       <Icon className="w-5 h-5 text-primary/80 mb-3" />
-      <h3 className="text-base font-semibold mb-1.5">{title}</h3>
-      <p className="text-sm text-muted-foreground leading-relaxed">
+      <h3 className="text-callout font-semibold mb-1.5">{title}</h3>
+      <p className="text-subhead text-muted-foreground leading-relaxed">
         {description}
       </p>
     </div>
@@ -109,14 +109,14 @@ function HumanFirstInfographic() {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-10 lg:gap-20 w-full max-w-5xl">
           {/* Quality Checklist - Left */}
           <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 w-full lg:w-auto">
-            <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-white/40 mb-1 sm:mb-2">What ranks you higher</span>
+            <span className="text-[9px] sm:text-[10px] lg:text-caption1 font-medium text-white/40 mb-1 sm:mb-2">What ranks you higher</span>
             
             <div 
               className="flex items-center gap-2 sm:gap-3 lg:gap-4"
               style={{ animation: 'fade-check-1 6s ease-out infinite' }}
             >
               <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
-              <span className="text-xs sm:text-sm lg:text-base text-white/70">Clear, real photos</span>
+              <span className="text-caption1 sm:text-subhead lg:text-callout text-white/70">Clear, real photos</span>
             </div>
 
             <div 
@@ -124,7 +124,7 @@ function HumanFirstInfographic() {
               style={{ animation: 'fade-check-2 6s ease-out infinite' }}
             >
               <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
-              <span className="text-xs sm:text-sm lg:text-base text-white/70">Honest descriptions</span>
+              <span className="text-caption1 sm:text-subhead lg:text-callout text-white/70">Honest descriptions</span>
             </div>
 
             <div 
@@ -132,7 +132,7 @@ function HumanFirstInfographic() {
               style={{ animation: 'fade-check-3 6s ease-out infinite' }}
             >
               <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
-              <span className="text-xs sm:text-sm lg:text-base text-white/70">Quick responses</span>
+              <span className="text-caption1 sm:text-subhead lg:text-callout text-white/70">Quick responses</span>
             </div>
 
             <div 
@@ -140,7 +140,7 @@ function HumanFirstInfographic() {
               style={{ animation: 'fade-check-4 6s ease-out infinite' }}
             >
               <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-primary flex-shrink-0" />
-              <span className="text-xs sm:text-sm lg:text-base text-white/70">Genuine buyer interest</span>
+              <span className="text-caption1 sm:text-subhead lg:text-callout text-white/70">Genuine buyer interest</span>
             </div>
           </div>
 

@@ -106,12 +106,12 @@ export function EmailSentModal({
       >
         <div className="flex flex-col items-center text-center">
           {/* Title */}
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-title3 font-semibold tracking-tight text-foreground">
             {content.title}
           </h2>
           
           {/* Description */}
-          <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+          <p className="text-footnote text-muted-foreground mt-2 mb-6">
             {content.description}{" "}
             <span className="font-medium text-foreground">{email}</span>
           </p>
@@ -120,7 +120,7 @@ export function EmailSentModal({
           <div className="w-full space-y-3">
             <button
               onClick={onClose}
-              className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="w-full h-11 rounded-xl text-subhead font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               Back to sign in
             </button>
@@ -130,7 +130,7 @@ export function EmailSentModal({
           <button
             onClick={handleResend}
             disabled={countdown > 0 || isResending}
-            className={`mt-5 text-[13px] transition-colors ${countdown > 0 || isResending ? "text-muted-foreground/60 cursor-not-allowed" : "text-muted-foreground/60 hover:text-muted-foreground"}`}
+            className={`mt-5 text-footnote transition-colors ${countdown > 0 || isResending ? "text-muted-foreground/60 cursor-not-allowed" : "text-muted-foreground/60 hover:text-muted-foreground"}`}
           >
             {isResending 
               ? "Sending..." 

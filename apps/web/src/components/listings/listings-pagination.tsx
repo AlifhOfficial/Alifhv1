@@ -36,7 +36,7 @@ export function ListingsPagination({
         <button
           onClick={goToPreviousPage}
           disabled={!canGoBack || isFetching}
-          className="inline-flex h-11 min-w-[120px] items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-sidebar-foreground transition-colors hover:bg-muted/60 active:bg-muted/80 disabled:pointer-events-none disabled:opacity-35 touch-manipulation"
+          className="inline-flex h-11 min-w-[120px] items-center justify-center gap-2 rounded-full px-4 text-subhead font-semibold text-sidebar-foreground transition-colors hover:bg-muted/60 active:bg-muted/80 disabled:pointer-events-none disabled:opacity-35 touch-manipulation"
           aria-label="Previous page"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -47,7 +47,7 @@ export function ListingsPagination({
           <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Page
           </span>
-          <span className="text-base font-semibold text-foreground">
+          <span className="text-callout font-semibold text-foreground">
             {currentPage}
           </span>
         </div>
@@ -55,7 +55,7 @@ export function ListingsPagination({
         <button
           onClick={goToNextPage}
           disabled={!hasNextPage || isFetching}
-          className="inline-flex h-11 min-w-[120px] items-center justify-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-background transition-[opacity,transform] will-change-transform hover:opacity-95 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35 touch-manipulation"
+          className="inline-flex h-11 min-w-[120px] items-center justify-center gap-2 rounded-full bg-foreground px-4 text-subhead font-semibold text-background transition-[opacity,transform] will-change-transform hover:opacity-95 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35 touch-manipulation"
           aria-label="Next page"
         >
           <span>{hasNextPage ? 'Next page' : 'No more'}</span>

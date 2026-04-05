@@ -54,37 +54,37 @@ export function AchievementCard({ achievement, onUpdate, onRemove, onImageUpload
                 </label>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">Award badge / certificate image</p>
+            <p className="text-caption1 text-muted-foreground">Award badge / certificate image</p>
           </div>
           <input
             value={form.title}
             onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
             placeholder="Achievement title"
-            className="w-full h-8 bg-muted/20 rounded px-2 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
+            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
           <input
             value={form.issuer || ''}
             onChange={(e) => setForm(f => ({ ...f, issuer: e.target.value || null }))}
             placeholder="Issuing organization"
-            className="w-full h-8 bg-muted/20 rounded px-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30"
+            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
           <input
             type="number"
             value={form.year || ''}
             onChange={(e) => setForm(f => ({ ...f, year: parseInt(e.target.value) || null }))}
             placeholder="Year"
-            className="w-full h-8 bg-muted/20 rounded px-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30"
+            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
           <div className="flex gap-2">
             <button
               onClick={() => { onUpdate(form); setIsEditing(false); }}
-              className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+              className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
             >
               Save
             </button>
             <button
               onClick={() => { setForm(achievement); setIsEditing(false); }}
-              className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+              className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
             >
               Cancel
             </button>
@@ -101,12 +101,12 @@ export function AchievementCard({ achievement, onUpdate, onRemove, onImageUpload
               </div>
             )}
             <div>
-              <p className="text-sm font-semibold text-foreground">{achievement.title}</p>
+              <p className="text-subhead font-semibold text-foreground">{achievement.title}</p>
               {achievement.issuer && (
-                <p className="text-xs text-muted-foreground mt-0.5">{achievement.issuer}</p>
+                <p className="text-caption1 text-muted-foreground mt-0.5">{achievement.issuer}</p>
               )}
               {achievement.year && (
-                <p className="text-xs text-muted-foreground/70 mt-0.5">{achievement.year}</p>
+                <p className="text-caption1 text-muted-foreground/70 mt-0.5">{achievement.year}</p>
               )}
             </div>
           </div>

@@ -56,12 +56,12 @@ function MagicLinkCallback() {
 
         {/* Message */}
         <div className="space-y-1">
-          <h1 className="text-base font-semibold text-foreground tracking-tight">
+          <h1 className="text-callout font-semibold text-foreground tracking-tight">
             {status === 'loading' && 'Signing you in...'}
             {status === 'success' && 'Welcome back'}
             {status === 'error' && 'Something went wrong'}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-subhead text-muted-foreground">
             {status === 'loading' && 'Verifying your magic link'}
             {status === 'success' && 'Redirecting...'}
             {status === 'error' && 'Please try again'}
@@ -73,7 +73,7 @@ function MagicLinkCallback() {
           <button
             onClick={() => router.push('/')}
             className={cn(
-              "w-full h-10 rounded-lg text-sm font-semibold transition-colors",
+              "w-full h-10 rounded-lg text-subhead font-semibold transition-colors",
               "bg-primary text-primary-foreground hover:bg-primary/90"
             )}
           >

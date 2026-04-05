@@ -41,8 +41,8 @@ export function FavoritesPageClient({ initialStatus, initialListings }: Favorite
     <div className="space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base sm:text-lg font-semibold text-foreground">Favorites</h1>
-          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">{validFavoriteIds.length} saved</p>
+          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Favorites</h1>
+          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">{validFavoriteIds.length} saved</p>
         </div>
         <button
           onClick={handleRefresh}
@@ -64,7 +64,7 @@ export function FavoritesPageClient({ initialStatus, initialListings }: Favorite
 
       {error && (
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-red-500">{error}</p>
+          <p className="text-caption1 sm:text-subhead text-red-500">{error}</p>
         </div>
       )}
 
@@ -74,8 +74,8 @@ export function FavoritesPageClient({ initialStatus, initialListings }: Favorite
             <div className="flex items-center justify-center min-h-[40vh]">
               <div className="text-center max-w-xs">
                 <Heart className="w-8 h-8 mx-auto text-muted-foreground/20 mb-4" strokeWidth={1.5} />
-                <h3 className="text-sm font-semibold text-foreground mb-1">No favorites yet</h3>
-                <p className="text-xs text-muted-foreground/60 leading-relaxed">
+                <h3 className="text-subhead font-semibold text-foreground mb-1">No favorites yet</h3>
+                <p className="text-caption1 text-muted-foreground/60 leading-relaxed">
                   Tap the heart icon on any listing to save it here
                 </p>
               </div>

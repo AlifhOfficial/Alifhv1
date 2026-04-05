@@ -2,7 +2,7 @@
  * Label Component
  * 
  * Follows Revvup Design Philosophy:
- * - Small text (text-sm)
+ * - Small text (text-subhead)
  * - Semantic colors
  */
 
@@ -19,7 +19,7 @@ const Label = React.forwardRef<
   <LabelPrimitive.Root
     ref={ref}
     className={cn(
-      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+      "text-subhead font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
       className
     )}
     {...props}

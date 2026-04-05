@@ -30,7 +30,7 @@ export function SocialSection({
     <div className="space-y-6">
       {/* Social Media */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Social Media</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Social Media</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <EditableField
             {...getEditableFieldProps('instagramHandle')}
@@ -65,11 +65,11 @@ export function SocialSection({
 
       {/* Press Features */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Press Features</h3>
-        <p className="text-xs text-muted-foreground mb-3">Add media mentions and press coverage</p>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Press Features</h3>
+        <p className="text-caption1 text-muted-foreground mb-3">Add media mentions and press coverage</p>
         <div className="rounded-xl border border-dashed border-border/40 p-8 text-center">
           <Globe className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">Press feature editor coming soon</p>
+          <p className="text-subhead text-muted-foreground">Press feature editor coming soon</p>
         </div>
       </section>
     </div>

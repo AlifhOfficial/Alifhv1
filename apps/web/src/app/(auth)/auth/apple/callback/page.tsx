@@ -95,23 +95,23 @@ export default function AppleCallbackPage() {
         {status === 'loading' && (
           <>
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground mx-auto" />
-            <p className="text-sm text-muted-foreground">{message}</p>
+            <p className="text-subhead text-muted-foreground">{message}</p>
           </>
         )}
         
         {status === 'success' && (
           <>
             <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto" />
-            <p className="text-sm font-medium text-foreground">{message}</p>
-            <p className="text-xs text-muted-foreground">This window will close automatically</p>
+            <p className="text-subhead font-medium text-foreground">{message}</p>
+            <p className="text-caption1 text-muted-foreground">This window will close automatically</p>
           </>
         )}
         
         {status === 'error' && (
           <>
             <XCircle className="h-8 w-8 text-destructive mx-auto" />
-            <p className="text-sm font-medium text-destructive">{message}</p>
-            <p className="text-xs text-muted-foreground">This window will close automatically</p>
+            <p className="text-subhead font-medium text-destructive">{message}</p>
+            <p className="text-caption1 text-muted-foreground">This window will close automatically</p>
           </>
         )}
       </div>

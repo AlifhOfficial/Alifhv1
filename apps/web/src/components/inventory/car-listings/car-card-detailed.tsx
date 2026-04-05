@@ -168,7 +168,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
 
           {!currentImage && (
             <div className="flex h-full items-center justify-center">
-              <span className="text-sm font-medium text-muted-foreground">No photos available</span>
+              <span className="text-subhead font-medium text-muted-foreground">No photos available</span>
             </div>
           )}
           
@@ -194,7 +194,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
 
           {/* Image Counter */}
           {thumbImages.length > 0 && (
-            <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 text-white text-xs font-medium tabular-nums rounded">
+            <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-black/70 text-white text-caption1 font-medium tabular-nums rounded">
               {safeCurrentIndex + 1}/{thumbImages.length}
             </div>
           )}
@@ -380,7 +380,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
       {/* Highlights - Clean minimal list */}
       {allHighlights.length > 0 && (
         <div className="space-y-3">
-          <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
+          <p className="text-footnote uppercase tracking-wider font-bold text-muted-foreground/70">
             Highlights
           </p>
           <div className="flex flex-wrap gap-x-5 gap-y-2.5">
@@ -390,7 +390,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
                 className="flex items-center gap-1.5"
               >
                 <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                <span className="text-sm font-semibold text-foreground">{highlight}</span>
+                <span className="text-subhead font-semibold text-foreground">{highlight}</span>
               </div>
             ))}
           </div>
@@ -403,7 +403,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0 space-y-1.5">
             <h1 className={cn(
-              "text-lg sm:text-xl font-bold tracking-tight",
+              "text-headline sm:text-title3 font-bold tracking-tight",
               listing.isBlkListing ? "text-zinc-900 dark:text-white" : "text-foreground"
             )}>
               {carTitle}
@@ -412,13 +412,13 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
             {/* Price */}
             <div className="flex items-baseline gap-2.5 flex-wrap">
               <p className={cn(
-                "text-xl sm:text-2xl font-black tabular-nums tracking-tight leading-none",
+                "text-title3 sm:text-title2 font-black tabular-nums tracking-tight leading-none",
                 listing.isBlkListing ? "text-zinc-900 dark:text-white" : "text-blue-600 dark:text-blue-500"
               )}>
                 {formatPrice(listing.price)}
               </p>
               {listing.isNegotiable && (
-                <span className="text-sm text-green-500 font-semibold">Negotiable</span>
+                <span className="text-subhead text-green-500 font-semibold">Negotiable</span>
               )}
             </div>
           </div>
@@ -473,7 +473,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
         </div>
 
         {/* Quick Details */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-subhead text-muted-foreground">
           <span className="font-bold tabular-nums text-foreground/80">{formatMileage(listing.mileage)} km</span>
           <span className="text-muted-foreground/40">•</span>
           <span className="font-bold text-foreground/80">{formatEnumValue(listing.specs)} Specs</span>
@@ -487,11 +487,11 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
         {/* VIN */}
         {(listing.vin || listing.vinVisibility === 'private') && (
           <div className="flex items-baseline gap-2.5">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground/70">VIN</span>
+            <span className="text-caption2 uppercase tracking-wider font-bold text-muted-foreground/70">VIN</span>
             {listing.vin ? (
-              <span className="font-mono text-sm font-medium text-muted-foreground/80">{listing.vin}</span>
+              <span className="font-mono text-subhead font-medium text-muted-foreground/80">{listing.vin}</span>
             ) : (
-              <span className="text-sm font-semibold text-green-500">Verified</span>
+              <span className="text-subhead font-semibold text-green-500">Verified</span>
             )}
           </div>
         )}
@@ -500,10 +500,10 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
       {/* Description */}
       {listing.description && (
         <div className="space-y-3">
-          <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
+          <p className="text-footnote uppercase tracking-wider font-bold text-muted-foreground/70">
             Description
           </p>
-          <p className="text-sm font-medium text-muted-foreground leading-relaxed whitespace-pre-line">
+          <p className="text-subhead font-medium text-muted-foreground leading-relaxed whitespace-pre-line">
             {listing.description}
           </p>
         </div>
@@ -511,7 +511,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
 
       {/* Specifications - Two Column with Label/Value rows */}
       <div className="space-y-4">
-        <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
+        <p className="text-footnote uppercase tracking-wider font-bold text-muted-foreground/70">
           Specifications
         </p>
         
@@ -520,56 +520,56 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
           <div className="space-y-0">
             {listing.bodyType && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Body Type</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.bodyType)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Body Type</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.bodyType)}</span>
               </div>
             )}
             {listing.engineSize && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Engine</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.engineSize)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Engine</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.engineSize)}</span>
               </div>
             )}
             {listing.trim && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Trim</span>
-                <span className="text-sm font-semibold text-foreground">{listing.trim}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Trim</span>
+                <span className="text-subhead font-semibold text-foreground">{listing.trim}</span>
               </div>
             )}
             {listing.exteriorColor && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Exterior Color</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.exteriorColor)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Exterior Color</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.exteriorColor)}</span>
               </div>
             )}
             {listing.cylinders && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Cylinders</span>
-                <span className="text-sm font-semibold text-foreground">{listing.cylinders}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Cylinders</span>
+                <span className="text-subhead font-semibold text-foreground">{listing.cylinders}</span>
               </div>
             )}
             {listing.doors && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Doors</span>
-                <span className="text-sm font-semibold text-foreground">{listing.doors}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Doors</span>
+                <span className="text-subhead font-semibold text-foreground">{listing.doors}</span>
               </div>
             )}
             {listing.seatingCapacity && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Seating Capacity</span>
-                <span className="text-sm font-semibold text-foreground">{listing.seatingCapacity} Seater</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Seating Capacity</span>
+                <span className="text-subhead font-semibold text-foreground">{listing.seatingCapacity} Seater</span>
               </div>
             )}
             {listing.steeringSide && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Steering Side</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.steeringSide)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Steering Side</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.steeringSide)}</span>
               </div>
             )}
             {listing.specs && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Regional Specs</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.specs)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Regional Specs</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.specs)}</span>
               </div>
             )}
           </div>
@@ -578,62 +578,62 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
           <div className="space-y-0">
             {listing.transmission && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Transmission</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.transmission)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Transmission</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.transmission)}</span>
               </div>
             )}
             {listing.powerRange && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Power</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.powerRange)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Power</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.powerRange)}</span>
               </div>
             )}
             {listing.fuelType && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Fuel Type</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.fuelType)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Fuel Type</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.fuelType)}</span>
               </div>
             )}
             {listing.interiorColor && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Interior Color</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.interiorColor)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Interior Color</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.interiorColor)}</span>
               </div>
             )}
             {listing.warrantyType && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Warranty</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.warrantyType)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Warranty</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.warrantyType)}</span>
               </div>
             )}
             {listing.sellerType && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Seller Type</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.sellerType)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Seller Type</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.sellerType)}</span>
               </div>
             )}
             {listing.exportStatus && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Export Status</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.exportStatus)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Export Status</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.exportStatus)}</span>
               </div>
             )}
             {listing.engineType && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Engine Type</span>
-                <span className="text-sm font-semibold text-foreground">{formatEnumValue(listing.engineType)}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Engine Type</span>
+                <span className="text-subhead font-semibold text-foreground">{formatEnumValue(listing.engineType)}</span>
               </div>
             )}
             {listing.torque && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Torque</span>
-                <span className="text-sm font-semibold text-foreground">{listing.torque}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Torque</span>
+                <span className="text-subhead font-semibold text-foreground">{listing.torque}</span>
               </div>
             )}
             {listing.fuelEconomy && (
               <div className="flex justify-between py-3">
-                <span className="text-sm font-medium text-muted-foreground/70">Fuel Economy</span>
-                <span className="text-sm font-semibold text-foreground">{listing.fuelEconomy}</span>
+                <span className="text-subhead font-medium text-muted-foreground/70">Fuel Economy</span>
+                <span className="text-subhead font-semibold text-foreground">{listing.fuelEconomy}</span>
               </div>
             )}
           </div>
@@ -643,14 +643,14 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
       {/* Extras / Features */}
       {listing.extras.length > 0 && (
         <div className="space-y-3">
-          <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
+          <p className="text-footnote uppercase tracking-wider font-bold text-muted-foreground/70">
             Features
           </p>
           <div className="flex flex-wrap gap-2">
             {listing.extras.map((extra, idx) => (
               <span 
                 key={idx}
-                className="px-3 py-1.5 text-sm font-semibold text-foreground/80 bg-muted/50 rounded-lg"
+                className="px-3 py-1.5 text-subhead font-semibold text-foreground/80 bg-muted/50 rounded-lg"
               >
                 {extra}
               </span>
@@ -662,14 +662,14 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
       {/* Quick Notes / Owner Remarks */}
       {ownerRemarks.length > 0 && (
         <div className="space-y-3 pt-4">
-          <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
+          <p className="text-footnote uppercase tracking-wider font-bold text-muted-foreground/70">
             Quick Notes
           </p>
           <ul className="space-y-2.5">
             {ownerRemarks.map((remark, idx) => (
               <li 
                 key={idx}
-                className="flex items-start gap-2.5 text-sm text-muted-foreground"
+                className="flex items-start gap-2.5 text-subhead text-muted-foreground"
               >
                 <span className="text-blue-500/60 mt-0.5">•</span>
                 <span className="font-semibold">{remark}</span>
@@ -690,7 +690,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
           <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
             <Play className="w-5 h-5 text-primary ml-0.5" />
           </div>
-          <span className="text-sm font-bold tracking-tight text-foreground">Watch Video</span>
+          <span className="text-subhead font-bold tracking-tight text-foreground">Watch Video</span>
         </a>
       )}
 

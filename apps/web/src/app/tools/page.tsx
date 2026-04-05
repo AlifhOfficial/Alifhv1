@@ -29,8 +29,8 @@ export default function ToolsPage() {
     <div className="max-w-3xl mx-auto px-6 py-12">
       {/* Header */}
       <div className="text-center mb-16">
-        <h1 className="text-2xl font-semibold tracking-tight mb-2">Car Tools</h1>
-        <p className="text-[14px] text-muted-foreground">
+        <h1 className="text-title2 font-semibold tracking-tight mb-2">Car Tools</h1>
+        <p className="text-subhead text-muted-foreground">
           Free calculators for smarter car decisions
         </p>
       </div>
@@ -43,10 +43,10 @@ export default function ToolsPage() {
             href={tool.href}
             className="group flex items-center justify-between py-4 px-1 border-b border-border/30 hover:border-border transition-colors"
           >
-            <span className="text-[15px] font-medium group-hover:text-foreground text-foreground/80 transition-colors">
+            <span className="text-subhead font-medium group-hover:text-foreground text-foreground/80 transition-colors">
               {tool.title}
             </span>
-            <span className="text-[13px] text-muted-foreground">
+            <span className="text-footnote text-muted-foreground">
               {tool.desc}
             </span>
           </Link>
@@ -55,12 +55,12 @@ export default function ToolsPage() {
 
       {/* Footer */}
       <div className="mt-16 text-center">
-        <p className="text-[13px] text-muted-foreground mb-4">
+        <p className="text-footnote text-muted-foreground mb-4">
           Ready to sell your car?
         </p>
         <Link
           href="/sell"
-          className="inline-block text-[13px] font-medium px-5 py-2.5 bg-foreground text-background rounded-full hover:bg-foreground/90 transition-colors"
+          className="inline-block text-footnote font-medium px-5 py-2.5 bg-foreground text-background rounded-full hover:bg-foreground/90 transition-colors"
         >
           List for Free
         </Link>

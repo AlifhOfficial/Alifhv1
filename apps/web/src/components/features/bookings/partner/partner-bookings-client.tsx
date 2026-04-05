@@ -310,8 +310,8 @@ export function PartnerBookingsClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base sm:text-lg font-semibold text-foreground">Bookings</h1>
-          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">{partnerName}</p>
+          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Bookings</h1>
+          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">{partnerName}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -337,7 +337,7 @@ export function PartnerBookingsClient({
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+            className="w-full h-9 sm:h-10 pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
@@ -373,7 +373,7 @@ export function PartnerBookingsClient({
               <button
                 key={tab.key}
                 onClick={() => handleStatusFilterChange(tab.key)}
-                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all whitespace-nowrap ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all whitespace-nowrap ${
                   isActive
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
@@ -390,7 +390,7 @@ export function PartnerBookingsClient({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
-                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs transition-all flex items-center gap-1 whitespace-nowrap ${
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
                     isSecondaryStatusSelected
                       ? 'bg-background text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -412,7 +412,7 @@ export function PartnerBookingsClient({
                   <DropdownMenuItem
                     key={tab.key}
                     onClick={() => handleStatusFilterChange(tab.key)}
-                    className={`text-xs cursor-pointer ${
+                    className={`text-caption1 cursor-pointer ${
                       statusFilter === tab.key ? 'bg-secondary' : ''
                     }`}
                   >
@@ -430,10 +430,10 @@ export function PartnerBookingsClient({
       {/* Error */}
       {error && (
         <div className="flex flex-col items-center justify-center py-16 sm:py-20">
-          <p className="text-xs sm:text-sm text-destructive font-medium">{error}</p>
+          <p className="text-caption1 sm:text-subhead text-destructive font-medium">{error}</p>
           <button
             onClick={() => router.refresh()}
-            className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="mt-3 text-caption1 text-muted-foreground hover:text-foreground transition-colors"
           >
             Try again
           </button>
@@ -483,12 +483,12 @@ export function PartnerBookingsClient({
         <>
           {/* Count */}
           <div className="flex items-center justify-between mb-6">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-caption1 text-muted-foreground">
               {totalBookings} booking{totalBookings !== 1 ? 's' : ''}
               {hasActiveFilters && ` (filtered)`}
             </p>
             {totalPages > 1 && (
-              <p className="text-xs text-muted-foreground">{currentPage} / {totalPages}</p>
+              <p className="text-caption1 text-muted-foreground">{currentPage} / {totalPages}</p>
             )}
           </div>
 
@@ -529,19 +529,19 @@ export function PartnerBookingsClient({
                       {/* Header */}
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-sm sm:text-base font-semibold text-foreground tracking-tight line-clamp-1">
+                          <p className="text-subhead sm:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
                             {booking.listingTitle || `${booking.listingYear || ''} ${booking.listingMake || ''} ${booking.listingModel || ''}`.trim() || 'Vehicle'}
                           </p>
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <User className="w-3.5 h-3.5 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">{booking.userName}</span>
+                            <span className="text-caption1 text-muted-foreground">{booking.userName}</span>
                             {booking.numberOfAttendees && booking.numberOfAttendees > 1 && (
-                              <span className="text-xs text-muted-foreground/60">+{booking.numberOfAttendees - 1}</span>
+                              <span className="text-caption1 text-muted-foreground/60">+{booking.numberOfAttendees - 1}</span>
                             )}
                           </div>
                         </div>
                         <span className={cn(
-                          "text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0",
+                          "text-caption1 font-medium px-2 py-0.5 rounded-full flex-shrink-0",
                           statusConfig?.bg || 'bg-muted',
                           statusConfig?.color || 'text-muted-foreground'
                         )}>
@@ -550,7 +550,7 @@ export function PartnerBookingsClient({
                       </div>
 
                       {/* Date & Time */}
-                      <div className="flex items-center gap-3 text-xs mt-2">
+                      <div className="flex items-center gap-3 text-caption1 mt-2">
                         <span className="flex items-center gap-1.5 text-muted-foreground">
                           <Calendar className="w-3.5 h-3.5" />
                           <span className={cn(
@@ -568,7 +568,7 @@ export function PartnerBookingsClient({
                         </span>
                         {booking.listingPrice && (
                           <span className="hidden sm:flex items-center gap-1.5 text-muted-foreground">
-                            <span className="text-xs">AED</span>
+                            <span className="text-caption1">AED</span>
                             <span className="font-medium text-foreground tabular-nums">
                               {booking.listingPrice.toLocaleString()}
                             </span>
@@ -584,7 +584,7 @@ export function PartnerBookingsClient({
                               e.stopPropagation();
                               copyToken(booking.confirmationToken!);
                             }}
-                            className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors"
+                            className="flex items-center gap-1.5 text-caption1 font-mono text-muted-foreground hover:text-foreground transition-colors"
                             title="Copy booking code"
                           >
                             <span>#{booking.confirmationToken}</span>
@@ -597,7 +597,7 @@ export function PartnerBookingsClient({
                         )}
                         {booking.staffName && (
                           <span className={cn(
-                            "text-xs text-muted-foreground truncate",
+                            "text-caption1 text-muted-foreground truncate",
                             teamMember?.status === 'left' && "opacity-50"
                           )}>
                             {booking.staffName}
@@ -610,7 +610,7 @@ export function PartnerBookingsClient({
                   {/* Details Toggle */}
                   <button
                     onClick={() => setExpandedBooking(isExpanded ? null : booking.id)}
-                    className="w-full flex items-center justify-center gap-1.5 py-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors border-t border-border/20"
+                    className="w-full flex items-center justify-center gap-1.5 py-3 text-caption1 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors border-t border-border/20"
                   >
                     <span>{isExpanded ? 'Hide details' : 'View details'}</span>
                     <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", isExpanded && "rotate-180")} />
@@ -622,18 +622,18 @@ export function PartnerBookingsClient({
                       <div className="grid md:grid-cols-2 gap-6">
                         {/* Contact Info */}
                         <div className="space-y-3">
-                          <p className="text-xs font-medium text-muted-foreground">Contact</p>
+                          <p className="text-caption1 font-medium text-muted-foreground">Contact</p>
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
                               <User className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm font-medium text-foreground">{booking.userName}</span>
+                              <span className="text-subhead font-medium text-foreground">{booking.userName}</span>
                               {booking.numberOfAttendees && booking.numberOfAttendees > 1 && (
-                                <span className="text-xs text-muted-foreground">(+{booking.numberOfAttendees - 1} guests)</span>
+                                <span className="text-caption1 text-muted-foreground">(+{booking.numberOfAttendees - 1} guests)</span>
                               )}
                             </div>
                             <a 
                               href={`mailto:${booking.userEmail}`}
-                              className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
+                              className="flex items-center gap-2 text-subhead text-foreground hover:text-primary transition-colors"
                             >
                               <Mail className="w-4 h-4 text-muted-foreground" />
                               {booking.userEmail}
@@ -641,7 +641,7 @@ export function PartnerBookingsClient({
                             {booking.userPhone && (
                               <a 
                                 href={`tel:${booking.userPhone}`}
-                                className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors"
+                                className="flex items-center gap-2 text-subhead text-foreground hover:text-primary transition-colors"
                               >
                                 <Phone className="w-4 h-4 text-muted-foreground" />
                                 {booking.userPhone}
@@ -652,21 +652,21 @@ export function PartnerBookingsClient({
 
                         {/* Booking Info */}
                         <div className="space-y-3">
-                          <p className="text-xs font-medium text-muted-foreground">Booking Info</p>
+                          <p className="text-caption1 font-medium text-muted-foreground">Booking Info</p>
                           <div className="space-y-2">
                             <div>
-                              <p className="text-xs text-muted-foreground mb-0.5">Date & Time</p>
-                              <p className="text-sm font-medium text-foreground">
+                              <p className="text-caption1 text-muted-foreground mb-0.5">Date & Time</p>
+                              <p className="text-subhead font-medium text-foreground">
                                 {dateInfo.label}, {formatTime(booking.scheduledStartTime)}
                                 {booking.scheduledEndTime && ` – ${formatTime(booking.scheduledEndTime)}`}
                               </p>
                             </div>
                             {booking.confirmationToken && (
                               <div>
-                                <p className="text-xs text-muted-foreground mb-0.5">Confirmation Code</p>
+                                <p className="text-caption1 text-muted-foreground mb-0.5">Confirmation Code</p>
                                 <button
                                   onClick={() => copyToken(booking.confirmationToken!)}
-                                  className="flex items-center gap-1.5 text-sm font-mono font-medium text-foreground hover:text-primary transition-colors"
+                                  className="flex items-center gap-1.5 text-subhead font-mono font-medium text-foreground hover:text-primary transition-colors"
                                 >
                                   {booking.confirmationToken}
                                   {copiedToken === booking.confirmationToken ? (
@@ -679,14 +679,14 @@ export function PartnerBookingsClient({
                             )}
                             {booking.listingPrice && (
                               <div>
-                                <p className="text-xs text-muted-foreground mb-0.5">Vehicle Price</p>
-                                <p className="text-sm font-medium text-foreground">AED {booking.listingPrice.toLocaleString()}</p>
+                                <p className="text-caption1 text-muted-foreground mb-0.5">Vehicle Price</p>
+                                <p className="text-subhead font-medium text-foreground">AED {booking.listingPrice.toLocaleString()}</p>
                               </div>
                             )}
                             <div>
-                              <p className="text-xs text-muted-foreground mb-0.5">Assigned Staff</p>
+                              <p className="text-caption1 text-muted-foreground mb-0.5">Assigned Staff</p>
                               <p className={cn(
-                                "text-sm font-medium",
+                                "text-subhead font-medium",
                                 booking.staffName ? "text-foreground" : "text-muted-foreground/60"
                               )}>
                                 {booking.staffName || 'Unassigned'}
@@ -701,14 +701,14 @@ export function PartnerBookingsClient({
                         <div className="space-y-4">
                           {booking.notes && (
                             <div>
-                              <p className="text-xs font-medium text-muted-foreground mb-1">Customer Notes</p>
-                              <p className="text-sm text-foreground leading-relaxed">{booking.notes}</p>
+                              <p className="text-caption1 font-medium text-muted-foreground mb-1">Customer Notes</p>
+                              <p className="text-subhead text-foreground leading-relaxed">{booking.notes}</p>
                             </div>
                           )}
                           {booking.specialRequests && (
                             <div>
-                              <p className="text-xs font-medium text-muted-foreground mb-1">Special Requests</p>
-                              <p className="text-sm text-foreground leading-relaxed">{booking.specialRequests}</p>
+                              <p className="text-caption1 font-medium text-muted-foreground mb-1">Special Requests</p>
+                              <p className="text-subhead text-foreground leading-relaxed">{booking.specialRequests}</p>
                             </div>
                           )}
                         </div>
@@ -717,10 +717,10 @@ export function PartnerBookingsClient({
                       {/* Cancellation Reason */}
                       {(booking.cancellationReason || booking.cancellationNotes) && (
                         <div className="p-4 rounded-lg bg-destructive/5">
-                          <p className="text-xs font-medium text-destructive mb-1">
+                          <p className="text-caption1 font-medium text-destructive mb-1">
                             Cancelled by {booking.cancelledBy || 'unknown'}
                           </p>
-                          <p className="text-sm text-foreground">
+                          <p className="text-subhead text-foreground">
                             {booking.cancellationNotes || booking.cancellationReason?.replace(/_/g, ' ')}
                           </p>
                         </div>
@@ -729,8 +729,8 @@ export function PartnerBookingsClient({
                       {/* Rejection Reason */}
                       {booking.rejectionReason && (
                         <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
-                          <p className="text-xs font-medium text-red-500 mb-1">Rejection Reason</p>
-                          <p className="text-sm text-foreground">{booking.rejectionReason}</p>
+                          <p className="text-caption1 font-medium text-red-500 mb-1">Rejection Reason</p>
+                          <p className="text-subhead text-foreground">{booking.rejectionReason}</p>
                         </div>
                       )}
 
@@ -780,7 +780,7 @@ export function PartnerBookingsClient({
                   <button
                     key={pageNum}
                     onClick={() => updateRoute({ page: pageNum })}
-                    className={`w-8 h-8 rounded-lg text-sm transition-colors ${
+                    className={`w-8 h-8 rounded-lg text-subhead transition-colors ${
                       currentPage === pageNum
                         ? 'bg-secondary text-foreground font-medium'
                         : 'text-muted-foreground hover:bg-secondary/50'
@@ -809,8 +809,8 @@ export function PartnerBookingsClient({
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Calendar className="w-4 h-4 text-muted-foreground/40" />
           </div>
-          <p className="text-sm font-medium text-foreground">No bookings yet</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">Customer appointments will appear here</p>
+          <p className="text-subhead font-medium text-foreground">No bookings yet</p>
+          <p className="text-caption1 text-muted-foreground/60 mt-1">Customer appointments will appear here</p>
         </div>
       )}
 
@@ -820,11 +820,11 @@ export function PartnerBookingsClient({
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Search className="w-4 h-4 text-muted-foreground/40" />
           </div>
-          <p className="text-sm font-medium text-foreground">No results found</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">Try a different search or filter</p>
+          <p className="text-subhead font-medium text-foreground">No results found</p>
+          <p className="text-caption1 text-muted-foreground/60 mt-1">Try a different search or filter</p>
           <button
             onClick={clearFilters}
-            className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="mt-3 text-caption1 text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear filters
           </button>

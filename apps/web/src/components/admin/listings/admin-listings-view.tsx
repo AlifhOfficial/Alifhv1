@@ -323,49 +323,49 @@ export function AdminListingsView() {
       {/* Stats Overview */}
       <section className="space-y-8">
         <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Overview</h3>
+          <h3 className="text-headline font-medium tracking-tight">Overview</h3>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 border-y border-border divide-x divide-border">
           <div 
             className="p-8 text-center"
           >
-            <p className="text-xs text-muted-foreground mb-1">Total</p>
-            <p className="text-xl font-semibold">{stats.all}</p>
+            <p className="text-caption1 text-muted-foreground mb-1">Total</p>
+            <p className="text-title3 font-semibold">{stats.all}</p>
           </div>
           <button 
             onClick={() => setActiveTab('pending')}
             className="p-8 text-center cursor-pointer hover:bg-secondary/10 transition-colors"
           >
-            <p className="text-xs text-muted-foreground mb-1">Pending</p>
-            <p className="text-xl font-semibold text-blue-500">{stats.pending}</p>
+            <p className="text-caption1 text-muted-foreground mb-1">Pending</p>
+            <p className="text-title3 font-semibold text-blue-500">{stats.pending}</p>
           </button>
           <button 
             onClick={() => setActiveTab('public')}
             className="p-8 text-center cursor-pointer hover:bg-secondary/10 transition-colors"
           >
-            <p className="text-xs text-muted-foreground mb-1">Public</p>
-            <p className="text-xl font-semibold text-green-500">{stats.public}</p>
+            <p className="text-caption1 text-muted-foreground mb-1">Public</p>
+            <p className="text-title3 font-semibold text-green-500">{stats.public}</p>
           </button>
           <button 
             onClick={() => setTypeFilter(typeFilter === 'user' ? 'all' : 'user')}
             className={`p-8 text-center cursor-pointer hover:bg-secondary/10 transition-colors ${typeFilter === 'user' ? 'bg-secondary/20' : ''}`}
           >
-            <p className="text-xs text-muted-foreground mb-1">User</p>
-            <p className="text-xl font-semibold">{stats.userListings}</p>
+            <p className="text-caption1 text-muted-foreground mb-1">User</p>
+            <p className="text-title3 font-semibold">{stats.userListings}</p>
           </button>
           <button 
             onClick={() => setTypeFilter(typeFilter === 'partner' ? 'all' : 'partner')}
             className={`p-8 text-center cursor-pointer hover:bg-secondary/10 transition-colors ${typeFilter === 'partner' ? 'bg-secondary/20' : ''}`}
           >
-            <p className="text-xs text-muted-foreground mb-1">Partner</p>
-            <p className="text-xl font-semibold text-blue-500">{stats.partnerListings}</p>
+            <p className="text-caption1 text-muted-foreground mb-1">Partner</p>
+            <p className="text-title3 font-semibold text-blue-500">{stats.partnerListings}</p>
           </button>
           <button 
             onClick={() => setActiveTab('deep_inventory')}
             className="p-8 text-center cursor-pointer hover:bg-secondary/10 transition-colors"
           >
-            <p className="text-xs text-muted-foreground mb-1">Deep Inventory</p>
-            <p className="text-xl font-semibold">{stats.deepInventory}</p>
+            <p className="text-caption1 text-muted-foreground mb-1">Deep Inventory</p>
+            <p className="text-title3 font-semibold">{stats.deepInventory}</p>
           </button>
         </div>
       </section>
@@ -373,7 +373,7 @@ export function AdminListingsView() {
       {/* Tabs & Content */}
       <section className="space-y-8">
         <div className="border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Listings</h3>
+          <h3 className="text-headline font-medium tracking-tight">Listings</h3>
         </div>
 
       {/* Tabs */}
@@ -397,7 +397,7 @@ export function AdminListingsView() {
                 }`}
               >
                 <span>{tab.label}</span>
-                <span className={`ml-2 px-2 py-0.5 rounded-md text-xs ${tab.badgeClass || 'bg-secondary/50 text-muted-foreground'}`}>
+                <span className={`ml-2 px-2 py-0.5 rounded-md text-caption1 ${tab.badgeClass || 'bg-secondary/50 text-muted-foreground'}`}>
                   {tab.count}
                 </span>
               </button>
@@ -415,7 +415,7 @@ export function AdminListingsView() {
           >
             <Archive className="w-4 h-4" />
             <span>Deep Inventory</span>
-            <span className="px-2 py-0.5 rounded-md text-xs bg-secondary/50 text-muted-foreground">
+            <span className="px-2 py-0.5 rounded-md text-caption1 bg-secondary/50 text-muted-foreground">
               {stats.deepInventory}
             </span>
           </button>
@@ -428,7 +428,7 @@ export function AdminListingsView() {
               <button
                 key={filter.key}
                 onClick={() => setDeepInventoryFilter(filter.key)}
-                className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                className={`px-4 py-2 rounded-full text-subhead transition-colors ${
                   deepInventoryFilter === filter.key
                     ? 'bg-blue-500 text-white'
                     : 'border border-border hover:bg-secondary/10'
@@ -451,7 +451,7 @@ export function AdminListingsView() {
             placeholder="Search by make, model, user, email, ID..."
             value={searchInput}
             onChange={(e) => { setSearchInput(e.target.value); debouncedSetSearchTerm(e.target.value); }}
-            className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors pl-6 pr-0 text-sm"
+            className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors pl-6 pr-0 text-subhead"
           />
         </div>
 
@@ -483,14 +483,14 @@ export function AdminListingsView() {
         <button 
           onClick={() => fetchData(true)} 
           disabled={isRefreshing}
-          className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50"
+          className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-subhead transition-colors disabled:opacity-50"
         >
           {isRefreshing ? 'Refreshing...' : 'Refresh'}
         </button>
       </div>
 
       {/* Results count */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
+      <div className="flex items-center justify-between text-caption1 text-muted-foreground">
         <p>
           Showing {filteredListings.length} of {stats.all} listings
           {searchInput && ` • Search: "${searchInput}"`}
@@ -500,13 +500,13 @@ export function AdminListingsView() {
       {/* Error Message */}
       {error && (
         <div className="rounded-xl border border-red-500/20 p-4">
-          <p className="text-sm text-red-500">{error}</p>
+          <p className="text-subhead text-red-500">{error}</p>
         </div>
       )}
 
       {/* Refreshing Indicator */}
       {isRefreshing && (
-        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+        <div className="flex items-center justify-center gap-2 text-subhead text-muted-foreground">
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-foreground"></div>
           Refreshing...
         </div>
@@ -520,7 +520,7 @@ export function AdminListingsView() {
       ) : filteredListings.length === 0 ? (
         <div className="min-h-[300px] flex items-center justify-center">
           <div className="text-center space-y-2">
-            <p className="text-sm text-muted-foreground">No listings found</p>
+            <p className="text-subhead text-muted-foreground">No listings found</p>
           </div>
         </div>
       ) : (
@@ -542,7 +542,7 @@ export function AdminListingsView() {
               <button
                 onClick={loadMore}
                 disabled={isLoadingMore}
-                className="px-6 py-3 rounded-full border border-border hover:bg-secondary/10 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 rounded-full border border-border hover:bg-secondary/10 text-subhead font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoadingMore ? (
                   <span className="flex items-center gap-2">
@@ -604,14 +604,14 @@ export function AdminListingsView() {
             <button 
               onClick={closeDeleteModal}
               disabled={isDeleting}
-              className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50"
+              className="px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-subhead transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={executeDelete}
               disabled={isDeleting}
-              className="px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm transition-colors disabled:opacity-50"
+              className="px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-subhead transition-colors disabled:opacity-50"
             >
               {isDeleting ? 'Deleting...' : 'Delete'}
             </button>

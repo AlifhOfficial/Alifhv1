@@ -74,14 +74,14 @@ export function StaffCancelModal({
             <AlertTriangle className="w-5 h-5 text-destructive" />
           </div>
           
-          <h2 className="text-lg font-semibold text-foreground mb-1.5">Cancel Booking</h2>
-          <p className="text-sm text-muted-foreground/70 mb-5">
+          <h2 className="text-headline font-semibold text-foreground mb-1.5">Cancel Booking</h2>
+          <p className="text-subhead text-muted-foreground/70 mb-5">
             Enter a reason. The customer will be notified.
           </p>
 
           {/* Reason Text Field */}
           <div className="space-y-1.5 mb-3 text-left">
-            <label className="text-xs font-semibold text-muted-foreground/70">
+            <label className="text-caption1 font-semibold text-muted-foreground/70">
               Reason <span className="font-medium text-muted-foreground/50">(optional)</span>
             </label>
             <input
@@ -90,13 +90,13 @@ export function StaffCancelModal({
               onChange={(e) => onReasonChange(e.target.value)}
               placeholder="Enter reason..."
               disabled={isSubmitting}
-              className="w-full h-10 px-3 bg-muted/30 border border-border/40 rounded-lg text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
+              className="w-full h-10 px-3 bg-muted/30 border border-border/40 rounded-lg text-subhead placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
             />
           </div>
 
           {/* Notes Textarea */}
           <div className="space-y-1.5 mb-5 text-left">
-            <label className="text-xs font-semibold text-muted-foreground/70">
+            <label className="text-caption1 font-semibold text-muted-foreground/70">
               Notes <span className="font-medium text-muted-foreground/50">(optional)</span>
             </label>
             <textarea
@@ -105,7 +105,7 @@ export function StaffCancelModal({
               placeholder="Additional details..."
               rows={2}
               disabled={isSubmitting}
-              className="w-full px-3 py-2.5 bg-muted/30 border border-border/40 rounded-lg text-sm resize-none placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
+              className="w-full px-3 py-2.5 bg-muted/30 border border-border/40 rounded-lg text-subhead resize-none placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
             />
           </div>
 
@@ -114,7 +114,7 @@ export function StaffCancelModal({
             <button
               onClick={onSubmit}
               disabled={isSubmitting}
-              className="w-full h-11 bg-destructive text-destructive-foreground rounded-lg text-sm font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
+              className="w-full h-11 bg-destructive text-destructive-foreground rounded-lg text-subhead font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -128,7 +128,7 @@ export function StaffCancelModal({
             <button
               onClick={onClose}
               disabled={isSubmitting}
-              className="w-full h-11 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-50"
+              className="w-full h-11 text-subhead font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-50"
             >
               Go Back
             </button>

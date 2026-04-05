@@ -128,10 +128,10 @@ export function BookingList({
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
         <Icon className={`w-5 h-5 ${config.color} mb-3`} strokeWidth={2} />
-        <h3 className="text-sm font-semibold tracking-tight">
+        <h3 className="text-subhead font-semibold tracking-tight">
           {config.message}
         </h3>
-        <p className="text-xs text-muted-foreground mt-1">
+        <p className="text-caption1 text-muted-foreground mt-1">
           {config.subMessage}
         </p>
       </div>
@@ -141,7 +141,7 @@ export function BookingList({
   return (
     <section className="space-y-3">
       {/* Section Header */}
-      <p className="text-xs text-muted-foreground mb-6">
+      <p className="text-caption1 text-muted-foreground mb-6">
         {bookings.length} booking{bookings.length !== 1 ? 's' : ''}
         {searchQuery && <span> matching "{searchQuery}"</span>}
       </p>

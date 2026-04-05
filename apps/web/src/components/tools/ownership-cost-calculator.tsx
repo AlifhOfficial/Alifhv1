@@ -63,7 +63,7 @@ export function OwnershipCostCalculator() {
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-subhead font-medium mb-2">
               Car Price (AED)
             </label>
             <input
@@ -76,7 +76,7 @@ export function OwnershipCostCalculator() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-subhead font-medium mb-2">
               Years to Own
             </label>
             <select
@@ -92,7 +92,7 @@ export function OwnershipCostCalculator() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-subhead font-medium mb-2">
               Annual Mileage (km)
             </label>
             <input
@@ -105,7 +105,7 @@ export function OwnershipCostCalculator() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-subhead font-medium mb-2">
               Insurance Type
             </label>
             <select
@@ -129,10 +129,10 @@ export function OwnershipCostCalculator() {
         {result && (
           <div className="space-y-4">
             <div className="p-6 bg-primary/10 rounded-lg border border-primary/20">
-              <p className="text-sm text-muted-foreground mb-2">
+              <p className="text-subhead text-muted-foreground mb-2">
                 Total {formData.yearsToOwn}-Year Ownership Cost
               </p>
-              <p className="text-4xl font-bold text-primary">
+              <p className="text-display font-bold text-primary">
                 AED {result.total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </p>
             </div>
@@ -146,7 +146,7 @@ export function OwnershipCostCalculator() {
                 { label: 'Registration', value: result.registration },
               ].map((item) => (
                 <div key={item.label} className="flex justify-between items-center p-3 border rounded-lg">
-                  <span className="text-sm">{item.label}</span>
+                  <span className="text-subhead">{item.label}</span>
                   <span className="font-semibold">
                     AED {item.value.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </span>

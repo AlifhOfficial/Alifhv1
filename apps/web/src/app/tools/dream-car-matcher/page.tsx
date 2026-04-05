@@ -14,8 +14,8 @@ export default function DreamCarMatcherPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">✨ Dream Car Matcher</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="text-display font-bold mb-4">✨ Dream Car Matcher</h1>
+          <p className="text-headline text-muted-foreground">
             Find your perfect car based on your lifestyle and needs
           </p>
         </div>
@@ -25,7 +25,7 @@ export default function DreamCarMatcherPage() {
 
         {/* CTA Section */}
         <div className="mt-16 text-center p-8 border rounded-lg bg-muted/50">
-          <h2 className="text-2xl font-bold mb-2">Found your dream car?</h2>
+          <h2 className="text-title2 font-bold mb-2">Found your dream car?</h2>
           <p className="text-muted-foreground mb-6">
             Browse our marketplace to find it for real!
           </p>

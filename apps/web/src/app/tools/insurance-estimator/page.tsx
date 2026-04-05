@@ -13,8 +13,8 @@ export default function InsuranceEstimatorPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Car Insurance Estimator</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="text-display font-bold mb-4">Car Insurance Estimator</h1>
+          <p className="text-headline text-muted-foreground">
             Get rough insurance cost estimate for your car in UAE
           </p>
         </div>
@@ -47,7 +47,7 @@ export default function InsuranceEstimatorPage() {
             <li>Nationality (some variations)</li>
           </ul>
 
-          <p className="text-sm text-muted-foreground mt-8">
+          <p className="text-subhead text-muted-foreground mt-8">
             <strong>Note:</strong> This is an estimate only. Get official quotes from insurance providers.
           </p>
         </div>

@@ -15,10 +15,10 @@ export function AboutHeroSection() {
         
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             About Revvup
           </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             A Better Way to Buy & Sell Cars.
             <br />
             <span className="text-muted-foreground">In the UAE.</span>
@@ -38,7 +38,7 @@ export function AboutHeroSection() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+        <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
           No listing fees. No pay-to-rank schemes. No hidden agendas. 
           Just a clean platform for people who want to buy or sell cars without the games.
         </p>
@@ -46,18 +46,18 @@ export function AboutHeroSection() {
         {/* Stats */}
         <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40">
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-primary">Dubai</div>
-            <div className="text-sm text-muted-foreground">Built here</div>
+            <div className="text-title2 font-bold tracking-tight text-primary">Dubai</div>
+            <div className="text-subhead text-muted-foreground">Built here</div>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-primary">100%</div>
-            <div className="text-sm text-muted-foreground">Independent</div>
+            <div className="text-title2 font-bold tracking-tight text-primary">100%</div>
+            <div className="text-subhead text-muted-foreground">Independent</div>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <div className="text-2xl font-bold tracking-tight text-primary">0</div>
-            <div className="text-sm text-muted-foreground">Listing fees</div>
+            <div className="text-title2 font-bold tracking-tight text-primary">0</div>
+            <div className="text-subhead text-muted-foreground">Listing fees</div>
           </div>
         </div>
 

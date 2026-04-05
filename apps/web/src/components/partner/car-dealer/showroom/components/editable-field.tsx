@@ -32,7 +32,7 @@ export const EditableField = React.memo(function EditableField({
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-muted-foreground/70 mb-1">{label}</p>
+          <p className="text-subhead font-semibold text-muted-foreground/70 mb-1">{label}</p>
           {isEditing ? (
             <div className="flex flex-col gap-2">
               {type === 'textarea' ? (
@@ -43,7 +43,7 @@ export const EditableField = React.memo(function EditableField({
                   placeholder={placeholder}
                   maxLength={maxLength}
                   rows={4}
-                  className="flex-1 bg-muted/20 rounded-lg p-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
+                  className="flex-1 bg-muted/20 rounded-lg p-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') onCancel();
                   }}
@@ -59,7 +59,7 @@ export const EditableField = React.memo(function EditableField({
                   }}
                   placeholder={placeholder}
                   maxLength={maxLength}
-                  className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') onSave();
                     if (e.key === 'Escape') onCancel();
@@ -70,25 +70,25 @@ export const EditableField = React.memo(function EditableField({
                 <button
                   onClick={(e) => { e.stopPropagation(); onSave(); }}
                   disabled={isUpdating}
-                  className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                  className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                 >
                   {isUpdating ? 'Saving...' : 'Save'}
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); onCancel(); }}
-                  className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                  className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
                 >
                   Cancel
                 </button>
                 {maxLength && (
-                  <span className="text-xs text-muted-foreground/50 ml-auto">
+                  <span className="text-caption1 text-muted-foreground/50 ml-auto">
                     {String(value || '').length}/{maxLength}
                   </span>
                 )}
               </div>
             </div>
           ) : (
-            <p className="text-sm font-medium text-foreground">
+            <p className="text-subhead font-medium text-foreground">
               {value || <span className="text-muted-foreground/50">Tap to add</span>}
             </p>
           )}

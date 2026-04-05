@@ -175,7 +175,7 @@ function CategoryAccordion({
         onClick={onToggle}
         className="group w-full flex items-center justify-between py-3.5 text-left transition-colors"
       >
-        <span className="text-[15px] font-medium text-foreground/90 group-hover:text-foreground transition-colors">
+        <span className="text-subhead font-medium text-foreground/90 group-hover:text-foreground transition-colors">
           {name}
         </span>
         <div className="flex items-center justify-center w-5 h-5 rounded-full border border-border/60 group-hover:border-border transition-colors">
@@ -197,9 +197,9 @@ function CategoryAccordion({
                 }`} 
               />
               <div className="space-y-0.5">
-                <p className="text-sm font-medium text-foreground/80">{feature.name}</p>
+                <p className="text-subhead font-medium text-foreground/80">{feature.name}</p>
                 {feature.description && (
-                  <p className="text-[13px] text-muted-foreground leading-relaxed">{feature.description}</p>
+                  <p className="text-footnote text-muted-foreground leading-relaxed">{feature.description}</p>
                 )}
               </div>
             </div>
@@ -263,10 +263,10 @@ export function PricingFeaturesSection() {
 
         {/* Section Header */}
         <div className="mb-16 border-t border-border/20 pt-16">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-2">
+          <h2 className="text-title2 sm:text-title1 font-semibold tracking-tight mb-2">
             Full feature breakdown
           </h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-subhead">
             Everything included in each plan
           </p>
         </div>
@@ -279,14 +279,14 @@ export function PricingFeaturesSection() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/40">
               <div className="flex items-center gap-3">
-                <h3 className="text-lg font-semibold tracking-tight">Flow</h3>
-                <span className="text-xs text-muted-foreground tabular-nums">
+                <h3 className="text-headline font-semibold tracking-tight">Flow</h3>
+                <span className="text-caption1 text-muted-foreground tabular-nums">
                   {totalFlowFeatures} features
                 </span>
               </div>
               <button 
                 onClick={toggleAllFlow}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="text-caption1 text-muted-foreground hover:text-foreground transition-colors"
               >
                 {expandedFlow.size > 0 ? 'Collapse all' : 'Expand all'}
               </button>
@@ -312,14 +312,14 @@ export function PricingFeaturesSection() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/40">
               <div className="flex items-center gap-3">
-                <h3 className="text-lg font-semibold tracking-tight">Black adds</h3>
-                <span className="text-xs text-muted-foreground tabular-nums">
+                <h3 className="text-headline font-semibold tracking-tight">Black adds</h3>
+                <span className="text-caption1 text-muted-foreground tabular-nums">
                   {totalBlackFeatures} extras
                 </span>
               </div>
               <button 
                 onClick={toggleAllBlack}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="text-caption1 text-muted-foreground hover:text-foreground transition-colors"
               >
                 {expandedBlack.size > 0 ? 'Collapse all' : 'Expand all'}
               </button>

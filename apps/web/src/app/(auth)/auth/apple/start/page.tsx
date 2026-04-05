@@ -43,7 +43,7 @@ export default function AppleStartPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="text-center">
-          <p className="text-sm text-destructive">{error}</p>
+          <p className="text-subhead text-destructive">{error}</p>
         </div>
       </div>
     );
@@ -53,7 +53,7 @@ export default function AppleStartPage() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="text-center space-y-3">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground mx-auto" />
-        <p className="text-sm text-muted-foreground">Connecting to Apple...</p>
+        <p className="text-subhead text-muted-foreground">Connecting to Apple...</p>
       </div>
     </div>
   );

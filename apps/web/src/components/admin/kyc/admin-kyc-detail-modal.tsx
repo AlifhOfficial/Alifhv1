@@ -80,15 +80,15 @@ function InfoRow({
     <div className="py-2.5 border-b border-border/20 last:border-0 flex items-start justify-between gap-4">
       <div className="flex items-center gap-2">
         {Icon && <Icon className="w-4 h-4 text-muted-foreground" />}
-        <span className="text-sm font-semibold text-muted-foreground/70">{label}</span>
+        <span className="text-subhead font-semibold text-muted-foreground/70">{label}</span>
       </div>
       <span className={cn(
-        "text-sm font-medium text-right max-w-[60%] break-all",
+        "text-subhead font-medium text-right max-w-[60%] break-all",
         highlight === 'good' && "text-green-500",
         highlight === 'bad' && "text-red-500",
         highlight === 'warning' && "text-amber-500",
         !highlight && "text-foreground",
-        mono && "font-mono text-xs"
+        mono && "font-mono text-caption1"
       )}>
         {displayValue}
       </span>
@@ -119,23 +119,23 @@ function ScoreCard({
       "p-4 rounded-lg text-center border",
       isGood ? "bg-green-500/10 border-green-500/20" : hasScore ? "bg-red-500/10 border-red-500/20" : "bg-muted/20 border-border/40"
     )}>
-      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+      <p className="text-caption1 text-muted-foreground mb-1">{label}</p>
       {hasScore ? (
         <p className={cn(
-          "text-xl font-bold",
+          "text-title3 font-bold",
           isGood ? "text-green-500" : "text-red-500"
         )}>
           {Math.round(score)}%
         </p>
       ) : status ? (
         <p className={cn(
-          "text-sm font-semibold",
+          "text-subhead font-semibold",
           status === 'Approved' ? "text-green-500" : "text-red-500"
         )}>
           {status}
         </p>
       ) : (
-        <p className="text-lg font-semibold text-muted-foreground">—</p>
+        <p className="text-headline font-semibold text-muted-foreground">—</p>
       )}
     </div>
   );
@@ -160,14 +160,14 @@ function ImageViewer({
     return (
       <div className="flex flex-col items-center justify-center p-8 rounded-xl bg-muted/20 border border-border/40">
         <Camera className="w-8 h-8 text-muted-foreground/30 mb-2" />
-        <p className="text-xs text-muted-foreground">{label} not available</p>
+        <p className="text-caption1 text-muted-foreground">{label} not available</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-muted-foreground font-medium">{label}</p>
+      <p className="text-caption1 text-muted-foreground font-medium">{label}</p>
       <div 
         className="relative cursor-pointer group rounded-xl overflow-hidden border border-border/40"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -209,7 +209,7 @@ function CollapsibleSection({
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between border-b border-border/40 pb-2 hover:text-primary transition-colors"
       >
-        <h3 className="text-base font-medium tracking-tight">{title}</h3>
+        <h3 className="text-callout font-medium tracking-tight">{title}</h3>
         {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
       </button>
       {isOpen && children}
@@ -254,7 +254,7 @@ function StatusBadge({ status }: { status: KycRecordData['status'] }) {
   const Icon = config.icon;
 
   return (
-    <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold ${config.color}`}>
+    <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-subhead font-semibold ${config.color}`}>
       <Icon className="w-4 h-4" />
       {config.label}
     </span>
@@ -315,10 +315,10 @@ export function AdminKycDetailModal({
               size="md"
             />
             <div>
-              <h2 className="text-lg font-semibold tracking-tight">
+              <h2 className="text-headline font-semibold tracking-tight">
                 {displayRecord.userName || 'Unknown User'}
               </h2>
-              <p className="text-sm text-muted-foreground">{displayRecord.userEmail}</p>
+              <p className="text-subhead text-muted-foreground">{displayRecord.userEmail}</p>
             </div>
           </div>
           
@@ -339,7 +339,7 @@ export function AdminKycDetailModal({
           {/* Verification Scores */}
           <section className="space-y-4">
             <div className="border-b border-border/40 pb-2">
-              <h3 className="text-base font-medium tracking-tight">Verification Results</h3>
+              <h3 className="text-callout font-medium tracking-tight">Verification Results</h3>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -354,12 +354,12 @@ export function AdminKycDetailModal({
                 status={displayRecord.livenessStatus}
               />
               <div className="p-4 rounded-lg text-center bg-muted/20 border border-border/40">
-                <p className="text-xs text-muted-foreground mb-1">Liveness Method</p>
-                <p className="text-sm font-semibold">{displayRecord.livenessMethod || '—'}</p>
+                <p className="text-caption1 text-muted-foreground mb-1">Liveness Method</p>
+                <p className="text-subhead font-semibold">{displayRecord.livenessMethod || '—'}</p>
               </div>
               <div className="p-4 rounded-lg text-center bg-muted/20 border border-border/40">
-                <p className="text-xs text-muted-foreground mb-1">Est. Age</p>
-                <p className="text-sm font-semibold">
+                <p className="text-caption1 text-muted-foreground mb-1">Est. Age</p>
+                <p className="text-subhead font-semibold">
                   {displayRecord.livenessAgeEstimation ? `${Math.round(displayRecord.livenessAgeEstimation)} yrs` : '—'}
                 </p>
               </div>
@@ -618,7 +618,7 @@ export function AdminKycDetailModal({
           {displayRecord.warnings && displayRecord.warnings.length > 0 && (
             <section className="space-y-4">
               <div className="border-b border-border/40 pb-2">
-                <h3 className="text-base font-medium tracking-tight text-amber-500">Warnings</h3>
+                <h3 className="text-callout font-medium tracking-tight text-amber-500">Warnings</h3>
               </div>
               
               <div className="space-y-2">
@@ -626,8 +626,8 @@ export function AdminKycDetailModal({
                   <div key={index} className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
                     <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-medium text-amber-500">{warning.risk}</p>
-                      <p className="text-sm text-muted-foreground">{warning.description}</p>
+                      <p className="text-subhead font-medium text-amber-500">{warning.risk}</p>
+                      <p className="text-subhead text-muted-foreground">{warning.description}</p>
                     </div>
                   </div>
                 ))}
@@ -639,13 +639,13 @@ export function AdminKycDetailModal({
           {displayRecord.status === 'rejected' && displayRecord.rejectionReason && (
             <section className="space-y-4">
               <div className="border-b border-border/40 pb-2">
-                <h3 className="text-base font-medium tracking-tight text-red-500">Rejection Details</h3>
+                <h3 className="text-callout font-medium tracking-tight text-red-500">Rejection Details</h3>
               </div>
               
               <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
                 <XCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-red-500">
+                  <p className="text-subhead font-medium text-red-500">
                     {displayRecord.rejectionReason}
                   </p>
                 </div>
@@ -661,7 +661,7 @@ export function AdminKycDetailModal({
             <button
               onClick={onReject}
               disabled={isRejecting}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 text-sm font-semibold transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 text-subhead font-semibold transition-colors disabled:opacity-50"
             >
               <ShieldX className="w-4 h-4" />
               {isRejecting ? 'Rejecting...' : 'Reject'}
@@ -669,7 +669,7 @@ export function AdminKycDetailModal({
             <button
               onClick={onApprove}
               disabled={isApproving}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-green-500 hover:bg-green-600 text-white text-subhead font-semibold transition-colors disabled:opacity-50"
             >
               <ShieldCheck className="w-4 h-4" />
               {isApproving ? 'Approving...' : 'Approve KYC'}

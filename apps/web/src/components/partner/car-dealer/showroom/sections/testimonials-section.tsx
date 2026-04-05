@@ -98,7 +98,7 @@ export function TestimonialsSection({
   return (
     <div className="space-y-6">
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Section Media</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Section Media</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
           <ImageUpload
             value={form.testimonialsSectionImage || null}
@@ -125,7 +125,7 @@ export function TestimonialsSection({
       {/* Featured Testimonials */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Featured Testimonials</h3>
+          <h3 className="text-subhead font-bold tracking-tight text-foreground">Featured Testimonials</h3>
           <div className="flex items-center gap-3">
             <label className="flex items-center gap-1.5 cursor-pointer select-none">
               <input
@@ -134,12 +134,12 @@ export function TestimonialsSection({
                 onChange={(e) => setOnlyFiveStar(e.target.checked)}
                 className="w-3.5 h-3.5 accent-yellow-500"
               />
-              <span className="text-xs text-muted-foreground">5★ only</span>
+              <span className="text-caption1 text-muted-foreground">5★ only</span>
             </label>
             <button
               onClick={syncGoogleReviews}
               disabled={isSyncing}
-              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-semibold disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 text-caption1 text-muted-foreground hover:text-foreground font-semibold disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
               {isSyncing ? 'Syncing…' : 'Sync Google'}
@@ -147,7 +147,7 @@ export function TestimonialsSection({
             <button
               onClick={addTestimonial}
               disabled={(form.featuredTestimonials?.length || 0) >= 5}
-              className="inline-flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
             >
               <Plus className="w-3.5 h-3.5" />
               Add
@@ -182,7 +182,7 @@ export function TestimonialsSection({
           {(form.featuredTestimonials?.length || 0) === 0 && (
             <div className="rounded-xl border border-dashed border-border/40 p-8 text-center">
               <MessageSquareQuote className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No testimonials yet</p>
+              <p className="text-subhead text-muted-foreground">No testimonials yet</p>
             </div>
           )}
         </div>
@@ -190,7 +190,7 @@ export function TestimonialsSection({
 
       {/* Section Title */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Display</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Display</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <EditableField
             {...getEditableFieldProps('testimonialsSectionTitle')}

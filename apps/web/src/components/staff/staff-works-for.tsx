@@ -89,8 +89,8 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
       <div className="py-8 lg:py-12">
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <Building2 className="w-12 h-12 text-muted-foreground/40 mb-5" />
-          <h3 className="text-base font-medium mb-2">Unable to Load Dealership</h3>
-          <p className="text-sm text-muted-foreground">
+          <h3 className="text-callout font-medium mb-2">Unable to Load Dealership</h3>
+          <p className="text-subhead text-muted-foreground">
             {error ? String(error) : 'No dealership data available'}
           </p>
         </div>
@@ -116,7 +116,7 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
         />
         <div className="flex-1 min-w-0 pt-0.5 lg:pt-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-lg lg:text-xl font-semibold tracking-tight truncate">{profile.brandName}</h1>
+            <h1 className="text-headline lg:text-title3 font-semibold tracking-tight truncate">{profile.brandName}</h1>
             {isBlackTier ? (
               <span className="flex-shrink-0 px-1.5 h-5 inline-flex items-center text-[9px] font-black tracking-widest uppercase bg-black text-white rounded-sm">
                 BLK
@@ -125,11 +125,11 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
               <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
             )}
           </div>
-          <p className="text-xs lg:text-sm text-muted-foreground mt-1 truncate">{profile.companyNameLegal}</p>
+          <p className="text-caption1 lg:text-subhead text-muted-foreground mt-1 truncate">{profile.companyNameLegal}</p>
 
           {/* Status & Tier badges */}
           <div className="flex items-center gap-2 mt-2">
-            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-green-500/10 text-xs text-green-500">
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-green-500/10 text-caption1 text-green-500">
               <div className="w-1.5 h-1.5 rounded-full bg-current" />
               {profile.status}
             </div>
@@ -153,7 +153,7 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
             {badges.map((badge, idx) => (
               <span
                 key={idx}
-                className="px-3 py-1.5 rounded-lg bg-muted/30 text-foreground text-xs font-semibold border border-border/40 inline-flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-muted/30 text-foreground text-caption1 font-semibold border border-border/40 inline-flex items-center gap-1.5"
               >
                 <Award className="w-3.5 h-3.5 text-amber-500" />
                 {badge}
@@ -168,31 +168,31 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
 
         {/* Contact Information */}
         <section>
-          <h3 className="text-sm font-semibold tracking-tight text-foreground mb-3">Contact Information</h3>
+          <h3 className="text-subhead font-semibold tracking-tight text-foreground mb-3">Contact Information</h3>
           <div className="rounded-xl border border-border/40 bg-sidebar p-4 h-full">
             <div className="space-y-4">
               {location && (
                 <div className="pb-4 border-b border-border/20">
                   <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Location</p>
-                  <p className="text-sm font-medium text-foreground">{location}</p>
+                  <p className="text-subhead font-medium text-foreground">{location}</p>
                 </div>
               )}
               {profile.address && (
                 <div className="pb-4 border-b border-border/20">
                   <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Address</p>
-                  <p className="text-sm font-medium text-foreground">{profile.address}</p>
+                  <p className="text-subhead font-medium text-foreground">{profile.address}</p>
                 </div>
               )}
               {profile.phone && (
                 <div className="pb-4 border-b border-border/20">
                   <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Phone</p>
-                  <p className="text-sm font-medium text-foreground">{profile.phone}</p>
+                  <p className="text-subhead font-medium text-foreground">{profile.phone}</p>
                 </div>
               )}
               {profile.email && (
                 <div className="pb-4 border-b border-border/20">
                   <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Email</p>
-                  <p className="text-sm font-medium text-foreground">{profile.email}</p>
+                  <p className="text-subhead font-medium text-foreground">{profile.email}</p>
                 </div>
               )}
               {profile.website && (
@@ -202,7 +202,7 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
                     href={profile.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-medium text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1.5"
+                    className="text-subhead font-medium text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1.5"
                   >
                     {profile.website.replace(/^https?:\/\/(www\.)?/, '')}
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -217,19 +217,19 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
         <div className="flex flex-col gap-6 lg:gap-8">
           {(profile.experienceYears || profile.googleRating) && (
             <section>
-              <h3 className="text-sm font-semibold tracking-tight text-foreground mb-3">Business Info</h3>
+              <h3 className="text-subhead font-semibold tracking-tight text-foreground mb-3">Business Info</h3>
               <div className="rounded-xl border border-border/40 bg-sidebar p-4">
                 <div className="space-y-4">
                   {profile.experienceYears && (
                     <div className="pb-4 border-b border-border/20">
                       <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Experience</p>
-                      <p className="text-sm font-medium text-foreground">{profile.experienceYears}+ years in business</p>
+                      <p className="text-subhead font-medium text-foreground">{profile.experienceYears}+ years in business</p>
                     </div>
                   )}
                   {profile.googleRating && (
                     <div>
                       <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-1">Google Rating</p>
-                      <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                      <p className="text-subhead font-medium text-foreground flex items-center gap-1.5">
                         <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                         {profile.googleRating} ({profile.googleReviewCount ?? 0} reviews)
                       </p>
@@ -243,16 +243,16 @@ export function StaffWorksFor({ initialProfile }: StaffWorksForProps) {
           {/* Public Showroom Link (Black Tier only) */}
           {isBlackTier && (
             <section>
-              <h3 className="text-sm font-semibold tracking-tight text-foreground mb-3">Public Presence</h3>
+              <h3 className="text-subhead font-semibold tracking-tight text-foreground mb-3">Public Presence</h3>
               <div className="rounded-xl border border-border/40 bg-sidebar p-4">
                 <Link
                   href={`/showroom/${profile.id}`}
-                  className="text-sm font-medium text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1.5"
+                  className="text-subhead font-medium text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1.5"
                 >
                   View Public Showroom
                   <ExternalLink className="w-3.5 h-3.5" />
                 </Link>
-                <p className="text-xs text-muted-foreground/70 mt-1.5">See how customers view your dealership</p>
+                <p className="text-caption1 text-muted-foreground/70 mt-1.5">See how customers view your dealership</p>
               </div>
             </section>
           )}

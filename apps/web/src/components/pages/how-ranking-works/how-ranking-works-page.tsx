@@ -41,10 +41,10 @@ export function HowRankingWorksPage() {
         <div className="max-w-[1600px] mx-auto">
           
           <div className="text-center mb-12 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Transparency
             </span>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               How listings rank.
               <br />
               <span className="text-muted-foreground">No boosts. Just quality.</span>
@@ -64,7 +64,7 @@ export function HowRankingWorksPage() {
           </div>
 
           {/* Description below image */}
-          <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mt-8 leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center mt-8 leading-relaxed">
             Revvup doesn't sell boosts or promoted listings. Visibility is earned through quality, transparency, and genuine buyer interest.
           </p>
         </div>
@@ -75,10 +75,10 @@ export function HowRankingWorksPage() {
         <div className="max-w-[1600px] mx-auto">
           
           <div className="text-center mb-16 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               The rules are simple
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               What works. What doesn't.
             </h2>
           </div>
@@ -88,7 +88,7 @@ export function HowRankingWorksPage() {
             
             {/* What Helps */}
             <div className="p-8 bg-primary text-primary-foreground">
-              <p className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-8">What helps</p>
+              <p className="text-subhead font-semibold uppercase tracking-wider text-white/60 mb-8">What helps</p>
               <div className="space-y-6">
                 {[
                   { title: 'Clear, real photos', desc: 'Multiple angles, good lighting' },
@@ -100,8 +100,8 @@ export function HowRankingWorksPage() {
                   <div key={i} className="flex items-start gap-3">
                     <CheckCircle2 className="w-4 h-4 text-white/60 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-semibold">{item.title}</p>
-                      <p className="text-sm text-white/60">{item.desc}</p>
+                      <p className="text-subhead font-semibold">{item.title}</p>
+                      <p className="text-subhead text-white/60">{item.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -110,7 +110,7 @@ export function HowRankingWorksPage() {
 
             {/* What Doesn't Help */}
             <div className="p-8 bg-sidebar">
-              <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/60 mb-8">What doesn't</p>
+              <p className="text-subhead font-semibold uppercase tracking-wider text-muted-foreground/60 mb-8">What doesn't</p>
               <div className="space-y-6">
                 {[
                   { title: 'Reposting', desc: 'Doesn\'t reset your ranking' },
@@ -122,8 +122,8 @@ export function HowRankingWorksPage() {
                   <div key={i} className="flex items-start gap-3">
                     <XCircle className="w-4 h-4 text-muted-foreground/40 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">{item.title}</p>
-                      <p className="text-sm text-muted-foreground/60">{item.desc}</p>
+                      <p className="text-subhead font-medium text-muted-foreground">{item.title}</p>
+                      <p className="text-subhead text-muted-foreground/60">{item.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -138,10 +138,10 @@ export function HowRankingWorksPage() {
         <div className="max-w-[1600px] mx-auto">
           
           <div className="text-center mb-12 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Why we rank this way
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               Quality wins.
               <br />
               <span className="text-muted-foreground">That's the point.</span>
@@ -154,25 +154,25 @@ export function HowRankingWorksPage() {
           </div>
 
           {/* Description */}
-          <p className="text-base text-muted-foreground max-w-lg mx-auto text-center leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center leading-relaxed">
             Other platforms let you pay for visibility. We don't think that's fair. On Revvup, the best listings rise — not the biggest ad budgets.
           </p>
 
           {/* Stats */}
           <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40 mt-12">
             <div className="text-center space-y-1">
-              <p className="text-xl font-semibold tracking-tight text-primary">0</p>
-              <span className="text-sm text-muted-foreground">Paid boosts</span>
+              <p className="text-title3 font-semibold tracking-tight text-primary">0</p>
+              <span className="text-subhead text-muted-foreground">Paid boosts</span>
             </div>
             <div className="w-px h-10 bg-border/30 hidden sm:block" />
             <div className="text-center space-y-1">
-              <p className="text-xl font-semibold tracking-tight text-primary">0</p>
-              <span className="text-sm text-muted-foreground">Promoted listings</span>
+              <p className="text-title3 font-semibold tracking-tight text-primary">0</p>
+              <span className="text-subhead text-muted-foreground">Promoted listings</span>
             </div>
             <div className="w-px h-10 bg-border/30 hidden sm:block" />
             <div className="text-center space-y-1">
-              <p className="text-xl font-semibold tracking-tight text-primary">100%</p>
-              <span className="text-sm text-muted-foreground">Quality-based</span>
+              <p className="text-title3 font-semibold tracking-tight text-primary">100%</p>
+              <span className="text-subhead text-muted-foreground">Quality-based</span>
             </div>
           </div>
         </div>
@@ -183,10 +183,10 @@ export function HowRankingWorksPage() {
         <div className="max-w-[1600px] mx-auto">
           
           <div className="text-center space-y-4 max-w-lg mx-auto">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Ready?
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               Put effort in.
               <br />
               <span className="text-muted-foreground">Get visibility out.</span>
@@ -195,13 +195,13 @@ export function HowRankingWorksPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
               <button
                 onClick={handleCreateListing}
-                className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+                className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
               >
                 Create a Listing
               </button>
               <Link
                 href="/listings"
-                className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+                className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
               >
                 Browse Listings
               </Link>
@@ -210,7 +210,7 @@ export function HowRankingWorksPage() {
             <div className="pt-2">
               <Link
                 href="/contact"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-subhead text-muted-foreground hover:text-foreground transition-colors"
               >
                 Have questions? Talk to us →
               </Link>
@@ -240,7 +240,7 @@ function WhyQualityInfographic() {
       <div className="flex flex-col-reverse md:flex-row">
         {/* Left - Others: macOS window with paid rankings (80%) */}
         <div className="w-full md:w-[75%] lg:w-[80%] flex flex-col items-center justify-center md:border-r border-t md:border-t-0 border-border/20 p-2 sm:p-4 lg:p-8">
-          <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-muted-foreground/60 mb-2 sm:mb-4 lg:mb-6">Others</span>
+          <span className="text-[9px] sm:text-[10px] lg:text-caption1 font-medium text-muted-foreground/60 mb-2 sm:mb-4 lg:mb-6">Others</span>
           
           {/* macOS Window Frame */}
           <div className="relative w-full max-w-sm sm:max-w-xl lg:max-w-3xl">
@@ -252,25 +252,25 @@ function WhyQualityInfographic() {
                   </div>
                   
                   {/* Paid ranking badges */}
-                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-3 lg:-top-3 lg:-right-4 px-1.5 sm:px-2.5 lg:px-4 py-0.5 sm:py-1 lg:py-2 rounded-md bg-amber-500 text-[6px] sm:text-[9px] lg:text-xs font-bold text-white shadow-xl rotate-3 z-10">
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-3 lg:-top-3 lg:-right-4 px-1.5 sm:px-2.5 lg:px-4 py-0.5 sm:py-1 lg:py-2 rounded-md bg-amber-500 text-[6px] sm:text-[9px] lg:text-caption1 font-bold text-white shadow-xl rotate-3 z-10">
                     PAID #1
                   </div>
-                  <div className="absolute top-5 sm:top-10 lg:top-14 -left-1 sm:-left-2 lg:-left-4 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-amber-600 text-[5px] sm:text-[8px] lg:text-[11px] font-semibold text-white shadow-lg -rotate-6 z-10">
+                  <div className="absolute top-5 sm:top-10 lg:top-14 -left-1 sm:-left-2 lg:-left-4 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-amber-600 text-[5px] sm:text-[8px] lg:text-caption2 font-semibold text-white shadow-lg -rotate-6 z-10">
                     +Boost
                   </div>
-                  <div className="absolute -bottom-0.5 sm:-bottom-2 lg:-bottom-3 right-2 sm:right-6 lg:right-10 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-amber-700 text-[5px] sm:text-[8px] lg:text-[11px] font-semibold text-white shadow-lg rotate-2 z-10">
+                  <div className="absolute -bottom-0.5 sm:-bottom-2 lg:-bottom-3 right-2 sm:right-6 lg:right-10 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-amber-700 text-[5px] sm:text-[8px] lg:text-caption2 font-semibold text-white shadow-lg rotate-2 z-10">
                     Featured
                   </div>
                 </div>
             </MacOSWindow>
           </div>
           
-          <p className="text-[8px] sm:text-[9px] lg:text-xs text-muted-foreground/50 mt-2 sm:mt-4 lg:mt-8 text-center">Pay to rank</p>
+          <p className="text-[8px] sm:text-[9px] lg:text-caption1 text-muted-foreground/50 mt-2 sm:mt-4 lg:mt-8 text-center">Pay to rank</p>
         </div>
         
         {/* Right - Revvup: Quality-based (20%) */}
         <div className="w-full md:w-[25%] lg:w-[20%] flex flex-col items-center justify-center py-4 md:py-4 px-3 sm:p-4 lg:p-6">
-          <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-primary mb-2 sm:mb-3 lg:mb-4">Revvup</span>
+          <span className="text-[9px] sm:text-[10px] lg:text-caption1 font-medium text-primary mb-2 sm:mb-3 lg:mb-4">Revvup</span>
           
           <div className="flex flex-col items-center text-center">
             <div 
@@ -279,8 +279,8 @@ function WhyQualityInfographic() {
             >
               <CheckCircle2 className="w-6 h-6 sm:w-10 sm:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14" />
             </div>
-            <span className="text-[9px] sm:text-[10px] lg:text-xs text-primary/80 font-medium mt-1.5 sm:mt-2 lg:mt-3">Quality</span>
-            <span className="text-[8px] sm:text-[9px] lg:text-xs text-primary/60 mt-0.5">ranks</span>
+            <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-primary/80 font-medium mt-1.5 sm:mt-2 lg:mt-3">Quality</span>
+            <span className="text-[8px] sm:text-[9px] lg:text-caption1 text-primary/60 mt-0.5">ranks</span>
           </div>
           
           <p className="text-[7px] sm:text-[8px] lg:text-[10px] text-primary/50 mt-2 sm:mt-4 lg:mt-6">Earn visibility</p>

@@ -48,7 +48,7 @@ export default function CarValuationPage() {
 
       {/* FAQ Section */}
       <section className="mt-12">
-        <h2 className="text-[15px] font-bold tracking-tight text-foreground mb-4">
+        <h2 className="text-subhead font-bold tracking-tight text-foreground mb-4">
           Frequently Asked Questions
         </h2>
         
@@ -60,10 +60,10 @@ export default function CarValuationPage() {
                 value={`item-${index}`}
                 className="border-b border-border/40 last:border-0"
               >
-                <AccordionTrigger className="px-5 py-4 text-sm font-semibold text-foreground hover:no-underline">
+                <AccordionTrigger className="px-5 py-4 text-subhead font-semibold text-foreground hover:no-underline">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="px-5 text-sm text-muted-foreground/70">
+                <AccordionContent className="px-5 text-subhead text-muted-foreground/70">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

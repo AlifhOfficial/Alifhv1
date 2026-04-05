@@ -74,7 +74,7 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
 
   return (
     <div className={cn("space-y-4", className)}>
-      <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">
+      <p className="text-footnote uppercase tracking-wider font-bold text-muted-foreground/70">
         Location
       </p>
 
@@ -83,13 +83,13 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
         <MapPin className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
         <div className="space-y-0.5">
           {sellerData.type === 'partner' && locationData.address && (
-            <p className="text-sm font-bold text-foreground">{locationData.address}</p>
+            <p className="text-subhead font-bold text-foreground">{locationData.address}</p>
           )}
           {locationString && (
             <p className={cn(
               sellerData.type === 'partner' && locationData.address
-                ? "text-sm text-muted-foreground font-semibold"
-                : "text-sm font-bold text-foreground"
+                ? "text-subhead text-muted-foreground font-semibold"
+                : "text-subhead font-bold text-foreground"
             )}>
               {locationString}
             </p>
@@ -103,7 +103,7 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
           href={mapsSearchUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 min-w-[120px] py-2.5 px-4 text-sm font-bold text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+          className="flex-1 min-w-[120px] py-2.5 px-4 text-subhead font-bold text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
         >
           <ExternalLink className="w-4 h-4" />
           View Map
@@ -112,7 +112,7 @@ export function LocationSection({ sellerData, className }: LocationSectionProps)
           href={directionsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 min-w-[120px] py-2.5 px-4 text-sm font-bold text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+          className="flex-1 min-w-[120px] py-2.5 px-4 text-subhead font-bold text-foreground border border-border rounded-full hover:bg-muted/50 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
         >
           <Navigation className="w-4 h-4" />
           Directions

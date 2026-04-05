@@ -85,27 +85,27 @@ export function StatCard({ label, value, subtext, trend, className }: StatCardPr
       "p-4 rounded-xl border border-border bg-card space-y-2",
       className
     )}>
-      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+      <p className="text-caption1 font-medium text-muted-foreground uppercase tracking-wide">
         {label}
       </p>
       <div className="flex items-baseline gap-2">
-        <p className="text-2xl font-semibold text-foreground tabular-nums">
+        <p className="text-title2 font-semibold text-foreground tabular-nums">
           {typeof value === 'number' ? value.toLocaleString() : value}
         </p>
         {trend && TrendIcon && (
-          <span className={cn("flex items-center gap-0.5 text-xs font-medium", trendColor)}>
+          <span className={cn("flex items-center gap-0.5 text-caption1 font-medium", trendColor)}>
             <TrendIcon className="w-3 h-3" />
             {Math.abs(trend.value)}%
           </span>
         )}
       </div>
       {subtext && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-caption1 text-muted-foreground">
           {subtext}
         </p>
       )}
       {trend?.label && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-caption1 text-muted-foreground">
           {trend.label}
         </p>
       )}
@@ -143,9 +143,9 @@ export function AlertCard({ label, count, href, variant = 'neutral', className }
     >
       <div className="flex items-center gap-2">
         <AlertCircle className={cn("w-4 h-4", iconStyles[variant])} />
-        <span className="text-sm font-medium text-foreground">{label}</span>
+        <span className="text-subhead font-medium text-foreground">{label}</span>
       </div>
-      <span className="text-sm font-semibold text-foreground tabular-nums">{count}</span>
+      <span className="text-subhead font-semibold text-foreground tabular-nums">{count}</span>
     </Link>
   );
 }
@@ -157,11 +157,11 @@ export function AlertCard({ label, count, href, variant = 'neutral', className }
 export function TopListings({ title, listings, emptyMessage = "No data", className }: TopListingsProps) {
   return (
     <div className={cn("space-y-3", className)}>
-      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+      <p className="text-caption1 font-medium text-muted-foreground uppercase tracking-wide">
         {title}
       </p>
       {listings.length === 0 ? (
-        <p className="text-sm text-muted-foreground py-4">{emptyMessage}</p>
+        <p className="text-subhead text-muted-foreground py-4">{emptyMessage}</p>
       ) : (
         <div className="space-y-2">
           {listings.map((listing) => (
@@ -184,15 +184,15 @@ export function TopListings({ title, listings, emptyMessage = "No data", classNa
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
+                <p className="text-subhead font-medium text-foreground truncate">
                   {listing.title}
                 </p>
               </div>
               <div className="text-right flex-shrink-0">
-                <p className="text-sm font-semibold text-foreground tabular-nums">
+                <p className="text-subhead font-semibold text-foreground tabular-nums">
                   {typeof listing.stat === 'number' ? listing.stat.toLocaleString() : listing.stat}
                 </p>
-                <p className="text-xs text-muted-foreground">{listing.statLabel}</p>
+                <p className="text-caption1 text-muted-foreground">{listing.statLabel}</p>
               </div>
             </Link>
           ))}
@@ -225,7 +225,7 @@ export function ColdListings({
     <div className={cn("space-y-3", className)}>
       <div className="flex items-center gap-2">
         <Eye className="w-4 h-4 text-muted-foreground" />
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        <p className="text-caption1 font-medium text-muted-foreground uppercase tracking-wide">
           Low Visibility
         </p>
       </div>
@@ -250,17 +250,17 @@ export function ColdListings({
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">
+              <p className="text-subhead font-medium text-foreground truncate">
                 {listing.title}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-caption1 text-muted-foreground">
                 {listing.viewCount} views · {listing.daysSincePublished}d old
               </p>
             </div>
           </Link>
         ))}
       </div>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-caption1 text-muted-foreground">
         Consider updating photos or adjusting price
       </p>
     </div>
@@ -277,8 +277,8 @@ export function ProgressStat({ label, value, max = 100, suffix = '%', className 
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium text-muted-foreground">{label}</p>
-        <p className="text-sm font-semibold text-foreground tabular-nums">
+        <p className="text-caption1 font-medium text-muted-foreground">{label}</p>
+        <p className="text-subhead font-semibold text-foreground tabular-nums">
           {value}{suffix}
         </p>
       </div>
@@ -306,9 +306,9 @@ export function MetricRow({
     <div className={cn("flex items-center justify-between py-2", className)}>
       <div className="flex items-center gap-2">
         {Icon && <Icon className="w-4 h-4 text-muted-foreground" />}
-        <span className="text-sm text-muted-foreground">{label}</span>
+        <span className="text-subhead text-muted-foreground">{label}</span>
       </div>
-      <span className="text-sm font-semibold text-foreground tabular-nums">
+      <span className="text-subhead font-semibold text-foreground tabular-nums">
         {typeof value === 'number' ? value.toLocaleString() : value}
       </span>
     </div>
@@ -328,7 +328,7 @@ export function SectionHeader({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+      <h2 className="text-subhead font-semibold text-foreground">{title}</h2>
       {action}
     </div>
   );
@@ -350,7 +350,7 @@ export function TrendBadge({
   
   return (
     <div className={cn(
-      "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium",
+      "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption1 font-medium",
       isPositive && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
       value < 0 && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
       isNeutral && "bg-muted text-muted-foreground"

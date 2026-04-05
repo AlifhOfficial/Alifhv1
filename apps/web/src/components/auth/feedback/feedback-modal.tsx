@@ -85,11 +85,11 @@ export function FeedbackModal({
           {isLoadingState && (
             <Loader2 className="w-5 h-5 text-muted-foreground animate-spin mx-auto" />
           )}
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">
+          <h2 className="text-headline font-semibold tracking-tight text-foreground">
             {getTitle()}
           </h2>
           {getMessage() && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-subhead text-muted-foreground">
               {getMessage()}
             </p>
           )}
@@ -99,7 +99,7 @@ export function FeedbackModal({
         {(isError || isSuccess) && onClose && (
           <button
             onClick={onClose}
-            className="w-full h-11 px-6 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+            className="w-full h-11 px-6 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors"
           >
             {isError ? "Try again" : "Got it"}
           </button>

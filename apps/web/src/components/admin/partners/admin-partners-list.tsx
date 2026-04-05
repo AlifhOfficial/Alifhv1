@@ -42,13 +42,13 @@ export function AdminPartnersList() {
         {/* Stats */}
         <section className="space-y-6">
           <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight">Overview</h3>
+            <h3 className="text-headline font-medium tracking-tight">Overview</h3>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
             <div className="p-8 flex flex-col gap-3">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Total</span>
-              <span className="text-2xl font-semibold text-foreground">{counts.total}</span>
+              <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Total</span>
+              <span className="text-title2 font-semibold text-foreground">{counts.total}</span>
             </div>
             <button
               onClick={() => setStatusFilter('active')}
@@ -56,8 +56,8 @@ export function AdminPartnersList() {
                 statusFilter === 'active' ? 'bg-secondary/40' : ''
               }`}
             >
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Active</span>
-              <span className="text-2xl font-semibold text-green-500">{counts.active}</span>
+              <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Active</span>
+              <span className="text-title2 font-semibold text-green-500">{counts.active}</span>
             </button>
             <button
               onClick={() => setStatusFilter('suspended')}
@@ -65,8 +65,8 @@ export function AdminPartnersList() {
                 statusFilter === 'suspended' ? 'bg-secondary/40' : ''
               }`}
             >
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Suspended</span>
-              <span className="text-2xl font-semibold text-yellow-500">{counts.suspended}</span>
+              <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Suspended</span>
+              <span className="text-title2 font-semibold text-yellow-500">{counts.suspended}</span>
             </button>
             <button
               onClick={() => setStatusFilter('cancelled')}
@@ -74,8 +74,8 @@ export function AdminPartnersList() {
                 statusFilter === 'cancelled' ? 'bg-secondary/40' : ''
               }`}
             >
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Cancelled</span>
-              <span className="text-2xl font-semibold text-foreground">{counts.cancelled}</span>
+              <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Cancelled</span>
+              <span className="text-title2 font-semibold text-foreground">{counts.cancelled}</span>
             </button>
           </div>
         </section>
@@ -83,11 +83,11 @@ export function AdminPartnersList() {
         {/* Partners List */}
         <section className="space-y-6">
           <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight">Partners</h3>
+            <h3 className="text-headline font-medium tracking-tight">Partners</h3>
             {statusFilter && (
               <button
                 onClick={() => setStatusFilter(undefined)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-subhead text-muted-foreground hover:text-foreground transition-colors"
               >
                 Clear filter
               </button>
@@ -97,7 +97,7 @@ export function AdminPartnersList() {
           {partners.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <Building2 className="w-12 h-12 text-muted-foreground/30 mb-4" />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-subhead text-muted-foreground">
                 {statusFilter ? `No ${statusFilter} partners found` : 'No partners yet'}
               </p>
             </div>
@@ -115,12 +115,12 @@ export function AdminPartnersList() {
                           size="md"
                         />
                         <div>
-                          <h3 className="text-base font-medium text-foreground">{partner.companyNameLegal}</h3>
-                          <p className="text-sm text-muted-foreground">{partner.brandName}</p>
+                          <h3 className="text-callout font-medium text-foreground">{partner.companyNameLegal}</h3>
+                          <p className="text-subhead text-muted-foreground">{partner.brandName}</p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-6 text-sm text-muted-foreground mt-4">
+                      <div className="flex items-center gap-6 text-subhead text-muted-foreground mt-4">
                         <div className="flex items-center gap-2">
                           <span className={`w-2 h-2 rounded-full ${
                             partner.status === 'active' ? 'bg-green-500' :
@@ -160,7 +160,7 @@ export function AdminPartnersList() {
 
                     <button
                       onClick={() => setSelectedPartnerId(partner.id)}
-                      className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors"
+                      className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-subhead font-medium transition-colors"
                     >
                       Manage
                     </button>

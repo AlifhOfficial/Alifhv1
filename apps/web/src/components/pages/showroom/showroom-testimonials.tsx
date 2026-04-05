@@ -34,10 +34,10 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
         
         {/* Header - Above Image */}
         <div className="mb-8 px-4 sm:px-6 lg:px-8">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {showroom.testimonialsSectionTitle || 'Client Stories'}
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             What Our Clients Say
           </h2>
         </div>
@@ -69,7 +69,7 @@ export function ShowroomTestimonials({ showroom }: ShowroomTestimonialsProps) {
         
         {/* Description - Below Image */}
         <div className="mb-8 px-4 sm:px-6 lg:px-8">
-          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-2xl leading-relaxed">
             Real experiences from real people.
           </p>
         </div>
@@ -128,7 +128,7 @@ function TestimonialCard({
       </div>
       
       {/* Content */}
-      <p className="text-sm leading-relaxed text-muted-foreground flex-1">
+      <p className="text-subhead leading-relaxed text-muted-foreground flex-1">
         "{testimonial.content}"
       </p>
 
@@ -145,22 +145,22 @@ function TestimonialCard({
             />
           ) : (
             <div className="w-10 h-10 rounded-full bg-muted/30 flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-semibold text-muted-foreground">
+              <span className="text-subhead font-semibold text-muted-foreground">
                 {testimonial.customerName.charAt(0)}
               </span>
             </div>
           )}
           <div>
-            <p className="text-base font-semibold text-foreground">
+            <p className="text-callout font-semibold text-foreground">
               {testimonial.customerName}
             </p>
             {testimonial.vehiclePurchased && (
-              <p className="text-sm text-muted-foreground mt-0.5">
+              <p className="text-subhead text-muted-foreground mt-0.5">
                 {testimonial.vehiclePurchased}
               </p>
             )}
             {testimonial.source === 'google' && (
-              <p className="text-xs text-muted-foreground/60 mt-0.5">via Google Reviews</p>
+              <p className="text-caption1 text-muted-foreground/60 mt-0.5">via Google Reviews</p>
             )}
           </div>
         </div>

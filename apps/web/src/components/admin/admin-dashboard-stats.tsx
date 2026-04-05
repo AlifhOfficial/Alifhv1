@@ -36,7 +36,7 @@ export function AdminDashboardStats() {
           <XCircle className="w-5 h-5" />
           <h3 className="font-medium">Error Loading Statistics</h3>
         </div>
-        <p className="text-sm text-red-600/80 dark:text-red-400/80">
+        <p className="text-subhead text-red-600/80 dark:text-red-400/80">
           {error instanceof Error ? error.message : 'Failed to load dashboard statistics'}
         </p>
       </div>
@@ -64,8 +64,8 @@ export function AdminDashboardStats() {
             <Activity className="w-6 h-6 text-blue-500" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold">System Overview</h2>
-            <p className="text-sm text-muted-foreground">Monitor platform performance and user activity</p>
+            <h2 className="text-title3 font-semibold">System Overview</h2>
+            <p className="text-subhead text-muted-foreground">Monitor platform performance and user activity</p>
           </div>
         </div>
       </section>
@@ -73,10 +73,10 @@ export function AdminDashboardStats() {
       {/* User Statistics */}
       <section className="space-y-6">
         <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">User Statistics</h3>
+          <h3 className="text-headline font-medium tracking-tight">User Statistics</h3>
           <Link 
             href="/admin-dashboard/users"
-            className="text-sm text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1"
+            className="text-subhead text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1"
           >
             View All
             <ArrowRight className="w-3.5 h-3.5" />
@@ -85,20 +85,20 @@ export function AdminDashboardStats() {
         
         <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Total Users</span>
-            <span className="text-2xl font-semibold text-blue-500">{stats.users.total.toLocaleString()}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Total Users</span>
+            <span className="text-title2 font-semibold text-blue-500">{stats.users.total.toLocaleString()}</span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Regular Users</span>
-            <span className="text-2xl font-semibold text-green-500">{stats.users.user.toLocaleString()}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Regular Users</span>
+            <span className="text-title2 font-semibold text-green-500">{stats.users.user.toLocaleString()}</span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Admins</span>
-            <span className="text-2xl font-semibold text-foreground">{stats.users.admin.toLocaleString()}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Admins</span>
+            <span className="text-title2 font-semibold text-foreground">{stats.users.admin.toLocaleString()}</span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Super Admins</span>
-            <span className="text-2xl font-semibold text-foreground">{stats.users.super_admin.toLocaleString()}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Super Admins</span>
+            <span className="text-title2 font-semibold text-foreground">{stats.users.super_admin.toLocaleString()}</span>
           </div>
         </div>
       </section>
@@ -106,10 +106,10 @@ export function AdminDashboardStats() {
       {/* Partner Statistics */}
       <section className="space-y-6">
         <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Partner Statistics</h3>
+          <h3 className="text-headline font-medium tracking-tight">Partner Statistics</h3>
           <Link 
             href="/admin-dashboard/partners"
-            className="text-sm text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1"
+            className="text-subhead text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1"
           >
             View All
             <ArrowRight className="w-3.5 h-3.5" />
@@ -118,24 +118,24 @@ export function AdminDashboardStats() {
         
         <div className="grid grid-cols-2 md:grid-cols-5 border-y border-border divide-x divide-border bg-background">
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Total</span>
-            <span className="text-2xl font-semibold text-blue-500">{stats.partners.total.toLocaleString()}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Total</span>
+            <span className="text-title2 font-semibold text-blue-500">{stats.partners.total.toLocaleString()}</span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Pending</span>
-            <span className="text-2xl font-semibold text-yellow-500">{stats.partners.pending.toLocaleString()}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Pending</span>
+            <span className="text-title2 font-semibold text-yellow-500">{stats.partners.pending.toLocaleString()}</span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Active</span>
-            <span className="text-2xl font-semibold text-green-500">{stats.partners.active.toLocaleString()}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Active</span>
+            <span className="text-title2 font-semibold text-green-500">{stats.partners.active.toLocaleString()}</span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Suspended</span>
-            <span className="text-2xl font-semibold text-foreground">{stats.partners.suspended.toLocaleString()}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Suspended</span>
+            <span className="text-title2 font-semibold text-foreground">{stats.partners.suspended.toLocaleString()}</span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Cancelled</span>
-            <span className="text-2xl font-semibold text-foreground">{stats.partners.cancelled.toLocaleString()}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Cancelled</span>
+            <span className="text-title2 font-semibold text-foreground">{stats.partners.cancelled.toLocaleString()}</span>
           </div>
         </div>
       </section>
@@ -143,7 +143,7 @@ export function AdminDashboardStats() {
       {/* Quick Actions */}
       <section className="space-y-6">
         <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Quick Actions</h3>
+          <h3 className="text-headline font-medium tracking-tight">Quick Actions</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -157,7 +157,7 @@ export function AdminDashboardStats() {
               </div>
               <h4 className="font-medium">Manage Users</h4>
             </div>
-            <p className="text-sm text-muted-foreground">View, search, and manage user accounts</p>
+            <p className="text-subhead text-muted-foreground">View, search, and manage user accounts</p>
           </Link>
 
           <Link 
@@ -170,7 +170,7 @@ export function AdminDashboardStats() {
               </div>
               <h4 className="font-medium">Manage Partners</h4>
             </div>
-            <p className="text-sm text-muted-foreground">Review and approve partner applications</p>
+            <p className="text-subhead text-muted-foreground">Review and approve partner applications</p>
           </Link>
 
           <Link 
@@ -183,7 +183,7 @@ export function AdminDashboardStats() {
               </div>
               <h4 className="font-medium">Ban Appeals</h4>
             </div>
-            <p className="text-sm text-muted-foreground">Review user ban appeal requests</p>
+            <p className="text-subhead text-muted-foreground">Review user ban appeal requests</p>
           </Link>
         </div>
       </section>

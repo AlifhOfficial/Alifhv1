@@ -137,7 +137,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
       {isOpen && (
         <div className="absolute right-0 top-full mt-3 w-96 bg-sidebar border border-sidebar-border rounded-2xl shadow-2xl z-[70] overflow-hidden">
           <div className="px-4 py-3.5 border-b border-sidebar-border">
-            <h3 className="text-[15px] font-semibold text-sidebar-foreground">Messages</h3>
+            <h3 className="text-subhead font-semibold text-sidebar-foreground">Messages</h3>
           </div>
 
           <div className="max-h-[400px] overflow-y-auto">
@@ -148,7 +148,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
             <Link
               href="/user-dashboard/messaging"
               onClick={() => setIsOpen(false)}
-              className="flex items-center justify-center gap-1.5 px-4 py-3.5 text-sm font-semibold text-primary hover:bg-sidebar-accent transition-colors"
+              className="flex items-center justify-center gap-1.5 px-4 py-3.5 text-subhead font-semibold text-primary hover:bg-sidebar-accent transition-colors"
             >
               View all messages
               <ChevronRight className="w-3.5 h-3.5" />
@@ -217,7 +217,7 @@ function NavbarMessagingDropdown({
     return (
       <div className="flex flex-col items-center justify-center py-14 px-6 text-center gap-3">
         <MessageCircle className="w-10 h-10 text-muted-foreground/30" />
-        <p className="text-sm font-medium text-foreground/60">No messages yet</p>
+        <p className="text-subhead font-medium text-foreground/60">No messages yet</p>
       </div>
     );
   }
@@ -284,7 +284,7 @@ function GroupRow({ group, onSelect }: GroupRowProps) {
         </div>
 
         <span className={cn(
-          'flex-1 text-sm truncate',
+          'flex-1 text-subhead truncate',
           hasUnread ? 'font-semibold text-sidebar-foreground' : 'font-medium text-sidebar-foreground/90'
         )}>
           {displayName}
@@ -339,18 +339,18 @@ function NestedItem({ conversation, onClick }: { conversation: Conversation; onC
     >
       <div className="flex items-center justify-between gap-2 mb-0.5">
         <span className={cn(
-          'text-[13px] truncate',
+          'text-footnote truncate',
           hasUnread ? 'font-semibold text-sidebar-foreground' : 'font-medium text-sidebar-foreground/80'
         )}>
           {listing?.title || 'General'}
         </span>
         {lastMessageDate && (
-          <span className="text-[11px] text-muted-foreground flex-shrink-0">
+          <span className="text-caption2 text-muted-foreground flex-shrink-0">
             {formatDistanceToNow(lastMessageDate, { addSuffix: false })}
           </span>
         )}
       </div>
-      <p className="text-xs truncate text-muted-foreground/60">
+      <p className="text-caption1 truncate text-muted-foreground/60">
         {lastMessagePreview || 'No messages'}
       </p>
     </button>

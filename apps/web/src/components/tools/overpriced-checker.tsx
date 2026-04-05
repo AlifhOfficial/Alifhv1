@@ -38,18 +38,18 @@ export function OverpricedChecker() {
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-2">Asking Price (AED)</label>
+            <label className="block text-subhead font-medium mb-2">Asking Price (AED)</label>
             <input
               type="number"
               placeholder="75000"
-              className="w-full px-4 py-2 border rounded-lg text-lg font-semibold"
+              className="w-full px-4 py-2 border rounded-lg text-headline font-semibold"
               value={formData.askingPrice}
               onChange={(e) => setFormData({ ...formData, askingPrice: e.target.value })}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Brand</label>
+            <label className="block text-subhead font-medium mb-2">Brand</label>
             <input
               type="text"
               placeholder="Toyota"
@@ -60,7 +60,7 @@ export function OverpricedChecker() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Model</label>
+            <label className="block text-subhead font-medium mb-2">Model</label>
             <input
               type="text"
               placeholder="Camry"
@@ -71,7 +71,7 @@ export function OverpricedChecker() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Year</label>
+            <label className="block text-subhead font-medium mb-2">Year</label>
             <input
               type="number"
               placeholder="2020"
@@ -82,7 +82,7 @@ export function OverpricedChecker() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Mileage (km)</label>
+            <label className="block text-subhead font-medium mb-2">Mileage (km)</label>
             <input
               type="number"
               placeholder="50000"
@@ -112,12 +112,12 @@ export function OverpricedChecker() {
               {result.status === 'overpriced' && <TrendingUp className="w-8 h-8 text-red-600" />}
               
               <div>
-                <h3 className="text-xl font-bold">
+                <h3 className="text-title3 font-bold">
                   {result.status === 'great-deal' && 'Great Deal! 🎉'}
                   {result.status === 'fair' && 'Fair Price ✓'}
                   {result.status === 'overpriced' && 'Overpriced ⚠️'}
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-subhead text-muted-foreground">
                   {Math.abs(result.difference).toFixed(1)}% {result.difference > 0 ? 'above' : 'below'} market value
                 </p>
               </div>
@@ -125,11 +125,11 @@ export function OverpricedChecker() {
 
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm">Asking Price:</span>
+                <span className="text-subhead">Asking Price:</span>
                 <span className="font-semibold">AED {parseInt(formData.askingPrice).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm">Market Value:</span>
+                <span className="text-subhead">Market Value:</span>
                 <span className="font-semibold">AED {result.marketValue.toLocaleString()}</span>
               </div>
             </div>

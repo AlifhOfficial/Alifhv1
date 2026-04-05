@@ -90,7 +90,7 @@ export function SignInModal({
           </div>
           
           {/* Tagline - Bottom */}
-          <p className="text-white/40 text-xs font-medium">
+          <p className="text-white/40 text-caption1 font-medium">
             More than a marketplace. Join the Revolution.
           </p>
         </div>
@@ -100,8 +100,8 @@ export function SignInModal({
           {/* Header */}
           <div className="flex items-start justify-between p-6 pb-0">
             <div>
-              <h2 className="text-xl font-semibold tracking-tight text-foreground">Welcome back</h2>
-              <p className="text-[13px] text-muted-foreground mt-1">Sign in to your account</p>
+              <h2 className="text-title3 font-semibold tracking-tight text-foreground">Welcome back</h2>
+              <p className="text-footnote text-muted-foreground mt-1">Sign in to your account</p>
             </div>
             <button
               onClick={() => onOpenChange(false)}
@@ -117,14 +117,14 @@ export function SignInModal({
             {/* Error */}
             {error && (
               <div className="mb-5 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
-                <p className="text-[13px] text-destructive">{error}</p>
+                <p className="text-footnote text-destructive">{error}</p>
               </div>
             )}
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label htmlFor="email" className="text-[13px] font-medium text-muted-foreground">
+                <label htmlFor="email" className="text-footnote font-medium text-muted-foreground">
                   Email
                 </label>
                 <div className="relative">
@@ -134,7 +134,7 @@ export function SignInModal({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="username webauthn"
-                    className="w-full h-11 px-3.5 pr-11 bg-muted/30 border border-border/50 rounded-xl text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all disabled:opacity-50"
+                    className="w-full h-11 px-3.5 pr-11 bg-muted/30 border border-border/50 rounded-xl text-callout text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all disabled:opacity-50"
                     placeholder="you@example.com"
                     required
                     disabled={isLoading || isPasskeyLoading}
@@ -157,13 +157,13 @@ export function SignInModal({
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-[13px] font-medium text-muted-foreground">
+                  <label htmlFor="password" className="text-footnote font-medium text-muted-foreground">
                     Password
                   </label>
                   <button
                     type="button"
                     onClick={onSwitchToForgotPassword}
-                    className="text-[12px] font-medium text-muted-foreground/70 hover:text-foreground transition-colors"
+                    className="text-caption1 font-medium text-muted-foreground/70 hover:text-foreground transition-colors"
                   >
                     Forgot?
                   </button>
@@ -174,7 +174,7 @@ export function SignInModal({
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full h-11 px-3.5 pr-14 bg-muted/30 border border-border/50 rounded-xl text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all disabled:opacity-50"
+                    className="w-full h-11 px-3.5 pr-14 bg-muted/30 border border-border/50 rounded-xl text-callout text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all disabled:opacity-50"
                     placeholder="••••••••"
                     required
                     disabled={isLoading || isPasskeyLoading}
@@ -182,7 +182,7 @@ export function SignInModal({
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[12px] font-semibold text-muted-foreground/60 hover:text-foreground transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-caption1 font-semibold text-muted-foreground/60 hover:text-foreground transition-colors"
                   >
                     {showPassword ? "Hide" : "Show"}
                   </button>
@@ -193,7 +193,7 @@ export function SignInModal({
                 type="submit"
                 disabled={isLoading || isPasskeyLoading || !email || !password}
                 className={cn(
-                  "w-full h-11 rounded-xl text-[15px] font-semibold transition-all",
+                  "w-full h-11 rounded-xl text-subhead font-semibold transition-all",
                   "bg-primary text-primary-foreground hover:bg-primary/90",
                   "disabled:opacity-50 disabled:cursor-not-allowed"
                 )}
@@ -206,7 +206,7 @@ export function SignInModal({
             {(onGoogleSignIn || onSwitchToMagicLink) && (
               <div className="flex items-center gap-4 my-5">
                 <div className="flex-1 h-px bg-border/50" />
-                <span className="text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider">or</span>
+                <span className="text-caption2 font-medium text-muted-foreground/50 uppercase tracking-wider">or</span>
                 <div className="flex-1 h-px bg-border/50" />
               </div>
             )}
@@ -218,7 +218,7 @@ export function SignInModal({
                   <button
                     onClick={onGoogleSignIn}
                     className={cn(
-                      "flex-1 h-11 rounded-xl text-[14px] font-semibold transition-all",
+                      "flex-1 h-11 rounded-xl text-subhead font-semibold transition-all",
                       "border border-border/50 bg-muted/20 text-foreground",
                       "hover:bg-muted/40",
                       "flex items-center justify-center gap-2.5"
@@ -241,7 +241,7 @@ export function SignInModal({
                     onClick={onSwitchToMagicLink}
                     disabled={isLoading}
                     className={cn(
-                      "flex-1 h-11 rounded-xl text-[14px] font-semibold transition-all",
+                      "flex-1 h-11 rounded-xl text-subhead font-semibold transition-all",
                       "border border-border/50 bg-muted/20 text-foreground",
                       "hover:bg-muted/40 disabled:opacity-50"
                     )}
@@ -255,7 +255,7 @@ export function SignInModal({
 
           {/* Footer */}
           <div className="border-t border-border/40 px-6 py-4">
-            <p className="text-[13px] text-muted-foreground text-center">
+            <p className="text-footnote text-muted-foreground text-center">
               Don't have an account?{" "}
               <button
                 onClick={onSwitchToSignUp}

@@ -13,8 +13,8 @@ export default function RegistrationFeeCalculatorPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">RTA Registration Fee Calculator</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="text-display font-bold mb-4">RTA Registration Fee Calculator</h1>
+          <p className="text-headline text-muted-foreground">
             Calculate vehicle registration costs in UAE
           </p>
         </div>
@@ -50,7 +50,7 @@ export default function RegistrationFeeCalculatorPage() {
             <li>Additional fees may apply</li>
           </ul>
 
-          <p className="text-sm text-muted-foreground mt-8">
+          <p className="text-subhead text-muted-foreground mt-8">
             <strong>Note:</strong> Fees are subject to change. Check official RTA/transport authority websites.
           </p>
         </div>

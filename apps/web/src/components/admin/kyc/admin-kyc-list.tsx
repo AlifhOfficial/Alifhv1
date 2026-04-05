@@ -73,7 +73,7 @@ function StatusBadge({ status }: { status: KycRecordData['status'] }) {
   const Icon = config.icon;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${config.color}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-caption1 font-semibold ${config.color}`}>
       <Icon className="w-3.5 h-3.5" />
       {config.label}
     </span>
@@ -101,17 +101,17 @@ function ScoreBadge({
   
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-caption1 text-muted-foreground">{label}</span>
       {score !== null ? (
         <span className={cn(
-          "text-sm font-semibold",
+          "text-subhead font-semibold",
           isGood ? "text-green-500" : "text-red-500"
         )}>
           {Math.round(score)}%
         </span>
       ) : status ? (
         <span className={cn(
-          "text-sm font-semibold",
+          "text-subhead font-semibold",
           status === 'Approved' ? "text-green-500" : "text-red-500"
         )}>
           {status}
@@ -175,25 +175,25 @@ export function AdminKycList() {
       {/* Stats Overview */}
       <section className="space-y-6">
         <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">Overview</h3>
+          <h3 className="text-headline font-medium tracking-tight">Overview</h3>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Total</span>
-            <span className="text-2xl font-semibold text-foreground">{stats?.total ?? 0}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Total</span>
+            <span className="text-title2 font-semibold text-foreground">{stats?.total ?? 0}</span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Pending</span>
-            <span className="text-2xl font-semibold text-amber-500">{stats?.pending ?? 0}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Pending</span>
+            <span className="text-title2 font-semibold text-amber-500">{stats?.pending ?? 0}</span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Approved</span>
-            <span className="text-2xl font-semibold text-green-500">{stats?.approved ?? 0}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Approved</span>
+            <span className="text-title2 font-semibold text-green-500">{stats?.approved ?? 0}</span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest">Rejected</span>
-            <span className="text-2xl font-semibold text-red-500">{stats?.rejected ?? 0}</span>
+            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Rejected</span>
+            <span className="text-title2 font-semibold text-red-500">{stats?.rejected ?? 0}</span>
           </div>
         </div>
       </section>
@@ -201,7 +201,7 @@ export function AdminKycList() {
       {/* Filters & List */}
       <section className="space-y-6">
         <div className="flex items-center justify-between border-b border-border/40 pb-2">
-          <h3 className="text-lg font-medium tracking-tight">KYC Submissions</h3>
+          <h3 className="text-headline font-medium tracking-tight">KYC Submissions</h3>
           
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
             <SelectTrigger className="w-[150px]">
@@ -233,13 +233,13 @@ export function AdminKycList() {
 
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-base font-medium text-foreground">
+                        <h3 className="text-callout font-medium text-foreground">
                           {record.userName || 'Unknown User'}
                         </h3>
                         <StatusBadge status={record.status} />
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex flex-wrap items-center gap-4 text-subhead text-muted-foreground">
                         <div className="flex items-center gap-1.5">
                           <Mail className="w-3.5 h-3.5" />
                           {record.userEmail}
@@ -269,7 +269,7 @@ export function AdminKycList() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleViewDetails(record)}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 hover:bg-muted text-foreground text-sm font-medium transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 hover:bg-muted text-foreground text-subhead font-medium transition-colors"
                     >
                       <Eye className="w-4 h-4" />
                       Details
@@ -278,10 +278,10 @@ export function AdminKycList() {
                 </div>
 
                 {/* Extracted Info & Scores */}
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-4 pt-4 border-t border-border text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-4 pt-4 border-t border-border text-subhead">
                   {/* Extracted Name */}
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">Extracted Name</p>
+                    <p className="text-caption1 text-muted-foreground mb-1">Extracted Name</p>
                     <p className="font-medium">
                       {record.extractedFullName ||
                         (record.extractedFirstName || record.extractedLastName 
@@ -293,13 +293,13 @@ export function AdminKycList() {
 
                   {/* Nationality */}
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">Nationality</p>
+                    <p className="text-caption1 text-muted-foreground mb-1">Nationality</p>
                     <p className="font-medium">{record.extractedNationality || '—'}</p>
                   </div>
 
                   {/* DOB */}
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">Date of Birth</p>
+                    <p className="text-caption1 text-muted-foreground mb-1">Date of Birth</p>
                     <p className="font-medium">{record.extractedDateOfBirth || '—'}</p>
                   </div>
 
@@ -319,7 +319,7 @@ export function AdminKycList() {
 
                   {/* IP Info */}
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">Location</p>
+                    <p className="text-caption1 text-muted-foreground mb-1">Location</p>
                     <p className="font-medium">
                       {record.ipCity && record.ipCountryCode 
                         ? `${record.ipCity}, ${record.ipCountryCode}`
@@ -327,7 +327,7 @@ export function AdminKycList() {
                       }
                     </p>
                     {record.isVpnOrTor && (
-                      <span className="inline-flex items-center gap-1 text-xs text-red-500 font-medium mt-1">
+                      <span className="inline-flex items-center gap-1 text-caption1 text-red-500 font-medium mt-1">
                         <AlertTriangle className="w-3 h-3" />
                         VPN/Tor
                       </span>
@@ -341,7 +341,7 @@ export function AdminKycList() {
                     <button
                       onClick={() => handleApprove(record.id)}
                       disabled={isApproving}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-green-500 hover:bg-green-600 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-green-500 hover:bg-green-600 text-white text-subhead font-semibold transition-colors disabled:opacity-50"
                     >
                       <ShieldCheck className="w-4 h-4" />
                       Approve
@@ -349,7 +349,7 @@ export function AdminKycList() {
                     <button
                       onClick={() => handleReject(record.id)}
                       disabled={isRejecting}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-sm font-semibold transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-subhead font-semibold transition-colors disabled:opacity-50"
                     >
                       <ShieldX className="w-4 h-4" />
                       Reject
@@ -362,8 +362,8 @@ export function AdminKycList() {
                   <div className="flex items-start gap-2 pt-4 mt-4 border-t border-border">
                     <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-xs text-muted-foreground mb-1">Rejection Reason</p>
-                      <p className="text-sm text-red-500 font-medium">
+                      <p className="text-caption1 text-muted-foreground mb-1">Rejection Reason</p>
+                      <p className="text-subhead text-red-500 font-medium">
                         {record.rejectionReason}
                       </p>
                     </div>
@@ -376,7 +376,7 @@ export function AdminKycList() {
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <ShieldCheck className="w-12 h-12 text-muted-foreground/30 mb-4" />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-subhead text-muted-foreground">
               {statusFilter === 'all' 
                 ? 'No KYC submissions yet'
                 : `No ${statusFilter} submissions`

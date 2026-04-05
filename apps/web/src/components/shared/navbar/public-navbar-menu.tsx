@@ -46,7 +46,7 @@ export function PublicNavbarMenu({ navItems }: PublicNavbarMenuProps) {
           >
             <Link
               href={item.href}
-              className={`inline-flex items-baseline rounded-md px-4 py-2.5 text-[15px] font-semibold leading-none tracking-tight transition-colors ${
+              className={`inline-flex items-baseline rounded-md px-4 py-2.5 text-subhead font-semibold leading-none tracking-tight transition-colors ${
                 pathname === item.href
                   ? 'text-foreground'
                   : 'text-muted-foreground hover:text-foreground'

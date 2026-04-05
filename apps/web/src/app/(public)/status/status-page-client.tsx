@@ -84,10 +84,10 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
       <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10 space-y-4">
-            <p className="wordmark-geom text-lg text-foreground">
+            <p className="wordmark-geom text-headline text-foreground">
               Revvup
             </p>
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               System Status
             </span>
           </div>
@@ -96,11 +96,11 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
             <div className="flex items-center justify-center gap-3">
               <div className={`w-2 h-2 rounded-full ${overallConfig.barClass} animate-pulse`} />
               <OverallIcon className={`w-5 h-5 ${overallConfig.textClass}`} />
-              <span className={`text-lg font-semibold ${overallConfig.textClass}`}>
+              <span className={`text-headline font-semibold ${overallConfig.textClass}`}>
                 {overallConfig.label}
               </span>
             </div>
-            <p className="mt-3 text-center text-xs text-muted-foreground">
+            <p className="mt-3 text-center text-caption1 text-muted-foreground">
               Last checked at {lastUpdated}
             </p>
           </div>
@@ -110,10 +110,10 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
       <section className="pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground/70 mb-3">
+            <p className="text-caption1 uppercase tracking-widest text-muted-foreground/70 mb-3">
               Services
             </p>
-            <h2 className="text-xl font-semibold text-foreground tracking-tight">
+            <h2 className="text-title3 font-semibold text-foreground tracking-tight">
               Current Status
             </h2>
           </div>
@@ -131,18 +131,18 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-semibold text-foreground">
+                      <span className="text-subhead font-semibold text-foreground">
                         {service.displayName || service.name}
                       </span>
                       {service.currentLatency > 0 && (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-caption1 text-muted-foreground">
                           {service.currentLatency}ms
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
                       <Icon className={`w-4 h-4 ${config.textClass}`} />
-                      <span className={`text-sm font-medium ${config.textClass}`}>
+                      <span className={`text-subhead font-medium ${config.textClass}`}>
                         {config.serviceLabel}
                       </span>
                     </div>
@@ -162,12 +162,12 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
                       })
                     ) : (
                       <div className="flex-1 rounded-[2px] bg-muted/50 flex items-center justify-center">
-                        <span className="text-xs text-muted-foreground">No history yet</span>
+                        <span className="text-caption1 text-muted-foreground">No history yet</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="flex items-center justify-between text-caption1 text-muted-foreground">
                     <span>90 days ago</span>
                     <span className="font-medium">{service.uptimePercent90d ?? 100}% uptime</span>
                     <span>Today</span>
@@ -182,18 +182,18 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
       <section className="pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground/70 mb-3">
+            <p className="text-caption1 uppercase tracking-widest text-muted-foreground/70 mb-3">
               Incidents
             </p>
-            <h2 className="text-xl font-semibold text-foreground tracking-tight">
+            <h2 className="text-title3 font-semibold text-foreground tracking-tight">
               Recent Activity
             </h2>
           </div>
 
           <div className="rounded-xl border border-border/40 bg-sidebar p-8 text-center">
             <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
-            <p className="text-sm font-medium text-foreground mb-1">No recent incidents</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-subhead font-medium text-foreground mb-1">No recent incidents</p>
+            <p className="text-caption1 text-muted-foreground">
               All systems have been running smoothly.
             </p>
           </div>

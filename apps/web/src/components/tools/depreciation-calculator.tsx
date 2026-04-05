@@ -195,10 +195,10 @@ export function DepreciationCalculator() {
     <div className="space-y-6">
       {/* Specs Origin - Important for UAE */}
       <div>
-        <label className="flex items-center gap-2 text-sm font-medium mb-3">
+        <label className="flex items-center gap-2 text-subhead font-medium mb-3">
           <Globe className="w-4 h-4" />
           Vehicle Specs Origin
-          <span className="text-xs text-amber-600 font-normal">(Major impact on resale)</span>
+          <span className="text-caption1 text-amber-600 font-normal">(Major impact on resale)</span>
         </label>
         <div className="grid grid-cols-3 gap-2">
           {[
@@ -219,19 +219,19 @@ export function DepreciationCalculator() {
                   : "bg-background border-border hover:border-primary/50"
               )}
             >
-              <span className="text-lg">{spec.flag}</span>
-              <p className="text-xs font-medium mt-1">{spec.label}</p>
+              <span className="text-headline">{spec.flag}</span>
+              <p className="text-caption1 font-medium mt-1">{spec.label}</p>
             </button>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
+        <p className="text-caption1 text-muted-foreground mt-2">
           💡 GCC specs hold value best due to warranty support and climate optimization
         </p>
       </div>
 
       {/* Purchase Price */}
       <div>
-        <label className="text-sm font-medium mb-2 block">Original Purchase Price</label>
+        <label className="text-subhead font-medium mb-2 block">Original Purchase Price</label>
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
             AED
@@ -239,7 +239,7 @@ export function DepreciationCalculator() {
           <input
             type="number"
             placeholder="150,000"
-            className="w-full pl-14 pr-4 py-3 border border-border rounded-lg text-lg font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            className="w-full pl-14 pr-4 py-3 border border-border rounded-lg text-headline font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
             value={formData.purchasePrice}
             onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
           />
@@ -249,7 +249,7 @@ export function DepreciationCalculator() {
       {/* Year & Brand Row */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="flex items-center gap-2 text-sm font-medium mb-2">
+          <label className="flex items-center gap-2 text-subhead font-medium mb-2">
             <Calendar className="w-4 h-4" />
             Year Bought
           </label>
@@ -265,7 +265,7 @@ export function DepreciationCalculator() {
         </div>
 
         <div>
-          <label className="flex items-center gap-2 text-sm font-medium mb-2">
+          <label className="flex items-center gap-2 text-subhead font-medium mb-2">
             <Car className="w-4 h-4" />
             Brand
           </label>
@@ -283,7 +283,7 @@ export function DepreciationCalculator() {
 
       {/* Condition */}
       <div>
-        <label className="text-sm font-medium mb-3 block">Vehicle Condition</label>
+        <label className="text-subhead font-medium mb-3 block">Vehicle Condition</label>
         <div className="grid grid-cols-4 gap-2">
           {[
             { id: 'excellent', label: 'Excellent', color: 'text-green-600' },
@@ -301,7 +301,7 @@ export function DepreciationCalculator() {
                   : "bg-background border-border hover:border-primary/50"
               )}
             >
-              <p className={cn("text-sm font-medium", formData.condition === cond.id && cond.color)}>
+              <p className={cn("text-subhead font-medium", formData.condition === cond.id && cond.color)}>
                 {cond.label}
               </p>
             </button>
@@ -312,8 +312,8 @@ export function DepreciationCalculator() {
       {/* Annual Mileage */}
       <div>
         <label className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium">Average Annual Mileage</span>
-          <span className="text-xs font-semibold text-primary">
+          <span className="text-subhead font-medium">Average Annual Mileage</span>
+          <span className="text-caption1 font-semibold text-primary">
             {parseInt(formData.mileagePerYear).toLocaleString()} km/year
           </span>
         </label>
@@ -326,7 +326,7 @@ export function DepreciationCalculator() {
           value={formData.mileagePerYear}
           onChange={(e) => setFormData({ ...formData, mileagePerYear: e.target.value })}
         />
-        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+        <div className="flex justify-between text-caption1 text-muted-foreground mt-1">
           <span>5k km (Low)</span>
           <span className="text-primary">UAE avg: 20k km</span>
           <span>40k km (High)</span>
@@ -348,17 +348,17 @@ export function DepreciationCalculator() {
         <div className="space-y-4 pt-2">
           {/* Current Value */}
           <div className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl border border-primary/20">
-            <p className="text-sm text-muted-foreground mb-2">
+            <p className="text-subhead text-muted-foreground mb-2">
               Estimated Current Value ({currentYear})
             </p>
-            <p className="text-4xl font-bold text-primary">
+            <p className="text-display font-bold text-primary">
               {formatAED(result.currentValue)}
             </p>
             <div className="flex items-center gap-4 mt-3">
-              <span className="text-sm text-red-600 font-medium">
+              <span className="text-subhead text-red-600 font-medium">
                 -{formatAED(result.totalDepreciation)} ({result.percentLost.toFixed(1)}% lost)
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-caption1 text-muted-foreground">
                 ~{formatAED(result.averageYearlyDepreciation)}/year avg
               </span>
             </div>
@@ -366,22 +366,22 @@ export function DepreciationCalculator() {
 
           {/* Depreciation Chart */}
           <div className="border rounded-lg p-4">
-            <p className="text-sm font-medium mb-4">Value Over Time</p>
+            <p className="text-subhead font-medium mb-4">Value Over Time</p>
             <div className="space-y-2">
               {result.yearlyData.map((row) => (
                 <div key={row.year} className="flex items-center gap-3">
-                  <span className="text-xs w-10 text-muted-foreground">{row.year}</span>
+                  <span className="text-caption1 w-10 text-muted-foreground">{row.year}</span>
                   <div className="flex-1 h-6 bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-primary to-primary/70 transition-all duration-500"
                       style={{ width: `${row.percentRetained}%` }}
                     />
                   </div>
-                  <span className="text-xs w-24 text-right font-medium">
+                  <span className="text-caption1 w-24 text-right font-medium">
                     {formatAED(row.value)}
                   </span>
                   {row.depreciation > 0 && (
-                    <span className="text-xs w-20 text-right text-red-500">
+                    <span className="text-caption1 w-20 text-right text-red-500">
                       -{formatAED(row.depreciation)}
                     </span>
                   )}
@@ -395,10 +395,10 @@ export function DepreciationCalculator() {
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+                <p className="text-subhead font-medium text-blue-900 dark:text-blue-100 mb-2">
                   Value Factors
                 </p>
-                <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
+                <ul className="text-caption1 text-blue-800 dark:text-blue-200 space-y-1">
                   {result.insights.map((insight, i) => (
                     <li key={i} className="flex items-start gap-1.5">
                       <CheckCircle2 className="w-3 h-3 mt-0.5 shrink-0" />
@@ -411,7 +411,7 @@ export function DepreciationCalculator() {
           </div>
 
           {/* Disclaimer */}
-          <div className="flex items-start gap-2 text-xs text-muted-foreground">
+          <div className="flex items-start gap-2 text-caption1 text-muted-foreground">
             <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
             <p>
               Estimates based on UAE market trends. Actual values vary by specific model, 

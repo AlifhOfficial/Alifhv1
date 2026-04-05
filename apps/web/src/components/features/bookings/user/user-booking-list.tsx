@@ -101,8 +101,8 @@ export function UserBookingList({
       <div className="flex items-center justify-center min-h-[40vh]">
         <div className="text-center max-w-xs">
           <Icon className={`w-8 h-8 mx-auto mb-4 ${searchQuery ? 'text-muted-foreground/20' : config.color}`} strokeWidth={1.5} />
-          <h3 className="text-sm font-semibold text-foreground mb-1">{config.message}</h3>
-          <p className="text-xs text-muted-foreground/60 leading-relaxed">{config.subMessage}</p>
+          <h3 className="text-subhead font-semibold text-foreground mb-1">{config.message}</h3>
+          <p className="text-caption1 text-muted-foreground/60 leading-relaxed">{config.subMessage}</p>
         </div>
       </div>
     );
@@ -111,7 +111,7 @@ export function UserBookingList({
   return (
     <div>
       {/* Section Header */}
-      <p className="text-[11px] sm:text-xs text-muted-foreground mb-4 sm:mb-6">
+      <p className="text-caption2 sm:text-caption1 text-muted-foreground mb-4 sm:mb-6">
         {bookings.length} booking{bookings.length !== 1 ? 's' : ''}
         {searchQuery && <span> matching "{searchQuery}"</span>}
       </p>

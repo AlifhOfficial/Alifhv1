@@ -46,7 +46,7 @@ const emailTemplate = (content: string) => `
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Revvup</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+<body style="margin: 0; padding: 0; background-color: #FFFFFF; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;">
   <table width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #FFFFFF;">
     <tr>
       <td align="center" style="padding: 40px 20px;">

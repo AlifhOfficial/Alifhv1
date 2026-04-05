@@ -13,8 +13,8 @@ export default function LoanCalculatorPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Car Loan Calculator</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="text-display font-bold mb-4">Car Loan Calculator</h1>
+          <p className="text-headline text-muted-foreground">
             Calculate monthly payments and total loan cost in UAE
           </p>
         </div>

@@ -202,8 +202,8 @@ function CommunicationStatsCards() {
         {cards.map(({ label, value, color }, idx) => (
           <React.Fragment key={label}>
             <div className="text-center min-w-[60px]">
-              <p className={cn("text-xl font-semibold tabular-nums", color)}>{value}</p>
-              <p className="text-xs text-muted-foreground/70 font-medium mt-0.5">{label}</p>
+              <p className={cn("text-title3 font-semibold tabular-nums", color)}>{value}</p>
+              <p className="text-caption1 text-muted-foreground/70 font-medium mt-0.5">{label}</p>
             </div>
             {idx < cards.length - 1 && (
               <div className="h-8 w-px bg-border/40 flex-shrink-0" />
@@ -333,13 +333,13 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className={cn(
-                "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium",
+                "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-caption1 font-medium",
                 statusConfig.bg, statusConfig.color
               )}>
                 <StatusIcon className="w-3 h-3" />
                 {statusConfig.label}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-muted/50 text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-caption1 font-medium bg-muted/50 text-muted-foreground">
                 <TypeIcon className="w-3 h-3" />
                 {getTypeLabel(communication.type)}
               </span>
@@ -347,7 +347,7 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
                 <span className="w-2 h-2 rounded-full bg-blue-500" title="Unread" />
               )}
             </div>
-            <h2 className="text-lg font-semibold tracking-tight">{communication.subject}</h2>
+            <h2 className="text-headline font-semibold tracking-tight">{communication.subject}</h2>
           </div>
           <button
             onClick={onClose}
@@ -361,15 +361,15 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
         <div className="p-5 space-y-6">
           {/* Contact Info */}
           <section>
-            <p className="text-[15px] font-bold tracking-tight text-foreground mb-3">Contact</p>
+            <p className="text-subhead font-bold tracking-tight text-foreground mb-3">Contact</p>
             <div className="rounded-xl border border-border/40 bg-sidebar">
               <div className="py-3 px-5 border-b border-border/20 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center">
                   <User className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground/70">Name</p>
-                  <p className="text-sm font-medium">{communication.name}</p>
+                  <p className="text-caption1 text-muted-foreground/70">Name</p>
+                  <p className="text-subhead font-medium">{communication.name}</p>
                 </div>
               </div>
               <div className="py-3 px-5 border-b border-border/20 flex items-center gap-3">
@@ -377,8 +377,8 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
                   <Mail className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground/70">Email</p>
-                  <a href={`mailto:${communication.email}`} className="text-sm font-medium text-primary hover:underline">
+                  <p className="text-caption1 text-muted-foreground/70">Email</p>
+                  <a href={`mailto:${communication.email}`} className="text-subhead font-medium text-primary hover:underline">
                     {communication.email}
                   </a>
                 </div>
@@ -389,8 +389,8 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
                     <Phone className="w-4 h-4 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground/70">Phone</p>
-                    <a href={`tel:${communication.phone}`} className="text-sm font-medium text-primary hover:underline">
+                    <p className="text-caption1 text-muted-foreground/70">Phone</p>
+                    <a href={`tel:${communication.phone}`} className="text-subhead font-medium text-primary hover:underline">
                       {communication.phone}
                     </a>
                   </div>
@@ -401,12 +401,12 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
 
           {/* Message */}
           <section>
-            <p className="text-[15px] font-bold tracking-tight text-foreground mb-3">Message</p>
+            <p className="text-subhead font-bold tracking-tight text-foreground mb-3">Message</p>
             <div className="rounded-xl border border-border/40 bg-sidebar p-4">
-              <p className="text-sm font-medium whitespace-pre-wrap leading-relaxed">
+              <p className="text-subhead font-medium whitespace-pre-wrap leading-relaxed">
                 {communication.message}
               </p>
-              <p className="text-xs text-muted-foreground/50 mt-4">
+              <p className="text-caption1 text-muted-foreground/50 mt-4">
                 Received {formatDate(communication.createdAt)}
                 {communication.resolvedAt && communication.resolvedByUser && (
                   <> · Resolved by {communication.resolvedByUser.name}</>
@@ -417,20 +417,20 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
 
           {/* Admin Note */}
           <section>
-            <p className="text-[15px] font-bold tracking-tight text-foreground mb-3">Admin Note</p>
+            <p className="text-subhead font-bold tracking-tight text-foreground mb-3">Admin Note</p>
             <div className="rounded-xl border border-border/40 bg-sidebar p-4">
               <textarea
                 value={adminNote}
                 onChange={(e) => setAdminNote(e.target.value)}
                 placeholder="Add internal notes..."
                 rows={3}
-                className="w-full bg-muted/20 rounded-lg px-3 py-2.5 text-sm font-medium resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full bg-muted/20 rounded-lg px-3 py-2.5 text-subhead font-medium resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
               />
               {adminNote !== (communication.adminNote || '') && (
                 <button
                   onClick={handleSaveNote}
                   disabled={isUpdating}
-                  className="mt-3 px-4 py-2 text-sm font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                  className="mt-3 px-4 py-2 text-subhead font-semibold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
                 >
                   {isUpdating ? 'Saving...' : 'Save Note'}
                 </button>
@@ -440,7 +440,7 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
 
           {/* Status Actions */}
           <section>
-            <p className="text-[15px] font-bold tracking-tight text-foreground mb-3">Status</p>
+            <p className="text-subhead font-bold tracking-tight text-foreground mb-3">Status</p>
             <div className="rounded-xl border border-border/40 bg-sidebar p-4">
               <div className="flex flex-wrap gap-2">
                 {(['new', 'in_progress', 'resolved', 'archived'] as CommunicationStatus[]).map((status) => {
@@ -454,7 +454,7 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
                       onClick={() => handleStatusUpdate(status)}
                       disabled={isUpdating || isActive}
                       className={cn(
-                        "inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all",
+                        "inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-subhead font-medium transition-all",
                         isActive
                           ? cn(config.bg, config.color)
                           : "bg-muted/30 text-muted-foreground/70 hover:bg-muted/50 hover:text-foreground disabled:opacity-50"
@@ -475,7 +475,7 @@ function CommunicationDetailModal({ communication, onClose, onUpdate }: DetailMo
             <button
               onClick={handleDelete}
               disabled={isUpdating}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-subhead font-medium text-red-500 hover:bg-red-500/10 transition-colors disabled:opacity-50"
             >
               <Trash2 className="w-4 h-4" />
               Delete Communication
@@ -527,7 +527,7 @@ function CommunicationListItem({ communication, onClick }: ListItemProps) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
             <span className={cn(
-              "text-sm font-semibold truncate",
+              "text-subhead font-semibold truncate",
               !communication.isRead && "text-foreground"
             )}>
               {communication.name}
@@ -535,17 +535,17 @@ function CommunicationListItem({ communication, onClick }: ListItemProps) {
             {!communication.isRead && (
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
             )}
-            <span className="text-xs text-muted-foreground/50 ml-auto flex-shrink-0">
+            <span className="text-caption1 text-muted-foreground/50 ml-auto flex-shrink-0">
               {formatDate(communication.createdAt)}
             </span>
           </div>
-          <p className="text-sm font-medium truncate">{communication.subject}</p>
-          <p className="text-xs text-muted-foreground/70 truncate mt-0.5">
+          <p className="text-subhead font-medium truncate">{communication.subject}</p>
+          <p className="text-caption1 text-muted-foreground/70 truncate mt-0.5">
             {communication.message.slice(0, 80)}...
           </p>
           <div className="flex items-center gap-2 mt-2">
             <span className={cn(
-              "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium",
+              "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-caption1 font-medium",
               statusConfig.bg, statusConfig.color
             )}>
               <StatusIcon className="w-3 h-3" />
@@ -599,8 +599,8 @@ export function AdminCommunicationsView() {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Communications</h1>
-        <p className="text-sm text-muted-foreground/70 mt-0.5">Manage incoming messages</p>
+        <h1 className="text-title3 font-semibold tracking-tight">Communications</h1>
+        <p className="text-subhead text-muted-foreground/70 mt-0.5">Manage incoming messages</p>
       </div>
 
       {/* Stats */}
@@ -608,7 +608,7 @@ export function AdminCommunicationsView() {
 
       {/* Filters */}
       <section>
-        <p className="text-[15px] font-bold tracking-tight text-foreground mb-3">Filters</p>
+        <p className="text-subhead font-bold tracking-tight text-foreground mb-3">Filters</p>
         <div className="rounded-xl border border-border/40 bg-sidebar">
           {/* Search */}
           <div className="py-3 px-5 border-b border-border/20">
@@ -619,7 +619,7 @@ export function AdminCommunicationsView() {
                 value={searchInput}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Search by name, email, or subject..."
-                className="w-full pl-10 pr-4 h-10 bg-muted/20 rounded-lg text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full pl-10 pr-4 h-10 bg-muted/20 rounded-lg text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
               />
             </div>
           </div>
@@ -627,11 +627,11 @@ export function AdminCommunicationsView() {
           {/* Status & Type */}
           <div className="py-3 px-5 flex flex-col sm:flex-row gap-3">
             <div className="flex-1">
-              <p className="text-xs text-muted-foreground/70 mb-1.5">Status</p>
+              <p className="text-caption1 text-muted-foreground/70 mb-1.5">Status</p>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full h-10 px-3 bg-muted/20 rounded-lg text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
+                className="w-full h-10 px-3 bg-muted/20 rounded-lg text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
               >
                 <option value="">All Status</option>
                 <option value="new">New</option>
@@ -641,11 +641,11 @@ export function AdminCommunicationsView() {
               </select>
             </div>
             <div className="flex-1">
-              <p className="text-xs text-muted-foreground/70 mb-1.5">Type</p>
+              <p className="text-caption1 text-muted-foreground/70 mb-1.5">Type</p>
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="w-full h-10 px-3 bg-muted/20 rounded-lg text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
+                className="w-full h-10 px-3 bg-muted/20 rounded-lg text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
               >
                 <option value="">All Types</option>
                 <option value="inquiry">Inquiry</option>
@@ -670,7 +670,7 @@ export function AdminCommunicationsView() {
 
       {/* List */}
       <section>
-        <p className="text-[15px] font-bold tracking-tight text-foreground mb-3">Messages</p>
+        <p className="text-subhead font-bold tracking-tight text-foreground mb-3">Messages</p>
         <div className="rounded-xl border border-border/40 bg-sidebar overflow-hidden">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
@@ -678,16 +678,16 @@ export function AdminCommunicationsView() {
             </div>
           ) : error ? (
             <div className="p-8 text-center">
-              <p className="text-sm text-red-500">Failed to load communications</p>
-              <button onClick={handleRefresh} className="mt-2 text-xs text-muted-foreground hover:text-foreground underline">
+              <p className="text-subhead text-red-500">Failed to load communications</p>
+              <button onClick={handleRefresh} className="mt-2 text-caption1 text-muted-foreground hover:text-foreground underline">
                 Try again
               </button>
             </div>
           ) : communications.length === 0 ? (
             <div className="p-12 text-center">
               <MailOpen className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-sm font-medium text-muted-foreground">No messages</p>
-              <p className="text-xs text-muted-foreground/50 mt-1">
+              <p className="text-subhead font-medium text-muted-foreground">No messages</p>
+              <p className="text-caption1 text-muted-foreground/50 mt-1">
                 {searchQuery || filterStatus || filterType
                   ? 'Try adjusting your filters'
                   : 'Incoming messages will appear here'}

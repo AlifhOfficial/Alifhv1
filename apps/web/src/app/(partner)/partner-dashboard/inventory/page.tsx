@@ -41,8 +41,8 @@ export default async function PartnerInventoryPage({ searchParams }: PageProps) 
       <DashboardDisplayArea>
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="rounded-xl border border-border p-8 text-center">
-            <h2 className="text-lg font-medium text-foreground mb-2">No Partner Access</h2>
-            <p className="text-sm text-muted-foreground">You need to be associated with a partner to manage inventory.</p>
+            <h2 className="text-headline font-medium text-foreground mb-2">No Partner Access</h2>
+            <p className="text-subhead text-muted-foreground">You need to be associated with a partner to manage inventory.</p>
           </div>
         </div>
       </DashboardDisplayArea>

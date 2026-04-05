@@ -32,7 +32,7 @@ function FoundingProgramButton() {
     <>
       <button
         onClick={handleClick}
-        className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
+        className="w-full sm:w-auto h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center shadow-sm"
       >
         Apply for Founding Program
       </button>
@@ -53,15 +53,15 @@ export function PartnerHeroSection() {
         
         {/* Brand & Tagline */}
         <div className="text-center mb-8 space-y-5">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             For Dealers
           </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Keep 100%.
             <br />
             <span className="text-muted-foreground">Zero commission.</span>
           </h1>
-          <p className="text-sm sm:text-base font-medium text-muted-foreground">
+          <p className="text-subhead sm:text-callout font-medium text-muted-foreground">
             Flat fee. Unlimited listings. Join the Revolution.
           </p>
         </div>
@@ -71,7 +71,7 @@ export function PartnerHeroSection() {
           <FoundingProgramButton />
           <Link
             href="/pricing"
-            className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+            className="w-full sm:w-auto h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
           >
             See Pricing
           </Link>
@@ -93,23 +93,23 @@ export function PartnerHeroSection() {
         {/* Trust Indicators */}
         <div className="flex items-center justify-center gap-8 sm:gap-12 max-w-2xl mx-auto">
           <div className="text-center">
-            <div className="text-2xl font-semibold tracking-tight text-primary mb-1">0%</div>
-            <div className="text-sm text-muted-foreground">Commission</div>
+            <div className="text-title2 font-semibold tracking-tight text-primary mb-1">0%</div>
+            <div className="text-subhead text-muted-foreground">Commission</div>
           </div>
           <div className="w-px h-10 bg-border/30" />
           <div className="text-center">
-            <div className="text-2xl font-semibold tracking-tight text-primary mb-1">∞</div>
-            <div className="text-sm text-muted-foreground">Listings</div>
+            <div className="text-title2 font-semibold tracking-tight text-primary mb-1">∞</div>
+            <div className="text-subhead text-muted-foreground">Listings</div>
           </div>
           <div className="w-px h-10 bg-border/30" />
           <div className="text-center">
-            <div className="text-2xl font-semibold tracking-tight text-primary mb-1">1</div>
-            <div className="text-sm text-muted-foreground">Flat fee</div>
+            <div className="text-title2 font-semibold tracking-tight text-primary mb-1">1</div>
+            <div className="text-subhead text-muted-foreground">Flat fee</div>
           </div>
         </div>
 
         {/* Description */}
-        <p className="text-center text-sm text-muted-foreground max-w-md mx-auto mt-8">
+        <p className="text-center text-subhead text-muted-foreground max-w-md mx-auto mt-8">
           No credit card to get started. List alongside any other platform.
         </p>
 

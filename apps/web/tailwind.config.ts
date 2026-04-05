@@ -22,6 +22,31 @@ const config: Config = {
   		'xl': '1280px',
   		'2xl': '1536px',
   	},
+  	// ── Complete Apple HIG type scale (replaces ALL Tailwind defaults) ──
+  	// Mapping from Tailwind defaults:
+  	//   text-xs→caption1  text-sm→subhead   text-base→callout  text-lg→headline
+  	//   text-xl→title3    text-2xl→title2   text-3xl→title1
+  	//   text-4xl→display  text-5xl→display1 … text-9xl→display5
+  	fontSize: {
+  		// ── Display (web marketing, SF Display equivalent) ───────────────
+  		'display5':    ['8rem',    { lineHeight: '1.00', fontWeight: '800', letterSpacing: '-0.04em'  }], // 128px
+  		'display4':    ['6rem',    { lineHeight: '1.01', fontWeight: '800', letterSpacing: '-0.035em' }], //  96px
+  		'display3':    ['4.5rem',  { lineHeight: '1.02', fontWeight: '800', letterSpacing: '-0.03em'  }], //  72px
+  		'display2':    ['3.75rem', { lineHeight: '1.04', fontWeight: '800', letterSpacing: '-0.025em' }], //  60px
+  		'display1':    ['3rem',    { lineHeight: '1.05', fontWeight: '800', letterSpacing: '-0.02em'  }], //  48px
+  		'display':     ['2.25rem', { lineHeight: '1.08', fontWeight: '700', letterSpacing: '-0.02em'  }], //  36px
+  		// ── Apple HIG Dynamic Type (standard UI scale) ───────────────────
+  		'large-title': ['2.125rem',{ lineHeight: '1.21', fontWeight: '600', letterSpacing: '-0.01em'  }], //  34px
+  		'title1':      ['1.75rem', { lineHeight: '1.21', fontWeight: '600' }],                            //  28px
+  		'title2':      ['1.375rem',{ lineHeight: '1.27', fontWeight: '600' }],                            //  22px
+  		'title3':      ['1.25rem', { lineHeight: '1.25', fontWeight: '600' }],                            //  20px
+  		'headline':    ['1.0625rem',{ lineHeight: '1.29', fontWeight: '600' }],                           //  17px
+  		'callout':     ['1rem',    { lineHeight: '1.31', fontWeight: '500' }],                            //  16px
+  		'subhead':     ['0.9375rem',{ lineHeight: '1.33', fontWeight: '500' }],                           //  15px
+  		'footnote':    ['0.8125rem',{ lineHeight: '1.38', fontWeight: '500' }],                           //  13px
+  		'caption1':    ['0.75rem', { lineHeight: '1.33', fontWeight: '500' }],                            //  12px
+  		'caption2':    ['0.6875rem',{ lineHeight: '1.18', fontWeight: '500' }],                           //  11px
+  	},
   	extend: {
   		colors: {
   			background: 'hsl(var(--background))',

@@ -70,7 +70,7 @@ export function AchievementsSection({
   return (
     <div className="space-y-6">
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Section Media</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Section Media</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
           <ImageUpload
             value={form.achievementsSectionImage || null}
@@ -96,7 +96,7 @@ export function AchievementsSection({
 
       {/* Key Metrics */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Key Metrics</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Key Metrics</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <EditableField
             {...getEditableFieldProps('totalCarsSold')}
@@ -118,10 +118,10 @@ export function AchievementsSection({
       {/* Awards & Certifications */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Awards & Certifications</h3>
+          <h3 className="text-subhead font-bold tracking-tight text-foreground">Awards & Certifications</h3>
           <button
             onClick={addAchievement}
-            className="inline-flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-600 font-semibold"
+            className="inline-flex items-center gap-1.5 text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
           >
             <Plus className="w-3.5 h-3.5" />
             Add
@@ -155,7 +155,7 @@ export function AchievementsSection({
           {(form.achievements?.length || 0) === 0 && (
             <div className="rounded-xl border border-dashed border-border/40 p-8 text-center">
               <Award className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No achievements yet</p>
+              <p className="text-subhead text-muted-foreground">No achievements yet</p>
             </div>
           )}
         </div>

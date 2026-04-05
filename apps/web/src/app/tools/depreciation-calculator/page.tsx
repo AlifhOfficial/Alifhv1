@@ -13,8 +13,8 @@ export default function DepreciationCalculatorPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Car Depreciation Calculator</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="text-display font-bold mb-4">Car Depreciation Calculator</h1>
+          <p className="text-headline text-muted-foreground">
             See how much your car will lose in value over time
           </p>
         </div>

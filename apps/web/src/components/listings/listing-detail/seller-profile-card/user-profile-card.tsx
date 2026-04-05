@@ -61,7 +61,7 @@ export function UserProfileCard({ sellerData }: UserProfileCardProps) {
 
       {/* Description */}
       {profile?.description && (
-        <p className="text-sm text-muted-foreground leading-relaxed font-medium whitespace-pre-line">
+        <p className="text-subhead text-muted-foreground leading-relaxed font-medium whitespace-pre-line">
           {profile.description}
         </p>
       )}
@@ -99,20 +99,20 @@ function UserHeader({ name, avatar, kycVerified, location, memberSinceYear }: Us
       {/* User Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg sm:text-xl font-bold tracking-tight text-foreground truncate">{name}</h3>
+          <h3 className="text-headline sm:text-title3 font-bold tracking-tight text-foreground truncate">{name}</h3>
           {kycVerified && (
             <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0" />
           )}
         </div>
         
         {location && (
-          <div className="flex items-center gap-2 mt-1.5 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 mt-1.5 text-subhead text-muted-foreground">
             <MapPin className="w-4 h-4" />
             <span className="truncate font-semibold">{location}</span>
           </div>
         )}
 
-        <p className="text-sm text-muted-foreground mt-1.5 font-semibold">
+        <p className="text-subhead text-muted-foreground mt-1.5 font-semibold">
           Member since {memberSinceYear}
         </p>
       </div>
@@ -142,20 +142,20 @@ function UserBadges({ badges, emailVerified, phoneVerified }: UserBadgesProps) {
       {badges.map((badge, idx) => (
         <span
           key={idx}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"
+          className="inline-flex items-center gap-1.5 text-subhead font-semibold text-muted-foreground"
         >
           <Award className="w-4 h-4 text-amber-500" />
           {badge}
         </span>
       ))}
       {emailVerified && (
-        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5 text-subhead font-semibold text-muted-foreground">
           <CheckCircle2 className="w-4 h-4 text-green-500" />
           Email
         </span>
       )}
       {phoneVerified && (
-        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5 text-subhead font-semibold text-muted-foreground">
           <CheckCircle2 className="w-4 h-4 text-green-500" />
           Phone
         </span>
@@ -182,16 +182,16 @@ function UserStatsGrid({ userId, stats, statsLoading, hasRating, profile }: User
       >
         <div className="flex items-center gap-2">
           <Package className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
+          <span className="text-subhead font-semibold text-muted-foreground/70">Inventory</span>
         </div>
         {statsLoading ? (
           <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
         ) : (
           <>
-            <p className="text-lg font-bold tabular-nums text-foreground">
+            <p className="text-headline font-bold tabular-nums text-foreground">
               {stats && 'listingsCount' in stats ? stats.listingsCount : 0}
             </p>
-            <span className="text-xs font-semibold text-primary group-hover:underline">View all →</span>
+            <span className="text-caption1 font-semibold text-primary group-hover:underline">View all →</span>
           </>
         )}
       </Link>
@@ -200,9 +200,9 @@ function UserStatsGrid({ userId, stats, statsLoading, hasRating, profile }: User
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-semibold text-muted-foreground/70">Response</span>
+          <span className="text-subhead font-semibold text-muted-foreground/70">Response</span>
         </div>
-        <p className="text-lg font-bold tabular-nums text-foreground">
+        <p className="text-headline font-bold tabular-nums text-foreground">
           {statsLoading ? (
             <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
           ) : stats?.responseTime ? (
@@ -217,9 +217,9 @@ function UserStatsGrid({ userId, stats, statsLoading, hasRating, profile }: User
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <MessageCircle className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-semibold text-muted-foreground/70">Rate</span>
+          <span className="text-subhead font-semibold text-muted-foreground/70">Rate</span>
         </div>
-        <p className="text-lg font-bold tabular-nums text-foreground">
+        <p className="text-headline font-bold tabular-nums text-foreground">
           {statsLoading ? (
             <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
           ) : stats?.responseRate ? (
@@ -235,11 +235,11 @@ function UserStatsGrid({ userId, stats, statsLoading, hasRating, profile }: User
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-            <span className="text-sm font-semibold text-muted-foreground/70">Rating</span>
+            <span className="text-subhead font-semibold text-muted-foreground/70">Rating</span>
           </div>
-          <p className="text-lg font-bold tabular-nums text-foreground">
+          <p className="text-headline font-bold tabular-nums text-foreground">
             {profile.platformRating!.toFixed(1)}
-            <span className="text-sm font-medium text-muted-foreground ml-1">({profile.platformReviewCount})</span>
+            <span className="text-subhead font-medium text-muted-foreground ml-1">({profile.platformReviewCount})</span>
           </p>
         </div>
       )}
@@ -252,12 +252,12 @@ function UserTags({ tags }: { tags: string[] }) {
 
   return (
     <div className="space-y-2">
-      <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">Tags</p>
+      <p className="text-footnote uppercase tracking-wider font-bold text-muted-foreground/70">Tags</p>
       <div className="flex flex-wrap gap-2">
         {tags.map((tag, idx) => (
           <span
             key={idx}
-            className="px-3 py-1.5 text-sm font-semibold bg-muted text-foreground/80 rounded-lg"
+            className="px-3 py-1.5 text-subhead font-semibold bg-muted text-foreground/80 rounded-lg"
           >
             {tag}
           </span>

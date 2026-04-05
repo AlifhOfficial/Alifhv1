@@ -13,10 +13,10 @@ export function PartnerCompareSection() {
       <div className="max-w-[1600px] mx-auto">
         
         <div className="text-center mb-16 space-y-5">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Side by side
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             The difference.
           </h2>
         </div>
@@ -31,7 +31,7 @@ export function PartnerCompareSection() {
           
           {/* Others */}
           <div className="p-8 bg-sidebar">
-            <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/60 mb-8">Typical platforms</p>
+            <p className="text-subhead font-semibold uppercase tracking-wider text-muted-foreground/60 mb-8">Typical platforms</p>
             <div className="space-y-6">
               {[
                 { label: 'Commission', value: '3-5% per sale' },
@@ -42,8 +42,8 @@ export function PartnerCompareSection() {
                 { label: 'Your profile', value: 'Name + phone' },
               ].map((item, i) => (
                 <div key={i} className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">{item.label}</span>
-                  <span className="text-sm text-foreground/60">{item.value}</span>
+                  <span className="text-subhead text-muted-foreground">{item.label}</span>
+                  <span className="text-subhead text-foreground/60">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -51,7 +51,7 @@ export function PartnerCompareSection() {
 
           {/* Revvup */}
           <div className="p-8 bg-primary text-primary-foreground">
-            <p className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-8">Revvup</p>
+            <p className="text-subhead font-semibold uppercase tracking-wider text-white/60 mb-8">Revvup</p>
             <div className="space-y-6">
               {[
                 { label: 'Commission', value: 'Zero. Forever.' },
@@ -62,9 +62,9 @@ export function PartnerCompareSection() {
                 { label: 'Your profile', value: 'Full brand page' },
               ].map((item, i) => (
                 <div key={i} className="flex justify-between items-center">
-                  <span className="text-sm text-white/70">{item.label}</span>
+                  <span className="text-subhead text-white/70">{item.label}</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold">{item.value}</span>
+                    <span className="text-subhead font-semibold">{item.value}</span>
                     <CheckCircle2 className="w-5 h-5 text-white/60" />
                   </div>
                 </div>
@@ -90,7 +90,7 @@ function CompareInfographic() {
         {/* Left - Others */}
         <div className="flex-1 flex flex-col border-r border-border/20">
           <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
-            <span className="text-xs font-medium text-muted-foreground/60">Others</span>
+            <span className="text-caption1 font-medium text-muted-foreground/60">Others</span>
           </div>
           
           <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">
@@ -114,14 +114,14 @@ function CompareInfographic() {
           </div>
           
           <div className="px-6 sm:px-8 lg:px-10 pb-6 sm:pb-8 lg:pb-10">
-            <p className="text-xs text-muted-foreground/50 text-center">Fees eat profit</p>
+            <p className="text-caption1 text-muted-foreground/50 text-center">Fees eat profit</p>
           </div>
         </div>
         
         {/* Right - Revvup */}
         <div className="flex-1 flex flex-col">
           <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
-            <span className="text-xs font-medium text-primary">Revvup</span>
+            <span className="text-caption1 font-medium text-primary">Revvup</span>
           </div>
           
           <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">
@@ -133,7 +133,7 @@ function CompareInfographic() {
               
               {/* Single clean badge */}
               <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                <div className="px-3 py-1 rounded-full bg-primary text-xs font-semibold text-white shadow-xl shadow-primary/25">
+                <div className="px-3 py-1 rounded-full bg-primary text-caption1 font-semibold text-white shadow-xl shadow-primary/25">
                   100% yours
                 </div>
               </div>
@@ -141,7 +141,7 @@ function CompareInfographic() {
           </div>
           
           <div className="px-6 sm:px-8 lg:px-10 pb-6 sm:pb-8 lg:pb-10">
-            <p className="text-xs text-primary/70 text-center">Keep every dirham</p>
+            <p className="text-caption1 text-primary/70 text-center">Keep every dirham</p>
           </div>
         </div>
       </div>

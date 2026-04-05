@@ -39,8 +39,8 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-6">
-      <h3 className="text-[15px] font-bold tracking-tight text-foreground">{title}</h3>
-      {subtitle && <p className="text-xs text-muted-foreground/70 mt-1">{subtitle}</p>}
+      <h3 className="text-subhead font-bold tracking-tight text-foreground">{title}</h3>
+      {subtitle && <p className="text-caption1 text-muted-foreground/70 mt-1">{subtitle}</p>}
     </div>
   );
 }
@@ -58,13 +58,13 @@ function FieldWrapper({
 }) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-semibold text-muted-foreground/70">
+      <label className="text-subhead font-semibold text-muted-foreground/70">
         {label}
         {required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       {children}
       {error && (
-        <p className="text-xs font-medium text-red-500">{error}</p>
+        <p className="text-caption1 font-medium text-red-500">{error}</p>
       )}
     </div>
   );
@@ -256,8 +256,8 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
       <div className="max-w-2xl mx-auto py-16">
         <div className="rounded-xl border border-border/40 bg-sidebar p-8 text-center space-y-5">
           <div>
-            <p className="text-lg font-semibold text-foreground">Staff Membership Active</p>
-            <p className="text-sm text-muted-foreground/70 mt-2 max-w-md mx-auto">
+            <p className="text-headline font-semibold text-foreground">Staff Membership Active</p>
+            <p className="text-subhead text-muted-foreground/70 mt-2 max-w-md mx-auto">
               You're currently a staff member of {membership?.partnerName || 'a partner organization'}. 
               To apply as a partner, you must first leave your current organization.
             </p>
@@ -265,7 +265,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
           
           <button
             onClick={() => router.push('/staff-dashboard')}
-            className="px-6 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
+            className="px-6 py-3 rounded-lg bg-primary text-primary-foreground text-subhead font-medium hover:bg-primary/90 transition-colors shadow-sm"
           >
             Go to Staff Dashboard
           </button>
@@ -295,8 +295,8 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
       
         {/* Header */}
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Partner Application</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-title3 font-semibold tracking-tight">Partner Application</h1>
+          <p className="text-subhead text-muted-foreground mt-0.5">
             Join Revvup as a verified partner
           </p>
         </div>
@@ -320,7 +320,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
                   placeholder="Enter your company's legal name"
                   className={cn(
                     "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
-                    "outline-none transition-colors px-0 text-sm font-medium",
+                    "outline-none transition-colors px-0 text-subhead font-medium",
                     "placeholder:text-muted-foreground/40"
                   )}
                 />
@@ -373,7 +373,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
                     placeholder="TL-123456"
                     className={cn(
                       "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
-                      "outline-none transition-colors px-0 text-sm font-medium",
+                      "outline-none transition-colors px-0 text-subhead font-medium",
                       "placeholder:text-muted-foreground/40"
                     )}
                   />
@@ -386,7 +386,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
                         type="button"
                         className={cn(
                           "w-full h-12 bg-transparent border-b-2 border-border/40 hover:border-primary/60 focus:border-primary",
-                          "outline-none transition-colors px-0 text-sm font-medium text-left",
+                          "outline-none transition-colors px-0 text-subhead font-medium text-left",
                           !selectedDate && "text-muted-foreground/40"
                         )}
                       >
@@ -429,15 +429,15 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
                   <div className="rounded-lg bg-muted/20 p-4">
                     <div className="flex items-center justify-between gap-4">
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-foreground truncate">{uploadedFile.name}</p>
-                        <p className="text-xs text-muted-foreground/70 mt-0.5">
+                        <p className="text-subhead font-medium text-foreground truncate">{uploadedFile.name}</p>
+                        <p className="text-caption1 text-muted-foreground/70 mt-0.5">
                           {(uploadedFile.size / 1024).toFixed(1)} KB
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={removeFile}
-                        className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
+                        className="text-caption1 font-semibold text-red-500 hover:text-red-600 transition-colors"
                       >
                         Remove
                       </button>
@@ -456,13 +456,13 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
                   >
                     {isUploading ? (
                       <div className="text-center">
-                        <p className="text-sm font-medium text-foreground">Uploading...</p>
-                        <p className="text-xs text-muted-foreground/70 mt-1">Please wait</p>
+                        <p className="text-subhead font-medium text-foreground">Uploading...</p>
+                        <p className="text-caption1 text-muted-foreground/70 mt-1">Please wait</p>
                       </div>
                     ) : (
                       <div className="text-center">
-                        <p className="text-sm font-medium text-foreground">Click to upload</p>
-                        <p className="text-xs text-muted-foreground/70 mt-1">PDF, JPG, or PNG • Max 5MB</p>
+                        <p className="text-subhead font-medium text-foreground">Click to upload</p>
+                        <p className="text-caption1 text-muted-foreground/70 mt-1">PDF, JPG, or PNG • Max 5MB</p>
                       </div>
                     )}
                   </button>
@@ -477,7 +477,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
                   placeholder="Enter VAT registration number"
                   className={cn(
                     "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-primary",
-                    "outline-none transition-colors px-0 text-sm font-medium",
+                    "outline-none transition-colors px-0 text-subhead font-medium",
                     "placeholder:text-muted-foreground/40"
                   )}
                 />
@@ -490,7 +490,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
             <button
               type="button"
               onClick={() => router.push('/user-dashboard/requests')}
-              className="w-full sm:w-auto px-6 py-3 rounded-lg bg-muted text-foreground text-sm font-medium hover:bg-muted/80 transition-colors"
+              className="w-full sm:w-auto px-6 py-3 rounded-lg bg-muted text-foreground text-subhead font-medium hover:bg-muted/80 transition-colors"
             >
               Cancel
             </button>
@@ -498,7 +498,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
               type="submit"
               disabled={isSubmitting || isUploading}
               className={cn(
-                "w-full sm:w-auto px-8 py-3 rounded-lg text-sm font-medium transition-colors shadow-sm",
+                "w-full sm:w-auto px-8 py-3 rounded-lg text-subhead font-medium transition-colors shadow-sm",
                 "bg-primary text-primary-foreground hover:bg-primary/90",
                 "disabled:opacity-50 disabled:cursor-not-allowed"
               )}

@@ -89,13 +89,13 @@ function VerifyEmailForm() {
 
         {/* Message */}
         <div className="space-y-1">
-          <h1 className="text-base font-semibold text-foreground tracking-tight">
+          <h1 className="text-callout font-semibold text-foreground tracking-tight">
             {displayStatus === 'loading' && 'Verifying email...'}
             {displayStatus === 'success' && 'Email verified'}
             {displayStatus === 'error' && 'Verification failed'}
             {displayStatus === 'invalid' && 'Invalid link'}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-subhead text-muted-foreground">
             {displayStatus === 'loading' && 'Please wait'}
             {displayStatus === 'success' && 'Redirecting...'}
             {displayStatus === 'error' && (errorMessage || 'Please try again')}
@@ -110,7 +110,7 @@ function VerifyEmailForm() {
               <button
                 onClick={verifyEmail}
                 className={cn(
-                  "w-full h-10 rounded-lg text-sm font-semibold transition-colors",
+                  "w-full h-10 rounded-lg text-subhead font-semibold transition-colors",
                   "bg-primary text-primary-foreground hover:bg-primary/90"
                 )}
               >
@@ -120,7 +120,7 @@ function VerifyEmailForm() {
             <button
               onClick={() => router.push('/')}
               className={cn(
-                "w-full h-10 rounded-lg text-sm font-semibold transition-colors",
+                "w-full h-10 rounded-lg text-subhead font-semibold transition-colors",
                 "bg-muted/30 text-foreground hover:bg-muted/50"
               )}
             >

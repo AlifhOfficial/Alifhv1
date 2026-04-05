@@ -63,7 +63,7 @@ export function PartnerDashboardNav() {
   return (
     <nav className="flex flex-col h-full bg-emerald-50 border-r border-emerald-200">
       <div className="p-6 border-b border-emerald-200">
-        <h2 className="text-lg font-semibold text-emerald-900">Partner Hub</h2>
+        <h2 className="text-headline font-semibold text-emerald-900">Partner Hub</h2>
       </div>
       
       <div className="flex-1 px-3 py-4">
@@ -75,7 +75,7 @@ export function PartnerDashboardNav() {
                 <Link
                   href={item.href}
                   className={cn(
-                    'group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                    'group flex items-center px-3 py-2 text-subhead font-medium rounded-md transition-colors',
                     isActive
                       ? 'bg-emerald-100 text-emerald-800 border-r-2 border-emerald-600'
                       : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-900'
@@ -100,11 +100,11 @@ export function PartnerDashboardNav() {
       <div className="p-4 border-t border-emerald-200">
         <div className="flex items-center">
           <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center">
-            <span className="text-sm font-medium text-white">P</span>
+            <span className="text-subhead font-medium text-white">P</span>
           </div>
           <div className="ml-3">
-            <p className="text-sm font-medium text-emerald-800">Partner Portal</p>
-            <p className="text-xs text-emerald-600">Management</p>
+            <p className="text-subhead font-medium text-emerald-800">Partner Portal</p>
+            <p className="text-caption1 text-emerald-600">Management</p>
           </div>
         </div>
       </div>

@@ -18,7 +18,7 @@ export function Footer() {
                   Revvup
                 </span>
               </Link>
-              <p className="text-sm text-muted-foreground/60 mt-3 max-w-[200px]">
+              <p className="text-subhead text-muted-foreground/60 mt-3 max-w-[200px]">
                 More than a marketplace.<br />Join the Revolution.
               </p>
             </div>
@@ -27,18 +27,18 @@ export function Footer() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 lg:gap-14">
               {footerSections.map((section) => (
                 <div key={section.title}>
-                  <p className="text-xs font-semibold text-muted-foreground/50 uppercase tracking-wider mb-3">
+                  <p className="text-caption1 font-semibold text-muted-foreground/50 uppercase tracking-wider mb-3">
                     {section.title}
                   </p>
                   <ul className="space-y-2.5">
                     {section.links.map((item) => (
                       <li key={item.label}>
                         {item.href === "/user-dashboard/listings/new" ? (
-                          <FooterSellLink className="text-sm text-foreground/70 hover:text-foreground transition-colors" />
+                          <FooterSellLink className="text-subhead text-foreground/70 hover:text-foreground transition-colors" />
                         ) : (
                           <Link 
                             href={item.href} 
-                            className="text-sm text-foreground/70 hover:text-foreground transition-colors"
+                            className="text-subhead text-foreground/70 hover:text-foreground transition-colors"
                           >
                             {item.label}
                           </Link>
@@ -54,7 +54,7 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="py-4 border-t border-border/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <p className="text-xs text-muted-foreground/50">
+          <p className="text-caption1 text-muted-foreground/50">
             © {new Date().getFullYear()} AISH CAPITALS FZCO · Dubai
           </p>
           <div className="flex flex-wrap items-center gap-4">
@@ -62,7 +62,7 @@ export function Footer() {
               <Link 
                 key={item.label} 
                 href={item.href} 
-                className="text-xs text-muted-foreground/50 hover:text-foreground transition-colors"
+                className="text-caption1 text-muted-foreground/50 hover:text-foreground transition-colors"
               >
                 {item.label}
               </Link>

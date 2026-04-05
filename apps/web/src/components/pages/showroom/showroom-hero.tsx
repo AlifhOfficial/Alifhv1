@@ -71,10 +71,10 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
         
         {/* Brand Name & Tagline - Top, Centered */}
         <div className="px-4 sm:px-6 lg:px-8 mb-8 text-center">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {partner.brandName}
           </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             {(() => {
               const tagline = showroom.heroTagline || `Welcome to ${partner.brandName}`;
               const words = tagline.split(' ');
@@ -208,10 +208,10 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
             <div className="flex-1 max-w-2xl">
               {showroom.brandPhilosophy && (
                 <>
-                  <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+                  <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
                     Philosophy
                   </span>
-                  <p className="text-base text-muted-foreground leading-relaxed">
+                  <p className="text-callout text-muted-foreground leading-relaxed">
                     {showroom.brandPhilosophy}
                   </p>
                 </>
@@ -225,14 +225,14 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                   href={showroom.heroCtaLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
+                  className="h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
                 >
                   {showroom.heroCtaText || 'Talk to Us'}
                 </a>
               ) : (
                 <button
                   onClick={() => document.getElementById('showroom-contact')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="h-11 px-8 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
+                  className="h-11 px-8 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
                 >
                   {showroom.heroCtaText || 'Talk to Us'}
                 </button>
@@ -244,14 +244,14 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                     href={showroom.heroCtaSecondaryLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+                    className="h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
                   >
                     {showroom.heroCtaSecondaryText}
                   </a>
                 ) : (
                   <button
                     onClick={() => document.getElementById('inventory')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="h-11 px-8 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
+                    className="h-11 px-8 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors flex items-center justify-center"
                   >
                     {showroom.heroCtaSecondaryText}
                   </button>
@@ -267,10 +267,10 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 
                 {showroom.yearsInBusiness && (
                   <div className="p-6 rounded-xl bg-sidebar border border-border/40">
-                    <span className="text-2xl sm:text-3xl font-semibold text-foreground tabular-nums">
+                    <span className="text-title2 sm:text-title1 font-semibold text-foreground tabular-nums">
                       {showroom.yearsInBusiness}+
                     </span>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-subhead text-muted-foreground mt-1">
                       Years in Business
                     </p>
                   </div>
@@ -278,10 +278,10 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 
                 {showroom.totalCarsSold && (
                   <div className="p-6 rounded-xl bg-sidebar border border-border/40">
-                    <span className="text-2xl sm:text-3xl font-semibold text-foreground tabular-nums">
+                    <span className="text-title2 sm:text-title1 font-semibold text-foreground tabular-nums">
                       {showroom.totalCarsSold.toLocaleString()}+
                     </span>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-subhead text-muted-foreground mt-1">
                       Vehicles Sold
                     </p>
                   </div>
@@ -289,10 +289,10 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 
                 {partner.googleRating && (
                   <div className="p-6 rounded-xl bg-sidebar border border-border/40">
-                    <span className="text-2xl sm:text-3xl font-semibold text-foreground tabular-nums">
+                    <span className="text-title2 sm:text-title1 font-semibold text-foreground tabular-nums">
                       {partner.googleRating.toFixed(1)}
                     </span>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-subhead text-muted-foreground mt-1">
                       Google Rating
                     </p>
                   </div>
@@ -300,10 +300,10 @@ export function ShowroomHero({ showroom }: ShowroomHeroProps) {
                 
                 {partner.googleReviewCount > 0 && (
                   <div className="p-6 rounded-xl bg-sidebar border border-border/40">
-                    <span className="text-2xl sm:text-3xl font-semibold text-foreground tabular-nums">
+                    <span className="text-title2 sm:text-title1 font-semibold text-foreground tabular-nums">
                       {partner.googleReviewCount.toLocaleString()}
                     </span>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-subhead text-muted-foreground mt-1">
                       Reviews
                     </p>
                   </div>

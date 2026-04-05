@@ -32,8 +32,8 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
   return (
     <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
       <Icon className="w-5 h-5 text-primary/80 mb-3" />
-      <h3 className="text-base font-semibold mb-1.5">{title}</h3>
-      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+      <h3 className="text-callout font-semibold mb-1.5">{title}</h3>
+      <p className="text-subhead text-muted-foreground leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -42,8 +42,8 @@ function HighlightCard({ icon: Icon, title, description }: FeatureCardProps) {
   return (
     <div className="p-6 rounded-xl bg-primary text-primary-foreground">
       <Icon className="w-5 h-5 text-primary-foreground/70 mb-3" />
-      <h3 className="text-base font-semibold mb-1.5">{title}</h3>
-      <p className="text-sm text-primary-foreground/70 leading-relaxed">{description}</p>
+      <h3 className="text-callout font-semibold mb-1.5">{title}</h3>
+      <p className="text-subhead text-primary-foreground/70 leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -62,10 +62,10 @@ export function VisionPillarsSection() {
         ═══════════════════════════════════════════════════════════════════ */}
         <div className="mb-28">
           <div className="text-center mb-12 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Pillar 1
             </span>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h3 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               Forward Society.
               <br />
               <span className="text-muted-foreground">Prosperity through trust.</span>
@@ -84,7 +84,7 @@ export function VisionPillarsSection() {
           </div>
 
           {/* Description */}
-          <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
             In automotive, trust can be strengthened. Clear pricing. Verified sellers. No duplicates.
             One transparent transaction at a time.
           </p>
@@ -119,10 +119,10 @@ export function VisionPillarsSection() {
         ═══════════════════════════════════════════════════════════════════ */}
         <div className="mb-28">
           <div className="text-center mb-12 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Pillar 2
             </span>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h3 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               Forward Economy.
               <br />
               <span className="text-muted-foreground">Growth through empowerment.</span>
@@ -141,7 +141,7 @@ export function VisionPillarsSection() {
           </div>
 
           {/* Description */}
-          <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
             Fair pricing. Full margins. Dealers keep more of their earnings—supporting growth, 
             hiring, and reinvestment in the UAE economy.
           </p>
@@ -176,10 +176,10 @@ export function VisionPillarsSection() {
         ═══════════════════════════════════════════════════════════════════ */}
         <div className="mb-28">
           <div className="text-center mb-12 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Pillar 3
             </span>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h3 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               Forward Diplomacy.
               <br />
               <span className="text-muted-foreground">A force for good.</span>
@@ -198,7 +198,7 @@ export function VisionPillarsSection() {
           </div>
 
           {/* Description */}
-          <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
             The automotive sector is evolving. Electric vehicles. Sustainable practices. 
             We aim to support this transition.
           </p>
@@ -233,10 +233,10 @@ export function VisionPillarsSection() {
         ═══════════════════════════════════════════════════════════════════ */}
         <div>
           <div className="text-center mb-12 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Pillar 4
             </span>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h3 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               Forward Ecosystem.
               <br />
               <span className="text-muted-foreground">Digital infrastructure.</span>
@@ -255,7 +255,7 @@ export function VisionPillarsSection() {
           </div>
 
           {/* Description */}
-          <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
             Digital rails for automotive transactions. Online booking. Secure messaging. 
             Real-time inventory. Built for 2031 and beyond.
           </p>

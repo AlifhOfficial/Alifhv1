@@ -53,11 +53,11 @@ export function StaffInviteActionModal({
           
           {/* Content */}
           <div className="text-center space-y-1">
-            <h2 className="text-base font-semibold tracking-tight text-foreground">
+            <h2 className="text-callout font-semibold tracking-tight text-foreground">
               {error ? 'Failed' : isLoading ? (isAccept ? 'Joining...' : 'Declining...') : (isAccept ? 'Join team?' : 'Decline invite?')}
             </h2>
             
-            <p className="text-sm text-muted-foreground">
+            <p className="text-subhead text-muted-foreground">
               {error ? error : isLoading ? 'Please wait' : (
                 isAccept 
                   ? `Join ${partnerName} as ${role}`
@@ -71,14 +71,14 @@ export function StaffInviteActionModal({
             <div className="flex gap-2 w-full">
               <button
                 onClick={onClose}
-                className="flex-1 py-2.5 rounded-lg bg-muted text-sm font-medium text-foreground hover:bg-muted/80 transition-colors"
+                className="flex-1 py-2.5 rounded-lg bg-muted text-subhead font-medium text-foreground hover:bg-muted/80 transition-colors"
               >
                 {error ? 'Close' : 'Cancel'}
               </button>
               {!error && (
                 <button
                   onClick={onConfirm}
-                  className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex-1 py-2.5 rounded-lg text-subhead font-medium transition-colors ${
                     isAccept
                       ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                       : 'bg-red-500 text-white hover:bg-red-600'

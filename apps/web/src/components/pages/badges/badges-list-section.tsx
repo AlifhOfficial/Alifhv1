@@ -10,17 +10,17 @@ export function BadgesListSection() {
         
         {/* Header */}
         <div className="mb-12">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground/70 mb-3">
+          <p className="text-caption1 uppercase tracking-widest text-muted-foreground/70 mb-3">
             Recognition
           </p>
-          <h2 className="text-xl font-semibold text-foreground tracking-tight">
+          <h2 className="text-title3 font-semibold text-foreground tracking-tight">
             We see you. We recognize you.
           </h2>
         </div>
 
         {/* User Badges */}
         <section className="mb-10">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">
+          <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">
             01. User Badges
           </h3>
           <div className="rounded-xl border border-border/40 bg-sidebar p-5">
@@ -36,7 +36,7 @@ export function BadgesListSection() {
 
         {/* Dealer Badges */}
         <section>
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">
+          <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">
             02. Dealer Badges
           </h3>
           <div className="rounded-xl border border-border/40 bg-sidebar p-5">
@@ -58,8 +58,8 @@ export function BadgesListSection() {
 function BadgeItem({ name, desc, last }: { name: string; desc: string; last?: boolean }) {
   return (
     <div className={`flex items-start justify-between gap-4 ${!last ? 'pb-3 border-b border-border/20' : ''}`}>
-      <span className="text-sm font-medium text-foreground">{name}</span>
-      <span className="text-sm text-muted-foreground text-right">{desc}</span>
+      <span className="text-subhead font-medium text-foreground">{name}</span>
+      <span className="text-subhead text-muted-foreground text-right">{desc}</span>
     </div>
   );
 }

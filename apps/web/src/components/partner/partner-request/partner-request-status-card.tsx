@@ -112,8 +112,8 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
             <Icon className={`w-5 h-5 ${config.iconColor || 'text-muted-foreground'}`} />
           </div>
           <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-foreground">{config.title}</h2>
-            <p className="text-sm text-muted-foreground/70 max-w-md">
+            <h2 className="text-title3 font-semibold text-foreground">{config.title}</h2>
+            <p className="text-subhead text-muted-foreground/70 max-w-md">
               {config.description}
             </p>
           </div>
@@ -122,18 +122,18 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
         {/* Company Details Grid */}
         <div className="space-y-6 mb-8">
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground/70">Company Name</p>
-            <p className="text-sm text-foreground">{request.companyNameLegal}</p>
+            <p className="text-caption1 text-muted-foreground/70">Company Name</p>
+            <p className="text-subhead text-foreground">{request.companyNameLegal}</p>
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground/70">Trade License</p>
-            <p className="text-sm font-mono text-foreground">{request.tradeLicense}</p>
+            <p className="text-caption1 text-muted-foreground/70">Trade License</p>
+            <p className="text-subhead font-mono text-foreground">{request.tradeLicense}</p>
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs text-muted-foreground/70">Applied Date</p>
-            <p className="text-sm text-foreground">
+            <p className="text-caption1 text-muted-foreground/70">Applied Date</p>
+            <p className="text-subhead text-foreground">
               {new Date(request.createdAt).toLocaleDateString('en-AE', {
                 month: 'long',
                 day: 'numeric',
@@ -144,8 +144,8 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
 
           {request.status === 'approved' && request.reviewedAt && (
             <div className="space-y-2">
-              <p className="text-xs text-muted-foreground/70">Approved On</p>
-              <p className="text-sm text-foreground">
+              <p className="text-caption1 text-muted-foreground/70">Approved On</p>
+              <p className="text-subhead text-foreground">
                 {new Date(request.reviewedAt).toLocaleDateString('en-AE', {
                   month: 'long',
                   day: 'numeric',
@@ -159,8 +159,8 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
         {/* Rejection Reason */}
         {request.status === 'rejected' && request.rejectionReason && (
           <div className="space-y-2 mb-8">
-            <p className="text-xs text-muted-foreground/70">Feedback</p>
-            <p className="text-sm text-foreground">{request.rejectionReason}</p>
+            <p className="text-caption1 text-muted-foreground/70">Feedback</p>
+            <p className="text-subhead text-foreground">{request.rejectionReason}</p>
           </div>
         )}
 
@@ -169,7 +169,7 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
           <div className="flex justify-center pt-6 border-t border-border/40">
             <button
               onClick={() => setShowCancelConfirm(true)}
-              className="text-xs text-red-500 hover:text-red-600 transition-colors"
+              className="text-caption1 text-red-500 hover:text-red-600 transition-colors"
             >
               Cancel Application
             </button>
@@ -185,8 +185,8 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
                 <AlertTriangle className="w-6 h-6 text-red-500" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">Cancel Application?</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <h3 className="text-headline font-semibold text-foreground mb-1">Cancel Application?</h3>
+                <p className="text-subhead text-muted-foreground leading-relaxed">
                   Are you sure you want to cancel your partner application? This action cannot be undone and you'll need to start over if you want to reapply.
                 </p>
               </div>

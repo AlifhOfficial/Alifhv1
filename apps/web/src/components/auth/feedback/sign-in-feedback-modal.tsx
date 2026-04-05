@@ -100,12 +100,12 @@ export function SignInFeedbackModal({
           )}
 
           {/* Title */}
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-title3 font-semibold tracking-tight text-foreground">
             {isError ? "Sign in failed" : showSuccess ? "Welcome back" : "Signing in"}
           </h2>
           
           {/* Description with dots animation */}
-          <p className="text-[13px] text-muted-foreground mt-2">
+          <p className="text-footnote text-muted-foreground mt-2">
             {isError ? error : showSuccess ? (
               <span>Redirecting you now<span className="inline-block w-4 text-left">{dots}</span></span>
             ) : (
@@ -118,7 +118,7 @@ export function SignInFeedbackModal({
             <div className="w-full space-y-3 mt-6">
               <button
                 onClick={onClose}
-                className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="w-full h-11 rounded-xl text-subhead font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               >
                 Try again
               </button>

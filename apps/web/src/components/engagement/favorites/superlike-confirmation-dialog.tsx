@@ -68,12 +68,12 @@ export function SuperlikeConfirmationDialog({
         <div className="flex items-center gap-3 mb-4">
           <Zap className="w-5 h-5 text-yellow-500 flex-shrink-0" fill="currentColor" />
           <div className="flex-1 min-w-0">
-            <h2 className="text-[15px] font-semibold text-foreground">Superlike this listing?</h2>
+            <h2 className="text-subhead font-semibold text-foreground">Superlike this listing?</h2>
             {listingTitle && (
-              <p className="text-[13px] text-muted-foreground truncate">{listingTitle}</p>
+              <p className="text-footnote text-muted-foreground truncate">{listingTitle}</p>
             )}
           </div>
-          <span className="text-[13px] font-semibold text-muted-foreground tabular-nums flex-shrink-0">
+          <span className="text-footnote font-semibold text-muted-foreground tabular-nums flex-shrink-0">
             {remaining}/{total} left
           </span>
         </div>
@@ -82,13 +82,13 @@ export function SuperlikeConfirmationDialog({
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 h-10 rounded-xl text-[14px] font-semibold border border-border/50 bg-muted/20 text-foreground hover:bg-muted/40 transition-colors"
+            className="flex-1 h-10 rounded-xl text-subhead font-semibold border border-border/50 bg-muted/20 text-foreground hover:bg-muted/40 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={() => { onConfirm(); onClose(); }}
-            className="flex-1 h-10 rounded-xl text-[14px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            className="flex-1 h-10 rounded-xl text-subhead font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
           >
             Confirm
           </button>

@@ -16,10 +16,10 @@ export function PartnerBrandSection() {
         
         {/* Header */}
         <div className="text-center mb-16 space-y-5">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Your brand
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             We make you look good.
             <br />
             <span className="text-muted-foreground">Really good.</span>
@@ -32,7 +32,7 @@ export function PartnerBrandSection() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mb-16">
+        <p className="text-callout text-muted-foreground leading-relaxed max-w-lg mx-auto text-center mb-16">
           Others show your name and phone. We show inventory, response time, Google rating, location—everything that builds trust.
         </p>
 
@@ -57,8 +57,8 @@ export function PartnerBrandSection() {
           {/* Highlighted Card */}
           <div className="p-6 rounded-xl bg-primary text-primary-foreground">
             <CheckCircle2 className="w-5 h-5 text-white/70 mb-3" />
-            <h3 className="text-base font-semibold mb-1">Verified badge</h3>
-            <p className="text-sm text-white/60">
+            <h3 className="text-callout font-semibold mb-1">Verified badge</h3>
+            <p className="text-subhead text-white/60">
               Build trust instantly.
             </p>
           </div>
@@ -83,8 +83,8 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
   return (
     <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
       <Icon className="w-5 h-5 text-primary/80 mb-3" />
-      <h3 className="text-base font-semibold mb-1">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
+      <h3 className="text-callout font-semibold mb-1">{title}</h3>
+      <p className="text-subhead text-muted-foreground">{description}</p>
     </div>
   );
 }

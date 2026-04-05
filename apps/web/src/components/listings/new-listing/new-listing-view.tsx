@@ -43,15 +43,15 @@ function PendingReviewModal({ onClose }: { onClose: () => void }) {
               <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-semibold text-foreground">Under Review</h2>
-              <p className="text-[11px] sm:text-xs text-muted-foreground/60">Listing submitted</p>
+              <h2 className="text-callout sm:text-headline font-semibold text-foreground">Under Review</h2>
+              <p className="text-caption2 sm:text-caption1 text-muted-foreground/60">Listing submitted</p>
             </div>
           </div>
         </div>
 
         {/* Content */}
         <div className="px-4 sm:px-6 pb-3 sm:pb-4">
-          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          <p className="text-caption1 sm:text-subhead text-muted-foreground leading-relaxed">
             Your listing requires a quick manual review. We'll check it within <span className="font-semibold text-foreground">24 hours</span> and notify you once it's live.
           </p>
         </div>
@@ -60,7 +60,7 @@ function PendingReviewModal({ onClose }: { onClose: () => void }) {
         <div className="border-t border-border/40 p-3 sm:p-4">
           <button
             onClick={onClose}
-            className="w-full h-9 sm:h-10 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-colors"
+            className="w-full h-9 sm:h-10 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-semibold hover:bg-primary/90 transition-colors"
           >
             View My Listings
           </button>
@@ -95,15 +95,15 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
               <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-semibold text-foreground">You're Live!</h2>
-              <p className="text-[11px] sm:text-xs text-muted-foreground/60">Listing published</p>
+              <h2 className="text-callout sm:text-headline font-semibold text-foreground">You're Live!</h2>
+              <p className="text-caption2 sm:text-caption1 text-muted-foreground/60">Listing published</p>
             </div>
           </div>
         </div>
 
         {/* Content */}
         <div className="px-4 sm:px-6 pb-3 sm:pb-4">
-          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          <p className="text-caption1 sm:text-subhead text-muted-foreground leading-relaxed">
             Your listing is now <span className="font-semibold text-foreground">live</span> and visible to buyers. Good luck with your sale!
           </p>
         </div>
@@ -112,7 +112,7 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
         <div className="border-t border-border/40 p-3 sm:p-4">
           <button
             onClick={onClose}
-            className="w-full h-9 sm:h-10 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-colors"
+            className="w-full h-9 sm:h-10 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-semibold hover:bg-primary/90 transition-colors"
           >
             Go to My Listings
           </button>
@@ -246,7 +246,7 @@ export function NewListingView({ userId, initialData, draftId }: NewListingViewP
       {error && (
         <div className="max-w-2xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6">
           <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
-            <p className="text-xs sm:text-sm text-red-500">{error}</p>
+            <p className="text-caption1 sm:text-subhead text-red-500">{error}</p>
           </div>
         </div>
       )}

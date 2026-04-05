@@ -87,11 +87,11 @@ export function ListingDetailView({
         <main className="pt-20">
           <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-              <h1 className="text-2xl font-bold text-foreground mb-2">Listing Not Found</h1>
+              <h1 className="text-title2 font-bold text-foreground mb-2">Listing Not Found</h1>
               <p className="text-muted-foreground font-medium mb-6">This listing may have been removed or is no longer available.</p>
               <Link 
                 href="/listings" 
-                className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                className="inline-flex items-center gap-1.5 text-subhead text-primary hover:underline"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Back to Listings
@@ -114,11 +114,11 @@ export function ListingDetailView({
           <main className="pt-20">
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-                <h1 className="text-2xl font-bold text-foreground mb-2">Listing Not Available</h1>
+                <h1 className="text-title2 font-bold text-foreground mb-2">Listing Not Available</h1>
                 <p className="text-muted-foreground font-medium mb-6">This listing is not currently public.</p>
                 <Link 
                   href="/listings" 
-                  className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                  className="inline-flex items-center gap-1.5 text-subhead text-primary hover:underline"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Back to Listings
@@ -263,14 +263,14 @@ export function ListingDetailView({
                 <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-amber-700 dark:text-amber-400">Admin Preview</p>
-                  <p className="text-sm text-amber-600 dark:text-amber-400/80 mt-0.5">
+                  <p className="text-subhead text-amber-600 dark:text-amber-400/80 mt-0.5">
                     This listing is <strong>{listing.moderationStatus}</strong> ({listing.lifecycleStatus}).
                     It is not visible to the public.
                   </p>
                 </div>
                 <Link
                   href="/admin-dashboard/listings"
-                  className="text-sm font-medium text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap"
+                  className="text-subhead font-medium text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap"
                 >
                   ← Back to Moderation
                 </Link>
@@ -289,7 +289,7 @@ export function ListingDetailView({
             </div>
           ) : listing ? (
             <nav className="flex items-center py-4 mb-2 sm:mb-3 h-14 overflow-x-auto scrollbar-hide">
-              <div className="flex items-center gap-2 text-sm font-bold tracking-tight overflow-x-auto scrollbar-hide whitespace-nowrap min-w-0 max-w-full">
+              <div className="flex items-center gap-2 text-subhead font-bold tracking-tight overflow-x-auto scrollbar-hide whitespace-nowrap min-w-0 max-w-full">
                 {breadcrumbItems.map((item, index) => {
                   const isLast = index === breadcrumbItems.length - 1;
 
@@ -404,7 +404,7 @@ export function ListingDetailView({
                     ) : (
                       <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
                     )}
-                    <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+                    <p className="text-subhead text-muted-foreground leading-relaxed font-medium">
                       {isDealerListing 
                         ? isBlackTierPartner
                           ? <><span className="font-black text-foreground">Elite Partner.</span> Verified, vetted, and held to the highest standards.</>

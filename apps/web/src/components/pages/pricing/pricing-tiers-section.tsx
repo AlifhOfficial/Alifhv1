@@ -21,7 +21,7 @@ function FlowApplyButton() {
     <>
       <button
         onClick={() => isAuthenticated ? router.push('/user-dashboard/requests') : openModal()}
-        className="w-full h-11 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
+        className="w-full h-11 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
       >
         Apply for Founding Program
       </button>
@@ -34,7 +34,7 @@ function BlackContactButton() {
   return (
     <Link
       href="/contact?type=dealer&plan=black"
-      className="w-full h-11 bg-foreground text-background text-sm font-semibold rounded-lg hover:bg-foreground/90 transition-colors flex items-center justify-center"
+      className="w-full h-11 bg-foreground text-background text-subhead font-semibold rounded-lg hover:bg-foreground/90 transition-colors flex items-center justify-center"
     >
       Contact Us
     </Link>
@@ -48,7 +48,7 @@ export function PricingTiersSection() {
 
         {/* Founding Program callout */}
         <div className="text-center mb-12">
-          <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+          <span className="inline-flex items-center gap-2 text-subhead text-muted-foreground">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary" />
             <span>
               <span className="font-semibold text-foreground">Founding Dealer Program</span>
@@ -63,19 +63,19 @@ export function PricingTiersSection() {
           {/* Flow Card */}
           <div className="p-10 bg-sidebar flex flex-col gap-8">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-widest text-primary">Flow</span>
-              <span className="text-xs font-semibold text-primary">Recommended</span>
+              <span className="text-caption1 font-semibold uppercase tracking-widest text-primary">Flow</span>
+              <span className="text-caption1 font-semibold text-primary">Recommended</span>
             </div>
 
             <div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-4xl font-semibold tracking-tight">AED 7,000</span>
-                <span className="text-sm text-muted-foreground">/mo</span>
+                <span className="text-display font-semibold tracking-tight">AED 7,000</span>
+                <span className="text-subhead text-muted-foreground">/mo</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-1.5 uppercase tracking-wider font-medium">per showroom</p>
+              <p className="text-caption1 text-muted-foreground mt-1.5 uppercase tracking-wider font-medium">per showroom</p>
             </div>
 
-            <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+            <p className="text-subhead text-muted-foreground leading-relaxed flex-1">
               Unlimited listings, bookings, leads, messaging, and analytics. Every feature we offer — nothing locked behind a higher tier.
             </p>
 
@@ -85,20 +85,20 @@ export function PricingTiersSection() {
           {/* Black Card */}
           <div className="p-10 bg-sidebar flex flex-col gap-8">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-widest">Black</span>
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Limited spots</span>
+              <span className="text-caption1 font-semibold uppercase tracking-widest">Black</span>
+              <span className="text-caption1 font-semibold text-muted-foreground uppercase tracking-widest">Limited spots</span>
             </div>
 
             <div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-xs text-muted-foreground">from</span>
-                <span className="text-4xl font-semibold tracking-tight">AED 21,000</span>
-                <span className="text-sm text-muted-foreground">/mo</span>
+                <span className="text-caption1 text-muted-foreground">from</span>
+                <span className="text-display font-semibold tracking-tight">AED 21,000</span>
+                <span className="text-subhead text-muted-foreground">/mo</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-1.5 uppercase tracking-wider font-medium">per showroom</p>
+              <p className="text-caption1 text-muted-foreground mt-1.5 uppercase tracking-wider font-medium">per showroom</p>
             </div>
 
-            <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+            <p className="text-subhead text-muted-foreground leading-relaxed flex-1">
               Everything in Flow, plus premium brand presence, custom showroom page, and a dedicated support line.
             </p>
 
@@ -109,12 +109,12 @@ export function PricingTiersSection() {
 
         {/* Footer notes */}
         <div className="text-center mt-10 max-w-lg mx-auto space-y-2">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-caption1 text-muted-foreground">
             Pricing may change as we scale. Limited rate-lock spots available for early commitments.
           </p>
           <Link
             href="/partner"
-            className="inline-block text-sm text-primary hover:text-primary/80 transition-colors mt-2"
+            className="inline-block text-subhead text-primary hover:text-primary/80 transition-colors mt-2"
           >
             See all platform features →
           </Link>

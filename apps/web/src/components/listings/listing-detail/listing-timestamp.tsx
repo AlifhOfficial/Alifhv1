@@ -66,11 +66,11 @@ export function ListingTimestamp({
       <div className="flex items-center gap-2.5">
         <Clock className="w-5 h-5 text-muted-foreground" />
         <div className="flex items-baseline gap-2">
-          <span className="text-sm font-bold text-foreground">
+          <span className="text-subhead font-bold text-foreground">
             {formatTimeAgo(postedDate)}
           </span>
           {wasUpdated && (
-            <span className="text-sm text-muted-foreground font-semibold">
+            <span className="text-subhead text-muted-foreground font-semibold">
               • Updated {formatTimeAgo(editedDateObj)}
             </span>
           )}

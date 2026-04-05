@@ -49,7 +49,7 @@ function Lightbox({ item, onClose, onPrev, onNext, hasPrev, hasNext }: {
           alt={item.label}
           className="max-w-[90vw] max-h-[80vh] object-contain rounded-lg shadow-2xl"
         />
-        <p className="text-white/70 text-xs text-center">{item.label}</p>
+        <p className="text-white/70 text-caption1 text-center">{item.label}</p>
       </div>
 
       {/* Next */}
@@ -272,8 +272,8 @@ export default function ImageTestPage() {
       )}
 
     <div className="max-w-5xl mx-auto px-6 py-10">
-      <h1 className="text-2xl font-bold mb-1">Sharp Image Test</h1>
-      <p className="text-sm text-muted-foreground mb-8">
+      <h1 className="text-title2 font-bold mb-1">Sharp Image Test</h1>
+      <p className="text-subhead text-muted-foreground mb-8">
         Server-side Sharp pipeline · 480px thumb + 1400px full · WebP · byte-aware batching · no R2 upload
       </p>
 
@@ -291,15 +291,15 @@ export default function ImageTestPage() {
           className="hidden"
           onChange={e => handleFiles(e.target.files)}
         />
-        <span className="text-4xl">📷</span>
+        <span className="text-display">📷</span>
         <span className="font-medium">Drop images here or click to select</span>
-        <span className="text-xs text-muted-foreground">JPEG, PNG, WebP, HEIC · up to 50 files</span>
+        <span className="text-caption1 text-muted-foreground">JPEG, PNG, WebP, HEIC · up to 50 files</span>
       </label>
 
       {/* Progress bar */}
       {isProcessing && progress && (
         <div className="mb-6">
-          <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
+          <div className="flex justify-between text-caption1 text-muted-foreground mb-1.5">
             <span>
               {progress.phase === 'heic'
                 ? 'Converting HEIC → JPEG… (Chrome: ~2s/file, Safari: ~50ms/file)'
@@ -318,40 +318,40 @@ export default function ImageTestPage() {
 
       {/* Error */}
       {error && (
-        <div className="rounded-lg bg-destructive/10 text-destructive px-4 py-3 text-sm mb-6">
+        <div className="rounded-lg bg-destructive/10 text-destructive px-4 py-3 text-subhead mb-6">
           {error}
         </div>
       )}
 
       {/* Stats + totals bar */}
       {results.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8 p-4 rounded-xl bg-muted/40 text-sm">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8 p-4 rounded-xl bg-muted/40 text-subhead">
           <div>
-            <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Original</div>
+            <div className="text-caption2 text-muted-foreground uppercase tracking-wider mb-1">Original</div>
             <div className="font-semibold">{fmt(totalOriginal)}</div>
-            <div className="text-xs text-muted-foreground">{results.length} img</div>
+            <div className="text-caption1 text-muted-foreground">{results.length} img</div>
           </div>
           <div>
-            <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Thumbs</div>
+            <div className="text-caption2 text-muted-foreground uppercase tracking-wider mb-1">Thumbs</div>
             <div className="font-semibold">{fmt(totalThumb)}</div>
-            <div className="text-xs text-green-600 font-medium">{savings(totalOriginal, totalThumb)}</div>
+            <div className="text-caption1 text-green-600 font-medium">{savings(totalOriginal, totalThumb)}</div>
           </div>
           <div>
-            <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Fulls</div>
+            <div className="text-caption2 text-muted-foreground uppercase tracking-wider mb-1">Fulls</div>
             <div className="font-semibold">{fmt(totalFull)}</div>
-            <div className="text-xs text-green-600 font-medium">{savings(totalOriginal, totalFull)}</div>
+            <div className="text-caption1 text-green-600 font-medium">{savings(totalOriginal, totalFull)}</div>
           </div>
           {stats && (
             <>
               <div>
-                <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Wall time</div>
+                <div className="text-caption2 text-muted-foreground uppercase tracking-wider mb-1">Wall time</div>
                 <div className="font-semibold">{fmtMs(stats.totalMs)}</div>
-                <div className="text-xs text-muted-foreground">end-to-end</div>
+                <div className="text-caption1 text-muted-foreground">end-to-end</div>
               </div>
               <div>
-                <div className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Throughput</div>
+                <div className="text-caption2 text-muted-foreground uppercase tracking-wider mb-1">Throughput</div>
                 <div className="font-semibold">{stats.imagesPerSec}/s</div>
-                <div className="text-xs text-muted-foreground">~{fmtMs(stats.avgMsPerImage)}/img</div>
+                <div className="text-caption1 text-muted-foreground">~{fmtMs(stats.avgMsPerImage)}/img</div>
               </div>
             </>
           )}
@@ -366,32 +366,32 @@ export default function ImageTestPage() {
             return (
             <div key={i} className="border border-border rounded-xl overflow-hidden">
               <div className="px-4 py-2.5 bg-muted/30 flex items-center justify-between gap-4">
-                <span className="text-sm font-medium truncate">{r.name}</span>
+                <span className="text-subhead font-medium truncate">{r.name}</span>
                 <div className="flex items-center gap-3 shrink-0">
                   {r.totalMs > 0 && (
-                    <span className="text-xs text-muted-foreground">{fmtMs(r.totalMs)} total</span>
+                    <span className="text-caption1 text-muted-foreground">{fmtMs(r.totalMs)} total</span>
                   )}
-                  <span className="text-xs text-muted-foreground">{fmt(r.originalSize)}</span>
+                  <span className="text-caption1 text-muted-foreground">{fmt(r.originalSize)}</span>
                 </div>
               </div>
 
               {r.error ? (
-                <div className="px-4 py-3 text-sm text-destructive">{r.error}</div>
+                <div className="px-4 py-3 text-subhead text-destructive">{r.error}</div>
               ) : (
                 <>
                   {/* Timing breakdown row */}
                   <div className="px-4 py-2 bg-muted/10 border-b border-border flex flex-wrap gap-x-4 gap-y-1">
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-caption2 text-muted-foreground">
                       Sharp parallel <span className="font-medium text-foreground">{fmtMs(r.timing.sharpParallelMs)}</span>
                     </span>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-caption2 text-muted-foreground">
                       thumb <span className="font-medium text-foreground">{fmtMs(r.timing.thumbMs)}</span>
                     </span>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-caption2 text-muted-foreground">
                       full <span className="font-medium text-foreground">{fmtMs(r.timing.fullMs)}</span>
                     </span>
                     {r.timing.heicConvertMs > 0 && (
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="text-caption2 text-muted-foreground">
                         HEIC→JPEG <span className="font-medium text-foreground">{fmtMs(r.timing.heicConvertMs)}</span>
                       </span>
                     )}
@@ -399,37 +399,37 @@ export default function ImageTestPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border">
                     <div className="p-4 space-y-2">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                      <div className="flex items-center justify-between text-caption1 text-muted-foreground mb-2">
                         <span className="font-semibold text-foreground">Thumb</span>
                         <span>{r.thumb.width} × {r.thumb.height}px</span>
                       </div>
                       <button className="w-full group relative" onClick={() => openLightbox(thumbIdx)}>
                         <img src={r.thumb.dataUrl} alt="" className="w-full h-auto rounded-lg" />
                         <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 group-hover:bg-black/30 transition-colors">
-                          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-medium bg-black/60 px-2 py-1 rounded">
+                          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-caption1 font-medium bg-black/60 px-2 py-1 rounded">
                             View full size
                           </span>
                         </span>
                       </button>
-                      <div className="flex items-center justify-between text-xs pt-1">
+                      <div className="flex items-center justify-between text-caption1 pt-1">
                         <span className="font-medium">{fmt(r.thumb.size)}</span>
                         <span className="text-green-600 font-medium">{savings(r.originalSize, r.thumb.size)}</span>
                       </div>
                     </div>
                     <div className="p-4 space-y-2">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                      <div className="flex items-center justify-between text-caption1 text-muted-foreground mb-2">
                         <span className="font-semibold text-foreground">Full</span>
                         <span>{r.full.width} × {r.full.height}px</span>
                       </div>
                       <button className="w-full group relative" onClick={() => openLightbox(fullIdx)}>
                         <img src={r.full.dataUrl} alt="" className="w-full h-auto rounded-lg" />
                         <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 group-hover:bg-black/30 transition-colors">
-                          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-medium bg-black/60 px-2 py-1 rounded">
+                          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-caption1 font-medium bg-black/60 px-2 py-1 rounded">
                             View full size
                           </span>
                         </span>
                       </button>
-                      <div className="flex items-center justify-between text-xs pt-1">
+                      <div className="flex items-center justify-between text-caption1 pt-1">
                         <span className="font-medium">{fmt(r.full.size)}</span>
                         <span className="text-green-600 font-medium">{savings(r.originalSize, r.full.size)}</span>
                       </div>

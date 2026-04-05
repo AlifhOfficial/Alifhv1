@@ -202,7 +202,7 @@ export function ListingForm({
             <button
               onClick={onCancel}
               disabled={isSubmitting}
-              className="text-xs sm:text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
+              className="text-caption1 sm:text-subhead font-medium text-red-500 hover:text-red-600 transition-colors"
             >
               Cancel
             </button>
@@ -210,10 +210,10 @@ export function ListingForm({
         </div>
         
         {/* Title - step specific */}
-        <h1 className="text-base sm:text-xl font-semibold tracking-tight text-sidebar-foreground">
+        <h1 className="text-callout sm:text-title3 font-semibold tracking-tight text-sidebar-foreground">
           {mode === 'edit' ? 'Edit Listing' : stepTitles[currentStep]}
         </h1>
-        <p className="text-[11px] sm:text-sm text-sidebar-foreground/60 mt-0.5">
+        <p className="text-caption2 sm:text-subhead text-sidebar-foreground/60 mt-0.5">
           Step {currentStepIndex + 1} of {editableSteps.length}
         </p>
       </header>
@@ -242,12 +242,12 @@ export function ListingForm({
           return true;
         }).length > 0 && (
           <div className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-xl border border-red-500/30 bg-red-500/5">
-            <p className="text-[11px] sm:text-xs font-bold text-red-500 mb-1.5 sm:mb-2">Please fix:</p>
+            <p className="text-caption2 sm:text-caption1 font-bold text-red-500 mb-1.5 sm:mb-2">Please fix:</p>
             <ul className="space-y-1">
               {Object.entries(errors)
                 .filter(([field]) => !(currentStep === 'vin' && field === 'vin'))
                 .map(([field, error]) => (
-                <li key={field} className="text-[11px] sm:text-xs text-red-500/90 flex items-center gap-1.5 sm:gap-2">
+                <li key={field} className="text-caption2 sm:text-caption1 text-red-500/90 flex items-center gap-1.5 sm:gap-2">
                   <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-red-500 shrink-0" />
                   {error}
                 </li>
@@ -265,7 +265,7 @@ export function ListingForm({
               type="button"
               onClick={handleBack}
               disabled={isSubmitting}
-              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-caption1 sm:text-subhead font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               Back
@@ -279,7 +279,7 @@ export function ListingForm({
               type="button"
               onClick={handleSaveDraft}
               disabled={isSubmitting}
-              className="hidden sm:block px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
+              className="hidden sm:block px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-caption1 sm:text-subhead font-semibold text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
             >
               Save Draft
             </button>
@@ -290,7 +290,7 @@ export function ListingForm({
               type="button"
               onClick={handleNext}
               disabled={isSubmitting}
-              className="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-primary text-primary-foreground text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-colors"
+              className="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-primary text-primary-foreground text-caption1 sm:text-subhead font-semibold hover:bg-primary/90 transition-colors"
             >
               Continue
               <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -301,7 +301,7 @@ export function ListingForm({
               onClick={handleSubmit}
               disabled={isSubmitting}
               className={cn(
-                "flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold transition-colors disabled:opacity-50",
+                "flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-caption1 sm:text-subhead font-semibold transition-colors disabled:opacity-50",
                 mode === 'edit' 
                   ? "bg-primary text-primary-foreground hover:bg-primary/90"
                   : "bg-green-500 text-white hover:bg-green-600"

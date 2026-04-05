@@ -145,7 +145,7 @@ export function R2UploaderClient() {
             </SelectContent>
           </Select>
         </div>
-        <div className="text-sm text-muted-foreground pt-6">
+        <div className="text-subhead text-muted-foreground pt-6">
           Files uploaded to: <code className="bg-muted px-1.5 py-0.5 rounded">{folder}/</code>
         </div>
       </div>
@@ -175,10 +175,10 @@ export function R2UploaderClient() {
           "mx-auto h-12 w-12 mb-4 transition-colors",
           isDragging ? "text-primary" : "text-muted-foreground"
         )} />
-        <p className="text-lg font-medium mb-1">
+        <p className="text-headline font-medium mb-1">
           {isDragging ? 'Drop files here' : 'Drag & drop files here'}
         </p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-subhead text-muted-foreground">
           or click to browse • Images & videos up to 100MB
         </p>
       </div>
@@ -226,10 +226,10 @@ export function R2UploaderClient() {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate">{file.name}</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-subhead text-muted-foreground">
                     {formatSize(file.size)}
                     {file.status === 'success' && file.key && (
-                      <> • <code className="text-xs">{file.key}</code></>
+                      <> • <code className="text-caption1">{file.key}</code></>
                     )}
                     {file.status === 'error' && file.error && (
                       <span className="text-destructive"> • {file.error}</span>
@@ -274,9 +274,9 @@ export function R2UploaderClient() {
       )}
 
       {/* Quick Reference */}
-      <div className="rounded-lg bg-muted/30 border p-4 text-sm">
+      <div className="rounded-lg bg-muted/30 border p-4 text-subhead">
         <h4 className="font-medium mb-2">URL Pattern</h4>
-        <code className="block bg-muted px-3 py-2 rounded text-xs">
+        <code className="block bg-muted px-3 py-2 rounded text-caption1">
           {process.env.NEXT_PUBLIC_R2_PUBLIC_URL || 'https://cdn.revvup.ae'}/{folder}/[filename]
         </code>
         <p className="mt-2 text-muted-foreground">

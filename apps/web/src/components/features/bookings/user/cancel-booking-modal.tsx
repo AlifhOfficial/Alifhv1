@@ -71,10 +71,10 @@ export function CancelBookingModal({
 
           {/* Title */}
           <div className="space-y-1">
-            <h3 className="text-base font-semibold text-foreground">
+            <h3 className="text-callout font-semibold text-foreground">
               Cancel Booking
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-subhead text-muted-foreground">
               Tell us why you're cancelling
             </p>
           </div>
@@ -83,7 +83,7 @@ export function CancelBookingModal({
           <div className="w-full space-y-3 text-left">
             {/* Reason */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-muted-foreground/70">
+              <label className="text-caption1 font-semibold text-muted-foreground/70">
                 Reason <span className="font-normal text-muted-foreground/50">(optional)</span>
               </label>
               <input
@@ -92,13 +92,13 @@ export function CancelBookingModal({
                 onChange={(e) => onReasonChange(e.target.value)}
                 placeholder="Enter reason..."
                 disabled={isSubmitting}
-                className="w-full h-10 px-3 bg-muted/30 border border-border/40 rounded-lg text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
+                className="w-full h-10 px-3 bg-muted/30 border border-border/40 rounded-lg text-subhead placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
               />
             </div>
 
             {/* Notes */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-muted-foreground/70">
+              <label className="text-caption1 font-semibold text-muted-foreground/70">
                 Notes <span className="font-normal text-muted-foreground/50">(optional)</span>
               </label>
               <textarea
@@ -107,7 +107,7 @@ export function CancelBookingModal({
                 placeholder="Additional details..."
                 rows={2}
                 disabled={isSubmitting}
-                className="w-full px-3 py-2.5 bg-muted/30 border border-border/40 rounded-lg text-sm resize-none placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
+                className="w-full px-3 py-2.5 bg-muted/30 border border-border/40 rounded-lg text-subhead resize-none placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all disabled:opacity-50"
               />
             </div>
           </div>
@@ -117,7 +117,7 @@ export function CancelBookingModal({
             <button
               onClick={onSubmit}
               disabled={isSubmitting}
-              className="w-full h-10 rounded-lg bg-destructive text-destructive-foreground text-sm font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
+              className="w-full h-10 rounded-lg bg-destructive text-destructive-foreground text-subhead font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -131,7 +131,7 @@ export function CancelBookingModal({
             <button
               onClick={onClose}
               disabled={isSubmitting}
-              className="w-full h-10 rounded-lg text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
+              className="w-full h-10 rounded-lg text-subhead font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors disabled:opacity-50"
             >
               Go Back
             </button>

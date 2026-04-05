@@ -37,16 +37,16 @@ export default function ToolsLayout({
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link 
             href={isToolsIndex ? "/" : "/tools"} 
-            className="text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="text-footnote font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             ← {isToolsIndex ? "Home" : "All Tools"}
           </Link>
-          <span className="text-[13px] font-semibold">
+          <span className="text-footnote font-semibold">
             Revvup Tools
           </span>
           <Link
             href="/sell"
-            className="text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="text-footnote font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Sell →
           </Link>
@@ -64,7 +64,7 @@ export default function ToolsLayout({
           <div className="flex items-center gap-1.5 px-3 py-2.5 rounded-2xl bg-muted/70 backdrop-blur-xl border border-white/10 shadow-2xl">
             <Link
               href="/tools"
-              className="px-3 py-1.5 text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="px-3 py-1.5 text-caption1 font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               All
             </Link>
@@ -77,7 +77,7 @@ export default function ToolsLayout({
                     key={tool.href}
                     href={tool.href}
                     className={cn(
-                      "shrink-0 px-3 py-1.5 text-[12px] rounded-xl transition-all whitespace-nowrap",
+                      "shrink-0 px-3 py-1.5 text-caption1 rounded-xl transition-all whitespace-nowrap",
                       isActive
                         ? "bg-foreground text-background font-medium shadow-sm"
                         : "text-muted-foreground hover:text-foreground hover:bg-white/10"

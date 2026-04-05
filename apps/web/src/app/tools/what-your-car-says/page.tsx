@@ -13,8 +13,8 @@ export default function WhatYourCarSaysPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">🎭 What Your Car Says About You</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className="text-display font-bold mb-4">🎭 What Your Car Says About You</h1>
+          <p className="text-headline text-muted-foreground">
             Discover what your car choice reveals about your personality
           </p>
         </div>
@@ -24,7 +24,7 @@ export default function WhatYourCarSaysPage() {
 
         {/* Disclaimer */}
         <div className="mt-16 text-center p-6 border rounded-lg">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-subhead text-muted-foreground">
             This is just for fun! Your car doesn't define you, but it can say something 
             about your priorities and style. Take it with a grain of salt! 😄
           </p>

@@ -111,7 +111,7 @@ export function NewWorkListingView({ userId, partnerId }: NewWorkListingViewProp
       {error && (
         <div className="max-w-2xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6">
           <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
-            <p className="text-xs sm:text-sm text-red-500">{error}</p>
+            <p className="text-caption1 sm:text-subhead text-red-500">{error}</p>
           </div>
         </div>
       )}

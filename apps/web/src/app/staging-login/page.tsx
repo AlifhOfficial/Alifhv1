@@ -53,7 +53,7 @@ function StagingLoginForm() {
         <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-muted mb-4">
           <Lock className="w-6 h-6 text-muted-foreground" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">Staging Access</h1>
+        <h1 className="text-title2 font-bold tracking-tight">Staging Access</h1>
         <p className="text-muted-foreground mt-2">
           Enter the password to access this site
         </p>
@@ -73,7 +73,7 @@ function StagingLoginForm() {
         </div>
 
         {error && (
-          <p className="text-sm text-destructive text-center">{error}</p>
+          <p className="text-subhead text-destructive text-center">{error}</p>
         )}
 
         <button

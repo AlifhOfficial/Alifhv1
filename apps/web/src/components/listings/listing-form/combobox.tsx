@@ -61,7 +61,7 @@ export function Combobox({
           className={cn(
             "w-full h-12 flex items-center justify-between px-0 bg-transparent",
             "transition-colors focus:outline-none",
-            value ? "text-sidebar-foreground text-sm font-medium" : "text-sidebar-foreground/40 text-sm",
+            value ? "text-sidebar-foreground text-subhead font-medium" : "text-sidebar-foreground/40 text-subhead",
             disabled && "opacity-50 cursor-not-allowed",
             className
           )}
@@ -84,10 +84,10 @@ export function Combobox({
         <Command className="rounded-xl bg-transparent">
           <CommandInput 
             placeholder={searchPlaceholder} 
-            className="h-11 border-b border-sidebar-border text-sm" 
+            className="h-11 border-b border-sidebar-border text-subhead" 
           />
           <CommandList id={listId} className="max-h-[240px]">
-            <CommandEmpty className="py-8 text-center text-sm text-sidebar-foreground/50">
+            <CommandEmpty className="py-8 text-center text-subhead text-sidebar-foreground/50">
               No results found
             </CommandEmpty>
             <CommandGroup className="p-1.5">
@@ -100,7 +100,7 @@ export function Combobox({
                     setOpen(false);
                   }}
                   className={cn(
-                    "cursor-pointer rounded-lg px-3 py-2.5 text-sm transition-colors text-sidebar-foreground",
+                    "cursor-pointer rounded-lg px-3 py-2.5 text-subhead transition-colors text-sidebar-foreground",
                     value === option.value && "bg-primary/10 text-primary"
                   )}
                 >

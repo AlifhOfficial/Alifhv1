@@ -296,7 +296,7 @@ export function CarCard({
         <Link href={`/listings/${id}`} prefetch={false} className="group/title">
           <div className="flex items-baseline justify-between gap-2">
             <h3 className={cn(
-              "text-lg sm:text-[15px] font-bold tracking-tight line-clamp-1 transition-colors flex-1 min-w-0 leading-tight",
+              "text-headline sm:text-subhead font-bold tracking-tight line-clamp-1 transition-colors flex-1 min-w-0 leading-tight",
               isBlkListing 
                 ? "text-zinc-900 dark:text-white group-hover/title:text-zinc-600 dark:group-hover/title:text-zinc-300" 
                 : "text-foreground group-hover/title:text-primary"
@@ -304,7 +304,7 @@ export function CarCard({
               {make} {model}
             </h3>
             <span className={cn(
-              "text-sm sm:text-xs font-semibold tabular-nums flex-shrink-0",
+              "text-subhead sm:text-caption1 font-semibold tabular-nums flex-shrink-0",
               isBlkListing ? "text-zinc-500 dark:text-zinc-500" : "text-muted-foreground/80"
             )}>
               {year}
@@ -314,7 +314,7 @@ export function CarCard({
 
         {/* Price */}
         <p className={cn(
-          "text-xl sm:text-lg font-black tracking-tight leading-none",
+          "text-title3 sm:text-headline font-black tracking-tight leading-none",
           isBlkListing ? "text-zinc-900 dark:text-white" : "text-blue-600 dark:text-blue-500"
         )}>
           {formatPrice(price)}
@@ -322,7 +322,7 @@ export function CarCard({
 
         {/* Mobile: Stats Row */}
         <div className={cn(
-          "flex items-center gap-2 text-sm min-w-0 overflow-hidden sm:hidden",
+          "flex items-center gap-2 text-subhead min-w-0 overflow-hidden sm:hidden",
           isBlkListing ? "text-zinc-500 dark:text-zinc-400" : "text-muted-foreground"
         )}>
           <span className="font-medium tabular-nums whitespace-nowrap">{formatMileage(mileage)} km</span>
@@ -383,7 +383,7 @@ export function CarCard({
               />
             )}
             <span className={cn(
-              "text-sm sm:text-[11px] font-semibold truncate",
+              "text-subhead sm:text-caption2 font-semibold truncate",
               isBlkListing ? "text-zinc-600 dark:text-zinc-300" : "text-foreground"
             )}>
               {displaySellerName}
@@ -485,7 +485,7 @@ export function CarCard({
         </div>
 
         {/* Desktop: Stats Row */}
-        <div className="hidden sm:flex items-center gap-1.5 text-sm">
+        <div className="hidden sm:flex items-center gap-1.5 text-subhead">
           <span className={cn(
             "font-semibold tabular-nums",
             isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
@@ -559,7 +559,7 @@ export function CarCard({
               />
             )}
             <span className={cn(
-              "text-[13px] font-medium",
+              "text-footnote font-medium",
               isBlkListing ? "text-zinc-700 dark:text-zinc-200" : "text-foreground"
             )}>
               {displaySellerName}

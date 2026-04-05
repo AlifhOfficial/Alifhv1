@@ -155,8 +155,8 @@ export function StaffProfile() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <User className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-lg font-medium tracking-tight">Unable to load profile</h3>
-          <p className="text-sm text-muted-foreground mt-1">Please try again later</p>
+          <h3 className="text-headline font-medium tracking-tight">Unable to load profile</h3>
+          <p className="text-subhead text-muted-foreground mt-1">Please try again later</p>
         </div>
       </div>
     );
@@ -169,7 +169,7 @@ export function StaffProfile() {
       {/* Back */}
       <Link 
         href="/partner-dashboard/staff"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+        className="inline-flex items-center gap-1.5 text-subhead text-muted-foreground hover:text-foreground transition-colors mb-6"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Staff
@@ -179,8 +179,8 @@ export function StaffProfile() {
       <header className="mb-8 sm:mb-16">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Work Profile</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+            <h1 className="text-title3 sm:text-title2 font-semibold tracking-tight">Work Profile</h1>
+            <p className="text-caption1 sm:text-subhead text-muted-foreground mt-2">
               Your work identity for client interactions
             </p>
           </div>
@@ -198,14 +198,14 @@ export function StaffProfile() {
                 <button
                   onClick={handleCancel}
                   disabled={updateMutation.isPending}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm hover:bg-secondary/50 transition-colors disabled:opacity-50"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-caption1 sm:text-subhead hover:bg-secondary/50 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={updateMutation.isPending}
-                  className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-500 text-white text-xs sm:text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-500 text-white text-caption1 sm:text-subhead font-medium hover:bg-blue-600 transition-colors disabled:opacity-50"
                 >
                   {updateMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Save
@@ -214,7 +214,7 @@ export function StaffProfile() {
             ) : (
               <button
                 onClick={() => setEditing(true)}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-500 text-white text-xs sm:text-sm font-medium hover:bg-blue-600 transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-500 text-white text-caption1 sm:text-subhead font-medium hover:bg-blue-600 transition-colors"
               >
                 Edit
               </button>
@@ -225,24 +225,24 @@ export function StaffProfile() {
         {/* Role Badge */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <span className={cn(
-            "px-2.5 py-1 rounded-md text-xs font-medium capitalize",
+            "px-2.5 py-1 rounded-md text-caption1 font-medium capitalize",
             roleBadge.bg,
             roleBadge.color
           )}>
             {profile.role}
           </span>
           {profile.title && (
-            <span className="text-xs text-muted-foreground">{profile.title}</span>
+            <span className="text-caption1 text-muted-foreground">{profile.title}</span>
           )}
           {profile.department && (
-            <span className="text-xs text-muted-foreground">· {profile.department}</span>
+            <span className="text-caption1 text-muted-foreground">· {profile.department}</span>
           )}
         </div>
       </header>
 
       {/* Info Note */}
       <div className="mb-8 sm:mb-12 p-3 sm:p-4 rounded-xl bg-secondary/30">
-        <p className="text-xs text-muted-foreground">
+        <p className="text-caption1 text-muted-foreground">
           Your display name is shown to clients instead of your personal name. Work email and phone are used for business communications.
         </p>
       </div>
@@ -256,16 +256,16 @@ export function StaffProfile() {
               <User className="w-4 h-4 text-muted-foreground" />
             </div>
             <div className="flex-1 min-w-0">
-              <label className="text-xs text-muted-foreground">Display Name</label>
+              <label className="text-caption1 text-muted-foreground">Display Name</label>
               {editing ? (
                 <input
                   value={formData.displayName}
                   onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
                   placeholder="e.g. Ahmed, Alex, Sarah"
-                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-sm font-medium border border-transparent focus:border-blue-500 focus:outline-none placeholder:text-muted-foreground/50"
+                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-subhead font-medium border border-transparent focus:border-blue-500 focus:outline-none placeholder:text-muted-foreground/50"
                 />
               ) : (
-                <p className="text-sm font-medium tracking-tight mt-1">
+                <p className="text-subhead font-medium tracking-tight mt-1">
                   {profile.displayName || <span className="text-muted-foreground">Not set</span>}
                 </p>
               )}
@@ -280,17 +280,17 @@ export function StaffProfile() {
               <Phone className="w-4 h-4 text-muted-foreground" />
             </div>
             <div className="flex-1 min-w-0">
-              <label className="text-xs text-muted-foreground">Work Phone</label>
+              <label className="text-caption1 text-muted-foreground">Work Phone</label>
               {editing ? (
                 <input
                   type="tel"
                   value={formData.workPhone}
                   onChange={(e) => setFormData({ ...formData, workPhone: e.target.value })}
                   placeholder="+971 50 123 4567"
-                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-sm font-medium border border-transparent focus:border-blue-500 focus:outline-none placeholder:text-muted-foreground/50"
+                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-subhead font-medium border border-transparent focus:border-blue-500 focus:outline-none placeholder:text-muted-foreground/50"
                 />
               ) : (
-                <p className="text-sm font-medium tracking-tight mt-1">
+                <p className="text-subhead font-medium tracking-tight mt-1">
                   {profile.workPhone || <span className="text-muted-foreground">Not set</span>}
                 </p>
               )}

@@ -106,7 +106,7 @@ export function AmnaDialog({ open, onOpenChange }: AmnaDialogProps) {
           <div className="absolute inset-0 z-20 bg-background/90 backdrop-blur-sm flex items-center justify-center animate-in fade-in-0 duration-200 rounded-2xl">
             <div className="flex flex-col items-center gap-4 px-6">
               <Zap className="h-8 w-8 text-violet-500 animate-pulse" />
-              <p className="text-sm font-semibold text-foreground text-center">
+              <p className="text-subhead font-semibold text-foreground text-center">
                 {message || 'Finding cars for you...'}
               </p>
             </div>
@@ -117,8 +117,8 @@ export function AmnaDialog({ open, onOpenChange }: AmnaDialogProps) {
         <div className="flex items-center gap-2.5 px-5 pt-4 pb-2">
           <Zap className="h-4 w-4 text-violet-500 shrink-0" />
           <div>
-            <h3 className="text-sm font-bold text-foreground leading-tight">Ask Amna</h3>
-            <p className="text-[11px] text-muted-foreground/60">Describe what you're looking for</p>
+            <h3 className="text-subhead font-bold text-foreground leading-tight">Ask Amna</h3>
+            <p className="text-caption2 text-muted-foreground/60">Describe what you're looking for</p>
           </div>
         </div>
 
@@ -139,7 +139,7 @@ export function AmnaDialog({ open, onOpenChange }: AmnaDialogProps) {
             disabled={loading}
             className={cn(
               'w-full rounded-lg border border-border/50 bg-muted/20 px-3.5 py-2.5 resize-none',
-              'text-sm text-foreground',
+              'text-subhead text-foreground',
               'placeholder:text-muted-foreground/40',
               'focus:outline-none focus:border-violet-500/40',
               'transition-colors duration-150',
@@ -161,7 +161,7 @@ export function AmnaDialog({ open, onOpenChange }: AmnaDialogProps) {
                 }}
                 disabled={loading}
                 className={cn(
-                  'px-2.5 py-1 rounded-full text-xs font-medium',
+                  'px-2.5 py-1 rounded-full text-caption1 font-medium',
                   'bg-muted/50 text-muted-foreground',
                   'border border-border/40',
                   'hover:bg-muted hover:text-foreground',
@@ -184,7 +184,7 @@ export function AmnaDialog({ open, onOpenChange }: AmnaDialogProps) {
             onClick={() => handleSubmit()}
             disabled={!query.trim() || loading}
             className={cn(
-              'flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold',
+              'flex items-center gap-1.5 px-4 py-1.5 rounded-full text-caption1 font-semibold',
               'transition-all duration-150',
               query.trim() && !loading
                 ? 'bg-violet-500 text-white hover:bg-violet-600'

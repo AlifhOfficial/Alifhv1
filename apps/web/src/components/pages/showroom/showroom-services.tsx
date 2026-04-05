@@ -38,10 +38,10 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
         
         {/* Header - Above Image */}
         <div className="px-4 sm:px-6 lg:px-8 mb-8">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {showroom.servicesSectionTitle || 'What We Offer'}
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Signature Services
           </h2>
         </div>
@@ -73,7 +73,7 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
 
         {/* Description - Below Image */}
         <div className="px-4 sm:px-6 lg:px-8 mb-8">
-          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-2xl leading-relaxed">
             Tailored experiences designed around you.
           </p>
         </div>
@@ -92,7 +92,7 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
                     className="flex-shrink-0 w-[280px] sm:w-[320px] h-[200px] p-6 rounded-xl bg-blue-600 text-white border border-blue-700/40 hover:border-blue-400/50 transition-all duration-300 flex flex-col text-left cursor-pointer"
                   >
                     {/* VIP Label */}
-                    <span className="text-xl font-semibold text-white mb-3">
+                    <span className="text-title3 font-semibold text-white mb-3">
                       VIP
                     </span>
 
@@ -101,13 +101,13 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
                       {vipPerks.slice(0, 4).map((perk, idx) => (
                         <div key={idx} className="flex items-center gap-2">
                           <div className="w-1.5 h-1.5 rounded-full bg-white/40 flex-shrink-0" />
-                          <span className="text-sm text-white/80 truncate">{perk}</span>
+                          <span className="text-subhead text-white/80 truncate">{perk}</span>
                         </div>
                       ))}
                     </div>
                     
                     {vipPerks.length > 4 && (
-                      <span className="text-xs text-white/60 mt-2">
+                      <span className="text-caption1 text-white/60 mt-2">
                         +{vipPerks.length - 4} more perks
                       </span>
                     )}
@@ -123,7 +123,7 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
                     {vipPerks.map((perk, idx) => (
                       <div key={idx} className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0" />
-                        <span className="text-sm text-foreground">{perk}</span>
+                        <span className="text-subhead text-foreground">{perk}</span>
                       </div>
                     ))}
                   </div>
@@ -149,17 +149,17 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
                       </div>
                     )}
                     {/* Number */}
-                    <span className="text-xl font-semibold text-muted-foreground/30 mb-3">
+                    <span className="text-title3 font-semibold text-muted-foreground/30 mb-3">
                       {String(index + 1).padStart(2, '0')}
                     </span>
 
                     {/* Content */}
                     <div className="flex-1 overflow-hidden">
-                      <h3 className="text-base font-semibold text-foreground leading-snug mb-2">
+                      <h3 className="text-callout font-semibold text-foreground leading-snug mb-2">
                         {service.title}
                       </h3>
                       {service.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-3">
+                        <p className="text-subhead text-muted-foreground line-clamp-3">
                           {service.description}
                         </p>
                       )}
@@ -185,7 +185,7 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
                     </div>
                   )}
                   {service.description && (
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-subhead text-muted-foreground leading-relaxed">
                       {service.description}
                     </p>
                   )}

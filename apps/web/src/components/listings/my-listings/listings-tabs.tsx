@@ -79,7 +79,7 @@ export function ListingsTabs({
                 key={tab.key}
                 onClick={() => onTabChange(tab.key)}
                 className={cn(
-                  "text-sm font-semibold tracking-tight transition-colors whitespace-nowrap",
+                  "text-subhead font-semibold tracking-tight transition-colors whitespace-nowrap",
                   isActive
                     ? "text-foreground"
                     : "text-muted-foreground/60 hover:text-foreground"
@@ -88,7 +88,7 @@ export function ListingsTabs({
                 {tab.label}
                 {tab.count > 0 && (
                   <span className={cn(
-                    "ml-1.5 text-xs font-bold tabular-nums",
+                    "ml-1.5 text-caption1 font-bold tabular-nums",
                     isActive ? "text-foreground" : "text-muted-foreground/50"
                   )}>
                     {tab.count}
@@ -106,7 +106,7 @@ export function ListingsTabs({
             onClick={() => setIsDeepOpen(!isDeepOpen)}
             onBlur={() => setTimeout(() => setIsDeepOpen(false), 150)}
             className={cn(
-              "flex items-center gap-2 text-sm font-semibold transition-colors",
+              "flex items-center gap-2 text-subhead font-semibold transition-colors",
               isDeepInventoryActive
                 ? "text-foreground"
                 : "text-muted-foreground/60 hover:text-foreground"
@@ -120,7 +120,7 @@ export function ListingsTabs({
             ) : (
               'Deep Inventory'
             )}
-            <span className="text-xs font-bold tabular-nums text-muted-foreground/50">
+            <span className="text-caption1 font-bold tabular-nums text-muted-foreground/50">
               {deepInventoryTotal}
             </span>
             <ChevronDown className={cn(
@@ -140,14 +140,14 @@ export function ListingsTabs({
                   setIsDeepOpen(false);
                 }}
                 className={cn(
-                  "w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors",
+                  "w-full flex items-center justify-between px-4 py-2.5 text-subhead font-medium transition-colors",
                   isDeepInventoryActive && deepInventoryFilter === 'all'
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <span>All</span>
-                <span className="text-xs font-bold tabular-nums text-muted-foreground/50">
+                <span className="text-caption1 font-bold tabular-nums text-muted-foreground/50">
                   {deepInventoryTotal}
                 </span>
               </button>
@@ -169,7 +169,7 @@ export function ListingsTabs({
                         setIsDeepOpen(false);
                       }}
                       className={cn(
-                        "w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors",
+                        "w-full flex items-center justify-between px-4 py-2.5 text-subhead font-medium transition-colors",
                         isSelected
                           ? "text-foreground"
                           : "text-muted-foreground hover:text-foreground"
@@ -179,7 +179,7 @@ export function ListingsTabs({
                         <Icon className="w-4 h-4" />
                         {filter.label}
                       </span>
-                      <span className="text-xs font-bold tabular-nums text-muted-foreground/50">
+                      <span className="text-caption1 font-bold tabular-nums text-muted-foreground/50">
                         {filter.count}
                       </span>
                     </button>

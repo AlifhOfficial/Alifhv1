@@ -15,17 +15,17 @@ export function FormField({ label, required, error, hint, children, className }:
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-baseline justify-between">
-        <label className="text-[13px] font-semibold tracking-tight text-foreground">
+        <label className="text-footnote font-semibold tracking-tight text-foreground">
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
         {hint && !error && (
-          <span className="text-[12px] text-muted-foreground/60">{hint}</span>
+          <span className="text-caption1 text-muted-foreground/60">{hint}</span>
         )}
       </div>
       {children}
       {error && (
-        <p className="text-[12px] font-semibold text-red-500">{error}</p>
+        <p className="text-caption1 font-semibold text-red-500">{error}</p>
       )}
     </div>
   );

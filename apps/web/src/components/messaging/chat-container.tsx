@@ -177,8 +177,8 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
                   <MessageCircle className="w-7 h-7 sm:w-9 sm:h-9 text-muted-foreground/50 stroke-[1.5]" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm sm:text-base font-semibold text-foreground/80">No conversation selected</p>
-                  <p className="text-xs sm:text-sm font-medium text-muted-foreground/60">Choose a conversation from the list to start chatting</p>
+                  <p className="text-subhead sm:text-callout font-semibold text-foreground/80">No conversation selected</p>
+                  <p className="text-caption1 sm:text-subhead font-medium text-muted-foreground/60">Choose a conversation from the list to start chatting</p>
                 </div>
               </div>
             </div>

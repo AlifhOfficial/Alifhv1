@@ -10,6 +10,45 @@
 
 @layer base {
   :root {
+    /* ── Apple HIG Typography Scale (web-aligned, matches mobile theme.ts) ── */
+    /* Font sizes — 1pt iOS ≈ 1px web logical pixel */
+    --fs-large-title: 2.125rem;   /* 34px — largeTitle  */
+    --fs-title1:      1.75rem;    /* 28px — title1      */
+    --fs-title2:      1.375rem;   /* 22px — title2      */
+    --fs-title3:      1.25rem;    /* 20px — title3      */
+    --fs-headline:    1.0625rem;  /* 17px — headline    */
+    --fs-body:        1.0625rem;  /* 17px — body        */
+    --fs-callout:     1rem;       /* 16px — callout     */
+    --fs-subhead:     0.9375rem;  /* 15px — subhead     */
+    --fs-footnote:    0.8125rem;  /* 13px — footnote    */
+    --fs-caption1:    0.75rem;    /* 12px — caption1    */
+    --fs-caption2:    0.6875rem;  /* 11px — caption2    */
+
+    /* Line heights — from mobile theme.ts iOS type scale */
+    --lh-large-title: 1.21;   /* 41/34 */
+    --lh-title1:      1.21;   /* 34/28 */
+    --lh-title2:      1.27;   /* 28/22 */
+    --lh-title3:      1.25;   /* 25/20 */
+    --lh-headline:    1.29;   /* 22/17 */
+    --lh-body:        1.29;   /* 22/17 */
+    --lh-callout:     1.31;   /* 21/16 */
+    --lh-subhead:     1.33;   /* 20/15 */
+    --lh-footnote:    1.38;   /* 18/13 */
+    --lh-caption1:    1.33;   /* 16/12 */
+    --lh-caption2:    1.18;   /* 13/11 */
+
+    /* Font weights */
+    --fw-regular:    400;
+    --fw-medium:     500;
+    --fw-semibold:   600;
+    --fw-bold:       700;
+    --fw-extrabold:  800;
+
+    /* Letter spacing */
+    --ls-tight:  -0.02em;   /* h1 large headings */
+    --ls-snug:   -0.01em;   /* h2 section headings */
+    --ls-normal:  0em;
+
     /* Base Colors */
     --background: 0 0% 100%;
     --foreground: 0 0% 5%;
@@ -78,7 +117,7 @@
     --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted-foreground: 0 0% 68%;  /* #ADADAD — matches mobile secondaryLabelDark */
     
     /* Accent */
     --accent: 0 0% 15%;
@@ -89,8 +128,8 @@
     --destructive-foreground: 0 0% 98%;
     
     /* Border & Input */
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
+    --border: 0 0% 22%;  /* #383838 — matches mobile opaqueSeparatorDark */
+    --input: 0 0% 15%;   /* elevated surface for input backgrounds */
     --ring: 217.2 91.2% 59.8%;
     
     /* Sidebar */
@@ -217,11 +256,12 @@
 }
 
 .font-geom {
-  font-family: var(--font-geom), var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--font-geom), var(--font-inter), sans-serif;
 }
 
+/* Wordmark — Geom Black only, Inter fallback, no system fonts */
 .wordmark-geom {
-  font-family: var(--font-geom), var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--font-geom), var(--font-inter), sans-serif;
   letter-spacing: -0.05em;
   text-rendering: geometricPrecision;
   text-shadow:
@@ -256,39 +296,39 @@
   
   /* Typography System - Revvup Design (Cross-platform optimized) */
   h1 {
-    @apply text-4xl sm:text-5xl md:text-6xl tracking-tight;
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    @apply text-display sm:text-display1 md:text-display2 tracking-tight;
+    font-weight: var(--fw-extrabold);
+    line-height: var(--lh-large-title);
+    letter-spacing: var(--ls-tight);
   }
   
   h2 {
-    @apply text-lg sm:text-xl tracking-tight;
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
+    @apply text-headline sm:text-title3 tracking-tight;
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-title2);
+    letter-spacing: var(--ls-snug);
   }
   
   h3 {
-    @apply text-sm sm:text-base;
-    font-weight: 600;
-    line-height: 1.3;
+    @apply text-subhead sm:text-callout;
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-subhead);
   }
   
   p {
-    @apply text-xs sm:text-sm;
-    font-weight: 500;
-    line-height: 1.6;
+    @apply text-caption1 sm:text-subhead;
+    font-weight: var(--fw-medium);
+    line-height: var(--lh-footnote);
   }
   
   small, .text-meta {
-    @apply text-xs;
-    font-weight: 500;
+    @apply text-caption1;
+    font-weight: var(--fw-medium);
   }
   
   /* Buttons and interactive text */
   button, [role="button"], a {
-    font-weight: 600;
+    font-weight: var(--fw-semibold);
   }
   
   /* Prevent theme transition flash */

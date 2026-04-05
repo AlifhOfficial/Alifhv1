@@ -23,10 +23,10 @@ export default function ContactPage() {
         
         {/* Header */}
         <div className="mb-12">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground/70 mb-3">
+          <p className="text-caption1 uppercase tracking-widest text-muted-foreground/70 mb-3">
             Support
           </p>
-          <h1 className="text-xl font-semibold text-foreground tracking-tight">
+          <h1 className="text-title3 font-semibold text-foreground tracking-tight">
             Contact Us
           </h1>
         </div>
@@ -35,14 +35,14 @@ export default function ContactPage() {
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 mb-10">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm font-semibold text-muted-foreground/70">Response Time</p>
-              <p className="text-sm font-medium text-foreground mt-0.5">24-48 hours</p>
+              <p className="text-subhead font-semibold text-muted-foreground/70">Response Time</p>
+              <p className="text-subhead font-medium text-foreground mt-0.5">24-48 hours</p>
             </div>
             <div>
-              <p className="text-sm font-semibold text-muted-foreground/70">Email</p>
+              <p className="text-subhead font-semibold text-muted-foreground/70">Email</p>
               <a 
                 href="mailto:support@revvup.ae" 
-                className="text-sm font-medium text-primary hover:underline mt-0.5 inline-block"
+                className="text-subhead font-medium text-primary hover:underline mt-0.5 inline-block"
               >
                 support@revvup.ae
               </a>
@@ -52,16 +52,16 @@ export default function ContactPage() {
 
         {/* Introduction */}
         <div className="mb-10 py-5 border-y border-border/40">
-          <p className="text-sm text-foreground leading-relaxed">
+          <p className="text-subhead text-foreground leading-relaxed">
             Have a question, need support, or interested in a partnership? We&apos;re here to help.
           </p>
           <div className="flex flex-wrap items-center gap-2 mt-4">
-            <span className="text-xs text-muted-foreground/70">Quick links:</span>
-            <Link href="/faq" className="text-xs text-primary hover:underline font-medium">Help Center</Link>
+            <span className="text-caption1 text-muted-foreground/70">Quick links:</span>
+            <Link href="/faq" className="text-caption1 text-primary hover:underline font-medium">Help Center</Link>
             <span className="text-muted-foreground/40">·</span>
-            <Link href="/privacy-policy" className="text-xs text-primary hover:underline font-medium">Privacy</Link>
+            <Link href="/privacy-policy" className="text-caption1 text-primary hover:underline font-medium">Privacy</Link>
             <span className="text-muted-foreground/40">·</span>
-            <Link href="/terms-of-service" className="text-xs text-primary hover:underline font-medium">Terms</Link>
+            <Link href="/terms-of-service" className="text-caption1 text-primary hover:underline font-medium">Terms</Link>
           </div>
         </div>
 
@@ -71,12 +71,12 @@ export default function ContactPage() {
         {/* Footer */}
         <div className="mt-16 pt-6 border-t border-border/40">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-muted-foreground/70">
+            <p className="text-caption1 text-muted-foreground/70">
               © 2026 AISH CAPITALS FZCO
             </p>
             <Link 
               href="/" 
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors font-medium"
+              className="text-caption1 text-muted-foreground hover:text-foreground transition-colors font-medium"
             >
               Back to Home
             </Link>

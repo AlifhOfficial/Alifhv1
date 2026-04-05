@@ -370,7 +370,7 @@ function createResultHtml(status: ResultStatus, sessionId: string, reason?: stri
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;

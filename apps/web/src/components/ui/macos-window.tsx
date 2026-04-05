@@ -99,7 +99,7 @@ function TypewriterToast({
           boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
         }}
       >
-        <span className="text-xs sm:text-sm text-white/90 font-medium whitespace-nowrap overflow-hidden text-ellipsis block">
+        <span className="text-caption1 sm:text-subhead text-white/90 font-medium whitespace-nowrap overflow-hidden text-ellipsis block">
           {displayText}
           <span 
             className={cn(
@@ -230,7 +230,7 @@ export function MacOSWindow({
               </svg>
               
               {/* URL text */}
-              <span className="text-[10px] sm:text-xs text-white/50 font-medium truncate min-w-0">{url}</span>
+              <span className="text-[10px] sm:text-caption1 text-white/50 font-medium truncate min-w-0">{url}</span>
             </button>
           </div>
         )}

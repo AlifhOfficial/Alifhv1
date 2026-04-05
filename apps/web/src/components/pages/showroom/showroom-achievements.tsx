@@ -32,10 +32,10 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
         
         {/* Header */}
         <div className="mb-8 px-4 sm:px-6 lg:px-8">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             {showroom.achievementsSectionTitle || 'Recognition'}
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Awards & Milestones
           </h2>
         </div>
@@ -80,7 +80,7 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
                 <div className="flex items-start justify-between mb-6">
                   {/* Year */}
                   {achievement.year && (
-                    <span className="text-2xl font-semibold text-muted-foreground/30">
+                    <span className="text-title2 font-semibold text-muted-foreground/30">
                       {achievement.year}
                     </span>
                   )}
@@ -101,12 +101,12 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
 
                 {/* Content */}
                 <div className="space-y-2 flex-1">
-                  <h3 className="text-base font-semibold text-foreground leading-snug">
+                  <h3 className="text-callout font-semibold text-foreground leading-snug">
                     {achievement.title}
                   </h3>
                   
                   {achievement.issuer && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-subhead text-muted-foreground">
                       {achievement.issuer}
                     </p>
                   )}
@@ -114,7 +114,7 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
 
                 {/* Card Number */}
                 <div className="mt-6 pt-4 border-t border-border/40">
-                  <span className="text-sm text-muted-foreground/50">
+                  <span className="text-subhead text-muted-foreground/50">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                 </div>
@@ -125,7 +125,7 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
 
         {/* Description - Below Carousel */}
         <div className="mt-8 px-4 sm:px-6 lg:px-8">
-          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-2xl leading-relaxed">
             Years of dedication, recognized.
           </p>
         </div>
@@ -140,7 +140,7 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
               />
             ))}
             {achievements.length > 5 && (
-              <span className="text-xs text-muted-foreground ml-1">+{achievements.length - 5}</span>
+              <span className="text-caption1 text-muted-foreground ml-1">+{achievements.length - 5}</span>
             )}
           </div>
         )}

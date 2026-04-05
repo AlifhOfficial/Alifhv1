@@ -116,17 +116,17 @@ export function UserBookingCard({
           {/* Title */}
           <Link 
             href={`/listings/${booking.listingId}`}
-            className="text-sm sm:text-base font-semibold text-foreground tracking-tight line-clamp-1 hover:text-primary transition-colors"
+            className="text-subhead sm:text-callout font-semibold text-foreground tracking-tight line-clamp-1 hover:text-primary transition-colors"
             onClick={e => e.stopPropagation()}
           >
             {booking.listingTitle}
           </Link>
-          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+          <p className="text-caption1 text-muted-foreground mt-0.5 line-clamp-1">
             {booking.partnerName}
           </p>
 
           {/* Date & Time */}
-          <div className="flex items-center gap-3 text-xs mt-2">
+          <div className="flex items-center gap-3 text-caption1 mt-2">
             <span className="flex items-center gap-1.5 text-muted-foreground">
               <Calendar className="w-3.5 h-3.5" />
               <span className="font-medium text-foreground">{formatDate(booking.scheduledStartTime)}</span>
@@ -146,7 +146,7 @@ export function UserBookingCard({
           {/* Status + Code */}
           <div className="flex items-center gap-3 mt-auto pt-3">
             <span className={cn(
-              "text-xs font-medium px-2 py-0.5 rounded-full",
+              "text-caption1 font-medium px-2 py-0.5 rounded-full",
               STATUS_CONFIG[booking.status]?.bg || 'bg-muted',
               STATUS_CONFIG[booking.status]?.text || 'text-muted-foreground'
             )}>
@@ -154,7 +154,7 @@ export function UserBookingCard({
             </span>
             
             {booking.confirmationToken && (
-              <span className="text-xs font-mono text-muted-foreground/50 ml-auto">
+              <span className="text-caption1 font-mono text-muted-foreground/50 ml-auto">
                 #{booking.confirmationToken}
               </span>
             )}
@@ -165,7 +165,7 @@ export function UserBookingCard({
       {/* Details Toggle */}
       <button
         onClick={onToggleExpand}
-        className="w-full flex items-center justify-center gap-1.5 py-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+        className="w-full flex items-center justify-center gap-1.5 py-3 text-caption1 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
       >
         <span>{isExpanded ? 'Hide details' : 'View details'}</span>
         <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", isExpanded && "rotate-180")} />
@@ -177,40 +177,40 @@ export function UserBookingCard({
           {/* Details Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Attendees</p>
-              <p className="text-sm font-medium text-foreground">{booking.numberOfAttendees} {booking.numberOfAttendees === 1 ? 'person' : 'people'}</p>
+              <p className="text-caption1 text-muted-foreground mb-1">Attendees</p>
+              <p className="text-subhead font-medium text-foreground">{booking.numberOfAttendees} {booking.numberOfAttendees === 1 ? 'person' : 'people'}</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Booked</p>
-              <p className="text-sm font-medium text-foreground">{formatFullDate(booking.createdAt)}</p>
+              <p className="text-caption1 text-muted-foreground mb-1">Booked</p>
+              <p className="text-subhead font-medium text-foreground">{formatFullDate(booking.createdAt)}</p>
             </div>
             {booking.confirmedAt && (
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Confirmed</p>
-                <p className="text-sm font-medium text-foreground">{formatFullDate(booking.confirmedAt)}</p>
+                <p className="text-caption1 text-muted-foreground mb-1">Confirmed</p>
+                <p className="text-subhead font-medium text-foreground">{formatFullDate(booking.confirmedAt)}</p>
               </div>
             )}
           </div>
           
           {booking.notes && (
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Notes</p>
-              <p className="text-sm text-foreground">{booking.notes}</p>
+              <p className="text-caption1 text-muted-foreground mb-1">Notes</p>
+              <p className="text-subhead text-foreground">{booking.notes}</p>
             </div>
           )}
 
           {booking.specialRequests && (
             <div>
-              <p className="text-xs text-muted-foreground mb-1">Special Requests</p>
-              <p className="text-sm text-foreground">{booking.specialRequests}</p>
+              <p className="text-caption1 text-muted-foreground mb-1">Special Requests</p>
+              <p className="text-subhead text-foreground">{booking.specialRequests}</p>
             </div>
           )}
 
           {/* Cancellation Reason */}
           {(booking.cancellationReason || booking.cancellationNotes) && (
             <div className="p-4 rounded-lg bg-destructive/5">
-              <p className="text-xs font-medium text-destructive mb-1">Cancellation Reason</p>
-              <p className="text-sm text-foreground">
+              <p className="text-caption1 font-medium text-destructive mb-1">Cancellation Reason</p>
+              <p className="text-subhead text-foreground">
                 {booking.cancellationNotes || booking.cancellationReason?.replace(/_/g, ' ')}
               </p>
             </div>
@@ -219,8 +219,8 @@ export function UserBookingCard({
           {/* Rejection Reason */}
           {booking.rejectionReason && (
             <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
-              <p className="text-xs font-medium text-red-500 mb-1">Rejection Reason</p>
-              <p className="text-sm text-foreground">{booking.rejectionReason}</p>
+              <p className="text-caption1 font-medium text-red-500 mb-1">Rejection Reason</p>
+              <p className="text-subhead text-foreground">{booking.rejectionReason}</p>
             </div>
           )}
 
@@ -229,7 +229,7 @@ export function UserBookingCard({
             <button
               onClick={onCancel}
               disabled={isActionLoading}
-              className="h-9 px-4 rounded-lg text-destructive hover:bg-destructive/10 text-sm font-medium transition-colors disabled:opacity-50"
+              className="h-9 px-4 rounded-lg text-destructive hover:bg-destructive/10 text-subhead font-medium transition-colors disabled:opacity-50"
             >
               Cancel Booking
             </button>

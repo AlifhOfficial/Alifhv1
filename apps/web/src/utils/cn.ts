@@ -9,18 +9,28 @@
  */
 
 import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
 
 /**
- * Merges Tailwind CSS classes with proper conflict resolution
- * Handles conditional classes and removes conflicting utilities
- * 
- * @param inputs - Class values (strings, objects, arrays)
- * @returns Merged class string with conflicts resolved
- * @example
- * cn("px-2 py-1", condition && "px-4") // "py-1 px-4"
- * cn("text-red-500", { "text-blue-500": isBlue }) // "text-blue-500" if isBlue
+ * Extended twMerge that knows our Apple HIG font-size tokens.
+ * Without this, custom text-{size} classes (text-subhead, text-footnote…)
+ * are unknown to tailwind-merge and can conflict with text-{color} classes,
+ * silently dropping the color utility when the size token appears last.
  */
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      'font-size': [
+        'text-display5', 'text-display4', 'text-display3',
+        'text-display2', 'text-display1', 'text-display',
+        'text-large-title', 'text-title1', 'text-title2', 'text-title3',
+        'text-headline', 'text-callout', 'text-subhead',
+        'text-footnote', 'text-caption1', 'text-caption2',
+      ],
+    },
+  },
+});
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

@@ -172,8 +172,8 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base sm:text-lg font-semibold text-foreground">My Bookings</h1>
-          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Your scheduled test drives</p>
+          <h1 className="text-callout sm:text-headline font-semibold text-foreground">My Bookings</h1>
+          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">Your scheduled test drives</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -201,7 +201,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
                 setSearchQuery(e.target.value);
                 handleSearchChange(e.target.value);
               }}
-              className="w-full h-9 sm:h-10 pl-9 sm:pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+              className="w-full h-9 sm:h-10 pl-9 sm:pl-10 pr-8 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
             />
             {searchQuery && (
               <button
@@ -221,7 +221,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
             setError(null);
             updateRoute({ sort: v as BookingSort, page: 1 });
           }}>
-            <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-xs sm:text-sm shrink-0">
+            <SelectTrigger className="h-9 sm:h-10 w-24 sm:w-28 border-0 bg-secondary/50 rounded-lg sm:rounded-xl text-caption1 sm:text-subhead shrink-0">
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
             <SelectContent>
@@ -244,7 +244,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
                     setError(null);
                     updateRoute({ status: tab.key, page: 1 });
                     }}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs transition-all capitalize whitespace-nowrap ${
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all capitalize whitespace-nowrap ${
                     isActive
                       ? 'bg-background text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -262,7 +262,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs transition-all flex items-center gap-1 whitespace-nowrap ${
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-caption2 sm:text-caption1 transition-all flex items-center gap-1 whitespace-nowrap ${
                     isSecondaryStatusSelected
                       ? 'bg-background text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -287,7 +287,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
                       setError(null);
                       updateRoute({ status: tab.key, page: 1 });
                     }}
-                    className={`text-xs cursor-pointer ${
+                    className={`text-caption1 cursor-pointer ${
                       selectedStatus === tab.key ? 'bg-secondary' : ''
                     }`}
                   >
@@ -303,7 +303,7 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
 
       {/* Error */}
       {error && (
-        <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-xs sm:text-sm">
+        <div className="mb-6 sm:mb-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-secondary/50 text-caption1 sm:text-subhead">
           {error}
         </div>
       )}
@@ -324,21 +324,21 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
         
         return (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 sm:pt-6 border-t border-border/40 mt-4 sm:mt-6">
-            <p className="text-[11px] sm:text-xs text-muted-foreground text-center sm:text-left">
+            <p className="text-caption2 sm:text-caption1 text-muted-foreground text-center sm:text-left">
               Page {currentPage} of {totalPages} · {totalBookings} booking{totalBookings !== 1 ? 's' : ''}
             </p>
             <div className="flex items-center justify-center gap-2">
               <button
                 onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                 disabled={currentPage === 1 || isLoading}
-                className="px-3 py-1.5 text-[11px] sm:text-xs font-medium rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 text-caption2 sm:text-caption1 font-medium rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Previous
               </button>
               <button
                 onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                 disabled={currentPage === totalPages || isLoading}
-                className="px-3 py-1.5 text-[11px] sm:text-xs font-medium rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 text-caption2 sm:text-caption1 font-medium rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>

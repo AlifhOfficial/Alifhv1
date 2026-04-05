@@ -69,12 +69,12 @@ export function MagicLinkModal({
         >
           <div className="flex flex-col items-center text-center">
             {/* Title */}
-            <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            <h2 className="text-title3 font-semibold tracking-tight text-foreground">
               Check your email
             </h2>
             
             {/* Description */}
-            <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+            <p className="text-footnote text-muted-foreground mt-2 mb-6">
               We sent a magic link to{" "}
               <span className="font-medium text-foreground">{successEmail}</span>
             </p>
@@ -83,14 +83,14 @@ export function MagicLinkModal({
             <div className="w-full space-y-3">
               <button
                 onClick={onBackToSignIn}
-                className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="w-full h-11 rounded-xl text-subhead font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               >
                 Back to sign in
               </button>
             </div>
 
             {/* Hint */}
-            <p className="mt-5 text-[13px] text-muted-foreground/60">
+            <p className="mt-5 text-footnote text-muted-foreground/60">
               Expires in 10 minutes · Check spam
             </p>
           </div>
@@ -128,18 +128,18 @@ export function MagicLinkModal({
 
         <div className="flex flex-col items-center text-center">
           {/* Title */}
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-title3 font-semibold tracking-tight text-foreground">
             Magic link
           </h2>
           
-          <p className="text-[13px] text-muted-foreground mt-2 mb-6">
+          <p className="text-footnote text-muted-foreground mt-2 mb-6">
             Sign in without a password
           </p>
 
           {/* Error */}
           {error && (
             <div className="w-full rounded-xl border border-destructive/30 bg-destructive/5 p-3 mb-4">
-              <p className="text-[13px] text-destructive">{error}</p>
+              <p className="text-footnote text-destructive">{error}</p>
             </div>
           )}
 
@@ -150,7 +150,7 @@ export function MagicLinkModal({
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-11 px-4 bg-muted/30 border border-border/50 rounded-xl text-base font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all disabled:opacity-50"
+              className="w-full h-11 px-4 bg-muted/30 border border-border/50 rounded-xl text-callout font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all disabled:opacity-50"
               placeholder="you@example.com"
               required
               disabled={isLoading}
@@ -159,14 +159,14 @@ export function MagicLinkModal({
             <button
               type="submit"
               disabled={isLoading || !email || retryCountdown > 0}
-              className="w-full h-11 rounded-xl text-[15px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-11 rounded-xl text-subhead font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Sending..." : retryCountdown > 0 ? `Retry in ${retryCountdown}s` : "Send magic link"}
             </button>
           </form>
 
           {/* Hint */}
-          <p className="mt-5 text-[13px] text-muted-foreground/60">
+          <p className="mt-5 text-footnote text-muted-foreground/60">
             Only for existing accounts
           </p>
         </div>

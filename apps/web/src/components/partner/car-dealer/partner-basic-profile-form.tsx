@@ -94,7 +94,7 @@ const EditableField = React.memo(function EditableField({
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-muted-foreground/70 mb-1">{label}</p>
+          <p className="text-subhead font-semibold text-muted-foreground/70 mb-1">{label}</p>
           {isEditing ? (
             <div className="space-y-2">
               {multiline ? (
@@ -104,7 +104,7 @@ const EditableField = React.memo(function EditableField({
                   onChange={(e) => onChange(e.target.value)}
                   placeholder={placeholder}
                   rows={3}
-                  className="w-full bg-muted/20 rounded-lg p-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
+                  className="w-full bg-muted/20 rounded-lg p-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') onCancel();
                   }}
@@ -125,7 +125,7 @@ const EditableField = React.memo(function EditableField({
                     }
                   }}
                   placeholder={placeholder}
-                  className="w-full h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') onSave();
                     if (e.key === 'Escape') onCancel();
@@ -135,21 +135,21 @@ const EditableField = React.memo(function EditableField({
               <div className="flex items-center justify-end gap-3">
                 <button
                   onClick={(e) => { e.stopPropagation(); onCancel(); }}
-                  className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                  className="text-caption1 text-muted-foreground hover:text-foreground font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); onSave(); }}
                   disabled={isUpdating}
-                  className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                  className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                 >
                   {isUpdating ? '...' : 'Save'}
                 </button>
               </div>
             </div>
           ) : (
-            <p className={cn("text-sm font-medium text-foreground", multiline && "whitespace-pre-line")}>
+            <p className={cn("text-subhead font-medium text-foreground", multiline && "whitespace-pre-line")}>
               {value || <span className="text-muted-foreground/50">Tap to add</span>}
             </p>
           )}
@@ -545,7 +545,7 @@ export function PartnerBasicProfileForm({
     return (
       <div className="max-w-2xl mx-auto px-6 py-16">
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <p className="text-sm text-muted-foreground">Unable to load profile</p>
+          <p className="text-subhead text-muted-foreground">Unable to load profile</p>
         </div>
       </div>
     );
@@ -556,7 +556,7 @@ export function PartnerBasicProfileForm({
       {/* Back */}
       <Link 
         href="/partner-dashboard"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+        className="inline-flex items-center gap-1.5 text-subhead text-muted-foreground hover:text-foreground transition-colors mb-6"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Dashboard
@@ -606,7 +606,7 @@ export function PartnerBasicProfileForm({
             ) : (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Upload className="w-4 h-4" />
-                <span className="text-sm">Add banner</span>
+                <span className="text-subhead">Add banner</span>
               </div>
             )}
           </label>
@@ -662,7 +662,7 @@ export function PartnerBasicProfileForm({
 
         <div className="flex-1 min-w-0 pt-1 sm:pt-2">
           <div className="flex items-center gap-2">
-            <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate">{profile.brandName}</h1>
+            <h1 className="text-headline sm:text-title3 font-semibold tracking-tight truncate">{profile.brandName}</h1>
             {profile.tier === 'black' ? (
               <span className="inline-flex items-center px-1.5 h-5 text-[10px] font-black tracking-wider bg-black text-white">
                 BLK
@@ -678,13 +678,13 @@ export function PartnerBasicProfileForm({
               <RefreshCw className={cn("w-3.5 h-3.5 text-muted-foreground", isLoading && "animate-spin")} />
             </button>
           </div>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 truncate">
+          <p className="text-caption1 sm:text-subhead text-muted-foreground mt-0.5 truncate">
             {profile.companyNameLegal}
           </p>
           {!profile.isVerified && (
             <Link 
               href="/partner/verify" 
-              className="text-xs text-blue-500 hover:text-blue-600 font-medium mt-1 inline-block"
+              className="text-caption1 text-blue-500 hover:text-blue-600 font-medium mt-1 inline-block"
             >
               Get verified
             </Link>
@@ -695,20 +695,20 @@ export function PartnerBasicProfileForm({
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 border border-border/40 bg-sidebar rounded-xl mb-6 sm:mb-8 overflow-hidden">
         <div className="p-4 sm:p-5 flex flex-col gap-1 border-r border-b md:border-b-0 border-border/40">
-          <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Inventory</span>
-          <span className="text-lg sm:text-xl font-bold text-foreground">{statsLoading ? '—' : stats?.inventoryCount ?? 0}</span>
+          <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Inventory</span>
+          <span className="text-headline sm:text-title3 font-bold text-foreground">{statsLoading ? '—' : stats?.inventoryCount ?? 0}</span>
         </div>
         <div className="p-4 sm:p-5 flex flex-col gap-1 border-b md:border-b-0 md:border-r border-border/40">
-          <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Sales</span>
-          <span className="text-lg sm:text-xl font-bold text-foreground">{statsLoading ? '—' : stats?.totalSales ?? 0}</span>
+          <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Sales</span>
+          <span className="text-headline sm:text-title3 font-bold text-foreground">{statsLoading ? '—' : stats?.totalSales ?? 0}</span>
         </div>
         <div className="p-4 sm:p-5 flex flex-col gap-1 border-r border-border/40">
-          <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Response</span>
-          <span className="text-lg sm:text-xl font-bold text-foreground">{statsLoading ? '—' : stats?.responseRate ? `${stats.responseRate}%` : '—'}</span>
+          <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Response</span>
+          <span className="text-headline sm:text-title3 font-bold text-foreground">{statsLoading ? '—' : stats?.responseRate ? `${stats.responseRate}%` : '—'}</span>
         </div>
         <div className="p-4 sm:p-5 flex flex-col gap-1">
-          <span className="text-xs sm:text-sm font-semibold text-muted-foreground/70">Rating</span>
-          <span className="text-xl font-bold text-foreground">
+          <span className="text-caption1 sm:text-subhead font-semibold text-muted-foreground/70">Rating</span>
+          <span className="text-title3 font-bold text-foreground">
             {profile.googleRating ? (
               <span className="flex items-center gap-1.5">
                 <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
@@ -721,7 +721,7 @@ export function PartnerBasicProfileForm({
 
       {/* About */}
       <section className="mb-6 sm:mb-8">
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">About</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">About</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
           <EditableField 
             {...getEditableFieldProps('brandName')}
@@ -748,7 +748,7 @@ export function PartnerBasicProfileForm({
 
       {/* Details */}
       <section className="mb-6 sm:mb-8">
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Details</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Details</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
           <EditableField 
             {...getEditableFieldProps('experienceYears')}
@@ -770,8 +770,8 @@ export function PartnerBasicProfileForm({
       {/* Specialties */}
       <section className="mb-6 sm:mb-8">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Specialties</h3>
-          <span className="text-sm font-semibold text-muted-foreground/70">{form.specialties.length}/4</span>
+          <h3 className="text-subhead font-bold tracking-tight text-foreground">Specialties</h3>
+          <span className="text-subhead font-semibold text-muted-foreground/70">{form.specialties.length}/4</span>
         </div>
         
         <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
@@ -779,7 +779,7 @@ export function PartnerBasicProfileForm({
             {form.specialties.length > 0 ? form.specialties.map((specialty) => (
               <span 
                 key={specialty} 
-                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-muted/30 text-xs sm:text-sm font-semibold border border-border/40"
+                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-muted/30 text-caption1 sm:text-subhead font-semibold border border-border/40"
               >
                 {specialty}
                 <button
@@ -790,7 +790,7 @@ export function PartnerBasicProfileForm({
                 </button>
               </span>
             )) : (
-              <p className="text-sm text-muted-foreground/60">No specialties added</p>
+              <p className="text-subhead text-muted-foreground/60">No specialties added</p>
             )}
           </div>
           
@@ -801,12 +801,12 @@ export function PartnerBasicProfileForm({
                 onChange={(e) => setCustomSpecialty(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addSpecialty()}
                 placeholder="Add specialty..."
-                className="flex-1 bg-transparent text-sm font-medium focus:outline-none placeholder:text-muted-foreground/50"
+                className="flex-1 bg-transparent text-subhead font-medium focus:outline-none placeholder:text-muted-foreground/50"
               />
               {customSpecialty.trim() && (
                 <button
                   onClick={addSpecialty}
-                  className="text-xs text-blue-500 hover:text-blue-600 font-semibold"
+                  className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
                 >
                   Add
                 </button>
@@ -819,12 +819,12 @@ export function PartnerBasicProfileForm({
       {/* Google Reviews */}
       <section className="mb-6 sm:mb-8">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Google Reviews</h3>
+          <h3 className="text-subhead font-bold tracking-tight text-foreground">Google Reviews</h3>
           {form.googleReviewUrl?.trim() && (
             <button 
               onClick={syncReviews} 
               disabled={syncingReviews}
-              className="text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50 flex items-center gap-1"
+              className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50 flex items-center gap-1"
             >
               {syncingReviews ? (
                 <><Loader2 className="w-3 h-3 animate-spin" /> Syncing...</>
@@ -847,7 +847,7 @@ export function PartnerBasicProfileForm({
           {/* Sync Error */}
           {syncError && (
             <div className="mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-              <p className="text-xs text-red-500 font-medium">{syncError}</p>
+              <p className="text-caption1 text-red-500 font-medium">{syncError}</p>
             </div>
           )}
           
@@ -856,22 +856,22 @@ export function PartnerBasicProfileForm({
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 pt-4 mt-2 border-t border-border/20">
               {profile.googleRating ? (
                 <div>
-                  <p className="text-lg font-semibold flex items-center gap-1.5">
+                  <p className="text-headline font-semibold flex items-center gap-1.5">
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                     {profile.googleRating.toFixed(1)}
                   </p>
-                  <p className="text-xs text-muted-foreground/70">{profile.googleReviewCount ?? 0} reviews</p>
+                  <p className="text-caption1 text-muted-foreground/70">{profile.googleReviewCount ?? 0} reviews</p>
                 </div>
               ) : (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground/70">No rating yet</p>
-                  <p className="text-xs text-muted-foreground/50">Tap Sync to fetch reviews</p>
+                  <p className="text-subhead font-medium text-muted-foreground/70">No rating yet</p>
+                  <p className="text-caption1 text-muted-foreground/50">Tap Sync to fetch reviews</p>
                 </div>
               )}
               <div>
                 {profile.googleReviewsSyncedAt ? (
                   <>
-                    <p className="text-sm font-semibold flex items-center gap-1.5">
+                    <p className="text-subhead font-semibold flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5 text-muted-foreground/70" />
                       {new Date(profile.googleReviewsSyncedAt).toLocaleDateString('en-US', { 
                         month: 'short', 
@@ -881,12 +881,12 @@ export function PartnerBasicProfileForm({
                         minute: '2-digit'
                       })}
                     </p>
-                    <p className="text-xs text-muted-foreground/70">Last synced</p>
+                    <p className="text-caption1 text-muted-foreground/70">Last synced</p>
                   </>
                 ) : (
                   <>
-                    <p className="text-sm font-medium text-muted-foreground/50">Never synced</p>
-                    <p className="text-xs text-muted-foreground/50">Add URL and sync</p>
+                    <p className="text-subhead font-medium text-muted-foreground/50">Never synced</p>
+                    <p className="text-caption1 text-muted-foreground/50">Add URL and sync</p>
                   </>
                 )}
               </div>
@@ -898,11 +898,11 @@ export function PartnerBasicProfileForm({
       {/* Location */}
       <section className="mb-6 sm:mb-8">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Location</h3>
+          <h3 className="text-subhead font-bold tracking-tight text-foreground">Location</h3>
           <button
             onClick={handleUseCurrentLocation}
             disabled={isLoadingLocation}
-            className="text-xs text-blue-500 hover:text-blue-600 font-semibold flex items-center gap-1"
+            className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold flex items-center gap-1"
           >
             {isLoadingLocation ? <Loader2 className="w-3 h-3 animate-spin" /> : <MapPin className="w-3 h-3" />}
             Detect
@@ -938,13 +938,13 @@ export function PartnerBasicProfileForm({
               />
             </Suspense>
           </div>
-          <p className="text-xs text-muted-foreground/70 mt-3">Tap map to pin location</p>
+          <p className="text-caption1 text-muted-foreground/70 mt-3">Tap map to pin location</p>
         </div>
       </section>
 
       {/* Badges */}
       <section className="mb-6 sm:mb-8">
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Badges</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Badges</h3>
         
         <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
           {profile.badges && profile.badges.length > 0 ? (
@@ -952,7 +952,7 @@ export function PartnerBasicProfileForm({
               {profile.badges.map((badge, i) => (
                 <span 
                   key={i} 
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-muted/30 text-foreground text-xs sm:text-sm font-semibold border border-border/40"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-muted/30 text-foreground text-caption1 sm:text-subhead font-semibold border border-border/40"
                 >
                   {badge}
                 </span>
@@ -960,10 +960,10 @@ export function PartnerBasicProfileForm({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <p className="text-[15px] font-medium text-muted-foreground/60 mb-2">No badges earned yet</p>
+              <p className="text-subhead font-medium text-muted-foreground/60 mb-2">No badges earned yet</p>
               <a 
                 href="/badges" 
-                className="text-sm text-primary hover:text-primary/80 font-semibold transition-colors"
+                className="text-subhead text-primary hover:text-primary/80 font-semibold transition-colors"
               >
                 Learn more about badges
               </a>

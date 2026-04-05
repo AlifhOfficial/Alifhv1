@@ -18,7 +18,7 @@ export default function UserBannedPage() {
 
         {/* Title */}
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-title2 font-bold text-foreground">
             Account Suspended
           </h1>
           <p className="text-muted-foreground">
@@ -28,8 +28,8 @@ export default function UserBannedPage() {
 
         {/* Info Box */}
         <div className="bg-muted/50 rounded-xl p-4 text-left space-y-3">
-          <h3 className="font-medium text-sm">What can you do?</h3>
-          <ul className="text-sm text-muted-foreground space-y-2">
+          <h3 className="font-medium text-subhead">What can you do?</h3>
+          <ul className="text-subhead text-muted-foreground space-y-2">
             <li className="flex items-start gap-2">
               <span className="text-primary mt-1">•</span>
               <span>Review our <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link> to understand why your account may have been suspended.</span>
@@ -45,7 +45,7 @@ export default function UserBannedPage() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="mailto:support@revvup.ae?subject=Ban%20Appeal"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-subhead font-medium"
           >
             <Mail className="w-4 h-4" />
             Submit Appeal
@@ -53,7 +53,7 @@ export default function UserBannedPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-xs text-muted-foreground">
+        <p className="text-caption1 text-muted-foreground">
           If you have any questions, please contact our support team.
         </p>
       </div>

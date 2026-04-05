@@ -74,7 +74,7 @@ export function SuspendListingModal({ open, listing, onClose, onSuccess }: Suspe
       <div className="relative z-50 w-full max-w-md bg-background border border-border rounded-xl shadow-xl m-4">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-medium">Suspend Listing</h2>
+          <h2 className="text-headline font-medium">Suspend Listing</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-secondary/50 rounded-full transition-colors"
@@ -85,21 +85,21 @@ export function SuspendListingModal({ open, listing, onClose, onSuccess }: Suspe
 
         {/* Content */}
         <div className="p-6 space-y-6">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-subhead text-muted-foreground">
             Suspending this listing will immediately hide it from public view. The user will be notified with your reason.
           </p>
           
           <div className="rounded-xl border border-border p-4">
-            <p className="text-sm font-medium">
+            <p className="text-subhead font-medium">
               {listing.year} {listing.make} {listing.model}
               {listing.trim && ` ${listing.trim}`}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">ID: {listing.id}</p>
+            <p className="text-caption1 text-muted-foreground mt-1">ID: {listing.id}</p>
           </div>
 
           {/* Reason Input */}
           <div className="space-y-3">
-            <label className="text-sm font-medium">
+            <label className="text-subhead font-medium">
               Suspension Reason <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -107,14 +107,14 @@ export function SuspendListingModal({ open, listing, onClose, onSuccess }: Suspe
               onChange={(e) => setReason(e.target.value)}
               placeholder="e.g., Violates platform policies, suspicious activity, inappropriate content..."
               rows={4}
-              className="w-full bg-transparent border-b border-border focus:border-foreground outline-none transition-colors text-sm resize-none py-2"
+              className="w-full bg-transparent border-b border-border focus:border-foreground outline-none transition-colors text-subhead resize-none py-2"
             />
           </div>
 
           {/* Error */}
           {error && (
             <div className="rounded-xl border border-red-500/20 p-3">
-              <p className="text-sm text-red-500">{error}</p>
+              <p className="text-subhead text-red-500">{error}</p>
             </div>
           )}
 
@@ -123,14 +123,14 @@ export function SuspendListingModal({ open, listing, onClose, onSuccess }: Suspe
             <button
               onClick={onClose}
               disabled={isSubmitting}
-              className="flex-1 px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm transition-colors disabled:opacity-50"
+              className="flex-1 px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-subhead transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={handleSuspend}
               disabled={isSubmitting || !reason.trim()}
-              className="flex-1 px-5 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white text-sm transition-colors disabled:opacity-50"
+              className="flex-1 px-5 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white text-subhead transition-colors disabled:opacity-50"
             >
               {isSubmitting ? 'Suspending...' : 'Suspend'}
             </button>

@@ -204,39 +204,39 @@ export default function AdminFeedbackPage() {
         
         {/* Header */}
         <section className="space-y-4">
-          <h1 className="text-3xl font-semibold tracking-tight">User Feedback</h1>
+          <h1 className="text-title1 font-semibold tracking-tight">User Feedback</h1>
           <p className="text-muted-foreground">Review and manage feedback from users</p>
         </section>
 
         {/* Stats */}
         <section className="space-y-6">
           <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-lg font-medium tracking-tight">Overview</h3>
+            <h3 className="text-headline font-medium tracking-tight">Overview</h3>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card className="cursor-pointer hover:border-primary/40 transition-colors" onClick={() => setSelectedStatus('all')}>
               <CardContent className="p-4">
-                <div className="text-2xl font-semibold">{allFeedback.length}</div>
-                <div className="text-sm text-muted-foreground">Total</div>
+                <div className="text-title2 font-semibold">{allFeedback.length}</div>
+                <div className="text-subhead text-muted-foreground">Total</div>
               </CardContent>
             </Card>
             <Card className="cursor-pointer hover:border-blue-500/40 transition-colors" onClick={() => setSelectedStatus('new')}>
               <CardContent className="p-4">
-                <div className="text-2xl font-semibold text-blue-600">{newCount}</div>
-                <div className="text-sm text-muted-foreground">New ({unreadCount} unread)</div>
+                <div className="text-title2 font-semibold text-blue-600">{newCount}</div>
+                <div className="text-subhead text-muted-foreground">New ({unreadCount} unread)</div>
               </CardContent>
             </Card>
             <Card className="cursor-pointer hover:border-green-500/40 transition-colors" onClick={() => setSelectedStatus('reviewed')}>
               <CardContent className="p-4">
-                <div className="text-2xl font-semibold text-green-600">{reviewedCount}</div>
-                <div className="text-sm text-muted-foreground">Reviewed</div>
+                <div className="text-title2 font-semibold text-green-600">{reviewedCount}</div>
+                <div className="text-subhead text-muted-foreground">Reviewed</div>
               </CardContent>
             </Card>
             <Card className="cursor-pointer hover:border-border transition-colors" onClick={() => setSelectedStatus('archived')}>
               <CardContent className="p-4">
-                <div className="text-2xl font-semibold text-muted-foreground">{archivedCount}</div>
-                <div className="text-sm text-muted-foreground">Archived</div>
+                <div className="text-title2 font-semibold text-muted-foreground">{archivedCount}</div>
+                <div className="text-subhead text-muted-foreground">Archived</div>
               </CardContent>
             </Card>
           </div>
@@ -304,7 +304,7 @@ export default function AdminFeedbackPage() {
                             <h3 className="font-medium truncate">{item.feedback.title}</h3>
                             {getStatusBadge(item.feedback.status, item.feedback.isRead)}
                           </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                          <div className="flex items-center gap-4 text-subhead text-muted-foreground mb-2">
                             <span className="flex items-center gap-1">
                               <User className="w-3 h-3" />
                               {getUserDisplay(item)}
@@ -315,11 +315,11 @@ export default function AdminFeedbackPage() {
                             </span>
                           </div>
                           {expandedFeedback !== item.feedback.id && (
-                            <p className="text-sm text-muted-foreground line-clamp-2">{item.feedback.content}</p>
+                            <p className="text-subhead text-muted-foreground line-clamp-2">{item.feedback.content}</p>
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground whitespace-nowrap">
+                          <span className="text-caption1 text-muted-foreground whitespace-nowrap">
                             {new Date(item.feedback.createdAt).toLocaleDateString()}
                           </span>
                           {expandedFeedback === item.feedback.id ? (
@@ -335,16 +335,16 @@ export default function AdminFeedbackPage() {
                     {expandedFeedback === item.feedback.id && (
                       <div className="mt-4 pt-4 border-t border-border/40 space-y-4">
                         <div>
-                          <h4 className="text-sm font-medium mb-2">Full Feedback</h4>
-                          <p className="text-sm text-muted-foreground whitespace-pre-wrap bg-muted/30 p-3 rounded-md">
+                          <h4 className="text-subhead font-medium mb-2">Full Feedback</h4>
+                          <p className="text-subhead text-muted-foreground whitespace-pre-wrap bg-muted/30 p-3 rounded-md">
                             {item.feedback.content}
                           </p>
                         </div>
 
                         {item.feedback.adminNote && (
                           <div>
-                            <h4 className="text-sm font-medium mb-2">Previous Admin Note</h4>
-                            <p className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-md">
+                            <h4 className="text-subhead font-medium mb-2">Previous Admin Note</h4>
+                            <p className="text-subhead text-muted-foreground bg-muted/30 p-3 rounded-md">
                               {item.feedback.adminNote}
                             </p>
                           </div>
@@ -353,7 +353,7 @@ export default function AdminFeedbackPage() {
                         {item.feedback.status !== 'archived' && (
                           <div className="space-y-3">
                             <div>
-                              <label className="text-sm font-medium">Admin Note (Optional)</label>
+                              <label className="text-subhead font-medium">Admin Note (Optional)</label>
                               <Textarea
                                 placeholder="Add a response or note..."
                                 value={adminNote}
@@ -410,7 +410,7 @@ export default function AdminFeedbackPage() {
                         )}
 
                         {item.reviewer && (
-                          <div className="text-xs text-muted-foreground pt-2 border-t border-border/40">
+                          <div className="text-caption1 text-muted-foreground pt-2 border-t border-border/40">
                             Reviewed by {item.reviewer.name || item.reviewer.email} on{' '}
                             {item.feedback.reviewedAt ? new Date(item.feedback.reviewedAt).toLocaleString() : 'N/A'}
                           </div>

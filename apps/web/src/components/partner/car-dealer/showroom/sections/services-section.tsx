@@ -72,7 +72,7 @@ export function ServicesSection({
   return (
     <div className="space-y-6">
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Section Media</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Section Media</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4">
           <ImageUpload
             value={form.servicesSectionImage || null}
@@ -99,11 +99,11 @@ export function ServicesSection({
       {/* Signature Services */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-foreground">Signature Services</h3>
+          <h3 className="text-subhead font-bold tracking-tight text-foreground">Signature Services</h3>
           <button
             onClick={addService}
             disabled={(form.signatureServices?.length || 0) >= 6}
-            className="inline-flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
           >
             <Plus className="w-3.5 h-3.5" />
             Add
@@ -138,16 +138,16 @@ export function ServicesSection({
         {(form.signatureServices?.length || 0) === 0 && (
           <div className="rounded-xl border border-dashed border-border/40 p-8 text-center">
             <Zap className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">No services added</p>
+            <p className="text-subhead text-muted-foreground">No services added</p>
           </div>
         )}
       </section>
 
       {/* VIP Perks */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">VIP Perks</h3>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">VIP Perks</h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-          <p className="text-xs text-muted-foreground mb-3">Add exclusive perks (one per line)</p>
+          <p className="text-caption1 text-muted-foreground mb-3">Add exclusive perks (one per line)</p>
           <textarea
             value={(form.vipPerks || []).join('\n')}
             onChange={(e) => updateField('vipPerks', e.target.value.split('\n').filter(Boolean))}
@@ -157,15 +157,15 @@ export function ServicesSection({
             }}
             placeholder="Complimentary pickup & delivery&#10;Priority access to new arrivals&#10;Dedicated relationship manager"
             rows={4}
-            className="w-full bg-muted/20 rounded-lg p-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
+            className="w-full bg-muted/20 rounded-lg p-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
           />
         </div>
       </section>
 
       {/* Visit Info */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">Visit Information</h3>
-        <p className="text-xs text-muted-foreground mb-3">Your address is set in your <span className="text-primary">Basic Profile</span>. Add additional details below.</p>
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">Visit Information</h3>
+        <p className="text-caption1 text-muted-foreground mb-3">Your address is set in your <span className="text-primary">Basic Profile</span>. Add additional details below.</p>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
           <EditableField
             {...getEditableFieldProps('parkingInfo')}

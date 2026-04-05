@@ -81,17 +81,17 @@ function IncidentCard({ incident }: { incident: Incident }) {
       {/* Incident Header */}
       <div className="flex items-start justify-between gap-4 mb-4">
         <div className="flex-1">
-          <h3 className="text-sm font-semibold text-foreground mb-1">
+          <h3 className="text-subhead font-semibold text-foreground mb-1">
             {incident.title}
           </h3>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-3 text-caption1 text-muted-foreground">
             <span>{formatDate(incident.createdAt)}</span>
             <span className={severityConf.textClass}>{severityConf.label}</span>
           </div>
         </div>
         <div className={`flex items-center gap-2 px-2 py-1 rounded-full ${statusConf.bgClass}`}>
           <StatusIcon className={`w-3 h-3 ${statusConf.textClass}`} />
-          <span className={`text-xs font-medium ${statusConf.textClass}`}>
+          <span className={`text-caption1 font-medium ${statusConf.textClass}`}>
             {statusConf.label}
           </span>
         </div>
@@ -103,7 +103,7 @@ function IncidentCard({ incident }: { incident: Incident }) {
           {incident.affectedServices.map((service) => (
             <span
               key={service}
-              className="px-2 py-0.5 text-xs bg-muted rounded-md text-muted-foreground"
+              className="px-2 py-0.5 text-caption1 bg-muted rounded-md text-muted-foreground"
             >
               {service}
             </span>
@@ -119,10 +119,10 @@ function IncidentCard({ incident }: { incident: Incident }) {
               <div key={update.id} className="flex gap-3">
                 <div className="flex-shrink-0 w-1 bg-border/40 rounded-full" />
                 <div>
-                  <div className="text-xs text-muted-foreground mb-1">
+                  <div className="text-caption1 text-muted-foreground mb-1">
                     {formatDate(update.createdAt)}
                   </div>
-                  <div className="text-sm text-foreground">{update.message}</div>
+                  <div className="text-subhead text-foreground">{update.message}</div>
                 </div>
               </div>
             ))}
@@ -142,10 +142,10 @@ export function StatusIncidentsSection({ incidents }: StatusIncidentsSectionProp
         
         {/* Header */}
         <div className="mb-6">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground/70 mb-3">
+          <p className="text-caption1 uppercase tracking-widest text-muted-foreground/70 mb-3">
             Incidents
           </p>
-          <h2 className="text-xl font-semibold text-foreground tracking-tight">
+          <h2 className="text-title3 font-semibold text-foreground tracking-tight">
             Recent Activity
           </h2>
         </div>
@@ -160,10 +160,10 @@ export function StatusIncidentsSection({ incidents }: StatusIncidentsSectionProp
         ) : (
           <div className="rounded-xl border border-border/40 bg-sidebar p-8 text-center">
             <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
-            <p className="text-sm font-medium text-foreground mb-1">
+            <p className="text-subhead font-medium text-foreground mb-1">
               No recent incidents
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-caption1 text-muted-foreground">
               All systems have been running smoothly.
             </p>
           </div>

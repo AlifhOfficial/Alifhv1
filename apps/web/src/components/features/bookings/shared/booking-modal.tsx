@@ -355,24 +355,24 @@ export function BookingModal({
         {step === 'success' && bookingResult ? (
           <div className="p-6 text-center">
             <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-4" />
-            <h2 className="text-lg font-semibold text-foreground mb-1">Booking Requested</h2>
-            <p className="text-sm text-muted-foreground/70 mb-1">{listingTitle}</p>
-            <p className="text-xs text-muted-foreground/50 mb-4">
+            <h2 className="text-headline font-semibold text-foreground mb-1">Booking Requested</h2>
+            <p className="text-subhead text-muted-foreground/70 mb-1">{listingTitle}</p>
+            <p className="text-caption1 text-muted-foreground/50 mb-4">
               {selectedDate && formatDate(selectedDate)} • {selectedSlot && formatTime(selectedSlot.startTime)}
             </p>
-            <p className="text-xs text-muted-foreground/60 mb-4">The dealer will confirm your booking shortly.</p>
-            <p className="font-mono text-sm font-semibold text-foreground mb-6">{bookingResult.confirmationToken}</p>
+            <p className="text-caption1 text-muted-foreground/60 mb-4">The dealer will confirm your booking shortly.</p>
+            <p className="font-mono text-subhead font-semibold text-foreground mb-6">{bookingResult.confirmationToken}</p>
             
             <div className="space-y-2">
               <button 
                 onClick={() => router.push('/user-dashboard/bookings')} 
-                className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors"
+                className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-subhead font-semibold transition-colors"
               >
                 View Bookings
               </button>
               <button 
                 onClick={onClose} 
-                className="w-full h-11 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="w-full h-11 text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 Done
               </button>
@@ -383,10 +383,10 @@ export function BookingModal({
             {/* Header */}
             <div className="px-6 pt-6 pb-4">
               <DialogHeader>
-                <DialogTitle className="text-lg font-semibold text-foreground">
+                <DialogTitle className="text-headline font-semibold text-foreground">
                   {step === 'confirm' ? 'Confirm Booking' : 'Schedule Test Drive'}
                 </DialogTitle>
-                <DialogDescription className="text-sm text-muted-foreground/70">
+                <DialogDescription className="text-subhead text-muted-foreground/70">
                   {listingTitle}
                 </DialogDescription>
               </DialogHeader>
@@ -396,7 +396,7 @@ export function BookingModal({
             <div className="px-6 pb-6">
               {/* Error */}
               {error && (
-                <p className="text-sm text-destructive mb-4">{error}</p>
+                <p className="text-subhead text-destructive mb-4">{error}</p>
               )}
 
               {/* Loading */}
@@ -418,7 +418,7 @@ export function BookingModal({
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <span className="text-sm font-medium">
+                    <span className="text-subhead font-medium">
                       {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
                     </span>
                     <button
@@ -432,7 +432,7 @@ export function BookingModal({
                   {/* Day Headers */}
                   <div className="grid grid-cols-7 gap-1">
                     {DAY_NAMES.map(day => (
-                      <div key={day} className="text-center text-[11px] font-medium text-muted-foreground/50 py-1">
+                      <div key={day} className="text-center text-caption2 font-medium text-muted-foreground/50 py-1">
                         {day}
                       </div>
                     ))}
@@ -454,7 +454,7 @@ export function BookingModal({
                           onClick={() => isAvailable && setSelectedDate(date)}
                           disabled={!isAvailable}
                           className={cn(
-                            "aspect-square rounded-lg text-sm transition-colors",
+                            "aspect-square rounded-lg text-subhead transition-colors",
                             isSelected && "bg-primary text-primary-foreground font-semibold",
                             !isSelected && isAvailable && "hover:bg-muted/50 font-medium",
                             !isSelected && !isAvailable && "text-muted-foreground/20",
@@ -474,13 +474,13 @@ export function BookingModal({
                 <div className="space-y-4">
                   <button
                     onClick={() => setStep('date')}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-subhead text-muted-foreground hover:text-foreground transition-colors"
                   >
                     ← {formatDate(selectedDate)}
                   </button>
 
                   {timeSlots.length === 0 ? (
-                    <p className="text-sm text-muted-foreground/70 text-center py-8">No times available</p>
+                    <p className="text-subhead text-muted-foreground/70 text-center py-8">No times available</p>
                   ) : (
                     <div className="grid grid-cols-3 gap-2">
                       {timeSlots.map(slot => (
@@ -489,7 +489,7 @@ export function BookingModal({
                           onClick={() => slot.isAvailable && setSelectedSlot(slot)}
                           disabled={!slot.isAvailable}
                           className={cn(
-                            "py-2 rounded-lg text-sm transition-colors",
+                            "py-2 rounded-lg text-subhead transition-colors",
                             selectedSlot?.id === slot.id && "bg-primary text-primary-foreground font-semibold",
                             selectedSlot?.id !== slot.id && slot.isAvailable && "hover:bg-muted/50 font-medium",
                             !slot.isAvailable && "text-muted-foreground/20 line-through"
@@ -504,7 +504,7 @@ export function BookingModal({
                   {selectedSlot && (
                     <button
                       onClick={() => setStep('confirm')}
-                      className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors"
+                      className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-subhead font-semibold transition-colors"
                     >
                       Continue
                     </button>
@@ -517,23 +517,23 @@ export function BookingModal({
                 <div className="space-y-4">
                   <button
                     onClick={() => setStep('time')}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-subhead text-muted-foreground hover:text-foreground transition-colors"
                   >
                     ← Change time
                   </button>
 
                   <div className="py-3 space-y-1 border-b border-border/30">
-                    <p className="text-sm font-medium">{formatDate(selectedDate)}</p>
-                    <p className="text-sm text-muted-foreground/70">
+                    <p className="text-subhead font-medium">{formatDate(selectedDate)}</p>
+                    <p className="text-subhead text-muted-foreground/70">
                       {formatTime(selectedSlot.startTime)} – {formatTime(selectedSlot.endTime)} • {selectedSlot.duration} min
                     </p>
                   </div>
 
                   <div className="space-y-3">
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground/70 mb-1.5 block">Attendees</label>
+                      <label className="text-caption1 font-medium text-muted-foreground/70 mb-1.5 block">Attendees</label>
                       <Select value={attendees.toString()} onValueChange={(value) => setAttendees(parseInt(value))}>
-                        <SelectTrigger className="w-full h-10 border-border/30 text-sm rounded-lg">
+                        <SelectTrigger className="w-full h-10 border-border/30 text-subhead rounded-lg">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -545,7 +545,7 @@ export function BookingModal({
                     </div>
 
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground/70 mb-1.5 block">
+                      <label className="text-caption1 font-medium text-muted-foreground/70 mb-1.5 block">
                         Notes <span className="text-muted-foreground/40">(optional)</span>
                       </label>
                       <textarea
@@ -553,7 +553,7 @@ export function BookingModal({
                         onChange={(e) => setNotes(e.target.value)}
                         placeholder="Questions or requests..."
                         rows={2}
-                        className="w-full px-3 py-2 border border-border/30 rounded-lg text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/40"
+                        className="w-full px-3 py-2 border border-border/30 rounded-lg text-subhead resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/40"
                       />
                     </div>
                   </div>
@@ -561,7 +561,7 @@ export function BookingModal({
                   {!isAuthenticated ? (
                     <button 
                       onClick={onLoginRequired} 
-                      className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors"
+                      className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-subhead font-semibold transition-colors"
                     >
                       Sign in to Book
                     </button>
@@ -569,7 +569,7 @@ export function BookingModal({
                     <button
                       onClick={handleBooking}
                       disabled={isLoading}
-                      className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors disabled:opacity-50"
+                      className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-subhead font-semibold transition-colors disabled:opacity-50"
                     >
                       {isLoading ? 'Booking...' : 'Confirm Booking'}
                     </button>

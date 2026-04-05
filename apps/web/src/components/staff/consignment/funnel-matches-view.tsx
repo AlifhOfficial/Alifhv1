@@ -81,7 +81,7 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
         <button 
           type="button"
           onClick={onBack}
-          className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors mb-4 -ml-1"
+          className="flex items-center gap-1.5 text-subhead font-semibold text-muted-foreground hover:text-foreground transition-colors mb-4 -ml-1"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Funnels
@@ -89,14 +89,14 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
         
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{funnel.name}</h1>
+            <h1 className="text-title3 sm:text-title2 font-bold tracking-tight">{funnel.name}</h1>
             {funnel.description && (
-              <p className="text-sm sm:text-[15px] text-muted-foreground/70 mt-1">{funnel.description}</p>
+              <p className="text-subhead sm:text-subhead text-muted-foreground/70 mt-1">{funnel.description}</p>
             )}
           </div>
           {data && (
             <div className="flex-shrink-0">
-              <span className="text-sm font-semibold text-blue-600">Count: {data.total}</span>
+              <span className="text-subhead font-semibold text-blue-600">Count: {data.total}</span>
             </div>
           )}
         </div>
@@ -122,7 +122,7 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
       {/* Error State */}
       {error && (
         <div className="text-center py-24 rounded-xl bg-destructive/5 border border-destructive/20">
-          <p className="text-[15px] text-destructive font-medium">Failed to load matches. Please try again.</p>
+          <p className="text-subhead text-destructive font-medium">Failed to load matches. Please try again.</p>
         </div>
       )}
 
@@ -130,8 +130,8 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
       {!isLoading && !error && (!data?.listings || data.listings.length === 0) && (
         <div className="flex flex-col items-center justify-center py-20 px-6">
           <Inbox className="w-12 h-12 text-muted-foreground/30 mb-4" strokeWidth={1.5} />
-          <h3 className="text-lg font-semibold tracking-tight mb-1">No Matches Yet</h3>
-          <p className="text-sm text-muted-foreground/60 text-center max-w-md">
+          <h3 className="text-headline font-semibold tracking-tight mb-1">No Matches Yet</h3>
+          <p className="text-subhead text-muted-foreground/60 text-center max-w-md">
             No listings currently match your funnel criteria.
           </p>
         </div>
@@ -166,10 +166,10 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
                   </div>
                   {/* Info */}
                   <div className="p-2.5">
-                    <p className="text-sm font-semibold text-sidebar-foreground truncate">
+                    <p className="text-subhead font-semibold text-sidebar-foreground truncate">
                       {listing.year} {listing.make} {listing.model}
                     </p>
-                    <p className="text-sm font-bold text-blue-600">
+                    <p className="text-subhead font-bold text-blue-600">
                       AED {listing.price.toLocaleString()}
                     </p>
                   </div>
@@ -181,7 +181,7 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-border/30">
-              <p className="text-sm text-muted-foreground/70 font-medium">
+              <p className="text-subhead text-muted-foreground/70 font-medium">
                 Page {currentPage} of {totalPages} · {data.total} vehicles
               </p>
               <div className="flex items-center gap-2">
@@ -189,7 +189,7 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
                   type="button"
                   onClick={() => setOffset(Math.max(0, offset - limit))}
                   disabled={offset === 0}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 px-3 py-1.5 text-subhead font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Previous
@@ -198,7 +198,7 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
                   type="button"
                   onClick={() => setOffset(offset + limit)}
                   disabled={!data.hasMore}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 px-3 py-1.5 text-subhead font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Next
                   <ChevronRight className="w-4 h-4" />
@@ -263,7 +263,7 @@ function FunnelFilterTags({ filters }: { filters: FunnelFilters }) {
       {tags.map((tag, i) => (
         <span
           key={i}
-          className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sidebar-accent text-sidebar-foreground border border-sidebar-border/40"
+          className="inline-flex items-center px-2.5 py-1 rounded-full text-caption1 font-semibold bg-sidebar-accent text-sidebar-foreground border border-sidebar-border/40"
         >
           {tag.label}
         </span>

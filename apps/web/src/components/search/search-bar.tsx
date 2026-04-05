@@ -332,11 +332,11 @@ export function SearchBar({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Size classes - use text-base (16px) on mobile to prevent iOS auto-zoom
+  // Size classes - use text-callout (16px) on mobile to prevent iOS auto-zoom
   const sizeClasses = {
-    sm: 'h-10 sm:h-9 text-base sm:text-sm px-1',
-    md: 'h-12 sm:h-11 text-base sm:text-sm px-1',
-    lg: 'h-14 sm:h-12 text-base px-2',
+    sm: 'h-10 sm:h-9 text-callout sm:text-subhead px-1',
+    md: 'h-12 sm:h-11 text-callout sm:text-subhead px-1',
+    lg: 'h-14 sm:h-12 text-callout px-2',
   };
 
   const iconSizes = {
@@ -460,7 +460,7 @@ export function SearchBar({
           {isLoading && suggestions.length === 0 ? (
             <div className="flex items-center justify-center py-8 text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin mr-3" />
-              <span className="text-base sm:text-sm font-semibold">Searching...</span>
+              <span className="text-callout sm:text-subhead font-semibold">Searching...</span>
             </div>
           ) : (
             <ul className="py-1 sm:py-2">
@@ -480,17 +480,17 @@ export function SearchBar({
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
-                    <span className="text-base sm:text-[15px] font-semibold text-foreground truncate">
+                    <span className="text-callout sm:text-subhead font-semibold text-foreground truncate">
                       {suggestion.text}
                     </span>
                     {SUGGESTION_LABELS[suggestion.type] && (
-                      <span className="shrink-0 text-xs sm:text-xs text-muted-foreground/50 font-medium">
+                      <span className="shrink-0 text-caption1 sm:text-caption1 text-muted-foreground/50 font-medium">
                         {SUGGESTION_LABELS[suggestion.type]}
                       </span>
                     )}
                   </div>
                   {!['vin_listing', 'vin_decode', 'vin_partial'].includes(suggestion.type) && suggestion.count >= 0 && (
-                    <span className="text-sm font-semibold text-muted-foreground/70 tabular-nums shrink-0 ml-2">
+                    <span className="text-subhead font-semibold text-muted-foreground/70 tabular-nums shrink-0 ml-2">
                       {suggestion.count} {suggestion.count === 1 ? 'car' : 'cars'}
                     </span>
                   )}
@@ -506,7 +506,7 @@ export function SearchBar({
               className={cn(
                 'w-full flex items-center justify-center gap-2',
                 'px-4 py-3.5 sm:py-3 border-t border-border/30',
-                'text-base sm:text-sm font-semibold text-muted-foreground/70 hover:text-primary hover:bg-primary/5 active:bg-primary/10',
+                'text-callout sm:text-subhead font-semibold text-muted-foreground/70 hover:text-primary hover:bg-primary/5 active:bg-primary/10',
                 'transition-colors touch-manipulation'
               )}
             >

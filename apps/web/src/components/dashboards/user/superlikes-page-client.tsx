@@ -45,8 +45,8 @@ export function SuperlikesPageClient({ initialStatus, initialListings }: Superli
     <div className="space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base sm:text-lg font-semibold text-foreground">Superlikes</h1>
-          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">{validSuperlikeIds.length} saved</p>
+          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Superlikes</h1>
+          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">{validSuperlikeIds.length} saved</p>
         </div>
         <div className="flex items-center gap-2">
           <SuperlikeQuotaBadge quota={quota} />
@@ -71,7 +71,7 @@ export function SuperlikesPageClient({ initialStatus, initialListings }: Superli
 
       {error && (
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-red-500">{error}</p>
+          <p className="text-caption1 sm:text-subhead text-red-500">{error}</p>
         </div>
       )}
 
@@ -81,8 +81,8 @@ export function SuperlikesPageClient({ initialStatus, initialListings }: Superli
             <div className="flex items-center justify-center min-h-[40vh]">
               <div className="text-center max-w-xs">
                 <Zap className="w-8 h-8 mx-auto text-muted-foreground/20 mb-4" strokeWidth={1.5} />
-                <h3 className="text-sm font-semibold text-foreground mb-1">No superlikes yet</h3>
-                <p className="text-xs text-muted-foreground/60 leading-relaxed">
+                <h3 className="text-subhead font-semibold text-foreground mb-1">No superlikes yet</h3>
+                <p className="text-caption1 text-muted-foreground/60 leading-relaxed">
                   Use superlikes to show extra interest in listings you love
                 </p>
               </div>

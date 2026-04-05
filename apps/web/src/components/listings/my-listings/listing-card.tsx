@@ -244,20 +244,20 @@ export function ListingCard({
           <div className="flex items-start justify-between gap-3">
             {canViewPublicDetail ? (
               <Link href={`/listings/${listing.id}`} className="flex-1 min-w-0">
-                <h3 className="text-sm sm:text-base font-semibold text-foreground tracking-tight line-clamp-1">
+                <h3 className="text-subhead sm:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
                   {listing.year} {listing.make} {listing.model}
                 </h3>
                 {listing.trim && (
-                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{listing.trim}</p>
+                  <p className="text-caption1 text-muted-foreground mt-0.5 line-clamp-1">{listing.trim}</p>
                 )}
               </Link>
             ) : (
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm sm:text-base font-semibold text-foreground tracking-tight line-clamp-1">
+                <h3 className="text-subhead sm:text-callout font-semibold text-foreground tracking-tight line-clamp-1">
                   {listing.year} {listing.make} {listing.model}
                 </h3>
                 {listing.trim && (
-                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{listing.trim}</p>
+                  <p className="text-caption1 text-muted-foreground mt-0.5 line-clamp-1">{listing.trim}</p>
                 )}
               </div>
             )}
@@ -337,20 +337,20 @@ export function ListingCard({
           </div>
 
           {/* Price */}
-          <p className="text-base sm:text-lg font-bold text-foreground tabular-nums mt-2">
-            {listing.price.toLocaleString()} <span className="text-xs font-medium text-muted-foreground">AED</span>
+          <p className="text-callout sm:text-headline font-bold text-foreground tabular-nums mt-2">
+            {listing.price.toLocaleString()} <span className="text-caption1 font-medium text-muted-foreground">AED</span>
           </p>
 
           {/* Status + Stats */}
           <div className="flex items-center gap-3 mt-auto pt-3">
-            <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", status.bg, status.text)}>
+            <span className={cn("text-caption1 font-medium px-2 py-0.5 rounded-full", status.bg, status.text)}>
               {status.label}
             </span>
 
             {/* Expiry countdown for active listings */}
             {listing.lifecycleStatus === 'active' && daysRemaining !== null && msRemaining !== null && msRemaining > 0 && (
               <span className={cn(
-                "flex items-center gap-1 text-xs font-medium",
+                "flex items-center gap-1 text-caption1 font-medium",
                 isExpiringSoon ? "text-amber-500" : "text-muted-foreground"
               )}>
                 <Clock className="w-3 h-3" />
@@ -359,13 +359,13 @@ export function ListingCard({
             )}
             
             {hotScore >= 40 && (
-              <span className={cn("flex items-center gap-1 text-xs font-medium", hotLevel.color)}>
+              <span className={cn("flex items-center gap-1 text-caption1 font-medium", hotLevel.color)}>
                 <Flame className="w-3.5 h-3.5" />
                 {hotLevel.label}
               </span>
             )}
 
-            <div className="flex items-center gap-3 ml-auto text-xs text-muted-foreground">
+            <div className="flex items-center gap-3 ml-auto text-caption1 text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Eye className="w-3.5 h-3.5" />
                 {views}
@@ -385,12 +385,12 @@ export function ListingCard({
 
           {/* Rejection/Suspension Reason */}
           {isRejected && listing.rejectionReason && (
-            <p className="text-xs text-red-600 mt-3 line-clamp-2">
+            <p className="text-caption1 text-red-600 mt-3 line-clamp-2">
               {listing.rejectionReason}
             </p>
           )}
           {isSuspended && listing.suspensionReason && (
-            <p className="text-xs text-red-600 mt-3 line-clamp-2">
+            <p className="text-caption1 text-red-600 mt-3 line-clamp-2">
               {listing.suspensionReason}
             </p>
           )}
@@ -400,7 +400,7 @@ export function ListingCard({
       {/* Insights Toggle */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-center gap-1.5 py-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+        className="w-full flex items-center justify-center gap-1.5 py-3 text-caption1 text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
       >
         <span>{isExpanded ? 'Hide insights' : isInReview ? 'Review status' : 'View insights'}</span>
         <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", isExpanded && "rotate-180")} />
@@ -414,12 +414,12 @@ export function ListingCard({
             <div className="p-4 rounded-lg bg-blue-500/5">
               <div className="flex items-center gap-2 mb-2">
                 <Clock className="w-4 h-4 text-blue-500" />
-                <span className="text-sm font-medium text-blue-600">Under Review</span>
+                <span className="text-subhead font-medium text-blue-600">Under Review</span>
               </div>
-              <p className="text-sm text-foreground/80 leading-relaxed">
+              <p className="text-subhead text-foreground/80 leading-relaxed">
                 {listing.aiModeration.reasoning}
               </p>
-              <p className="text-xs text-muted-foreground mt-3">
+              <p className="text-caption1 text-muted-foreground mt-3">
                 A human moderator will make the final decision
               </p>
             </div>
@@ -432,14 +432,14 @@ export function ListingCard({
                 <div className="flex items-baseline justify-between mb-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="text-xs text-muted-foreground cursor-help border-b border-dotted border-muted-foreground/50">Click Rate</span>
+                      <span className="text-caption1 text-muted-foreground cursor-help border-b border-dotted border-muted-foreground/50">Click Rate</span>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-[200px]">
-                      <p className="text-xs">Percentage of people who viewed your listing after seeing it in search results</p>
-                      <p className="text-xs text-muted-foreground mt-1">Views ÷ Impressions × 100</p>
+                      <p className="text-caption1">Percentage of people who viewed your listing after seeing it in search results</p>
+                      <p className="text-caption1 text-muted-foreground mt-1">Views ÷ Impressions × 100</p>
                     </TooltipContent>
                   </Tooltip>
-                  <span className="text-sm font-semibold tabular-nums">{ctr}%</span>
+                  <span className="text-subhead font-semibold tabular-nums">{ctr}%</span>
                 </div>
                 <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                   <div 
@@ -453,14 +453,14 @@ export function ListingCard({
                 <div className="flex items-baseline justify-between mb-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="text-xs text-muted-foreground cursor-help border-b border-dotted border-muted-foreground/50">Engagement</span>
+                      <span className="text-caption1 text-muted-foreground cursor-help border-b border-dotted border-muted-foreground/50">Engagement</span>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-[220px]">
-                      <p className="text-xs">Score based on how users interact with your listing</p>
-                      <p className="text-xs text-muted-foreground mt-1">Combines click rate, saves, superlikes, and view volume (0-100)</p>
+                      <p className="text-caption1">Score based on how users interact with your listing</p>
+                      <p className="text-caption1 text-muted-foreground mt-1">Combines click rate, saves, superlikes, and view volume (0-100)</p>
                     </TooltipContent>
                   </Tooltip>
-                  <span className={cn("text-sm font-semibold tabular-nums", hotLevel.color)}>{hotScore}</span>
+                  <span className={cn("text-subhead font-semibold tabular-nums", hotLevel.color)}>{hotScore}</span>
                 </div>
                 <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                   <div 
@@ -479,7 +479,7 @@ export function ListingCard({
           </TooltipProvider>
 
           {/* Additional Info */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground pt-2">
+          <div className="flex items-center justify-between text-caption1 text-muted-foreground pt-2">
             <span>{impressions.toLocaleString()} impressions</span>
             <span>{formatRelativeDate(listing.publishedAt || listing.createdAt)}</span>
           </div>
@@ -490,17 +490,17 @@ export function ListingCard({
       {deleteConfirm === listing.id && (
         <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-xl z-10">
           <div className="text-center px-6">
-            <p className="text-sm font-semibold mb-4">Delete this listing?</p>
+            <p className="text-subhead font-semibold mb-4">Delete this listing?</p>
             <div className="flex items-center justify-center gap-3">
               <button 
                 onClick={onCancelDelete}
-                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors"
+                className="px-4 py-2 text-subhead font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={() => onDelete(listing.id)}
-                className="px-4 py-2 text-sm font-semibold text-white bg-destructive hover:bg-destructive/90 rounded-lg transition-colors"
+                className="px-4 py-2 text-subhead font-semibold text-white bg-destructive hover:bg-destructive/90 rounded-lg transition-colors"
               >
                 Delete
               </button>

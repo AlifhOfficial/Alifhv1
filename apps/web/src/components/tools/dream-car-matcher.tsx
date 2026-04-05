@@ -115,10 +115,10 @@ export function DreamCarMatcher() {
       <div className="space-y-6">
         <div className="border rounded-lg p-8 bg-gradient-to-br from-primary/5 to-primary/10">
           <div className="text-center">
-            <div className="text-7xl mb-6">{result.image}</div>
-            <h2 className="text-3xl font-bold mb-2">Your Dream Car</h2>
-            <p className="text-4xl font-bold text-primary mb-6">{result.car}</p>
-            <p className="text-lg leading-relaxed">{result.reason}</p>
+            <div className="text-display3 mb-6">{result.image}</div>
+            <h2 className="text-title1 font-bold mb-2">Your Dream Car</h2>
+            <p className="text-display font-bold text-primary mb-6">{result.car}</p>
+            <p className="text-headline leading-relaxed">{result.reason}</p>
           </div>
         </div>
 
@@ -147,7 +147,7 @@ export function DreamCarMatcher() {
     <div className="space-y-6">
       {/* Progress */}
       <div>
-        <div className="flex justify-between text-sm text-muted-foreground mb-2">
+        <div className="flex justify-between text-subhead text-muted-foreground mb-2">
           <span>Question {currentQuestion + 1} of {questions.length}</span>
           <span>{Math.round(progress)}%</span>
         </div>
@@ -161,7 +161,7 @@ export function DreamCarMatcher() {
 
       {/* Question */}
       <div className="border rounded-lg p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">{question.question}</h2>
+        <h2 className="text-title2 font-bold mb-6 text-center">{question.question}</h2>
         <div className="space-y-3">
           {question.options.map((option, index) => (
             <button

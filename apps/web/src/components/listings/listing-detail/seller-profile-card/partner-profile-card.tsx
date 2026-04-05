@@ -61,8 +61,8 @@ export function PartnerProfileCard({ sellerData }: PartnerProfileCardProps) {
       {/* About Section */}
       {partner.description && (
         <div className="space-y-2">
-          <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">About</p>
-          <p className="text-sm text-muted-foreground leading-relaxed font-medium whitespace-pre-line">
+          <p className="text-footnote uppercase tracking-wider font-bold text-muted-foreground/70">About</p>
+          <p className="text-subhead text-muted-foreground leading-relaxed font-medium whitespace-pre-line">
             {partner.description}
           </p>
         </div>
@@ -113,7 +113,7 @@ function PartnerHeader({ partner, isBlackTier, location }: PartnerHeaderProps) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <h3 className={cn(
-            "text-lg sm:text-xl tracking-tight text-foreground truncate font-bold"
+            "text-headline sm:text-title3 tracking-tight text-foreground truncate font-bold"
           )}>
             {partner.brandName}
           </h3>
@@ -127,14 +127,14 @@ function PartnerHeader({ partner, isBlackTier, location }: PartnerHeaderProps) {
         </div>
         
         {location && (
-          <div className="flex items-center gap-2 mt-1.5 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 mt-1.5 text-subhead text-muted-foreground">
             <MapPin className="w-4 h-4" />
             <span className="truncate font-semibold">{location}</span>
           </div>
         )}
 
         {partner.experienceYears && (
-          <p className="text-sm text-muted-foreground mt-1.5 font-semibold">
+          <p className="text-subhead text-muted-foreground mt-1.5 font-semibold">
             {partner.experienceYears}+ years in business
           </p>
         )}
@@ -166,7 +166,7 @@ function PartnerLinks({ partner, hasPublishedShowroom }: PartnerLinksProps) {
           href={partner.website}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+          className="flex items-center gap-2 text-subhead font-semibold text-primary hover:text-primary/80 transition-colors"
         >
           <span className="truncate">{partner.website.replace(/^https?:\/\/(www\.)?/, '')}</span>
           <ExternalLink className="w-4 h-4 flex-shrink-0" />
@@ -176,7 +176,7 @@ function PartnerLinks({ partner, hasPublishedShowroom }: PartnerLinksProps) {
         <Link
           href={`/showroom/${partner.id}`}
           prefetch={false}
-          className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          className="flex items-center gap-2 text-subhead font-semibold text-muted-foreground hover:text-foreground transition-colors"
         >
           <span>Visit Showroom</span>
           <ExternalLink className="w-4 h-4 flex-shrink-0" />
@@ -194,7 +194,7 @@ function PartnerBadges({ badges }: { badges: string[] }) {
       {badges.slice(0, 3).map((badge, idx) => (
         <span
           key={idx}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground"
+          className="inline-flex items-center gap-1.5 text-subhead font-semibold text-muted-foreground"
         >
           <Award className="w-4 h-4 text-amber-500" />
           {badge}
@@ -217,11 +217,11 @@ function PartnerStatsGrid({ partner, stats, statsLoading }: PartnerStatsGridProp
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-          <span className="text-sm font-semibold text-muted-foreground/70">Google</span>
+          <span className="text-subhead font-semibold text-muted-foreground/70">Google</span>
         </div>
-        <p className="text-lg font-bold tabular-nums text-foreground">
+        <p className="text-headline font-bold tabular-nums text-foreground">
           {partner.googleRating !== null && partner.googleRating !== undefined
-            ? <>{partner.googleRating.toFixed(1)}<span className="text-sm font-medium text-muted-foreground ml-1">({partner.googleReviewCount ?? 0})</span></>
+            ? <>{partner.googleRating.toFixed(1)}<span className="text-subhead font-medium text-muted-foreground ml-1">({partner.googleReviewCount ?? 0})</span></>
             : <span className="text-muted-foreground">N/A</span>
           }
         </p>
@@ -234,19 +234,19 @@ function PartnerStatsGrid({ partner, stats, statsLoading }: PartnerStatsGridProp
       >
         <div className="flex items-center gap-2">
           <Package className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-semibold text-muted-foreground/70">Inventory</span>
+          <span className="text-subhead font-semibold text-muted-foreground/70">Inventory</span>
         </div>
         {statsLoading ? (
           <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
         ) : stats && 'inventoryCount' in stats ? (
           <>
-            <p className="text-lg font-bold tabular-nums text-foreground">
+            <p className="text-headline font-bold tabular-nums text-foreground">
               {stats.inventoryCount}
             </p>
-            <span className="text-xs font-semibold text-primary group-hover:underline">View all →</span>
+            <span className="text-caption1 font-semibold text-primary group-hover:underline">View all →</span>
           </>
         ) : (
-          <p className="text-lg font-bold text-muted-foreground">N/A</p>
+          <p className="text-headline font-bold text-muted-foreground">N/A</p>
         )}
       </Link>
 
@@ -254,9 +254,9 @@ function PartnerStatsGrid({ partner, stats, statsLoading }: PartnerStatsGridProp
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-semibold text-muted-foreground/70">Response</span>
+          <span className="text-subhead font-semibold text-muted-foreground/70">Response</span>
         </div>
-        <p className="text-lg font-bold tabular-nums text-foreground">
+        <p className="text-headline font-bold tabular-nums text-foreground">
           {statsLoading ? (
             <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
           ) : stats?.responseTime ? (
@@ -271,9 +271,9 @@ function PartnerStatsGrid({ partner, stats, statsLoading }: PartnerStatsGridProp
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <MessageCircle className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-semibold text-muted-foreground/70">Rate</span>
+          <span className="text-subhead font-semibold text-muted-foreground/70">Rate</span>
         </div>
-        <p className="text-lg font-bold tabular-nums text-foreground">
+        <p className="text-headline font-bold tabular-nums text-foreground">
           {statsLoading ? (
             <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
           ) : stats?.responseRate ? (
@@ -292,12 +292,12 @@ function PartnerSpecialties({ specialties }: { specialties: string[] }) {
 
   return (
     <div className="space-y-2">
-      <p className="text-[13px] uppercase tracking-wider font-bold text-muted-foreground/70">Specializes In</p>
+      <p className="text-footnote uppercase tracking-wider font-bold text-muted-foreground/70">Specializes In</p>
       <div className="flex flex-wrap gap-2">
         {specialties.map((specialty, idx) => (
           <span
             key={idx}
-            className="px-3 py-1.5 text-sm font-semibold bg-muted text-foreground/80 rounded-lg"
+            className="px-3 py-1.5 text-subhead font-semibold bg-muted text-foreground/80 rounded-lg"
           >
             {specialty}
           </span>

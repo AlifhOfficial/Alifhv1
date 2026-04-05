@@ -343,7 +343,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
     return (
       <div className="max-w-4xl mx-auto px-6 py-16">
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <p className="text-sm text-muted-foreground">Unable to load showroom</p>
+          <p className="text-subhead text-muted-foreground">Unable to load showroom</p>
         </div>
       </div>
     );
@@ -380,13 +380,13 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
           <div>
             <Link 
               href="/partner-dashboard"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2"
+              className="inline-flex items-center gap-1.5 text-subhead text-muted-foreground hover:text-foreground transition-colors mb-2"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Dashboard
             </Link>
-            <h1 className="text-xl font-bold tracking-tight text-foreground">Brand Showroom</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Your premium brand manifesto page</p>
+            <h1 className="text-title3 font-bold tracking-tight text-foreground">Brand Showroom</h1>
+            <p className="text-subhead text-muted-foreground mt-0.5">Your premium brand manifesto page</p>
           </div>
           
           <div className="flex items-center gap-2">
@@ -394,7 +394,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
             <Link
               href="/partner-dashboard/showroom/preview"
               target="_blank"
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-subhead font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors"
             >
               Preview
             </Link>
@@ -404,7 +404,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
                 <Link
                   href={`/showroom/${showroom.slug}`}
                   target="_blank"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-subhead font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors"
                 >
                   <ExternalLink className="w-4 h-4" />
                   View Live
@@ -412,7 +412,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
                 <button
                   onClick={handleUnpublish}
                   disabled={isPublishing}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-subhead font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors disabled:opacity-50"
                 >
                   {isPublishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Archive className="w-4 h-4" />}
                   Unpublish
@@ -422,7 +422,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
               <button
                 onClick={handlePublish}
                 disabled={isPublishing}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-subhead font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
               >
                 {isPublishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Globe className="w-4 h-4" />}
                 Publish
@@ -436,8 +436,8 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
           <div className="flex items-center gap-3 p-4 rounded-xl bg-sidebar border border-border/40 mb-6">
             <div className="w-2 h-2 rounded-full bg-green-500" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">Live at <span className="text-muted-foreground">/showroom/{showroom.slug}</span></p>
-              <p className="text-xs text-muted-foreground">{showroom.viewCount} views</p>
+              <p className="text-subhead font-medium text-foreground">Live at <span className="text-muted-foreground">/showroom/{showroom.slug}</span></p>
+              <p className="text-caption1 text-muted-foreground">{showroom.viewCount} views</p>
             </div>
           </div>
         )}
@@ -484,7 +484,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
       <aside className="w-64 flex-shrink-0 flex flex-col h-screen sticky top-0">
         {/* Header - Fixed */}
         <div className="flex items-center justify-between py-4 pr-6 flex-shrink-0">
-          <h2 className="text-[15px] font-bold tracking-tight text-foreground">Sections</h2>
+          <h2 className="text-subhead font-bold tracking-tight text-foreground">Sections</h2>
         </div>
         
         {/* Scrollable Navigation Content */}
@@ -497,7 +497,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
                   className={cn(
-                    "w-full py-3 px-4 text-[15px] rounded-2xl transition-all duration-150 text-left",
+                    "w-full py-3 px-4 text-subhead rounded-2xl transition-all duration-150 text-left",
                     isActive
                       ? 'text-foreground font-semibold bg-muted/50'
                       : 'text-muted-foreground font-medium hover:text-foreground hover:bg-muted/50'

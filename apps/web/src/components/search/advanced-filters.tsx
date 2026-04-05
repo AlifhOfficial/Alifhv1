@@ -120,8 +120,8 @@ export function AdvancedFilters({
   const filterContent = !hasAnyOptions ? (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <SlidersHorizontal className="h-10 w-10 text-muted-foreground/30 mb-3" />
-      <p className="text-sm font-medium text-muted-foreground">No filters available</p>
-      <p className="text-xs text-muted-foreground/60 mt-1">Try adjusting your search criteria</p>
+      <p className="text-subhead font-medium text-muted-foreground">No filters available</p>
+      <p className="text-caption1 text-muted-foreground/60 mt-1">Try adjusting your search criteria</p>
     </div>
   ) : (
     <div className="space-y-0.5">
@@ -221,7 +221,7 @@ export function AdvancedFilters({
         type="button"
         onClick={(e) => handleReset(e)}
         className={cn(
-          "w-full px-3 py-2 text-sm font-medium",
+          "w-full px-3 py-2 text-subhead font-medium",
           "text-muted-foreground/70 hover:text-sidebar-foreground/80",
           "hover:bg-muted/40 rounded-lg",
           "transition-colors"
@@ -241,7 +241,7 @@ export function AdvancedFilters({
             <button 
               type="button"
               className={cn(
-                "flex items-center gap-1.5 h-9 px-3.5 text-sm font-semibold rounded-full transition-colors touch-manipulation",
+                "flex items-center gap-1.5 h-9 px-3.5 text-subhead font-semibold rounded-full transition-colors touch-manipulation",
                 advancedCount > 0
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
@@ -271,9 +271,9 @@ export function AdvancedFilters({
             <div className="px-5 pb-4 border-b border-border shrink-0">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold tracking-tight">More Filters</h3>
+                  <h3 className="text-headline font-bold tracking-tight">More Filters</h3>
                   {advancedCount > 0 && (
-                    <p className="text-sm text-muted-foreground mt-0.5">
+                    <p className="text-subhead text-muted-foreground mt-0.5">
                       {advancedCount} filter{advancedCount > 1 ? 's' : ''} selected
                     </p>
                   )}
@@ -283,7 +283,7 @@ export function AdvancedFilters({
                     <button
                       type="button"
                       onClick={(e) => handleReset(e)}
-                      className="text-sm font-semibold text-muted-foreground hover:text-foreground touch-manipulation px-3 py-1.5 rounded-lg hover:bg-muted transition-colors"
+                      className="text-subhead font-semibold text-muted-foreground hover:text-foreground touch-manipulation px-3 py-1.5 rounded-lg hover:bg-muted transition-colors"
                     >
                       Reset
                     </button>
@@ -309,7 +309,7 @@ export function AdvancedFilters({
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="w-full h-12 bg-primary text-primary-foreground font-semibold text-base rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-[background-color,transform] will-change-transform touch-manipulation shadow-lg"
+                className="w-full h-12 bg-primary text-primary-foreground font-semibold text-callout rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-[background-color,transform] will-change-transform touch-manipulation shadow-lg"
               >
                 Apply Filters
               </button>
@@ -329,7 +329,7 @@ export function AdvancedFilters({
           <button 
             type="button"
             onClick={() => setDesktopOpen(!desktopOpen)}
-            className="flex items-center gap-2 h-9 px-4 text-sm font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 hover:text-sidebar-foreground shadow-sm transition-colors"
+            className="flex items-center gap-2 h-9 px-4 text-subhead font-semibold bg-sidebar border border-sidebar-border rounded-full text-sidebar-foreground/70 hover:text-sidebar-foreground shadow-sm transition-colors"
           >
             <SlidersHorizontal className="h-4 w-4" />
             <span>More Filters</span>
@@ -356,7 +356,7 @@ export function AdvancedFilters({
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-sidebar-border">
               <div className="flex items-center gap-2.5">
                 <SlidersHorizontal className="h-4 w-4 text-muted-foreground/70" />
-                <h3 className="text-[15px] font-semibold tracking-tight text-sidebar-foreground/80">More Filters</h3>
+                <h3 className="text-subhead font-semibold tracking-tight text-sidebar-foreground/80">More Filters</h3>
               </div>
               <button 
                 type="button"
@@ -436,10 +436,10 @@ function FilterGroup({
       <div>
         <CollapsibleTrigger asChild>
           <button type="button" className="flex w-full items-center justify-between py-3 hover:bg-muted/30 rounded-lg transition-colors touch-manipulation">
-            <span className="text-base font-semibold tracking-tight text-sidebar-foreground">{title}</span>
+            <span className="text-callout font-semibold tracking-tight text-sidebar-foreground">{title}</span>
             <div className="flex items-center gap-2">
               {selectedCount > 0 && (
-                <span className="min-w-[20px] h-[20px] px-1.5 text-xs font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+                <span className="min-w-[20px] h-[20px] px-1.5 text-caption1 font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                   {selectedCount}
                 </span>
               )}
@@ -493,7 +493,7 @@ function FilterGroup({
                       onClick={() => toggleOption(option.value)}
                       className={cn(
                         'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
-                        'text-base font-medium tracking-tight transition-colors duration-100',
+                        'text-callout font-medium tracking-tight transition-colors duration-100',
                         isSelected 
                           ? 'bg-muted text-foreground font-semibold' 
                           : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'

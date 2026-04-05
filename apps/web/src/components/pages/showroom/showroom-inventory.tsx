@@ -125,14 +125,14 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
             {/* Left: Title & Count */}
             <div className="space-y-4">
-              <span className="text-sm font-semibold uppercase tracking-wider text-primary block">
+              <span className="text-subhead font-semibold uppercase tracking-wider text-primary block">
                 Inventory
               </span>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+              <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
                 Our Collection
               </h2>
               {totalCount > 0 && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-subhead text-muted-foreground">
                   {totalCount} {totalCount === 1 ? 'vehicle' : 'vehicles'} available
                 </p>
               )}
@@ -143,7 +143,7 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
               {!isExpanded && totalCount > 0 && (
                 <Button
                   onClick={handleExpand}
-                  className="h-11 px-6 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+                  className="h-11 px-6 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   View All
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -154,7 +154,7 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
                 <Button
                   variant="ghost"
                   onClick={handleCollapse}
-                  className="h-11 px-6 text-sm font-medium text-muted-foreground hover:text-foreground rounded-lg"
+                  className="h-11 px-6 text-subhead font-medium text-muted-foreground hover:text-foreground rounded-lg"
                 >
                   <ChevronUp className="w-4 h-4 mr-2" />
                   Show Less
@@ -295,7 +295,7 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
 
         {/* Description - Below Content */}
         <div className="px-4 sm:px-6 lg:px-8 mt-8">
-          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-2xl leading-relaxed">
             Curated selection of vehicles.
           </p>
         </div>
@@ -347,7 +347,7 @@ function InventoryCarousel({
   if (error || listings.length === 0) {
     return (
       <div className="px-4 sm:px-6 lg:px-8">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-subhead text-muted-foreground">
           {error ? 'Unable to load inventory' : 'No vehicles currently available'}
         </p>
       </div>
@@ -384,7 +384,7 @@ function InventoryCarousel({
             />
           ))}
           {previewListings.length > 5 && (
-            <span className="text-xs text-muted-foreground ml-1">+{previewListings.length - 5}</span>
+            <span className="text-caption1 text-muted-foreground ml-1">+{previewListings.length - 5}</span>
           )}
         </div>
       )}
@@ -436,18 +436,18 @@ function ShowroomCarCard({ listing, priority = false, index: _index, theme: _the
       {/* Info */}
       <div className="p-4">
         {/* Make & Model */}
-        <h3 className="text-base font-semibold text-foreground leading-snug">
+        <h3 className="text-callout font-semibold text-foreground leading-snug">
           {listing.make} {listing.model}
         </h3>
         
         {/* Year & Variant */}
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-subhead text-muted-foreground mt-1">
           {listing.year}{listing.variant ? ` · ${listing.variant}` : ''}
         </p>
         
         {/* Price */}
         {price && (
-          <p className="text-sm font-medium text-foreground mt-3">
+          <p className="text-subhead font-medium text-foreground mt-3">
             {price}
           </p>
         )}

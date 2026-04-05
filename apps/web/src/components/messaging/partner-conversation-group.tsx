@@ -94,7 +94,7 @@ export function PartnerConversationGroup({
           href={`/listings?partnerId=${partner.id}&partnerName=${encodeURIComponent(partner.name)}&sort=relevance`}
           onClick={(e) => e.stopPropagation()}
           className={cn(
-            'flex-1 text-sm truncate hover:text-primary hover:underline transition-colors',
+            'flex-1 text-subhead truncate hover:text-primary hover:underline transition-colors',
             totalUnread > 0 ? 'font-semibold text-foreground' : 'font-medium text-foreground/90'
           )}
         >

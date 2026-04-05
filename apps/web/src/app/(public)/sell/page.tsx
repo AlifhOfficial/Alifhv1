@@ -16,10 +16,10 @@ export default function SellPage() {
           
           {/* Header */}
           <div className="text-center mb-12 space-y-5">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               For Private Sellers
             </span>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               List free.
               <br />
               <span className="text-muted-foreground">Sell fast.</span>
@@ -32,19 +32,19 @@ export default function SellPage() {
           </div>
 
           {/* Description */}
-          <p className="text-base text-muted-foreground max-w-md mx-auto text-center mb-12 leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-md mx-auto text-center mb-12 leading-relaxed">
             No fees. No boosts. No ads. Just your car, seen by real buyers.
           </p>
 
           {/* CTA */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/user-dashboard/listings/new">
-              <Button size="lg" className="w-full sm:w-auto h-11 px-8 text-sm font-semibold rounded-lg">
+              <Button size="lg" className="w-full sm:w-auto h-11 px-8 text-subhead font-semibold rounded-lg">
                 List Your Car
               </Button>
             </Link>
             <Link href="/listings">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto h-11 px-8 text-sm font-semibold rounded-lg">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto h-11 px-8 text-subhead font-semibold rounded-lg">
                 Browse Cars
               </Button>
             </Link>
@@ -58,10 +58,10 @@ export default function SellPage() {
           
           {/* Header */}
           <div className="text-center mb-12 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               How It Works
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               List in minutes.
             </h2>
           </div>
@@ -72,7 +72,7 @@ export default function SellPage() {
           </div>
 
           {/* Description */}
-          <p className="text-base text-muted-foreground max-w-md mx-auto text-center leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-md mx-auto text-center leading-relaxed">
             Photos. VIN. Price. Done.
           </p>
         </div>
@@ -84,10 +84,10 @@ export default function SellPage() {
           
           {/* Header */}
           <div className="text-center mb-12 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Why Revvup
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               Built for you.
             </h2>
           </div>
@@ -134,7 +134,7 @@ export default function SellPage() {
           
           {/* Header */}
           <div className="text-center mb-12 space-y-5">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               Ready to sell?
             </h2>
           </div>
@@ -142,7 +142,7 @@ export default function SellPage() {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/user-dashboard/listings/new">
-              <Button size="lg" className="w-full sm:w-auto h-11 px-8 text-sm font-semibold rounded-lg">
+              <Button size="lg" className="w-full sm:w-auto h-11 px-8 text-subhead font-semibold rounded-lg">
                 List Your Car
               </Button>
             </Link>
@@ -150,13 +150,13 @@ export default function SellPage() {
 
           {/* Trust badges */}
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mt-12 pt-8 border-t border-border/40">
-            <span className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+            <span className="text-subhead font-medium flex items-center gap-2 text-muted-foreground">
               <CheckCircle2 className="w-4 h-4 text-primary" />Free for private sellers
             </span>
-            <span className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+            <span className="text-subhead font-medium flex items-center gap-2 text-muted-foreground">
               <CheckCircle2 className="w-4 h-4 text-primary" />No commission
             </span>
-            <span className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+            <span className="text-subhead font-medium flex items-center gap-2 text-muted-foreground">
               <CheckCircle2 className="w-4 h-4 text-primary" />Based in Dubai
             </span>
           </div>
@@ -177,39 +177,39 @@ function SellHeroInfographic() {
       <div className="flex flex-col md:flex-row min-h-[450px] sm:min-h-[500px] lg:min-h-[550px]">
         {/* Left - Others */}
         <div className="flex-1 p-10 sm:p-14 lg:p-20 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-border/40">
-          <span className="text-xs font-medium text-muted-foreground/50 mb-10">Others</span>
+          <span className="text-caption1 font-medium text-muted-foreground/50 mb-10">Others</span>
           
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="px-3 py-1.5 rounded-md bg-red-500/10 border border-red-500/20">
-                <span className="text-sm font-semibold text-red-500">AED 500–1,000</span>
+                <span className="text-subhead font-semibold text-red-500">AED 500–1,000</span>
               </div>
-              <span className="text-xs text-muted-foreground/50">to list</span>
+              <span className="text-caption1 text-muted-foreground/50">to list</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="px-3 py-1.5 rounded-md bg-orange-500/10 border border-orange-500/20">
-                <span className="text-sm font-semibold text-orange-500">+AED 49–199</span>
+                <span className="text-subhead font-semibold text-orange-500">+AED 49–199</span>
               </div>
-              <span className="text-xs text-muted-foreground/50">to boost</span>
+              <span className="text-caption1 text-muted-foreground/50">to boost</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="px-3 py-1.5 rounded-md bg-amber-500/10 border border-amber-500/20">
-                <span className="text-sm font-semibold text-amber-500">+AED 99</span>
+                <span className="text-subhead font-semibold text-amber-500">+AED 99</span>
               </div>
-              <span className="text-xs text-muted-foreground/50">to feature</span>
+              <span className="text-caption1 text-muted-foreground/50">to feature</span>
             </div>
           </div>
         </div>
         
         {/* Right - Revvup */}
         <div className="w-full md:w-[300px] lg:w-[400px] p-10 sm:p-14 lg:p-20 flex flex-col items-center justify-center">
-          <span className="text-xs font-medium text-primary mb-10">Revvup</span>
+          <span className="text-caption1 font-medium text-primary mb-10">Revvup</span>
           
           <div className="flex flex-col items-center">
-            <div className="text-7xl sm:text-8xl lg:text-9xl font-bold text-primary leading-none">
+            <div className="text-display3 sm:text-display4 lg:text-display5 font-bold text-primary leading-none">
               0
             </div>
-            <span className="text-base text-primary/70 font-medium mt-2">fees</span>
+            <span className="text-callout text-primary/70 font-medium mt-2">fees</span>
           </div>
         </div>
       </div>
@@ -225,7 +225,7 @@ function StepsInfographic() {
   return (
     <div className="rounded-2xl overflow-hidden border border-border/40 bg-sidebar min-h-[500px] sm:min-h-[550px] lg:min-h-[600px] flex items-center justify-center">
       {/* Placeholder - content coming later */}
-      <p className="text-sm text-muted-foreground/30">Coming soon</p>
+      <p className="text-subhead text-muted-foreground/30">Coming soon</p>
     </div>
   );
 }
@@ -244,8 +244,8 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
   return (
     <div className="p-6 rounded-xl border border-border/40 bg-sidebar">
       <Icon className="w-5 h-5 text-primary/80 mb-3" />
-      <h3 className="text-base font-semibold mb-1">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
+      <h3 className="text-callout font-semibold mb-1">{title}</h3>
+      <p className="text-subhead text-muted-foreground">{description}</p>
     </div>
   );
 }

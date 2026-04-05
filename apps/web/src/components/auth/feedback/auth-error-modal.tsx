@@ -63,10 +63,10 @@ export function AuthErrorModal({
         {/* Header */}
         <div className="text-center space-y-3 mb-6">
           <XCircle className="w-6 h-6 text-red-500 mx-auto" />
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">
+          <h2 className="text-headline font-semibold tracking-tight text-foreground">
             {errorInfo.title}
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-subhead text-muted-foreground">
             {errorInfo.message}
           </p>
         </div>
@@ -77,13 +77,13 @@ export function AuthErrorModal({
             <>
               <button
                 onClick={handleAction}
-                className="flex-1 h-11 px-6 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+                className="flex-1 h-11 px-6 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors"
               >
                 {errorInfo.actionLabel || "Try again"}
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 h-11 px-6 bg-muted text-foreground text-sm font-semibold rounded-lg hover:bg-muted/80 transition-colors"
+                className="flex-1 h-11 px-6 bg-muted text-foreground text-subhead font-semibold rounded-lg hover:bg-muted/80 transition-colors"
               >
                 Dismiss
               </button>
@@ -91,7 +91,7 @@ export function AuthErrorModal({
           ) : (
             <button
               onClick={onClose}
-              className="w-full h-11 px-6 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+              className="w-full h-11 px-6 bg-primary text-primary-foreground text-subhead font-semibold rounded-lg hover:bg-primary/90 transition-colors"
             >
               Got it
             </button>

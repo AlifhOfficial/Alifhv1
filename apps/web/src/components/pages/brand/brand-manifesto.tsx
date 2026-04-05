@@ -26,10 +26,10 @@ function BrandHero() {
         
         {/* Header */}
         <div className="text-center mb-16 space-y-5">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Brand
           </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             This is Revvup.
           </h1>
         </div>
@@ -40,25 +40,25 @@ function BrandHero() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center leading-relaxed">
+        <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center leading-relaxed">
           Our brand is our promise. Simple, honest, and built to last.
         </p>
 
         {/* Brand Stats */}
         <div className="flex items-center justify-center gap-12 md:gap-20 pt-8 border-t border-border/40 mt-12">
           <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">2026</p>
-            <span className="text-sm text-muted-foreground">Founded</span>
+            <p className="text-title3 font-semibold tracking-tight text-primary">2026</p>
+            <span className="text-subhead text-muted-foreground">Founded</span>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">Dubai</p>
-            <span className="text-sm text-muted-foreground">Headquarters</span>
+            <p className="text-title3 font-semibold tracking-tight text-primary">Dubai</p>
+            <span className="text-subhead text-muted-foreground">Headquarters</span>
           </div>
           <div className="w-px h-10 bg-border/30 hidden sm:block" />
           <div className="text-center space-y-1">
-            <p className="text-xl font-semibold tracking-tight text-primary">Self-funded</p>
-            <span className="text-sm text-muted-foreground">Zero VCs</span>
+            <p className="text-title3 font-semibold tracking-tight text-primary">Self-funded</p>
+            <span className="text-subhead text-muted-foreground">Zero VCs</span>
           </div>
         </div>
 
@@ -100,10 +100,10 @@ function ManifestoSection() {
       <div className="max-w-[1600px] mx-auto">
         
         <div className="text-center mb-16 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             What We Believe
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Built different.
             <br />
             <span className="text-muted-foreground">Stays different.</span>
@@ -116,7 +116,7 @@ function ManifestoSection() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center leading-relaxed">
+        <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center leading-relaxed">
           No investors. No board meetings. No exit strategy. Just a founder who got tired of complaining and decided to build.
         </p>
 
@@ -142,7 +142,7 @@ function ManifestoInfographic() {
                 style={{ animation: `fade-value-${value.delay} 6s ease-out infinite` }}
               >
                 <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-primary flex-shrink-0" />
-                <span className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold text-white tracking-tight">
+                <span className="text-headline sm:text-title2 lg:text-title1 xl:text-display font-semibold text-white tracking-tight">
                   {value.label}
                 </span>
               </div>
@@ -163,10 +163,10 @@ function LogoVariantsSection() {
       <div className="max-w-[1600px] mx-auto">
         
         <div className="text-center mb-16 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             The Mark
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Light. Dark.
             <br />
             <span className="text-muted-foreground">Always bold.</span>
@@ -179,7 +179,7 @@ function LogoVariantsSection() {
         </div>
 
         {/* Usage note */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center leading-relaxed">
+        <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center leading-relaxed">
           Minimum clear space: 1x logo height on all sides.
         </p>
 
@@ -201,7 +201,7 @@ function LogoVariantsInfographic() {
                 className="h-full w-auto invert"
               />
             </div>
-            <span className="text-[10px] sm:text-xs lg:text-sm text-black/40 font-medium mt-4 sm:mt-6">Light backgrounds</span>
+            <span className="text-[10px] sm:text-caption1 lg:text-subhead text-black/40 font-medium mt-4 sm:mt-6">Light backgrounds</span>
           </div>
 
           {/* Dark variant */}
@@ -213,7 +213,7 @@ function LogoVariantsInfographic() {
                 className="h-full w-auto"
               />
             </div>
-            <span className="text-[10px] sm:text-xs lg:text-sm text-white/40 font-medium mt-4 sm:mt-6">Dark backgrounds</span>
+            <span className="text-[10px] sm:text-caption1 lg:text-subhead text-white/40 font-medium mt-4 sm:mt-6">Dark backgrounds</span>
           </div>
       </MacOSWindow>
     </div>
@@ -230,10 +230,10 @@ function ColorSection() {
       <div className="max-w-[1600px] mx-auto">
         
         <div className="text-center mb-16 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Palette
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Three colors.
             <br />
             <span className="text-muted-foreground">That&apos;s it.</span>
@@ -246,7 +246,7 @@ function ColorSection() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center leading-relaxed">
+        <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center leading-relaxed">
           Blue for action. Black and white for everything else.
         </p>
 
@@ -261,20 +261,20 @@ function ColorInfographic() {
       <MacOSWindow showUrlBar={false} contentClassName="flex flex-col sm:flex-row">
           {/* Primary Blue */}
           <div className="flex-1 bg-[#0066FF] flex flex-col items-center justify-center p-6 sm:p-10 lg:p-16 min-h-[150px] sm:min-h-[220px] lg:min-h-[300px]">
-            <span className="text-2xl sm:text-4xl lg:text-5xl xl:text-7xl font-bold text-white tracking-tight">Blue</span>
-            <span className="text-[9px] sm:text-xs lg:text-sm text-white/60 font-medium mt-2 sm:mt-3">#0066FF</span>
+            <span className="text-title2 sm:text-display lg:text-display1 xl:text-display3 font-bold text-white tracking-tight">Blue</span>
+            <span className="text-[9px] sm:text-caption1 lg:text-subhead text-white/60 font-medium mt-2 sm:mt-3">#0066FF</span>
           </div>
 
           {/* White */}
           <div className="flex-1 bg-white flex flex-col items-center justify-center p-6 sm:p-10 lg:p-16 min-h-[150px] sm:min-h-[220px] lg:min-h-[300px] border-t sm:border-t-0 sm:border-l border-black/10">
-            <span className="text-2xl sm:text-4xl lg:text-5xl xl:text-7xl font-bold text-black tracking-tight">White</span>
-            <span className="text-[9px] sm:text-xs lg:text-sm text-black/40 font-medium mt-2 sm:mt-3">#FFFFFF</span>
+            <span className="text-title2 sm:text-display lg:text-display1 xl:text-display3 font-bold text-black tracking-tight">White</span>
+            <span className="text-[9px] sm:text-caption1 lg:text-subhead text-black/40 font-medium mt-2 sm:mt-3">#FFFFFF</span>
           </div>
 
           {/* Black */}
           <div className="flex-1 bg-black flex flex-col items-center justify-center p-6 sm:p-10 lg:p-16 min-h-[150px] sm:min-h-[220px] lg:min-h-[300px] border-t sm:border-t-0 sm:border-l border-white/10">
-            <span className="text-2xl sm:text-4xl lg:text-5xl xl:text-7xl font-bold text-white tracking-tight">Black</span>
-            <span className="text-[9px] sm:text-xs lg:text-sm text-white/40 font-medium mt-2 sm:mt-3">#000000</span>
+            <span className="text-title2 sm:text-display lg:text-display1 xl:text-display3 font-bold text-white tracking-tight">Black</span>
+            <span className="text-[9px] sm:text-caption1 lg:text-subhead text-white/40 font-medium mt-2 sm:mt-3">#000000</span>
           </div>
       </MacOSWindow>
     </div>
@@ -291,10 +291,10 @@ function VoiceSection() {
       <div className="max-w-[1600px] mx-auto">
         
         <div className="text-center mb-16 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             Voice
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Say less.
             <br />
             <span className="text-muted-foreground">Mean more.</span>
@@ -306,7 +306,7 @@ function VoiceSection() {
           
           {/* We Say */}
           <div className="p-8 bg-primary text-primary-foreground">
-            <p className="text-sm font-semibold uppercase tracking-wider text-white/60 mb-8">We say</p>
+            <p className="text-subhead font-semibold uppercase tracking-wider text-white/60 mb-8">We say</p>
             <div className="space-y-4">
               {[
                 "Free. Forever.",
@@ -317,7 +317,7 @@ function VoiceSection() {
               ].map((phrase) => (
                 <div key={phrase} className="flex items-center gap-3">
                   <CheckCircle2 className="w-4 h-4 text-white/60 flex-shrink-0" />
-                  <span className="text-lg sm:text-xl font-semibold">{phrase}</span>
+                  <span className="text-headline sm:text-title3 font-semibold">{phrase}</span>
                 </div>
               ))}
             </div>
@@ -325,7 +325,7 @@ function VoiceSection() {
 
           {/* We Don't Say */}
           <div className="p-8 bg-sidebar">
-            <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground/60 mb-8">We don&apos;t say</p>
+            <p className="text-subhead font-semibold uppercase tracking-wider text-muted-foreground/60 mb-8">We don&apos;t say</p>
             <div className="space-y-4">
               {[
                 "The #1 marketplace...",
@@ -335,8 +335,8 @@ function VoiceSection() {
                 "Unlock premium features...",
               ].map((phrase) => (
                 <div key={phrase} className="flex items-center gap-3">
-                  <span className="text-muted-foreground/40 text-lg">✗</span>
-                  <span className="text-lg sm:text-xl text-muted-foreground/60 line-through">{phrase}</span>
+                  <span className="text-muted-foreground/40 text-headline">✗</span>
+                  <span className="text-headline sm:text-title3 text-muted-foreground/60 line-through">{phrase}</span>
                 </div>
               ))}
             </div>
@@ -359,10 +359,10 @@ function BrandClosing() {
 
         {/* Header */}
         <div className="text-center mb-16 space-y-5">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             The Promise
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             We don&apos;t change.
             <br />
             <span className="text-muted-foreground">We don&apos;t sell out.</span>
@@ -375,7 +375,7 @@ function BrandClosing() {
         </div>
 
         {/* Contact */}
-        <p className="text-sm text-muted-foreground text-center">
+        <p className="text-subhead text-muted-foreground text-center">
           Brand questions? <a href="mailto:support@revvup.ae" className="text-primary hover:underline">support@revvup.ae</a>
         </p>
 
@@ -389,7 +389,7 @@ function ClosingInfographic() {
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
       <MacOSWindow showUrlBar={false} contentClassName="flex items-center justify-center min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] p-6 sm:p-10 lg:p-16">
           <div className="text-center">
-            <p className="wordmark-geom text-5xl sm:text-7xl lg:text-9xl text-white">
+            <p className="wordmark-geom text-display1 sm:text-display3 lg:text-display5 text-white">
               Revvup
             </p>
           </div>

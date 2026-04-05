@@ -15,10 +15,10 @@ export function AboutTeamSection() {
         
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             The Team
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Small Team.
             <br />
             <span className="text-muted-foreground">Big standards.</span>
@@ -37,7 +37,7 @@ export function AboutTeamSection() {
         </div>
 
         {/* Description */}
-        <p className="text-base text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
+        <p className="text-callout text-muted-foreground max-w-lg mx-auto text-center mb-12 leading-relaxed">
           We're a small, focused team in Dubai. Car enthusiasts who got tired of the status quo 
           and decided to build something better.
         </p>
@@ -45,7 +45,7 @@ export function AboutTeamSection() {
         {/* Quote Card */}
         <div className="max-w-3xl mx-auto">
           <div className="p-8 rounded-xl bg-primary text-primary-foreground text-center">
-            <blockquote className="text-lg sm:text-xl font-medium leading-relaxed">
+            <blockquote className="text-headline sm:text-title3 font-medium leading-relaxed">
               "Self-funded. Independent. No investors, no board meetings, no exit strategy. 
               Just building a product we'd want to use ourselves."
             </blockquote>

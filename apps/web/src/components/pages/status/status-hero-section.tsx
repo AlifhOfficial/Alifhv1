@@ -45,13 +45,13 @@ export function StatusHeroSection({ overallStatus }: StatusHeroSectionProps) {
         
         {/* Header */}
         <div className="text-center mb-10 space-y-4">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
             System Status
           </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Revvup Status
           </h1>
-          <p className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+          <p className="text-callout text-muted-foreground max-w-lg mx-auto leading-relaxed">
             Real-time status of all Revvup services and infrastructure.
           </p>
         </div>
@@ -63,7 +63,7 @@ export function StatusHeroSection({ overallStatus }: StatusHeroSectionProps) {
               <div className={`w-2 h-2 rounded-full ${config.dotClass} animate-pulse`} />
             </div>
             <Icon className={`w-5 h-5 ${config.textClass}`} />
-            <span className={`text-lg font-semibold ${config.textClass}`}>
+            <span className={`text-headline font-semibold ${config.textClass}`}>
               {config.label}
             </span>
           </div>

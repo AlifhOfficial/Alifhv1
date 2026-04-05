@@ -81,7 +81,7 @@ export function KycLocationMap({
   if (!isClient || !icon) {
     return (
       <div className="h-[200px] w-full rounded-lg bg-muted flex items-center justify-center">
-        <span className="text-sm text-muted-foreground">Loading map...</span>
+        <span className="text-subhead text-muted-foreground">Loading map...</span>
       </div>
     );
   }
@@ -101,13 +101,13 @@ export function KycLocationMap({
         />
         <Marker position={position} icon={icon}>
           <Popup>
-            <div className="text-sm">
+            <div className="text-subhead">
               <p className="font-medium">{locationLabel}</p>
-              <p className="text-muted-foreground text-xs">
+              <p className="text-muted-foreground text-caption1">
                 {latitude.toFixed(4)}, {longitude.toFixed(4)}
               </p>
               {isVpnOrTor && (
-                <p className="text-red-600 text-xs font-medium mt-1">
+                <p className="text-red-600 text-caption1 font-medium mt-1">
                   ⚠️ VPN/Tor Detected
                 </p>
               )}
@@ -117,7 +117,7 @@ export function KycLocationMap({
       </MapContainer>
       
       {/* Coordinates overlay */}
-      <div className="absolute bottom-2 left-2 bg-background/90 backdrop-blur px-2 py-1 rounded text-xs text-muted-foreground">
+      <div className="absolute bottom-2 left-2 bg-background/90 backdrop-blur px-2 py-1 rounded text-caption1 text-muted-foreground">
         {latitude.toFixed(4)}, {longitude.toFixed(4)}
       </div>
     </div>

@@ -31,7 +31,7 @@ const years = Array.from({ length: currentYearFuel - 1900 + 2 }, (_, i) => curre
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <h3 className="text-[15px] font-bold tracking-tight text-foreground">{title}</h3>
+    <h3 className="text-subhead font-bold tracking-tight text-foreground">{title}</h3>
   )
 }
 
@@ -49,12 +49,12 @@ function FieldWrapper({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between">
-        <label className="text-sm font-semibold text-muted-foreground/70">
+        <label className="text-subhead font-semibold text-muted-foreground/70">
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
         {hint && (
-          <span className="text-xs text-muted-foreground/70">{hint}</span>
+          <span className="text-caption1 text-muted-foreground/70">{hint}</span>
         )}
       </div>
       {children}
@@ -81,7 +81,7 @@ function PillOptions({
           type="button"
           onClick={() => onChange(opt.value)}
           className={cn(
-            "h-11 px-3 rounded-lg text-sm font-medium transition-colors",
+            "h-11 px-3 rounded-lg text-subhead font-medium transition-colors",
             value === opt.value
               ? 'bg-foreground text-background'
               : 'bg-muted text-muted-foreground hover:text-foreground'
@@ -110,7 +110,7 @@ function NumberInput({
   return (
     <div className="relative">
       {prefix && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/70">
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 text-caption1 text-muted-foreground/70">
           {prefix}
         </span>
       )}
@@ -122,14 +122,14 @@ function NumberInput({
         placeholder={placeholder}
         className={cn(
           "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-foreground",
-          "outline-none transition-colors text-sm font-medium",
+          "outline-none transition-colors text-subhead font-medium",
           "placeholder:text-muted-foreground/40",
           prefix ? "pl-12" : "px-0",
           suffix ? "pr-14" : "pr-0"
         )}
       />
       {suffix && (
-        <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/70">
+        <span className="absolute right-0 top-1/2 -translate-y-1/2 text-caption1 text-muted-foreground/70">
           {suffix}
         </span>
       )}
@@ -160,9 +160,9 @@ function FuelPricesBanner({
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Fuel className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-medium">UAE Fuel Prices</span>
+          <span className="text-subhead font-medium">UAE Fuel Prices</span>
         </div>
-        <span className="text-xs text-muted-foreground">
+        <span className="text-caption1 text-muted-foreground">
           {new Date(UAE_FUEL_PRICES.effectiveDate).toLocaleDateString('en-AE', { month: 'short', year: 'numeric' })}
         </span>
       </div>
@@ -178,8 +178,8 @@ function FuelPricesBanner({
                 : "border-border/40 bg-background/40 hover:border-foreground/30"
             )}
           >
-            <div className="text-[11px] text-muted-foreground mb-0.5">{fuel.name}</div>
-            <div className="text-sm font-bold">{fuel.price.toFixed(2)}</div>
+            <div className="text-caption2 text-muted-foreground mb-0.5">{fuel.name}</div>
+            <div className="text-subhead font-bold">{fuel.price.toFixed(2)}</div>
             <div className="text-[10px] text-muted-foreground">AED/L</div>
           </button>
         ))}
@@ -312,8 +312,8 @@ export function FuelCostCalculator() {
       
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight mb-1">Fuel Cost Calculator</h1>
-        <p className="text-sm text-muted-foreground/70">
+        <h1 className="text-title2 font-bold tracking-tight mb-1">Fuel Cost Calculator</h1>
+        <p className="text-subhead text-muted-foreground/70">
           Estimate your driving costs with real UAE fuel prices
         </p>
       </div>
@@ -410,7 +410,7 @@ export function FuelCostCalculator() {
           <button
             onClick={() => setStep(2)}
             disabled={!isStep1Valid}
-            className="w-full py-3.5 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors disabled:opacity-40"
+            className="w-full py-3.5 rounded-full bg-foreground text-background text-subhead font-semibold hover:bg-foreground/90 transition-colors disabled:opacity-40"
           >
             Continue
           </button>
@@ -427,7 +427,7 @@ export function FuelCostCalculator() {
             <button
               onClick={() => setMode('estimate')}
               className={cn(
-                "flex-1 py-2.5 text-sm font-medium rounded-md transition-colors",
+                "flex-1 py-2.5 text-subhead font-medium rounded-md transition-colors",
                 mode === 'estimate' ? 'bg-background shadow-sm' : 'text-muted-foreground'
               )}
             >
@@ -436,7 +436,7 @@ export function FuelCostCalculator() {
             <button
               onClick={() => setMode('trip')}
               className={cn(
-                "flex-1 py-2.5 text-sm font-medium rounded-md transition-colors",
+                "flex-1 py-2.5 text-subhead font-medium rounded-md transition-colors",
                 mode === 'trip' ? 'bg-background shadow-sm' : 'text-muted-foreground'
               )}
             >
@@ -481,7 +481,7 @@ export function FuelCostCalculator() {
 
                 {/* Quick Routes */}
                 <div className="space-y-2">
-                  <label className="text-xs text-muted-foreground/70">Popular Routes</label>
+                  <label className="text-caption1 text-muted-foreground/70">Popular Routes</label>
                   <div className="flex flex-wrap gap-2">
                     {UAE_ROUTES.slice(0, 4).map(route => (
                       <button
@@ -489,7 +489,7 @@ export function FuelCostCalculator() {
                         type="button"
                         onClick={() => update('tripDistance', String(route.distance))}
                         className={cn(
-                          "px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
+                          "px-3 py-1.5 rounded-full text-caption1 font-medium transition-colors",
                           formData.tripDistance === String(route.distance)
                             ? 'bg-foreground text-background'
                             : 'bg-muted text-muted-foreground hover:text-foreground'
@@ -519,14 +519,14 @@ export function FuelCostCalculator() {
           <div className="flex gap-3">
             <button
               onClick={() => setStep(1)}
-              className="flex-1 py-3.5 rounded-full bg-muted text-muted-foreground text-sm font-semibold hover:text-foreground transition-colors"
+              className="flex-1 py-3.5 rounded-full bg-muted text-muted-foreground text-subhead font-semibold hover:text-foreground transition-colors"
             >
               Back
             </button>
             <button
               onClick={() => mode === 'trip' ? handleCalculate() : setStep(3)}
               disabled={!isStep2Valid}
-              className="flex-[2] py-3.5 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors disabled:opacity-40"
+              className="flex-[2] py-3.5 rounded-full bg-foreground text-background text-subhead font-semibold hover:bg-foreground/90 transition-colors disabled:opacity-40"
             >
               {mode === 'trip' ? 'Calculate Trip Cost' : 'Continue'}
             </button>
@@ -622,13 +622,13 @@ export function FuelCostCalculator() {
           <div className="flex gap-3">
             <button
               onClick={() => setStep(2)}
-              className="flex-1 py-3.5 rounded-full bg-muted text-muted-foreground text-sm font-semibold hover:text-foreground transition-colors"
+              className="flex-1 py-3.5 rounded-full bg-muted text-muted-foreground text-subhead font-semibold hover:text-foreground transition-colors"
             >
               Back
             </button>
             <button
               onClick={handleCalculate}
-              className="flex-[2] py-3.5 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors"
+              className="flex-[2] py-3.5 rounded-full bg-foreground text-background text-subhead font-semibold hover:bg-foreground/90 transition-colors"
             >
               Calculate Costs
             </button>
@@ -643,7 +643,7 @@ export function FuelCostCalculator() {
             <SectionHeader title="Your Results" />
             <button
               onClick={handleReset}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1.5 text-caption1 text-muted-foreground hover:text-foreground transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Start Over
@@ -653,11 +653,11 @@ export function FuelCostCalculator() {
           {/* Trip Result */}
           {tripResult && (
             <div className="rounded-xl border border-border/40 backdrop-blur-sm bg-background/60 p-6 text-center">
-              <p className="text-sm text-muted-foreground mb-2">
+              <p className="text-subhead text-muted-foreground mb-2">
                 {formData.tripType === 'round_trip' ? 'Round Trip' : 'One Way'} Cost
               </p>
-              <p className="text-4xl font-bold mb-1">{formatAED(tripResult.cost)}</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-display font-bold mb-1">{formatAED(tripResult.cost)}</p>
+              <p className="text-subhead text-muted-foreground">
                 {tripResult.distance} km · {tripResult.fuelNeeded}L fuel needed
               </p>
             </div>
@@ -668,13 +668,13 @@ export function FuelCostCalculator() {
             <>
               {/* Primary Result - Glass Card */}
               <div className="rounded-xl border border-border/40 backdrop-blur-sm bg-background/60 p-6 text-center">
-                <p className="text-sm text-muted-foreground mb-2">
+                <p className="text-subhead text-muted-foreground mb-2">
                   {TIME_PERIODS.find(p => p.value === formData.timePeriod)?.label} Cost
                 </p>
-                <p className="text-4xl font-bold mb-1">
+                <p className="text-display font-bold mb-1">
                   {formatAED(result.totalCost)}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-subhead text-muted-foreground">
                   {result.fuelConsumed}L fuel · {result.adjustedEfficiency} L/100km adjusted
                 </p>
               </div>
@@ -682,40 +682,40 @@ export function FuelCostCalculator() {
               {/* Breakdown */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl border border-border/40 bg-sidebar p-4">
-                  <p className="text-xs text-muted-foreground mb-1">Per Day</p>
-                  <p className="text-lg font-semibold">{formatAED(result.costPerDay)}</p>
+                  <p className="text-caption1 text-muted-foreground mb-1">Per Day</p>
+                  <p className="text-headline font-semibold">{formatAED(result.costPerDay)}</p>
                 </div>
                 <div className="rounded-xl border border-border/40 bg-sidebar p-4">
-                  <p className="text-xs text-muted-foreground mb-1">Per Week</p>
-                  <p className="text-lg font-semibold">{formatAED(result.costPerWeek)}</p>
+                  <p className="text-caption1 text-muted-foreground mb-1">Per Week</p>
+                  <p className="text-headline font-semibold">{formatAED(result.costPerWeek)}</p>
                 </div>
                 <div className="rounded-xl border border-border/40 bg-sidebar p-4">
-                  <p className="text-xs text-muted-foreground mb-1">Per Month</p>
-                  <p className="text-lg font-semibold">{formatAED(result.costPerMonth)}</p>
+                  <p className="text-caption1 text-muted-foreground mb-1">Per Month</p>
+                  <p className="text-headline font-semibold">{formatAED(result.costPerMonth)}</p>
                 </div>
                 <div className="rounded-xl border border-border/40 bg-sidebar p-4">
-                  <p className="text-xs text-muted-foreground mb-1">Per Year</p>
-                  <p className="text-lg font-semibold">{formatAED(result.costPerYear)}</p>
+                  <p className="text-caption1 text-muted-foreground mb-1">Per Year</p>
+                  <p className="text-headline font-semibold">{formatAED(result.costPerYear)}</p>
                 </div>
               </div>
 
               {/* Stats */}
               <div className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-3">
                 <div className="flex justify-between items-center py-2 border-b border-border/30">
-                  <span className="text-sm text-muted-foreground">Cost per km</span>
-                  <span className="text-sm font-semibold">AED {result.costPerKm.toFixed(2)}</span>
+                  <span className="text-subhead text-muted-foreground">Cost per km</span>
+                  <span className="text-subhead font-semibold">AED {result.costPerKm.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-border/30">
-                  <span className="text-sm text-muted-foreground">Tank Fills</span>
-                  <span className="text-sm font-semibold">{result.tankFills}x</span>
+                  <span className="text-subhead text-muted-foreground">Tank Fills</span>
+                  <span className="text-subhead font-semibold">{result.tankFills}x</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-border/30">
-                  <span className="text-sm text-muted-foreground">Range per Tank</span>
-                  <span className="text-sm font-semibold">{result.rangePerTank} km</span>
+                  <span className="text-subhead text-muted-foreground">Range per Tank</span>
+                  <span className="text-subhead font-semibold">{result.rangePerTank} km</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-sm text-muted-foreground">CO2 Emissions</span>
-                  <span className="text-sm font-semibold">{result.co2Emissions} kg</span>
+                  <span className="text-subhead text-muted-foreground">CO2 Emissions</span>
+                  <span className="text-subhead font-semibold">{result.co2Emissions} kg</span>
                 </div>
               </div>
 
@@ -729,13 +729,13 @@ export function FuelCostCalculator() {
                       <TrendingDown className="w-5 h-5 text-muted-foreground" />
                     )}
                     <div>
-                      <p className="text-sm font-semibold">
+                      <p className="text-subhead font-semibold">
                         {result.comparison.isOverspending 
                           ? `You may be overspending by ${formatAED(result.comparison.difference)}/month`
                           : `You're spending ${formatAED(result.comparison.difference)}/month less than calculated`
                         }
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-caption1 text-muted-foreground">
                         {result.comparison.percentDiff.toFixed(0)}% {result.comparison.isOverspending ? 'above' : 'below'} calculated estimate
                       </p>
                     </div>
@@ -753,9 +753,9 @@ export function FuelCostCalculator() {
                   
                   {/* Summary */}
                   <div className="rounded-xl border border-border/40 bg-sidebar p-4">
-                    <p className="text-sm">{suggestions.summary}</p>
+                    <p className="text-subhead">{suggestions.summary}</p>
                     {suggestions.potentialMonthlySaving > 0 && (
-                      <p className="text-xs text-muted-foreground mt-2">
+                      <p className="text-caption1 text-muted-foreground mt-2">
                         Potential monthly savings: <span className="font-semibold">{formatAED(suggestions.potentialMonthlySaving)}</span>
                       </p>
                     )}
@@ -770,12 +770,12 @@ export function FuelCostCalculator() {
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
-                            <p className="text-sm font-semibold mb-1">{suggestion.title}</p>
-                            <p className="text-xs text-muted-foreground">{suggestion.description}</p>
+                            <p className="text-subhead font-semibold mb-1">{suggestion.title}</p>
+                            <p className="text-caption1 text-muted-foreground">{suggestion.description}</p>
                           </div>
                           {suggestion.potentialSaving > 0 && (
                             <div className="text-right shrink-0">
-                              <p className="text-sm font-semibold">
+                              <p className="text-subhead font-semibold">
                                 -{formatAED(suggestion.potentialSaving)}
                               </p>
                               <p className="text-[10px] text-muted-foreground">/month</p>

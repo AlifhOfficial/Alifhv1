@@ -22,7 +22,7 @@ import { ImageUpload } from '@/components/ui/forms/image-upload';
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <h3 className="text-[15px] font-bold tracking-tight text-sidebar-foreground">{title}</h3>
+    <h3 className="text-subhead font-bold tracking-tight text-sidebar-foreground">{title}</h3>
   );
 }
 
@@ -42,17 +42,17 @@ function FieldWrapper({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between">
-        <label className="text-sm font-semibold text-sidebar-foreground/70">
+        <label className="text-subhead font-semibold text-sidebar-foreground/70">
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
         {hint && !error && (
-          <span className="text-xs text-sidebar-foreground/70">{hint}</span>
+          <span className="text-caption1 text-sidebar-foreground/70">{hint}</span>
         )}
       </div>
       {children}
       {error && (
-        <p className="text-xs font-semibold text-red-500">{error}</p>
+        <p className="text-caption1 font-semibold text-red-500">{error}</p>
       )}
     </div>
   );
@@ -186,12 +186,12 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                 placeholder="85,000"
                 min={0}
                 className={cn(
-                  "w-full h-12 bg-transparent px-0 pr-14 text-sm font-medium text-sidebar-foreground",
+                  "w-full h-12 bg-transparent px-0 pr-14 text-subhead font-medium text-sidebar-foreground",
                   "outline-none transition-colors",
                   "placeholder:text-sidebar-foreground/40"
                 )}
               />
-              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-sidebar-foreground/70">
+              <span className="absolute right-0 top-1/2 -translate-y-1/2 text-caption1 text-sidebar-foreground/70">
                 AED
               </span>
             </div>
@@ -203,7 +203,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               onClick={() => updateField('isNegotiable', !negotiable)}
               className={cn(
                 'flex items-center justify-between w-full h-12 px-0 transition-colors',
-                'text-sm font-medium'
+                'text-subhead font-medium'
               )}
             >
               <span className="text-sidebar-foreground">Allow offers</span>
@@ -240,7 +240,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               onChange={(e) => updateField('city', e.target.value)}
               placeholder="Jumeirah"
               className={cn(
-                "w-full h-12 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "w-full h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -265,7 +265,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
           deleteOnRemove={true}
           vin={data.vin}
         />
-        {errors.images && <p className="text-xs font-semibold text-red-500 mt-3">{errors.images}</p>}
+        {errors.images && <p className="text-caption1 font-semibold text-red-500 mt-3">{errors.images}</p>}
         </div>
       </section>
 
@@ -285,7 +285,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                   onClick={() => generateAIDescription(false)}
                   disabled={isGenerating}
                   className={cn(
-                    "flex items-center gap-2 text-sm font-semibold transition-colors",
+                    "flex items-center gap-2 text-subhead font-semibold transition-colors",
                     isGenerating 
                       ? "text-muted-foreground cursor-not-allowed" 
                       : "text-primary hover:text-primary/80"
@@ -309,7 +309,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                   onClick={() => generateAIDescription(true)}
                   disabled={isGenerating}
                   className={cn(
-                    "flex items-center gap-2 text-sm font-semibold transition-colors",
+                    "flex items-center gap-2 text-subhead font-semibold transition-colors",
                     isGenerating 
                       ? "text-muted-foreground cursor-not-allowed" 
                       : "text-primary hover:text-primary/80"
@@ -332,7 +332,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
 
             {/* Error message */}
             {generateError && (
-              <p className="text-xs font-semibold text-red-500">{generateError}</p>
+              <p className="text-caption1 font-semibold text-red-500">{generateError}</p>
             )}
 
             <textarea
@@ -343,7 +343,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               maxLength={2000}
               className={cn(
                 "w-full bg-transparent border-2 border-sidebar-border rounded-xl focus:border-primary",
-                "outline-none transition-colors px-4 py-3 text-sm font-medium text-sidebar-foreground resize-none",
+                "outline-none transition-colors px-4 py-3 text-subhead font-medium text-sidebar-foreground resize-none",
                 "placeholder:text-sidebar-foreground/40"
               )}
             />
@@ -353,10 +353,10 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
         {/* Owner Notes */}
         <div className="space-y-4">
           <div className="flex items-baseline justify-between">
-            <label className="text-sm font-semibold text-sidebar-foreground/70">
+            <label className="text-subhead font-semibold text-sidebar-foreground/70">
               Owner Notes
             </label>
-            <span className="text-xs text-sidebar-foreground/70">max 10</span>
+            <span className="text-caption1 text-sidebar-foreground/70">max 10</span>
           </div>
           
           {/* Notes list */}
@@ -369,7 +369,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                 >
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                    <p className="text-sm font-medium text-sidebar-foreground">{note}</p>
+                    <p className="text-subhead font-medium text-sidebar-foreground">{note}</p>
                   </div>
                   <button
                     type="button"
@@ -398,7 +398,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               }}
               placeholder="Add a short note (e.g. Full service history)"
               className={cn(
-                "flex-1 h-12 bg-transparent px-0 text-sm font-medium text-sidebar-foreground",
+                "flex-1 h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -407,13 +407,13 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               type="button"
               onClick={addOwnerRemark}
               disabled={!noteDraft.trim() || ownerRemarks.length >= 10}
-              className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors disabled:opacity-40"
+              className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-caption1 font-semibold hover:bg-primary/90 transition-colors disabled:opacity-40"
             >
               Add
             </button>
           </div>
 
-          {errors.ownerRemarks && <p className="text-xs font-semibold text-red-500">{errors.ownerRemarks}</p>}
+          {errors.ownerRemarks && <p className="text-caption1 font-semibold text-red-500">{errors.ownerRemarks}</p>}
         </div>
         </div>
       </section>

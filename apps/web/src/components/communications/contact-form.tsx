@@ -135,11 +135,11 @@ export function ContactForm({
       <div className="rounded-xl border border-border/40 bg-sidebar p-6">
         <div className="flex flex-col items-center text-center gap-3">
           <div className="w-10 h-10 rounded-full bg-sidebar-accent flex items-center justify-center">
-            <span className="text-lg">✓</span>
+            <span className="text-headline">✓</span>
           </div>
           <div>
-            <p className="text-[15px] font-bold tracking-tight text-foreground">Message Sent</p>
-            <p className="text-sm text-muted-foreground leading-relaxed mt-1">
+            <p className="text-subhead font-bold tracking-tight text-foreground">Message Sent</p>
+            <p className="text-subhead text-muted-foreground leading-relaxed mt-1">
               We'll get back to you soon
             </p>
           </div>
@@ -147,7 +147,7 @@ export function ContactForm({
             onClick={() => setIsSubmitted(false)}
             className={cn(
               'mt-2 px-4 py-2 rounded-md touch-manipulation',
-              'text-[14px] font-medium tracking-tight transition-colors duration-100',
+              'text-subhead font-medium tracking-tight transition-colors duration-100',
               'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             )}
           >
@@ -162,11 +162,11 @@ export function ContactForm({
     <div className="space-y-10">
       {/* Type Selector */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">
           01. Topic
         </h3>
         <div className="rounded-xl border border-border/40 bg-sidebar p-5">
-          <p className="text-sm text-foreground leading-relaxed mb-4">
+          <p className="text-subhead text-foreground leading-relaxed mb-4">
             Select the type of inquiry:
           </p>
           <div className="flex flex-wrap gap-1">
@@ -177,7 +177,7 @@ export function ContactForm({
                 onClick={() => setType(value)}
                 className={cn(
                   'px-3 py-2 rounded-md touch-manipulation',
-                  'text-[14px] font-medium tracking-tight transition-colors duration-100',
+                  'text-subhead font-medium tracking-tight transition-colors duration-100',
                   type === value
                     ? 'bg-sidebar-accent text-sidebar-foreground font-semibold'
                     : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
@@ -192,7 +192,7 @@ export function ContactForm({
 
       {/* Form Fields */}
       <section>
-        <h3 className="text-[15px] font-bold tracking-tight text-foreground mb-3">
+        <h3 className="text-subhead font-bold tracking-tight text-foreground mb-3">
           02. Your Details
         </h3>
         
@@ -200,27 +200,27 @@ export function ContactForm({
           <div className="rounded-xl border border-border/40 bg-sidebar">
             {/* Name */}
             <div className="py-3 px-5 border-b border-border/20">
-              <p className="text-sm font-semibold text-muted-foreground/70 mb-1.5">Name</p>
+              <p className="text-subhead font-semibold text-muted-foreground/70 mb-1.5">Name</p>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
                 maxLength={100}
-                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                 required
               />
             </div>
 
             {/* Email */}
             <div className="py-3 px-5 border-b border-border/20">
-              <p className="text-sm font-semibold text-muted-foreground/70 mb-1.5">Email</p>
+              <p className="text-subhead font-semibold text-muted-foreground/70 mb-1.5">Email</p>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                 required
               />
             </div>
@@ -228,28 +228,28 @@ export function ContactForm({
             {/* Phone (Optional) */}
             <div className="py-3 px-5 border-b border-border/20">
               <div className="flex items-center justify-between mb-1.5">
-                <p className="text-sm font-semibold text-muted-foreground/70">Phone</p>
-                <span className="text-xs text-muted-foreground/50">Optional</span>
+                <p className="text-subhead font-semibold text-muted-foreground/70">Phone</p>
+                <span className="text-caption1 text-muted-foreground/50">Optional</span>
               </div>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+971 50 123 4567"
-                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
               />
             </div>
 
             {/* Subject */}
             <div className="py-3 px-5 border-b border-border/20">
-              <p className="text-sm font-semibold text-muted-foreground/70 mb-1.5">Subject</p>
+              <p className="text-subhead font-semibold text-muted-foreground/70 mb-1.5">Subject</p>
               <input
                 type="text"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="What's this about?"
                 maxLength={150}
-                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                 required
               />
             </div>
@@ -257,8 +257,8 @@ export function ContactForm({
             {/* Message */}
             <div className="py-3 px-5">
               <div className="flex items-center justify-between mb-1.5">
-                <p className="text-sm font-semibold text-muted-foreground/70">Message</p>
-                <span className="text-xs text-muted-foreground/50 tabular-nums">{message.length}/5000</span>
+                <p className="text-subhead font-semibold text-muted-foreground/70">Message</p>
+                <span className="text-caption1 text-muted-foreground/50 tabular-nums">{message.length}/5000</span>
               </div>
               <textarea
                 value={message}
@@ -266,7 +266,7 @@ export function ContactForm({
                 placeholder="Tell us more..."
                 rows={5}
                 maxLength={5000}
-                className="w-full bg-muted/20 rounded-lg px-3 py-2.5 text-sm font-medium resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full bg-muted/20 rounded-lg px-3 py-2.5 text-subhead font-medium resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                 required
               />
             </div>
@@ -277,7 +277,7 @@ export function ContactForm({
             type="submit"
             disabled={isSubmitting}
             className={cn(
-              "w-full mt-6 h-12 rounded-xl text-sm font-semibold transition-all",
+              "w-full mt-6 h-12 rounded-xl text-subhead font-semibold transition-all",
               "bg-primary text-primary-foreground",
               "hover:bg-primary/90 active:scale-[0.99] will-change-transform",
               "disabled:opacity-50 disabled:cursor-not-allowed"

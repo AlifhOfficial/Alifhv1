@@ -29,11 +29,11 @@ interface BrandAvatarProps {
 }
 
 const sizeClasses = {
-  xs: 'w-6 h-6 text-xs',
-  sm: 'w-8 h-8 text-xs',
-  md: 'w-10 h-10 text-sm',
-  lg: 'w-12 h-12 text-base',
-  xl: 'w-16 h-16 text-lg',
+  xs: 'w-6 h-6 text-caption1',
+  sm: 'w-8 h-8 text-caption1',
+  md: 'w-10 h-10 text-subhead',
+  lg: 'w-12 h-12 text-callout',
+  xl: 'w-16 h-16 text-headline',
 };
 
 /**

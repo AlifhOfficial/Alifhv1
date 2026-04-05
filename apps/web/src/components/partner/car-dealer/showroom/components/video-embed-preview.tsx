@@ -50,7 +50,7 @@ export function VideoEmbedPreview({ url, aspectRatio = 'aspect-video' }: VideoEm
       <div className={cn("relative overflow-hidden rounded-xl bg-muted/30 border border-border/40 flex items-center justify-center", aspectRatio)}>
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <Video className="w-5 h-5" />
-          <span className="text-xs">Video preview will appear here</span>
+          <span className="text-caption1">Video preview will appear here</span>
         </div>
       </div>
     );
@@ -61,7 +61,7 @@ export function VideoEmbedPreview({ url, aspectRatio = 'aspect-video' }: VideoEm
       <div className={cn("relative overflow-hidden rounded-xl bg-muted/30 border border-border/40 flex items-center justify-center", aspectRatio)}>
         <div className="flex flex-col items-center gap-2 text-muted-foreground text-center px-4">
           <Video className="w-5 h-5" />
-          <span className="text-xs">Paste a YouTube or Vimeo URL to preview</span>
+          <span className="text-caption1">Paste a YouTube or Vimeo URL to preview</span>
           <span className="text-[10px] text-muted-foreground/60">e.g. youtube.com/watch?v=... or vimeo.com/...</span>
         </div>
       </div>

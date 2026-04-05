@@ -84,7 +84,7 @@ export function VideoUpload({
                   ) : (
                     <RefreshCw className="w-4 h-4 text-white" />
                   )}
-                  <span className="text-xs text-white font-medium">Replace</span>
+                  <span className="text-caption1 text-white font-medium">Replace</span>
                 </button>
                 <button
                   onClick={onRemove}
@@ -92,7 +92,7 @@ export function VideoUpload({
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm hover:bg-red-500/50 transition-colors"
                 >
                   <X className="w-4 h-4 text-white" />
-                  <span className="text-xs text-white font-medium">Remove</span>
+                  <span className="text-caption1 text-white font-medium">Remove</span>
                 </button>
               </div>
               {hasSavedVideo && (
@@ -132,7 +132,7 @@ export function VideoUpload({
             ) : (
               <div className="flex flex-col items-center gap-1 text-muted-foreground">
                 <Upload className="w-5 h-5" />
-                <span className="text-xs">{label}</span>
+                <span className="text-caption1">{label}</span>
                 <span className="text-[10px] text-muted-foreground/50">Max 50MB • 720p/1080p</span>
               </div>
             )}

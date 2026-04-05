@@ -103,8 +103,8 @@ export function ListingsContent({
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
         <X className="w-5 h-5 text-destructive mb-3" strokeWidth={2} />
-        <h3 className="text-sm font-semibold tracking-tight">Something went wrong</h3>
-        <p className="text-xs text-muted-foreground mt-1 max-w-xs">{error.message}</p>
+        <h3 className="text-subhead font-semibold tracking-tight">Something went wrong</h3>
+        <p className="text-caption1 text-muted-foreground mt-1 max-w-xs">{error.message}</p>
         <Button 
           variant="outline" 
           size="sm" 
@@ -128,8 +128,8 @@ export function ListingsContent({
           ) : (
             <Package className="w-8 h-8 mx-auto mb-4 text-muted-foreground/60" strokeWidth={1.5} />
           )}
-          <h3 className="text-sm font-semibold text-foreground mb-1">{showFilters ? 'No matches found' : 'No listings yet'}</h3>
-          <p className="text-xs text-muted-foreground/60 leading-relaxed mb-4">
+          <h3 className="text-subhead font-semibold text-foreground mb-1">{showFilters ? 'No matches found' : 'No listings yet'}</h3>
+          <p className="text-caption1 text-muted-foreground/60 leading-relaxed mb-4">
             {showFilters ? 'Try adjusting your search or filters.' : 'Create your first listing to get started.'}
           </p>
           {showFilters ? (

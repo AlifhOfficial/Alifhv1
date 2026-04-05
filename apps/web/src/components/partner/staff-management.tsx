@@ -283,7 +283,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
       {/* Back */}
       <Link 
         href="/partner-dashboard/staff"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+        className="inline-flex items-center gap-1.5 text-subhead text-muted-foreground hover:text-foreground transition-colors mb-6"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Staff
@@ -293,8 +293,8 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
       <header className="mb-16">
         <div className="flex items-start justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Team Management</h1>
-            <p className="text-sm text-muted-foreground mt-2">
+            <h1 className="text-title2 font-semibold tracking-tight">Team Management</h1>
+            <p className="text-subhead text-muted-foreground mt-2">
               Manage staff members and access levels
             </p>
           </div>
@@ -309,7 +309,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
             </button>
             <button
               onClick={() => setShowInviteForm(!showInviteForm)}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white text-subhead font-medium hover:bg-blue-700 transition-colors"
             >
               <UserPlus className="w-4 h-4" />
               Invite
@@ -320,17 +320,17 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
         {/* Stats */}
         <div className="flex items-center gap-10">
           <div>
-            <span className="text-xs text-muted-foreground">Active</span>
-            <p className="text-xl font-semibold tracking-tight mt-1 text-green-500">{activeTeam.length}</p>
+            <span className="text-caption1 text-muted-foreground">Active</span>
+            <p className="text-title3 font-semibold tracking-tight mt-1 text-green-500">{activeTeam.length}</p>
           </div>
           <div>
-            <span className="text-xs text-muted-foreground">Pending</span>
-            <p className="text-xl font-semibold tracking-tight mt-1 text-yellow-500">{pendingInvites.length}</p>
+            <span className="text-caption1 text-muted-foreground">Pending</span>
+            <p className="text-title3 font-semibold tracking-tight mt-1 text-yellow-500">{pendingInvites.length}</p>
           </div>
           {formerTeam.length > 0 && (
             <div>
-              <span className="text-xs text-muted-foreground">Former</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-muted-foreground">{formerTeam.length}</p>
+              <span className="text-caption1 text-muted-foreground">Former</span>
+              <p className="text-title3 font-semibold tracking-tight mt-1 text-muted-foreground">{formerTeam.length}</p>
             </div>
           )}
         </div>
@@ -340,7 +340,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
       {showInviteForm && (
         <div className="mb-12 p-6 rounded-xl bg-secondary/30">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-sm font-medium tracking-tight">Invite New Member</h3>
+            <h3 className="text-subhead font-medium tracking-tight">Invite New Member</h3>
             <button
               onClick={() => setShowInviteForm(false)}
               className="p-1 rounded hover:bg-secondary"
@@ -351,18 +351,18 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="text-xs text-muted-foreground mb-2 block">Email</label>
+              <label className="text-caption1 text-muted-foreground mb-2 block">Email</label>
               <input
                 type="email"
                 value={inviteFormData.email}
                 onChange={(e) => setInviteFormData({ ...inviteFormData, email: e.target.value })}
                 placeholder="colleague@company.ae"
-                className="w-full h-10 px-3 rounded-xl bg-background text-sm focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+                className="w-full h-10 px-3 rounded-xl bg-background text-subhead focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
               />
             </div>
 
             <div>
-              <label className="text-xs text-muted-foreground mb-2 block">Role</label>
+              <label className="text-caption1 text-muted-foreground mb-2 block">Role</label>
               <Select value={inviteFormData.role} onValueChange={(value) => setInviteFormData({ ...inviteFormData, role: value })}>
                 <SelectTrigger className="h-10 rounded-xl bg-background border-0">
                   <SelectValue placeholder="Select role" />
@@ -375,24 +375,24 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
             </div>
 
             <div>
-              <label className="text-xs text-muted-foreground mb-2 block">Title (optional)</label>
+              <label className="text-caption1 text-muted-foreground mb-2 block">Title (optional)</label>
               <input
                 type="text"
                 value={inviteFormData.title}
                 onChange={(e) => setInviteFormData({ ...inviteFormData, title: e.target.value })}
                 placeholder="Sales Manager"
-                className="w-full h-10 px-3 rounded-xl bg-background text-sm focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+                className="w-full h-10 px-3 rounded-xl bg-background text-subhead focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
               />
             </div>
 
             <div>
-              <label className="text-xs text-muted-foreground mb-2 block">Department (optional)</label>
+              <label className="text-caption1 text-muted-foreground mb-2 block">Department (optional)</label>
               <input
                 type="text"
                 value={inviteFormData.department}
                 onChange={(e) => setInviteFormData({ ...inviteFormData, department: e.target.value })}
                 placeholder="Sales"
-                className="w-full h-10 px-3 rounded-xl bg-background text-sm focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+                className="w-full h-10 px-3 rounded-xl bg-background text-subhead focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
               />
             </div>
           </div>
@@ -401,7 +401,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
             <button
               onClick={handleInvite}
               disabled={inviteMutation.isPending || !inviteFormData.email}
-              className="px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded-full bg-blue-600 text-white text-subhead font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
               {inviteMutation.isPending ? 'Sending...' : 'Send Invite'}
             </button>
@@ -410,7 +410,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                 setShowInviteForm(false);
                 setInviteFormData({ email: '', role: 'staff', title: '', department: '' });
               }}
-              className="px-4 py-2 rounded-full text-sm hover:bg-secondary transition-colors"
+              className="px-4 py-2 rounded-full text-subhead hover:bg-secondary transition-colors"
             >
               Cancel
             </button>
@@ -428,7 +428,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
+            className="w-full h-10 pl-10 pr-8 rounded-xl bg-secondary/50 text-subhead placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/10 transition-all"
           />
           {searchQuery && (
             <button
@@ -443,7 +443,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="text-caption1 text-muted-foreground hover:text-foreground transition-colors"
           >
             Reset
           </button>
@@ -455,7 +455,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
         <div className="mb-12">
           <div className="flex items-center gap-2 mb-4">
             <Mail className="w-4 h-4 text-yellow-500" />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-caption1 text-muted-foreground">
               {pendingInvites.length} pending invite{pendingInvites.length !== 1 ? 's' : ''}
             </p>
           </div>
@@ -471,8 +471,8 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium tracking-tight truncate">{invite.email}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-subhead font-medium tracking-tight truncate">{invite.email}</p>
+                  <p className="text-caption1 text-muted-foreground">
                     Invited as <span className="capitalize">{invite.role}</span>
                   </p>
                 </div>
@@ -480,14 +480,14 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-yellow-500" />
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-caption1 text-muted-foreground">
                       {new Date(invite.expiresAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
                     </span>
                   </div>
                   <button
                     onClick={() => cancelInviteMutation.mutate(invite.id)}
                     disabled={cancelInviteMutation.isPending}
-                    className="px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                    className="px-3 py-1.5 rounded-lg text-caption1 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors disabled:opacity-50"
                   >
                     Cancel
                   </button>
@@ -500,7 +500,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
 
       {/* Team List */}
       <div className="flex items-center justify-between mb-6">
-        <p className="text-xs text-muted-foreground">
+        <p className="text-caption1 text-muted-foreground">
           {filteredActiveTeam.length} active member{filteredActiveTeam.length !== 1 ? 's' : ''}
         </p>
       </div>
@@ -510,11 +510,11 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
           {searchQuery ? (
             <>
               <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
-              <h3 className="text-lg font-medium tracking-tight">No results</h3>
-              <p className="text-sm text-muted-foreground mt-1">Try a different search</p>
+              <h3 className="text-headline font-medium tracking-tight">No results</h3>
+              <p className="text-subhead text-muted-foreground mt-1">Try a different search</p>
               <button
                 onClick={clearFilters}
-                className="mt-4 text-sm text-foreground hover:underline"
+                className="mt-4 text-subhead text-foreground hover:underline"
               >
                 Clear search
               </button>
@@ -522,11 +522,11 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
           ) : (
             <>
               <User className="w-10 h-10 text-muted-foreground/20 mb-4" />
-              <h3 className="text-lg font-medium tracking-tight">No team members yet</h3>
-              <p className="text-sm text-muted-foreground mt-1">Start by inviting your first member</p>
+              <h3 className="text-headline font-medium tracking-tight">No team members yet</h3>
+              <p className="text-subhead text-muted-foreground mt-1">Start by inviting your first member</p>
               <button
                 onClick={() => setShowInviteForm(true)}
-                className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+                className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white text-subhead font-medium hover:bg-blue-700 transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
                 Invite Member
@@ -550,10 +550,10 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                 />
                 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium tracking-tight truncate">
+                  <p className="text-subhead font-medium tracking-tight truncate">
                     {member.userName || 'Unknown'}
                   </p>
-                  <p className="text-xs text-muted-foreground truncate">
+                  <p className="text-caption1 text-muted-foreground truncate">
                     {member.userEmail || member.email}
                   </p>
                 </div>
@@ -564,7 +564,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                     onValueChange={(newRole) => updateRoleMutation.mutate({ staffId: member.id, role: newRole })}
                     disabled={updateRoleMutation.isPending}
                   >
-                    <SelectTrigger className="w-24 h-8 text-xs font-medium border-0 bg-secondary/50 hover:bg-secondary">
+                    <SelectTrigger className="w-24 h-8 text-caption1 font-medium border-0 bg-secondary/50 hover:bg-secondary">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -575,7 +575,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                   
                   <div className="flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    <span className="text-xs text-muted-foreground hidden sm:block">Active</span>
+                    <span className="text-caption1 text-muted-foreground hidden sm:block">Active</span>
                   </div>
 
                   <button
@@ -596,7 +596,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
         <div className="mt-12 pt-8 border-t border-border/20">
           <button
             onClick={() => setShowFormerStaff(!showFormerStaff)}
-            className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-2 text-caption1 text-muted-foreground hover:text-foreground transition-colors"
           >
             {showFormerStaff ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             {filteredFormerTeam.length} former member{filteredFormerTeam.length !== 1 ? 's' : ''}
@@ -617,23 +617,23 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                   />
                   
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium tracking-tight truncate text-muted-foreground">
+                    <p className="text-subhead font-medium tracking-tight truncate text-muted-foreground">
                       {member.userName || 'Unknown'}
                     </p>
-                    <p className="text-xs text-muted-foreground/70 truncate">
+                    <p className="text-caption1 text-muted-foreground/70 truncate">
                       {member.userEmail || member.email}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-secondary text-muted-foreground capitalize">
+                    <span className="px-2.5 py-1 rounded-md text-caption1 font-medium bg-secondary text-muted-foreground capitalize">
                       Was: {member.role}
                     </span>
                     
                     <div className="flex items-center gap-1.5">
                       <UserMinus className="w-3.5 h-3.5 text-muted-foreground" />
                       {member.leftAt && (
-                        <span className="text-xs text-muted-foreground hidden sm:block">
+                        <span className="text-caption1 text-muted-foreground hidden sm:block">
                           {new Date(member.leftAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
                         </span>
                       )}
@@ -648,15 +648,15 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
 
       {/* Role Info - Collapsible */}
       <div className="mt-12 pt-8 border-t border-border/20">
-        <p className="text-xs text-muted-foreground mb-4">Role permissions</p>
+        <p className="text-caption1 text-muted-foreground mb-4">Role permissions</p>
         <div className="flex flex-wrap gap-4">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md text-xs font-medium bg-purple-500/10 text-purple-600">Owner</span>
-            <span className="text-xs text-muted-foreground">Full access including settings</span>
+            <span className="px-2 py-0.5 rounded-md text-caption1 font-medium bg-purple-500/10 text-purple-600">Owner</span>
+            <span className="text-caption1 text-muted-foreground">Full access including settings</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md text-xs font-medium bg-secondary text-foreground">Staff</span>
-            <span className="text-xs text-muted-foreground">Listings, inquiries, day-to-day tasks</span>
+            <span className="px-2 py-0.5 rounded-md text-caption1 font-medium bg-secondary text-foreground">Staff</span>
+            <span className="text-caption1 text-muted-foreground">Listings, inquiries, day-to-day tasks</span>
           </div>
         </div>
       </div>

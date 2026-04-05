@@ -98,7 +98,7 @@ export function AdminPartnerOperations({
           <button
             onClick={() => performOperation('activate', { partnerId: partner.id })}
             disabled={loading || isCancelled}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-subhead font-medium transition-colors disabled:opacity-50"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
             Activate
@@ -107,7 +107,7 @@ export function AdminPartnerOperations({
           <button
             onClick={() => setShowSuspendModal(true)}
             disabled={loading || isCancelled}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white text-subhead font-medium transition-colors disabled:opacity-50"
           >
             <Ban className="w-4 h-4" />
             Suspend
@@ -119,7 +119,7 @@ export function AdminPartnerOperations({
           <button
             onClick={() => performOperation('unverify', { partnerId: partner.id })}
             disabled={loading}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm font-medium transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-subhead font-medium transition-colors disabled:opacity-50"
           >
             <Shield className="w-4 h-4" />
             Unverify
@@ -128,7 +128,7 @@ export function AdminPartnerOperations({
           <button
             onClick={() => performOperation('verify', { partnerId: partner.id })}
             disabled={loading}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-subhead font-medium transition-colors disabled:opacity-50"
           >
             <Shield className="w-4 h-4" />
             Verify Partner
@@ -144,7 +144,7 @@ export function AdminPartnerOperations({
               }
             }}
             disabled={loading}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-subhead font-medium transition-colors disabled:opacity-50"
           >
             <XCircle className="w-4 h-4" />
             Cancel Partner
@@ -163,7 +163,7 @@ export function AdminPartnerOperations({
             }
           }}
           disabled={loading}
-          className="px-4 py-2.5 rounded-xl border border-border hover:bg-secondary/10 text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="px-4 py-2.5 rounded-xl border border-border hover:bg-secondary/10 text-subhead font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <Star className="w-4 h-4" />
           Update Tier
@@ -176,7 +176,7 @@ export function AdminPartnerOperations({
             if (tag) performOperation('addTag', { partnerId: partner.id, tag });
           }}
           disabled={loading}
-          className="px-4 py-2.5 rounded-xl border border-border hover:bg-secondary/10 text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="px-4 py-2.5 rounded-xl border border-border hover:bg-secondary/10 text-subhead font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <Tag className="w-4 h-4" />
           Add Tag
@@ -189,7 +189,7 @@ export function AdminPartnerOperations({
             if (tag) performOperation('removeTag', { partnerId: partner.id, tag });
           }}
           disabled={loading}
-          className="px-4 py-2.5 rounded-xl border border-border hover:bg-secondary/10 text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="px-4 py-2.5 rounded-xl border border-border hover:bg-secondary/10 text-subhead font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <Tag className="w-4 h-4" />
           Remove Tag
@@ -202,7 +202,7 @@ export function AdminPartnerOperations({
             if (badge) performOperation('addBadge', { partnerId: partner.id, badge });
           }}
           disabled={loading}
-          className="px-4 py-2.5 rounded-xl border border-border hover:bg-secondary/10 text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="px-4 py-2.5 rounded-xl border border-border hover:bg-secondary/10 text-subhead font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <Award className="w-4 h-4" />
           Add Badge
@@ -215,7 +215,7 @@ export function AdminPartnerOperations({
             if (badge) performOperation('removeBadge', { partnerId: partner.id, badge });
           }}
           disabled={loading}
-          className="px-4 py-2.5 rounded-xl border border-border hover:bg-secondary/10 text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="px-4 py-2.5 rounded-xl border border-border hover:bg-secondary/10 text-subhead font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <Award className="w-4 h-4" />
           Remove Badge
@@ -235,7 +235,7 @@ export function AdminPartnerOperations({
             }
           }}
           disabled={loading}
-          className="px-4 py-2.5 rounded-xl border border-red-500/50 text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="px-4 py-2.5 rounded-xl border border-red-500/50 text-subhead font-medium text-red-500 hover:bg-red-500/10 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <Trash2 className="w-4 h-4" />
           Delete Partner
@@ -248,18 +248,18 @@ export function AdminPartnerOperations({
           <div className="bg-card rounded-xl border border-border max-w-md w-full">
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-border">
-              <h3 className="text-lg font-semibold tracking-tight">Suspend Partner</h3>
+              <h3 className="text-headline font-semibold tracking-tight">Suspend Partner</h3>
             </div>
             
             {/* Modal Content */}
             <div className="px-6 py-6 space-y-6">
               <div>
-                <label className="text-xs text-muted-foreground">Partner</label>
-                <p className="text-sm font-medium mt-1">{partner.companyNameLegal}</p>
+                <label className="text-caption1 text-muted-foreground">Partner</label>
+                <p className="text-subhead font-medium mt-1">{partner.companyNameLegal}</p>
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-medium">
+                <label className="text-subhead font-medium">
                   Reason <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -279,14 +279,14 @@ export function AdminPartnerOperations({
                   setShowSuspendModal(false);
                   setSuspendReason('');
                 }}
-                className="flex-1 px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-sm font-medium transition-colors"
+                className="flex-1 px-5 py-2 rounded-full border border-border hover:bg-secondary/10 text-subhead font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSuspend}
                 disabled={loading || !suspendReason.trim()}
-                className="flex-1 px-5 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
+                className="flex-1 px-5 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white text-subhead font-medium transition-colors disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Suspend'}
               </button>

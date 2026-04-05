@@ -71,8 +71,8 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base sm:text-lg font-semibold text-foreground">Staff</h1>
-          <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-0.5">Manage your team members and access</p>
+          <h1 className="text-callout sm:text-headline font-semibold text-foreground">Staff</h1>
+          <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-0.5">Manage your team members and access</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -90,20 +90,20 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
         {stats && (
           <div className="flex items-center gap-10">
             <div>
-              <span className="text-xs text-muted-foreground">Total</span>
-              <p className="text-xl font-semibold tracking-tight mt-1">{stats.totalStaff}</p>
+              <span className="text-caption1 text-muted-foreground">Total</span>
+              <p className="text-title3 font-semibold tracking-tight mt-1">{stats.totalStaff}</p>
             </div>
             <div>
-              <span className="text-xs text-muted-foreground">Active</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-green-500">{stats.activeStaff}</p>
+              <span className="text-caption1 text-muted-foreground">Active</span>
+              <p className="text-title3 font-semibold tracking-tight mt-1 text-green-500">{stats.activeStaff}</p>
             </div>
             <div>
-              <span className="text-xs text-muted-foreground">Pending</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-yellow-500">{stats.pendingInvites}</p>
+              <span className="text-caption1 text-muted-foreground">Pending</span>
+              <p className="text-title3 font-semibold tracking-tight mt-1 text-yellow-500">{stats.pendingInvites}</p>
             </div>
             <div>
-              <span className="text-xs text-muted-foreground">Managers</span>
-              <p className="text-xl font-semibold tracking-tight mt-1 text-blue-500">{stats.managers}</p>
+              <span className="text-caption1 text-muted-foreground">Managers</span>
+              <p className="text-title3 font-semibold tracking-tight mt-1 text-blue-500">{stats.managers}</p>
             </div>
           </div>
         )}
@@ -112,7 +112,7 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
       <div className="flex items-center gap-3 mb-12">
         <Link
           href="/partner-dashboard/staff/manage"
-          className="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-blue-600 text-white text-subhead font-medium hover:bg-blue-700 transition-colors"
         >
           <UserPlus className="w-4 h-4" />
           Manage Team
@@ -152,12 +152,12 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
       {!isLoading && (
         <>
           <div className="flex items-center justify-between mb-6">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-caption1 text-muted-foreground">
               {team.length} team member{team.length !== 1 ? 's' : ''}
             </p>
             <Link
               href="/partner-dashboard/staff/manage"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              className="text-caption1 text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
             >
               View all
               <ArrowRight className="w-3 h-3" />
@@ -167,11 +167,11 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
           {team.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <Users className="w-10 h-10 text-muted-foreground/20 mb-4" />
-              <h3 className="text-lg font-medium tracking-tight">No team members yet</h3>
-              <p className="text-sm text-muted-foreground mt-1">Start by inviting your first staff member</p>
+              <h3 className="text-headline font-medium tracking-tight">No team members yet</h3>
+              <p className="text-subhead text-muted-foreground mt-1">Start by inviting your first staff member</p>
               <Link
                 href="/partner-dashboard/staff/manage"
-                className="mt-6 px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+                className="mt-6 px-4 py-2 rounded-full bg-blue-600 text-white text-subhead font-medium hover:bg-blue-700 transition-colors"
               >
                 Invite Team Member
               </Link>
@@ -193,24 +193,24 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
                     />
                     
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium tracking-tight truncate">
+                      <p className="text-subhead font-medium tracking-tight truncate">
                         {member.userName || 'Unknown'}
                       </p>
-                      <p className="text-xs text-muted-foreground truncate">
+                      <p className="text-caption1 text-muted-foreground truncate">
                         {member.userEmail || member.email}
                       </p>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <span className={cn(
-                        "px-2.5 py-1 rounded-md text-xs font-medium capitalize",
+                        "px-2.5 py-1 rounded-md text-caption1 font-medium capitalize",
                         roleBadge.bg,
                         roleBadge.color
                       )}>
                         {member.role}
                       </span>
                       {member.joinedAt && (
-                        <span className="text-xs text-muted-foreground hidden sm:block">
+                        <span className="text-caption1 text-muted-foreground hidden sm:block">
                           {new Date(member.joinedAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
                         </span>
                       )}
@@ -227,13 +227,13 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
               <div className="flex items-center justify-between mb-6 pt-8 border-t border-border/20">
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-caption1 text-muted-foreground">
                     {invites.length} pending invite{invites.length !== 1 ? 's' : ''}
                   </p>
                 </div>
                 <Link
                   href="/partner-dashboard/staff/manage"
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-caption1 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Manage
                 </Link>
@@ -250,17 +250,17 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium tracking-tight truncate">
+                      <p className="text-subhead font-medium tracking-tight truncate">
                         {invite.email}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-caption1 text-muted-foreground">
                         Invited as <span className="capitalize">{invite.role}</span>
                       </p>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <Clock className="w-3.5 h-3.5 text-yellow-500" />
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-caption1 text-muted-foreground">
                         Expires {new Date(invite.expiresAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
                       </span>
                     </div>

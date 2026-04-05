@@ -110,15 +110,15 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
         <div className="max-w-[1600px] mx-auto">
           {/* Header */}
           <div className="text-center mb-12 space-y-4">
-            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+            <span className="text-subhead font-semibold uppercase tracking-wider text-primary">
               Black Members
             </span>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+            <h1 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
               Every detail matters.
               <br />
               <span className="text-muted-foreground">Every single one.</span>
             </h1>
-            <p className="text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+            <p className="text-callout text-muted-foreground max-w-md mx-auto leading-relaxed">
               Showrooms that care about the small things.
             </p>
           </div>
@@ -134,7 +134,7 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
               className={cn(
                 'w-full h-12 pl-11 pr-11',
                 'bg-sidebar border border-border/40 rounded-xl',
-                'text-sm text-foreground placeholder:text-muted-foreground',
+                'text-subhead text-foreground placeholder:text-muted-foreground',
                 'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50',
                 'transition-all'
               )}
@@ -170,10 +170,10 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
                   <div className="rounded-full bg-muted/50 p-4 mb-6">
                     <X className="w-8 h-8 text-muted-foreground" strokeWidth={2} />
                   </div>
-                  <h3 className="text-xl font-semibold tracking-tight text-foreground mb-3">
+                  <h3 className="text-title3 font-semibold tracking-tight text-foreground mb-3">
                     Something went wrong
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                  <p className="text-subhead text-muted-foreground leading-relaxed max-w-lg">
                     Unable to load showrooms. Please try again later.
                   </p>
                 </div>
@@ -189,10 +189,10 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
                   <div className="rounded-full bg-muted/50 p-4 mb-6">
                     <Search className="w-8 h-8 text-muted-foreground" strokeWidth={2} />
                   </div>
-                  <h3 className="text-xl font-semibold tracking-tight text-foreground mb-3">
+                  <h3 className="text-title3 font-semibold tracking-tight text-foreground mb-3">
                     No matches found
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                  <p className="text-subhead text-muted-foreground leading-relaxed max-w-lg">
                     No results for &quot;{searchQuery}&quot;. Try a different search term.
                   </p>
                 </div>
@@ -208,10 +208,10 @@ export function BlackDirectoryView({ initialShowrooms }: BlackDirectoryViewProps
                   <div className="rounded-full bg-muted/50 p-4 mb-6">
                     <Package className="w-8 h-8 text-muted-foreground" strokeWidth={2} />
                   </div>
-                  <h3 className="text-xl font-semibold tracking-tight text-foreground mb-3">
+                  <h3 className="text-title3 font-semibold tracking-tight text-foreground mb-3">
                     No showrooms yet
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
+                  <p className="text-subhead text-muted-foreground leading-relaxed max-w-lg">
                     Check back soon. Black members will appear here once they join.
                   </p>
                 </div>

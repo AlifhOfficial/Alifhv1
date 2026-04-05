@@ -131,10 +131,10 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
           {listing.lifecycleStatus === 'archived' &&
             (listing.specialNotes?.suspensionReason || moderationReason) && (
               <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
-                <p className="text-xs sm:text-sm text-red-500">
+                <p className="text-caption1 sm:text-subhead text-red-500">
                   Suspended: {listing.specialNotes?.suspensionReason || moderationReason}
                 </p>
-                <p className="text-[11px] sm:text-xs text-muted-foreground/60 mt-1 sm:mt-1.5">
+                <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-1 sm:mt-1.5">
                   You can edit and resubmit this listing, but it will stay hidden until an admin unsuspends it.
                 </p>
               </div>
@@ -142,7 +142,7 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
 
           {listing.moderationStatus === 'rejected' && (listing.rejectionReason || listing.specialNotes?.rejectionReason) && (
             <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
-              <p className="text-xs sm:text-sm text-red-500">
+              <p className="text-caption1 sm:text-subhead text-red-500">
                 Rejected: {listing.rejectionReason || listing.specialNotes?.rejectionReason}
               </p>
             </div>
@@ -150,7 +150,7 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
 
           {error && (
             <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
-              <p className="text-xs sm:text-sm text-red-500">{error}</p>
+              <p className="text-caption1 sm:text-subhead text-red-500">{error}</p>
             </div>
           )}
         </div>

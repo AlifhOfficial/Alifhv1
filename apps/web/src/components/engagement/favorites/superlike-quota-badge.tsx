@@ -20,7 +20,7 @@ export function SuperlikeQuotaBadge({ quota, className }: SuperlikeQuotaBadgePro
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-lg border border-border/50 bg-muted/20 px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground',
+        'inline-flex items-center gap-1.5 rounded-lg border border-border/50 bg-muted/20 px-2.5 py-1.5 text-footnote font-medium text-muted-foreground',
         remaining === 0 && 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
         className
       )}
@@ -30,7 +30,7 @@ export function SuperlikeQuotaBadge({ quota, className }: SuperlikeQuotaBadgePro
         {remaining}<span className="opacity-60">/{total}</span>
       </span>
       {remaining === 0 && quota.periodEndDate && (
-        <span className="text-[11px] opacity-70">
+        <span className="text-caption2 opacity-70">
           · Resets {new Date(quota.periodEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
         </span>
       )}

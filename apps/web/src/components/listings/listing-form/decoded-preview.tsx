@@ -28,10 +28,10 @@ export function DecodedVehiclePreview({ data, isVisible }: DecodedVehiclePreview
       <div className="flex items-start gap-3">
         <CheckCircle2 className="w-5 h-5 text-foreground mt-0.5" />
         <div className="min-w-0">
-          <p className="text-[14px] font-semibold tracking-tight">
+          <p className="text-subhead font-semibold tracking-tight">
             {data.model ? 'Vehicle identified' : 'Partial match'}
           </p>
-          <p className="text-[13px] text-muted-foreground/70">
+          <p className="text-footnote text-muted-foreground/70">
             {data.model
               ? `${data.year} ${data.make} ${data.model}`
               : `${data.year} ${data.make} — select model below to continue`}
@@ -43,8 +43,8 @@ export function DecodedVehiclePreview({ data, isVisible }: DecodedVehiclePreview
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
           {decodedFields.map(({ label, value }) => (
             <div key={label} className="space-y-1">
-              <p className="text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider">{label}</p>
-              <p className="text-[15px] font-semibold capitalize text-foreground">{value}</p>
+              <p className="text-caption2 font-medium text-muted-foreground/50 uppercase tracking-wider">{label}</p>
+              <p className="text-subhead font-semibold capitalize text-foreground">{value}</p>
             </div>
           ))}
         </div>

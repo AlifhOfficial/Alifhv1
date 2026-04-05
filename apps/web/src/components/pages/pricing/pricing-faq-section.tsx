@@ -93,10 +93,10 @@ export function PricingFaqSection() {
         
         {/* Section Header */}
         <div className="mb-8">
-          <span className="text-sm font-semibold uppercase tracking-wider text-primary mb-4 block">
+          <span className="text-subhead font-semibold uppercase tracking-wider text-primary mb-4 block">
             Questions
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
+          <h2 className="text-title2 sm:text-title1 lg:text-display font-semibold tracking-tight">
             Common questions
           </h2>
         </div>
@@ -111,12 +111,12 @@ export function PricingFaqSection() {
                 className="border-b border-border/30 last:border-0"
               >
                 <AccordionTrigger className="px-5 py-4 text-left hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:text-muted-foreground/50 [&[data-state=open]]:bg-muted/20">
-                  <span className="text-base font-medium pr-4">
+                  <span className="text-callout font-medium pr-4">
                     {faq.q}
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="px-5 pb-5 pt-0">
-                  <p className="text-base text-muted-foreground leading-relaxed">
+                  <p className="text-callout text-muted-foreground leading-relaxed">
                     {faq.a}
                   </p>
                 </AccordionContent>
@@ -127,7 +127,7 @@ export function PricingFaqSection() {
 
         {/* Contact CTA */}
         <div className="mt-12 text-center">
-          <p className="text-base text-muted-foreground">
+          <p className="text-callout text-muted-foreground">
             Questions?{' '}
             <Link href="/contact" className="text-primary hover:underline">
               Reach out
