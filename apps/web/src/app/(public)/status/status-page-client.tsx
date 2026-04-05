@@ -52,17 +52,17 @@ const statusConfig = {
     icon: AlertTriangle,
     label: 'Partial System Outage',
     serviceLabel: 'Degraded',
-    bgClass: 'bg-amber-500/10 border-amber-500/20',
-    textClass: 'text-amber-500',
-    barClass: 'bg-amber-500',
+    bgClass: 'bg-warning-muted border-warning/20',
+    textClass: 'text-warning',
+    barClass: 'bg-warning',
   },
   unhealthy: {
     icon: XCircle,
     label: 'System Outage',
     serviceLabel: 'Outage',
-    bgClass: 'bg-red-500/10 border-red-500/20',
-    textClass: 'text-red-500',
-    barClass: 'bg-red-500',
+    bgClass: 'bg-destructive-muted border-destructive/20',
+    textClass: 'text-destructive',
+    barClass: 'bg-destructive',
   },
 };
 
@@ -142,7 +142,7 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <Icon className={`w-4 h-4 ${config.textClass}`} />
-                      <span className={`text-subhead font-medium ${config.textClass}`}>
+                      <span className={`text-subhead ${config.textClass}`}>
                         {config.serviceLabel}
                       </span>
                     </div>
@@ -192,7 +192,7 @@ export function StatusPageClient({ initialData }: StatusPageClientProps) {
 
           <div className="rounded-xl border border-border/40 bg-sidebar p-8 text-center">
             <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
-            <p className="text-subhead font-medium text-foreground mb-1">No recent incidents</p>
+            <p className="text-subhead text-foreground mb-1">No recent incidents</p>
             <p className="text-caption1 text-muted-foreground">
               All systems have been running smoothly.
             </p>

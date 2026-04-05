@@ -22,16 +22,16 @@ const statusConfig = {
   degraded: {
     icon: AlertTriangle,
     label: 'Partial System Outage',
-    bgClass: 'bg-amber-500/10 border-amber-500/20',
-    textClass: 'text-amber-500',
-    dotClass: 'bg-amber-500',
+    bgClass: 'bg-warning-muted border-warning/20',
+    textClass: 'text-warning',
+    dotClass: 'bg-warning',
   },
   unhealthy: {
     icon: XCircle,
     label: 'System Outage',
-    bgClass: 'bg-red-500/10 border-red-500/20',
-    textClass: 'text-red-500',
-    dotClass: 'bg-red-500',
+    bgClass: 'bg-destructive-muted border-destructive/20',
+    textClass: 'text-destructive',
+    dotClass: 'bg-destructive',
   },
 };
 

@@ -191,7 +191,7 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
           <button
             type="button"
             onClick={() => setIsCreateOpen(true)}
-            className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-medium transition-colors hover:bg-primary/90 flex items-center gap-1.5 sm:gap-2"
+            className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead transition-colors hover:bg-primary/90 flex items-center gap-1.5 sm:gap-2"
           >
             <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">New Funnel</span>
@@ -205,7 +205,7 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
         <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-10">
           <div>
             <span className="text-[10px] sm:text-caption1 text-muted-foreground">Funnels</span>
-            <p className="text-callout sm:text-headline lg:text-title3 font-semibold tracking-tight mt-0.5 sm:mt-1 text-blue-500">{data.funnels.length}</p>
+            <p className="text-callout sm:text-headline lg:text-title3 font-semibold tracking-tight mt-0.5 sm:mt-1 text-primary">{data.funnels.length}</p>
           </div>
         </div>
       )}
@@ -270,7 +270,7 @@ export function ConsignmentFunnelsView({ initialData }: ConsignmentFunnelsViewPr
             <button
               type="button"
               onClick={() => setIsCreateOpen(true)}
-              className="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-medium transition-colors hover:bg-primary/90"
+              className="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead transition-colors hover:bg-primary/90"
             >
               Create Funnel
             </button>
@@ -387,7 +387,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
             <div className="flex flex-wrap gap-1 sm:gap-1.5 ml-5 sm:ml-7">
               {filterTags.length > 0 ? (
                 filterTags.slice(0, 5).map((tag, i) => (
-                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-caption1 font-medium bg-secondary text-muted-foreground rounded-md">
+                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
                     {tag}
                   </span>
                 ))
@@ -395,7 +395,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
                 <span className="text-[10px] sm:text-caption1 text-muted-foreground/40 italic">All vehicles</span>
               )}
               {filterTags.length > 5 && (
-                <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-caption1 font-medium bg-secondary text-muted-foreground rounded-md">
+                <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
                   +{filterTags.length - 5} more
                 </span>
               )}
@@ -407,7 +407,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
             <span className={cn(
               'shrink-0 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-caption1 font-semibold rounded-full mr-1 sm:mr-2',
               funnel.isActive 
-                ? 'bg-green-500/10 text-green-600' 
+                ? 'bg-success-muted text-success' 
                 : 'bg-muted/50 text-muted-foreground'
             )}>
               {funnel.isActive ? 'Active' : 'Paused'}
@@ -487,7 +487,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
                       <p className="text-caption1 sm:text-subhead font-semibold truncate">
                         {listing.year} {listing.make} {listing.model}
                       </p>
-                      <p className="text-caption1 sm:text-subhead font-bold text-blue-500">
+                      <p className="text-caption1 sm:text-subhead font-bold text-primary">
                         AED {listing.price.toLocaleString()}
                       </p>
                     </div>
@@ -623,7 +623,7 @@ function DeleteConfirmModal({ open, funnelName, onClose, onConfirm, isDeleting }
             type="button"
             onClick={onClose}
             disabled={isDeleting}
-            className="flex-1 h-10 px-4 border border-border text-foreground text-subhead font-medium rounded-lg hover:bg-secondary/50 disabled:opacity-50 transition-colors"
+            className="flex-1 h-10 px-4 border border-border text-foreground text-subhead rounded-lg hover:bg-secondary/50 disabled:opacity-50 transition-colors"
           >
             Cancel
           </button>
@@ -631,7 +631,7 @@ function DeleteConfirmModal({ open, funnelName, onClose, onConfirm, isDeleting }
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="flex-1 h-10 px-4 bg-destructive text-destructive-foreground text-subhead font-medium rounded-lg hover:bg-destructive/90 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 h-10 px-4 bg-destructive text-destructive-foreground text-subhead rounded-lg hover:bg-destructive/90 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
           >
             {isDeleting ? (
               <>

@@ -364,7 +364,7 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
           <div className="p-6">
             <div className="flex flex-col items-center space-y-4">
               <div className="w-12 h-12 rounded-full flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-green-500" />
+                <CheckCircle2 className="w-6 h-6 text-success" />
               </div>
               <div className="text-center space-y-1">
                 <h2 className="text-callout font-semibold tracking-tight text-foreground">
@@ -383,7 +383,7 @@ export function KycVerificationModal({ isOpen, onClose, onVerified }: KycVerific
           <div className="p-6">
             <div className="flex flex-col items-center space-y-4">
               <div className="w-12 h-12 rounded-full flex items-center justify-center">
-                <Clock className="w-6 h-6 text-amber-500" />
+                <Clock className="w-6 h-6 text-warning" />
               </div>
               <div className="text-center space-y-1">
                 <h2 className="text-callout font-semibold tracking-tight text-foreground">

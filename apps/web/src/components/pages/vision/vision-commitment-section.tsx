@@ -34,7 +34,7 @@ export function VisionCommitmentSection() {
         {/* Quote Card */}
         <div className="max-w-3xl mx-auto mb-12">
           <div className="p-8 rounded-xl bg-primary text-primary-foreground text-center">
-            <blockquote className="text-headline sm:text-title3 font-medium leading-relaxed mb-4">
+            <blockquote className="text-headline sm:text-title3 leading-relaxed mb-4">
               "Today we look forward to a new era… an era characterized by boundless ambitions 
               guaranteeing a prosperous future positioning our nation as a global leader."
             </blockquote>
@@ -54,7 +54,7 @@ export function VisionCommitmentSection() {
               href="https://u.ae/en/about-the-uae/strategies-initiatives-and-awards/strategies-plans-and-visions/innovation-and-future-shaping/we-the-uae-2031-vision"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-subhead font-medium text-primary hover:text-primary/80 transition-colors"
+              className="inline-flex items-center gap-2 text-subhead text-primary hover:text-primary/80 transition-colors"
             >
               Official UAE Government Portal
               <ExternalLink className="w-3.5 h-3.5" />
@@ -64,7 +64,7 @@ export function VisionCommitmentSection() {
               href="https://assets.u.ae/api/public/content/a08d5e681e85451db0255d62b429decf?v=0bcab764"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-subhead font-medium text-primary hover:text-primary/80 transition-colors"
+              className="inline-flex items-center gap-2 text-subhead text-primary hover:text-primary/80 transition-colors"
             >
               We the UAE 2031 PDF
               <ExternalLink className="w-3.5 h-3.5" />

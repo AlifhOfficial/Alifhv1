@@ -116,7 +116,7 @@ export function CarPersonalityQuiz() {
           <p className="text-callout leading-relaxed mb-6">{brandData.description}</p>
           
           <div className="mt-6 p-4 bg-muted rounded-lg">
-            <p className="text-subhead font-medium mb-2">Your {brandData.name} matches:</p>
+            <p className="text-subhead mb-2">Your {brandData.name} matches:</p>
             <div className="flex gap-2 justify-center flex-wrap">
               {brandData.cars.map((car) => (
                 <span key={car} className="px-3 py-1 bg-background border rounded-full text-subhead">

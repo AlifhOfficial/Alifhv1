@@ -91,7 +91,7 @@ export function WhatYourCarSays() {
   return (
     <div className="space-y-6">
       <div className="border rounded-lg p-6">
-        <label className="block text-subhead font-medium mb-3">
+        <label className="block text-subhead mb-3">
           What car do you drive?
         </label>
         <select
@@ -128,12 +128,12 @@ export function WhatYourCarSays() {
           </p>
 
           <div className="mt-6">
-            <p className="text-subhead font-medium text-center mb-3">Your Personality Traits:</p>
+            <p className="text-subhead text-center mb-3">Your Personality Traits:</p>
             <div className="flex gap-2 justify-center flex-wrap">
               {result.traits.map((trait) => (
                 <span
                   key={trait}
-                  className="px-4 py-2 bg-background border rounded-full text-subhead font-medium"
+                  className="px-4 py-2 bg-background border rounded-full text-subhead"
                 >
                   {trait}
                 </span>

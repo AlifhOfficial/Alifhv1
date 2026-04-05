@@ -56,26 +56,26 @@ export function AdminPartnerDetailModal({ partnerId, onClose }: AdminPartnerDeta
             {/* Company Information */}
             <section className="space-y-6">
               <div className="border-b border-border/40 pb-2">
-                <h3 className="text-headline font-medium tracking-tight">Company Information</h3>
+                <h3 className="text-headline tracking-tight">Company Information</h3>
               </div>
 
               <div className="rounded-xl border border-border p-6 space-y-4">
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <label className="text-caption1 text-muted-foreground">Legal Name</label>
-                    <p className="text-subhead font-medium mt-1">{partner.companyNameLegal}</p>
+                    <p className="text-subhead mt-1">{partner.companyNameLegal}</p>
                   </div>
                   <div>
                     <label className="text-caption1 text-muted-foreground">Brand Name</label>
-                    <p className="text-subhead font-medium mt-1">{partner.brandName || '-'}</p>
+                    <p className="text-subhead mt-1">{partner.brandName || '-'}</p>
                   </div>
                   <div>
                     <label className="text-caption1 text-muted-foreground">Trade License</label>
-                    <p className="text-subhead font-medium mt-1">{partner.tradeLicense}</p>
+                    <p className="text-subhead mt-1">{partner.tradeLicense}</p>
                   </div>
                   <div>
                     <label className="text-caption1 text-muted-foreground">VAT Number</label>
-                    <p className="text-subhead font-medium mt-1">{partner.vatNumber || '-'}</p>
+                    <p className="text-subhead mt-1">{partner.vatNumber || '-'}</p>
                   </div>
                 </div>
               </div>
@@ -84,7 +84,7 @@ export function AdminPartnerDetailModal({ partnerId, onClose }: AdminPartnerDeta
             {/* Contact & Location */}
             <section className="space-y-6">
               <div className="border-b border-border/40 pb-2">
-                <h3 className="text-headline font-medium tracking-tight">Contact & Location</h3>
+                <h3 className="text-headline tracking-tight">Contact & Location</h3>
               </div>
 
               <div className="rounded-xl border border-border p-6 space-y-4">
@@ -113,23 +113,23 @@ export function AdminPartnerDetailModal({ partnerId, onClose }: AdminPartnerDeta
                 <p className="text-caption1 text-muted-foreground mb-2">Status</p>
                 <div className="flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${
-                    partner.status === 'active' ? 'bg-green-500' :
-                    partner.status === 'suspended' ? 'bg-yellow-500' :
-                    'bg-red-500'
+                    partner.status === 'active' ? 'bg-success' :
+                    partner.status === 'suspended' ? 'bg-warning' :
+                    'bg-destructive'
                   }`} />
                   <p className="text-headline font-semibold capitalize">{partner.status}</p>
                 </div>
               </div>
               <div className="rounded-xl border border-border p-6">
                 <p className="text-caption1 text-muted-foreground mb-2">Tier</p>
-                <p className="text-headline font-semibold capitalize text-blue-500">{partner.tier}</p>
+                <p className="text-headline font-semibold capitalize text-primary">{partner.tier}</p>
               </div>
             </section>
 
             {/* Partner Operations */}
             <section className="space-y-6">
               <div className="border-b border-border/40 pb-2">
-                <h3 className="text-headline font-medium tracking-tight">Partner Management</h3>
+                <h3 className="text-headline tracking-tight">Partner Management</h3>
               </div>
               <AdminPartnerOperations partner={partner} onOperationComplete={onClose} />
             </section>

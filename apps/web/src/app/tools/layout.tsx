@@ -37,7 +37,7 @@ export default function ToolsLayout({
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link 
             href={isToolsIndex ? "/" : "/tools"} 
-            className="text-footnote font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="text-footnote text-muted-foreground hover:text-foreground transition-colors"
           >
             ← {isToolsIndex ? "Home" : "All Tools"}
           </Link>
@@ -46,7 +46,7 @@ export default function ToolsLayout({
           </span>
           <Link
             href="/sell"
-            className="text-footnote font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="text-footnote text-muted-foreground hover:text-foreground transition-colors"
           >
             Sell →
           </Link>
@@ -64,7 +64,7 @@ export default function ToolsLayout({
           <div className="flex items-center gap-1.5 px-3 py-2.5 rounded-2xl bg-muted/70 backdrop-blur-xl border border-white/10 shadow-2xl">
             <Link
               href="/tools"
-              className="px-3 py-1.5 text-caption1 font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="px-3 py-1.5 text-caption1 text-muted-foreground hover:text-foreground transition-colors"
             >
               All
             </Link>

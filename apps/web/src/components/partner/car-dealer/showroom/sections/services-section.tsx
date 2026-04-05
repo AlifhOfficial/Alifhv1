@@ -103,7 +103,7 @@ export function ServicesSection({
           <button
             onClick={addService}
             disabled={(form.signatureServices?.length || 0) >= 6}
-            className="inline-flex items-center gap-1.5 text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 text-caption1 text-primary hover:text-primary font-semibold disabled:opacity-50"
           >
             <Plus className="w-3.5 h-3.5" />
             Add

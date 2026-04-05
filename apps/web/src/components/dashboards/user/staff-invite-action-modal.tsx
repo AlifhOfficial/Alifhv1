@@ -45,9 +45,9 @@ export function StaffInviteActionModal({
             ) : error ? (
               <XCircle className="w-6 h-6 text-destructive" />
             ) : isAccept ? (
-              <CheckCircle2 className="w-6 h-6 text-green-500" />
+              <CheckCircle2 className="w-6 h-6 text-success" />
             ) : (
-              <XCircle className="w-6 h-6 text-red-500" />
+              <XCircle className="w-6 h-6 text-destructive" />
             )}
           </div>
           
@@ -71,17 +71,17 @@ export function StaffInviteActionModal({
             <div className="flex gap-2 w-full">
               <button
                 onClick={onClose}
-                className="flex-1 py-2.5 rounded-lg bg-muted text-subhead font-medium text-foreground hover:bg-muted/80 transition-colors"
+                className="flex-1 py-2.5 rounded-lg bg-muted text-subhead text-foreground hover:bg-muted/80 transition-colors"
               >
                 {error ? 'Close' : 'Cancel'}
               </button>
               {!error && (
                 <button
                   onClick={onConfirm}
-                  className={`flex-1 py-2.5 rounded-lg text-subhead font-medium transition-colors ${
+                  className={`flex-1 py-2.5 rounded-lg text-subhead transition-colors ${
                     isAccept
                       ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-red-500 text-white hover:bg-red-600'
+                      : 'bg-destructive text-white hover:bg-destructive/90'
                   }`}
                 >
                   {isAccept ? 'Join' : 'Decline'}

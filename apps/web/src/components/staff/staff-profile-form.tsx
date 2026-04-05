@@ -351,9 +351,9 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
       </div>
 
       {/* Info Banner */}
-      <div className="rounded-xl border border-border/40 bg-blue-500/5 p-3 sm:p-4">
+      <div className="rounded-xl border border-border/40 bg-primary/5 p-3 sm:p-4">
         <div className="flex gap-3">
-          <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+          <Info className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
           <p className="text-subhead text-muted-foreground">
             Your work profile keeps your personal info private. Clients see your display name and work phone instead.
           </p>
@@ -372,7 +372,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
             )}
             onClick={() => editingField !== 'displayName' && setEditingField('displayName')}
           >
-            <p className="text-caption1 font-medium text-muted-foreground/70 mb-1">Name shown to clients</p>
+            <p className="text-caption1 text-muted-foreground/70 mb-1">Name shown to clients</p>
             {editingField === 'displayName' ? (
               <div className="space-y-2">
                 <input
@@ -381,7 +381,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                   value={form.displayName}
                   onChange={(e) => updateField({ displayName: e.target.value })}
                   placeholder="e.g. Ahmed, Alex, Sarah"
-                  className="w-full h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  className="w-full h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') saveField('displayName');
                     if (e.key === 'Escape') cancelEdit();
@@ -397,14 +397,14 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                   <button
                     onClick={(e) => { e.stopPropagation(); saveField('displayName'); }}
                     disabled={saving}
-                    className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                    className="text-caption1 text-primary hover:text-primary font-semibold"
                   >
                     {saving ? '...' : 'Save'}
                   </button>
                 </div>
               </div>
             ) : (
-              <p className="text-subhead font-medium text-foreground">
+              <p className="text-subhead text-foreground">
                 {form.displayName || <span className="text-muted-foreground/50">Tap to add</span>}
               </p>
             )}
@@ -432,7 +432,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                 onClick={toggleUsePersonalPhone}
               >
                 <div>
-                  <p className="text-subhead font-medium text-foreground">Use my personal phone</p>
+                  <p className="text-subhead text-foreground">Use my personal phone</p>
                   <p className="text-caption1 text-muted-foreground mt-0.5">
                     +971 {personalPhone} {isPersonalPhoneVerified && '(verified)'}
                   </p>
@@ -444,7 +444,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                 </div>
                 <div className={cn(
                   "w-10 h-6 rounded-full transition-colors relative",
-                  form.usePersonalPhone ? "bg-green-500" : "bg-muted"
+                  form.usePersonalPhone ? "bg-success" : "bg-muted"
                 )}>
                   <div className={cn(
                     "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
@@ -463,15 +463,15 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
           {/* Work phone input - always show so they can add/verify a work phone */}
           <div className="py-2 sm:py-3">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-caption1 font-medium text-muted-foreground/70">
+              <p className="text-caption1 text-muted-foreground/70">
                 {form.usePersonalPhone ? 'Or add a separate work number' : 'Separate work number'}
               </p>
               {(profile?.workPhoneVerified || phoneJustVerified) ? (
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <CheckCircle2 className="w-4 h-4 text-success" />
               ) : form.workPhone && phoneVerifyStep === 'idle' ? (
                 <button
                   onClick={sendPhoneOTP}
-                  className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                  className="text-caption1 text-primary hover:text-primary font-semibold"
                 >
                   Verify
                 </button>
@@ -508,7 +508,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                     <button
                       onClick={verifyPhoneOTP}
                       disabled={otp.length !== 6}
-                      className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+                      className="text-caption1 text-primary hover:text-primary font-semibold disabled:opacity-50"
                     >
                       Verify
                     </button>
@@ -531,7 +531,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
               // Edit phone number
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-subhead font-medium text-muted-foreground shrink-0">+971</span>
+                  <span className="text-subhead text-muted-foreground shrink-0">+971</span>
                   <input
                     autoFocus
                     type="tel"
@@ -539,7 +539,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                     value={form.workPhone}
                     onChange={(e) => updateField({ workPhone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
                     placeholder="50 000 0000"
-                    className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                    className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                     maxLength={9}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') saveField('workPhone');
@@ -557,7 +557,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                   <button
                     onClick={() => saveField('workPhone')}
                     disabled={saving}
-                    className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                    className="text-caption1 text-primary hover:text-primary font-semibold"
                   >
                     {saving ? '...' : 'Save'}
                   </button>
@@ -569,7 +569,7 @@ export function StaffProfileForm({ initialProfile, initialUserProfile }: StaffPr
                 className="cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 py-1 transition-colors rounded"
                 onClick={() => setEditingField('workPhone')}
               >
-                <p className="text-subhead font-medium text-foreground">
+                <p className="text-subhead text-foreground">
                   {form.workPhone ? `+971 ${form.workPhone}` : <span className="text-muted-foreground/50">Tap to add</span>}
                 </p>
               </div>

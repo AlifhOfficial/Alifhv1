@@ -175,7 +175,7 @@ export function R2UploaderClient() {
           "mx-auto h-12 w-12 mb-4 transition-colors",
           isDragging ? "text-primary" : "text-muted-foreground"
         )} />
-        <p className="text-headline font-medium mb-1">
+        <p className="text-headline mb-1">
           {isDragging ? 'Drop files here' : 'Drag & drop files here'}
         </p>
         <p className="text-subhead text-muted-foreground">
@@ -244,7 +244,7 @@ export function R2UploaderClient() {
                   )}
                   {file.status === 'success' && (
                     <>
-                      <Check className="h-5 w-5 text-green-500" />
+                      <Check className="h-5 w-5 text-success" />
                       <Button 
                         variant="ghost" 
                         size="icon"

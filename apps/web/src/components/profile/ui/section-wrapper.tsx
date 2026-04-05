@@ -44,7 +44,7 @@ export function SectionWrapper({
             {showEdit && (
               <button
                 onClick={onEdit}
-                className="h-8 px-3 text-caption1 font-medium text-foreground border border-border rounded-lg hover:bg-muted/50 flex items-center gap-2"
+                className="h-8 px-3 text-caption1 text-foreground border border-border rounded-lg hover:bg-muted/50 flex items-center gap-2"
               >
                 <Edit3 className="w-3.5 h-3.5" />
                 Edit
@@ -59,14 +59,14 @@ export function SectionWrapper({
           <button
             onClick={onCancel}
             disabled={isSaving}
-            className="h-8 px-3 text-caption1 font-medium border border-border rounded-lg hover:bg-muted/50 disabled:opacity-50"
+            className="h-8 px-3 text-caption1 border border-border rounded-lg hover:bg-muted/50 disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={onSave}
             disabled={isSaving}
-            className="h-8 px-3 text-caption1 font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
+            className="h-8 px-3 text-caption1 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
           >
             {isSaving ? 'Saving...' : 'Save'}
           </button>

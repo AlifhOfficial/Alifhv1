@@ -278,21 +278,21 @@ export function DealerInventory({
       return { label: 'Archived', color: 'text-muted-foreground', bg: 'bg-secondary' };
     }
     if (listing.lifecycleStatus === 'deleted') {
-      return { label: 'Deleted', color: 'text-red-600', bg: 'bg-red-500/10' };
+      return { label: 'Deleted', color: 'text-destructive', bg: 'bg-destructive-muted' };
     }
     
     // For active listings, check moderation status
     if (listing.moderationStatus === 'rejected') {
-      return { label: 'Rejected', color: 'text-red-600', bg: 'bg-red-500/10' };
+      return { label: 'Rejected', color: 'text-destructive', bg: 'bg-destructive-muted' };
     }
     if (listing.moderationStatus === 'draft') {
-      return { label: 'Draft', color: 'text-yellow-600', bg: 'bg-yellow-500/10' };
+      return { label: 'Draft', color: 'text-warning', bg: 'bg-warning-muted' };
     }
     if (listing.moderationStatus === 'submitted' || listing.moderationStatus === 'pending_review') {
-      return { label: 'In Review', color: 'text-blue-600', bg: 'bg-blue-500/10' };
+      return { label: 'In Review', color: 'text-primary', bg: 'bg-primary-muted' };
     }
     if (listing.isPublic) {
-      return { label: 'Active', color: 'text-green-600', bg: 'bg-green-500/10' };
+      return { label: 'Active', color: 'text-success', bg: 'bg-success-muted' };
     }
     
     return { label: 'Not Public', color: 'text-muted-foreground', bg: 'bg-secondary' };
@@ -311,7 +311,7 @@ export function DealerInventory({
           {blackQuota && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
               <Crown className="w-3 h-3" />
-              <span className="text-caption1 font-medium">
+              <span className="text-caption1">
                 {blackQuota.blackListingQuota - blackQuota.activeBlackListingsCount} of {blackQuota.blackListingQuota} BLK
               </span>
             </div>
@@ -507,7 +507,7 @@ export function DealerInventory({
                         {/* Price */}
                         <div>
                           <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mb-0.5">Price</p>
-                          <p className="text-subhead font-medium text-foreground">{listing.price.toLocaleString()} AED</p>
+                          <p className="text-subhead text-foreground">{listing.price.toLocaleString()} AED</p>
                         </div>
 
                         {/* Assigned To */}
@@ -530,8 +530,8 @@ export function DealerInventory({
                         if (listing.lifecycleStatus !== 'active' || daysRemaining === null || msRemaining === null || msRemaining <= 0) return null;
                         return (
                           <span className={cn(
-                            "flex items-center gap-1 text-caption1 font-medium",
-                            isExpiringSoon ? "text-amber-500" : "text-muted-foreground"
+                            "flex items-center gap-1 text-caption1",
+                            isExpiringSoon ? "text-warning" : "text-muted-foreground"
                           )}>
                             <Clock className="w-3 h-3" />
                             {daysRemaining}d left
@@ -540,7 +540,7 @@ export function DealerInventory({
                       })()}
                       <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         <Link href={`/listings/${listing.id}`}>
-                          <button className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-caption1 font-medium transition-colors">
+                          <button className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-caption1 transition-colors">
                             View
                           </button>
                         </Link>
@@ -549,7 +549,7 @@ export function DealerInventory({
                             <DropdownMenuTrigger asChild>
                               <button 
                                 disabled={reassigningListingId === listing.id}
-                                className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-caption1 font-medium transition-colors flex items-center gap-1 disabled:opacity-50"
+                                className="px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-caption1 transition-colors flex items-center gap-1 disabled:opacity-50"
                               >
                                 {reassigningListingId === listing.id ? 'Reassigning...' : 'Reassign'}
                                 <ChevronDown className="w-3 h-3" />
@@ -638,7 +638,7 @@ export function DealerInventory({
       {!isLoading && !error && listings.length === 0 && !hasActiveFilters && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
           <ShoppingCart className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-headline font-medium tracking-tight">No listings yet</h3>
+          <h3 className="text-headline tracking-tight">No listings yet</h3>
           <p className="text-subhead text-muted-foreground mt-1">Staff can create listings from Work Listings</p>
         </div>
       )}
@@ -647,7 +647,7 @@ export function DealerInventory({
       {!isLoading && !error && listings.length === 0 && hasActiveFilters && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
           <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-headline font-medium tracking-tight">No results</h3>
+          <h3 className="text-headline tracking-tight">No results</h3>
           <p className="text-subhead text-muted-foreground mt-1">Try a different search or filter</p>
           <button
             onClick={clearFilters}

@@ -103,7 +103,7 @@ export function TeamSection({
           <button
             onClick={addTeamMember}
             disabled={(form.teamMembers?.length || 0) >= 6}
-            className="inline-flex items-center gap-1.5 text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 text-caption1 text-primary hover:text-primary font-semibold disabled:opacity-50"
           >
             <Plus className="w-3.5 h-3.5" />
             Add member
@@ -142,7 +142,7 @@ export function TeamSection({
               <p className="text-subhead text-muted-foreground">No team members yet</p>
               <button
                 onClick={addTeamMember}
-                className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold mt-2"
+                className="text-caption1 text-primary hover:text-primary font-semibold mt-2"
               >
                 Add your first team member
               </button>

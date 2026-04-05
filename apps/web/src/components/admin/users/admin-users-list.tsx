@@ -111,7 +111,7 @@ export function AdminUsersList() {
       },
       admin: {
         icon: ShieldAlert,
-        color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+        color: 'bg-primary-muted text-primary',
         label: 'Admin',
       },
       user: {
@@ -128,7 +128,7 @@ export function AdminUsersList() {
     const Icon = config.icon;
 
     return (
-      <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-caption1 font-medium ${config.color}`}>
+      <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-caption1 ${config.color}`}>
         <Icon className="w-3 h-3" />
         {config.label}
       </span>
@@ -149,29 +149,29 @@ export function AdminUsersList() {
       {/* Stats */}
       <section className="space-y-6">
         <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-          <h3 className="text-headline font-medium tracking-tight">Overview</h3>
+          <h3 className="text-headline tracking-tight">Overview</h3>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Total</span>
-            <span className="text-title2 font-semibold text-blue-500">{users.length}</span>
+            <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Total</span>
+            <span className="text-title2 font-semibold text-primary">{users.length}</span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Verified</span>
-            <span className="text-title2 font-semibold text-green-500">
+            <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Verified</span>
+            <span className="text-title2 font-semibold text-success">
               {users.filter(u => u.profile?.kycVerified).length}
             </span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Partner Staff</span>
+            <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Partner Staff</span>
             <span className="text-title2 font-semibold text-foreground">
               {users.filter(u => u.partnerMemberships.length > 0).length}
             </span>
           </div>
           <div className="p-8 flex flex-col gap-3">
-            <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Banned</span>
-            <span className="text-title2 font-semibold text-red-500">
+            <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Banned</span>
+            <span className="text-title2 font-semibold text-destructive">
               {users.filter(u => u.banned).length}
             </span>
           </div>
@@ -181,7 +181,7 @@ export function AdminUsersList() {
       {/* Search & Filters */}
       <section className="space-y-6">
         <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-          <h3 className="text-headline font-medium tracking-tight">Users</h3>
+          <h3 className="text-headline tracking-tight">Users</h3>
         </div>
 
         <div className="flex flex-col md:flex-row gap-3">
@@ -250,10 +250,10 @@ export function AdminUsersList() {
 
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-callout font-medium text-foreground">{user.name}</h3>
+                        <h3 className="text-callout text-foreground">{user.name}</h3>
                         {getRoleBadge(user.role)}
                         {user.banned && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-500/10 text-caption1 text-red-600 dark:text-red-400">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-destructive-muted text-caption1 text-destructive">
                             <Ban className="w-3 h-3" />
                             Banned
                           </span>
@@ -265,7 +265,7 @@ export function AdminUsersList() {
                           <Mail className="w-3.5 h-3.5" />
                           {user.email}
                           {user.emailVerified && (
-                            <CheckCircle2 className="w-3 h-3 text-green-500" />
+                            <CheckCircle2 className="w-3 h-3 text-success" />
                           )}
                         </div>
                         
@@ -274,7 +274,7 @@ export function AdminUsersList() {
                             <Phone className="w-3.5 h-3.5" />
                             {user.profile?.phone || user.phoneNumber}
                             {user.phoneNumberVerified && (
-                              <CheckCircle2 className="w-3 h-3 text-green-500" />
+                              <CheckCircle2 className="w-3 h-3 text-success" />
                             )}
                           </div>
                         )}
@@ -293,7 +293,7 @@ export function AdminUsersList() {
 
                   <button
                     onClick={() => handleViewDetails(user)}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-subhead font-medium transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary hover:bg-primary/90 text-white text-subhead transition-colors"
                   >
                     View
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -307,8 +307,8 @@ export function AdminUsersList() {
                     <div className="flex items-center gap-1.5">
                       {user.profile?.kycVerified ? (
                         <>
-                          <ShieldCheck className="w-3.5 h-3.5 text-green-500" />
-                          <span className="text-green-500">Verified</span>
+                          <ShieldCheck className="w-3.5 h-3.5 text-success" />
+                          <span className="text-success">Verified</span>
                         </>
                       ) : (
                         <>
@@ -340,8 +340,8 @@ export function AdminUsersList() {
                     <div>
                       <p className="text-caption1 text-muted-foreground mb-1">Partner Staff</p>
                       <div className="flex items-center gap-1.5">
-                        <Building2 className="w-3.5 h-3.5 text-blue-500" />
-                        <span className="text-blue-500 font-medium">
+                        <Building2 className="w-3.5 h-3.5 text-primary" />
+                        <span className="text-primary font-medium">
                           {user.partnerMemberships.length} Partner{user.partnerMemberships.length > 1 ? 's' : ''}
                         </span>
                       </div>

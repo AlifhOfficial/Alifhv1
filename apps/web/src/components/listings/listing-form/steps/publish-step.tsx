@@ -44,7 +44,7 @@ function FieldWrapper({
       <div className="flex items-baseline justify-between">
         <label className="text-subhead font-semibold text-sidebar-foreground/70">
           {label}
-          {required && <span className="text-red-500 ml-0.5">*</span>}
+          {required && <span className="text-destructive ml-0.5">*</span>}
         </label>
         {hint && !error && (
           <span className="text-caption1 text-sidebar-foreground/70">{hint}</span>
@@ -52,7 +52,7 @@ function FieldWrapper({
       </div>
       {children}
       {error && (
-        <p className="text-caption1 font-semibold text-red-500">{error}</p>
+        <p className="text-caption1 font-semibold text-destructive">{error}</p>
       )}
     </div>
   );
@@ -186,7 +186,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                 placeholder="85,000"
                 min={0}
                 className={cn(
-                  "w-full h-12 bg-transparent px-0 pr-14 text-subhead font-medium text-sidebar-foreground",
+                  "w-full h-12 bg-transparent px-0 pr-14 text-subhead text-sidebar-foreground",
                   "outline-none transition-colors",
                   "placeholder:text-sidebar-foreground/40"
                 )}
@@ -203,12 +203,12 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               onClick={() => updateField('isNegotiable', !negotiable)}
               className={cn(
                 'flex items-center justify-between w-full h-12 px-0 transition-colors',
-                'text-subhead font-medium'
+                'text-subhead'
               )}
             >
               <span className="text-sidebar-foreground">Allow offers</span>
               {negotiable ? (
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                <CheckCircle2 className="w-5 h-5 text-success" />
               ) : (
                 <div className="w-5 h-5 rounded-full border-2 border-sidebar-foreground/40" />
               )}
@@ -240,7 +240,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               onChange={(e) => updateField('city', e.target.value)}
               placeholder="Jumeirah"
               className={cn(
-                "w-full h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
+                "w-full h-12 bg-transparent px-0 text-subhead text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -265,7 +265,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
           deleteOnRemove={true}
           vin={data.vin}
         />
-        {errors.images && <p className="text-caption1 font-semibold text-red-500 mt-3">{errors.images}</p>}
+        {errors.images && <p className="text-caption1 font-semibold text-destructive mt-3">{errors.images}</p>}
         </div>
       </section>
 
@@ -332,7 +332,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
 
             {/* Error message */}
             {generateError && (
-              <p className="text-caption1 font-semibold text-red-500">{generateError}</p>
+              <p className="text-caption1 font-semibold text-destructive">{generateError}</p>
             )}
 
             <textarea
@@ -343,7 +343,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               maxLength={2000}
               className={cn(
                 "w-full bg-transparent border-2 border-sidebar-border rounded-xl focus:border-primary",
-                "outline-none transition-colors px-4 py-3 text-subhead font-medium text-sidebar-foreground resize-none",
+                "outline-none transition-colors px-4 py-3 text-subhead text-sidebar-foreground resize-none",
                 "placeholder:text-sidebar-foreground/40"
               )}
             />
@@ -368,16 +368,16 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
                   className="flex items-center justify-between gap-3 p-3 bg-sidebar-accent rounded-lg group"
                 >
                   <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                    <p className="text-subhead font-medium text-sidebar-foreground">{note}</p>
+                    <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />
+                    <p className="text-subhead text-sidebar-foreground">{note}</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => removeOwnerRemark(idx)}
-                    className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/10 transition-all"
+                    className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-destructive-muted transition-all"
                     aria-label="Remove note"
                   >
-                    <X className="w-4 h-4 text-red-500" />
+                    <X className="w-4 h-4 text-destructive" />
                   </button>
                 </div>
               ))}
@@ -398,7 +398,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
               }}
               placeholder="Add a short note (e.g. Full service history)"
               className={cn(
-                "flex-1 h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
+                "flex-1 h-12 bg-transparent px-0 text-subhead text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -413,7 +413,7 @@ export function PublishStep({ data, updateField, errors }: StepProps) {
             </button>
           </div>
 
-          {errors.ownerRemarks && <p className="text-caption1 font-semibold text-red-500">{errors.ownerRemarks}</p>}
+          {errors.ownerRemarks && <p className="text-caption1 font-semibold text-destructive">{errors.ownerRemarks}</p>}
         </div>
         </div>
       </section>

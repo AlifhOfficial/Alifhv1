@@ -98,17 +98,17 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
   // Status label with clear priority hierarchy
   const getStatusLabel = (): { label: string; className: string } => {
     // Lifecycle status takes priority for non-active items
-    if (isSuspended) return { label: 'Suspended', className: 'bg-yellow-500/10 text-yellow-500' };
-    if (isDeleted) return { label: 'Deleted', className: 'bg-red-500/10 text-red-500' };
+    if (isSuspended) return { label: 'Suspended', className: 'bg-warning-muted text-warning' };
+    if (isDeleted) return { label: 'Deleted', className: 'bg-destructive-muted text-destructive' };
     if (isExpired) return { label: 'Expired', className: 'bg-secondary/50 text-muted-foreground' };
-    if (isSold) return { label: 'Sold', className: 'bg-green-500/10 text-green-500' };
+    if (isSold) return { label: 'Sold', className: 'bg-success-muted text-success' };
     if (isArchived) return { label: 'Archived', className: 'bg-secondary/50 text-muted-foreground' };
     
     // For active lifecycle, check moderation status
-    if (listing.isPublic) return { label: 'Public', className: 'bg-green-500/10 text-green-500' };
-    if (isPending) return { label: 'In Review', className: 'bg-blue-500/10 text-blue-500' };
-    if (listing.moderationStatus === 'draft') return { label: 'Draft', className: 'bg-yellow-500/10 text-yellow-500' };
-    if (listing.moderationStatus === 'rejected') return { label: 'Rejected', className: 'bg-red-500/10 text-red-500' };
+    if (listing.isPublic) return { label: 'Public', className: 'bg-success-muted text-success' };
+    if (isPending) return { label: 'In Review', className: 'bg-primary-muted text-primary' };
+    if (listing.moderationStatus === 'draft') return { label: 'Draft', className: 'bg-warning-muted text-warning' };
+    if (listing.moderationStatus === 'rejected') return { label: 'Rejected', className: 'bg-destructive-muted text-destructive' };
     
     return { label: listing.moderationStatus, className: 'bg-secondary/50 text-muted-foreground' };
   };
@@ -142,7 +142,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
               <Link
                 href={`/listings/${listing.id}`}
                 target="_blank"
-                className="text-subhead font-medium hover:text-blue-500 transition-colors"
+                className="text-subhead hover:text-primary transition-colors"
               >
                 {listing.year} {listing.make} {listing.model}
                 {listing.trim && ` ${listing.trim}`}
@@ -150,25 +150,25 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
               
               <div className="flex items-center gap-2 mt-2">
                 {/* Status Badge */}
-                <span className={`px-3 py-1 rounded-md text-caption1 font-medium ${status.className}`}>
+                <span className={`px-3 py-1 rounded-md text-caption1 ${status.className}`}>
                   {status.label}
                 </span>
 
                 {/* AI Moderated Badge */}
                 {isAutoApproved && (
-                  <span className="px-3 py-1 rounded-md text-caption1 font-medium bg-emerald-500/10 text-emerald-500 flex items-center gap-1.5">
+                  <span className="px-3 py-1 rounded-md text-caption1 bg-emerald-500/10 text-emerald-500 flex items-center gap-1.5">
                     <Bot className="w-3 h-3" />
                     AI Auto-Approved
                   </span>
                 )}
                 {isAutoRejected && (
-                  <span className="px-3 py-1 rounded-md text-caption1 font-medium bg-red-500/10 text-red-500 flex items-center gap-1.5">
+                  <span className="px-3 py-1 rounded-md text-caption1 bg-destructive-muted text-destructive flex items-center gap-1.5">
                     <Bot className="w-3 h-3" />
                     AI Auto-Rejected
                   </span>
                 )}
                 {isAIModerated && !isAutoApproved && !isAutoRejected && (
-                  <span className="px-3 py-1 rounded-md text-caption1 font-medium bg-purple-500/10 text-purple-500 flex items-center gap-1.5">
+                  <span className="px-3 py-1 rounded-md text-caption1 bg-purple-500/10 text-purple-500 flex items-center gap-1.5">
                     <Zap className="w-3 h-3" />
                     AI Reviewed
                   </span>
@@ -176,10 +176,10 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
 
                 {/* Listing Type Badge */}
                 <span
-                  className={`px-3 py-1 rounded-md text-caption1 font-medium ${
+                  className={`px-3 py-1 rounded-md text-caption1 ${
                     isUserListing
                       ? 'bg-secondary/50 text-muted-foreground'
-                      : 'bg-blue-500/10 text-blue-500'
+                      : 'bg-primary-muted text-primary'
                   }`}
                 >
                   {isUserListing ? (
@@ -193,7 +193,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
 
             {/* Price */}
             <div className="text-right">
-              <p className="text-callout font-medium text-foreground">
+              <p className="text-callout text-foreground">
                 {formatPrice(listing.price)}
               </p>
               <p className="text-caption1 text-muted-foreground mt-1">
@@ -252,18 +252,18 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
           {/* Suspension/Rejection Reason */}
           {(isSuspended && listing.suspensionReason) && (
             <div className="flex items-start gap-2 p-3 border border-yellow-500/20 rounded-xl">
-              <AlertTriangle className="w-4 h-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+              <AlertTriangle className="w-4 h-4 text-warning mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-caption1 font-medium text-yellow-500">Suspension Reason</p>
+                <p className="text-caption1 text-warning">Suspension Reason</p>
                 <p className="text-caption1 text-muted-foreground mt-0.5">{listing.suspensionReason}</p>
               </div>
             </div>
           )}
           {(listing.moderationStatus === 'rejected' && listing.rejectionReason) && (
-            <div className="flex items-start gap-2 p-3 border border-red-500/20 rounded-xl">
-              <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+            <div className="flex items-start gap-2 p-3 border border-destructive/20 rounded-xl">
+              <AlertTriangle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-caption1 font-medium text-red-500">Rejection Reason</p>
+                <p className="text-caption1 text-destructive">Rejection Reason</p>
                 <p className="text-caption1 text-muted-foreground mt-0.5">{listing.rejectionReason}</p>
               </div>
             </div>
@@ -275,7 +275,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
               <Bot className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-caption1 font-medium text-purple-500">AI Moderation</p>
+                  <p className="text-caption1 text-purple-500">AI Moderation</p>
                   <span className="text-caption1 text-muted-foreground">
                     {(aiModeration.confidence * 100).toFixed(0)}% confidence
                   </span>
@@ -288,10 +288,10 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
                         key={i} 
                         className={`px-2 py-0.5 rounded text-caption1 ${
                           flag.severity === 'high' 
-                            ? 'bg-red-500/10 text-red-500' 
+                            ? 'bg-destructive-muted text-destructive' 
                             : flag.severity === 'medium'
-                            ? 'bg-yellow-500/10 text-yellow-500'
-                            : 'bg-blue-500/10 text-blue-500'
+                            ? 'bg-warning-muted text-warning'
+                            : 'bg-primary-muted text-primary'
                         }`}
                       >
                         {flag.code}
@@ -318,7 +318,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
               <>
                 <button 
                   onClick={onApprove}
-                  className="px-4 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-caption1 transition-colors"
+                  className="px-4 py-2 rounded-full bg-success hover:bg-success/90 text-white text-caption1 transition-colors"
                 >
                   Approve
                 </button>
@@ -335,7 +335,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
             {!isDeepInventory && !isPending && (
               <button 
                 onClick={onSuspend} 
-                className="px-4 py-2 rounded-full border border-yellow-500/40 text-yellow-500 hover:bg-yellow-500/10 text-caption1 transition-colors"
+                className="px-4 py-2 rounded-full border border-yellow-500/40 text-warning hover:bg-warning-muted text-caption1 transition-colors"
               >
                 Suspend
               </button>
@@ -345,7 +345,7 @@ export function AdminListingCard({ listing, onApprove, onReject, onSuspend, onDe
             {!isDeleted && (
               <button 
                 onClick={onDelete} 
-                className="px-4 py-2 rounded-full border border-red-500/40 text-red-500 hover:bg-red-500/10 text-caption1 transition-colors"
+                className="px-4 py-2 rounded-full border border-destructive/40 text-destructive hover:bg-destructive-muted text-caption1 transition-colors"
               >
                 Delete
               </button>

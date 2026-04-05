@@ -68,7 +68,7 @@ export function StatCard({ label, value, subtext, trend, className }: StatCardPr
     ? trend.value > 0 
       ? 'text-emerald-600' 
       : trend.value < 0 
-        ? 'text-red-500' 
+        ? 'text-destructive' 
         : 'text-muted-foreground'
     : null;
 
@@ -85,7 +85,7 @@ export function StatCard({ label, value, subtext, trend, className }: StatCardPr
       "p-4 rounded-xl border border-border bg-card space-y-2",
       className
     )}>
-      <p className="text-caption1 font-medium text-muted-foreground uppercase tracking-wide">
+      <p className="text-caption1 text-muted-foreground uppercase tracking-wide">
         {label}
       </p>
       <div className="flex items-baseline gap-2">
@@ -93,7 +93,7 @@ export function StatCard({ label, value, subtext, trend, className }: StatCardPr
           {typeof value === 'number' ? value.toLocaleString() : value}
         </p>
         {trend && TrendIcon && (
-          <span className={cn("flex items-center gap-0.5 text-caption1 font-medium", trendColor)}>
+          <span className={cn("flex items-center gap-0.5 text-caption1", trendColor)}>
             <TrendIcon className="w-3 h-3" />
             {Math.abs(trend.value)}%
           </span>
@@ -121,14 +121,14 @@ export function AlertCard({ label, count, href, variant = 'neutral', className }
   if (count === 0) return null;
 
   const variantStyles = {
-    warning: 'border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30',
-    info: 'border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/30',
+    warning: 'border-warning/20 bg-warning-muted border-warning/30 bg-warning-muted',
+    info: 'border-primary/20 bg-primary-muted border-primary/30 bg-primary-muted',
     neutral: 'border-border bg-card',
   };
 
   const iconStyles = {
-    warning: 'text-amber-600',
-    info: 'text-blue-600',
+    warning: 'text-warning',
+    info: 'text-primary',
     neutral: 'text-muted-foreground',
   };
 
@@ -143,7 +143,7 @@ export function AlertCard({ label, count, href, variant = 'neutral', className }
     >
       <div className="flex items-center gap-2">
         <AlertCircle className={cn("w-4 h-4", iconStyles[variant])} />
-        <span className="text-subhead font-medium text-foreground">{label}</span>
+        <span className="text-subhead text-foreground">{label}</span>
       </div>
       <span className="text-subhead font-semibold text-foreground tabular-nums">{count}</span>
     </Link>
@@ -157,7 +157,7 @@ export function AlertCard({ label, count, href, variant = 'neutral', className }
 export function TopListings({ title, listings, emptyMessage = "No data", className }: TopListingsProps) {
   return (
     <div className={cn("space-y-3", className)}>
-      <p className="text-caption1 font-medium text-muted-foreground uppercase tracking-wide">
+      <p className="text-caption1 text-muted-foreground uppercase tracking-wide">
         {title}
       </p>
       {listings.length === 0 ? (
@@ -184,7 +184,7 @@ export function TopListings({ title, listings, emptyMessage = "No data", classNa
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-subhead font-medium text-foreground truncate">
+                <p className="text-subhead text-foreground truncate">
                   {listing.title}
                 </p>
               </div>
@@ -225,7 +225,7 @@ export function ColdListings({
     <div className={cn("space-y-3", className)}>
       <div className="flex items-center gap-2">
         <Eye className="w-4 h-4 text-muted-foreground" />
-        <p className="text-caption1 font-medium text-muted-foreground uppercase tracking-wide">
+        <p className="text-caption1 text-muted-foreground uppercase tracking-wide">
           Low Visibility
         </p>
       </div>
@@ -250,7 +250,7 @@ export function ColdListings({
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-subhead font-medium text-foreground truncate">
+              <p className="text-subhead text-foreground truncate">
                 {listing.title}
               </p>
               <p className="text-caption1 text-muted-foreground">
@@ -277,7 +277,7 @@ export function ProgressStat({ label, value, max = 100, suffix = '%', className 
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center justify-between">
-        <p className="text-caption1 font-medium text-muted-foreground">{label}</p>
+        <p className="text-caption1 text-muted-foreground">{label}</p>
         <p className="text-subhead font-semibold text-foreground tabular-nums">
           {value}{suffix}
         </p>
@@ -350,9 +350,9 @@ export function TrendBadge({
   
   return (
     <div className={cn(
-      "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption1 font-medium",
+      "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption1",
       isPositive && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-      value < 0 && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+      value < 0 && "bg-destructive-muted text-destructive bg-destructive-muted text-destructive",
       isNeutral && "bg-muted text-muted-foreground"
     )}>
       {isPositive ? <TrendingUp className="w-3 h-3" /> : value < 0 ? <TrendingDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}

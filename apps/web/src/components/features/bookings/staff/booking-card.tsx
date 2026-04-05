@@ -25,11 +25,11 @@ const BOOKING_TIME_ZONE = 'Asia/Dubai';
 
 // Status badge config with background and text colors
 const STATUS_CONFIG: Record<string, { bg: string; text: string }> = {
-  pending: { bg: 'bg-amber-500/10', text: 'text-amber-600' },
+  pending: { bg: 'bg-warning-muted', text: 'text-warning' },
   confirmed: { bg: 'bg-emerald-500/10', text: 'text-emerald-600' },
-  completed: { bg: 'bg-blue-500/10', text: 'text-blue-600' },
-  cancelled: { bg: 'bg-red-500/10', text: 'text-red-600' },
-  rejected: { bg: 'bg-red-500/10', text: 'text-red-600' },
+  completed: { bg: 'bg-primary-muted', text: 'text-primary' },
+  cancelled: { bg: 'bg-destructive-muted', text: 'text-destructive' },
+  rejected: { bg: 'bg-destructive-muted', text: 'text-destructive' },
   expired: { bg: 'bg-muted', text: 'text-muted-foreground' },
   no_show: { bg: 'bg-muted', text: 'text-muted-foreground' },
 };
@@ -136,7 +136,7 @@ export function BookingCard({
               </div>
             </div>
             <span className={cn(
-              "text-caption1 font-medium px-2 py-0.5 rounded-full flex-shrink-0",
+              "text-caption1 px-2 py-0.5 rounded-full flex-shrink-0",
               STATUS_CONFIG[booking.status]?.bg || 'bg-muted',
               STATUS_CONFIG[booking.status]?.text || 'text-muted-foreground'
             )}>
@@ -194,11 +194,11 @@ export function BookingCard({
           <div className="grid md:grid-cols-2 gap-6">
             {/* Contact Info */}
             <div className="space-y-3">
-              <p className="text-caption1 font-medium text-muted-foreground">Contact</p>
+              <p className="text-caption1 text-muted-foreground">Contact</p>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-subhead font-medium text-foreground">{booking.userName}</span>
+                  <span className="text-subhead text-foreground">{booking.userName}</span>
                   {booking.numberOfAttendees > 1 && (
                     <span className="text-caption1 text-muted-foreground">(+{booking.numberOfAttendees - 1} guests)</span>
                   )}
@@ -222,7 +222,7 @@ export function BookingCard({
 
             {/* Booking Info */}
             <div className="space-y-3">
-              <p className="text-caption1 font-medium text-muted-foreground">Booking Info</p>
+              <p className="text-caption1 text-muted-foreground">Booking Info</p>
               <div className="space-y-2">
                 <div>
                   <p className="text-caption1 text-muted-foreground mb-0.5">Code</p>
@@ -241,7 +241,7 @@ export function BookingCard({
                 {booking.checkInTime && (
                   <div>
                     <p className="text-caption1 text-muted-foreground mb-0.5">Checked In</p>
-                    <p className="text-subhead font-medium text-foreground">{formatTime(booking.checkInTime)}</p>
+                    <p className="text-subhead text-foreground">{formatTime(booking.checkInTime)}</p>
                   </div>
                 )}
               </div>
@@ -253,13 +253,13 @@ export function BookingCard({
             <div className="space-y-4">
               {booking.notes && (
                 <div>
-                  <p className="text-caption1 font-medium text-muted-foreground mb-1">Notes</p>
+                  <p className="text-caption1 text-muted-foreground mb-1">Notes</p>
                   <p className="text-subhead text-foreground leading-relaxed">{booking.notes}</p>
                 </div>
               )}
               {booking.specialRequests && (
                 <div>
-                  <p className="text-caption1 font-medium text-muted-foreground mb-1">Special Requests</p>
+                  <p className="text-caption1 text-muted-foreground mb-1">Special Requests</p>
                   <p className="text-subhead text-foreground leading-relaxed">{booking.specialRequests}</p>
                 </div>
               )}
@@ -269,7 +269,7 @@ export function BookingCard({
           {/* Cancellation Reason */}
           {(booking.cancellationReason || booking.cancellationNotes) && (
             <div className="p-4 rounded-lg bg-destructive/5">
-              <p className="text-caption1 font-medium text-destructive mb-1">Cancellation Reason</p>
+              <p className="text-caption1 text-destructive mb-1">Cancellation Reason</p>
               <p className="text-subhead text-foreground">
                 {booking.cancellationNotes || booking.cancellationReason?.replace(/_/g, ' ')}
               </p>
@@ -278,8 +278,8 @@ export function BookingCard({
 
           {/* Rejection Reason */}
           {booking.rejectionReason && (
-            <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
-              <p className="text-caption1 font-medium text-red-500 mb-1">Rejection Reason</p>
+            <div className="p-4 rounded-lg bg-destructive/5 border border-destructive/20">
+              <p className="text-caption1 text-destructive mb-1">Rejection Reason</p>
               <p className="text-subhead text-foreground">{booking.rejectionReason}</p>
             </div>
           )}
@@ -292,7 +292,7 @@ export function BookingCard({
                   <button
                     onClick={() => onAction('confirm')}
                     disabled={isActionLoading}
-                    className="h-9 px-4 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-subhead font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                    className="h-9 px-4 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-subhead transition-colors disabled:opacity-50 flex items-center gap-1.5"
                   >
                     {isActionLoading && <div className="w-3.5 h-3.5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />}
                     Confirm
@@ -300,7 +300,7 @@ export function BookingCard({
                   <button
                     onClick={() => onAction('reject')}
                     disabled={isActionLoading}
-                    className="h-9 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-subhead font-medium transition-colors disabled:opacity-50"
+                    className="h-9 px-4 rounded-lg bg-destructive-muted hover:bg-destructive/15 text-destructive text-subhead transition-colors disabled:opacity-50"
                   >
                     Reject
                   </button>
@@ -311,9 +311,9 @@ export function BookingCard({
                 <button
                   onClick={() => onAction('cancel')}
                   disabled={isActionLoading}
-                  className="h-9 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 text-subhead font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                  className="h-9 px-4 rounded-lg bg-destructive-muted hover:bg-destructive/15 text-destructive text-subhead transition-colors disabled:opacity-50 flex items-center gap-1.5"
                 >
-                  {isActionLoading && <div className="w-3.5 h-3.5 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" />}
+                  {isActionLoading && <div className="w-3.5 h-3.5 border-2 border-destructive/30 border-t-red-500 rounded-full animate-spin" />}
                   Cancel
                 </button>
               )}
@@ -323,7 +323,7 @@ export function BookingCard({
                   <button
                     onClick={() => onAction('complete')}
                     disabled={isActionLoading}
-                    className="h-9 px-4 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-subhead font-medium transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                    className="h-9 px-4 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 text-subhead transition-colors disabled:opacity-50 flex items-center gap-1.5"
                   >
                     {isActionLoading && <div className="w-3.5 h-3.5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />}
                     Complete
@@ -332,7 +332,7 @@ export function BookingCard({
                     <button
                       onClick={() => onAction('noShow', { noShowReason: 'Customer did not show up' })}
                       disabled={isActionLoading}
-                      className="h-9 px-4 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 text-subhead font-medium transition-colors disabled:opacity-50"
+                      className="h-9 px-4 rounded-lg bg-warning-muted hover:bg-warning/15 text-warning text-subhead transition-colors disabled:opacity-50"
                     >
                       No-show
                     </button>

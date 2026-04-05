@@ -164,7 +164,7 @@ export function RegistrationFeeCalculator() {
     <div className="space-y-6">
       {/* Emirate Selection */}
       <div>
-        <label className="flex items-center gap-2 text-subhead font-medium mb-3">
+        <label className="flex items-center gap-2 text-subhead mb-3">
           <MapPin className="w-4 h-4" />
           Select Emirate
         </label>
@@ -174,7 +174,7 @@ export function RegistrationFeeCalculator() {
               key={emirate.id}
               onClick={() => setFormData({ ...formData, emirate: emirate.id })}
               className={cn(
-                "p-3 rounded-lg border text-subhead font-medium transition-all",
+                "p-3 rounded-lg border text-subhead transition-all",
                 formData.emirate === emirate.id
                   ? "bg-primary text-primary-foreground border-primary"
                   : "bg-background border-border hover:border-primary/50"
@@ -190,7 +190,7 @@ export function RegistrationFeeCalculator() {
               key={emirate.id}
               onClick={() => setFormData({ ...formData, emirate: emirate.id })}
               className={cn(
-                "p-3 rounded-lg border text-subhead font-medium transition-all",
+                "p-3 rounded-lg border text-subhead transition-all",
                 formData.emirate === emirate.id
                   ? "bg-primary text-primary-foreground border-primary"
                   : "bg-background border-border hover:border-primary/50"
@@ -223,7 +223,7 @@ export function RegistrationFeeCalculator() {
 
       {/* Registration Type */}
       <div>
-        <label className="flex items-center gap-2 text-subhead font-medium mb-3">
+        <label className="flex items-center gap-2 text-subhead mb-3">
           <FileText className="w-4 h-4" />
           Service Type
         </label>
@@ -244,7 +244,7 @@ export function RegistrationFeeCalculator() {
                   : "bg-background border-border hover:border-primary/50"
               )}
             >
-              <p className="font-medium text-subhead">{type.label}</p>
+              <p className="text-subhead">{type.label}</p>
               <p className="text-caption1 text-muted-foreground">{type.desc}</p>
             </button>
           ))}
@@ -254,7 +254,7 @@ export function RegistrationFeeCalculator() {
       {/* Vehicle Age */}
       <div>
         <label className="flex items-center justify-between mb-2">
-          <span className="flex items-center gap-2 text-subhead font-medium">
+          <span className="flex items-center gap-2 text-subhead">
             <Car className="w-4 h-4" />
             Vehicle Age
           </span>
@@ -273,7 +273,7 @@ export function RegistrationFeeCalculator() {
         />
         <div className="flex justify-between text-caption1 text-muted-foreground mt-1">
           <span>New</span>
-          <span className={parseInt(formData.vehicleAge) > 3 ? "text-amber-600 font-medium" : ""}>
+          <span className={parseInt(formData.vehicleAge) > 3 ? "text-warning font-medium" : ""}>
             {parseInt(formData.vehicleAge) > 3 ? 'Testing required' : '3 years (no testing)'}
           </span>
           <span>15+ years</span>
@@ -290,7 +290,7 @@ export function RegistrationFeeCalculator() {
             className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
           />
           <div>
-            <p className="text-subhead font-medium">First time in this emirate</p>
+            <p className="text-subhead">First time in this emirate</p>
             <p className="text-caption1 text-muted-foreground">Traffic file opening fee applies</p>
           </div>
         </label>
@@ -313,8 +313,8 @@ export function RegistrationFeeCalculator() {
               <div key={index} className="flex items-center justify-between p-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-600" />
-                    <span className="font-medium text-subhead">{item.label}</span>
+                    <CheckCircle2 className="w-4 h-4 text-success" />
+                    <span className="text-subhead">{item.label}</span>
                     {item.optional && (
                       <span className="text-caption1 bg-muted px-1.5 py-0.5 rounded">Optional</span>
                     )}
@@ -331,7 +331,7 @@ export function RegistrationFeeCalculator() {
           {/* Total */}
           <div className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl border border-primary/20">
             <div className="flex justify-between items-center">
-              <span className="text-headline font-medium">Total Fees</span>
+              <span className="text-headline">Total Fees</span>
               <span className="text-title1 font-bold text-primary">
                 {formatAED(result.total)}
               </span>
@@ -340,14 +340,14 @@ export function RegistrationFeeCalculator() {
 
           {/* Emirate-specific notes */}
           {result.emirateInfo.notes.length > 0 && (
-            <div className="p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-lg">
+            <div className="p-4 bg-primary-muted bg-primary-muted border border-primary/20 border-primary/30 rounded-lg">
               <div className="flex items-start gap-2">
-                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5" />
+                <Info className="w-4 h-4 text-primary mt-0.5" />
                 <div>
-                  <p className="text-subhead font-medium text-blue-900 dark:text-blue-100 mb-2">
+                  <p className="text-subhead text-primary mb-2">
                     {result.emirateInfo.name} Notes
                   </p>
-                  <ul className="text-caption1 text-blue-800 dark:text-blue-200 space-y-1">
+                  <ul className="text-caption1 text-primary space-y-1">
                     {result.emirateInfo.notes.map((note, i) => (
                       <li key={i}>• {note}</li>
                     ))}
@@ -358,9 +358,9 @@ export function RegistrationFeeCalculator() {
           )}
 
           {/* Disclaimer */}
-          <div className="flex items-start gap-2 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg">
-            <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-            <div className="text-caption1 text-amber-800 dark:text-amber-200">
+          <div className="flex items-start gap-2 p-4 bg-warning-muted bg-warning-muted border border-warning/20 border-warning/30 rounded-lg">
+            <AlertCircle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+            <div className="text-caption1 text-warning">
               <strong>Note:</strong> Additional fees may apply for late renewals (AED 10/month up to AED 500), 
               custom plates, or special circumstances. Insurance must be valid before registration. 
               Visit {result.emirateInfo.authority} for official rates.

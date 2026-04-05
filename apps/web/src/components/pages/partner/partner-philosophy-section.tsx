@@ -67,7 +67,7 @@ function PhilosophyInfographic() {
         {/* Left - Others have inventory */}
         <div className="flex-1 flex flex-col border-r border-border/20">
           <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
-            <span className="text-caption1 font-medium text-muted-foreground/60">Their inventory</span>
+            <span className="text-caption1 text-muted-foreground/60">Their inventory</span>
           </div>
           
           <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">
@@ -92,7 +92,7 @@ function PhilosophyInfographic() {
         {/* Right - Revvup has zero */}
         <div className="flex-1 flex flex-col">
           <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
-            <span className="text-caption1 font-medium text-primary">Our inventory</span>
+            <span className="text-caption1 text-primary">Our inventory</span>
           </div>
           
           <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">

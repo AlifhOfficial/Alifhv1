@@ -111,7 +111,7 @@ export function PricingFaqSection() {
                 className="border-b border-border/30 last:border-0"
               >
                 <AccordionTrigger className="px-5 py-4 text-left hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:text-muted-foreground/50 [&[data-state=open]]:bg-muted/20">
-                  <span className="text-callout font-medium pr-4">
+                  <span className="text-callout pr-4">
                     {faq.q}
                   </span>
                 </AccordionTrigger>

@@ -43,7 +43,7 @@ export default function ToolsPage() {
             href={tool.href}
             className="group flex items-center justify-between py-4 px-1 border-b border-border/30 hover:border-border transition-colors"
           >
-            <span className="text-subhead font-medium group-hover:text-foreground text-foreground/80 transition-colors">
+            <span className="text-subhead group-hover:text-foreground text-foreground/80 transition-colors">
               {tool.title}
             </span>
             <span className="text-footnote text-muted-foreground">
@@ -60,7 +60,7 @@ export default function ToolsPage() {
         </p>
         <Link
           href="/sell"
-          className="inline-block text-footnote font-medium px-5 py-2.5 bg-foreground text-background rounded-full hover:bg-foreground/90 transition-colors"
+          className="inline-block text-footnote px-5 py-2.5 bg-foreground text-background rounded-full hover:bg-foreground/90 transition-colors"
         >
           List for Free
         </Link>

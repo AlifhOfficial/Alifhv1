@@ -105,12 +105,12 @@ const normalizeStatus = (status: string): StatusFilter => {
 
 const STATUS_CONFIG: Record<StatusFilter, { label: string; color: string; bg: string }> = {
   all: { label: 'All', color: 'text-foreground', bg: 'bg-secondary' },
-  pending: { label: 'Pending', color: 'text-yellow-600', bg: 'bg-yellow-500/10' },
-  confirmed: { label: 'Confirmed', color: 'text-green-600', bg: 'bg-green-500/10' },
-  completed: { label: 'Completed', color: 'text-blue-600', bg: 'bg-blue-500/10' },
-  cancelled: { label: 'Cancelled', color: 'text-red-600', bg: 'bg-red-500/10' },
-  rejected: { label: 'Rejected', color: 'text-red-600', bg: 'bg-red-500/10' },
-  no_show: { label: 'No Show', color: 'text-red-600', bg: 'bg-red-500/10' },
+  pending: { label: 'Pending', color: 'text-warning', bg: 'bg-warning-muted' },
+  confirmed: { label: 'Confirmed', color: 'text-success', bg: 'bg-success-muted' },
+  completed: { label: 'Completed', color: 'text-primary', bg: 'bg-primary-muted' },
+  cancelled: { label: 'Cancelled', color: 'text-destructive', bg: 'bg-destructive-muted' },
+  rejected: { label: 'Rejected', color: 'text-destructive', bg: 'bg-destructive-muted' },
+  no_show: { label: 'No Show', color: 'text-destructive', bg: 'bg-destructive-muted' },
 };
 
 const ITEMS_PER_PAGE = 20;
@@ -541,7 +541,7 @@ export function PartnerBookingsClient({
                           </div>
                         </div>
                         <span className={cn(
-                          "text-caption1 font-medium px-2 py-0.5 rounded-full flex-shrink-0",
+                          "text-caption1 px-2 py-0.5 rounded-full flex-shrink-0",
                           statusConfig?.bg || 'bg-muted',
                           statusConfig?.color || 'text-muted-foreground'
                         )}>
@@ -555,7 +555,7 @@ export function PartnerBookingsClient({
                           <Calendar className="w-3.5 h-3.5" />
                           <span className={cn(
                             "font-medium",
-                            dateInfo.isToday ? "text-yellow-600" : "text-foreground"
+                            dateInfo.isToday ? "text-warning" : "text-foreground"
                           )}>
                             {dateInfo.label}
                           </span>
@@ -622,11 +622,11 @@ export function PartnerBookingsClient({
                       <div className="grid md:grid-cols-2 gap-6">
                         {/* Contact Info */}
                         <div className="space-y-3">
-                          <p className="text-caption1 font-medium text-muted-foreground">Contact</p>
+                          <p className="text-caption1 text-muted-foreground">Contact</p>
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
                               <User className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-subhead font-medium text-foreground">{booking.userName}</span>
+                              <span className="text-subhead text-foreground">{booking.userName}</span>
                               {booking.numberOfAttendees && booking.numberOfAttendees > 1 && (
                                 <span className="text-caption1 text-muted-foreground">(+{booking.numberOfAttendees - 1} guests)</span>
                               )}
@@ -652,11 +652,11 @@ export function PartnerBookingsClient({
 
                         {/* Booking Info */}
                         <div className="space-y-3">
-                          <p className="text-caption1 font-medium text-muted-foreground">Booking Info</p>
+                          <p className="text-caption1 text-muted-foreground">Booking Info</p>
                           <div className="space-y-2">
                             <div>
                               <p className="text-caption1 text-muted-foreground mb-0.5">Date & Time</p>
-                              <p className="text-subhead font-medium text-foreground">
+                              <p className="text-subhead text-foreground">
                                 {dateInfo.label}, {formatTime(booking.scheduledStartTime)}
                                 {booking.scheduledEndTime && ` – ${formatTime(booking.scheduledEndTime)}`}
                               </p>
@@ -680,13 +680,13 @@ export function PartnerBookingsClient({
                             {booking.listingPrice && (
                               <div>
                                 <p className="text-caption1 text-muted-foreground mb-0.5">Vehicle Price</p>
-                                <p className="text-subhead font-medium text-foreground">AED {booking.listingPrice.toLocaleString()}</p>
+                                <p className="text-subhead text-foreground">AED {booking.listingPrice.toLocaleString()}</p>
                               </div>
                             )}
                             <div>
                               <p className="text-caption1 text-muted-foreground mb-0.5">Assigned Staff</p>
                               <p className={cn(
-                                "text-subhead font-medium",
+                                "text-subhead",
                                 booking.staffName ? "text-foreground" : "text-muted-foreground/60"
                               )}>
                                 {booking.staffName || 'Unassigned'}
@@ -701,13 +701,13 @@ export function PartnerBookingsClient({
                         <div className="space-y-4">
                           {booking.notes && (
                             <div>
-                              <p className="text-caption1 font-medium text-muted-foreground mb-1">Customer Notes</p>
+                              <p className="text-caption1 text-muted-foreground mb-1">Customer Notes</p>
                               <p className="text-subhead text-foreground leading-relaxed">{booking.notes}</p>
                             </div>
                           )}
                           {booking.specialRequests && (
                             <div>
-                              <p className="text-caption1 font-medium text-muted-foreground mb-1">Special Requests</p>
+                              <p className="text-caption1 text-muted-foreground mb-1">Special Requests</p>
                               <p className="text-subhead text-foreground leading-relaxed">{booking.specialRequests}</p>
                             </div>
                           )}
@@ -717,7 +717,7 @@ export function PartnerBookingsClient({
                       {/* Cancellation Reason */}
                       {(booking.cancellationReason || booking.cancellationNotes) && (
                         <div className="p-4 rounded-lg bg-destructive/5">
-                          <p className="text-caption1 font-medium text-destructive mb-1">
+                          <p className="text-caption1 text-destructive mb-1">
                             Cancelled by {booking.cancelledBy || 'unknown'}
                           </p>
                           <p className="text-subhead text-foreground">
@@ -728,8 +728,8 @@ export function PartnerBookingsClient({
 
                       {/* Rejection Reason */}
                       {booking.rejectionReason && (
-                        <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
-                          <p className="text-caption1 font-medium text-red-500 mb-1">Rejection Reason</p>
+                        <div className="p-4 rounded-lg bg-destructive/5 border border-destructive/20">
+                          <p className="text-caption1 text-destructive mb-1">Rejection Reason</p>
                           <p className="text-subhead text-foreground">{booking.rejectionReason}</p>
                         </div>
                       )}
@@ -741,7 +741,7 @@ export function PartnerBookingsClient({
                           {booking.source && ` via ${booking.source}`}
                         </span>
                         {booking.confirmedAt && (
-                          <span className="text-green-600/80">
+                          <span className="text-success/80">
                             Confirmed {new Date(booking.confirmedAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
                           </span>
                         )}
@@ -809,7 +809,7 @@ export function PartnerBookingsClient({
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Calendar className="w-4 h-4 text-muted-foreground/40" />
           </div>
-          <p className="text-subhead font-medium text-foreground">No bookings yet</p>
+          <p className="text-subhead text-foreground">No bookings yet</p>
           <p className="text-caption1 text-muted-foreground/60 mt-1">Customer appointments will appear here</p>
         </div>
       )}
@@ -820,7 +820,7 @@ export function PartnerBookingsClient({
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Search className="w-4 h-4 text-muted-foreground/40" />
           </div>
-          <p className="text-subhead font-medium text-foreground">No results found</p>
+          <p className="text-subhead text-foreground">No results found</p>
           <p className="text-caption1 text-muted-foreground/60 mt-1">Try a different search or filter</p>
           <button
             onClick={clearFilters}

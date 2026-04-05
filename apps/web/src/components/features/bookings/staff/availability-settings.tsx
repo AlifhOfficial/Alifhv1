@@ -85,7 +85,7 @@ function SettingRow({
       )}
     >
       <div className="flex-1 min-w-0 sm:pr-4">
-        <p className="text-caption1 sm:text-subhead font-medium text-foreground">{title}</p>
+        <p className="text-caption1 sm:text-subhead text-foreground">{title}</p>
         <p className="text-caption2 sm:text-caption1 text-muted-foreground/70 mt-0.5">{description}</p>
       </div>
       <div className="self-end sm:self-auto">
@@ -388,7 +388,7 @@ export function AvailabilitySettings({
                   </div>
                   
                   <span className={cn(
-                    "text-caption1 sm:text-subhead font-medium w-20 sm:w-24",
+                    "text-caption1 sm:text-subhead w-20 sm:w-24",
                     isActive ? "text-foreground" : "text-muted-foreground/50"
                   )}>
                     {day}

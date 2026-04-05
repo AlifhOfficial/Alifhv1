@@ -74,7 +74,7 @@ export function ThemeToggle() {
                 }}
                 className={cn(
                   'w-full text-left px-3 py-2 rounded-md touch-manipulation',
-                  'text-subhead font-medium tracking-tight transition-colors duration-100',
+                  'text-subhead tracking-tight transition-colors duration-100',
                   theme === themeOption.value
                     ? 'bg-sidebar-accent text-sidebar-foreground font-semibold'
                     : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'

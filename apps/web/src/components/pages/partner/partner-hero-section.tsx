@@ -61,7 +61,7 @@ export function PartnerHeroSection() {
             <br />
             <span className="text-muted-foreground">Zero commission.</span>
           </h1>
-          <p className="text-subhead sm:text-callout font-medium text-muted-foreground">
+          <p className="text-subhead sm:text-callout text-muted-foreground">
             Flat fee. Unlimited listings. Join the Revolution.
           </p>
         </div>

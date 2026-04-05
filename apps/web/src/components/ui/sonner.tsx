@@ -44,13 +44,13 @@ function Toaster({ ...props }: ToasterProps) {
           closeButton:
             'group-[.toast]:bg-sidebar group-[.toast]:text-muted-foreground group-[.toast]:border-sidebar-border group-[.toast]:hover:bg-sidebar-accent group-[.toast]:hover:text-sidebar-accent-foreground',
           success:
-            'group-[.toaster]:bg-emerald-50 group-[.toaster]:text-emerald-900 group-[.toaster]:border-emerald-200 dark:group-[.toaster]:bg-emerald-950/50 dark:group-[.toaster]:text-emerald-100 dark:group-[.toaster]:border-emerald-900/50',
+            'group-[.toaster]:bg-success-muted group-[.toaster]:text-success group-[.toaster]:border-success/20',
           error:
-            'group-[.toaster]:bg-red-50 group-[.toaster]:text-red-900 group-[.toaster]:border-red-200 dark:group-[.toaster]:bg-red-950/50 dark:group-[.toaster]:text-red-100 dark:group-[.toaster]:border-red-900/50',
+            'group-[.toaster]:bg-destructive-muted group-[.toaster]:text-destructive group-[.toaster]:border-destructive/20',
           warning:
-            'group-[.toaster]:bg-amber-50 group-[.toaster]:text-amber-900 group-[.toaster]:border-amber-200 dark:group-[.toaster]:bg-amber-950/50 dark:group-[.toaster]:text-amber-100 dark:group-[.toaster]:border-amber-900/50',
+            'group-[.toaster]:bg-warning-muted group-[.toaster]:text-warning group-[.toaster]:border-warning/20',
           info:
-            'group-[.toaster]:bg-blue-50 group-[.toaster]:text-blue-900 group-[.toaster]:border-blue-200 dark:group-[.toaster]:bg-blue-950/50 dark:group-[.toaster]:text-blue-100 dark:group-[.toaster]:border-blue-900/50',
+            'group-[.toaster]:bg-primary-muted group-[.toaster]:text-primary group-[.toaster]:border-primary/20',
         },
       }}
       {...props}

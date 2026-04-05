@@ -25,7 +25,7 @@ interface StaffProfileData {
 // Role badge config
 const ROLE_CONFIG: Record<string, { color: string; bg: string }> = {
   owner: { color: 'text-purple-600', bg: 'bg-purple-500/10' },
-  manager: { color: 'text-blue-600', bg: 'bg-blue-500/10' },
+  manager: { color: 'text-primary', bg: 'bg-primary-muted' },
   staff: { color: 'text-foreground', bg: 'bg-secondary' },
 };
 
@@ -155,7 +155,7 @@ export function StaffProfile() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <User className="w-10 h-10 text-muted-foreground/20 mb-4" />
-          <h3 className="text-headline font-medium tracking-tight">Unable to load profile</h3>
+          <h3 className="text-headline tracking-tight">Unable to load profile</h3>
           <p className="text-subhead text-muted-foreground mt-1">Please try again later</p>
         </div>
       </div>
@@ -205,7 +205,7 @@ export function StaffProfile() {
                 <button
                   onClick={handleSave}
                   disabled={updateMutation.isPending}
-                  className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-500 text-white text-caption1 sm:text-subhead font-medium hover:bg-blue-600 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary text-white text-caption1 sm:text-subhead hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
                   {updateMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Save
@@ -214,7 +214,7 @@ export function StaffProfile() {
             ) : (
               <button
                 onClick={() => setEditing(true)}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-500 text-white text-caption1 sm:text-subhead font-medium hover:bg-blue-600 transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary text-white text-caption1 sm:text-subhead hover:bg-primary/90 transition-colors"
               >
                 Edit
               </button>
@@ -225,7 +225,7 @@ export function StaffProfile() {
         {/* Role Badge */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <span className={cn(
-            "px-2.5 py-1 rounded-md text-caption1 font-medium capitalize",
+            "px-2.5 py-1 rounded-md text-caption1 capitalize",
             roleBadge.bg,
             roleBadge.color
           )}>
@@ -262,10 +262,10 @@ export function StaffProfile() {
                   value={formData.displayName}
                   onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
                   placeholder="e.g. Ahmed, Alex, Sarah"
-                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-subhead font-medium border border-transparent focus:border-blue-500 focus:outline-none placeholder:text-muted-foreground/50"
+                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-subhead border border-transparent focus:border-primary focus:outline-none placeholder:text-muted-foreground/50"
                 />
               ) : (
-                <p className="text-subhead font-medium tracking-tight mt-1">
+                <p className="text-subhead tracking-tight mt-1">
                   {profile.displayName || <span className="text-muted-foreground">Not set</span>}
                 </p>
               )}
@@ -287,10 +287,10 @@ export function StaffProfile() {
                   value={formData.workPhone}
                   onChange={(e) => setFormData({ ...formData, workPhone: e.target.value })}
                   placeholder="+971 50 123 4567"
-                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-subhead font-medium border border-transparent focus:border-blue-500 focus:outline-none placeholder:text-muted-foreground/50"
+                  className="w-full mt-1 px-3 py-2 bg-secondary/50 rounded-lg text-subhead border border-transparent focus:border-primary focus:outline-none placeholder:text-muted-foreground/50"
                 />
               ) : (
-                <p className="text-subhead font-medium tracking-tight mt-1">
+                <p className="text-subhead tracking-tight mt-1">
                   {profile.workPhone || <span className="text-muted-foreground">Not set</span>}
                 </p>
               )}

@@ -150,7 +150,7 @@ export function ForgotPasswordModal({
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-11 px-4 bg-muted/30 border border-border/50 rounded-xl text-callout font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all disabled:opacity-50"
+              className="w-full h-11 px-4 bg-muted/30 border border-border/50 rounded-xl text-callout text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all disabled:opacity-50"
               placeholder="you@example.com"
               required
               disabled={isLoading}

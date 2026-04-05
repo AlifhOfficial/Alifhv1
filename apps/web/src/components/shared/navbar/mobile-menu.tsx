@@ -75,7 +75,7 @@ export function MobileMenu({ navItems, pathname, onNavigate, onSignIn: _onSignIn
                                 key={subItem.href}
                                 href={subItem.href}
                                 onClick={onNavigate}
-                                className="block text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors"
+                                className="block text-subhead text-muted-foreground hover:text-foreground transition-colors"
                               >
                                 {subItem.label}
                               </Link>

@@ -58,7 +58,7 @@ export function BadgesListSection() {
 function BadgeItem({ name, desc, last }: { name: string; desc: string; last?: boolean }) {
   return (
     <div className={`flex items-start justify-between gap-4 ${!last ? 'pb-3 border-b border-border/20' : ''}`}>
-      <span className="text-subhead font-medium text-foreground">{name}</span>
+      <span className="text-subhead text-foreground">{name}</span>
       <span className="text-subhead text-muted-foreground text-right">{desc}</span>
     </div>
   );

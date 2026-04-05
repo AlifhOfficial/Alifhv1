@@ -89,7 +89,7 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
               <Dialog>
                 <DialogTrigger asChild>
                   <button 
-                    className="flex-shrink-0 w-[280px] sm:w-[320px] h-[200px] p-6 rounded-xl bg-blue-600 text-white border border-blue-700/40 hover:border-blue-400/50 transition-all duration-300 flex flex-col text-left cursor-pointer"
+                    className="flex-shrink-0 w-[280px] sm:w-[320px] h-[200px] p-6 rounded-xl bg-primary text-white border border-primary/40 hover:border-primary/40 transition-all duration-300 flex flex-col text-left cursor-pointer"
                   >
                     {/* VIP Label */}
                     <span className="text-title3 font-semibold text-white mb-3">
@@ -116,13 +116,13 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
                 <DialogContent className="max-w-md">
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                      <span className="text-blue-600">VIP</span> Perks
+                      <span className="text-primary">VIP</span> Perks
                     </DialogTitle>
                   </DialogHeader>
                   <div className="space-y-2 max-h-[60vh] overflow-y-auto">
                     {vipPerks.map((perk, idx) => (
                       <div key={idx} className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-600 flex-shrink-0" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                         <span className="text-subhead text-foreground">{perk}</span>
                       </div>
                     ))}

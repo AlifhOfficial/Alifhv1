@@ -122,7 +122,7 @@ function SortableGalleryImage({ id, url, index, onRemove }: SortableGalleryImage
       </button>
       
       {/* Position badge */}
-      <div className="absolute bottom-2 left-2 px-1.5 py-0.5 bg-black/50 text-white text-caption1 font-medium rounded">
+      <div className="absolute bottom-2 left-2 px-1.5 py-0.5 bg-black/50 text-white text-caption1 rounded">
         {index + 1}
       </div>
     </div>
@@ -360,7 +360,7 @@ export function GallerySection({
           {/* Progress bar — shown while gallery images are uploading */}
           {isGalleryUploading && (
             <div className="mt-4 space-y-2">
-              <p className="text-subhead font-medium text-foreground transition-all duration-500">
+              <p className="text-subhead text-foreground transition-all duration-500">
                 {getGalleryMessage(galleryDisplayProgress)}
               </p>
               <Progress value={galleryDisplayProgress} className="h-1.5" />

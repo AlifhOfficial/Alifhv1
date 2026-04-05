@@ -20,8 +20,8 @@ export function SuperlikeQuotaBadge({ quota, className }: SuperlikeQuotaBadgePro
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-lg border border-border/50 bg-muted/20 px-2.5 py-1.5 text-footnote font-medium text-muted-foreground',
-        remaining === 0 && 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
+        'inline-flex items-center gap-1.5 rounded-lg border border-border/50 bg-muted/20 px-2.5 py-1.5 text-footnote text-muted-foreground',
+        remaining === 0 && 'border-warning/30 bg-warning-muted text-warning',
         className
       )}
     >

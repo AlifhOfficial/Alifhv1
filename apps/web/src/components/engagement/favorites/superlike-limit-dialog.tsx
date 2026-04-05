@@ -60,7 +60,7 @@ export function SuperlikeLimitDialog({
       >
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
-          <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
+          <AlertCircle className="w-5 h-5 text-warning flex-shrink-0" />
           <div className="flex-1">
             <h2 className="text-subhead font-semibold text-foreground">No superlikes left</h2>
             <p className="text-footnote text-muted-foreground">Resets {resetDateStr}</p>

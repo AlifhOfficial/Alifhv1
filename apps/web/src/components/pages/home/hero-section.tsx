@@ -17,7 +17,7 @@ export function HeroSection() {
             <br />
             <span className="text-muted-foreground">Free. Forever.</span>
           </h1>
-          <p className="text-subhead sm:text-callout font-medium text-muted-foreground">
+          <p className="text-subhead sm:text-callout text-muted-foreground">
             More than a marketplace. Join the Revolution.
           </p>
         </div>

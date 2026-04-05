@@ -51,7 +51,7 @@ function FieldWrapper({
       <div className="flex items-baseline justify-between">
         <label className="text-subhead font-semibold text-muted-foreground/70">
           {label}
-          {required && <span className="text-red-500 ml-0.5">*</span>}
+          {required && <span className="text-destructive ml-0.5">*</span>}
         </label>
         {hint && (
           <span className="text-caption1 text-muted-foreground/70">{hint}</span>
@@ -81,7 +81,7 @@ function PillOptions({
           type="button"
           onClick={() => onChange(opt.value)}
           className={cn(
-            "h-11 px-3 rounded-lg text-subhead font-medium transition-colors",
+            "h-11 px-3 rounded-lg text-subhead transition-colors",
             value === opt.value
               ? 'bg-foreground text-background'
               : 'bg-muted text-muted-foreground hover:text-foreground'
@@ -122,7 +122,7 @@ function NumberInput({
         placeholder={placeholder}
         className={cn(
           "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-foreground",
-          "outline-none transition-colors text-subhead font-medium",
+          "outline-none transition-colors text-subhead",
           "placeholder:text-muted-foreground/40",
           prefix ? "pl-12" : "px-0",
           suffix ? "pr-14" : "pr-0"
@@ -160,7 +160,7 @@ function FuelPricesBanner({
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Fuel className="w-4 h-4 text-muted-foreground" />
-          <span className="text-subhead font-medium">UAE Fuel Prices</span>
+          <span className="text-subhead">UAE Fuel Prices</span>
         </div>
         <span className="text-caption1 text-muted-foreground">
           {new Date(UAE_FUEL_PRICES.effectiveDate).toLocaleDateString('en-AE', { month: 'short', year: 'numeric' })}
@@ -427,7 +427,7 @@ export function FuelCostCalculator() {
             <button
               onClick={() => setMode('estimate')}
               className={cn(
-                "flex-1 py-2.5 text-subhead font-medium rounded-md transition-colors",
+                "flex-1 py-2.5 text-subhead rounded-md transition-colors",
                 mode === 'estimate' ? 'bg-background shadow-sm' : 'text-muted-foreground'
               )}
             >
@@ -436,7 +436,7 @@ export function FuelCostCalculator() {
             <button
               onClick={() => setMode('trip')}
               className={cn(
-                "flex-1 py-2.5 text-subhead font-medium rounded-md transition-colors",
+                "flex-1 py-2.5 text-subhead rounded-md transition-colors",
                 mode === 'trip' ? 'bg-background shadow-sm' : 'text-muted-foreground'
               )}
             >
@@ -489,7 +489,7 @@ export function FuelCostCalculator() {
                         type="button"
                         onClick={() => update('tripDistance', String(route.distance))}
                         className={cn(
-                          "px-3 py-1.5 rounded-full text-caption1 font-medium transition-colors",
+                          "px-3 py-1.5 rounded-full text-caption1 transition-colors",
                           formData.tripDistance === String(route.distance)
                             ? 'bg-foreground text-background'
                             : 'bg-muted text-muted-foreground hover:text-foreground'

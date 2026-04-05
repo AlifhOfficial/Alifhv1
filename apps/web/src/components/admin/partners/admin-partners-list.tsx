@@ -42,12 +42,12 @@ export function AdminPartnersList() {
         {/* Stats */}
         <section className="space-y-6">
           <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-headline font-medium tracking-tight">Overview</h3>
+            <h3 className="text-headline tracking-tight">Overview</h3>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 border-y border-border divide-x divide-border bg-background">
             <div className="p-8 flex flex-col gap-3">
-              <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Total</span>
+              <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Total</span>
               <span className="text-title2 font-semibold text-foreground">{counts.total}</span>
             </div>
             <button
@@ -56,8 +56,8 @@ export function AdminPartnersList() {
                 statusFilter === 'active' ? 'bg-secondary/40' : ''
               }`}
             >
-              <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Active</span>
-              <span className="text-title2 font-semibold text-green-500">{counts.active}</span>
+              <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Active</span>
+              <span className="text-title2 font-semibold text-success">{counts.active}</span>
             </button>
             <button
               onClick={() => setStatusFilter('suspended')}
@@ -65,8 +65,8 @@ export function AdminPartnersList() {
                 statusFilter === 'suspended' ? 'bg-secondary/40' : ''
               }`}
             >
-              <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Suspended</span>
-              <span className="text-title2 font-semibold text-yellow-500">{counts.suspended}</span>
+              <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Suspended</span>
+              <span className="text-title2 font-semibold text-warning">{counts.suspended}</span>
             </button>
             <button
               onClick={() => setStatusFilter('cancelled')}
@@ -74,7 +74,7 @@ export function AdminPartnersList() {
                 statusFilter === 'cancelled' ? 'bg-secondary/40' : ''
               }`}
             >
-              <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Cancelled</span>
+              <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Cancelled</span>
               <span className="text-title2 font-semibold text-foreground">{counts.cancelled}</span>
             </button>
           </div>
@@ -83,7 +83,7 @@ export function AdminPartnersList() {
         {/* Partners List */}
         <section className="space-y-6">
           <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-headline font-medium tracking-tight">Partners</h3>
+            <h3 className="text-headline tracking-tight">Partners</h3>
             {statusFilter && (
               <button
                 onClick={() => setStatusFilter(undefined)}
@@ -115,7 +115,7 @@ export function AdminPartnersList() {
                           size="md"
                         />
                         <div>
-                          <h3 className="text-callout font-medium text-foreground">{partner.companyNameLegal}</h3>
+                          <h3 className="text-callout text-foreground">{partner.companyNameLegal}</h3>
                           <p className="text-subhead text-muted-foreground">{partner.brandName}</p>
                         </div>
                       </div>
@@ -123,13 +123,13 @@ export function AdminPartnersList() {
                       <div className="flex items-center gap-6 text-subhead text-muted-foreground mt-4">
                         <div className="flex items-center gap-2">
                           <span className={`w-2 h-2 rounded-full ${
-                            partner.status === 'active' ? 'bg-green-500' :
-                            partner.status === 'suspended' ? 'bg-yellow-500' :
+                            partner.status === 'active' ? 'bg-success' :
+                            partner.status === 'suspended' ? 'bg-warning' :
                             'bg-foreground/30'
                           }`} />
                           <span className={
-                            partner.status === 'active' ? 'text-green-500' :
-                            partner.status === 'suspended' ? 'text-yellow-500' :
+                            partner.status === 'active' ? 'text-success' :
+                            partner.status === 'suspended' ? 'text-warning' :
                             'text-foreground'
                           }>
                             {partner.status}
@@ -160,7 +160,7 @@ export function AdminPartnersList() {
 
                     <button
                       onClick={() => setSelectedPartnerId(partner.id)}
-                      className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-subhead font-medium transition-colors"
+                      className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-white text-subhead transition-colors"
                     >
                       Manage
                     </button>

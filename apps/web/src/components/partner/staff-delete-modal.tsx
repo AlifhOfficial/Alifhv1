@@ -45,9 +45,9 @@ export function StaffDeleteModal({
             {isLoading ? (
               <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
             ) : error ? (
-              <AlertCircle className="w-5 h-5 text-red-500" />
+              <AlertCircle className="w-5 h-5 text-destructive" />
             ) : (
-              <Trash2 className="w-5 h-5 text-red-500" />
+              <Trash2 className="w-5 h-5 text-destructive" />
             )}
           </div>
 
@@ -72,7 +72,7 @@ export function StaffDeleteModal({
             <button
               onClick={onClose}
               disabled={isLoading}
-              className="flex-1 px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-subhead font-medium transition-colors disabled:opacity-50"
+              className="flex-1 px-6 py-3 rounded-full border border-border/40 hover:bg-secondary/50 text-subhead transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
@@ -80,7 +80,7 @@ export function StaffDeleteModal({
               <button
                 onClick={onConfirm}
                 disabled={isLoading}
-                className="flex-1 px-6 py-3 rounded-full bg-destructive hover:bg-destructive/90 text-destructive-foreground text-subhead font-medium transition-colors disabled:opacity-50"
+                className="flex-1 px-6 py-3 rounded-full bg-destructive hover:bg-destructive/90 text-destructive-foreground text-subhead transition-colors disabled:opacity-50"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">

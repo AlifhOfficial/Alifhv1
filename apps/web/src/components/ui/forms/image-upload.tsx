@@ -127,7 +127,7 @@ function SortableImage({ id, url, index, onRemove, blobOverride }: SortableImage
       
       {/* Thumbnail badge */}
       {index === 0 && (
-        <div className="absolute bottom-2 left-2 px-2.5 py-1.5 bg-primary text-primary-foreground text-caption1 font-medium rounded-lg">
+        <div className="absolute bottom-2 left-2 px-2.5 py-1.5 bg-primary text-primary-foreground text-caption1 rounded-lg">
           Thumbnail
         </div>
       )}
@@ -389,7 +389,7 @@ export function ImageUpload({
     <div className="space-y-4">
       {label && (
         <div>
-          <p className="text-subhead font-medium text-foreground mb-1">{label}</p>
+          <p className="text-subhead text-foreground mb-1">{label}</p>
           {description && <p className="text-caption1 text-muted-foreground">{description}</p>}
         </div>
       )}
@@ -458,7 +458,7 @@ export function ImageUpload({
           <div className="flex flex-col gap-3 w-full">
             {uploading ? (
               <>
-                <p className="text-subhead font-medium text-foreground text-left transition-all duration-500">
+                <p className="text-subhead text-foreground text-left transition-all duration-500">
                   {getUploadMessage(displayProgress)}
                 </p>
                 <Progress value={displayProgress} className="h-1.5" />

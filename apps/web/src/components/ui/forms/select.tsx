@@ -113,7 +113,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("py-1.5 pl-8 pr-2 text-subhead font-medium", className)}
+    className={cn("py-1.5 pl-8 pr-2 text-subhead", className)}
     {...props}
   />
 ));

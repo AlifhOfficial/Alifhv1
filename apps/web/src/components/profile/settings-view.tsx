@@ -35,7 +35,7 @@ function Toggle({
       disabled={disabled}
       className={cn(
         "relative inline-flex h-[22px] w-[42px] shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus:outline-none disabled:opacity-50",
-        enabled ? "bg-green-500" : "bg-muted-foreground/30"
+        enabled ? "bg-success" : "bg-muted-foreground/30"
       )}
       aria-label="Toggle"
     >
@@ -73,7 +73,7 @@ function SettingRow({
       )}
     >
       <div className="flex-1 min-w-0 pr-4">
-        <p className="text-subhead font-medium text-foreground">{title}</p>
+        <p className="text-subhead text-foreground">{title}</p>
         <p className="text-caption1 text-muted-foreground/70 mt-0.5">{description}</p>
       </div>
       {children}
@@ -241,7 +241,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
                   key={t.value}
                   onClick={() => setTheme(t.value)}
                   className={cn(
-                    "py-2 sm:py-2.5 rounded-lg text-caption1 sm:text-subhead font-medium transition-all",
+                    "py-2 sm:py-2.5 rounded-lg text-caption1 sm:text-subhead transition-all",
                     mounted && theme === t.value 
                       ? "bg-muted/50 text-foreground" 
                       : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
@@ -249,7 +249,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
                 >
                   {t.label}
                   {mounted && theme === t.value && (
-                    <CheckCircle2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-green-500 inline ml-1" />
+                    <CheckCircle2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-success inline ml-1" />
                   )}
                 </button>
               ))}
@@ -302,13 +302,13 @@ export function SettingsView({ initialData }: SettingsViewProps) {
           <div className="rounded-xl border border-border/40 bg-sidebar p-4">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-subhead font-medium text-foreground">Passkeys</p>
+                <p className="text-subhead text-foreground">Passkeys</p>
                 <p className="text-caption1 text-muted-foreground/70">Sign in with biometrics or security key</p>
               </div>
               <button
                 onClick={addPasskey}
                 disabled={addingPasskey}
-                className="p-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors disabled:opacity-50"
+                className="p-2 rounded-lg bg-success text-white hover:bg-success/90 transition-colors disabled:opacity-50"
                 aria-label="Add Passkey"
               >
                 {addingPasskey ? (
@@ -331,7 +331,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <Key className="w-4 h-4 text-muted-foreground shrink-0" />
                       <div className="min-w-0">
-                        <p className="text-subhead font-medium text-foreground truncate">{pk.name || 'Passkey'}</p>
+                        <p className="text-subhead text-foreground truncate">{pk.name || 'Passkey'}</p>
                         <p className="text-caption1 text-muted-foreground/70">
                           Added {pk.createdAt ? new Date(pk.createdAt).toLocaleDateString() : 'recently'}
                         </p>
@@ -362,7 +362,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
           <div className="rounded-xl border border-destructive/30 bg-sidebar p-4">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
               <div>
-                <p className="text-subhead font-medium text-foreground">Delete Account</p>
+                <p className="text-subhead text-foreground">Delete Account</p>
                 <p className="text-caption1 text-muted-foreground/70 mt-0.5">
                   Request permanent account deletion
                 </p>
@@ -398,7 +398,7 @@ export function SettingsView({ initialData }: SettingsViewProps) {
                   value={deleteText}
                   onChange={(e) => setDeleteText(e.target.value)}
                   placeholder="DELETE"
-                  className="w-full h-10 px-3 bg-muted/20 border border-border/40 rounded-lg text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
+                  className="w-full h-10 px-3 bg-muted/20 border border-border/40 rounded-lg text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30"
                 />
               </div>
 

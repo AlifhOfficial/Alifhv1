@@ -258,19 +258,19 @@ export function ListingDetailView({
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
           {/* Admin Preview Banner */}
           {isAdminPreview && listing && (
-            <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+            <div className="mb-4 rounded-xl border border-warning/30 bg-warning-muted p-4">
               <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                <AlertTriangle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-amber-700 dark:text-amber-400">Admin Preview</p>
-                  <p className="text-subhead text-amber-600 dark:text-amber-400/80 mt-0.5">
+                  <p className="font-semibold text-warning">Admin Preview</p>
+                  <p className="text-subhead text-warning mt-0.5">
                     This listing is <strong>{listing.moderationStatus}</strong> ({listing.lifecycleStatus}).
                     It is not visible to the public.
                   </p>
                 </div>
                 <Link
                   href="/admin-dashboard/listings"
-                  className="text-subhead font-medium text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap"
+                  className="text-subhead text-warning hover:underline whitespace-nowrap"
                 >
                   ← Back to Moderation
                 </Link>
@@ -400,9 +400,9 @@ export function ListingDetailView({
                 {listing && (
                   <div className="py-4 flex items-start gap-3">
                     {isDealerListing ? (
-                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                     ) : (
-                      <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                      <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
                     )}
                     <p className="text-subhead text-muted-foreground leading-relaxed font-medium">
                       {isDealerListing 

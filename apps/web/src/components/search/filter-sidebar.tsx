@@ -93,7 +93,7 @@ export function FilterSidebar({
             onClick={() => onFilterChange({ condition: params.condition === 'new' ? undefined : 'new' })}
             className={cn(
               'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
-              'text-callout font-medium tracking-tight transition-colors duration-100',
+              'text-callout tracking-tight transition-colors duration-100',
               params.condition === 'new'
                 ? 'bg-muted text-foreground font-semibold'
                 : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -106,7 +106,7 @@ export function FilterSidebar({
             onClick={() => onFilterChange({ isBlkListing: params.isBlkListing ? undefined : true })}
             className={cn(
               'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
-              'text-callout font-medium tracking-tight transition-colors duration-100',
+              'text-callout tracking-tight transition-colors duration-100',
               params.isBlkListing
                 ? 'bg-muted text-foreground font-semibold'
                 : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -119,7 +119,7 @@ export function FilterSidebar({
             onClick={() => onFilterChange({ isBlackTierPartner: params.isBlackTierPartner ? undefined : true })}
             className={cn(
               'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
-              'text-callout font-medium tracking-tight transition-colors duration-100',
+              'text-callout tracking-tight transition-colors duration-100',
               params.isBlackTierPartner
                 ? 'bg-muted text-foreground font-semibold'
                 : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -216,7 +216,7 @@ export function FilterSidebar({
           onClick={() => onFilterChange({ isNegotiable: params.isNegotiable ? undefined : true })}
           className={cn(
             'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
-            'text-callout font-medium tracking-tight transition-colors duration-100',
+            'text-callout tracking-tight transition-colors duration-100',
             params.isNegotiable
               ? 'bg-muted text-foreground font-semibold'
               : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -260,7 +260,7 @@ export function FilterSidebar({
               onClick={() => onFilterChange({ sellerType: params.sellerType === type ? undefined : type })}
               className={cn(
                 'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
-                'text-callout font-medium tracking-tight transition-colors duration-100',
+                'text-callout tracking-tight transition-colors duration-100',
                 params.sellerType === type
                   ? 'bg-muted text-foreground font-semibold'
                   : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -293,7 +293,7 @@ export function FilterSidebar({
               }}
               className={cn(
                 'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
-                'text-callout font-medium tracking-tight transition-colors duration-100',
+                'text-callout tracking-tight transition-colors duration-100',
                 params.exportStatus?.includes(status.value)
                   ? 'bg-muted text-foreground font-semibold'
                   : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -411,7 +411,7 @@ function MultiSelectFilter({
             onClick={() => toggleOption(option.value)}
             className={cn(
               'flex items-center justify-between w-full pl-3 pr-3 py-2.5 rounded-md touch-manipulation',
-              'text-callout font-medium tracking-tight transition-colors duration-100',
+              'text-callout tracking-tight transition-colors duration-100',
               isSelected
                 ? 'bg-muted text-foreground font-semibold'
                 : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -434,7 +434,7 @@ function MultiSelectFilter({
         <button
           type="button"
           onClick={() => setShowAll(!showAll)}
-          className="text-callout font-medium text-muted-foreground hover:text-foreground pl-3 py-2.5 text-left transition-colors touch-manipulation"
+          className="text-callout text-muted-foreground hover:text-foreground pl-3 py-2.5 text-left transition-colors touch-manipulation"
         >
           {showAll ? 'Show less' : `Show ${options.length - maxVisible} more`}
         </button>
@@ -578,7 +578,7 @@ function RangeFilter({
               step={step}
               className="flex-1 h-10 rounded-lg text-callout"
             />
-            <span className="text-muted-foreground/40 text-callout font-medium">–</span>
+            <span className="text-muted-foreground/40 text-callout">–</span>
           </>
         )}
         <Input

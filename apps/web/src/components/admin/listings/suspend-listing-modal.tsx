@@ -74,7 +74,7 @@ export function SuspendListingModal({ open, listing, onClose, onSuccess }: Suspe
       <div className="relative z-50 w-full max-w-md bg-background border border-border rounded-xl shadow-xl m-4">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-headline font-medium">Suspend Listing</h2>
+          <h2 className="text-headline">Suspend Listing</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-secondary/50 rounded-full transition-colors"
@@ -90,7 +90,7 @@ export function SuspendListingModal({ open, listing, onClose, onSuccess }: Suspe
           </p>
           
           <div className="rounded-xl border border-border p-4">
-            <p className="text-subhead font-medium">
+            <p className="text-subhead">
               {listing.year} {listing.make} {listing.model}
               {listing.trim && ` ${listing.trim}`}
             </p>
@@ -99,8 +99,8 @@ export function SuspendListingModal({ open, listing, onClose, onSuccess }: Suspe
 
           {/* Reason Input */}
           <div className="space-y-3">
-            <label className="text-subhead font-medium">
-              Suspension Reason <span className="text-red-500">*</span>
+            <label className="text-subhead">
+              Suspension Reason <span className="text-destructive">*</span>
             </label>
             <textarea
               value={reason}
@@ -113,8 +113,8 @@ export function SuspendListingModal({ open, listing, onClose, onSuccess }: Suspe
 
           {/* Error */}
           {error && (
-            <div className="rounded-xl border border-red-500/20 p-3">
-              <p className="text-subhead text-red-500">{error}</p>
+            <div className="rounded-xl border border-destructive/20 p-3">
+              <p className="text-subhead text-destructive">{error}</p>
             </div>
           )}
 
@@ -130,7 +130,7 @@ export function SuspendListingModal({ open, listing, onClose, onSuccess }: Suspe
             <button
               onClick={handleSuspend}
               disabled={isSubmitting || !reason.trim()}
-              className="flex-1 px-5 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white text-subhead transition-colors disabled:opacity-50"
+              className="flex-1 px-5 py-2 rounded-full bg-warning hover:bg-yellow-600 text-white text-subhead transition-colors disabled:opacity-50"
             >
               {isSubmitting ? 'Suspending...' : 'Suspend'}
             </button>

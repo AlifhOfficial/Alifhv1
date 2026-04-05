@@ -259,7 +259,7 @@ export function ConversationList({
           <h1 className="text-callout sm:text-headline font-semibold text-foreground">Messages</h1>
           <div className="flex items-center gap-2 sm:gap-3">
             {totalUnread > 0 && (
-              <span className="w-2 h-2 bg-red-500 rounded-full" />
+              <span className="w-2 h-2 bg-destructive rounded-full" />
             )}
             <button
               onClick={() => onListToggle(false)}
@@ -285,7 +285,7 @@ export function ConversationList({
               placeholder="Search..."
               value={searchInput}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 text-caption1 sm:text-subhead font-medium bg-muted/50 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:bg-muted rounded-lg transition-colors"
+              className="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 text-caption1 sm:text-subhead bg-muted/50 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:bg-muted rounded-lg transition-colors"
             />
           </div>
         )}
@@ -312,7 +312,7 @@ export function ConversationList({
               <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-sidebar flex items-center justify-center">
                 <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground/40" />
               </div>
-              <p className="text-caption1 sm:text-subhead font-medium text-muted-foreground/70">
+              <p className="text-caption1 sm:text-subhead text-muted-foreground/70">
                 {searchQuery ? 'No results' : 'No messages'}
               </p>
             </div>

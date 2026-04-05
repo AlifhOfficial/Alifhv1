@@ -154,7 +154,7 @@ export function ShowroomInventory({ showroom, initialListings }: ShowroomInvento
                 <Button
                   variant="ghost"
                   onClick={handleCollapse}
-                  className="h-11 px-6 text-subhead font-medium text-muted-foreground hover:text-foreground rounded-lg"
+                  className="h-11 px-6 text-subhead text-muted-foreground hover:text-foreground rounded-lg"
                 >
                   <ChevronUp className="w-4 h-4 mr-2" />
                   Show Less
@@ -447,7 +447,7 @@ function ShowroomCarCard({ listing, priority = false, index: _index, theme: _the
         
         {/* Price */}
         {price && (
-          <p className="text-subhead font-medium text-foreground mt-3">
+          <p className="text-subhead text-foreground mt-3">
             {price}
           </p>
         )}

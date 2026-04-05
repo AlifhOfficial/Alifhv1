@@ -12,8 +12,8 @@ export default function UserBannedPage() {
     <div className="min-h-[calc(100vh-3.5rem)] flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center space-y-6">
         {/* Icon */}
-        <div className="w-20 h-20 mx-auto rounded-full bg-red-500/10 flex items-center justify-center">
-          <Ban className="w-10 h-10 text-red-500" />
+        <div className="w-20 h-20 mx-auto rounded-full bg-destructive-muted flex items-center justify-center">
+          <Ban className="w-10 h-10 text-destructive" />
         </div>
 
         {/* Title */}
@@ -28,7 +28,7 @@ export default function UserBannedPage() {
 
         {/* Info Box */}
         <div className="bg-muted/50 rounded-xl p-4 text-left space-y-3">
-          <h3 className="font-medium text-subhead">What can you do?</h3>
+          <h3 className="text-subhead">What can you do?</h3>
           <ul className="text-subhead text-muted-foreground space-y-2">
             <li className="flex items-start gap-2">
               <span className="text-primary mt-1">•</span>
@@ -45,7 +45,7 @@ export default function UserBannedPage() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="mailto:support@revvup.ae?subject=Ban%20Appeal"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-subhead font-medium"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-subhead"
           >
             <Mail className="w-4 h-4" />
             Submit Appeal

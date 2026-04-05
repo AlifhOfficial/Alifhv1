@@ -100,20 +100,20 @@ const formatDate = (dateString: string | null) => {
 // Status badge component
 const StatusBadge = ({ status }: { status: string }) => {
   const config: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
-    active: { bg: 'bg-green-500/10', text: 'text-green-500', icon: <CheckCircle2 className="w-3 h-3" /> },
-    trialing: { bg: 'bg-blue-500/10', text: 'text-blue-500', icon: <Clock className="w-3 h-3" /> },
-    past_due: { bg: 'bg-yellow-500/10', text: 'text-yellow-500', icon: <AlertCircle className="w-3 h-3" /> },
-    canceled: { bg: 'bg-red-500/10', text: 'text-red-500', icon: <AlertCircle className="w-3 h-3" /> },
+    active: { bg: 'bg-success-muted', text: 'text-success', icon: <CheckCircle2 className="w-3 h-3" /> },
+    trialing: { bg: 'bg-primary-muted', text: 'text-primary', icon: <Clock className="w-3 h-3" /> },
+    past_due: { bg: 'bg-warning-muted', text: 'text-warning', icon: <AlertCircle className="w-3 h-3" /> },
+    canceled: { bg: 'bg-destructive-muted', text: 'text-destructive', icon: <AlertCircle className="w-3 h-3" /> },
     inactive: { bg: 'bg-muted', text: 'text-muted-foreground', icon: <Clock className="w-3 h-3" /> },
-    paid: { bg: 'bg-green-500/10', text: 'text-green-500', icon: <CheckCircle2 className="w-3 h-3" /> },
-    open: { bg: 'bg-yellow-500/10', text: 'text-yellow-500', icon: <Clock className="w-3 h-3" /> },
-    upcoming: { bg: 'bg-blue-500/10', text: 'text-blue-500', icon: <Calendar className="w-3 h-3" /> },
+    paid: { bg: 'bg-success-muted', text: 'text-success', icon: <CheckCircle2 className="w-3 h-3" /> },
+    open: { bg: 'bg-warning-muted', text: 'text-warning', icon: <Clock className="w-3 h-3" /> },
+    upcoming: { bg: 'bg-primary-muted', text: 'text-primary', icon: <Calendar className="w-3 h-3" /> },
   };
   
   const { bg, text, icon } = config[status] || config.inactive;
   
   return (
-    <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption1 font-medium', bg, text)}>
+    <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption1', bg, text)}>
       {icon}
       {status.replace('_', ' ').toUpperCase()}
     </span>
@@ -335,7 +335,7 @@ export default function PartnerBillingPage() {
                   )}
                   <div className="grid grid-cols-2 gap-4 text-subhead">
                     <span className="text-muted-foreground">Current charge</span>
-                    <span className="font-semibold text-green-500 text-right">0 AED</span>
+                    <span className="font-semibold text-success text-right">0 AED</span>
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-subhead">
                     <span className="text-muted-foreground">Founding access ends</span>
@@ -347,7 +347,7 @@ export default function PartnerBillingPage() {
                       {subData.priceAED.toLocaleString()} AED
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-caption1 text-blue-500 pt-1">
+                  <div className="flex items-center gap-2 text-caption1 text-primary pt-1">
                     <Clock className="w-3 h-3" />
                     <span>{daysRemaining} days remaining in founding period</span>
                   </div>
@@ -371,7 +371,7 @@ export default function PartnerBillingPage() {
               {/* Cancellation notice */}
               {subData.cancelAtPeriodEnd && (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-subhead text-yellow-500">
+                  <div className="flex items-center gap-2 text-subhead text-warning">
                     <AlertCircle className="w-4 h-4" />
                     <span>Subscription ends {formatDate(subData.cancelAt || subData.currentPeriodEnd)}</span>
                   </div>
@@ -402,7 +402,7 @@ export default function PartnerBillingPage() {
                   <button
                     onClick={() => handleCheckout('flow')}
                     disabled={checkoutPlan !== null}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-subhead font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-subhead hover:bg-primary/90 transition-colors disabled:opacity-50"
                   >
                     {checkoutPlan === 'flow' ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
@@ -414,7 +414,7 @@ export default function PartnerBillingPage() {
                   <button
                     onClick={() => handleCheckout('black')}
                     disabled={checkoutPlan !== null}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-zinc-900 text-white text-subhead font-medium hover:bg-zinc-800 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-zinc-900 text-white text-subhead hover:bg-zinc-800 transition-colors disabled:opacity-50"
                   >
                     {checkoutPlan === 'black' ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
@@ -431,7 +431,7 @@ export default function PartnerBillingPage() {
                 <button
                   onClick={handleOpenPortal}
                   disabled={portalLoading}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-subhead font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-subhead hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
                   {portalLoading ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />
@@ -446,12 +446,12 @@ export default function PartnerBillingPage() {
 
           {/* Upcoming Payment */}
           {upcomingInvoice && (
-            <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Calendar className="w-5 h-5 text-blue-500" />
+                  <Calendar className="w-5 h-5 text-primary" />
                   <div>
-                    <p className="text-subhead font-medium text-foreground">Upcoming Payment</p>
+                    <p className="text-subhead text-foreground">Upcoming Payment</p>
                     <p className="text-caption1 text-muted-foreground">
                       {formatDate(upcomingInvoice.dueDate)}
                     </p>
@@ -469,7 +469,7 @@ export default function PartnerBillingPage() {
             <div className="p-4">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-muted-foreground" />
-                <h3 className="text-subhead font-medium text-foreground">Invoices</h3>
+                <h3 className="text-subhead text-foreground">Invoices</h3>
               </div>
             </div>
 
@@ -501,7 +501,7 @@ export default function PartnerBillingPage() {
                       <TableCell className="text-subhead text-muted-foreground">
                         {formatDate(invoice.created || invoice.paidAt)}
                       </TableCell>
-                      <TableCell className="text-subhead font-medium">
+                      <TableCell className="text-subhead">
                         {formatAED(invoice.amount)}
                       </TableCell>
                       <TableCell>

@@ -84,10 +84,10 @@ const SECONDARY_STATUS_TABS = [
 
 function _getColorClasses(color?: string) {
   switch (color) {
-    case 'blue': return 'text-blue-600 dark:text-blue-400';
-    case 'green': return 'text-green-600 dark:text-green-400';
-    case 'yellow': return 'text-yellow-600 dark:text-yellow-400';
-    case 'red': return 'text-red-600 dark:text-red-400';
+    case 'blue': return 'text-primary';
+    case 'green': return 'text-success';
+    case 'yellow': return 'text-warning';
+    case 'red': return 'text-destructive';
     case 'purple': return 'text-purple-600 dark:text-purple-400';
     case 'gray': return 'text-gray-600 dark:text-gray-400';
     default: return 'text-foreground';
@@ -300,13 +300,13 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
       case 'pending':
         return [
           { action: 'confirm', label: 'Confirm', color: 'bg-emerald-500 hover:bg-emerald-600 text-white' },
-          { action: 'reject', label: 'Reject', color: 'bg-red-500/10 hover:bg-red-500/20 text-red-600' },
+          { action: 'reject', label: 'Reject', color: 'bg-destructive-muted hover:bg-destructive/15 text-destructive' },
         ];
       case 'confirmed':
         return [
-          { action: 'complete', label: 'Complete', color: 'bg-blue-500 hover:bg-blue-600 text-white' },
-          { action: 'noShow', label: 'No-show', color: 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600' },
-          { action: 'cancel', label: 'Cancel', color: 'bg-red-500/10 hover:bg-red-500/20 text-red-600' },
+          { action: 'complete', label: 'Complete', color: 'bg-primary hover:bg-primary/90 text-white' },
+          { action: 'noShow', label: 'No-show', color: 'bg-warning-muted hover:bg-warning/15 text-warning' },
+          { action: 'cancel', label: 'Cancel', color: 'bg-destructive-muted hover:bg-destructive/15 text-destructive' },
         ];
       default:
         return [];
@@ -638,7 +638,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                   if (!open) resetQuickAction();
                 }}>
                   <PopoverTrigger asChild>
-                    <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-caption1 sm:text-subhead font-medium flex items-center gap-1.5 sm:gap-2 transition-colors flex-shrink-0">
+                    <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 text-caption1 sm:text-subhead flex items-center gap-1.5 sm:gap-2 transition-colors flex-shrink-0">
                       <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       <span className="hidden sm:inline">Quick Action</span>
                       <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -672,7 +672,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                           <button
                             onClick={handleLookupByCode}
                             disabled={isLookingUp || !verifyCode.trim()}
-                            className="h-10 px-3 sm:px-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-subhead font-medium transition-colors disabled:opacity-50 flex-shrink-0"
+                            className="h-10 px-3 sm:px-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-subhead transition-colors disabled:opacity-50 flex-shrink-0"
                           >
                             {isLookingUp ? '...' : 'Go'}
                           </button>
@@ -686,11 +686,11 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                         {/* Booking summary */}
                         <div className="p-3 rounded-lg bg-muted/30 border border-border/40 space-y-2">
                           <div className="flex items-start justify-between gap-2">
-                            <p className="text-subhead font-medium text-foreground line-clamp-1 min-w-0">{lookedUpBooking.listingTitle}</p>
+                            <p className="text-subhead text-foreground line-clamp-1 min-w-0">{lookedUpBooking.listingTitle}</p>
                             <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap ${
-                              lookedUpBooking.status === 'pending' ? 'bg-yellow-500/10 text-yellow-600' :
-                              lookedUpBooking.status === 'confirmed' ? 'bg-green-500/10 text-green-600' :
-                              lookedUpBooking.status === 'completed' ? 'bg-blue-500/10 text-blue-600' :
+                              lookedUpBooking.status === 'pending' ? 'bg-warning-muted text-warning' :
+                              lookedUpBooking.status === 'confirmed' ? 'bg-success-muted text-success' :
+                              lookedUpBooking.status === 'completed' ? 'bg-primary-muted text-primary' :
                               'bg-muted text-muted-foreground'
                             }`}>
                               {lookedUpBooking.status.toUpperCase()}
@@ -876,14 +876,14 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
                     <button
                       onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                       disabled={currentPage === 1 || isLoading}
-                      className="px-3 py-1.5 text-caption2 sm:text-caption1 font-medium rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="px-3 py-1.5 text-caption2 sm:text-caption1 rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       Previous
                     </button>
                     <button
                       onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                       disabled={currentPage === totalPages || isLoading}
-                      className="px-3 py-1.5 text-caption2 sm:text-caption1 font-medium rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="px-3 py-1.5 text-caption2 sm:text-caption1 rounded-md sm:rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
                     </button>
@@ -899,7 +899,7 @@ export function StaffBookingsView({ initialData, initialSettingsData, filters }:
           <div className="pb-24 sm:pb-32">
             <button
               onClick={() => setActiveTab('bookings')}
-              className="text-caption1 sm:text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors mb-4"
+              className="text-caption1 sm:text-subhead text-muted-foreground hover:text-foreground transition-colors mb-4"
             >
               ← Back to bookings
             </button>

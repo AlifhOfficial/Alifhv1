@@ -63,8 +63,8 @@ export function FavoritesPageClient({ initialStatus, initialListings }: Favorite
       )}
 
       {error && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-3 sm:p-4">
-          <p className="text-caption1 sm:text-subhead text-red-500">{error}</p>
+        <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 sm:p-4">
+          <p className="text-caption1 sm:text-subhead text-destructive">{error}</p>
         </div>
       )}
 

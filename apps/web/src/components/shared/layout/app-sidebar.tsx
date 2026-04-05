@@ -239,7 +239,7 @@ function SidebarFooterContent({
                   <div className="flex flex-col min-w-0 flex-1 gap-0.5">
                     <span className="truncate font-bold text-subhead tracking-tight">{displayName}</span>
                     {isStaffMode && (
-                      <span className="truncate text-caption1 font-medium text-sidebar-foreground/70">
+                      <span className="truncate text-caption1 text-sidebar-foreground/70">
                         {staffOverride?.companyName}
                       </span>
                     )}
@@ -539,7 +539,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                               <span className="relative inline-flex">
                                 <Icon className="size-4" />
                                 {hasUnreadMessages && (
-                                  <span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-rose-500" aria-hidden="true" />
+                                  <span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-favorite" aria-hidden="true" />
                                 )}
                               </span>
                             )}

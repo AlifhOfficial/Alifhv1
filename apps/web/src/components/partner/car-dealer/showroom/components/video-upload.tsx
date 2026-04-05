@@ -89,7 +89,7 @@ export function VideoUpload({
                 <button
                   onClick={onRemove}
                   disabled={isUploading}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm hover:bg-red-500/50 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm hover:bg-destructive/50 transition-colors"
                 >
                   <X className="w-4 h-4 text-white" />
                   <span className="text-caption1 text-white font-medium">Remove</span>
@@ -102,7 +102,7 @@ export function VideoUpload({
               )}
             </div>
             {/* Status badge */}
-            <div className="absolute bottom-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded bg-green-600/90 backdrop-blur-sm">
+            <div className="absolute bottom-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded bg-success/90 backdrop-blur-sm">
               <CheckCircle2 className="w-3 h-3 text-white" />
               <span className="text-[10px] text-white font-medium uppercase tracking-wider">Saved</span>
             </div>

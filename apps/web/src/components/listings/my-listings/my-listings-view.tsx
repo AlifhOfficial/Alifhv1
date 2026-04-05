@@ -28,7 +28,7 @@ const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: strin
   },
   active: { 
     icon: CheckCircle2, 
-    color: 'text-blue-500', 
+    color: 'text-primary', 
     message: 'No active listings', 
     subMessage: 'Published listings visible to buyers will appear here' 
   },
@@ -40,19 +40,19 @@ const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: strin
   },
   draft: { 
     icon: FileText, 
-    color: 'text-amber-500', 
+    color: 'text-warning', 
     message: 'No drafts', 
     subMessage: 'Unfinished listings you\'re working on will appear here' 
   },
   in_review: { 
     icon: Clock, 
-    color: 'text-blue-500', 
+    color: 'text-primary', 
     message: 'Nothing in review', 
     subMessage: 'Listings awaiting moderation will appear here' 
   },
   rejected: { 
     icon: XCircle, 
-    color: 'text-red-500', 
+    color: 'text-destructive', 
     message: 'No rejected listings', 
     subMessage: 'Listings that need changes will appear here' 
   },
@@ -76,7 +76,7 @@ const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: strin
   },
   suspended: { 
     icon: Ban, 
-    color: 'text-red-500', 
+    color: 'text-destructive', 
     message: 'No suspended listings', 
     subMessage: 'Listings flagged for policy review will appear here' 
   },
@@ -480,7 +480,7 @@ export function MyListingsView({
           <div className="flex items-center gap-2">
             {listingType === 'work' && blackQuota && (
               <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
-                <span className="text-[10px] sm:text-caption1 font-medium">
+                <span className="text-[10px] sm:text-caption1">
                   {blackQuota.blackListingQuota - blackQuota.activeBlackListingsCount} of {blackQuota.blackListingQuota} BLK
                 </span>
               </div>
@@ -536,7 +536,7 @@ export function MyListingsView({
 
           {/* New Listing */}
           <Link href={newListingUrl}>
-            <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-medium transition-colors hover:bg-primary/90 flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <button className="h-9 sm:h-10 px-3 sm:px-4 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead transition-colors hover:bg-primary/90 flex items-center gap-1.5 sm:gap-2 shrink-0">
               <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden xs:inline">New</span>
             </button>
@@ -660,7 +660,7 @@ export function MyListingsView({
             <h3 className="text-subhead font-semibold text-foreground mb-1">No listings yet</h3>
             <p className="text-caption1 text-muted-foreground/60 leading-relaxed mb-4">Create your first listing to get started</p>
             <Link href={newListingUrl}>
-              <button className="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead font-medium transition-colors hover:bg-primary/90">
+              <button className="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-primary-foreground text-caption1 sm:text-subhead transition-colors hover:bg-primary/90">
                 Create Listing
               </button>
             </Link>
@@ -742,13 +742,13 @@ export function MyListingsView({
             {/* Icon */}
             <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
               confirmModal.variant === 'destructive' ? 'bg-destructive/10' :
-              confirmModal.variant === 'warning' ? 'bg-amber-500/10' :
+              confirmModal.variant === 'warning' ? 'bg-warning-muted' :
               confirmModal.variant === 'success' ? 'bg-emerald-500/10' :
               'bg-primary/10'
             }`}>
               <AlertTriangle className={`w-6 h-6 ${
                 confirmModal.variant === 'destructive' ? 'text-destructive' :
-                confirmModal.variant === 'warning' ? 'text-amber-500' :
+                confirmModal.variant === 'warning' ? 'text-warning' :
                 confirmModal.variant === 'success' ? 'text-emerald-500' :
                 'text-primary'
               }`} />
@@ -773,7 +773,7 @@ export function MyListingsView({
                   confirmModal.variant === 'destructive' 
                     ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' 
                     : confirmModal.variant === 'warning'
-                    ? 'bg-amber-500 text-white hover:bg-amber-600'
+                    ? 'bg-warning text-white hover:bg-warning'
                     : confirmModal.variant === 'success'
                     ? 'bg-emerald-500 text-white hover:bg-emerald-600'
                     : 'bg-primary text-primary-foreground hover:bg-primary/90'

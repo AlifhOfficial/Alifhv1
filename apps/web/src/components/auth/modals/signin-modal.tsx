@@ -90,7 +90,7 @@ export function SignInModal({
           </div>
           
           {/* Tagline - Bottom */}
-          <p className="text-white/40 text-caption1 font-medium">
+          <p className="text-white/40 text-caption1">
             More than a marketplace. Join the Revolution.
           </p>
         </div>
@@ -124,7 +124,7 @@ export function SignInModal({
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label htmlFor="email" className="text-footnote font-medium text-muted-foreground">
+                <label htmlFor="email" className="text-footnote text-muted-foreground">
                   Email
                 </label>
                 <div className="relative">
@@ -157,13 +157,13 @@ export function SignInModal({
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-footnote font-medium text-muted-foreground">
+                  <label htmlFor="password" className="text-footnote text-muted-foreground">
                     Password
                   </label>
                   <button
                     type="button"
                     onClick={onSwitchToForgotPassword}
-                    className="text-caption1 font-medium text-muted-foreground/70 hover:text-foreground transition-colors"
+                    className="text-caption1 text-muted-foreground/70 hover:text-foreground transition-colors"
                   >
                     Forgot?
                   </button>
@@ -206,7 +206,7 @@ export function SignInModal({
             {(onGoogleSignIn || onSwitchToMagicLink) && (
               <div className="flex items-center gap-4 my-5">
                 <div className="flex-1 h-px bg-border/50" />
-                <span className="text-caption2 font-medium text-muted-foreground/50 uppercase tracking-wider">or</span>
+                <span className="text-caption2 text-muted-foreground/50 uppercase tracking-wider">or</span>
                 <div className="flex-1 h-px bg-border/50" />
               </div>
             )}

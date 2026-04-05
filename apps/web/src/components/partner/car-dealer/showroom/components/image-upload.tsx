@@ -68,7 +68,7 @@ export function ImageUpload({
             <button
               onClick={onRemove}
               disabled={isUploading}
-              className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-red-500/50 transition-colors"
+              className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-destructive/50 transition-colors"
             >
               <X className="w-4 h-4 text-white" />
             </button>

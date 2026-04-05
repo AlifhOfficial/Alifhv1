@@ -27,10 +27,10 @@ interface UserBookingCardProps {
 
 // Status colors with background for badge style
 const STATUS_CONFIG: Record<string, { bg: string; text: string }> = {
-  pending: { bg: 'bg-amber-500/10', text: 'text-amber-600' },
+  pending: { bg: 'bg-warning-muted', text: 'text-warning' },
   confirmed: { bg: 'bg-emerald-500/10', text: 'text-emerald-600' },
-  completed: { bg: 'bg-blue-500/10', text: 'text-blue-600' },
-  cancelled: { bg: 'bg-red-500/10', text: 'text-red-600' },
+  completed: { bg: 'bg-primary-muted', text: 'text-primary' },
+  cancelled: { bg: 'bg-destructive-muted', text: 'text-destructive' },
   no_show: { bg: 'bg-muted', text: 'text-muted-foreground' },
   expired: { bg: 'bg-muted', text: 'text-muted-foreground' },
 };
@@ -146,7 +146,7 @@ export function UserBookingCard({
           {/* Status + Code */}
           <div className="flex items-center gap-3 mt-auto pt-3">
             <span className={cn(
-              "text-caption1 font-medium px-2 py-0.5 rounded-full",
+              "text-caption1 px-2 py-0.5 rounded-full",
               STATUS_CONFIG[booking.status]?.bg || 'bg-muted',
               STATUS_CONFIG[booking.status]?.text || 'text-muted-foreground'
             )}>
@@ -178,16 +178,16 @@ export function UserBookingCard({
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
             <div>
               <p className="text-caption1 text-muted-foreground mb-1">Attendees</p>
-              <p className="text-subhead font-medium text-foreground">{booking.numberOfAttendees} {booking.numberOfAttendees === 1 ? 'person' : 'people'}</p>
+              <p className="text-subhead text-foreground">{booking.numberOfAttendees} {booking.numberOfAttendees === 1 ? 'person' : 'people'}</p>
             </div>
             <div>
               <p className="text-caption1 text-muted-foreground mb-1">Booked</p>
-              <p className="text-subhead font-medium text-foreground">{formatFullDate(booking.createdAt)}</p>
+              <p className="text-subhead text-foreground">{formatFullDate(booking.createdAt)}</p>
             </div>
             {booking.confirmedAt && (
               <div>
                 <p className="text-caption1 text-muted-foreground mb-1">Confirmed</p>
-                <p className="text-subhead font-medium text-foreground">{formatFullDate(booking.confirmedAt)}</p>
+                <p className="text-subhead text-foreground">{formatFullDate(booking.confirmedAt)}</p>
               </div>
             )}
           </div>
@@ -209,7 +209,7 @@ export function UserBookingCard({
           {/* Cancellation Reason */}
           {(booking.cancellationReason || booking.cancellationNotes) && (
             <div className="p-4 rounded-lg bg-destructive/5">
-              <p className="text-caption1 font-medium text-destructive mb-1">Cancellation Reason</p>
+              <p className="text-caption1 text-destructive mb-1">Cancellation Reason</p>
               <p className="text-subhead text-foreground">
                 {booking.cancellationNotes || booking.cancellationReason?.replace(/_/g, ' ')}
               </p>
@@ -218,8 +218,8 @@ export function UserBookingCard({
 
           {/* Rejection Reason */}
           {booking.rejectionReason && (
-            <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
-              <p className="text-caption1 font-medium text-red-500 mb-1">Rejection Reason</p>
+            <div className="p-4 rounded-lg bg-destructive/5 border border-destructive/20">
+              <p className="text-caption1 text-destructive mb-1">Rejection Reason</p>
               <p className="text-subhead text-foreground">{booking.rejectionReason}</p>
             </div>
           )}
@@ -229,7 +229,7 @@ export function UserBookingCard({
             <button
               onClick={onCancel}
               disabled={isActionLoading}
-              className="h-9 px-4 rounded-lg text-destructive hover:bg-destructive/10 text-subhead font-medium transition-colors disabled:opacity-50"
+              className="h-9 px-4 rounded-lg text-destructive hover:bg-destructive/10 text-subhead transition-colors disabled:opacity-50"
             >
               Cancel Booking
             </button>

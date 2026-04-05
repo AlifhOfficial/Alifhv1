@@ -60,7 +60,7 @@ export function AchievementCard({ achievement, onUpdate, onRemove, onImageUpload
             value={form.title}
             onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
             placeholder="Achievement title"
-            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
+            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
           <input
             value={form.issuer || ''}
@@ -78,7 +78,7 @@ export function AchievementCard({ achievement, onUpdate, onRemove, onImageUpload
           <div className="flex gap-2">
             <button
               onClick={() => { onUpdate(form); setIsEditing(false); }}
-              className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+              className="text-caption1 text-primary hover:text-primary font-semibold"
             >
               Save
             </button>
@@ -97,7 +97,7 @@ export function AchievementCard({ achievement, onUpdate, onRemove, onImageUpload
               <img src={imageUrl} alt={achievement.title} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
             ) : (
               <div className="w-10 h-10 rounded-lg bg-muted/30 flex items-center justify-center flex-shrink-0">
-                <Award className="w-4 h-4 text-amber-500" />
+                <Award className="w-4 h-4 text-warning" />
               </div>
             )}
             <div>

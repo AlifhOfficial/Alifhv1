@@ -124,7 +124,7 @@ export function ListingsContent({
       <div className="flex items-center justify-center min-h-[40vh]">
         <div className="text-center max-w-xs">
           {showFilters ? (
-            <XCircle className="w-8 h-8 mx-auto mb-4 text-red-500" strokeWidth={1.5} />
+            <XCircle className="w-8 h-8 mx-auto mb-4 text-destructive" strokeWidth={1.5} />
           ) : (
             <Package className="w-8 h-8 mx-auto mb-4 text-muted-foreground/60" strokeWidth={1.5} />
           )}
@@ -144,7 +144,7 @@ export function ListingsContent({
           ) : (
             <Button 
               onClick={handleSellClick}
-              className="min-w-[140px] bg-blue-600 text-white hover:bg-blue-700"
+              className="min-w-[140px] bg-primary text-white hover:bg-primary/90"
             >
               Create Listing
             </Button>

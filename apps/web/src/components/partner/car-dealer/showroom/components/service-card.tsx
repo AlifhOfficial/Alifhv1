@@ -60,7 +60,7 @@ export function ServiceCard({ service, onUpdate, onRemove, onImageUpload, isUplo
             value={form.title}
             onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
             placeholder="Service title"
-            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
+            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
           <textarea
             value={form.description || ''}
@@ -72,7 +72,7 @@ export function ServiceCard({ service, onUpdate, onRemove, onImageUpload, isUplo
           <div className="flex gap-2">
             <button
               onClick={() => { onUpdate(form); setIsEditing(false); }}
-              className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+              className="text-caption1 text-primary hover:text-primary font-semibold"
             >
               Save
             </button>

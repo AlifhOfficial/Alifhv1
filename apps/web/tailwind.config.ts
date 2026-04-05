@@ -1,5 +1,19 @@
 import type { Config } from "tailwindcss";
 
+const mobileNeutralScale = {
+	50: 'hsl(var(--neutral-50))',
+	100: 'hsl(var(--neutral-100))',
+	200: 'hsl(var(--neutral-200))',
+	300: 'hsl(var(--neutral-300))',
+	400: 'hsl(var(--neutral-400))',
+	500: 'hsl(var(--neutral-500))',
+	600: 'hsl(var(--neutral-600))',
+	700: 'hsl(var(--neutral-700))',
+	800: 'hsl(var(--neutral-800))',
+	900: 'hsl(var(--neutral-900))',
+	950: 'hsl(var(--neutral-950))',
+};
+
 const config: Config = {
   darkMode: ["variant", [".dark &", ".charcoal &"]],
   content: [
@@ -41,16 +55,31 @@ const config: Config = {
   		'title2':      ['1.375rem',{ lineHeight: '1.27', fontWeight: '600' }],                            //  22px
   		'title3':      ['1.25rem', { lineHeight: '1.25', fontWeight: '600' }],                            //  20px
   		'headline':    ['1.0625rem',{ lineHeight: '1.29', fontWeight: '600' }],                           //  17px
-  		'callout':     ['1rem',    { lineHeight: '1.31', fontWeight: '500' }],                            //  16px
-  		'subhead':     ['0.9375rem',{ lineHeight: '1.33', fontWeight: '500' }],                           //  15px
-  		'footnote':    ['0.8125rem',{ lineHeight: '1.38', fontWeight: '500' }],                           //  13px
-  		'caption1':    ['0.75rem', { lineHeight: '1.33', fontWeight: '500' }],                            //  12px
-  		'caption2':    ['0.6875rem',{ lineHeight: '1.18', fontWeight: '500' }],                           //  11px
+		'callout':     ['1rem',    { lineHeight: '1.31', fontWeight: '600' }],                            //  16px
+		'subhead':     ['0.9375rem',{ lineHeight: '1.33', fontWeight: '600' }],                           //  15px
+		'footnote':    ['0.8125rem',{ lineHeight: '1.38', fontWeight: '600' }],                           //  13px
+		'caption1':    ['0.75rem', { lineHeight: '1.33', fontWeight: '600' }],                            //  12px
+		'caption2':    ['0.6875rem',{ lineHeight: '1.18', fontWeight: '600' }],                           //  11px
   	},
   	extend: {
   		colors: {
+			gray: mobileNeutralScale,
+			slate: mobileNeutralScale,
+			zinc: mobileNeutralScale,
+			neutral: mobileNeutralScale,
+			stone: mobileNeutralScale,
   			background: 'hsl(var(--background))',
+			'background-secondary': 'hsl(var(--background-secondary))',
+			'background-tertiary': 'hsl(var(--background-tertiary))',
   			foreground: 'hsl(var(--foreground))',
+			black: 'hsl(var(--black))',
+			white: 'hsl(var(--white))',
+			label: {
+				DEFAULT: 'hsl(var(--foreground))',
+				secondary: 'hsl(var(--label-secondary))',
+				tertiary: 'hsl(var(--label-tertiary))',
+				quaternary: 'hsl(var(--label-quaternary))'
+			},
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
@@ -59,9 +88,15 @@ const config: Config = {
   				DEFAULT: 'hsl(var(--popover))',
   				foreground: 'hsl(var(--popover-foreground))'
   			},
+			surface: {
+				DEFAULT: 'hsl(var(--card))',
+				secondary: 'hsl(var(--surface-secondary))',
+				tertiary: 'hsl(var(--surface-tertiary))'
+			},
   			primary: {
   				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
+				foreground: 'hsl(var(--primary-foreground))',
+				muted: 'hsl(var(--primary-muted))'
   			},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
@@ -77,7 +112,28 @@ const config: Config = {
   			},
   			destructive: {
   				DEFAULT: 'hsl(var(--destructive))',
-  				foreground: 'hsl(var(--destructive-foreground))'
+				foreground: 'hsl(var(--destructive-foreground))',
+				muted: 'hsl(var(--destructive-muted))'
+			},
+			success: {
+				DEFAULT: 'hsl(var(--success))',
+				foreground: 'hsl(var(--success-foreground))',
+				muted: 'hsl(var(--success-muted))'
+			},
+			warning: {
+				DEFAULT: 'hsl(var(--warning))',
+				foreground: 'hsl(var(--warning-foreground))',
+				muted: 'hsl(var(--warning-muted))'
+			},
+			info: {
+				DEFAULT: 'hsl(var(--info))',
+				foreground: 'hsl(var(--info-foreground))',
+				muted: 'hsl(var(--info-muted))'
+			},
+			favorite: {
+				DEFAULT: 'hsl(var(--favorite))',
+				foreground: 'hsl(var(--favorite-foreground))',
+				muted: 'hsl(var(--favorite-muted))'
   			},
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',

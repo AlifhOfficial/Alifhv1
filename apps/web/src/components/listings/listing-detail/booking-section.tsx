@@ -29,7 +29,7 @@ export function BookingSection({
 
       <button
         onClick={onBookTestDrive}
-        className="w-full py-3 px-4 bg-green-500 text-white rounded-full text-subhead font-bold hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+        className="w-full py-3 px-4 bg-success text-white rounded-full text-subhead font-bold hover:bg-success/90 transition-colors flex items-center justify-center gap-2"
       >
         <Calendar className="w-4 h-4" />
         Book Test Drive

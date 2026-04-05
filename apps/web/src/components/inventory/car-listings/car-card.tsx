@@ -257,13 +257,13 @@ export function CarCard({
     <div className={cn(
       "group relative flex flex-col overflow-hidden rounded-[20px] transition-all duration-300 w-full",
       isBlkListing 
-        ? "bg-white dark:bg-[#0D0D0D] border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-2xl hover:shadow-zinc-900/50" 
+        ? "bg-background dark:bg-card border border-border hover:border-border/80 hover:shadow-2xl hover:shadow-black/20" 
         : "bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-md",
       className
     )}>
       {/* Subtle top accent for BLK listings */}
       {isBlkListing && (
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-300 dark:via-zinc-700 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       )}
 
       {/* Image Section */}
@@ -315,7 +315,7 @@ export function CarCard({
         {/* Price */}
         <p className={cn(
           "text-title3 sm:text-headline font-black tracking-tight leading-none",
-          isBlkListing ? "text-zinc-900 dark:text-white" : "text-blue-600 dark:text-blue-500"
+          isBlkListing ? "text-zinc-900 dark:text-white" : "text-primary dark:text-primary"
         )}>
           {formatPrice(price)}
         </p>
@@ -390,7 +390,7 @@ export function CarCard({
             </span>
             {!isBlackTierPartner && (partnerVerified || kycVerified) && (
               <CheckCircle2 
-                className="w-3.5 h-3.5 flex-shrink-0 text-blue-500" 
+                className="w-3.5 h-3.5 flex-shrink-0 text-primary" 
                 aria-label="Verified" 
               />
             )}
@@ -425,7 +425,7 @@ export function CarCard({
                 "relative rounded-full p-1.5 transition-all active:scale-95 touch-manipulation",
                 favorite.isUpdating && "opacity-50",
                 mounted && favorite.isFavorite
-                  ? "text-rose-500 active:bg-rose-500/10"
+                  ? "text-favorite active:bg-favorite/10"
                   : isBlkListing 
                     ? "text-zinc-400 dark:text-zinc-400 active:bg-zinc-200 dark:active:bg-zinc-800 active:text-zinc-600 dark:active:text-zinc-200" 
                     : "text-muted-foreground active:bg-muted active:text-foreground"
@@ -439,7 +439,7 @@ export function CarCard({
               }}
             >
               {showHearts && (
-                <span className="absolute inset-0 rounded-full bg-rose-500/20 animate-ripple" />
+                <span className="absolute inset-0 rounded-full bg-favorite/20 animate-ripple" />
               )}
               <Heart
                 className={cn(
@@ -456,7 +456,7 @@ export function CarCard({
                 "relative rounded-full p-1.5 transition-all active:scale-95 touch-manipulation",
                 superlike.isUpdating && "opacity-50",
                 mounted && superlike.isSuperliked
-                  ? "text-yellow-500 active:bg-yellow-500/10"
+                  ? "text-warning active:bg-warning-muted"
                   : isBlkListing 
                     ? "text-zinc-400 dark:text-zinc-400 active:bg-zinc-200 dark:active:bg-zinc-800 active:text-zinc-600 dark:active:text-zinc-200" 
                     : "text-muted-foreground active:bg-muted active:text-foreground"
@@ -470,7 +470,7 @@ export function CarCard({
               }}
             >
               {showSparkles && (
-                <span className="absolute inset-0 rounded-full bg-yellow-500/20 animate-ripple" />
+                <span className="absolute inset-0 rounded-full bg-warning/20 animate-ripple" />
               )}
               <Zap
                 className={cn(
@@ -559,14 +559,14 @@ export function CarCard({
               />
             )}
             <span className={cn(
-              "text-footnote font-medium",
+              "text-footnote",
               isBlkListing ? "text-zinc-700 dark:text-zinc-200" : "text-foreground"
             )}>
               {displaySellerName}
             </span>
             {!isBlackTierPartner && (partnerVerified || kycVerified) && (
               <CheckCircle2 
-                className="w-[18px] h-[18px] flex-shrink-0 text-blue-500" 
+                className="w-[18px] h-[18px] flex-shrink-0 text-primary" 
                 aria-label="Verified" 
               />
             )}
@@ -603,8 +603,8 @@ export function CarCard({
                 favorite.isUpdating && "opacity-50 cursor-not-allowed",
                 mounted && favorite.isFavorite
                   ? isBlkListing 
-                    ? "text-rose-500 dark:text-rose-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50" 
-                    : "text-rose-500 hover:bg-muted/50"
+                    ? "text-favorite dark:text-rose-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50" 
+                    : "text-favorite hover:bg-muted/50"
                   : isBlkListing 
                     ? "text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 active:bg-zinc-200 dark:active:bg-zinc-700/50" 
                     : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:bg-muted/70"
@@ -619,7 +619,7 @@ export function CarCard({
               }}
             >
               {showHearts && (
-                <span className="absolute inset-0 rounded-full bg-rose-500/20 animate-ripple" />
+                <span className="absolute inset-0 rounded-full bg-favorite/20 animate-ripple" />
               )}
               <Heart
                 className={cn(
@@ -638,8 +638,8 @@ export function CarCard({
                 superlike.isUpdating && "opacity-50 cursor-not-allowed",
                 mounted && superlike.isSuperliked
                   ? isBlkListing 
-                    ? "text-yellow-500 dark:text-yellow-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50" 
-                    : "text-yellow-500 hover:bg-muted/50"
+                    ? "text-warning hover:bg-zinc-100 dark:hover:bg-zinc-800/50" 
+                    : "text-warning hover:bg-muted/50"
                   : isBlkListing 
                     ? "text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 active:bg-zinc-200 dark:active:bg-zinc-700/50" 
                     : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50 active:bg-muted/70"
@@ -654,7 +654,7 @@ export function CarCard({
               }}
             >
               {showSparkles && (
-                <span className="absolute inset-0 rounded-full bg-yellow-500/20 animate-ripple" />
+                <span className="absolute inset-0 rounded-full bg-warning/20 animate-ripple" />
               )}
               <Zap
                 className={cn(

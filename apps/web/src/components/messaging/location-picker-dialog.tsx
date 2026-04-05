@@ -127,7 +127,7 @@ export function LocationPickerDialog({
                 <p className="text-subhead text-muted-foreground mt-2 text-center">{error}</p>
                 <button
                   onClick={handleRefreshLocation}
-                  className="mt-3 px-4 py-2 bg-blue-500 text-white text-subhead font-medium rounded-lg hover:bg-blue-600 transition-colors"
+                  className="mt-3 px-4 py-2 bg-primary text-white text-subhead rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   Try Again
                 </button>
@@ -141,7 +141,7 @@ export function LocationPickerDialog({
                 />
                 {/* Pin overlay */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full">
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center shadow-lg">
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg">
                     <MapPin className="w-4 h-4 text-white" />
                   </div>
                 </div>
@@ -196,7 +196,7 @@ export function LocationPickerDialog({
               className={cn(
                 'flex-[2] py-2.5 px-4 font-medium rounded-xl transition-colors flex items-center justify-center gap-2',
                 location && !isSending
-                  ? 'bg-blue-500 text-white hover:bg-blue-600'
+                  ? 'bg-primary text-white hover:bg-primary/90'
                   : 'bg-muted text-muted-foreground cursor-not-allowed'
               )}
             >

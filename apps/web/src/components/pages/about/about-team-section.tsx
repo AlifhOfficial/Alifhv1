@@ -45,7 +45,7 @@ export function AboutTeamSection() {
         {/* Quote Card */}
         <div className="max-w-3xl mx-auto">
           <div className="p-8 rounded-xl bg-primary text-primary-foreground text-center">
-            <blockquote className="text-headline sm:text-title3 font-medium leading-relaxed">
+            <blockquote className="text-headline sm:text-title3 leading-relaxed">
               "Self-funded. Independent. No investors, no board meetings, no exit strategy. 
               Just building a product we'd want to use ourselves."
             </blockquote>

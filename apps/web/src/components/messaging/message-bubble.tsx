@@ -125,7 +125,7 @@ export function MessageBubble({
               'break-words transition-all duration-200',
               compact ? 'rounded-xl px-3 py-2' : 'rounded-2xl sm:rounded-[18px] px-3 sm:px-4 py-2 sm:py-2.5',
               isOwn
-                ? 'bg-blue-500 text-white rounded-br-md'
+                ? 'bg-primary text-white rounded-br-md'
                 : 'bg-sidebar border border-border/30 text-foreground rounded-bl-md',
               isOptimistic && 'opacity-70'
             )}
@@ -196,7 +196,7 @@ export function MessageBubble({
         {/* Failed indicator - only show X if message failed to send */}
         {isOwn && !isOptimistic && !message.deliveredAt && !message.createdAt && (
           <div className="mt-1 px-2 flex items-center justify-end">
-            <X className="h-3 w-3 text-red-500" aria-label="Failed to send" />
+            <X className="h-3 w-3 text-destructive" aria-label="Failed to send" />
           </div>
         )}
 

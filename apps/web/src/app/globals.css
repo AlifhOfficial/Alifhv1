@@ -49,120 +49,174 @@
     --ls-snug:   -0.01em;   /* h2 section headings */
     --ls-normal:  0em;
 
-    /* Base Colors */
+    /* Mobile neutral ramp — single grayscale source for Tailwind gray/slate/zinc/neutral/stone */
+    --neutral-50: 0 0% 97%;
+    --neutral-100: 0 0% 95%;
+    --neutral-200: 0 0% 90%;
+    --neutral-300: 0 0% 82%;
+    --neutral-400: 0 0% 78%;
+    --neutral-500: 0 0% 68%;
+    --neutral-600: 0 0% 55%;
+    --neutral-700: 0 0% 45%;
+    --neutral-800: 0 0% 22%;
+    --neutral-900: 0 0% 10%;
+    --neutral-950: 0 0% 2%;
+
+    /* Apple HIG semantic palette — aligned to mobile theme.ts */
+    --black: 0 0% 0%;
+    --white: 0 0% 100%;
+
+    /* Labels */
+    --foreground: 0 0% 2%;
+    --label-secondary: 0 0% 32%;
+    --label-tertiary: 0 0% 45%;
+    --label-quaternary: 0 0% 58%;
+
+    /* Backgrounds / surfaces */
     --background: 0 0% 100%;
-    --foreground: 0 0% 5%;
-    
-    /* Card & Popover */
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 5%;
+    --background-secondary: 0 0% 97%;
+    --background-tertiary: 0 0% 95%;
+    --card: 0 0% 94%;
+    --card-foreground: var(--foreground);
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 5%;
-    
-    /* Primary (Blue) - #0066FF */
-    --primary: 216 100% 50%;
-    --primary-foreground: 0 0% 98%;
-    
-    /* Secondary & Muted */
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 10%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    
-    /* Accent */
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 10%;
-    
-    /* Destructive (Red) */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    
-    /* Border & Input */
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 221.2 83.2% 53.3%;
+    --popover-foreground: var(--foreground);
+    --surface-secondary: 0 0% 91%;
+    --surface-tertiary: 0 0% 88%;
+
+    /* Interaction */
+    --primary: 211 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-muted: 211 100% 50% / 12%;
+    --secondary: 0 0% 97%;
+    --secondary-foreground: 0 0% 6%;
+    --muted: 0 0% 95%;
+    --muted-foreground: var(--label-tertiary);
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 6%;
+
+    /* Semantic colors */
+    --destructive: 4 100% 59%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-muted: 4 100% 59% / 14%;
+    --success: 135 59% 49%;
+    --success-foreground: 0 0% 100%;
+    --success-muted: 135 59% 49% / 15%;
+    --warning: 35 100% 50%;
+    --warning-foreground: 0 0% 100%;
+    --warning-muted: 35 100% 50% / 15%;
+    --info: 211 100% 50%;
+    --info-foreground: 0 0% 100%;
+    --info-muted: 211 100% 50% / 12%;
+    --favorite: 343 100% 58%;
+    --favorite-foreground: 0 0% 100%;
+    --favorite-muted: 343 100% 58% / 12%;
+
+    /* Border / input */
+    --border: 0 0% 88%;
+    --input: 0 0% 94%;
+    --ring: var(--primary);
     --radius: 0.5rem;
-    
+
     /* Sidebar */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 10%;
-    --sidebar-primary: 0 0% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 0 0% 95%;
-    --sidebar-accent-foreground: 0 0% 10%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 221.2 83.2% 53.3%;
-    
-    /* Glass (Pills, bubbles - solid backgrounds with subtle border) */
+    --sidebar-background: 0 0% 97%;
+    --sidebar-foreground: 0 0% 6%;
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-accent: 0 0% 94%;
+    --sidebar-accent-foreground: 0 0% 6%;
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--ring);
+
+    /* Glass */
     --glass-background: 0 0% 100%;
     --glass-border: 0 0% 0% / 14%;
   }
 
   .dark {
-    /* Base Colors - Pure OLED black */
-    --background: 0 0% 0%;
+    --black: 0 0% 0%;
+    --white: 0 0% 100%;
+
+    /* Labels */
     --foreground: 0 0% 98%;
-    
-    /* Card & Popover - Match sidebar styling */
+    --label-secondary: 0 0% 68%;
+    --label-tertiary: 0 0% 55%;
+    --label-quaternary: 0 0% 42%;
+
+    /* Backgrounds / surfaces */
+    --background: 0 0% 0%;
+    --background-secondary: 0 0% 10%;
+    --background-tertiary: 0 0% 15%;
     --card: 0 0% 10%;
-    --card-foreground: 0 0% 98%;
+    --card-foreground: var(--foreground);
     --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 98%;
-    
-    /* Primary (Blue) - #0066FF */
-    --primary: 216 100% 50%;
-    --primary-foreground: 0 0% 98%;
-    
-    /* Secondary & Muted */
+    --popover-foreground: var(--foreground);
+    --surface-secondary: 0 0% 15%;
+    --surface-tertiary: 0 0% 20%;
+
+    /* Interaction */
+    --primary: 210 100% 52%;
+    --primary-foreground: 0 0% 100%;
+    --primary-muted: 210 100% 52% / 18%;
     --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 68%;  /* #ADADAD — matches mobile secondaryLabelDark */
-    
-    /* Accent */
+    --muted-foreground: var(--label-secondary);
     --accent: 0 0% 15%;
     --accent-foreground: 0 0% 98%;
-    
-    /* Destructive (Red) */
-    --destructive: 0 62.8% 50%;
-    --destructive-foreground: 0 0% 98%;
-    
-    /* Border & Input */
-    --border: 0 0% 22%;  /* #383838 — matches mobile opaqueSeparatorDark */
-    --input: 0 0% 15%;   /* elevated surface for input backgrounds */
-    --ring: 217.2 91.2% 59.8%;
-    
+
+    /* Semantic colors */
+    --destructive: 5 100% 61%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-muted: 5 100% 61% / 22%;
+    --success: 134 64% 50%;
+    --success-foreground: 0 0% 100%;
+    --success-muted: 134 64% 50% / 20%;
+    --warning: 36 100% 52%;
+    --warning-foreground: 0 0% 100%;
+    --warning-muted: 36 100% 52% / 20%;
+    --info: 211 100% 69%;
+    --info-foreground: 0 0% 100%;
+    --info-muted: 211 100% 69% / 15%;
+    --favorite: 343 100% 61%;
+    --favorite-foreground: 0 0% 100%;
+    --favorite-muted: 343 100% 61% / 16%;
+
+    /* Border / input */
+    --border: 0 0% 22%;
+    --input: 0 0% 15%;
+    --ring: var(--primary);
+
     /* Sidebar */
     --sidebar-background: 0 0% 10%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
     --sidebar-accent: 0 0% 16%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 16%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-    
-    /* Glass (Pills, bubbles - solid backgrounds with subtle border) */
+    --sidebar-ring: var(--ring);
+
+    /* Glass */
     --glass-background: 0 0% 5%;
     --glass-border: 0 0% 100% / 22%;
   }
 
-  /* Charcoal Theme - macOS-inspired Design System */
+  /* Charcoal Theme - aligned to the mobile neutral system */
   .charcoal {
-    /* Neutral Scale - macOS grays */
+    /* Legacy charcoal ladder kept in sync with the mobile palette */
     --neutral-0: 0 0% 100%;
-    --neutral-5: 0 0% 96%;
-    --neutral-10: 0 0% 93%;
-    --neutral-20: 0 0% 86%;
-    --neutral-30: 0 0% 76%;
-    --neutral-40: 0 0% 68%;
-    --neutral-50: 0 0% 53%;
-    --neutral-60: 0 0% 44%;
-    --neutral-70: 0 0% 36%;
-    --neutral-80: 0 0% 25%;
-    --neutral-90: 0 0% 15%;
-    --neutral-95: 0 0% 12%;
-    --neutral-100: 0 0% 8%;
+    --neutral-5: 0 0% 97%;
+    --neutral-10: 0 0% 95%;
+    --neutral-20: 0 0% 89%;
+    --neutral-30: 0 0% 82%;
+    --neutral-40: 0 0% 78%;
+    --neutral-50: 0 0% 68%;
+    --neutral-60: 0 0% 55%;
+    --neutral-70: 0 0% 45%;
+    --neutral-80: 0 0% 32%;
+    --neutral-90: 0 0% 22%;
+    --neutral-95: 0 0% 10%;
+    --neutral-100: 0 0% 2%;
     
     /* Opacity Variants - White */
     --opacity-white-100: 0 0% 100% / 100%;
@@ -197,40 +251,47 @@
     --shadow-image-inset: inset 0 0 0 0.5px hsl(var(--opacity-white-16));
     --shadow-dropdown: 0 8px 24px hsl(0 0% 0% / 48%);
     
-    /* Base Colors - Deep charcoal base */
-    --background: 0 0% 7%;
+    /* Charcoal now aliases the same Apple semantic root palette */
     --foreground: 0 0% 98%;
-    
-    /* Card & Popover - Elevated surfaces with better contrast */
+    --label-secondary: 0 0% 68%;
+    --label-tertiary: 0 0% 55%;
+    --label-quaternary: 0 0% 42%;
+    --background: 0 0% 7%;
+    --background-secondary: 0 0% 12%;
+    --background-tertiary: 0 0% 16%;
     --card: 0 0% 11%;
-    --card-foreground: 0 0% 98%;
+    --card-foreground: var(--foreground);
     --popover: 0 0% 13%;
-    --popover-foreground: 0 0% 98%;
-    
-    /* Primary - Blue accent #0066FF */
-    --primary: 216 100% 50%;
-    --primary-foreground: 0 0% 98%;
-    
-    /* Secondary - Subtle surfaces */
+    --popover-foreground: var(--foreground);
+    --surface-secondary: 0 0% 16%;
+    --surface-tertiary: 0 0% 20%;
+    --primary: 210 100% 52%;
+    --primary-foreground: 0 0% 100%;
+    --primary-muted: 210 100% 52% / 18%;
     --secondary: 0 0% 16%;
     --secondary-foreground: 0 0% 98%;
-    
-    /* Muted - Subdued elements with better contrast */
     --muted: 0 0% 16%;
-    --muted-foreground: 0 0% 68%;
-    
-    /* Accent - Interactive elements */
+    --muted-foreground: var(--label-secondary);
     --accent: 0 0% 18%;
     --accent-foreground: 0 0% 98%;
-    
-    /* Destructive - Error states */
-    --destructive: 0 63% 50%;
-    --destructive-foreground: 0 0% 98%;
-    
-    /* Border & Input - More visible separators */
+    --destructive: 5 100% 61%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-muted: 5 100% 61% / 22%;
+    --success: 134 64% 50%;
+    --success-foreground: 0 0% 100%;
+    --success-muted: 134 64% 50% / 20%;
+    --warning: 36 100% 52%;
+    --warning-foreground: 0 0% 100%;
+    --warning-muted: 36 100% 52% / 20%;
+    --info: 211 100% 69%;
+    --info-foreground: 0 0% 100%;
+    --info-muted: 211 100% 69% / 15%;
+    --favorite: 343 100% 61%;
+    --favorite-foreground: 0 0% 100%;
+    --favorite-muted: 343 100% 61% / 16%;
     --border: 0 0% 22%;
     --input: 0 0% 16%;
-    --ring: 217 91% 60%;
+    --ring: var(--primary);
     
     /* Chart Colors */
     --chart-1: 217 91% 60%;
@@ -239,15 +300,15 @@
     --chart-4: 280 67% 47%;
     --chart-5: 25 95% 53%;
     
-    /* Sidebar - macOS-style sidebar with lighter charcoal */
+    /* Sidebar */
     --sidebar-background: 0 0% 14%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
     --sidebar-accent: 0 0% 20%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 0 0% 22%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-ring: var(--ring);
     
     /* Glass (Pills, bubbles - solid backgrounds with subtle border) */
     --glass-background: 0 0% 12%;
@@ -317,13 +378,13 @@
   
   p {
     @apply text-caption1 sm:text-subhead;
-    font-weight: var(--fw-medium);
+    font-weight: var(--fw-semibold);
     line-height: var(--lh-footnote);
   }
   
   small, .text-meta {
     @apply text-caption1;
-    font-weight: var(--fw-medium);
+    font-weight: var(--fw-semibold);
   }
   
   /* Buttons and interactive text */

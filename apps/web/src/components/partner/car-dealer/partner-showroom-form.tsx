@@ -394,7 +394,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
             <Link
               href="/partner-dashboard/showroom/preview"
               target="_blank"
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-subhead font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-subhead border border-border/40 rounded-lg hover:bg-muted/30 transition-colors"
             >
               Preview
             </Link>
@@ -404,7 +404,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
                 <Link
                   href={`/showroom/${showroom.slug}`}
                   target="_blank"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-subhead font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-subhead border border-border/40 rounded-lg hover:bg-muted/30 transition-colors"
                 >
                   <ExternalLink className="w-4 h-4" />
                   View Live
@@ -412,7 +412,7 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
                 <button
                   onClick={handleUnpublish}
                   disabled={isPublishing}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-subhead font-medium border border-border/40 rounded-lg hover:bg-muted/30 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-subhead border border-border/40 rounded-lg hover:bg-muted/30 transition-colors disabled:opacity-50"
                 >
                   {isPublishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Archive className="w-4 h-4" />}
                   Unpublish
@@ -434,9 +434,9 @@ export function PartnerShowroomForm({ partnerId, initialShowroom = null }: Partn
         {/* Status Banner */}
         {showroom.isPublished && (
           <div className="flex items-center gap-3 p-4 rounded-xl bg-sidebar border border-border/40 mb-6">
-            <div className="w-2 h-2 rounded-full bg-green-500" />
+            <div className="w-2 h-2 rounded-full bg-success" />
             <div className="flex-1">
-              <p className="text-subhead font-medium text-foreground">Live at <span className="text-muted-foreground">/showroom/{showroom.slug}</span></p>
+              <p className="text-subhead text-foreground">Live at <span className="text-muted-foreground">/showroom/{showroom.slug}</span></p>
               <p className="text-caption1 text-muted-foreground">{showroom.viewCount} views</p>
             </div>
           </div>

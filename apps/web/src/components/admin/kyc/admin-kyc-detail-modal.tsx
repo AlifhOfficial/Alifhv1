@@ -83,10 +83,10 @@ function InfoRow({
         <span className="text-subhead font-semibold text-muted-foreground/70">{label}</span>
       </div>
       <span className={cn(
-        "text-subhead font-medium text-right max-w-[60%] break-all",
-        highlight === 'good' && "text-green-500",
-        highlight === 'bad' && "text-red-500",
-        highlight === 'warning' && "text-amber-500",
+        "text-subhead text-right max-w-[60%] break-all",
+        highlight === 'good' && "text-success",
+        highlight === 'bad' && "text-destructive",
+        highlight === 'warning' && "text-warning",
         !highlight && "text-foreground",
         mono && "font-mono text-caption1"
       )}>
@@ -117,20 +117,20 @@ function ScoreCard({
   return (
     <div className={cn(
       "p-4 rounded-lg text-center border",
-      isGood ? "bg-green-500/10 border-green-500/20" : hasScore ? "bg-red-500/10 border-red-500/20" : "bg-muted/20 border-border/40"
+      isGood ? "bg-success-muted border-success/20" : hasScore ? "bg-destructive-muted border-destructive/20" : "bg-muted/20 border-border/40"
     )}>
       <p className="text-caption1 text-muted-foreground mb-1">{label}</p>
       {hasScore ? (
         <p className={cn(
           "text-title3 font-bold",
-          isGood ? "text-green-500" : "text-red-500"
+          isGood ? "text-success" : "text-destructive"
         )}>
           {Math.round(score)}%
         </p>
       ) : status ? (
         <p className={cn(
           "text-subhead font-semibold",
-          status === 'Approved' ? "text-green-500" : "text-red-500"
+          status === 'Approved' ? "text-success" : "text-destructive"
         )}>
           {status}
         </p>
@@ -209,7 +209,7 @@ function CollapsibleSection({
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between border-b border-border/40 pb-2 hover:text-primary transition-colors"
       >
-        <h3 className="text-callout font-medium tracking-tight">{title}</h3>
+        <h3 className="text-callout tracking-tight">{title}</h3>
         {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
       </button>
       {isOpen && children}
@@ -225,17 +225,17 @@ function StatusBadge({ status }: { status: KycRecordData['status'] }) {
   const configMap = {
     pending: {
       icon: Clock,
-      color: 'bg-amber-500/10 text-amber-500',
+      color: 'bg-warning-muted text-warning',
       label: 'Pending Review',
     },
     approved: {
       icon: CheckCircle2,
-      color: 'bg-green-500/10 text-green-500',
+      color: 'bg-success-muted text-success',
       label: 'Approved',
     },
     rejected: {
       icon: XCircle,
-      color: 'bg-red-500/10 text-red-500',
+      color: 'bg-destructive-muted text-destructive',
       label: 'Rejected',
     },
     expired: {
@@ -339,7 +339,7 @@ export function AdminKycDetailModal({
           {/* Verification Scores */}
           <section className="space-y-4">
             <div className="border-b border-border/40 pb-2">
-              <h3 className="text-callout font-medium tracking-tight">Verification Results</h3>
+              <h3 className="text-callout tracking-tight">Verification Results</h3>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -618,15 +618,15 @@ export function AdminKycDetailModal({
           {displayRecord.warnings && displayRecord.warnings.length > 0 && (
             <section className="space-y-4">
               <div className="border-b border-border/40 pb-2">
-                <h3 className="text-callout font-medium tracking-tight text-amber-500">Warnings</h3>
+                <h3 className="text-callout tracking-tight text-warning">Warnings</h3>
               </div>
               
               <div className="space-y-2">
                 {displayRecord.warnings.map((warning, index) => (
-                  <div key={index} className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                    <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <div key={index} className="flex items-start gap-3 p-4 rounded-xl bg-warning-muted border border-warning/20">
+                    <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-subhead font-medium text-amber-500">{warning.risk}</p>
+                      <p className="text-subhead text-warning">{warning.risk}</p>
                       <p className="text-subhead text-muted-foreground">{warning.description}</p>
                     </div>
                   </div>
@@ -639,13 +639,13 @@ export function AdminKycDetailModal({
           {displayRecord.status === 'rejected' && displayRecord.rejectionReason && (
             <section className="space-y-4">
               <div className="border-b border-border/40 pb-2">
-                <h3 className="text-callout font-medium tracking-tight text-red-500">Rejection Details</h3>
+                <h3 className="text-callout tracking-tight text-destructive">Rejection Details</h3>
               </div>
               
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-                <XCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-destructive-muted border border-destructive/20">
+                <XCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-subhead font-medium text-red-500">
+                  <p className="text-subhead text-destructive">
                     {displayRecord.rejectionReason}
                   </p>
                 </div>
@@ -661,7 +661,7 @@ export function AdminKycDetailModal({
             <button
               onClick={onReject}
               disabled={isRejecting}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 text-subhead font-semibold transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-destructive-muted hover:bg-destructive/15 text-destructive text-subhead font-semibold transition-colors disabled:opacity-50"
             >
               <ShieldX className="w-4 h-4" />
               {isRejecting ? 'Rejecting...' : 'Reject'}
@@ -669,7 +669,7 @@ export function AdminKycDetailModal({
             <button
               onClick={onApprove}
               disabled={isApproving}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-green-500 hover:bg-green-600 text-white text-subhead font-semibold transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-success hover:bg-success/90 text-white text-subhead font-semibold transition-colors disabled:opacity-50"
             >
               <ShieldCheck className="w-4 h-4" />
               {isApproving ? 'Approving...' : 'Approve KYC'}

@@ -331,14 +331,14 @@ export function UserBookingsView({ initialData, filters }: UserBookingsViewProps
               <button
                 onClick={() => updateRoute({ page: Math.max(1, currentPage - 1) })}
                 disabled={currentPage === 1 || isLoading}
-                className="px-3 py-1.5 text-caption2 sm:text-caption1 font-medium rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 text-caption2 sm:text-caption1 rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Previous
               </button>
               <button
                 onClick={() => updateRoute({ page: Math.min(totalPages, currentPage + 1) })}
                 disabled={currentPage === totalPages || isLoading}
-                className="px-3 py-1.5 text-caption2 sm:text-caption1 font-medium rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 text-caption2 sm:text-caption1 rounded-lg bg-secondary/50 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>

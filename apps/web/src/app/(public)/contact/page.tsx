@@ -36,13 +36,13 @@ export default function ContactPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-subhead font-semibold text-muted-foreground/70">Response Time</p>
-              <p className="text-subhead font-medium text-foreground mt-0.5">24-48 hours</p>
+              <p className="text-subhead text-foreground mt-0.5">24-48 hours</p>
             </div>
             <div>
               <p className="text-subhead font-semibold text-muted-foreground/70">Email</p>
               <a 
                 href="mailto:support@revvup.ae" 
-                className="text-subhead font-medium text-primary hover:underline mt-0.5 inline-block"
+                className="text-subhead text-primary hover:underline mt-0.5 inline-block"
               >
                 support@revvup.ae
               </a>

@@ -97,7 +97,7 @@ export default function AdminBanAppealsPage() {
         {/* Stats */}
         <section className="space-y-6">
           <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-headline font-medium tracking-tight">Overview</h3>
+            <h3 className="text-headline tracking-tight">Overview</h3>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 border-y border-border divide-x divide-border bg-background">
@@ -107,8 +107,8 @@ export default function AdminBanAppealsPage() {
                 selectedStatus === 'pending' ? 'bg-secondary/40' : ''
               }`}
             >
-              <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Pending Review</span>
-              <span className="text-title2 font-semibold text-yellow-500">{pendingCount}</span>
+              <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Pending Review</span>
+              <span className="text-title2 font-semibold text-warning">{pendingCount}</span>
             </button>
             
             <button
@@ -117,8 +117,8 @@ export default function AdminBanAppealsPage() {
                 selectedStatus === 'approved' ? 'bg-secondary/40' : ''
               }`}
             >
-              <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Approved</span>
-              <span className="text-title2 font-semibold text-green-500">{approvedCount}</span>
+              <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Approved</span>
+              <span className="text-title2 font-semibold text-success">{approvedCount}</span>
             </button>
             
             <button
@@ -127,7 +127,7 @@ export default function AdminBanAppealsPage() {
                 selectedStatus === 'rejected' ? 'bg-secondary/40' : ''
               }`}
             >
-              <span className="text-caption1 font-medium text-muted-foreground uppercase tracking-widest">Rejected</span>
+              <span className="text-caption1 text-muted-foreground uppercase tracking-widest">Rejected</span>
               <span className="text-title2 font-semibold text-foreground">{rejectedCount}</span>
             </button>
           </div>
@@ -136,36 +136,36 @@ export default function AdminBanAppealsPage() {
         {/* Filter Toggle */}
         <section className="space-y-6">
           <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-headline font-medium tracking-tight">Appeals</h3>
+            <h3 className="text-headline tracking-tight">Appeals</h3>
             <div className="flex gap-2">
               <button
                 onClick={() => setSelectedStatus('all')}
-                className={`px-3 py-1 rounded-md text-caption1 font-medium transition-colors ${
-                  selectedStatus === 'all' ? 'bg-blue-500 text-white' : 'bg-secondary text-foreground hover:bg-secondary/80'
+                className={`px-3 py-1 rounded-md text-caption1 transition-colors ${
+                  selectedStatus === 'all' ? 'bg-primary text-white' : 'bg-secondary text-foreground hover:bg-secondary/80'
                 }`}
               >
                 All
               </button>
               <button
                 onClick={() => setSelectedStatus('pending')}
-                className={`px-3 py-1 rounded-md text-caption1 font-medium transition-colors ${
-                  selectedStatus === 'pending' ? 'bg-blue-500 text-white' : 'bg-secondary text-foreground hover:bg-secondary/80'
+                className={`px-3 py-1 rounded-md text-caption1 transition-colors ${
+                  selectedStatus === 'pending' ? 'bg-primary text-white' : 'bg-secondary text-foreground hover:bg-secondary/80'
                 }`}
               >
                 Pending
               </button>
               <button
                 onClick={() => setSelectedStatus('approved')}
-                className={`px-3 py-1 rounded-md text-caption1 font-medium transition-colors ${
-                  selectedStatus === 'approved' ? 'bg-blue-500 text-white' : 'bg-secondary text-foreground hover:bg-secondary/80'
+                className={`px-3 py-1 rounded-md text-caption1 transition-colors ${
+                  selectedStatus === 'approved' ? 'bg-primary text-white' : 'bg-secondary text-foreground hover:bg-secondary/80'
                 }`}
               >
                 Approved
               </button>
               <button
                 onClick={() => setSelectedStatus('rejected')}
-                className={`px-3 py-1 rounded-md text-caption1 font-medium transition-colors ${
-                  selectedStatus === 'rejected' ? 'bg-blue-500 text-white' : 'bg-secondary text-foreground hover:bg-secondary/80'
+                className={`px-3 py-1 rounded-md text-caption1 transition-colors ${
+                  selectedStatus === 'rejected' ? 'bg-primary text-white' : 'bg-secondary text-foreground hover:bg-secondary/80'
                 }`}
               >
                 Rejected
@@ -192,13 +192,13 @@ export default function AdminBanAppealsPage() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-callout font-medium text-foreground">
+                        <h3 className="text-callout text-foreground">
                           {user?.name || 'Unknown User'}
                         </h3>
-                        <span className={`px-2 py-0.5 text-caption1 font-medium rounded-md ${
-                          appeal.status === 'pending' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
-                          appeal.status === 'approved' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
-                          'bg-red-500/10 text-red-600 dark:text-red-400'
+                        <span className={`px-2 py-0.5 text-caption1 rounded-md ${
+                          appeal.status === 'pending' ? 'bg-warning-muted text-warning' :
+                          appeal.status === 'approved' ? 'bg-success-muted text-success' :
+                          'bg-destructive-muted text-destructive'
                         }`}>
                           {appeal.status}
                         </span>
@@ -216,11 +216,11 @@ export default function AdminBanAppealsPage() {
 
                   {/* Ban Info */}
                   {user?.banned && (
-                    <div className="mb-4 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-xl">
-                      <p className="text-caption1 font-medium text-red-900 dark:text-red-200 mb-1 uppercase tracking-wider">Current Ban</p>
-                      <p className="text-subhead text-red-700 dark:text-red-300">{user.banReason}</p>
+                    <div className="mb-4 p-4 bg-destructive-muted bg-destructive-muted border border-destructive/20 border-destructive/30 rounded-xl">
+                      <p className="text-caption1 text-destructive mb-1 uppercase tracking-wider">Current Ban</p>
+                      <p className="text-subhead text-destructive">{user.banReason}</p>
                       {user.banExpires && (
-                        <p className="text-caption1 text-red-600 dark:text-red-400 mt-1">
+                        <p className="text-caption1 text-destructive mt-1">
                           Expires: {new Date(user.banExpires).toLocaleDateString('en-AE')}
                         </p>
                       )}
@@ -229,7 +229,7 @@ export default function AdminBanAppealsPage() {
 
                   {/* Appeal Message */}
                   <div className="mb-4 p-4 bg-secondary/20 rounded-xl">
-                    <p className="text-caption1 font-medium text-muted-foreground mb-2 uppercase tracking-wider">Appeal Message</p>
+                    <p className="text-caption1 text-muted-foreground mb-2 uppercase tracking-wider">Appeal Message</p>
                     <p className="text-subhead text-foreground whitespace-pre-wrap">{appeal.message}</p>
                   </div>
 
@@ -246,13 +246,13 @@ export default function AdminBanAppealsPage() {
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => handleReview(appeal.id, 'approve')}
-                            className="px-5 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-subhead font-medium transition-colors"
+                            className="px-5 py-2 rounded-full bg-success hover:bg-success/90 text-white text-subhead transition-colors"
                           >
                             Approve & Unban
                           </button>
                           <button
                             onClick={() => handleReview(appeal.id, 'reject')}
-                            className="px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-subhead font-medium transition-colors"
+                            className="px-5 py-2 rounded-full bg-destructive hover:bg-destructive/90 text-white text-subhead transition-colors"
                           >
                             Reject Appeal
                           </button>
@@ -261,7 +261,7 @@ export default function AdminBanAppealsPage() {
                               setReviewingAppeal(null);
                               setReviewNote('');
                             }}
-                            className="px-4 py-2 text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors"
+                            className="px-4 py-2 text-subhead text-muted-foreground hover:text-foreground transition-colors"
                           >
                             Cancel
                           </button>
@@ -270,14 +270,14 @@ export default function AdminBanAppealsPage() {
                     ) : (
                       <button
                         onClick={() => setReviewingAppeal(appeal.id)}
-                        className="px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-subhead font-medium transition-colors"
+                        className="px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-white text-subhead transition-colors"
                       >
                         Review Appeal
                       </button>
                     )
                   ) : (
                     <div className="p-4 bg-secondary/20 rounded-xl">
-                      <p className="text-caption1 font-medium text-foreground mb-1">
+                      <p className="text-caption1 text-foreground mb-1">
                         Reviewed by {reviewer?.name || 'Unknown Admin'}
                       </p>
                       {appeal.reviewedAt && (

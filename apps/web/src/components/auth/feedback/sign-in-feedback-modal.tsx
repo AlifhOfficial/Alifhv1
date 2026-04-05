@@ -95,7 +95,7 @@ export function SignInFeedbackModal({
           {/* Success icon */}
           {showSuccess && (
             <div className="mb-4">
-              <CheckCircle2 className="w-6 h-6 text-green-500" />
+              <CheckCircle2 className="w-6 h-6 text-success" />
             </div>
           )}
 

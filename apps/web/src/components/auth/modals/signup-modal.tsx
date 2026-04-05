@@ -67,7 +67,7 @@ export function SignUpModal({
           </div>
           
           {/* Tagline - Bottom */}
-          <p className="text-white/40 text-caption1 font-medium">
+          <p className="text-white/40 text-caption1">
             More than a marketplace. Join the Revolution.
           </p>
         </div>
@@ -101,7 +101,7 @@ export function SignUpModal({
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label htmlFor="name" className="text-footnote font-medium text-muted-foreground">
+                <label htmlFor="name" className="text-footnote text-muted-foreground">
                   Name
                 </label>
                 <input
@@ -117,7 +117,7 @@ export function SignUpModal({
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="signup-email" className="text-footnote font-medium text-muted-foreground">
+                <label htmlFor="signup-email" className="text-footnote text-muted-foreground">
                   Email
                 </label>
                 <input
@@ -133,7 +133,7 @@ export function SignUpModal({
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="signup-password" className="text-footnote font-medium text-muted-foreground">
+                <label htmlFor="signup-password" className="text-footnote text-muted-foreground">
                   Password
                 </label>
                 <div className="relative">
@@ -175,7 +175,7 @@ export function SignUpModal({
             {onGoogleSignUp && (
               <div className="flex items-center gap-4 my-5">
                 <div className="flex-1 h-px bg-border/50" />
-                <span className="text-caption2 font-medium text-muted-foreground/50 uppercase tracking-wider">or</span>
+                <span className="text-caption2 text-muted-foreground/50 uppercase tracking-wider">or</span>
                 <div className="flex-1 h-px bg-border/50" />
               </div>
             )}

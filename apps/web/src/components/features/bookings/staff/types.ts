@@ -70,12 +70,12 @@ export interface BookingSettings {
 }
 
 export const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-yellow-500/10 text-yellow-500',
-  confirmed: 'bg-green-500/10 text-green-500',
-  completed: 'bg-blue-500/10 text-blue-500',
-  cancelled: 'bg-red-500/10 text-red-500',
-  rejected: 'bg-red-500/10 text-red-500',
-  no_show: 'bg-yellow-500/10 text-yellow-500',
+  pending: 'bg-warning-muted text-warning',
+  confirmed: 'bg-success-muted text-success',
+  completed: 'bg-primary-muted text-primary',
+  cancelled: 'bg-destructive-muted text-destructive',
+  rejected: 'bg-destructive-muted text-destructive',
+  no_show: 'bg-warning-muted text-warning',
   expired: 'bg-foreground/10 text-muted-foreground',
 };
 

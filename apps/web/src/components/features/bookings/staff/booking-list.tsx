@@ -21,7 +21,7 @@ const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: strin
   },
   pending: { 
     icon: Clock, 
-    color: 'text-amber-500', 
+    color: 'text-warning', 
     message: 'No pending bookings', 
     subMessage: 'Bookings awaiting confirmation will appear here' 
   },
@@ -33,13 +33,13 @@ const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: strin
   },
   completed: { 
     icon: CheckCircle2, 
-    color: 'text-blue-500', 
+    color: 'text-primary', 
     message: 'No completed bookings', 
     subMessage: 'Past test drives will appear here' 
   },
   cancelled: { 
     icon: XCircle, 
-    color: 'text-red-500', 
+    color: 'text-destructive', 
     message: 'No cancelled bookings', 
     subMessage: 'Cancelled bookings will appear here' 
   },

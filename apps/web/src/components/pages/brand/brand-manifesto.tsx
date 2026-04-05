@@ -260,7 +260,7 @@ function ColorInfographic() {
     <div className="relative w-full rounded-lg overflow-hidden bg-sidebar border border-border/40 p-3 sm:p-6 lg:p-12">
       <MacOSWindow showUrlBar={false} contentClassName="flex flex-col sm:flex-row">
           {/* Primary Blue */}
-          <div className="flex-1 bg-[#0066FF] flex flex-col items-center justify-center p-6 sm:p-10 lg:p-16 min-h-[150px] sm:min-h-[220px] lg:min-h-[300px]">
+          <div className="flex-1 bg-primary flex flex-col items-center justify-center p-6 sm:p-10 lg:p-16 min-h-[150px] sm:min-h-[220px] lg:min-h-[300px]">
             <span className="text-title2 sm:text-display lg:text-display1 xl:text-display3 font-bold text-white tracking-tight">Blue</span>
             <span className="text-[9px] sm:text-caption1 lg:text-subhead text-white/60 font-medium mt-2 sm:mt-3">#0066FF</span>
           </div>

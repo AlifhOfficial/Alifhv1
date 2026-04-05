@@ -43,7 +43,7 @@ export const EditableField = React.memo(function EditableField({
                   placeholder={placeholder}
                   maxLength={maxLength}
                   rows={4}
-                  className="flex-1 bg-muted/20 rounded-lg p-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
+                  className="flex-1 bg-muted/20 rounded-lg p-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') onCancel();
                   }}
@@ -59,7 +59,7 @@ export const EditableField = React.memo(function EditableField({
                   }}
                   placeholder={placeholder}
                   maxLength={maxLength}
-                  className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') onSave();
                     if (e.key === 'Escape') onCancel();
@@ -70,7 +70,7 @@ export const EditableField = React.memo(function EditableField({
                 <button
                   onClick={(e) => { e.stopPropagation(); onSave(); }}
                   disabled={isUpdating}
-                  className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                  className="text-caption1 text-primary hover:text-primary font-semibold"
                 >
                   {isUpdating ? 'Saving...' : 'Save'}
                 </button>
@@ -88,7 +88,7 @@ export const EditableField = React.memo(function EditableField({
               </div>
             </div>
           ) : (
-            <p className="text-subhead font-medium text-foreground">
+            <p className="text-subhead text-foreground">
               {value || <span className="text-muted-foreground/50">Tap to add</span>}
             </p>
           )}

@@ -107,7 +107,7 @@ function BuiltInDubaiInfographic() {
           <NoiseRow label="Pay-to-rank" />
         </div>
 
-        <p className="mt-5 sm:mt-6 text-caption1 sm:text-subhead font-medium text-white/70">
+        <p className="mt-5 sm:mt-6 text-caption1 sm:text-subhead text-white/70">
           No noise.
         </p>
       </div>

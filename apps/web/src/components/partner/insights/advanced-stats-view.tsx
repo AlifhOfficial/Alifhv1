@@ -184,7 +184,7 @@ const GHOST_WAVE_DATA = Array.from({ length: 20 }, (_, i) => ({
   y: Math.sin(i * 0.4) * 20 + 50 + Math.cos(i * 0.25) * 10,
 }));
 
-function WaveChart({ className = 'text-blue-500', data }: { className?: string; data?: number[] }) {
+function WaveChart({ className = 'text-primary', data }: { className?: string; data?: number[] }) {
   const [gradientId] = React.useState(() => `advancedWaveGradient-${++waveChartCounter}`);
   
   const chartData = data 
@@ -222,7 +222,7 @@ function WaveChart({ className = 'text-blue-500', data }: { className?: string; 
 
 const GHOST_BAR_DATA = [35, 55, 40, 70, 45, 60, 50, 75, 42, 65, 48, 58];
 
-function MiniBarChart({ className = 'text-blue-500', data, width = 40, height = 24 }: { className?: string; data?: number[]; width?: number; height?: number }) {
+function MiniBarChart({ className = 'text-primary', data, width = 40, height = 24 }: { className?: string; data?: number[]; width?: number; height?: number }) {
   const chartData = data 
     ? data.map((y, i) => ({ x: i, y }))
     : GHOST_BAR_DATA.map((y, i) => ({ x: i, y }));
@@ -518,7 +518,7 @@ function SectionHeader({ title, description }: SectionHeaderProps) {
     <div className="mb-4">
       <span className="text-subhead font-bold tracking-tight text-foreground">{title}</span>
       {description && (
-        <p className="text-subhead font-medium text-muted-foreground/70 mt-1">{description}</p>
+        <p className="text-subhead text-muted-foreground/70 mt-1">{description}</p>
       )}
     </div>
   );
@@ -583,7 +583,7 @@ function _SimpleListChart({ data, title, icon: Icon }: SimpleListChartProps) {
             <div className="flex items-center justify-between">
               <span className="text-subhead text-foreground/80">{item.name}</span>
               <div className="flex items-center gap-2">
-                <span className="text-subhead font-medium text-foreground tabular-nums">{item.value}</span>
+                <span className="text-subhead text-foreground tabular-nums">{item.value}</span>
                 <span className="text-caption1 text-muted-foreground/60 tabular-nums">
                   {total > 0 ? Math.round((item.value / total) * 100) : 0}%
                 </span>
@@ -628,7 +628,7 @@ function _HorizontalBarChartCard({ data, title, icon: Icon }: HorizontalBarChart
               <span className="text-subhead text-foreground/80 truncate max-w-[160px]">
                 {item.name}
               </span>
-              <span className="text-subhead font-medium text-foreground tabular-nums">{item.value}</span>
+              <span className="text-subhead text-foreground tabular-nums">{item.value}</span>
             </div>
             <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
               <div 
@@ -669,7 +669,7 @@ function _VerticalBarChartCard({ data, title, icon: Icon }: VerticalBarChartProp
               <span className="text-subhead text-foreground/80 truncate max-w-[140px]">
                 {item.name}
               </span>
-              <span className="text-subhead font-medium text-foreground tabular-nums">{item.value}</span>
+              <span className="text-subhead text-foreground tabular-nums">{item.value}</span>
             </div>
             <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
               <div 
@@ -772,7 +772,7 @@ function _TrendComparison({ title, metrics }: TrendComparisonProps) {
         {metrics.map((metric, i) => (
           <div key={i} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
             <div className="space-y-1">
-              <span className="text-subhead font-medium text-muted-foreground/70">{metric.label}</span>
+              <span className="text-subhead text-muted-foreground/70">{metric.label}</span>
               <p className="text-title3 font-bold text-foreground">
                 {metric.format === 'currency' 
                   ? formatCurrency(metric.current)
@@ -818,36 +818,36 @@ function _BookingFunnel({ pending, confirmed, completed, noShowRate, cancellatio
       
       <div className="grid grid-cols-3 gap-4 mb-5">
         <div className="text-center space-y-1">
-          <span className="text-title2 font-bold text-amber-500 tabular-nums">
+          <span className="text-title2 font-bold text-warning tabular-nums">
             {pending}
           </span>
-          <span className="text-subhead font-medium text-muted-foreground/70 block">Pending</span>
+          <span className="text-subhead text-muted-foreground/70 block">Pending</span>
         </div>
         <div className="text-center space-y-1">
-          <span className="text-title2 font-bold text-blue-500 tabular-nums">
+          <span className="text-title2 font-bold text-primary tabular-nums">
             {confirmed}
           </span>
-          <span className="text-subhead font-medium text-muted-foreground/70 block">Confirmed</span>
+          <span className="text-subhead text-muted-foreground/70 block">Confirmed</span>
         </div>
         <div className="text-center space-y-1">
           <span className="text-title2 font-bold text-emerald-500 tabular-nums">
             {completed}
           </span>
-          <span className="text-subhead font-medium text-muted-foreground/70 block">Completed</span>
+          <span className="text-subhead text-muted-foreground/70 block">Completed</span>
         </div>
       </div>
       
       <div className="space-y-3 pt-4 border-t border-border/40">
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-subhead font-medium text-muted-foreground/70">Cancellation</span>
-            <span className="text-subhead font-bold tabular-nums text-amber-500">
+            <span className="text-subhead text-muted-foreground/70">Cancellation</span>
+            <span className="text-subhead font-bold tabular-nums text-warning">
               {cancellationRate}%
             </span>
           </div>
           <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
             <div 
-              className="h-2 rounded-full bg-amber-500"
+              className="h-2 rounded-full bg-warning"
               style={{ width: `${Math.min(cancellationRate, 100)}%` }}
             />
           </div>
@@ -855,14 +855,14 @@ function _BookingFunnel({ pending, confirmed, completed, noShowRate, cancellatio
         
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-subhead font-medium text-muted-foreground/70">No-Show</span>
-            <span className="text-subhead font-bold tabular-nums text-rose-500">
+            <span className="text-subhead text-muted-foreground/70">No-Show</span>
+            <span className="text-subhead font-bold tabular-nums text-favorite">
               {noShowRate}%
             </span>
           </div>
           <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
             <div 
-              className="h-2 rounded-full bg-rose-500"
+              className="h-2 rounded-full bg-favorite"
               style={{ width: `${Math.min(noShowRate, 100)}%` }}
             />
           </div>
@@ -886,11 +886,11 @@ interface AlertBannerProps {
 
 function _AlertBanner({ listing }: AlertBannerProps) {
   return (
-    <div className="flex items-center gap-3 p-4 rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/20">
-      <Clock className="w-4 h-4 text-amber-600 dark:text-amber-500 flex-shrink-0" />
+    <div className="flex items-center gap-3 p-4 rounded-xl border border-warning/20 bg-warning-muted border-warning/30 bg-warning-muted">
+      <Clock className="w-4 h-4 text-warning dark:text-warning flex-shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-subhead font-medium text-amber-900 dark:text-amber-100 truncate">{listing.title}</p>
-        <p className="text-caption1 text-amber-700 dark:text-amber-300">
+        <p className="text-subhead text-warning truncate">{listing.title}</p>
+        <p className="text-caption1 text-warning">
           {listing.daysSincePublished} days — consider updating
         </p>
       </div>
@@ -937,7 +937,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           <header>
             <div className="space-y-2">
               <h1 className="text-title2 font-bold tracking-tight">Analytics</h1>
-              <p className="text-subhead font-medium text-muted-foreground/70">
+              <p className="text-subhead text-muted-foreground/70">
                 Detailed performance metrics
               </p>
             </div>
@@ -947,7 +947,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             <div className="w-12 h-12 rounded-full bg-muted/30 flex items-center justify-center mx-auto mb-4">
               <AlertCircle className="w-5 h-5 text-muted-foreground" />
             </div>
-            <p className="text-subhead font-medium text-foreground mb-1">Unable to load analytics</p>
+            <p className="text-subhead text-foreground mb-1">Unable to load analytics</p>
             <p className="text-caption1 text-muted-foreground">Please try again later</p>
           </div>
         </div>
@@ -1011,7 +1011,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
               </div>
             </div>
             <div className="flex items-baseline gap-3">
-              <span className="text-display font-bold text-blue-500 tabular-nums">
+              <span className="text-display font-bold text-primary tabular-nums">
                 {formatNumber(engagement.totalViewsThisMonth)}
               </span>
               <span className="text-subhead text-muted-foreground/60">views</span>
@@ -1049,10 +1049,10 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             {/* Favorites Card */}
             <div className="rounded-xl border border-border/40 bg-sidebar p-5 flex-1">
               <div className="flex items-center gap-2 mb-3">
-                <Heart className="w-4 h-4 text-rose-500" />
+                <Heart className="w-4 h-4 text-favorite" />
                 <span className="text-subhead font-semibold text-muted-foreground/70">Favorites</span>
               </div>
-              <span className="text-title2 font-bold text-rose-500">
+              <span className="text-title2 font-bold text-favorite">
                 {engagement.totalFavorites}
               </span>
               <p className="text-caption1 text-muted-foreground/60 mt-1">{engagement.viewToFavoriteRate}% of views convert to favorites</p>
@@ -1065,7 +1065,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
           {/* Active Inventory Card */}
           <div className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
             <div className="flex items-center gap-2 mb-4">
-              <Package className="w-4 h-4 text-blue-500" />
+              <Package className="w-4 h-4 text-primary" />
               <span className="text-subhead font-semibold text-muted-foreground/70">Active Inventory</span>
             </div>
             <div className="space-y-3">
@@ -1075,7 +1075,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-subhead text-muted-foreground/70">Total Value</span>
-                <span className="text-headline font-bold text-blue-500">{formatCurrency(inventory.totalValue)}</span>
+                <span className="text-headline font-bold text-primary">{formatCurrency(inventory.totalValue)}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-subhead text-muted-foreground/70">Avg Price</span>
@@ -1136,14 +1136,14 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-warning" />
                     <span className="text-subhead text-foreground/80">Cancelled</span>
                   </div>
                   <span className="text-subhead font-bold tabular-nums">{bookings.cancelledCount}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-favorite" />
                     <span className="text-subhead text-foreground/80">No Show</span>
                   </div>
                   <span className="text-subhead font-bold tabular-nums">{bookings.noShowCount}</span>
@@ -1153,7 +1153,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             <div className="mt-4 pt-3 border-t border-border/40 grid grid-cols-2 gap-3">
               <div className="flex items-center justify-between">
                 <span className="text-caption1 text-muted-foreground/70">Pending</span>
-                <span className="text-subhead font-bold text-blue-500">{bookings.pendingBookings}</span>
+                <span className="text-subhead font-bold text-primary">{bookings.pendingBookings}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-caption1 text-muted-foreground/70">Confirmed</span>
@@ -1270,13 +1270,13 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
                   <p className="text-caption1 text-muted-foreground/60">Impressions</p>
                 </div>
                 <div className="text-center space-y-1">
-                  <p className="text-title2 font-bold text-blue-500 tabular-nums">
+                  <p className="text-title2 font-bold text-primary tabular-nums">
                     {engagement.avgViewsPerListing}
                   </p>
                   <p className="text-caption1 text-muted-foreground/60">Avg Views</p>
                 </div>
                 <div className="text-center space-y-1">
-                  <p className="text-title2 font-bold text-rose-500 tabular-nums">
+                  <p className="text-title2 font-bold text-favorite tabular-nums">
                     {engagement.totalSuperlikes}
                   </p>
                   <p className="text-caption1 text-muted-foreground/60">Superlikes</p>
@@ -1303,7 +1303,7 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             {/* Top Performing Listings */}
             <div className="col-span-12 lg:col-span-4 rounded-xl border border-border/40 bg-sidebar p-5">
               <div className="flex items-center gap-2 mb-4">
-                <Activity className="w-4 h-4 text-blue-500" />
+                <Activity className="w-4 h-4 text-primary" />
                 <span className="text-subhead font-bold tracking-tight">Top Performing</span>
               </div>
               <TopListings
@@ -1347,8 +1347,8 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
               <span className="text-caption1 text-muted-foreground/60">Avg Model Year</span>
               <div className="flex items-end justify-between mt-2">
                 <span className="text-title3 font-bold tabular-nums">{composition.avgYear ?? '—'}</span>
-                <div className="h-6 w-10 text-blue-500 opacity-40">
-                  <MiniBarChart className="text-blue-500" />
+                <div className="h-6 w-10 text-primary opacity-40">
+                  <MiniBarChart className="text-primary" />
                 </div>
               </div>
             </div>
@@ -1358,19 +1358,19 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
                 <span className="text-title3 font-bold tabular-nums">
                   {composition.avgMileage ? `${Math.round(composition.avgMileage / 1000)}K km` : '—'}
                 </span>
-                <div className="h-6 w-10 text-amber-500 opacity-40">
-                  <WaveChart className="text-amber-500" />
+                <div className="h-6 w-10 text-warning opacity-40">
+                  <WaveChart className="text-warning" />
                 </div>
               </div>
             </div>
             <div className="rounded-xl border border-border/40 bg-sidebar p-5">
               <span className="text-caption1 text-muted-foreground/60">Avg List Price</span>
               <div className="flex items-end justify-between mt-2">
-                <span className="text-title3 font-bold text-blue-500 tabular-nums">
+                <span className="text-title3 font-bold text-primary tabular-nums">
                   {formatCurrency(inventory.avgPrice)}
                 </span>
-                <div className="h-6 w-10 text-blue-500 opacity-40">
-                  <WaveChart className="text-blue-500" />
+                <div className="h-6 w-10 text-primary opacity-40">
+                  <WaveChart className="text-primary" />
                 </div>
               </div>
             </div>
@@ -1394,27 +1394,27 @@ export function AdvancedStatsView({ initialStats }: { initialStats: AdvancedStat
             <SectionHeader title="Status" />
             <div className="flex flex-wrap gap-2">
               {inventory.staleCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 font-medium bg-sidebar border border-border/40 text-amber-500">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 bg-sidebar border border-border/40 text-warning">
                   {inventory.staleCount} stale
                 </span>
               )}
               {inventory.expiringCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 font-medium bg-sidebar border border-border/40 text-rose-500">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 bg-sidebar border border-border/40 text-favorite">
                   {inventory.expiringCount} expiring
                 </span>
               )}
               {inventory.pendingApprovalCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 font-medium bg-sidebar border border-border/40 text-blue-500">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 bg-sidebar border border-border/40 text-primary">
                   {inventory.pendingApprovalCount} pending
                 </span>
               )}
               {inventory.draftCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 font-medium bg-sidebar border border-border/40 text-muted-foreground/70">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 bg-sidebar border border-border/40 text-muted-foreground/70">
                   {inventory.draftCount} drafts
                 </span>
               )}
               {inventory.reservedCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 font-medium bg-sidebar border border-border/40 text-violet-500">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-caption1 bg-sidebar border border-border/40 text-violet-500">
                   {inventory.reservedCount} reserved
                 </span>
               )}

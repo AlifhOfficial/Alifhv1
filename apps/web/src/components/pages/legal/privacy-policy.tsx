@@ -25,11 +25,11 @@ export function PrivacyPolicy() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-subhead font-semibold text-muted-foreground/70">Operator</p>
-              <p className="text-subhead font-medium text-foreground mt-0.5">AISH CAPITALS FZCO</p>
+              <p className="text-subhead text-foreground mt-0.5">AISH CAPITALS FZCO</p>
             </div>
             <div>
               <p className="text-subhead font-semibold text-muted-foreground/70">Last Updated</p>
-              <p className="text-subhead font-medium text-foreground mt-0.5">January 2026</p>
+              <p className="text-subhead text-foreground mt-0.5">January 2026</p>
             </div>
           </div>
         </div>
@@ -345,17 +345,17 @@ export function PrivacyPolicy() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-subhead font-semibold text-muted-foreground/70">Legal Entity</p>
-                  <p className="text-subhead font-medium text-foreground mt-0.5">AISH CAPITALS FZCO</p>
+                  <p className="text-subhead text-foreground mt-0.5">AISH CAPITALS FZCO</p>
                 </div>
                 <div>
                   <p className="text-subhead font-semibold text-muted-foreground/70">Country</p>
-                  <p className="text-subhead font-medium text-foreground mt-0.5">United Arab Emirates</p>
+                  <p className="text-subhead text-foreground mt-0.5">United Arab Emirates</p>
                 </div>
                 <div className="col-span-2">
                   <p className="text-subhead font-semibold text-muted-foreground/70">Contact</p>
                   <a 
                     href="mailto:support@revvup.ae" 
-                    className="text-subhead font-medium text-primary hover:underline mt-0.5 inline-block"
+                    className="text-subhead text-primary hover:underline mt-0.5 inline-block"
                   >
                     support@revvup.ae
                   </a>

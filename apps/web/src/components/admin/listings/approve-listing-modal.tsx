@@ -68,7 +68,7 @@ export function ApproveListingModal({ open, listing, onClose, onSuccess }: Appro
       <div className="relative z-50 w-full max-w-md bg-background border border-border rounded-xl shadow-xl m-4">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-headline font-medium">Approve Listing</h2>
+          <h2 className="text-headline">Approve Listing</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-secondary/50 rounded-full transition-colors"
@@ -84,7 +84,7 @@ export function ApproveListingModal({ open, listing, onClose, onSuccess }: Appro
           </p>
           
           <div className="rounded-xl border border-border p-4">
-            <p className="text-subhead font-medium">
+            <p className="text-subhead">
               {listing.year} {listing.make} {listing.model}
               {listing.trim && ` ${listing.trim}`}
             </p>
@@ -93,8 +93,8 @@ export function ApproveListingModal({ open, listing, onClose, onSuccess }: Appro
 
           {/* Error */}
           {error && (
-            <div className="rounded-xl border border-red-500/20 p-3">
-              <p className="text-subhead text-red-500">{error}</p>
+            <div className="rounded-xl border border-destructive/20 p-3">
+              <p className="text-subhead text-destructive">{error}</p>
             </div>
           )}
 
@@ -110,7 +110,7 @@ export function ApproveListingModal({ open, listing, onClose, onSuccess }: Appro
             <button
               onClick={handleApprove}
               disabled={isSubmitting}
-              className="flex-1 px-5 py-2 rounded-full bg-green-500 hover:bg-green-600 text-white text-subhead transition-colors disabled:opacity-50"
+              className="flex-1 px-5 py-2 rounded-full bg-success hover:bg-success/90 text-white text-subhead transition-colors disabled:opacity-50"
             >
               {isSubmitting ? 'Approving...' : 'Approve'}
             </button>

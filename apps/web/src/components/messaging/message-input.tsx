@@ -257,7 +257,7 @@ export function MessageInput({
 
       {/* Hint - hide in compact mode and on mobile */}
       {!compact && (
-        <p className="hidden sm:block text-caption1 font-medium text-muted-foreground/50 mt-1.5 sm:mt-2 px-1">
+        <p className="hidden sm:block text-caption1 text-muted-foreground/50 mt-1.5 sm:mt-2 px-1">
           Enter to send · Shift+Enter for new line
         </p>
       )}

@@ -60,7 +60,7 @@ export function MegaDropdown({ activeDropdown, navItems, onClose, onMouseEnter, 
                         onClick={onClose}
                         className="block group"
                       >
-                        <span className="text-subhead font-medium text-muted-foreground group-hover:text-foreground transition-colors duration-150 will-change-[color]">
+                        <span className="text-subhead text-muted-foreground group-hover:text-foreground transition-colors duration-150 will-change-[color]">
                           {item.label}
                         </span>
                       </Link>

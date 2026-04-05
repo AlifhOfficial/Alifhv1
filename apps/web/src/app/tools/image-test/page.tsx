@@ -334,12 +334,12 @@ export default function ImageTestPage() {
           <div>
             <div className="text-caption2 text-muted-foreground uppercase tracking-wider mb-1">Thumbs</div>
             <div className="font-semibold">{fmt(totalThumb)}</div>
-            <div className="text-caption1 text-green-600 font-medium">{savings(totalOriginal, totalThumb)}</div>
+            <div className="text-caption1 text-success font-medium">{savings(totalOriginal, totalThumb)}</div>
           </div>
           <div>
             <div className="text-caption2 text-muted-foreground uppercase tracking-wider mb-1">Fulls</div>
             <div className="font-semibold">{fmt(totalFull)}</div>
-            <div className="text-caption1 text-green-600 font-medium">{savings(totalOriginal, totalFull)}</div>
+            <div className="text-caption1 text-success font-medium">{savings(totalOriginal, totalFull)}</div>
           </div>
           {stats && (
             <>
@@ -366,7 +366,7 @@ export default function ImageTestPage() {
             return (
             <div key={i} className="border border-border rounded-xl overflow-hidden">
               <div className="px-4 py-2.5 bg-muted/30 flex items-center justify-between gap-4">
-                <span className="text-subhead font-medium truncate">{r.name}</span>
+                <span className="text-subhead truncate">{r.name}</span>
                 <div className="flex items-center gap-3 shrink-0">
                   {r.totalMs > 0 && (
                     <span className="text-caption1 text-muted-foreground">{fmtMs(r.totalMs)} total</span>
@@ -406,14 +406,14 @@ export default function ImageTestPage() {
                       <button className="w-full group relative" onClick={() => openLightbox(thumbIdx)}>
                         <img src={r.thumb.dataUrl} alt="" className="w-full h-auto rounded-lg" />
                         <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 group-hover:bg-black/30 transition-colors">
-                          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-caption1 font-medium bg-black/60 px-2 py-1 rounded">
+                          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-caption1 bg-black/60 px-2 py-1 rounded">
                             View full size
                           </span>
                         </span>
                       </button>
                       <div className="flex items-center justify-between text-caption1 pt-1">
                         <span className="font-medium">{fmt(r.thumb.size)}</span>
-                        <span className="text-green-600 font-medium">{savings(r.originalSize, r.thumb.size)}</span>
+                        <span className="text-success font-medium">{savings(r.originalSize, r.thumb.size)}</span>
                       </div>
                     </div>
                     <div className="p-4 space-y-2">
@@ -424,14 +424,14 @@ export default function ImageTestPage() {
                       <button className="w-full group relative" onClick={() => openLightbox(fullIdx)}>
                         <img src={r.full.dataUrl} alt="" className="w-full h-auto rounded-lg" />
                         <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 group-hover:bg-black/30 transition-colors">
-                          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-caption1 font-medium bg-black/60 px-2 py-1 rounded">
+                          <span className="opacity-0 group-hover:opacity-100 transition-opacity text-white text-caption1 bg-black/60 px-2 py-1 rounded">
                             View full size
                           </span>
                         </span>
                       </button>
                       <div className="flex items-center justify-between text-caption1 pt-1">
                         <span className="font-medium">{fmt(r.full.size)}</span>
-                        <span className="text-green-600 font-medium">{savings(r.originalSize, r.full.size)}</span>
+                        <span className="text-success font-medium">{savings(r.originalSize, r.full.size)}</span>
                       </div>
                     </div>
                   </div>

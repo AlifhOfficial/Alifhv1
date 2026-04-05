@@ -195,10 +195,10 @@ export function DepreciationCalculator() {
     <div className="space-y-6">
       {/* Specs Origin - Important for UAE */}
       <div>
-        <label className="flex items-center gap-2 text-subhead font-medium mb-3">
+        <label className="flex items-center gap-2 text-subhead mb-3">
           <Globe className="w-4 h-4" />
           Vehicle Specs Origin
-          <span className="text-caption1 text-amber-600 font-normal">(Major impact on resale)</span>
+          <span className="text-caption1 text-warning font-normal">(Major impact on resale)</span>
         </label>
         <div className="grid grid-cols-3 gap-2">
           {[
@@ -220,7 +220,7 @@ export function DepreciationCalculator() {
               )}
             >
               <span className="text-headline">{spec.flag}</span>
-              <p className="text-caption1 font-medium mt-1">{spec.label}</p>
+              <p className="text-caption1 mt-1">{spec.label}</p>
             </button>
           ))}
         </div>
@@ -231,7 +231,7 @@ export function DepreciationCalculator() {
 
       {/* Purchase Price */}
       <div>
-        <label className="text-subhead font-medium mb-2 block">Original Purchase Price</label>
+        <label className="text-subhead mb-2 block">Original Purchase Price</label>
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
             AED
@@ -249,7 +249,7 @@ export function DepreciationCalculator() {
       {/* Year & Brand Row */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="flex items-center gap-2 text-subhead font-medium mb-2">
+          <label className="flex items-center gap-2 text-subhead mb-2">
             <Calendar className="w-4 h-4" />
             Year Bought
           </label>
@@ -265,7 +265,7 @@ export function DepreciationCalculator() {
         </div>
 
         <div>
-          <label className="flex items-center gap-2 text-subhead font-medium mb-2">
+          <label className="flex items-center gap-2 text-subhead mb-2">
             <Car className="w-4 h-4" />
             Brand
           </label>
@@ -283,13 +283,13 @@ export function DepreciationCalculator() {
 
       {/* Condition */}
       <div>
-        <label className="text-subhead font-medium mb-3 block">Vehicle Condition</label>
+        <label className="text-subhead mb-3 block">Vehicle Condition</label>
         <div className="grid grid-cols-4 gap-2">
           {[
-            { id: 'excellent', label: 'Excellent', color: 'text-green-600' },
-            { id: 'good', label: 'Good', color: 'text-blue-600' },
-            { id: 'fair', label: 'Fair', color: 'text-amber-600' },
-            { id: 'poor', label: 'Poor', color: 'text-red-600' },
+            { id: 'excellent', label: 'Excellent', color: 'text-success' },
+            { id: 'good', label: 'Good', color: 'text-primary' },
+            { id: 'fair', label: 'Fair', color: 'text-warning' },
+            { id: 'poor', label: 'Poor', color: 'text-destructive' },
           ].map((cond) => (
             <button
               key={cond.id}
@@ -301,7 +301,7 @@ export function DepreciationCalculator() {
                   : "bg-background border-border hover:border-primary/50"
               )}
             >
-              <p className={cn("text-subhead font-medium", formData.condition === cond.id && cond.color)}>
+              <p className={cn("text-subhead", formData.condition === cond.id && cond.color)}>
                 {cond.label}
               </p>
             </button>
@@ -312,7 +312,7 @@ export function DepreciationCalculator() {
       {/* Annual Mileage */}
       <div>
         <label className="flex items-center justify-between mb-2">
-          <span className="text-subhead font-medium">Average Annual Mileage</span>
+          <span className="text-subhead">Average Annual Mileage</span>
           <span className="text-caption1 font-semibold text-primary">
             {parseInt(formData.mileagePerYear).toLocaleString()} km/year
           </span>
@@ -355,7 +355,7 @@ export function DepreciationCalculator() {
               {formatAED(result.currentValue)}
             </p>
             <div className="flex items-center gap-4 mt-3">
-              <span className="text-subhead text-red-600 font-medium">
+              <span className="text-subhead text-destructive font-medium">
                 -{formatAED(result.totalDepreciation)} ({result.percentLost.toFixed(1)}% lost)
               </span>
               <span className="text-caption1 text-muted-foreground">
@@ -366,7 +366,7 @@ export function DepreciationCalculator() {
 
           {/* Depreciation Chart */}
           <div className="border rounded-lg p-4">
-            <p className="text-subhead font-medium mb-4">Value Over Time</p>
+            <p className="text-subhead mb-4">Value Over Time</p>
             <div className="space-y-2">
               {result.yearlyData.map((row) => (
                 <div key={row.year} className="flex items-center gap-3">
@@ -381,7 +381,7 @@ export function DepreciationCalculator() {
                     {formatAED(row.value)}
                   </span>
                   {row.depreciation > 0 && (
-                    <span className="text-caption1 w-20 text-right text-red-500">
+                    <span className="text-caption1 w-20 text-right text-destructive">
                       -{formatAED(row.depreciation)}
                     </span>
                   )}
@@ -391,14 +391,14 @@ export function DepreciationCalculator() {
           </div>
 
           {/* Insights */}
-          <div className="p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-lg">
+          <div className="p-4 bg-primary-muted bg-primary-muted border border-primary/20 border-primary/30 rounded-lg">
             <div className="flex items-start gap-2">
-              <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5" />
+              <Info className="w-4 h-4 text-primary mt-0.5" />
               <div>
-                <p className="text-subhead font-medium text-blue-900 dark:text-blue-100 mb-2">
+                <p className="text-subhead text-primary mb-2">
                   Value Factors
                 </p>
-                <ul className="text-caption1 text-blue-800 dark:text-blue-200 space-y-1">
+                <ul className="text-caption1 text-primary space-y-1">
                   {result.insights.map((insight, i) => (
                     <li key={i} className="flex items-start gap-1.5">
                       <CheckCircle2 className="w-3 h-3 mt-0.5 shrink-0" />

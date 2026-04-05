@@ -135,7 +135,7 @@ export function UserStaffInvites({ initialInvites }: UserStaffInvitesProps) {
         </div>
         
         <div className="rounded-xl border border-border/40 bg-sidebar p-8 text-center">
-          <p className="text-subhead font-medium text-muted-foreground/60 mb-1">No pending invitations</p>
+          <p className="text-subhead text-muted-foreground/60 mb-1">No pending invitations</p>
           <p className="text-caption1 text-muted-foreground/40">
             Team invites will appear here
           </p>
@@ -212,13 +212,13 @@ export function UserStaffInvites({ initialInvites }: UserStaffInvitesProps) {
                 <div className="mt-4 flex gap-3">
                   <button
                     onClick={() => handleOpenModal(invite, 'accept')}
-                    className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-subhead font-medium hover:bg-primary/90 transition-colors shadow-sm"
+                    className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-subhead hover:bg-primary/90 transition-colors shadow-sm"
                   >
                     Accept
                   </button>
                   <button
                     onClick={() => handleOpenModal(invite, 'reject')}
-                    className="px-5 py-2.5 rounded-lg bg-muted text-foreground text-subhead font-medium hover:bg-muted/80 transition-colors"
+                    className="px-5 py-2.5 rounded-lg bg-muted text-foreground text-subhead hover:bg-muted/80 transition-colors"
                   >
                     Decline
                   </button>

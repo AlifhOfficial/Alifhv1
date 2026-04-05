@@ -62,7 +62,7 @@ export function CarCardMinimal({
       className={cn(
         'group flex flex-col overflow-hidden rounded-[20px] transition-all',
         isBlkListing 
-          ? 'bg-white dark:bg-[#0D0D0D] border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-900/50' 
+          ? 'bg-background dark:bg-card border border-border hover:border-border/80 hover:shadow-lg hover:shadow-black/20' 
           : 'bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-sm',
         className
       )}
@@ -113,7 +113,7 @@ export function CarCardMinimal({
                 BLK
               </span>
             ) : isVerified && (
-              <CheckCircle2 className="w-3 h-3 flex-shrink-0 text-blue-500" />
+              <CheckCircle2 className="w-3 h-3 flex-shrink-0 text-primary" />
             )}
           </div>
         </div>

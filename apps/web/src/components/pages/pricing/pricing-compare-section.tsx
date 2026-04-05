@@ -30,7 +30,7 @@ export function PricingCompareSection() {
                 <span className="text-subhead text-muted-foreground/60 line-through">{row.others}</span>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-subhead font-medium">{row.alifh}</span>
+                  <span className="text-subhead">{row.alifh}</span>
                 </div>
               </div>
             ))}

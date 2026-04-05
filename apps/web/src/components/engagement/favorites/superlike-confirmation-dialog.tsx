@@ -66,7 +66,7 @@ export function SuperlikeConfirmationDialog({
       >
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
-          <Zap className="w-5 h-5 text-yellow-500 flex-shrink-0" fill="currentColor" />
+          <Zap className="w-5 h-5 text-warning flex-shrink-0" fill="currentColor" />
           <div className="flex-1 min-w-0">
             <h2 className="text-subhead font-semibold text-foreground">Superlike this listing?</h2>
             {listingTitle && (

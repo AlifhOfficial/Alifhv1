@@ -43,8 +43,8 @@ function MagicLinkCallback() {
             </div>
           )}
           {status === 'success' && (
-            <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
-              <CheckCircle2 className="h-6 w-6 text-green-500" />
+            <div className="w-12 h-12 rounded-full bg-success-muted flex items-center justify-center">
+              <CheckCircle2 className="h-6 w-6 text-success" />
             </div>
           )}
           {status === 'error' && (

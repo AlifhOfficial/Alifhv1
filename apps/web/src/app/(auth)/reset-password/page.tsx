@@ -141,7 +141,7 @@ function ResetPasswordForm() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full h-10 px-3 pr-10 bg-muted/20 border border-border/40 rounded-lg text-subhead font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
+                  className="w-full h-10 px-3 pr-10 bg-muted/20 border border-border/40 rounded-lg text-subhead text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors disabled:opacity-50"
                   placeholder="••••••••"
                   required
                   disabled={isLoading}

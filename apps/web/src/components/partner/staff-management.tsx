@@ -42,7 +42,7 @@ interface TeamMember {
 // Role badge config
 const ROLE_CONFIG: Record<string, { color: string; bg: string }> = {
   owner: { color: 'text-purple-600', bg: 'bg-purple-500/10' },
-  manager: { color: 'text-blue-600', bg: 'bg-blue-500/10' },
+  manager: { color: 'text-primary', bg: 'bg-primary-muted' },
   staff: { color: 'text-foreground', bg: 'bg-secondary' },
 };
 
@@ -309,7 +309,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
             </button>
             <button
               onClick={() => setShowInviteForm(!showInviteForm)}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white text-subhead font-medium hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-subhead hover:bg-primary/90 transition-colors"
             >
               <UserPlus className="w-4 h-4" />
               Invite
@@ -321,11 +321,11 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
         <div className="flex items-center gap-10">
           <div>
             <span className="text-caption1 text-muted-foreground">Active</span>
-            <p className="text-title3 font-semibold tracking-tight mt-1 text-green-500">{activeTeam.length}</p>
+            <p className="text-title3 font-semibold tracking-tight mt-1 text-success">{activeTeam.length}</p>
           </div>
           <div>
             <span className="text-caption1 text-muted-foreground">Pending</span>
-            <p className="text-title3 font-semibold tracking-tight mt-1 text-yellow-500">{pendingInvites.length}</p>
+            <p className="text-title3 font-semibold tracking-tight mt-1 text-warning">{pendingInvites.length}</p>
           </div>
           {formerTeam.length > 0 && (
             <div>
@@ -340,7 +340,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
       {showInviteForm && (
         <div className="mb-12 p-6 rounded-xl bg-secondary/30">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-subhead font-medium tracking-tight">Invite New Member</h3>
+            <h3 className="text-subhead tracking-tight">Invite New Member</h3>
             <button
               onClick={() => setShowInviteForm(false)}
               className="p-1 rounded hover:bg-secondary"
@@ -401,7 +401,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
             <button
               onClick={handleInvite}
               disabled={inviteMutation.isPending || !inviteFormData.email}
-              className="px-4 py-2 rounded-full bg-blue-600 text-white text-subhead font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded-full bg-primary text-white text-subhead hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
               {inviteMutation.isPending ? 'Sending...' : 'Send Invite'}
             </button>
@@ -454,7 +454,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
       {pendingInvites.length > 0 && (
         <div className="mb-12">
           <div className="flex items-center gap-2 mb-4">
-            <Mail className="w-4 h-4 text-yellow-500" />
+            <Mail className="w-4 h-4 text-warning" />
             <p className="text-caption1 text-muted-foreground">
               {pendingInvites.length} pending invite{pendingInvites.length !== 1 ? 's' : ''}
             </p>
@@ -466,12 +466,12 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                 key={invite.id} 
                 className="flex items-center gap-4 p-4 -mx-4 rounded-xl hover:bg-secondary/30 transition-colors"
               >
-                <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-4 h-4 text-yellow-600" />
+                <div className="w-10 h-10 rounded-full bg-warning-muted flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-warning" />
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <p className="text-subhead font-medium tracking-tight truncate">{invite.email}</p>
+                  <p className="text-subhead tracking-tight truncate">{invite.email}</p>
                   <p className="text-caption1 text-muted-foreground">
                     Invited as <span className="capitalize">{invite.role}</span>
                   </p>
@@ -479,7 +479,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
 
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-yellow-500" />
+                    <Clock className="w-3.5 h-3.5 text-warning" />
                     <span className="text-caption1 text-muted-foreground">
                       {new Date(invite.expiresAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
                     </span>
@@ -487,7 +487,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                   <button
                     onClick={() => cancelInviteMutation.mutate(invite.id)}
                     disabled={cancelInviteMutation.isPending}
-                    className="px-3 py-1.5 rounded-lg text-caption1 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                    className="px-3 py-1.5 rounded-lg text-caption1 text-muted-foreground hover:text-destructive hover:bg-destructive-muted transition-colors disabled:opacity-50"
                   >
                     Cancel
                   </button>
@@ -510,7 +510,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
           {searchQuery ? (
             <>
               <Search className="w-10 h-10 text-muted-foreground/20 mb-4" />
-              <h3 className="text-headline font-medium tracking-tight">No results</h3>
+              <h3 className="text-headline tracking-tight">No results</h3>
               <p className="text-subhead text-muted-foreground mt-1">Try a different search</p>
               <button
                 onClick={clearFilters}
@@ -522,11 +522,11 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
           ) : (
             <>
               <User className="w-10 h-10 text-muted-foreground/20 mb-4" />
-              <h3 className="text-headline font-medium tracking-tight">No team members yet</h3>
+              <h3 className="text-headline tracking-tight">No team members yet</h3>
               <p className="text-subhead text-muted-foreground mt-1">Start by inviting your first member</p>
               <button
                 onClick={() => setShowInviteForm(true)}
-                className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white text-subhead font-medium hover:bg-blue-700 transition-colors"
+                className="mt-6 flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-subhead hover:bg-primary/90 transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
                 Invite Member
@@ -550,7 +550,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                 />
                 
                 <div className="flex-1 min-w-0">
-                  <p className="text-subhead font-medium tracking-tight truncate">
+                  <p className="text-subhead tracking-tight truncate">
                     {member.userName || 'Unknown'}
                   </p>
                   <p className="text-caption1 text-muted-foreground truncate">
@@ -564,7 +564,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                     onValueChange={(newRole) => updateRoleMutation.mutate({ staffId: member.id, role: newRole })}
                     disabled={updateRoleMutation.isPending}
                   >
-                    <SelectTrigger className="w-24 h-8 text-caption1 font-medium border-0 bg-secondary/50 hover:bg-secondary">
+                    <SelectTrigger className="w-24 h-8 text-caption1 border-0 bg-secondary/50 hover:bg-secondary">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -574,15 +574,15 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                   </Select>
                   
                   <div className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-success" />
                     <span className="text-caption1 text-muted-foreground hidden sm:block">Active</span>
                   </div>
 
                   <button
                     onClick={() => handleOpenDeleteModal(member)}
-                    className="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/10 transition-all"
+                    className="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-destructive-muted transition-all"
                   >
-                    <Trash2 className="w-4 h-4 text-muted-foreground hover:text-red-500 transition-colors" />
+                    <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive transition-colors" />
                   </button>
                 </div>
               </div>
@@ -617,7 +617,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                   />
                   
                   <div className="flex-1 min-w-0">
-                    <p className="text-subhead font-medium tracking-tight truncate text-muted-foreground">
+                    <p className="text-subhead tracking-tight truncate text-muted-foreground">
                       {member.userName || 'Unknown'}
                     </p>
                     <p className="text-caption1 text-muted-foreground/70 truncate">
@@ -626,7 +626,7 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="px-2.5 py-1 rounded-md text-caption1 font-medium bg-secondary text-muted-foreground capitalize">
+                    <span className="px-2.5 py-1 rounded-md text-caption1 bg-secondary text-muted-foreground capitalize">
                       Was: {member.role}
                     </span>
                     
@@ -651,11 +651,11 @@ export function PartnerStaffManagement({ initialTeamData }: { initialTeamData: a
         <p className="text-caption1 text-muted-foreground mb-4">Role permissions</p>
         <div className="flex flex-wrap gap-4">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md text-caption1 font-medium bg-purple-500/10 text-purple-600">Owner</span>
+            <span className="px-2 py-0.5 rounded-md text-caption1 bg-purple-500/10 text-purple-600">Owner</span>
             <span className="text-caption1 text-muted-foreground">Full access including settings</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md text-caption1 font-medium bg-secondary text-foreground">Staff</span>
+            <span className="px-2 py-0.5 rounded-md text-caption1 bg-secondary text-foreground">Staff</span>
             <span className="text-caption1 text-muted-foreground">Listings, inquiries, day-to-day tasks</span>
           </div>
         </div>

@@ -55,9 +55,9 @@ function StatusPill({
   label: string;
 }) {
   const styles = {
-    success: 'bg-green-500/10 text-green-600 dark:text-green-400',
-    warning: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
-    error: 'bg-red-500/10 text-red-600 dark:text-red-400',
+    success: 'bg-success-muted text-success',
+    warning: 'bg-warning-muted text-warning',
+    error: 'bg-destructive-muted text-destructive',
     neutral: 'bg-muted/50 text-muted-foreground',
   };
 
@@ -90,7 +90,7 @@ function ActionRow({
       (onClick || href) && "hover:bg-muted/30 cursor-pointer"
     )}>
       <div className="flex-1 min-w-0">
-        <p className="text-caption1 sm:text-subhead font-medium text-foreground">{title}</p>
+        <p className="text-caption1 sm:text-subhead text-foreground">{title}</p>
         {description && <p className="text-caption2 sm:text-caption1 text-muted-foreground/70 mt-0.5">{description}</p>}
       </div>
       {trailing}
@@ -228,7 +228,7 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
           description={partnerMembership.partnerName}
           href="/partner-dashboard/insights"
           trailing={
-            <span className="text-subhead font-medium text-primary">Open →</span>
+            <span className="text-subhead text-primary">Open →</span>
           }
         />
       );
@@ -242,7 +242,7 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
           description="List vehicles and grow your business"
           onClick={() => setView('apply')}
           trailing={
-            <span className="text-subhead font-medium text-primary">Apply →</span>
+            <span className="text-subhead text-primary">Apply →</span>
           }
         />
       );
@@ -273,7 +273,7 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
             </div>
             <div className="flex items-center gap-2">
               <div className="flex-1 h-1.5 bg-muted/40 rounded-full overflow-hidden">
-                <div className="h-full w-1/2 bg-amber-500 rounded-full" />
+                <div className="h-full w-1/2 bg-warning rounded-full" />
               </div>
             </div>
           </div>
@@ -287,7 +287,7 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
             {!confirmCancel ? (
               <button
                 onClick={() => setConfirmCancel(true)}
-                className="w-full py-2 sm:py-2.5 text-caption1 sm:text-subhead font-medium text-muted-foreground hover:text-red-500 transition-colors"
+                className="w-full py-2 sm:py-2.5 text-caption1 sm:text-subhead text-muted-foreground hover:text-destructive transition-colors"
               >
                 Cancel Application
               </button>
@@ -300,14 +300,14 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
                   <button
                     onClick={() => setConfirmCancel(false)}
                     disabled={isCancelling}
-                    className="flex-1 py-2 sm:py-2.5 rounded-lg bg-muted text-caption1 sm:text-subhead font-medium text-foreground hover:bg-muted/80 transition-colors"
+                    className="flex-1 py-2 sm:py-2.5 rounded-lg bg-muted text-caption1 sm:text-subhead text-foreground hover:bg-muted/80 transition-colors"
                   >
                     Keep it
                   </button>
                   <button
                     onClick={() => cancel()}
                     disabled={isCancelling}
-                    className="flex-1 py-2 sm:py-2.5 rounded-lg bg-red-500 text-caption1 sm:text-subhead font-medium text-white hover:bg-red-600 transition-colors disabled:opacity-50"
+                    className="flex-1 py-2 sm:py-2.5 rounded-lg bg-destructive text-caption1 sm:text-subhead text-white hover:bg-destructive/90 transition-colors disabled:opacity-50"
                   >
                     {isCancelling ? 'Cancelling...' : 'Yes, cancel'}
                   </button>
@@ -335,10 +335,10 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
             className="flex items-center justify-between w-full py-2.5 sm:py-3 -mx-4 sm:-mx-5 px-4 sm:px-5 rounded-lg hover:bg-muted/30 transition-colors text-left"
           >
             <div>
-              <p className="text-caption1 sm:text-subhead font-medium text-foreground">Try Again</p>
+              <p className="text-caption1 sm:text-subhead text-foreground">Try Again</p>
               <p className="text-caption2 sm:text-caption1 text-muted-foreground/70">Submit a new application</p>
             </div>
-            <span className="text-caption1 sm:text-subhead font-medium text-primary">Apply →</span>
+            <span className="text-caption1 sm:text-subhead text-primary">Apply →</span>
           </button>
         </div>
       );
@@ -358,10 +358,10 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
             className="flex items-center justify-between py-2.5 sm:py-3 -mx-4 sm:-mx-5 px-4 sm:px-5 rounded-lg hover:bg-muted/30 transition-colors"
           >
             <div>
-              <p className="text-caption1 sm:text-subhead font-medium text-foreground">{partnerMembership.partnerName}</p>
+              <p className="text-caption1 sm:text-subhead text-foreground">{partnerMembership.partnerName}</p>
               <p className="text-caption2 sm:text-caption1 text-muted-foreground/70">Partner Dashboard</p>
             </div>
-            <span className="text-caption1 sm:text-subhead font-medium text-primary">Open →</span>
+            <span className="text-caption1 sm:text-subhead text-primary">Open →</span>
           </Link>
         </div>
       );
@@ -427,12 +427,12 @@ export function UserRequestsHub({ initialPartnerRequest, initialInvites = [] }: 
                 description="You've been invited to join a partner team"
                 onClick={() => setView('invites')}
                 trailing={
-                  <span className="text-caption1 sm:text-subhead font-medium text-primary">View</span>
+                  <span className="text-caption1 sm:text-subhead text-primary">View</span>
                 }
               />
             ) : (
               <div className="py-4 sm:py-6 text-center">
-                <p className="text-caption1 sm:text-subhead font-medium text-muted-foreground/60 mb-1">No pending invitations</p>
+                <p className="text-caption1 sm:text-subhead text-muted-foreground/60 mb-1">No pending invitations</p>
                 <p className="text-caption2 sm:text-caption1 text-muted-foreground/40">
                   Team invites will appear here
                 </p>

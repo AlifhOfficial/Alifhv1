@@ -25,11 +25,11 @@ export function Disclaimer() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-subhead font-semibold text-muted-foreground/70">Operator</p>
-              <p className="text-subhead font-medium text-foreground mt-0.5">AISH CAPITALS FZCO</p>
+              <p className="text-subhead text-foreground mt-0.5">AISH CAPITALS FZCO</p>
             </div>
             <div>
               <p className="text-subhead font-semibold text-muted-foreground/70">Last Updated</p>
-              <p className="text-subhead font-medium text-foreground mt-0.5">January 2026</p>
+              <p className="text-subhead text-foreground mt-0.5">January 2026</p>
             </div>
           </div>
         </div>

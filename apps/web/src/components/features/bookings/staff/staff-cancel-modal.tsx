@@ -128,7 +128,7 @@ export function StaffCancelModal({
             <button
               onClick={onClose}
               disabled={isSubmitting}
-              className="w-full h-11 text-subhead font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-50"
+              className="w-full h-11 text-subhead text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-50"
             >
               Go Back
             </button>

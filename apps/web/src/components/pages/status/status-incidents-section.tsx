@@ -31,8 +31,8 @@ const incidentStatusConfig = {
   investigating: {
     icon: Clock,
     label: 'Investigating',
-    textClass: 'text-amber-500',
-    bgClass: 'bg-amber-500/10',
+    textClass: 'text-warning',
+    bgClass: 'bg-warning-muted',
   },
   identified: {
     icon: AlertTriangle,
@@ -43,8 +43,8 @@ const incidentStatusConfig = {
   monitoring: {
     icon: Clock,
     label: 'Monitoring',
-    textClass: 'text-blue-500',
-    bgClass: 'bg-blue-500/10',
+    textClass: 'text-primary',
+    bgClass: 'bg-primary-muted',
   },
   resolved: {
     icon: CheckCircle2,
@@ -55,9 +55,9 @@ const incidentStatusConfig = {
 };
 
 const severityConfig = {
-  minor: { label: 'Minor', textClass: 'text-amber-500' },
+  minor: { label: 'Minor', textClass: 'text-warning' },
   major: { label: 'Major', textClass: 'text-orange-500' },
-  critical: { label: 'Critical', textClass: 'text-red-500' },
+  critical: { label: 'Critical', textClass: 'text-destructive' },
 };
 
 function formatDate(dateString: string) {
@@ -91,7 +91,7 @@ function IncidentCard({ incident }: { incident: Incident }) {
         </div>
         <div className={`flex items-center gap-2 px-2 py-1 rounded-full ${statusConf.bgClass}`}>
           <StatusIcon className={`w-3 h-3 ${statusConf.textClass}`} />
-          <span className={`text-caption1 font-medium ${statusConf.textClass}`}>
+          <span className={`text-caption1 ${statusConf.textClass}`}>
             {statusConf.label}
           </span>
         </div>
@@ -160,7 +160,7 @@ export function StatusIncidentsSection({ incidents }: StatusIncidentsSectionProp
         ) : (
           <div className="rounded-xl border border-border/40 bg-sidebar p-8 text-center">
             <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
-            <p className="text-subhead font-medium text-foreground mb-1">
+            <p className="text-subhead text-foreground mb-1">
               No recent incidents
             </p>
             <p className="text-caption1 text-muted-foreground">

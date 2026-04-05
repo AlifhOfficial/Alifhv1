@@ -311,9 +311,9 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
         </div>
 
         {/* Info Banner */}
-        <div className="rounded-xl border border-border/40 bg-blue-500/5 p-3 sm:p-4">
+        <div className="rounded-xl border border-border/40 bg-primary/5 p-3 sm:p-4">
           <div className="flex gap-3">
-            <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+            <Info className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
             <p className="text-subhead text-muted-foreground">
               These contact numbers are used as fallbacks when staff don&apos;t respond, and for customers to reach your dealership directly.
             </p>
@@ -334,7 +334,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
               )}
               onClick={() => editingField !== 'adminName' && setEditingField('adminName')}
             >
-              <p className="text-caption1 font-medium text-muted-foreground/70 mb-1">Admin Name</p>
+              <p className="text-caption1 text-muted-foreground/70 mb-1">Admin Name</p>
               {editingField === 'adminName' ? (
                 <div className="space-y-2">
                   <input
@@ -343,7 +343,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                     value={form.adminName}
                     onChange={(e) => updateField({ adminName: e.target.value })}
                     placeholder="e.g. Ahmed Al Mansouri"
-                    className="w-full h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                    className="w-full h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') saveField('adminName');
                       if (e.key === 'Escape') cancelEdit();
@@ -359,14 +359,14 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                     <button
                       onClick={(e) => { e.stopPropagation(); saveField('adminName'); }}
                       disabled={saving}
-                      className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                      className="text-caption1 text-primary hover:text-primary font-semibold"
                     >
                       {saving ? '...' : 'Save'}
                     </button>
                   </div>
                 </div>
               ) : (
-                <p className="text-subhead font-medium text-foreground">
+                <p className="text-subhead text-foreground">
                   {form.adminName || <span className="text-muted-foreground/50">Tap to add</span>}
                 </p>
               )}
@@ -377,13 +377,13 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
             {/* Admin Phone with verification */}
             <div className="py-2 sm:py-3">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <p className="text-caption1 font-medium text-muted-foreground/70">Admin Phone</p>
+                <p className="text-caption1 text-muted-foreground/70">Admin Phone</p>
                 {(profile?.adminPhoneVerified || phoneJustVerified) ? (
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <CheckCircle2 className="w-4 h-4 text-success" />
                 ) : form.adminPhone && phoneVerifyStep === 'idle' && editingField !== 'adminPhone' ? (
                   <button
                     onClick={sendPhoneOTP}
-                    className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                    className="text-caption1 text-primary hover:text-primary font-semibold"
                   >
                     Verify
                   </button>
@@ -420,7 +420,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                       <button
                         onClick={verifyPhoneOTP}
                         disabled={otp.length !== 6}
-                        className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+                        className="text-caption1 text-primary hover:text-primary font-semibold disabled:opacity-50"
                       >
                         Verify
                       </button>
@@ -443,7 +443,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                 // Edit phone number
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-subhead font-medium text-muted-foreground shrink-0">+971</span>
+                    <span className="text-subhead text-muted-foreground shrink-0">+971</span>
                     <input
                       autoFocus
                       type="tel"
@@ -451,7 +451,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                       value={form.adminPhone}
                       onChange={(e) => updateField({ adminPhone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
                       placeholder="50 000 0000"
-                      className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                      className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                       maxLength={9}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') saveField('adminPhone');
@@ -469,7 +469,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                     <button
                       onClick={() => saveField('adminPhone')}
                       disabled={saving}
-                      className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                      className="text-caption1 text-primary hover:text-primary font-semibold"
                     >
                       {saving ? '...' : 'Save'}
                     </button>
@@ -481,7 +481,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                   className="cursor-pointer hover:bg-muted/30 -mx-4 sm:-mx-5 px-4 sm:px-5 py-1 transition-colors rounded"
                   onClick={() => setEditingField('adminPhone')}
                 >
-                  <p className="text-subhead font-medium text-foreground">
+                  <p className="text-subhead text-foreground">
                     {form.adminPhone ? `+971 ${form.adminPhone}` : <span className="text-muted-foreground/50">Tap to add</span>}
                   </p>
                 </div>
@@ -507,11 +507,11 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
               )}
               onClick={() => editingField !== 'tollNumber' && setEditingField('tollNumber')}
             >
-              <p className="text-caption1 font-medium text-muted-foreground/70 mb-1">800 Number (no verification needed)</p>
+              <p className="text-caption1 text-muted-foreground/70 mb-1">800 Number (no verification needed)</p>
               {editingField === 'tollNumber' ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-subhead font-medium text-muted-foreground shrink-0">800</span>
+                    <span className="text-subhead text-muted-foreground shrink-0">800</span>
                     <input
                       autoFocus
                       type="tel"
@@ -519,7 +519,7 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                       value={form.tollNumber}
                       onChange={(e) => updateField({ tollNumber: e.target.value.replace(/[^\d]/g, '').slice(0, 10) })}
                       placeholder="DEALER"
-                      className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                      className="flex-1 h-9 sm:h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                       maxLength={10}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') saveField('tollNumber');
@@ -537,14 +537,14 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
                     <button
                       onClick={(e) => { e.stopPropagation(); saveField('tollNumber'); }}
                       disabled={saving}
-                      className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                      className="text-caption1 text-primary hover:text-primary font-semibold"
                     >
                       {saving ? '...' : 'Save'}
                     </button>
                   </div>
                 </div>
               ) : (
-                <p className="text-subhead font-medium text-foreground">
+                <p className="text-subhead text-foreground">
                   {form.tollNumber ? `800 ${form.tollNumber}` : <span className="text-muted-foreground/50">Tap to add</span>}
                 </p>
               )}
@@ -563,10 +563,10 @@ export function PartnerContactSettings({ initialProfile = null }: { initialProfi
           
           <div className="rounded-xl border border-border/40 bg-sidebar p-4 sm:p-5">
             <div className="py-2 sm:py-3">
-              <p className="text-caption1 font-medium text-muted-foreground/70 mb-1">Main business line (from registration)</p>
+              <p className="text-caption1 text-muted-foreground/70 mb-1">Main business line (from registration)</p>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-muted-foreground" />
-                <p className="text-subhead font-medium text-foreground">{profile.phone}</p>
+                <p className="text-subhead text-foreground">{profile.phone}</p>
               </div>
             </div>
             <p className="text-caption1 text-muted-foreground border-t border-border/20 pt-3">

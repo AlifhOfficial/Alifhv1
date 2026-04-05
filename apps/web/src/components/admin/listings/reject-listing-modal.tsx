@@ -74,7 +74,7 @@ export function RejectListingModal({ open, listing, onClose, onSuccess }: Reject
       <div className="relative z-50 w-full max-w-md bg-background border border-border rounded-xl shadow-xl m-4">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-headline font-medium">Reject Listing</h2>
+          <h2 className="text-headline">Reject Listing</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-secondary/50 rounded-full transition-colors"
@@ -90,7 +90,7 @@ export function RejectListingModal({ open, listing, onClose, onSuccess }: Reject
           </p>
           
           <div className="rounded-xl border border-border p-4">
-            <p className="text-subhead font-medium">
+            <p className="text-subhead">
               {listing.year} {listing.make} {listing.model}
               {listing.trim && ` ${listing.trim}`}
             </p>
@@ -99,8 +99,8 @@ export function RejectListingModal({ open, listing, onClose, onSuccess }: Reject
 
           {/* Reason Input */}
           <div className="space-y-3">
-            <label className="text-subhead font-medium">
-              Rejection Reason <span className="text-red-500">*</span>
+            <label className="text-subhead">
+              Rejection Reason <span className="text-destructive">*</span>
             </label>
             <textarea
               value={reason}
@@ -113,8 +113,8 @@ export function RejectListingModal({ open, listing, onClose, onSuccess }: Reject
 
           {/* Error */}
           {error && (
-            <div className="rounded-xl border border-red-500/20 p-3">
-              <p className="text-subhead text-red-500">{error}</p>
+            <div className="rounded-xl border border-destructive/20 p-3">
+              <p className="text-subhead text-destructive">{error}</p>
             </div>
           )}
 
@@ -130,7 +130,7 @@ export function RejectListingModal({ open, listing, onClose, onSuccess }: Reject
             <button
               onClick={handleReject}
               disabled={isSubmitting || !reason.trim()}
-              className="flex-1 px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-subhead transition-colors disabled:opacity-50"
+              className="flex-1 px-5 py-2 rounded-full bg-destructive hover:bg-destructive/90 text-white text-subhead transition-colors disabled:opacity-50"
             >
               {isSubmitting ? 'Rejecting...' : 'Reject'}
             </button>

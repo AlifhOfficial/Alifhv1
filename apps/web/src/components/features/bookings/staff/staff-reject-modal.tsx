@@ -66,8 +66,8 @@ export function StaffRejectModal({
         {/* Content - Centered Layout */}
         <div className="p-6 text-center">
           {/* Icon Circle */}
-          <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
-            <XCircle className="w-5 h-5 text-red-500" />
+          <div className="w-12 h-12 rounded-full bg-destructive-muted flex items-center justify-center mx-auto mb-4">
+            <XCircle className="w-5 h-5 text-destructive" />
           </div>
           
           <h2 className="text-headline font-semibold text-foreground mb-1.5">Reject Booking</h2>
@@ -78,7 +78,7 @@ export function StaffRejectModal({
           {/* Reason Text Field */}
           <div className="space-y-1.5 mb-5 text-left">
             <label className="text-caption1 font-semibold text-muted-foreground/70">
-              Reason <span className="text-red-500">*</span>
+              Reason <span className="text-destructive">*</span>
             </label>
             <textarea
               value={reason}
@@ -95,7 +95,7 @@ export function StaffRejectModal({
             <button
               onClick={onSubmit}
               disabled={isSubmitting || !reason.trim()}
-              className="w-full h-11 bg-red-500 text-white rounded-lg text-subhead font-semibold hover:bg-red-600 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
+              className="w-full h-11 bg-destructive text-white rounded-lg text-subhead font-semibold hover:bg-destructive/90 transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -109,7 +109,7 @@ export function StaffRejectModal({
             <button
               onClick={onClose}
               disabled={isSubmitting}
-              className="w-full h-11 text-subhead font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-50"
+              className="w-full h-11 text-subhead text-muted-foreground hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors disabled:opacity-50"
             >
               Go Back
             </button>

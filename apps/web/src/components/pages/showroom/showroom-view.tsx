@@ -142,7 +142,7 @@ function ShowroomError() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center max-w-md mx-auto px-4">
-        <h1 className="text-title2 font-medium text-foreground mb-2">Showroom Not Found</h1>
+        <h1 className="text-title2 text-foreground mb-2">Showroom Not Found</h1>
         <p className="text-muted-foreground mb-6">
           This showroom may have been removed or is no longer available.
         </p>

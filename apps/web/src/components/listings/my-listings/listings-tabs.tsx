@@ -140,7 +140,7 @@ export function ListingsTabs({
                   setIsDeepOpen(false);
                 }}
                 className={cn(
-                  "w-full flex items-center justify-between px-4 py-2.5 text-subhead font-medium transition-colors",
+                  "w-full flex items-center justify-between px-4 py-2.5 text-subhead transition-colors",
                   isDeepInventoryActive && deepInventoryFilter === 'all'
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -169,7 +169,7 @@ export function ListingsTabs({
                         setIsDeepOpen(false);
                       }}
                       className={cn(
-                        "w-full flex items-center justify-between px-4 py-2.5 text-subhead font-medium transition-colors",
+                        "w-full flex items-center justify-between px-4 py-2.5 text-subhead transition-colors",
                         isSelected
                           ? "text-foreground"
                           : "text-muted-foreground hover:text-foreground"

@@ -122,7 +122,7 @@ export function HowRankingWorksPage() {
                   <div key={i} className="flex items-start gap-3">
                     <XCircle className="w-4 h-4 text-muted-foreground/40 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-subhead font-medium text-muted-foreground">{item.title}</p>
+                      <p className="text-subhead text-muted-foreground">{item.title}</p>
                       <p className="text-subhead text-muted-foreground/60">{item.desc}</p>
                     </div>
                   </div>
@@ -240,7 +240,7 @@ function WhyQualityInfographic() {
       <div className="flex flex-col-reverse md:flex-row">
         {/* Left - Others: macOS window with paid rankings (80%) */}
         <div className="w-full md:w-[75%] lg:w-[80%] flex flex-col items-center justify-center md:border-r border-t md:border-t-0 border-border/20 p-2 sm:p-4 lg:p-8">
-          <span className="text-[9px] sm:text-[10px] lg:text-caption1 font-medium text-muted-foreground/60 mb-2 sm:mb-4 lg:mb-6">Others</span>
+          <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-muted-foreground/60 mb-2 sm:mb-4 lg:mb-6">Others</span>
           
           {/* macOS Window Frame */}
           <div className="relative w-full max-w-sm sm:max-w-xl lg:max-w-3xl">
@@ -252,13 +252,13 @@ function WhyQualityInfographic() {
                   </div>
                   
                   {/* Paid ranking badges */}
-                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-3 lg:-top-3 lg:-right-4 px-1.5 sm:px-2.5 lg:px-4 py-0.5 sm:py-1 lg:py-2 rounded-md bg-amber-500 text-[6px] sm:text-[9px] lg:text-caption1 font-bold text-white shadow-xl rotate-3 z-10">
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-3 lg:-top-3 lg:-right-4 px-1.5 sm:px-2.5 lg:px-4 py-0.5 sm:py-1 lg:py-2 rounded-md bg-warning text-[6px] sm:text-[9px] lg:text-caption1 font-bold text-white shadow-xl rotate-3 z-10">
                     PAID #1
                   </div>
-                  <div className="absolute top-5 sm:top-10 lg:top-14 -left-1 sm:-left-2 lg:-left-4 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-amber-600 text-[5px] sm:text-[8px] lg:text-caption2 font-semibold text-white shadow-lg -rotate-6 z-10">
+                  <div className="absolute top-5 sm:top-10 lg:top-14 -left-1 sm:-left-2 lg:-left-4 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-warning text-[5px] sm:text-[8px] lg:text-caption2 font-semibold text-white shadow-lg -rotate-6 z-10">
                     +Boost
                   </div>
-                  <div className="absolute -bottom-0.5 sm:-bottom-2 lg:-bottom-3 right-2 sm:right-6 lg:right-10 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-amber-700 text-[5px] sm:text-[8px] lg:text-caption2 font-semibold text-white shadow-lg rotate-2 z-10">
+                  <div className="absolute -bottom-0.5 sm:-bottom-2 lg:-bottom-3 right-2 sm:right-6 lg:right-10 px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-warning text-[5px] sm:text-[8px] lg:text-caption2 font-semibold text-white shadow-lg rotate-2 z-10">
                     Featured
                   </div>
                 </div>
@@ -270,7 +270,7 @@ function WhyQualityInfographic() {
         
         {/* Right - Revvup: Quality-based (20%) */}
         <div className="w-full md:w-[25%] lg:w-[20%] flex flex-col items-center justify-center py-4 md:py-4 px-3 sm:p-4 lg:p-6">
-          <span className="text-[9px] sm:text-[10px] lg:text-caption1 font-medium text-primary mb-2 sm:mb-3 lg:mb-4">Revvup</span>
+          <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-primary mb-2 sm:mb-3 lg:mb-4">Revvup</span>
           
           <div className="flex flex-col items-center text-center">
             <div 

@@ -54,12 +54,12 @@ export interface UserBookingStats {
 }
 
 export const USER_BOOKING_STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-yellow-500/10 text-yellow-600',
-  confirmed: 'bg-green-500/10 text-green-600',
-  completed: 'bg-blue-500/10 text-blue-600',
-  cancelled: 'bg-red-500/10 text-red-600',
+  pending: 'bg-warning-muted text-warning',
+  confirmed: 'bg-success-muted text-success',
+  completed: 'bg-primary-muted text-primary',
+  cancelled: 'bg-destructive-muted text-destructive',
   rejected: 'bg-muted text-muted-foreground',
-  no_show: 'bg-red-500/10 text-red-600',
+  no_show: 'bg-destructive-muted text-destructive',
   expired: 'bg-muted text-muted-foreground',
 };
 

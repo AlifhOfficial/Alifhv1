@@ -38,7 +38,7 @@ export function OverpricedChecker() {
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
-            <label className="block text-subhead font-medium mb-2">Asking Price (AED)</label>
+            <label className="block text-subhead mb-2">Asking Price (AED)</label>
             <input
               type="number"
               placeholder="75000"
@@ -49,7 +49,7 @@ export function OverpricedChecker() {
           </div>
 
           <div>
-            <label className="block text-subhead font-medium mb-2">Brand</label>
+            <label className="block text-subhead mb-2">Brand</label>
             <input
               type="text"
               placeholder="Toyota"
@@ -60,7 +60,7 @@ export function OverpricedChecker() {
           </div>
 
           <div>
-            <label className="block text-subhead font-medium mb-2">Model</label>
+            <label className="block text-subhead mb-2">Model</label>
             <input
               type="text"
               placeholder="Camry"
@@ -71,7 +71,7 @@ export function OverpricedChecker() {
           </div>
 
           <div>
-            <label className="block text-subhead font-medium mb-2">Year</label>
+            <label className="block text-subhead mb-2">Year</label>
             <input
               type="number"
               placeholder="2020"
@@ -82,7 +82,7 @@ export function OverpricedChecker() {
           </div>
 
           <div>
-            <label className="block text-subhead font-medium mb-2">Mileage (km)</label>
+            <label className="block text-subhead mb-2">Mileage (km)</label>
             <input
               type="number"
               placeholder="50000"
@@ -102,14 +102,14 @@ export function OverpricedChecker() {
 
         {result && (
           <div className={`p-6 rounded-lg border-2 ${
-            result.status === 'great-deal' ? 'bg-green-50 border-green-500 dark:bg-green-950' :
-            result.status === 'fair' ? 'bg-blue-50 border-blue-500 dark:bg-blue-950' :
-            'bg-red-50 border-red-500 dark:bg-red-950'
+            result.status === 'great-deal' ? 'bg-success-muted border-success' :
+            result.status === 'fair' ? 'bg-primary-muted border-primary' :
+            'bg-destructive-muted border-destructive'
           }`}>
             <div className="flex items-center gap-3 mb-4">
-              {result.status === 'great-deal' && <TrendingDown className="w-8 h-8 text-green-600" />}
-              {result.status === 'fair' && <Minus className="w-8 h-8 text-blue-600" />}
-              {result.status === 'overpriced' && <TrendingUp className="w-8 h-8 text-red-600" />}
+              {result.status === 'great-deal' && <TrendingDown className="w-8 h-8 text-success" />}
+              {result.status === 'fair' && <Minus className="w-8 h-8 text-primary" />}
+              {result.status === 'overpriced' && <TrendingUp className="w-8 h-8 text-destructive" />}
               
               <div>
                 <h3 className="text-title3 font-bold">

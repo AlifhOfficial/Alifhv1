@@ -80,7 +80,7 @@ export function UserConversationGroup({
             className="w-9 h-9"
           />
           {isOnline && (
-            <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 border-2 border-sidebar rounded-full" />
+            <span className="absolute bottom-0 right-0 w-2 h-2 bg-success border-2 border-sidebar rounded-full" />
           )}
         </div>
 
@@ -94,7 +94,7 @@ export function UserConversationGroup({
 
         {/* Right side: unread dot + chevron */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          {totalUnread > 0 && <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />}
+          {totalUnread > 0 && <span className="w-1.5 h-1.5 bg-favorite rounded-full" />}
           <button
             type="button"
             onClick={handleChevronClick}

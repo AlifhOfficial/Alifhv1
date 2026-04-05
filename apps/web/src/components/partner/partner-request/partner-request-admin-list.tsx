@@ -110,7 +110,7 @@ export function PartnerRequestAdminList() {
             }`}
           >
             <small className="text-muted-foreground">Pending</small>
-            <h2 className="text-yellow-500">{counts?.pending || 0}</h2>
+            <h2 className="text-warning">{counts?.pending || 0}</h2>
           </button>
           <button
             onClick={() => setStatusFilter(statusFilter === 'approved' ? undefined : 'approved')}
@@ -119,7 +119,7 @@ export function PartnerRequestAdminList() {
             }`}
           >
             <small className="text-muted-foreground">Approved</small>
-            <h2 className="text-green-500">{counts?.approved || 0}</h2>
+            <h2 className="text-success">{counts?.approved || 0}</h2>
           </button>
           <button
             onClick={() => setStatusFilter(statusFilter === 'rejected' ? undefined : 'rejected')}
@@ -172,9 +172,9 @@ export function PartnerRequestAdminList() {
                         <div className="flex items-center justify-between gap-3 mb-2">
                           <h3 className="text-foreground">{request.companyNameLegal}</h3>
                           <span className={`px-3 py-1 text-caption1 rounded-full ${
-                            request.status === 'pending' ? 'text-yellow-600 bg-yellow-500/10' :
-                            request.status === 'approved' ? 'text-green-600 bg-green-500/10' :
-                            'text-red-600 bg-red-500/10'
+                            request.status === 'pending' ? 'text-warning bg-warning-muted' :
+                            request.status === 'approved' ? 'text-success bg-success-muted' :
+                            'text-destructive bg-destructive-muted'
                           }`}>
                             {request.status}
                           </span>
@@ -253,7 +253,7 @@ export function PartnerRequestAdminList() {
                             <FileText className="w-4 h-4 text-muted-foreground" />
                           </div>
                           <div className="text-left flex-1 min-w-0">
-                            <p className="text-subhead font-medium text-foreground mb-0.5">Trade License Document</p>
+                            <p className="text-subhead text-foreground mb-0.5">Trade License Document</p>
                             <small className="text-muted-foreground">Click to view</small>
                           </div>
                           <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
@@ -267,14 +267,14 @@ export function PartnerRequestAdminList() {
                         <button
                           onClick={() => setApprovingId(request.id)}
                           disabled={isReviewing}
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white text-subhead font-medium transition-all disabled:opacity-50"
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-success hover:bg-success/90 text-white text-subhead transition-all disabled:opacity-50"
                         >
                           <CheckCircle2 className="w-4 h-4" />
                           Approve Application
                         </button>
                         <button
                           onClick={() => setRejectingId(request.id)}
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-border/40 hover:border-red-500/30 hover:bg-red-500/10 text-foreground hover:text-red-500 text-subhead font-medium transition-all"
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-border/40 hover:border-destructive/30 hover:bg-destructive-muted text-foreground hover:text-destructive text-subhead transition-all"
                         >
                           <XCircle className="w-4 h-4" />
                           Reject
@@ -286,7 +286,7 @@ export function PartnerRequestAdminList() {
                     {rejectingId === request.id && (
                       <div className="space-y-4 pt-6 border-t border-border/40">
                         <div className="space-y-2">
-                          <label className="text-subhead font-medium text-foreground">Rejection Reason</label>
+                          <label className="text-subhead text-foreground">Rejection Reason</label>
                           <textarea
                             value={rejectionReason}
                             onChange={(e) => setRejectionReason(e.target.value)}
@@ -305,7 +305,7 @@ export function PartnerRequestAdminList() {
                               }
                             }}
                             disabled={isReviewing || !rejectionReason.trim()}
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-red-500 hover:bg-red-600 text-white text-subhead font-medium transition-all disabled:opacity-50"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-destructive hover:bg-destructive/90 text-white text-subhead transition-all disabled:opacity-50"
                           >
                             {isReviewing && <Loader2 className="w-4 h-4 animate-spin" />}
                             Confirm Rejection
@@ -315,7 +315,7 @@ export function PartnerRequestAdminList() {
                               setRejectingId(null);
                               setRejectionReason('');
                             }}
-                            className="px-6 py-3 text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors"
+                            className="px-6 py-3 text-subhead text-muted-foreground hover:text-foreground transition-colors"
                           >
                             Cancel
                           </button>
@@ -327,7 +327,7 @@ export function PartnerRequestAdminList() {
                     {approvingId === request.id && (
                       <div className="space-y-4 pt-6 border-t border-border/40">
                         <div className="space-y-2">
-                          <label className="text-subhead font-medium text-foreground">Founding Access Period</label>
+                          <label className="text-subhead text-foreground">Founding Access Period</label>
                           <p className="text-caption1 text-muted-foreground">
                             Select how many months of founding access to grant on Revvup Flow
                           </p>
@@ -337,9 +337,9 @@ export function PartnerRequestAdminList() {
                                 key={months}
                                 type="button"
                                 onClick={() => setTrialMonths(months)}
-                                className={`px-4 py-2 rounded-lg text-subhead font-medium transition-all ${
+                                className={`px-4 py-2 rounded-lg text-subhead transition-all ${
                                   trialMonths === months
-                                    ? 'bg-green-500 text-white'
+                                    ? 'bg-success text-white'
                                     : 'bg-secondary/50 text-foreground hover:bg-secondary'
                                 }`}
                               >
@@ -348,7 +348,7 @@ export function PartnerRequestAdminList() {
                             ))}
                           </div>
                           {trialMonths > 0 && (
-                            <p className="text-caption1 text-green-500 mt-2">
+                            <p className="text-caption1 text-success mt-2">
                               Partner will get {trialMonths} month{trialMonths > 1 ? 's' : ''} free access to Revvup Flow (no credit card required)
                             </p>
                           )}
@@ -357,7 +357,7 @@ export function PartnerRequestAdminList() {
                           <button
                             onClick={() => handleReview(request.id, 'approved', undefined, trialMonths)}
                             disabled={isReviewing}
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-green-500 hover:bg-green-600 text-white text-subhead font-medium transition-all disabled:opacity-50"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-success hover:bg-success/90 text-white text-subhead transition-all disabled:opacity-50"
                           >
                             {isReviewing && <Loader2 className="w-4 h-4 animate-spin" />}
                             Confirm Approval
@@ -367,7 +367,7 @@ export function PartnerRequestAdminList() {
                               setApprovingId(null);
                               setTrialMonths(3);
                             }}
-                            className="px-6 py-3 text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors"
+                            className="px-6 py-3 text-subhead text-muted-foreground hover:text-foreground transition-colors"
                           >
                             Cancel
                           </button>

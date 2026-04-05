@@ -298,10 +298,10 @@ export function AdminListingsView() {
 
   // Tab definitions
   const mainTabs: Array<{ key: AdminTab; label: string; count: number; badgeClass?: string }> = [
-    { key: 'pending', label: 'Pending Review', count: stats.pending, badgeClass: 'bg-blue-500/10 text-blue-600' },
-    { key: 'public', label: 'Public', count: stats.public, badgeClass: 'bg-green-500/10 text-green-600' },
-    { key: 'draft', label: 'Drafts', count: stats.draft, badgeClass: 'bg-yellow-500/10 text-yellow-600' },
-    { key: 'rejected', label: 'Rejected', count: stats.rejected, badgeClass: 'bg-red-500/10 text-red-600' },
+    { key: 'pending', label: 'Pending Review', count: stats.pending, badgeClass: 'bg-primary-muted text-primary' },
+    { key: 'public', label: 'Public', count: stats.public, badgeClass: 'bg-success-muted text-success' },
+    { key: 'draft', label: 'Drafts', count: stats.draft, badgeClass: 'bg-warning-muted text-warning' },
+    { key: 'rejected', label: 'Rejected', count: stats.rejected, badgeClass: 'bg-destructive-muted text-destructive' },
   ];
 
   const deepFilters: Array<{ key: DeepInventoryFilter; label: string; count: number }> = [
@@ -323,7 +323,7 @@ export function AdminListingsView() {
       {/* Stats Overview */}
       <section className="space-y-8">
         <div className="border-b border-border/40 pb-2">
-          <h3 className="text-headline font-medium tracking-tight">Overview</h3>
+          <h3 className="text-headline tracking-tight">Overview</h3>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 border-y border-border divide-x divide-border">
           <div 
@@ -337,14 +337,14 @@ export function AdminListingsView() {
             className="p-8 text-center cursor-pointer hover:bg-secondary/10 transition-colors"
           >
             <p className="text-caption1 text-muted-foreground mb-1">Pending</p>
-            <p className="text-title3 font-semibold text-blue-500">{stats.pending}</p>
+            <p className="text-title3 font-semibold text-primary">{stats.pending}</p>
           </button>
           <button 
             onClick={() => setActiveTab('public')}
             className="p-8 text-center cursor-pointer hover:bg-secondary/10 transition-colors"
           >
             <p className="text-caption1 text-muted-foreground mb-1">Public</p>
-            <p className="text-title3 font-semibold text-green-500">{stats.public}</p>
+            <p className="text-title3 font-semibold text-success">{stats.public}</p>
           </button>
           <button 
             onClick={() => setTypeFilter(typeFilter === 'user' ? 'all' : 'user')}
@@ -358,7 +358,7 @@ export function AdminListingsView() {
             className={`p-8 text-center cursor-pointer hover:bg-secondary/10 transition-colors ${typeFilter === 'partner' ? 'bg-secondary/20' : ''}`}
           >
             <p className="text-caption1 text-muted-foreground mb-1">Partner</p>
-            <p className="text-title3 font-semibold text-blue-500">{stats.partnerListings}</p>
+            <p className="text-title3 font-semibold text-primary">{stats.partnerListings}</p>
           </button>
           <button 
             onClick={() => setActiveTab('deep_inventory')}
@@ -373,7 +373,7 @@ export function AdminListingsView() {
       {/* Tabs & Content */}
       <section className="space-y-8">
         <div className="border-b border-border/40 pb-2">
-          <h3 className="text-headline font-medium tracking-tight">Listings</h3>
+          <h3 className="text-headline tracking-tight">Listings</h3>
         </div>
 
       {/* Tabs */}
@@ -430,7 +430,7 @@ export function AdminListingsView() {
                 onClick={() => setDeepInventoryFilter(filter.key)}
                 className={`px-4 py-2 rounded-full text-subhead transition-colors ${
                   deepInventoryFilter === filter.key
-                    ? 'bg-blue-500 text-white'
+                    ? 'bg-primary text-white'
                     : 'border border-border hover:bg-secondary/10'
                 }`}
               >
@@ -499,8 +499,8 @@ export function AdminListingsView() {
 
       {/* Error Message */}
       {error && (
-        <div className="rounded-xl border border-red-500/20 p-4">
-          <p className="text-subhead text-red-500">{error}</p>
+        <div className="rounded-xl border border-destructive/20 p-4">
+          <p className="text-subhead text-destructive">{error}</p>
         </div>
       )}
 
@@ -542,7 +542,7 @@ export function AdminListingsView() {
               <button
                 onClick={loadMore}
                 disabled={isLoadingMore}
-                className="px-6 py-3 rounded-full border border-border hover:bg-secondary/10 text-subhead font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 rounded-full border border-border hover:bg-secondary/10 text-subhead transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoadingMore ? (
                   <span className="flex items-center gap-2">
@@ -611,7 +611,7 @@ export function AdminListingsView() {
             <button
               onClick={executeDelete}
               disabled={isDeleting}
-              className="px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 text-white text-subhead transition-colors disabled:opacity-50"
+              className="px-5 py-2 rounded-full bg-destructive hover:bg-destructive/90 text-white text-subhead transition-colors disabled:opacity-50"
             >
               {isDeleting ? 'Deleting...' : 'Delete'}
             </button>

@@ -120,7 +120,7 @@ export function AdvancedFilters({
   const filterContent = !hasAnyOptions ? (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <SlidersHorizontal className="h-10 w-10 text-muted-foreground/30 mb-3" />
-      <p className="text-subhead font-medium text-muted-foreground">No filters available</p>
+      <p className="text-subhead text-muted-foreground">No filters available</p>
       <p className="text-caption1 text-muted-foreground/60 mt-1">Try adjusting your search criteria</p>
     </div>
   ) : (
@@ -221,7 +221,7 @@ export function AdvancedFilters({
         type="button"
         onClick={(e) => handleReset(e)}
         className={cn(
-          "w-full px-3 py-2 text-subhead font-medium",
+          "w-full px-3 py-2 text-subhead",
           "text-muted-foreground/70 hover:text-sidebar-foreground/80",
           "hover:bg-muted/40 rounded-lg",
           "transition-colors"
@@ -493,7 +493,7 @@ function FilterGroup({
                       onClick={() => toggleOption(option.value)}
                       className={cn(
                         'flex items-center w-full pl-3 py-2.5 rounded-md touch-manipulation',
-                        'text-callout font-medium tracking-tight transition-colors duration-100',
+                        'text-callout tracking-tight transition-colors duration-100',
                         isSelected 
                           ? 'bg-muted text-foreground font-semibold' 
                           : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'

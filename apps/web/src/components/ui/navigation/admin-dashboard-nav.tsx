@@ -75,9 +75,9 @@ export function AdminDashboardNav() {
                 <Link
                   href={item.href}
                   className={cn(
-                    'group flex items-center px-3 py-2 text-subhead font-medium rounded-md transition-colors',
+                    'group flex items-center px-3 py-2 text-subhead rounded-md transition-colors',
                     isActive
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-primary text-white'
                       : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   )}
                 >
@@ -99,11 +99,11 @@ export function AdminDashboardNav() {
       
       <div className="p-4 border-t border-gray-800">
         <div className="flex items-center">
-          <div className="h-8 w-8 rounded-full bg-red-500 flex items-center justify-center">
-            <span className="text-subhead font-medium text-white">A</span>
+          <div className="h-8 w-8 rounded-full bg-destructive flex items-center justify-center">
+            <span className="text-subhead text-white">A</span>
           </div>
           <div className="ml-3">
-            <p className="text-subhead font-medium text-white">Admin Portal</p>
+            <p className="text-subhead text-white">Admin Portal</p>
             <p className="text-caption1 text-gray-400">Full Access</p>
           </div>
         </div>

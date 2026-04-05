@@ -61,11 +61,11 @@ function FieldWrapper({
     <div className="space-y-2">
       <label className="text-subhead font-semibold text-sidebar-foreground/70">
         {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
+        {required && <span className="text-destructive ml-0.5">*</span>}
       </label>
       {children}
       {error && (
-        <p className="text-caption1 font-semibold text-red-500">{error}</p>
+        <p className="text-caption1 font-semibold text-destructive">{error}</p>
       )}
     </div>
   );
@@ -195,7 +195,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
                 placeholder="45,000"
                 min={0}
                 className={cn(
-                  "w-full h-12 bg-transparent px-0 pr-12 text-subhead font-medium text-sidebar-foreground",
+                  "w-full h-12 bg-transparent px-0 pr-12 text-subhead text-sidebar-foreground",
                   "outline-none transition-colors",
                   "placeholder:text-sidebar-foreground/40"
                 )}
@@ -338,7 +338,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               min={0}
               max={16}
               className={cn(
-                "w-full h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
+                "w-full h-12 bg-transparent px-0 text-subhead text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -361,7 +361,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               onChange={(e) => updateField('fuelEconomy', e.target.value)}
               placeholder="12 km/L"
               className={cn(
-                "w-full h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
+                "w-full h-12 bg-transparent px-0 text-subhead text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -375,7 +375,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               onChange={(e) => updateField('torque', e.target.value)}
               placeholder="350 Nm"
               className={cn(
-                "w-full h-12 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
+                "w-full h-12 bg-transparent px-0 text-subhead text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -463,7 +463,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
               type="text"
               placeholder="Add custom extra..."
               className={cn(
-                "flex-1 h-10 bg-transparent px-0 text-subhead font-medium text-sidebar-foreground",
+                "flex-1 h-10 bg-transparent px-0 text-subhead text-sidebar-foreground",
                 "outline-none transition-colors",
                 "placeholder:text-sidebar-foreground/40"
               )}
@@ -523,7 +523,7 @@ export function DetailsStep({ data, updateField, errors }: StepProps) {
             );
           })}
           </div>
-          {errors.tags && <p className="text-caption1 font-semibold text-red-500 mt-3">{errors.tags}</p>}
+          {errors.tags && <p className="text-caption1 font-semibold text-destructive mt-3">{errors.tags}</p>}
         </div>
       </section>
     </div>

@@ -161,7 +161,7 @@ export function AmnaDialog({ open, onOpenChange }: AmnaDialogProps) {
                 }}
                 disabled={loading}
                 className={cn(
-                  'px-2.5 py-1 rounded-full text-caption1 font-medium',
+                  'px-2.5 py-1 rounded-full text-caption1',
                   'bg-muted/50 text-muted-foreground',
                   'border border-border/40',
                   'hover:bg-muted hover:text-foreground',

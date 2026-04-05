@@ -107,7 +107,7 @@ export function KycLocationMap({
                 {latitude.toFixed(4)}, {longitude.toFixed(4)}
               </p>
               {isVpnOrTor && (
-                <p className="text-red-600 text-caption1 font-medium mt-1">
+                <p className="text-destructive text-caption1 mt-1">
                   ⚠️ VPN/Tor Detected
                 </p>
               )}

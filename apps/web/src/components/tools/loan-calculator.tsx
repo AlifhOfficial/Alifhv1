@@ -122,7 +122,7 @@ export function LoanCalculator() {
         <button
           onClick={() => setFormData({ ...formData, financingType: 'conventional', rate: '3.49' })}
           className={cn(
-            "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-subhead font-medium transition-all",
+            "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-subhead transition-all",
             formData.financingType === 'conventional'
               ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
@@ -134,7 +134,7 @@ export function LoanCalculator() {
         <button
           onClick={() => setFormData({ ...formData, financingType: 'islamic', rate: '3.29' })}
           className={cn(
-            "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-subhead font-medium transition-all",
+            "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-subhead transition-all",
             formData.financingType === 'islamic'
               ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
@@ -146,9 +146,9 @@ export function LoanCalculator() {
       </div>
 
       {/* Info banner */}
-      <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-lg">
-        <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-        <div className="text-subhead text-blue-900 dark:text-blue-100">
+      <div className="flex items-start gap-3 p-4 bg-primary-muted bg-primary-muted border border-primary/20 border-primary/30 rounded-lg">
+        <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+        <div className="text-subhead text-primary">
           {formData.financingType === 'islamic' ? (
             <>
               <strong>Islamic Financing (Murabaha):</strong> Sharia-compliant financing where 
@@ -169,7 +169,7 @@ export function LoanCalculator() {
         {/* Car Price */}
         <div>
           <label className="flex items-center justify-between mb-2">
-            <span className="text-subhead font-medium">Vehicle Price</span>
+            <span className="text-subhead">Vehicle Price</span>
             <span className="text-caption1 text-muted-foreground">Required</span>
           </label>
           <div className="relative">
@@ -189,10 +189,10 @@ export function LoanCalculator() {
         {/* Down Payment */}
         <div>
           <label className="flex items-center justify-between mb-2">
-            <span className="text-subhead font-medium">Down Payment</span>
+            <span className="text-subhead">Down Payment</span>
             <span className={cn(
               "text-caption1 font-semibold",
-              isDownPaymentValid ? "text-green-600" : "text-red-500"
+              isDownPaymentValid ? "text-success" : "text-destructive"
             )}>
               {formData.downPaymentPercent}%
               {formData.carPrice && ` (${formatAED(parseFloat(formData.carPrice) * parseFloat(formData.downPaymentPercent) / 100)})`}
@@ -209,11 +209,11 @@ export function LoanCalculator() {
           />
           <div className="flex justify-between text-caption1 text-muted-foreground mt-1">
             <span>0%</span>
-            <span className="text-amber-600 font-medium">Min 20% (UAE law)</span>
+            <span className="text-warning font-medium">Min 20% (UAE law)</span>
             <span>80%</span>
           </div>
           {!isDownPaymentValid && (
-            <p className="text-caption1 text-red-500 mt-1">
+            <p className="text-caption1 text-destructive mt-1">
               ⚠️ UAE Central Bank requires minimum 20% down payment for auto loans
             </p>
           )}
@@ -222,7 +222,7 @@ export function LoanCalculator() {
         {/* Interest/Profit Rate */}
         <div>
           <label className="flex items-center justify-between mb-2">
-            <span className="text-subhead font-medium">
+            <span className="text-subhead">
               {formData.financingType === 'islamic' ? 'Profit Rate' : 'Interest Rate'}
             </span>
             <span className="text-caption1 font-semibold text-primary">{formData.rate}% per year</span>
@@ -238,7 +238,7 @@ export function LoanCalculator() {
           />
           <div className="flex justify-between text-caption1 text-muted-foreground mt-1">
             <span>2.0%</span>
-            <span className="text-green-600">
+            <span className="text-success">
               {formData.financingType === 'islamic' 
                 ? `Typical: ${UAE_FINANCING_CONFIG.islamic.profitRateRange.typical}%`
                 : `Typical: ${UAE_FINANCING_CONFIG.conventional.rateRange.typical}%`
@@ -251,7 +251,7 @@ export function LoanCalculator() {
         {/* Loan Term */}
         <div>
           <label className="flex items-center justify-between mb-2">
-            <span className="text-subhead font-medium">Financing Term</span>
+            <span className="text-subhead">Financing Term</span>
             <span className="text-caption1 font-semibold text-primary">{formData.loanTerm} years</span>
           </label>
           <div className="grid grid-cols-5 gap-2">
@@ -260,7 +260,7 @@ export function LoanCalculator() {
                 key={year}
                 onClick={() => setFormData({ ...formData, loanTerm: String(year) })}
                 className={cn(
-                  "py-2.5 rounded-lg text-subhead font-medium transition-all border",
+                  "py-2.5 rounded-lg text-subhead transition-all border",
                   formData.loanTerm === String(year)
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-background border-border hover:border-primary/50"
@@ -321,7 +321,7 @@ export function LoanCalculator() {
                 <Percent className="w-3.5 h-3.5" />
                 Total {formData.financingType === 'islamic' ? 'Profit' : 'Interest'}
               </div>
-              <p className="text-headline font-semibold text-amber-600">{formatAED(result.totalInterest)}</p>
+              <p className="text-headline font-semibold text-warning">{formatAED(result.totalInterest)}</p>
             </div>
             <div className="p-4 border rounded-lg bg-muted/30">
               <div className="flex items-center gap-2 text-caption1 text-muted-foreground mb-1">
@@ -334,7 +334,7 @@ export function LoanCalculator() {
 
           {/* Cost Breakdown Visual */}
           <div className="p-4 border rounded-lg">
-            <p className="text-subhead font-medium mb-3">Payment Breakdown</p>
+            <p className="text-subhead mb-3">Payment Breakdown</p>
             <div className="h-4 flex rounded-full overflow-hidden">
               <div 
                 className="bg-primary"
@@ -342,7 +342,7 @@ export function LoanCalculator() {
                 title="Principal"
               />
               <div 
-                className="bg-amber-500"
+                className="bg-warning"
                 style={{ width: `${(result.totalInterest / result.totalPayment) * 100}%` }}
                 title={formData.financingType === 'islamic' ? 'Profit' : 'Interest'}
               />
@@ -353,7 +353,7 @@ export function LoanCalculator() {
                 Principal ({((result.loanAmount / result.totalPayment) * 100).toFixed(1)}%)
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                <span className="w-2.5 h-2.5 rounded-full bg-warning" />
                 {formData.financingType === 'islamic' ? 'Profit' : 'Interest'} ({((result.totalInterest / result.totalPayment) * 100).toFixed(1)}%)
               </span>
             </div>
@@ -388,8 +388,8 @@ export function LoanCalculator() {
                       <tr key={row.month} className="border-t">
                         <td className="py-2 px-3">{row.month}</td>
                         <td className="text-right py-2 px-3">{formatAED(row.payment)}</td>
-                        <td className="text-right py-2 px-3 text-green-600">{formatAED(row.principal)}</td>
-                        <td className="text-right py-2 px-3 text-amber-600">{formatAED(row.interest)}</td>
+                        <td className="text-right py-2 px-3 text-success">{formatAED(row.principal)}</td>
+                        <td className="text-right py-2 px-3 text-warning">{formatAED(row.interest)}</td>
                         <td className="text-right py-2 px-3">{formatAED(row.balance)}</td>
                       </tr>
                     ))}
@@ -401,7 +401,7 @@ export function LoanCalculator() {
 
           {/* Bank suggestions */}
           <div className="p-4 bg-muted/50 rounded-lg">
-            <p className="text-subhead font-medium mb-2">Popular UAE Banks for Auto Financing</p>
+            <p className="text-subhead mb-2">Popular UAE Banks for Auto Financing</p>
             <div className="flex flex-wrap gap-2">
               {UAE_FINANCING_CONFIG.majorBanks
                 .filter(bank => 

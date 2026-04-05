@@ -43,7 +43,7 @@ export function DecodedVehiclePreview({ data, isVisible }: DecodedVehiclePreview
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
           {decodedFields.map(({ label, value }) => (
             <div key={label} className="space-y-1">
-              <p className="text-caption2 font-medium text-muted-foreground/50 uppercase tracking-wider">{label}</p>
+              <p className="text-caption2 text-muted-foreground/50 uppercase tracking-wider">{label}</p>
               <p className="text-subhead font-semibold capitalize text-foreground">{value}</p>
             </div>
           ))}

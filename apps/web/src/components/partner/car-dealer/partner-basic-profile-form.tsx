@@ -104,7 +104,7 @@ const EditableField = React.memo(function EditableField({
                   onChange={(e) => onChange(e.target.value)}
                   placeholder={placeholder}
                   rows={3}
-                  className="w-full bg-muted/20 rounded-lg p-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
+                  className="w-full bg-muted/20 rounded-lg p-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Escape') onCancel();
                   }}
@@ -125,7 +125,7 @@ const EditableField = React.memo(function EditableField({
                     }
                   }}
                   placeholder={placeholder}
-                  className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') onSave();
                     if (e.key === 'Escape') onCancel();
@@ -142,14 +142,14 @@ const EditableField = React.memo(function EditableField({
                 <button
                   onClick={(e) => { e.stopPropagation(); onSave(); }}
                   disabled={isUpdating}
-                  className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                  className="text-caption1 text-primary hover:text-primary font-semibold"
                 >
                   {isUpdating ? '...' : 'Save'}
                 </button>
               </div>
             </div>
           ) : (
-            <p className={cn("text-subhead font-medium text-foreground", multiline && "whitespace-pre-line")}>
+            <p className={cn("text-subhead text-foreground", multiline && "whitespace-pre-line")}>
               {value || <span className="text-muted-foreground/50">Tap to add</span>}
             </p>
           )}
@@ -590,7 +590,7 @@ export function PartnerBasicProfileForm({
               </label>
               <button
                 onClick={removeHero}
-                className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-red-500/50 transition-colors"
+                className="p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-destructive/50 transition-colors"
               >
                 <X className="w-4 h-4 text-white" />
               </button>
@@ -668,7 +668,7 @@ export function PartnerBasicProfileForm({
                 BLK
               </span>
             ) : profile.isVerified ? (
-              <CheckCircle2 className="w-5 h-5 text-blue-500" />
+              <CheckCircle2 className="w-5 h-5 text-primary" />
             ) : null}
             <button
               onClick={() => refetchFresh()}
@@ -684,7 +684,7 @@ export function PartnerBasicProfileForm({
           {!profile.isVerified && (
             <Link 
               href="/partner/verify" 
-              className="text-caption1 text-blue-500 hover:text-blue-600 font-medium mt-1 inline-block"
+              className="text-caption1 text-primary hover:text-primary font-medium mt-1 inline-block"
             >
               Get verified
             </Link>
@@ -711,7 +711,7 @@ export function PartnerBasicProfileForm({
           <span className="text-title3 font-bold text-foreground">
             {profile.googleRating ? (
               <span className="flex items-center gap-1.5">
-                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                <Star className="w-4 h-4 text-warning fill-yellow-500" />
                 {profile.googleRating.toFixed(1)}
               </span>
             ) : '—'}
@@ -801,12 +801,12 @@ export function PartnerBasicProfileForm({
                 onChange={(e) => setCustomSpecialty(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addSpecialty()}
                 placeholder="Add specialty..."
-                className="flex-1 bg-transparent text-subhead font-medium focus:outline-none placeholder:text-muted-foreground/50"
+                className="flex-1 bg-transparent text-subhead focus:outline-none placeholder:text-muted-foreground/50"
               />
               {customSpecialty.trim() && (
                 <button
                   onClick={addSpecialty}
-                  className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                  className="text-caption1 text-primary hover:text-primary font-semibold"
                 >
                   Add
                 </button>
@@ -824,7 +824,7 @@ export function PartnerBasicProfileForm({
             <button 
               onClick={syncReviews} 
               disabled={syncingReviews}
-              className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50 flex items-center gap-1"
+              className="text-caption1 text-primary hover:text-primary font-semibold disabled:opacity-50 flex items-center gap-1"
             >
               {syncingReviews ? (
                 <><Loader2 className="w-3 h-3 animate-spin" /> Syncing...</>
@@ -846,8 +846,8 @@ export function PartnerBasicProfileForm({
           
           {/* Sync Error */}
           {syncError && (
-            <div className="mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-              <p className="text-caption1 text-red-500 font-medium">{syncError}</p>
+            <div className="mt-3 p-3 rounded-lg bg-destructive-muted border border-destructive/20">
+              <p className="text-caption1 text-destructive font-medium">{syncError}</p>
             </div>
           )}
           
@@ -857,14 +857,14 @@ export function PartnerBasicProfileForm({
               {profile.googleRating ? (
                 <div>
                   <p className="text-headline font-semibold flex items-center gap-1.5">
-                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                    <Star className="w-4 h-4 text-warning fill-yellow-500" />
                     {profile.googleRating.toFixed(1)}
                   </p>
                   <p className="text-caption1 text-muted-foreground/70">{profile.googleReviewCount ?? 0} reviews</p>
                 </div>
               ) : (
                 <div>
-                  <p className="text-subhead font-medium text-muted-foreground/70">No rating yet</p>
+                  <p className="text-subhead text-muted-foreground/70">No rating yet</p>
                   <p className="text-caption1 text-muted-foreground/50">Tap Sync to fetch reviews</p>
                 </div>
               )}
@@ -885,7 +885,7 @@ export function PartnerBasicProfileForm({
                   </>
                 ) : (
                   <>
-                    <p className="text-subhead font-medium text-muted-foreground/50">Never synced</p>
+                    <p className="text-subhead text-muted-foreground/50">Never synced</p>
                     <p className="text-caption1 text-muted-foreground/50">Add URL and sync</p>
                   </>
                 )}
@@ -902,7 +902,7 @@ export function PartnerBasicProfileForm({
           <button
             onClick={handleUseCurrentLocation}
             disabled={isLoadingLocation}
-            className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold flex items-center gap-1"
+            className="text-caption1 text-primary hover:text-primary font-semibold flex items-center gap-1"
           >
             {isLoadingLocation ? <Loader2 className="w-3 h-3 animate-spin" /> : <MapPin className="w-3 h-3" />}
             Detect
@@ -960,7 +960,7 @@ export function PartnerBasicProfileForm({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <p className="text-subhead font-medium text-muted-foreground/60 mb-2">No badges earned yet</p>
+              <p className="text-subhead text-muted-foreground/60 mb-2">No badges earned yet</p>
               <a 
                 href="/badges" 
                 className="text-subhead text-primary hover:text-primary/80 font-semibold transition-colors"

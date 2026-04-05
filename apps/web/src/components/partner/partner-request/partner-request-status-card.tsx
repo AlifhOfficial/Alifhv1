@@ -69,7 +69,7 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
       case 'pending':
         return {
           icon: Clock,
-          iconColor: 'text-yellow-500',
+          iconColor: 'text-warning',
           title: 'Under Review',
           description: 'Your application is being reviewed by our team. We\'ll notify you once a decision has been made.',
           badge: 'Pending Review',
@@ -77,7 +77,7 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
       case 'approved':
         return {
           icon: CheckCircle2,
-          iconColor: 'text-green-500',
+          iconColor: 'text-success',
           title: 'Application Approved',
           description: 'Congratulations! Your partner application has been approved. You can now access your partner dashboard and start listing vehicles.',
           badge: 'Approved',
@@ -85,7 +85,7 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
       case 'rejected':
         return {
           icon: XCircle,
-          iconColor: 'text-red-500',
+          iconColor: 'text-destructive',
           title: 'Application Not Approved',
           description: 'Unfortunately, your partner application was not approved at this time. Please review the feedback below and consider re-applying.',
           badge: 'Rejected',
@@ -169,7 +169,7 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
           <div className="flex justify-center pt-6 border-t border-border/40">
             <button
               onClick={() => setShowCancelConfirm(true)}
-              className="text-caption1 text-red-500 hover:text-red-600 transition-colors"
+              className="text-caption1 text-destructive hover:text-destructive transition-colors"
             >
               Cancel Application
             </button>
@@ -181,8 +181,8 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
         <div className="fixed inset-0 bg-background/40 backdrop-blur-2xl flex items-center justify-center z-50 animate-in fade-in duration-200">
           <div className="bg-card rounded-2xl border border-border/40 shadow-2xl p-8 max-w-md w-full mx-4 animate-in zoom-in-95 duration-200">
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0">
-                <AlertTriangle className="w-6 h-6 text-red-500" />
+              <div className="w-12 h-12 rounded-full bg-destructive-muted flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-6 h-6 text-destructive" />
               </div>
               <div>
                 <h3 className="text-headline font-semibold text-foreground mb-1">Cancel Application?</h3>
@@ -202,7 +202,7 @@ export function PartnerRequestStatusCard({ onUpdate }: PartnerRequestStatusCardP
               <button
                 onClick={handleCancel}
                 disabled={isCancelling}
-                className="flex-1 px-6 py-3 rounded-full bg-red-500 hover:bg-red-600 text-white font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 px-6 py-3 rounded-full bg-destructive hover:bg-destructive/90 text-white font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isCancelling ? (
                   <>

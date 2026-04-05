@@ -128,7 +128,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
       >
         <MessageCircle className="size-4" />
         {hasUnread && (
-          <span className="absolute top-1 right-1 size-2 rounded-full bg-rose-500" />
+          <span className="absolute top-1 right-1 size-2 rounded-full bg-favorite" />
         )}
       </button>
 
@@ -217,7 +217,7 @@ function NavbarMessagingDropdown({
     return (
       <div className="flex flex-col items-center justify-center py-14 px-6 text-center gap-3">
         <MessageCircle className="w-10 h-10 text-muted-foreground/30" />
-        <p className="text-subhead font-medium text-foreground/60">No messages yet</p>
+        <p className="text-subhead text-foreground/60">No messages yet</p>
       </div>
     );
   }
@@ -279,7 +279,7 @@ function GroupRow({ group, onSelect }: GroupRowProps) {
             <UserAvatar src={user?.avatarUrl} name={displayName} size="md" className="w-9 h-9" />
           )}
           {isOnline && (
-            <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border-2 border-sidebar" />
+            <span className="absolute bottom-0 right-0 w-2 h-2 bg-success rounded-full border-2 border-sidebar" />
           )}
         </div>
 
@@ -291,7 +291,7 @@ function GroupRow({ group, onSelect }: GroupRowProps) {
         </span>
 
         <div className="flex items-center gap-2 flex-shrink-0">
-          {hasUnread && <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />}
+          {hasUnread && <span className="w-1.5 h-1.5 bg-favorite rounded-full" />}
           <button
             type="button"
             onClick={handleChevronClick}

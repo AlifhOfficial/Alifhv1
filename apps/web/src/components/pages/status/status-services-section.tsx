@@ -38,16 +38,16 @@ const statusConfig = {
   degraded: {
     icon: AlertTriangle,
     label: 'Degraded',
-    textClass: 'text-amber-500',
-    barClass: 'bg-amber-500',
-    bgClass: 'bg-amber-500/10',
+    textClass: 'text-warning',
+    barClass: 'bg-warning',
+    bgClass: 'bg-warning-muted',
   },
   unhealthy: {
     icon: XCircle,
     label: 'Outage',
-    textClass: 'text-red-500',
-    barClass: 'bg-red-500',
-    bgClass: 'bg-red-500/10',
+    textClass: 'text-destructive',
+    barClass: 'bg-destructive',
+    bgClass: 'bg-destructive-muted',
   },
 };
 
@@ -71,7 +71,7 @@ function ServiceCard({ service }: { service: Service }) {
         </div>
         <div className="flex items-center gap-2">
           <Icon className={`w-4 h-4 ${config.textClass}`} />
-          <span className={`text-subhead font-medium ${config.textClass}`}>
+          <span className={`text-subhead ${config.textClass}`}>
             {config.label}
           </span>
         </div>

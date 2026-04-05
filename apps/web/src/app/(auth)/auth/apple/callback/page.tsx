@@ -101,8 +101,8 @@ export default function AppleCallbackPage() {
         
         {status === 'success' && (
           <>
-            <CheckCircle2 className="h-8 w-8 text-green-500 mx-auto" />
-            <p className="text-subhead font-medium text-foreground">{message}</p>
+            <CheckCircle2 className="h-8 w-8 text-success mx-auto" />
+            <p className="text-subhead text-foreground">{message}</p>
             <p className="text-caption1 text-muted-foreground">This window will close automatically</p>
           </>
         )}
@@ -110,7 +110,7 @@ export default function AppleCallbackPage() {
         {status === 'error' && (
           <>
             <XCircle className="h-8 w-8 text-destructive mx-auto" />
-            <p className="text-subhead font-medium text-destructive">{message}</p>
+            <p className="text-subhead text-destructive">{message}</p>
             <p className="text-caption1 text-muted-foreground">This window will close automatically</p>
           </>
         )}

@@ -202,7 +202,7 @@ export function ListingForm({
             <button
               onClick={onCancel}
               disabled={isSubmitting}
-              className="text-caption1 sm:text-subhead font-medium text-red-500 hover:text-red-600 transition-colors"
+              className="text-caption1 sm:text-subhead text-destructive hover:text-destructive transition-colors"
             >
               Cancel
             </button>
@@ -241,14 +241,14 @@ export function ListingForm({
           if (currentStep === 'vin' && key === 'vin') return false;
           return true;
         }).length > 0 && (
-          <div className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-xl border border-red-500/30 bg-red-500/5">
-            <p className="text-caption2 sm:text-caption1 font-bold text-red-500 mb-1.5 sm:mb-2">Please fix:</p>
+          <div className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-xl border border-destructive/30 bg-destructive/5">
+            <p className="text-caption2 sm:text-caption1 font-bold text-destructive mb-1.5 sm:mb-2">Please fix:</p>
             <ul className="space-y-1">
               {Object.entries(errors)
                 .filter(([field]) => !(currentStep === 'vin' && field === 'vin'))
                 .map(([field, error]) => (
-                <li key={field} className="text-caption2 sm:text-caption1 text-red-500/90 flex items-center gap-1.5 sm:gap-2">
-                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-red-500 shrink-0" />
+                <li key={field} className="text-caption2 sm:text-caption1 text-destructive/90 flex items-center gap-1.5 sm:gap-2">
+                  <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-destructive shrink-0" />
                   {error}
                 </li>
               ))}
@@ -304,7 +304,7 @@ export function ListingForm({
                 "flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-caption1 sm:text-subhead font-semibold transition-colors disabled:opacity-50",
                 mode === 'edit' 
                   ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "bg-green-500 text-white hover:bg-green-600"
+                  : "bg-success text-white hover:bg-success/90"
               )}
             >
               {isSubmitting ? (

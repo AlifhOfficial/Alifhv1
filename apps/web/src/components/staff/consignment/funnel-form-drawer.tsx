@@ -302,7 +302,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
                 max={currentYear + 1}
                 className="flex-1 h-10 bg-sidebar-accent/30 border-sidebar-border/50"
               />
-              <span className="text-sidebar-foreground/30 text-subhead font-medium">–</span>
+              <span className="text-sidebar-foreground/30 text-subhead">–</span>
               <Input
                 type="number"
                 value={filters.maxYear || ''}
@@ -327,7 +327,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
                 step={10000}
                 className="flex-1 h-10 bg-sidebar-accent/30 border-sidebar-border/50"
               />
-              <span className="text-sidebar-foreground/30 text-subhead font-medium">–</span>
+              <span className="text-sidebar-foreground/30 text-subhead">–</span>
               <Input
                 type="number"
                 value={filters.maxPrice || ''}
@@ -387,7 +387,7 @@ export function FunnelFormDrawer({ open, onClose, funnel }: FunnelFormDrawerProp
               type="button"
               onClick={handleSubmit}
               disabled={!name.trim() || isPending}
-              className="flex-1 px-4 py-2.5 text-subhead font-semibold bg-[#2563eb] text-white hover:bg-[#1d4ed8] rounded-full transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2.5 text-subhead font-semibold bg-primary text-primary-foreground hover:bg-primary/90 rounded-full transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               {isEditing ? 'Save Changes' : 'Create Funnel'}
@@ -523,7 +523,7 @@ function SearchableFilterGroup({
                       {option.label}
                     </span>
                     {isSelected && (
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      <CheckCircle2 className="h-4 w-4 text-success" />
                     )}
                   </button>
                 );
@@ -533,7 +533,7 @@ function SearchableFilterGroup({
                 <button
                   type="button"
                   onClick={() => setExpanded(true)}
-                  className="text-subhead text-[#2563eb] hover:text-[#1d4ed8] font-semibold transition-colors mt-2 px-3"
+                  className="text-subhead text-primary hover:text-primary/90 font-semibold transition-colors mt-2 px-3"
                 >
                   Show {filteredOptions.length - 3} more
                 </button>

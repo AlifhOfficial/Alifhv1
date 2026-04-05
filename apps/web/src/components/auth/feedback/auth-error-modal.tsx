@@ -62,7 +62,7 @@ export function AuthErrorModal({
       >
         {/* Header */}
         <div className="text-center space-y-3 mb-6">
-          <XCircle className="w-6 h-6 text-red-500 mx-auto" />
+          <XCircle className="w-6 h-6 text-destructive mx-auto" />
           <h2 className="text-headline font-semibold tracking-tight text-foreground">
             {errorInfo.title}
           </h2>

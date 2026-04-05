@@ -20,8 +20,8 @@ const SERVICE_LABELS = {
 
 const STATUS_COLORS = {
   healthy: 'bg-emerald-500',
-  degraded: 'bg-amber-500',
-  unhealthy: 'bg-red-500',
+  degraded: 'bg-warning',
+  unhealthy: 'bg-destructive',
   unknown: 'bg-muted-foreground/30',
 } as const;
 
@@ -45,7 +45,7 @@ export function HealthStatus({
   if (error || !health) {
     return (
       <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+        <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
         <span className="text-caption1 text-muted-foreground/60">System offline</span>
       </div>
     );
@@ -78,8 +78,8 @@ export function HealthStatus({
                     Status: <span className={cn(
                       'font-medium',
                       service.status === 'healthy' && 'text-emerald-500',
-                      service.status === 'degraded' && 'text-amber-500',
-                      service.status === 'unhealthy' && 'text-red-500'
+                      service.status === 'degraded' && 'text-warning',
+                      service.status === 'unhealthy' && 'text-destructive'
                     )}>
                       {service.status}
                     </span>

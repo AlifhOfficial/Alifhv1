@@ -39,7 +39,7 @@ export function PartnerApplicationFeedbackModal({
             {isError ? (
               <XCircle className="w-6 h-6 text-destructive" />
             ) : success ? (
-              <CheckCircle2 className="w-6 h-6 text-green-500" />
+              <CheckCircle2 className="w-6 h-6 text-success" />
             ) : (
               <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
             )}
@@ -60,7 +60,7 @@ export function PartnerApplicationFeedbackModal({
           {(success || isError) && onClose && (
             <button
               onClick={onClose}
-              className="w-full py-2.5 rounded-lg bg-muted text-subhead font-medium text-foreground hover:bg-muted/80 transition-colors"
+              className="w-full py-2.5 rounded-lg bg-muted text-subhead text-foreground hover:bg-muted/80 transition-colors"
             >
               {success ? "Done" : "Try again"}
             </button>

@@ -123,7 +123,7 @@ export function ShowroomGallery({ showroom }: ShowroomGalleryProps) {
             {allImages.length > 1 && (
               <button
                 onClick={() => handleImageClick(0)}
-                className="text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                className="text-subhead text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
               >
                 <Images className="h-4 w-4" />
                 View all {allImages.length}

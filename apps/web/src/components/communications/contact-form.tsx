@@ -147,7 +147,7 @@ export function ContactForm({
             onClick={() => setIsSubmitted(false)}
             className={cn(
               'mt-2 px-4 py-2 rounded-md touch-manipulation',
-              'text-subhead font-medium tracking-tight transition-colors duration-100',
+              'text-subhead tracking-tight transition-colors duration-100',
               'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
             )}
           >
@@ -177,7 +177,7 @@ export function ContactForm({
                 onClick={() => setType(value)}
                 className={cn(
                   'px-3 py-2 rounded-md touch-manipulation',
-                  'text-subhead font-medium tracking-tight transition-colors duration-100',
+                  'text-subhead tracking-tight transition-colors duration-100',
                   type === value
                     ? 'bg-sidebar-accent text-sidebar-foreground font-semibold'
                     : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
@@ -207,7 +207,7 @@ export function ContactForm({
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
                 maxLength={100}
-                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                 required
               />
             </div>
@@ -220,7 +220,7 @@ export function ContactForm({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                 required
               />
             </div>
@@ -236,7 +236,7 @@ export function ContactForm({
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+971 50 123 4567"
-                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
               />
             </div>
 
@@ -249,7 +249,7 @@ export function ContactForm({
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="What's this about?"
                 maxLength={150}
-                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                 required
               />
             </div>
@@ -266,7 +266,7 @@ export function ContactForm({
                 placeholder="Tell us more..."
                 rows={5}
                 maxLength={5000}
-                className="w-full bg-muted/20 rounded-lg px-3 py-2.5 text-subhead font-medium resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                className="w-full bg-muted/20 rounded-lg px-3 py-2.5 text-subhead resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                 required
               />
             </div>

@@ -94,7 +94,7 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
         <span className="text-subhead font-semibold text-muted-foreground/70">Estimated Monthly</span>
         <span className="text-title3 font-bold tabular-nums text-foreground">
           {formatAmount(calculations.emi)}
-          <span className="text-subhead font-medium text-muted-foreground">/mo</span>
+          <span className="text-subhead text-muted-foreground">/mo</span>
         </span>
       </div>
 

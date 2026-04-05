@@ -96,7 +96,7 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
           </div>
           {data && (
             <div className="flex-shrink-0">
-              <span className="text-subhead font-semibold text-blue-600">Count: {data.total}</span>
+              <span className="text-subhead font-semibold text-primary">Count: {data.total}</span>
             </div>
           )}
         </div>
@@ -169,7 +169,7 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
                     <p className="text-subhead font-semibold text-sidebar-foreground truncate">
                       {listing.year} {listing.make} {listing.model}
                     </p>
-                    <p className="text-subhead font-bold text-blue-600">
+                    <p className="text-subhead font-bold text-primary">
                       AED {listing.price.toLocaleString()}
                     </p>
                   </div>

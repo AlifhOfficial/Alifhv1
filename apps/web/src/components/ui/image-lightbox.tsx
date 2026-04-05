@@ -120,7 +120,7 @@ export function ImageLightbox({
       </button>
 
       {/* Image Counter */}
-      <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-muted/80 backdrop-blur-sm text-foreground text-caption1 sm:text-subhead font-medium tabular-nums rounded-full">
+      <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-muted/80 backdrop-blur-sm text-foreground text-caption1 sm:text-subhead tabular-nums rounded-full">
         {safeIndex + 1} / {totalImages}
       </div>
 

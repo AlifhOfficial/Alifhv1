@@ -358,7 +358,7 @@ export function ChatThread({
         ) : messages.length === 0 ? (
           compact ? (
             <div className="flex items-center justify-center h-full">
-              <p className="text-footnote font-medium text-muted-foreground/70">No messages yet</p>
+              <p className="text-footnote text-muted-foreground/70">No messages yet</p>
             </div>
           ) : (
             <div className="flex items-center justify-center flex-1">
@@ -366,7 +366,7 @@ export function ChatThread({
                 <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-sidebar flex items-center justify-center">
                   <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground/40" />
                 </div>
-                <p className="text-caption1 sm:text-subhead font-medium text-muted-foreground/70">Start a conversation</p>
+                <p className="text-caption1 sm:text-subhead text-muted-foreground/70">Start a conversation</p>
               </div>
             </div>
           )

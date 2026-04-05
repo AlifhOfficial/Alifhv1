@@ -67,7 +67,7 @@ export function StaffOverview() {
       <div className="max-w-4xl mx-auto px-6 py-16">
         <div className="text-center py-24">
           <Building2 className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-headline font-medium mb-2">No Staff Profile Found</h3>
+          <h3 className="text-headline mb-2">No Staff Profile Found</h3>
           <p className="text-subhead text-muted-foreground">
             You are not currently employed at any dealership.
           </p>
@@ -84,7 +84,7 @@ export function StaffOverview() {
       {/* Dealership Info */}
       <section className="space-y-8">
         <div className="border-b border-border/40 pb-2">
-          <h3 className="text-headline font-medium tracking-tight">Your Dealership</h3>
+          <h3 className="text-headline tracking-tight">Your Dealership</h3>
         </div>
 
         <div className="rounded-xl border border-border p-8 space-y-6">
@@ -97,7 +97,7 @@ export function StaffOverview() {
             <div className="flex-1">
               <h2 className="text-title3 font-semibold mb-1">{staffProfile.partner.brandName}</h2>
               <p className="text-subhead text-muted-foreground mb-3">{staffProfile.partner.companyNameLegal}</p>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-green-500/10 text-subhead text-green-500">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-success-muted text-subhead text-success">
                 <div className="w-1.5 h-1.5 rounded-full bg-current" />
                 {staffProfile.status}
               </div>
@@ -126,10 +126,10 @@ export function StaffOverview() {
       {/* Work Identity */}
       <section className="space-y-8">
         <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-          <h3 className="text-headline font-medium tracking-tight">Work Identity</h3>
+          <h3 className="text-headline tracking-tight">Work Identity</h3>
           <Link 
             href="/staff-dashboard/profile"
-            className="text-subhead text-blue-500 hover:text-blue-600 transition-colors"
+            className="text-subhead text-primary hover:text-primary transition-colors"
           >
             Edit Profile
           </Link>
@@ -169,7 +169,7 @@ export function StaffOverview() {
             </p>
             <Link 
               href="/staff-dashboard/profile"
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white text-subhead transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary hover:bg-primary/90 text-white text-subhead transition-colors"
             >
               Set Up Profile
               <ChevronRight className="w-4 h-4" />
@@ -181,7 +181,7 @@ export function StaffOverview() {
       {/* Quick Links */}
       <section className="space-y-8">
         <div className="border-b border-border/40 pb-2">
-          <h3 className="text-headline font-medium tracking-tight">Quick Access</h3>
+          <h3 className="text-headline tracking-tight">Quick Access</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -190,8 +190,8 @@ export function StaffOverview() {
             className="group rounded-xl border border-border p-6 hover:bg-secondary/10 transition-colors"
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Building2 className="w-5 h-5 text-blue-500" />
+              <div className="w-10 h-10 rounded-full bg-primary-muted flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-primary" />
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
             </div>
@@ -204,8 +204,8 @@ export function StaffOverview() {
             className="group rounded-xl border border-border p-6 hover:bg-secondary/10 transition-colors"
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Mail className="w-5 h-5 text-blue-500" />
+              <div className="w-10 h-10 rounded-full bg-primary-muted flex items-center justify-center">
+                <Mail className="w-5 h-5 text-primary" />
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
             </div>

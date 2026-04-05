@@ -175,7 +175,7 @@ function CategoryAccordion({
         onClick={onToggle}
         className="group w-full flex items-center justify-between py-3.5 text-left transition-colors"
       >
-        <span className="text-subhead font-medium text-foreground/90 group-hover:text-foreground transition-colors">
+        <span className="text-subhead text-foreground/90 group-hover:text-foreground transition-colors">
           {name}
         </span>
         <div className="flex items-center justify-center w-5 h-5 rounded-full border border-border/60 group-hover:border-border transition-colors">
@@ -197,7 +197,7 @@ function CategoryAccordion({
                 }`} 
               />
               <div className="space-y-0.5">
-                <p className="text-subhead font-medium text-foreground/80">{feature.name}</p>
+                <p className="text-subhead text-foreground/80">{feature.name}</p>
                 {feature.description && (
                   <p className="text-footnote text-muted-foreground leading-relaxed">{feature.description}</p>
                 )}

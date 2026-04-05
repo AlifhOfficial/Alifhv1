@@ -376,7 +376,7 @@ export function PartnerInsightsView({
                 label="Active" 
                 tooltip="Number of listings currently live and visible to buyers" 
               />
-              <span className="text-title2 font-semibold text-blue-500">
+              <span className="text-title2 font-semibold text-primary">
                 {inventory.activeCount}
               </span>
             </div>
@@ -394,7 +394,7 @@ export function PartnerInsightsView({
                 label="Favorites" 
                 tooltip="How many times users have saved your listings to favorites" 
               />
-              <span className="text-title2 font-semibold text-amber-500">
+              <span className="text-title2 font-semibold text-warning">
                 {formatNumber(engagement.totalFavorites ?? 0)}
               </span>
             </div>
@@ -403,7 +403,7 @@ export function PartnerInsightsView({
                 label="Sold" 
                 tooltip="Vehicles sold this month" 
               />
-              <span className="text-title2 font-semibold text-green-500">
+              <span className="text-title2 font-semibold text-success">
                 {sales.soldThisMonth}
               </span>
             </div>
@@ -444,7 +444,7 @@ export function PartnerInsightsView({
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-subhead text-muted-foreground">This month</span>
-                    <span className="text-subhead font-semibold text-green-500">{formatCurrency(sales.revenueThisMonth)}</span>
+                    <span className="text-subhead font-semibold text-success">{formatCurrency(sales.revenueThisMonth)}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-subhead text-muted-foreground">Total value</span>
@@ -464,7 +464,7 @@ export function PartnerInsightsView({
                   </div>
                 </div>
                 <div>
-                  <span className="text-title2 font-bold text-blue-500">{bookings.pendingBookings}</span>
+                  <span className="text-title2 font-bold text-primary">{bookings.pendingBookings}</span>
                   <span className="text-subhead text-muted-foreground/60 ml-1.5">pending</span>
                 </div>
                 <p className="text-caption1 text-muted-foreground/50 mt-1">{bookings.confirmedBookings} confirmed · {bookings.completedThisMonth} completed</p>
@@ -480,7 +480,7 @@ export function PartnerInsightsView({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-subhead text-muted-foreground">Active</span>
-                  <span className="text-subhead font-semibold text-blue-500">{inventory.activeCount}</span>
+                  <span className="text-subhead font-semibold text-primary">{inventory.activeCount}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-subhead text-muted-foreground">Total value</span>
@@ -499,7 +499,7 @@ export function PartnerInsightsView({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-subhead text-muted-foreground">This month</span>
-                  <span className="text-subhead font-semibold text-green-500">{sales.soldThisMonth}</span>
+                  <span className="text-subhead font-semibold text-success">{sales.soldThisMonth}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-subhead text-muted-foreground">Revenue</span>
@@ -507,7 +507,7 @@ export function PartnerInsightsView({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-subhead text-muted-foreground">Avg days to sell</span>
-                  <span className="text-subhead font-semibold text-amber-500">{sales.avgDaysToSell ?? '—'}</span>
+                  <span className="text-subhead font-semibold text-warning">{sales.avgDaysToSell ?? '—'}</span>
                 </div>
               </div>
             </div>
@@ -520,7 +520,7 @@ export function PartnerInsightsView({
                 <p className="text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Engagement</p>
               </div>
               <div>
-                <span className="text-title2 font-semibold text-rose-500">{engagement.totalFavorites ?? 0}</span>
+                <span className="text-title2 font-semibold text-favorite">{engagement.totalFavorites ?? 0}</span>
                 <span className="text-subhead text-muted-foreground ml-1.5">favorites</span>
               </div>
             </div>
@@ -538,14 +538,14 @@ export function PartnerInsightsView({
                   <span className="text-title3 font-bold tracking-tight text-foreground">{trends.listingsAddedThisMonth}</span>
                   <TrendBadge value={trends.listingsAddedDelta} />
                 </div>
-                <p className="text-subhead font-medium text-muted-foreground/70">New listings</p>
+                <p className="text-subhead text-muted-foreground/70">New listings</p>
                 <p className="text-caption1 text-muted-foreground/50">vs {trends.listingsAddedLastMonth} last month</p>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-title3 font-bold tracking-tight text-foreground">{formatNumber(engagement.totalViewsThisMonth)}</span>
                 </div>
-                <p className="text-subhead font-medium text-muted-foreground/70">Total views</p>
+                <p className="text-subhead text-muted-foreground/70">Total views</p>
                 <p className="text-caption1 text-muted-foreground/50">{formatNumber(engagement.totalImpressions ?? 0)} impressions tracked</p>
               </div>
               <div>
@@ -553,14 +553,14 @@ export function PartnerInsightsView({
                   <span className="text-title3 font-bold tracking-tight text-foreground">{trends.salesThisMonth}</span>
                   <TrendBadge value={trends.salesDelta} />
                 </div>
-                <p className="text-subhead font-medium text-muted-foreground/70">Sales</p>
+                <p className="text-subhead text-muted-foreground/70">Sales</p>
                 <p className="text-caption1 text-muted-foreground/50">vs {trends.salesLastMonth} last month</p>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-title3 font-bold tracking-tight text-foreground">{sales.sellThroughRate}%</span>
                 </div>
-                <p className="text-subhead font-medium text-muted-foreground/70">Sell-through</p>
+                <p className="text-subhead text-muted-foreground/70">Sell-through</p>
                 <p className="text-caption1 text-muted-foreground/50">of listed inventory</p>
               </div>
             </div>

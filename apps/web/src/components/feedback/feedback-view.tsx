@@ -40,9 +40,9 @@ const DEFAULT_RESPONSE = 'We have received your feedback and taken note. Thank y
 function getStatusIcon(status: string) {
   switch (status) {
     case 'new':
-      return <Clock className="w-3.5 h-3.5 text-amber-500" />;
+      return <Clock className="w-3.5 h-3.5 text-warning" />;
     case 'reviewed':
-      return <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />;
+      return <CheckCircle2 className="w-3.5 h-3.5 text-success" />;
     case 'archived':
       return <Archive className="w-3.5 h-3.5 text-muted-foreground" />;
     default:
@@ -145,7 +145,7 @@ export function FeedbackView() {
           <div className="rounded-xl border border-border/40 bg-sidebar p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-3">
-                <label className="text-caption1 font-medium text-muted-foreground">
+                <label className="text-caption1 text-muted-foreground">
                   Subject
                 </label>
                 <input
@@ -161,7 +161,7 @@ export function FeedbackView() {
               </div>
 
               <div className="space-y-3">
-                <label className="text-caption1 font-medium text-muted-foreground">
+                <label className="text-caption1 text-muted-foreground">
                   Message
                 </label>
                 <textarea
@@ -202,7 +202,7 @@ export function FeedbackView() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-subhead font-bold tracking-tight text-foreground">Submission History</h3>
-              <span className="text-caption1 font-medium tabular-nums text-muted-foreground/60 bg-muted/50 px-2.5 py-1 rounded-full">
+              <span className="text-caption1 tabular-nums text-muted-foreground/60 bg-muted/50 px-2.5 py-1 rounded-full">
                 {feedbackList.length}
               </span>
             </div>
@@ -239,7 +239,7 @@ export function FeedbackView() {
                           })}
                         </p>
                       </div>
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 text-caption2 font-medium text-muted-foreground flex-shrink-0">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 text-caption2 text-muted-foreground flex-shrink-0">
                         {getStatusIcon(feedback.status)}
                         {getStatusLabel(feedback.status)}
                       </div>

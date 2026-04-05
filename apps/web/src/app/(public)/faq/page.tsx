@@ -92,7 +92,7 @@ export default function FAQPage() {
                     setSearchQuery('');
                   }}
                   className={cn(
-                    "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-subhead font-medium transition-colors",
+                    "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-subhead transition-colors",
                     activeCategory === null && !isSearching
                       ? "bg-sidebar text-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
@@ -113,7 +113,7 @@ export default function FAQPage() {
                       setSearchQuery('');
                     }}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-subhead font-medium transition-colors",
+                      "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-subhead transition-colors",
                       activeCategory === category.id && !isSearching
                         ? "bg-sidebar text-foreground"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
@@ -131,7 +131,7 @@ export default function FAQPage() {
                 <p className="text-caption1 text-muted-foreground/60 mb-3">Can&apos;t find an answer?</p>
                 <Link 
                   href="/contact" 
-                  className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-lg bg-blue-600 text-white text-subhead font-semibold hover:bg-blue-700 transition-colors"
+                  className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-lg bg-primary text-white text-subhead font-semibold hover:bg-primary/90 transition-colors"
                 >
                   Contact Support
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -243,7 +243,7 @@ export default function FAQPage() {
                             >
                               <AccordionTrigger className="px-5 py-4 text-left hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:text-muted-foreground/50 [&[data-state=open]]:bg-muted/20">
                                 <div className="flex items-center gap-3 pr-2">
-                                  <span className="text-subhead font-medium text-foreground">{item.question}</span>
+                                  <span className="text-subhead text-foreground">{item.question}</span>
                                   <span className="shrink-0 text-[10px] font-medium text-muted-foreground/60 bg-muted/50 px-2 py-0.5 rounded uppercase tracking-wide">
                                     {item.category}
                                   </span>
@@ -261,7 +261,7 @@ export default function FAQPage() {
                     </div>
                   ) : (
                     <div className="rounded-xl border border-sidebar-border bg-sidebar p-8 text-center">
-                      <p className="text-subhead font-medium text-foreground mb-2">
+                      <p className="text-subhead text-foreground mb-2">
                         No results for &quot;{searchQuery}&quot;
                       </p>
                       <p className="text-caption1 text-muted-foreground/70 mb-4">
@@ -269,7 +269,7 @@ export default function FAQPage() {
                       </p>
                       <Link 
                         href="/contact" 
-                        className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-lg bg-blue-600 text-white text-subhead font-semibold hover:bg-blue-700 transition-colors"
+                        className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-lg bg-primary text-white text-subhead font-semibold hover:bg-primary/90 transition-colors"
                       >
                         Contact Support
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -299,7 +299,7 @@ export default function FAQPage() {
                               className="scroll-mt-28 border-b border-sidebar-border/50 last:border-0"
                             >
                               <AccordionTrigger className="px-5 py-4 text-left hover:no-underline hover:bg-muted/30 transition-colors [&>svg]:text-muted-foreground/50 [&[data-state=open]]:bg-muted/20">
-                                <span className="text-subhead font-medium text-foreground pr-4">
+                                <span className="text-subhead text-foreground pr-4">
                                   {item.question}
                                 </span>
                               </AccordionTrigger>
@@ -322,7 +322,7 @@ export default function FAQPage() {
                 <p className="text-caption1 text-muted-foreground/60 mb-3">Can&apos;t find an answer?</p>
                 <Link 
                   href="/contact" 
-                  className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-lg bg-blue-600 text-white text-subhead font-semibold hover:bg-blue-700 transition-colors"
+                  className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-lg bg-primary text-white text-subhead font-semibold hover:bg-primary/90 transition-colors"
                 >
                   Contact Support
                   <ChevronRight className="w-3.5 h-3.5" />

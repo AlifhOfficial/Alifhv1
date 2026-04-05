@@ -150,13 +150,13 @@ export default function SellPage() {
 
           {/* Trust badges */}
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mt-12 pt-8 border-t border-border/40">
-            <span className="text-subhead font-medium flex items-center gap-2 text-muted-foreground">
+            <span className="text-subhead flex items-center gap-2 text-muted-foreground">
               <CheckCircle2 className="w-4 h-4 text-primary" />Free for private sellers
             </span>
-            <span className="text-subhead font-medium flex items-center gap-2 text-muted-foreground">
+            <span className="text-subhead flex items-center gap-2 text-muted-foreground">
               <CheckCircle2 className="w-4 h-4 text-primary" />No commission
             </span>
-            <span className="text-subhead font-medium flex items-center gap-2 text-muted-foreground">
+            <span className="text-subhead flex items-center gap-2 text-muted-foreground">
               <CheckCircle2 className="w-4 h-4 text-primary" />Based in Dubai
             </span>
           </div>
@@ -177,12 +177,12 @@ function SellHeroInfographic() {
       <div className="flex flex-col md:flex-row min-h-[450px] sm:min-h-[500px] lg:min-h-[550px]">
         {/* Left - Others */}
         <div className="flex-1 p-10 sm:p-14 lg:p-20 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-border/40">
-          <span className="text-caption1 font-medium text-muted-foreground/50 mb-10">Others</span>
+          <span className="text-caption1 text-muted-foreground/50 mb-10">Others</span>
           
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="px-3 py-1.5 rounded-md bg-red-500/10 border border-red-500/20">
-                <span className="text-subhead font-semibold text-red-500">AED 500–1,000</span>
+              <div className="px-3 py-1.5 rounded-md bg-destructive-muted border border-destructive/20">
+                <span className="text-subhead font-semibold text-destructive">AED 500–1,000</span>
               </div>
               <span className="text-caption1 text-muted-foreground/50">to list</span>
             </div>
@@ -193,8 +193,8 @@ function SellHeroInfographic() {
               <span className="text-caption1 text-muted-foreground/50">to boost</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="px-3 py-1.5 rounded-md bg-amber-500/10 border border-amber-500/20">
-                <span className="text-subhead font-semibold text-amber-500">+AED 99</span>
+              <div className="px-3 py-1.5 rounded-md bg-warning-muted border border-warning/20">
+                <span className="text-subhead font-semibold text-warning">+AED 99</span>
               </div>
               <span className="text-caption1 text-muted-foreground/50">to feature</span>
             </div>
@@ -203,7 +203,7 @@ function SellHeroInfographic() {
         
         {/* Right - Revvup */}
         <div className="w-full md:w-[300px] lg:w-[400px] p-10 sm:p-14 lg:p-20 flex flex-col items-center justify-center">
-          <span className="text-caption1 font-medium text-primary mb-10">Revvup</span>
+          <span className="text-caption1 text-primary mb-10">Revvup</span>
           
           <div className="flex flex-col items-center">
             <div className="text-display3 sm:text-display4 lg:text-display5 font-bold text-primary leading-none">

@@ -130,8 +130,8 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
         <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 space-y-3 sm:space-y-4">
           {listing.lifecycleStatus === 'archived' &&
             (listing.specialNotes?.suspensionReason || moderationReason) && (
-              <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
-                <p className="text-caption1 sm:text-subhead text-red-500">
+              <div className="rounded-xl sm:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 sm:p-4">
+                <p className="text-caption1 sm:text-subhead text-destructive">
                   Suspended: {listing.specialNotes?.suspensionReason || moderationReason}
                 </p>
                 <p className="text-caption2 sm:text-caption1 text-muted-foreground/60 mt-1 sm:mt-1.5">
@@ -141,16 +141,16 @@ export function EditListingView({ listing, userId, listingType = 'personal' }: E
             )}
 
           {listing.moderationStatus === 'rejected' && (listing.rejectionReason || listing.specialNotes?.rejectionReason) && (
-            <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
-              <p className="text-caption1 sm:text-subhead text-red-500">
+            <div className="rounded-xl sm:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 sm:p-4">
+              <p className="text-caption1 sm:text-subhead text-destructive">
                 Rejected: {listing.rejectionReason || listing.specialNotes?.rejectionReason}
               </p>
             </div>
           )}
 
           {error && (
-            <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
-              <p className="text-caption1 sm:text-subhead text-red-500">{error}</p>
+            <div className="rounded-xl sm:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 sm:p-4">
+              <p className="text-caption1 sm:text-subhead text-destructive">{error}</p>
             </div>
           )}
         </div>

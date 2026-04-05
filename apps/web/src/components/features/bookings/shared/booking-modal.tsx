@@ -372,7 +372,7 @@ export function BookingModal({
               </button>
               <button 
                 onClick={onClose} 
-                className="w-full h-11 text-subhead font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="w-full h-11 text-subhead text-muted-foreground hover:text-foreground transition-colors"
               >
                 Done
               </button>
@@ -418,7 +418,7 @@ export function BookingModal({
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <span className="text-subhead font-medium">
+                    <span className="text-subhead">
                       {MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
                     </span>
                     <button
@@ -432,7 +432,7 @@ export function BookingModal({
                   {/* Day Headers */}
                   <div className="grid grid-cols-7 gap-1">
                     {DAY_NAMES.map(day => (
-                      <div key={day} className="text-center text-caption2 font-medium text-muted-foreground/50 py-1">
+                      <div key={day} className="text-center text-caption2 text-muted-foreground/50 py-1">
                         {day}
                       </div>
                     ))}
@@ -523,7 +523,7 @@ export function BookingModal({
                   </button>
 
                   <div className="py-3 space-y-1 border-b border-border/30">
-                    <p className="text-subhead font-medium">{formatDate(selectedDate)}</p>
+                    <p className="text-subhead">{formatDate(selectedDate)}</p>
                     <p className="text-subhead text-muted-foreground/70">
                       {formatTime(selectedSlot.startTime)} – {formatTime(selectedSlot.endTime)} • {selectedSlot.duration} min
                     </p>
@@ -531,7 +531,7 @@ export function BookingModal({
 
                   <div className="space-y-3">
                     <div>
-                      <label className="text-caption1 font-medium text-muted-foreground/70 mb-1.5 block">Attendees</label>
+                      <label className="text-caption1 text-muted-foreground/70 mb-1.5 block">Attendees</label>
                       <Select value={attendees.toString()} onValueChange={(value) => setAttendees(parseInt(value))}>
                         <SelectTrigger className="w-full h-10 border-border/30 text-subhead rounded-lg">
                           <SelectValue />
@@ -545,7 +545,7 @@ export function BookingModal({
                     </div>
 
                     <div>
-                      <label className="text-caption1 font-medium text-muted-foreground/70 mb-1.5 block">
+                      <label className="text-caption1 text-muted-foreground/70 mb-1.5 block">
                         Notes <span className="text-muted-foreground/40">(optional)</span>
                       </label>
                       <textarea

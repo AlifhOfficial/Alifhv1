@@ -47,7 +47,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
       case 'super_admin':
         return <Crown className="w-4 h-4 text-purple-500" />;
       case 'admin':
-        return <ShieldAlert className="w-4 h-4 text-blue-500" />;
+        return <ShieldAlert className="w-4 h-4 text-primary" />;
       default:
         return <Users className="w-4 h-4 text-foreground" />;
     }
@@ -66,7 +66,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
         
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-border bg-background">
-          <h2 className="text-headline font-medium">User Details</h2>
+          <h2 className="text-headline">User Details</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-secondary/50 rounded-full transition-colors"
@@ -91,7 +91,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
                 <span className="capitalize">{user.role.replace('_', ' ')}</span>
               </div>
               {user.banned && (
-                <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-md bg-red-500/10 text-subhead text-red-600 dark:text-red-400">
+                <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-md bg-destructive-muted text-subhead text-destructive">
                   <Ban className="w-3.5 h-3.5" />
                   Banned{user.banReason && `: ${user.banReason}`}
                 </div>
@@ -102,7 +102,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
           {/* Contact */}
           <section className="space-y-6">
             <div className="border-b border-border/40 pb-2">
-              <h3 className="text-callout font-medium tracking-tight">Contact Information</h3>
+              <h3 className="text-callout tracking-tight">Contact Information</h3>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -111,17 +111,17 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
                   <Mail className="w-3.5 h-3.5" />
                   <span>Email</span>
                 </div>
-                <p className="text-subhead font-medium">{user.email}</p>
+                <p className="text-subhead">{user.email}</p>
                 <div className="flex items-center gap-1.5">
                   {user.emailVerified ? (
                     <>
-                      <CheckCircle2 className="w-3 h-3 text-green-500" />
-                      <span className="text-caption1 text-green-500">Verified</span>
+                      <CheckCircle2 className="w-3 h-3 text-success" />
+                      <span className="text-caption1 text-success">Verified</span>
                     </>
                   ) : (
                     <>
-                      <XCircle className="w-3 h-3 text-red-500" />
-                      <span className="text-caption1 text-red-500">Not Verified</span>
+                      <XCircle className="w-3 h-3 text-destructive" />
+                      <span className="text-caption1 text-destructive">Not Verified</span>
                     </>
                   )}
                 </div>
@@ -133,17 +133,17 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
                     <Phone className="w-3.5 h-3.5" />
                     <span>Phone</span>
                   </div>
-                  <p className="text-subhead font-medium">{user.profile.phone || user.phoneNumber}</p>
+                  <p className="text-subhead">{user.profile.phone || user.phoneNumber}</p>
                   <div className="flex items-center gap-1.5">
                     {user.phoneNumberVerified ? (
                       <>
-                        <CheckCircle2 className="w-3 h-3 text-green-500" />
-                        <span className="text-caption1 text-green-500">Verified</span>
+                        <CheckCircle2 className="w-3 h-3 text-success" />
+                        <span className="text-caption1 text-success">Verified</span>
                       </>
                     ) : (
                       <>
-                        <XCircle className="w-3 h-3 text-red-500" />
-                        <span className="text-caption1 text-red-500">Not Verified</span>
+                        <XCircle className="w-3 h-3 text-destructive" />
+                        <span className="text-caption1 text-destructive">Not Verified</span>
                       </>
                     )}
                   </div>
@@ -156,7 +156,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
           {user.profile && (
             <section className="space-y-6">
               <div className="border-b border-border/40 pb-2">
-                <h3 className="text-callout font-medium tracking-tight">Profile</h3>
+                <h3 className="text-callout tracking-tight">Profile</h3>
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-subhead">
@@ -198,15 +198,15 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
           {/* KYC Status */}
           <section className="space-y-6">
             <div className="border-b border-border/40 pb-2">
-              <h3 className="text-callout font-medium tracking-tight">KYC Verification</h3>
+              <h3 className="text-callout tracking-tight">KYC Verification</h3>
             </div>
             
             <div className="rounded-xl border border-border p-4">
               {user.profile?.kycVerified ? (
                 <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
                   <div>
-                    <p className="text-subhead font-medium text-green-500">KYC Verified</p>
+                    <p className="text-subhead text-success">KYC Verified</p>
                     {user.profile.kycVerifiedAt && (
                       <p className="text-caption1 text-muted-foreground mt-1">
                         Verified on {formatDate(user.profile.kycVerifiedAt)}
@@ -222,14 +222,14 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
                 </div>
               ) : (
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+                  <AlertCircle className="w-5 h-5 text-warning flex-shrink-0" />
                   <div>
-                    <p className="text-subhead font-medium">Not Verified</p>
+                    <p className="text-subhead">Not Verified</p>
                     {user.kyc && (
                       <div className="mt-2 text-caption1 text-muted-foreground space-y-0.5">
                         <p>Status: {user.kyc.status}</p>
                         {user.kyc.rejectionReason && (
-                          <p className="text-red-500 mt-1">Reason: {user.kyc.rejectionReason}</p>
+                          <p className="text-destructive mt-1">Reason: {user.kyc.rejectionReason}</p>
                         )}
                       </div>
                     )}
@@ -243,19 +243,19 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
           {user.profile && (
             <section className="space-y-6">
               <div className="border-b border-border/40 pb-2">
-                <h3 className="text-callout font-medium tracking-tight">Activity</h3>
+                <h3 className="text-callout tracking-tight">Activity</h3>
               </div>
               
               <div className="grid grid-cols-3 border-y border-border divide-x divide-border">
                 <div className="p-6 text-center">
-                  <Package className="w-5 h-5 text-blue-500 mx-auto mb-2" />
+                  <Package className="w-5 h-5 text-primary mx-auto mb-2" />
                   <p className="text-caption1 text-muted-foreground mb-1">Listings</p>
-                  <p className="text-headline font-semibold text-blue-500">{user.profile.inventoryCount}</p>
+                  <p className="text-headline font-semibold text-primary">{user.profile.inventoryCount}</p>
                 </div>
 
                 {user.profile.rating !== null && user.profile.rating !== undefined && (
                   <div className="p-6 text-center">
-                    <Star className="w-5 h-5 text-yellow-500 mx-auto mb-2" />
+                    <Star className="w-5 h-5 text-warning mx-auto mb-2" />
                     <p className="text-caption1 text-muted-foreground mb-1">Rating</p>
                     <p className="text-headline font-semibold text-foreground">{user.profile.rating.toFixed(1)}</p>
                   </div>
@@ -265,7 +265,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
                   <div className="p-6 text-center">
                     <Clock className="w-5 h-5 text-foreground/50 mx-auto mb-2" />
                     <p className="text-caption1 text-muted-foreground mb-1">Last Active</p>
-                    <p className="text-caption1 font-medium">{formatDate(user.profile.lastActiveAt)}</p>
+                    <p className="text-caption1">{formatDate(user.profile.lastActiveAt)}</p>
                   </div>
                 )}
               </div>
@@ -276,7 +276,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
           {user.partnerMemberships.length > 0 && (
             <section className="space-y-6">
               <div className="border-b border-border/40 pb-2">
-                <h3 className="text-callout font-medium tracking-tight">Partner Memberships</h3>
+                <h3 className="text-callout tracking-tight">Partner Memberships</h3>
               </div>
               
               <div className="space-y-0 border border-border rounded-xl overflow-hidden divide-y divide-border">
@@ -284,10 +284,10 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
                   <div key={membership.staffId} className="p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <p className="font-medium text-subhead">{membership.partnerBrandName}</p>
+                        <p className="text-subhead">{membership.partnerBrandName}</p>
                         <p className="text-caption1 text-muted-foreground">{membership.partnerName}</p>
                       </div>
-                      <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-500 text-caption1 font-medium">
+                      <span className="px-2 py-0.5 rounded-md bg-primary-muted text-primary text-caption1">
                         {membership.staffRole}
                       </span>
                     </div>
@@ -306,7 +306,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
                       )}
                       <span>Joined {formatDate(membership.joinedAt)}</span>
                       <span className={
-                        membership.status === 'active' ? 'text-green-500 font-medium' : ''
+                        membership.status === 'active' ? 'text-success font-medium' : ''
                       }>
                         {membership.status}
                       </span>
@@ -321,7 +321,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
           {user.profile && (user.profile.tags.length > 0 || user.profile.badges.length > 0) && (
             <section className="space-y-6">
               <div className="border-b border-border/40 pb-2">
-                <h3 className="text-callout font-medium tracking-tight">Tags & Badges</h3>
+                <h3 className="text-callout tracking-tight">Tags & Badges</h3>
               </div>
               
               <div className="space-y-4">
@@ -342,7 +342,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
                     <p className="text-caption1 text-muted-foreground mb-2">Badges</p>
                     <div className="flex flex-wrap gap-2">
                       {user.profile.badges.map((badge, i) => (
-                        <span key={i} className="px-2 py-1 rounded-md bg-blue-500/10 text-blue-500 text-caption1 font-medium">
+                        <span key={i} className="px-2 py-1 rounded-md bg-primary-muted text-primary text-caption1">
                           {badge}
                         </span>
                       ))}
@@ -356,7 +356,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
           {/* Admin Operations */}
           <section className="space-y-6 pt-6 border-t border-border">
             <div className="border-b border-border/40 pb-2">
-              <h3 className="text-callout font-medium tracking-tight">Admin Operations</h3>
+              <h3 className="text-callout tracking-tight">Admin Operations</h3>
             </div>
             <AdminUserOperations user={user} onOperationComplete={onClose} />
           </section>

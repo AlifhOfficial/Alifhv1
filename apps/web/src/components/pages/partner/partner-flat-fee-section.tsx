@@ -76,7 +76,7 @@ export function PartnerFlatFeeSection() {
 
         {/* Micro-summary - Reset attention */}
         <div className="mt-16 text-center">
-          <p className="text-subhead font-medium text-muted-foreground bg-muted/50 inline-block px-6 py-3 rounded-full">
+          <p className="text-subhead text-muted-foreground bg-muted/50 inline-block px-6 py-3 rounded-full">
             In short: Flat fee. No commission. No competition.
           </p>
         </div>
@@ -115,11 +115,11 @@ function UnlimitedListingsInfographic() {
       <MacOSWindow url="revvup.ae/dashboard" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1]">
           {/* Left - Your inventory with car cards */}
           <div className="flex-1 p-3 sm:p-6 lg:p-12 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5">
-            <span className="text-[9px] sm:text-[10px] lg:text-caption1 font-medium text-white/30 mb-3 sm:mb-4 lg:mb-6">Your inventory</span>
+            <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-white/30 mb-3 sm:mb-4 lg:mb-6">Your inventory</span>
             
             <div className="grid grid-cols-3 gap-1.5 sm:gap-3 lg:gap-6 w-full max-w-3xl">
               {/* Card 1 */}
-              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
+              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-card border border-border/40 shadow-sm">
                 <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted/20">
                   <Image src={m14} alt="" fill className="object-cover" sizes="(max-width: 640px) 120px, (max-width: 1280px) 220px, 300px" />
                 </div>
@@ -128,7 +128,7 @@ function UnlimitedListingsInfographic() {
                     <p className="text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold truncate text-white">Landcruiser</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
                       <p className="text-[5px] sm:text-[7px] lg:text-[10px] xl:text-caption1 text-white/50 truncate">IS Motors</p>
-                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-blue-500" />
+                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-primary" />
                     </div>
                   </div>
                   <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
@@ -136,7 +136,7 @@ function UnlimitedListingsInfographic() {
               </div>
               
               {/* Card 2 */}
-              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
+              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-card border border-border/40 shadow-sm">
                 <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted/20">
                   <Image src={m15} alt="" fill className="object-cover" sizes="(max-width: 640px) 120px, (max-width: 1280px) 220px, 300px" />
                 </div>
@@ -145,7 +145,7 @@ function UnlimitedListingsInfographic() {
                     <p className="text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold truncate text-white">Lexus</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
                       <p className="text-[5px] sm:text-[7px] lg:text-[10px] xl:text-caption1 text-white/50 truncate">IS Motors</p>
-                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-blue-500" />
+                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-primary" />
                     </div>
                   </div>
                   <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
@@ -153,7 +153,7 @@ function UnlimitedListingsInfographic() {
               </div>
               
               {/* Card 3 */}
-              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-[#141414] border border-white/10 shadow-sm">
+              <div className="flex flex-col overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl bg-card border border-border/40 shadow-sm">
                 <div className="relative aspect-[3/2] w-full overflow-hidden bg-muted/20">
                   <Image src={m17} alt="" fill className="object-cover" sizes="(max-width: 640px) 120px, (max-width: 1280px) 220px, 300px" />
                 </div>
@@ -162,7 +162,7 @@ function UnlimitedListingsInfographic() {
                     <p className="text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold truncate text-white">McLaren</p>
                     <div className="flex items-center gap-0.5 mt-0.5">
                       <p className="text-[5px] sm:text-[7px] lg:text-[10px] xl:text-caption1 text-white/50 truncate">IS Motors</p>
-                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-blue-500" />
+                      <CheckCircle2 className="w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-3 lg:h-3 flex-shrink-0 text-primary" />
                     </div>
                   </div>
                   <Image src={avatarMock} alt="" width={32} height={32} className="w-3 h-3 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 rounded-full object-cover flex-shrink-0 border border-white/10" sizes="32px" />
@@ -178,7 +178,7 @@ function UnlimitedListingsInfographic() {
           
           {/* Right - One subscription */}
           <div className="w-full md:w-[200px] lg:w-[280px] xl:w-[360px] p-6 sm:p-10 lg:p-16 flex flex-col items-center justify-center min-h-[160px] sm:min-h-0">
-            <span className="text-[9px] sm:text-[10px] lg:text-caption1 font-medium text-primary mb-4 sm:mb-6 lg:mb-10">Your cost</span>
+            <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-primary mb-4 sm:mb-6 lg:mb-10">Your cost</span>
             
             <div className="flex flex-col items-center">
               {/* Giant one */}

@@ -122,7 +122,7 @@ function PartnerHeader({ partner, isBlackTier, location }: PartnerHeaderProps) {
               BLK
             </span>
           ) : partner.isVerified && (
-            <CheckCircle2 className="w-5 h-5 text-blue-500 flex-shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
           )}
         </div>
         
@@ -196,7 +196,7 @@ function PartnerBadges({ badges }: { badges: string[] }) {
           key={idx}
           className="inline-flex items-center gap-1.5 text-subhead font-semibold text-muted-foreground"
         >
-          <Award className="w-4 h-4 text-amber-500" />
+          <Award className="w-4 h-4 text-warning" />
           {badge}
         </span>
       ))}
@@ -216,12 +216,12 @@ function PartnerStatsGrid({ partner, stats, statsLoading }: PartnerStatsGridProp
       {/* Google Rating */}
       <div className="space-y-1">
         <div className="flex items-center gap-2">
-          <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+          <Star className="w-4 h-4 text-warning fill-amber-500" />
           <span className="text-subhead font-semibold text-muted-foreground/70">Google</span>
         </div>
         <p className="text-headline font-bold tabular-nums text-foreground">
           {partner.googleRating !== null && partner.googleRating !== undefined
-            ? <>{partner.googleRating.toFixed(1)}<span className="text-subhead font-medium text-muted-foreground ml-1">({partner.googleReviewCount ?? 0})</span></>
+            ? <>{partner.googleRating.toFixed(1)}<span className="text-subhead text-muted-foreground ml-1">({partner.googleReviewCount ?? 0})</span></>
             : <span className="text-muted-foreground">N/A</span>
           }
         </p>

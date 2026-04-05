@@ -90,7 +90,7 @@ function CompareInfographic() {
         {/* Left - Others */}
         <div className="flex-1 flex flex-col border-r border-border/20">
           <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
-            <span className="text-caption1 font-medium text-muted-foreground/60">Others</span>
+            <span className="text-caption1 text-muted-foreground/60">Others</span>
           </div>
           
           <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">
@@ -101,13 +101,13 @@ function CompareInfographic() {
               </div>
               
               {/* Fee badges */}
-              <div className="absolute -top-2 -right-2 px-2 py-1 rounded-lg bg-red-500 text-[9px] font-bold text-white shadow-xl rotate-3">
+              <div className="absolute -top-2 -right-2 px-2 py-1 rounded-lg bg-destructive text-[9px] font-bold text-white shadow-xl rotate-3">
                 -5%
               </div>
-              <div className="absolute top-8 -left-2 px-1.5 py-0.5 rounded-lg bg-red-500/80 text-[8px] font-semibold text-white shadow-lg -rotate-6">
+              <div className="absolute top-8 -left-2 px-1.5 py-0.5 rounded-lg bg-destructive/80 text-[8px] font-semibold text-white shadow-lg -rotate-6">
                 +Listing
               </div>
-              <div className="absolute -bottom-1 right-4 px-1.5 py-0.5 rounded-lg bg-red-500/70 text-[8px] font-semibold text-white shadow-lg rotate-2">
+              <div className="absolute -bottom-1 right-4 px-1.5 py-0.5 rounded-lg bg-destructive/70 text-[8px] font-semibold text-white shadow-lg rotate-2">
                 +Boost
               </div>
             </div>
@@ -121,7 +121,7 @@ function CompareInfographic() {
         {/* Right - Revvup */}
         <div className="flex-1 flex flex-col">
           <div className="px-6 sm:px-8 lg:px-10 pt-6 sm:pt-8 lg:pt-10">
-            <span className="text-caption1 font-medium text-primary">Revvup</span>
+            <span className="text-caption1 text-primary">Revvup</span>
           </div>
           
           <div className="flex-1 flex items-center justify-center px-4 sm:px-8 lg:px-12 py-6">

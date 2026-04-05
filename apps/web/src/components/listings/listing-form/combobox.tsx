@@ -61,7 +61,7 @@ export function Combobox({
           className={cn(
             "w-full h-12 flex items-center justify-between px-0 bg-transparent",
             "transition-colors focus:outline-none",
-            value ? "text-sidebar-foreground text-subhead font-medium" : "text-sidebar-foreground/40 text-subhead",
+            value ? "text-sidebar-foreground text-subhead" : "text-sidebar-foreground/40 text-subhead",
             disabled && "opacity-50 cursor-not-allowed",
             className
           )}

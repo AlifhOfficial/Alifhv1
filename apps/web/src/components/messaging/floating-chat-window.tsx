@@ -131,22 +131,22 @@ export function FloatingChatWindow({
               {/* Activity indicator */}
               {controller.isOtherOnline ? (
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                  <span className="text-caption1 font-semibold text-green-500">now</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                  <span className="text-caption1 font-semibold text-success">now</span>
                 </div>
               ) : lastActiveAt ? (
-                <span className="text-caption1 font-medium text-muted-foreground/70 flex-shrink-0">
+                <span className="text-caption1 text-muted-foreground/70 flex-shrink-0">
                   {formatTimeAgo(lastActiveAt)}
                 </span>
               ) : (
-                <span className="text-caption1 font-medium text-muted-foreground/50 flex-shrink-0">away</span>
+                <span className="text-caption1 text-muted-foreground/50 flex-shrink-0">away</span>
               )}
             </div>
             {!isMinimized && listing && (
               <Link
                 href={`/listings/${listing.id}`}
                 onClick={(e) => e.stopPropagation()}
-                className="text-caption1 font-medium text-muted-foreground/70 truncate mt-1 block hover:text-primary hover:underline transition-colors leading-snug"
+                className="text-caption1 text-muted-foreground/70 truncate mt-1 block hover:text-primary hover:underline transition-colors leading-snug"
               >
                 {listing.title}
               </Link>

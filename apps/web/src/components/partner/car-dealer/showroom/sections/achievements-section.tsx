@@ -121,7 +121,7 @@ export function AchievementsSection({
           <h3 className="text-subhead font-bold tracking-tight text-foreground">Awards & Certifications</h3>
           <button
             onClick={addAchievement}
-            className="inline-flex items-center gap-1.5 text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+            className="inline-flex items-center gap-1.5 text-caption1 text-primary hover:text-primary font-semibold"
           >
             <Plus className="w-3.5 h-3.5" />
             Add

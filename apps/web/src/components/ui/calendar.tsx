@@ -66,7 +66,7 @@ function Calendar({
           defaultClassNames.month_caption
         ),
         dropdowns: cn(
-          "flex h-[--cell-size] w-full items-center justify-center gap-1.5 text-subhead font-medium",
+          "flex h-[--cell-size] w-full items-center justify-center gap-1.5 text-subhead",
           defaultClassNames.dropdowns
         ),
         dropdown_root: cn(

@@ -193,7 +193,7 @@ export function BlackShowroomCard({ showroom, priority = false, index: _index }:
             </span>
             
             {/* Experience CTA */}
-            <span className="flex items-center gap-1.5 text-subhead font-medium text-primary transition-colors">
+            <span className="flex items-center gap-1.5 text-subhead text-primary transition-colors">
               Visit
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </span>

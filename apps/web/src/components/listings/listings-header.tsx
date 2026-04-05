@@ -266,7 +266,7 @@ export function ListingsHeader({
                         {(facets?.make ?? []).length > 8 && (
                           <Popover>
                             <PopoverTrigger asChild>
-                              <button className="text-caption1 font-medium text-primary active:text-primary/80 touch-manipulation">
+                              <button className="text-caption1 text-primary active:text-primary/80 touch-manipulation">
                                 View all ({(facets?.make ?? []).length})
                               </button>
                             </PopoverTrigger>
@@ -294,7 +294,7 @@ export function ListingsHeader({
                                             }
                                           }}
                                           className={cn(
-                                            "flex items-center justify-between gap-3 px-4 py-3 text-callout font-medium tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
+                                            "flex items-center justify-between gap-3 px-4 py-3 text-callout tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
                                             isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                           )}
                                         >
@@ -330,7 +330,7 @@ export function ListingsHeader({
                           <button
                             key={make.value}
                             onClick={() => toggleMake(make.value)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
                           >
                             <span>{make.label}</span>
                             <span className="text-caption1 text-muted-foreground tabular-nums">{make.count}</span>
@@ -347,7 +347,7 @@ export function ListingsHeader({
                           {(facets?.model ?? []).length > 8 && (
                             <Popover>
                               <PopoverTrigger asChild>
-                                <button className="text-caption1 font-medium text-primary active:text-primary/80 touch-manipulation">
+                                <button className="text-caption1 text-primary active:text-primary/80 touch-manipulation">
                                   View all ({(facets?.model ?? []).length})
                                 </button>
                               </PopoverTrigger>
@@ -375,7 +375,7 @@ export function ListingsHeader({
                                               }
                                             }}
                                             className={cn(
-                                              "flex items-center justify-between gap-3 px-4 py-3 text-callout font-medium tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
+                                              "flex items-center justify-between gap-3 px-4 py-3 text-callout tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
                                               isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                             )}
                                           >
@@ -411,7 +411,7 @@ export function ListingsHeader({
                             <button
                               key={model.value}
                               onClick={() => toggleModel(model.value)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
+                              className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
                             >
                               <span>{model.label}</span>
                               <span className="text-caption1 text-muted-foreground tabular-nums">{model.count}</span>
@@ -429,7 +429,7 @@ export function ListingsHeader({
                           {(facets?.trim ?? []).length > 8 && (
                             <Popover>
                               <PopoverTrigger asChild>
-                                <button className="text-caption1 font-medium text-primary active:text-primary/80 touch-manipulation">
+                                <button className="text-caption1 text-primary active:text-primary/80 touch-manipulation">
                                   View all ({(facets?.trim ?? []).length})
                                 </button>
                               </PopoverTrigger>
@@ -457,7 +457,7 @@ export function ListingsHeader({
                                               }
                                             }}
                                             className={cn(
-                                              "flex items-center justify-between gap-3 px-4 py-3 text-callout font-medium tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
+                                              "flex items-center justify-between gap-3 px-4 py-3 text-callout tracking-tight rounded-lg cursor-pointer transition-colors duration-100",
                                               isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                             )}
                                           >
@@ -493,7 +493,7 @@ export function ListingsHeader({
                             <button
                               key={trim.value}
                               onClick={() => toggleTrim(trim.value)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
+                              className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-foreground/70 bg-muted/40 active:bg-muted/60 rounded-full transition-all touch-manipulation"
                             >
                               <span>{trim.label}</span>
                               <span className="text-caption1 text-muted-foreground tabular-nums">{trim.count}</span>
@@ -575,7 +575,7 @@ export function ListingsHeader({
                     key={option.value}
                     onClick={() => setSort(option.value)}
                     className={cn(
-                      "text-subhead font-medium tracking-tight cursor-pointer rounded-md px-3 py-2 transition-colors duration-100",
+                      "text-subhead tracking-tight cursor-pointer rounded-md px-3 py-2 transition-colors duration-100",
                       (params.sortBy || 'relevance') === option.value
                         ? "bg-muted text-foreground font-semibold"
                         : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -765,7 +765,7 @@ export function ListingsHeader({
                       key={option.value}
                       onClick={() => setSort(option.value)}
                       className={cn(
-                        "text-subhead font-medium tracking-tight cursor-pointer rounded-md px-3 py-2 transition-colors duration-100",
+                        "text-subhead tracking-tight cursor-pointer rounded-md px-3 py-2 transition-colors duration-100",
                         (params.sortBy || 'relevance') === option.value
                           ? "bg-muted text-foreground font-semibold"
                           : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -857,7 +857,7 @@ export function ListingsHeader({
                       <button
                         key={make.value}
                         onClick={() => setFilters({ make: [make.value], model: undefined, trim: undefined })}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
                       >
                         <span>{make.label}</span>
                         <span className="text-caption1 text-muted-foreground tabular-nums">{make.count}</span>
@@ -891,7 +891,7 @@ export function ListingsHeader({
                       <button
                         key={model.value}
                         onClick={() => setFilters({ model: [model.value], trim: undefined })}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
                       >
                         <span>{model.label}</span>
                         <span className="text-caption1 text-muted-foreground tabular-nums">{model.count}</span>
@@ -925,7 +925,7 @@ export function ListingsHeader({
                       <button
                         key={trim.value}
                         onClick={() => setFilters({ trim: [trim.value] })}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-foreground/80 hover:text-foreground bg-muted/40 hover:bg-muted/60 rounded-full transition-all whitespace-nowrap shrink-0"
                       >
                         <span>{trim.label}</span>
                         <span className="text-caption1 text-muted-foreground tabular-nums">{trim.count}</span>
@@ -982,14 +982,14 @@ export function ListingsHeader({
                   {activeFilterCount > 0 && (
                     <button
                       onClick={clearFilters}
-                      className="px-2 py-1 text-caption1 font-medium text-muted-foreground hover:text-foreground transition-colors"
+                      className="px-2 py-1 text-caption1 text-muted-foreground hover:text-foreground transition-colors"
                     >
                       Clear all
                     </button>
                   )}
                   <button
                     onClick={() => setIslandExpanded(false)}
-                    className="flex items-center gap-1.5 px-2 py-1 text-caption1 font-medium text-muted-foreground hover:text-foreground rounded transition-colors"
+                    className="flex items-center gap-1.5 px-2 py-1 text-caption1 text-muted-foreground hover:text-foreground rounded transition-colors"
                   >
                     <span>Collapse</span>
                     <ChevronDown className="size-3.5 rotate-180" />
@@ -1021,7 +1021,7 @@ export function ListingsHeader({
                       <button
                         key={make.value}
                         onClick={() => toggleMake(make.value)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
                       >
                         <span>{make.label}</span>
                         <span className="text-caption1 text-muted-foreground/60 tabular-nums">{make.count}</span>
@@ -1031,7 +1031,7 @@ export function ListingsHeader({
                     {(facets?.make ?? []).length > 8 && (
                       <Popover open={makesOpen} onOpenChange={setMakesOpen}>
                         <PopoverTrigger asChild>
-                          <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
+                          <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground rounded-full transition-all">
                             <span>View all ({(facets?.make ?? []).length})</span>
                             <ChevronDown className={cn("size-3.5 transition-transform", makesOpen && "rotate-180")} />
                           </button>
@@ -1054,7 +1054,7 @@ export function ListingsHeader({
                                       value={make.label}
                                       onSelect={() => toggleMake(make.value)}
                                       className={cn(
-                                        "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
+                                        "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead tracking-tight rounded-md cursor-pointer transition-colors duration-100",
                                         isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                       )}
                                     >
@@ -1073,7 +1073,7 @@ export function ListingsHeader({
                   {(params.make?.length ?? 0) > 0 && (
                     <button
                       onClick={() => setFilters({ make: undefined, model: undefined, trim: undefined })}
-                      className="text-caption1 font-medium text-muted-foreground hover:text-foreground px-2"
+                      className="text-caption1 text-muted-foreground hover:text-foreground px-2"
                     >
                       Clear
                     </button>
@@ -1108,7 +1108,7 @@ export function ListingsHeader({
                         <button
                           key={model.value}
                           onClick={() => toggleModel(model.value)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
                         >
                           <span>{model.label}</span>
                           <span className="text-caption1 text-muted-foreground/60 tabular-nums">{model.count}</span>
@@ -1118,7 +1118,7 @@ export function ListingsHeader({
                       {(facets?.model ?? []).length > 8 && (
                         <Popover open={modelsOpen} onOpenChange={setModelsOpen}>
                           <PopoverTrigger asChild>
-                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
+                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground rounded-full transition-all">
                               <span>View all ({(facets?.model ?? []).length})</span>
                               <ChevronDown className={cn("size-3.5 transition-transform", modelsOpen && "rotate-180")} />
                             </button>
@@ -1141,7 +1141,7 @@ export function ListingsHeader({
                                         value={model.label}
                                         onSelect={() => toggleModel(model.value)}
                                         className={cn(
-                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
+                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead tracking-tight rounded-md cursor-pointer transition-colors duration-100",
                                           isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                         )}
                                       >
@@ -1160,7 +1160,7 @@ export function ListingsHeader({
                       {(params.model?.length ?? 0) > 0 && (
                         <button
                           onClick={() => setFilters({ model: undefined, trim: undefined })}
-                          className="text-caption1 font-medium text-muted-foreground hover:text-foreground px-2"
+                          className="text-caption1 text-muted-foreground hover:text-foreground px-2"
                         >
                           Clear
                         </button>
@@ -1199,7 +1199,7 @@ export function ListingsHeader({
                         <button
                           key={trim.value}
                           onClick={() => toggleTrim(trim.value)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/50 rounded-full transition-all"
                         >
                           <span>{trim.label}</span>
                           <span className="text-caption1 text-muted-foreground/60 tabular-nums">{trim.count}</span>
@@ -1209,7 +1209,7 @@ export function ListingsHeader({
                       {(facets?.trim ?? []).length > 8 && (
                         <Popover open={trimsOpen} onOpenChange={setTrimsOpen}>
                           <PopoverTrigger asChild>
-                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead font-medium text-muted-foreground hover:text-foreground rounded-full transition-all">
+                            <button className="flex items-center gap-1.5 px-3 py-1.5 text-subhead text-muted-foreground hover:text-foreground rounded-full transition-all">
                               <span>View all ({(facets?.trim ?? []).length})</span>
                               <ChevronDown className={cn("size-3.5 transition-transform", trimsOpen && "rotate-180")} />
                             </button>
@@ -1232,7 +1232,7 @@ export function ListingsHeader({
                                         value={trim.label}
                                         onSelect={() => toggleTrim(trim.value)}
                                         className={cn(
-                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead font-medium tracking-tight rounded-md cursor-pointer transition-colors duration-100",
+                                          "flex items-center justify-between gap-3 px-3 py-2.5 text-subhead tracking-tight rounded-md cursor-pointer transition-colors duration-100",
                                           isSelected ? "bg-muted text-foreground font-semibold" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                         )}
                                       >
@@ -1251,7 +1251,7 @@ export function ListingsHeader({
                       {(params.trim?.length ?? 0) > 0 && (
                         <button
                           onClick={() => setFilters({ trim: undefined })}
-                          className="text-caption1 font-medium text-muted-foreground hover:text-foreground px-2"
+                          className="text-caption1 text-muted-foreground hover:text-foreground px-2"
                         >
                           Clear
                         </button>

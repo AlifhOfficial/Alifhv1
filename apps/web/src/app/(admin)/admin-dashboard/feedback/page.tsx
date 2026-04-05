@@ -177,13 +177,13 @@ export default function AdminFeedbackPage() {
 
   const getStatusBadge = (status: string, isRead: boolean) => {
     if (!isRead && status === 'new') {
-      return <Badge className="bg-blue-500 hover:bg-blue-600"><Clock className="w-3 h-3 mr-1" />New</Badge>;
+      return <Badge className="bg-primary hover:bg-primary/90"><Clock className="w-3 h-3 mr-1" />New</Badge>;
     }
     switch (status) {
       case 'new':
-        return <Badge variant="outline" className="text-blue-600 border-blue-600"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
+        return <Badge variant="outline" className="text-primary border-primary"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
       case 'reviewed':
-        return <Badge variant="outline" className="text-green-600 border-green-600"><CheckCircle className="w-3 h-3 mr-1" />Reviewed</Badge>;
+        return <Badge variant="outline" className="text-success border-success"><CheckCircle className="w-3 h-3 mr-1" />Reviewed</Badge>;
       case 'archived':
         return <Badge variant="outline" className="text-muted-foreground"><Archive className="w-3 h-3 mr-1" />Archived</Badge>;
       default:
@@ -211,7 +211,7 @@ export default function AdminFeedbackPage() {
         {/* Stats */}
         <section className="space-y-6">
           <div className="flex items-baseline justify-between border-b border-border/40 pb-2">
-            <h3 className="text-headline font-medium tracking-tight">Overview</h3>
+            <h3 className="text-headline tracking-tight">Overview</h3>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -221,15 +221,15 @@ export default function AdminFeedbackPage() {
                 <div className="text-subhead text-muted-foreground">Total</div>
               </CardContent>
             </Card>
-            <Card className="cursor-pointer hover:border-blue-500/40 transition-colors" onClick={() => setSelectedStatus('new')}>
+            <Card className="cursor-pointer hover:border-primary/40 transition-colors" onClick={() => setSelectedStatus('new')}>
               <CardContent className="p-4">
-                <div className="text-title2 font-semibold text-blue-600">{newCount}</div>
+                <div className="text-title2 font-semibold text-primary">{newCount}</div>
                 <div className="text-subhead text-muted-foreground">New ({unreadCount} unread)</div>
               </CardContent>
             </Card>
-            <Card className="cursor-pointer hover:border-green-500/40 transition-colors" onClick={() => setSelectedStatus('reviewed')}>
+            <Card className="cursor-pointer hover:border-success/40 transition-colors" onClick={() => setSelectedStatus('reviewed')}>
               <CardContent className="p-4">
-                <div className="text-title2 font-semibold text-green-600">{reviewedCount}</div>
+                <div className="text-title2 font-semibold text-success">{reviewedCount}</div>
                 <div className="text-subhead text-muted-foreground">Reviewed</div>
               </CardContent>
             </Card>
@@ -291,7 +291,7 @@ export default function AdminFeedbackPage() {
               {filteredFeedback.map((item) => (
                 <Card 
                   key={item.feedback.id} 
-                  className={`transition-colors ${!item.feedback.isRead ? 'border-blue-500/40 bg-blue-50/30 dark:bg-blue-950/10' : ''}`}
+                  className={`transition-colors ${!item.feedback.isRead ? 'border-primary/40 bg-primary-muted bg-primary-muted' : ''}`}
                 >
                   <CardContent className="p-4">
                     <div 
@@ -335,7 +335,7 @@ export default function AdminFeedbackPage() {
                     {expandedFeedback === item.feedback.id && (
                       <div className="mt-4 pt-4 border-t border-border/40 space-y-4">
                         <div>
-                          <h4 className="text-subhead font-medium mb-2">Full Feedback</h4>
+                          <h4 className="text-subhead mb-2">Full Feedback</h4>
                           <p className="text-subhead text-muted-foreground whitespace-pre-wrap bg-muted/30 p-3 rounded-md">
                             {item.feedback.content}
                           </p>
@@ -343,7 +343,7 @@ export default function AdminFeedbackPage() {
 
                         {item.feedback.adminNote && (
                           <div>
-                            <h4 className="text-subhead font-medium mb-2">Previous Admin Note</h4>
+                            <h4 className="text-subhead mb-2">Previous Admin Note</h4>
                             <p className="text-subhead text-muted-foreground bg-muted/30 p-3 rounded-md">
                               {item.feedback.adminNote}
                             </p>
@@ -353,7 +353,7 @@ export default function AdminFeedbackPage() {
                         {item.feedback.status !== 'archived' && (
                           <div className="space-y-3">
                             <div>
-                              <label className="text-subhead font-medium">Admin Note (Optional)</label>
+                              <label className="text-subhead">Admin Note (Optional)</label>
                               <Textarea
                                 placeholder="Add a response or note..."
                                 value={adminNote}

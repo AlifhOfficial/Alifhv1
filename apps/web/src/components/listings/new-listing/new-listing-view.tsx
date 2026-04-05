@@ -39,8 +39,8 @@ function PendingReviewModal({ onClose }: { onClose: () => void }) {
           </button>
           
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
-              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-warning-muted flex items-center justify-center">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-warning" />
             </div>
             <div>
               <h2 className="text-callout sm:text-headline font-semibold text-foreground">Under Review</h2>
@@ -245,8 +245,8 @@ export function NewListingView({ userId, initialData, draftId }: NewListingViewP
       {/* Error Message */}
       {error && (
         <div className="max-w-2xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6">
-          <div className="rounded-xl sm:rounded-2xl border border-red-500/20 bg-red-500/10 p-3 sm:p-4">
-            <p className="text-caption1 sm:text-subhead text-red-500">{error}</p>
+          <div className="rounded-xl sm:rounded-2xl border border-destructive/20 bg-destructive-muted p-3 sm:p-4">
+            <p className="text-caption1 sm:text-subhead text-destructive">{error}</p>
           </div>
         </div>
       )}

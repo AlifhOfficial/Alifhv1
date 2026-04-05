@@ -178,7 +178,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
                 </div>
                 <div className="space-y-1">
                   <p className="text-subhead sm:text-callout font-semibold text-foreground/80">No conversation selected</p>
-                  <p className="text-caption1 sm:text-subhead font-medium text-muted-foreground/60">Choose a conversation from the list to start chatting</p>
+                  <p className="text-caption1 sm:text-subhead text-muted-foreground/60">Choose a conversation from the list to start chatting</p>
                 </div>
               </div>
             </div>

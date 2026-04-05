@@ -74,7 +74,7 @@ function calculateHotScore(listing: ListingData): number {
 
 function getHotLevel(score: number): { label: string; color: string } {
   if (score >= 70) return { label: 'Hot', color: 'text-orange-500' };
-  if (score >= 40) return { label: 'Warm', color: 'text-amber-500' };
+  if (score >= 40) return { label: 'Warm', color: 'text-warning' };
   if (score >= 20) return { label: 'Active', color: 'text-emerald-500' };
   return { label: 'New', color: 'text-muted-foreground' };
 }
@@ -164,13 +164,13 @@ export function ListingCard({
   const getStatus = () => {
     if (isDeleted) return { label: 'Deleted', bg: 'bg-muted', text: 'text-muted-foreground' };
     if (isSold) return { label: 'Sold', bg: 'bg-emerald-500/10', text: 'text-emerald-600' };
-    if (isExpired) return { label: 'Expired', bg: 'bg-amber-500/10', text: 'text-amber-600' };
-    if (isSuspended) return { label: 'Suspended', bg: 'bg-red-500/10', text: 'text-red-600' };
-    if (isRejected) return { label: 'Rejected', bg: 'bg-red-500/10', text: 'text-red-600' };
+    if (isExpired) return { label: 'Expired', bg: 'bg-warning-muted', text: 'text-warning' };
+    if (isSuspended) return { label: 'Suspended', bg: 'bg-destructive-muted', text: 'text-destructive' };
+    if (isRejected) return { label: 'Rejected', bg: 'bg-destructive-muted', text: 'text-destructive' };
     if (isArchived) return { label: 'Archived', bg: 'bg-muted', text: 'text-muted-foreground' };
     if (listing.isPublic) return { label: 'Live', bg: 'bg-emerald-500/10', text: 'text-emerald-600' };
-    if (isInReview) return { label: 'In Review', bg: 'bg-blue-500/10', text: 'text-blue-600' };
-    if (isDraft) return { label: 'Draft', bg: 'bg-amber-500/10', text: 'text-amber-600' };
+    if (isInReview) return { label: 'In Review', bg: 'bg-primary-muted', text: 'text-primary' };
+    if (isDraft) return { label: 'Draft', bg: 'bg-warning-muted', text: 'text-warning' };
     if (isApproved) return { label: 'Ready', bg: 'bg-emerald-500/10', text: 'text-emerald-600' };
     return { label: 'Active', bg: 'bg-muted', text: 'text-muted-foreground' };
   };
@@ -205,7 +205,7 @@ export function ListingCard({
             )}
 
             {isExpiringSoon && daysRemaining !== null && (
-              <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-white">
+              <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-warning text-white">
                 <span className="text-[10px] font-bold">{daysRemaining}d left</span>
               </div>
             )}
@@ -231,7 +231,7 @@ export function ListingCard({
             )}
 
             {isExpiringSoon && daysRemaining !== null && (
-              <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-white">
+              <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-warning text-white">
                 <span className="text-[10px] font-bold">{daysRemaining}d left</span>
               </div>
             )}
@@ -287,11 +287,11 @@ export function ListingCard({
                 )}
                 {isExpiringSoon && (
                   <>
-                    <DropdownMenuItem onClick={() => onExtend(listing.id, 7)} className="flex items-center gap-2 text-blue-600">
+                    <DropdownMenuItem onClick={() => onExtend(listing.id, 7)} className="flex items-center gap-2 text-primary">
                       <Clock className="w-4 h-4" />
                       Extend 7 days
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onExtend(listing.id, 14)} className="flex items-center gap-2 text-blue-600">
+                    <DropdownMenuItem onClick={() => onExtend(listing.id, 14)} className="flex items-center gap-2 text-primary">
                       <Clock className="w-4 h-4" />
                       Extend 14 days
                     </DropdownMenuItem>
@@ -325,7 +325,7 @@ export function ListingCard({
                 {canDelete && (
                   <>
                     {(canEdit || canMarkSold || canArchiveToggle) && <DropdownMenuSeparator />}
-                    <DropdownMenuItem onClick={() => onDelete(listing.id)} className="flex items-center gap-2 text-red-600 focus:text-red-600">
+                    <DropdownMenuItem onClick={() => onDelete(listing.id)} className="flex items-center gap-2 text-destructive focus:text-destructive">
                       <Trash2 className="w-4 h-4" />
                       Delete
                     </DropdownMenuItem>
@@ -338,20 +338,20 @@ export function ListingCard({
 
           {/* Price */}
           <p className="text-callout sm:text-headline font-bold text-foreground tabular-nums mt-2">
-            {listing.price.toLocaleString()} <span className="text-caption1 font-medium text-muted-foreground">AED</span>
+            {listing.price.toLocaleString()} <span className="text-caption1 text-muted-foreground">AED</span>
           </p>
 
           {/* Status + Stats */}
           <div className="flex items-center gap-3 mt-auto pt-3">
-            <span className={cn("text-caption1 font-medium px-2 py-0.5 rounded-full", status.bg, status.text)}>
+            <span className={cn("text-caption1 px-2 py-0.5 rounded-full", status.bg, status.text)}>
               {status.label}
             </span>
 
             {/* Expiry countdown for active listings */}
             {listing.lifecycleStatus === 'active' && daysRemaining !== null && msRemaining !== null && msRemaining > 0 && (
               <span className={cn(
-                "flex items-center gap-1 text-caption1 font-medium",
-                isExpiringSoon ? "text-amber-500" : "text-muted-foreground"
+                "flex items-center gap-1 text-caption1",
+                isExpiringSoon ? "text-warning" : "text-muted-foreground"
               )}>
                 <Clock className="w-3 h-3" />
                 {daysRemaining}d left
@@ -359,7 +359,7 @@ export function ListingCard({
             )}
             
             {hotScore >= 40 && (
-              <span className={cn("flex items-center gap-1 text-caption1 font-medium", hotLevel.color)}>
+              <span className={cn("flex items-center gap-1 text-caption1", hotLevel.color)}>
                 <Flame className="w-3.5 h-3.5" />
                 {hotLevel.label}
               </span>
@@ -375,7 +375,7 @@ export function ListingCard({
                 {saves}
               </span>
               {superlikes > 0 && (
-                <span className="flex items-center gap-1 text-amber-500">
+                <span className="flex items-center gap-1 text-warning">
                   <Zap className="w-3.5 h-3.5" />
                   {superlikes}
                 </span>
@@ -385,12 +385,12 @@ export function ListingCard({
 
           {/* Rejection/Suspension Reason */}
           {isRejected && listing.rejectionReason && (
-            <p className="text-caption1 text-red-600 mt-3 line-clamp-2">
+            <p className="text-caption1 text-destructive mt-3 line-clamp-2">
               {listing.rejectionReason}
             </p>
           )}
           {isSuspended && listing.suspensionReason && (
-            <p className="text-caption1 text-red-600 mt-3 line-clamp-2">
+            <p className="text-caption1 text-destructive mt-3 line-clamp-2">
               {listing.suspensionReason}
             </p>
           )}
@@ -411,10 +411,10 @@ export function ListingCard({
         <div className="px-5 pb-5 pt-2 space-y-5 animate-in slide-in-from-top-2 duration-200">
           {/* AI Moderation for Review - shown first when in review */}
           {isInReview && listing.aiModeration?.reasoning && (
-            <div className="p-4 rounded-lg bg-blue-500/5">
+            <div className="p-4 rounded-lg bg-primary/5">
               <div className="flex items-center gap-2 mb-2">
-                <Clock className="w-4 h-4 text-blue-500" />
-                <span className="text-subhead font-medium text-blue-600">Under Review</span>
+                <Clock className="w-4 h-4 text-primary" />
+                <span className="text-subhead text-primary">Under Review</span>
               </div>
               <p className="text-subhead text-foreground/80 leading-relaxed">
                 {listing.aiModeration.reasoning}
@@ -467,7 +467,7 @@ export function ListingCard({
                     className={cn(
                       "h-full rounded-full",
                       hotScore >= 70 ? "bg-orange-500" :
-                      hotScore >= 40 ? "bg-amber-500" :
+                      hotScore >= 40 ? "bg-warning" :
                       hotScore >= 20 ? "bg-emerald-500" :
                       "bg-muted-foreground/30"
                     )}
@@ -494,7 +494,7 @@ export function ListingCard({
             <div className="flex items-center justify-center gap-3">
               <button 
                 onClick={onCancelDelete}
-                className="px-4 py-2 text-subhead font-medium text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors"
+                className="px-4 py-2 text-subhead text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors"
               >
                 Cancel
               </button>

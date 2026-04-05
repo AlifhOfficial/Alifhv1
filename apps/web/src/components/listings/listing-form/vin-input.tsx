@@ -117,9 +117,9 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
           className={cn(
             "w-full h-14 bg-transparent text-headline font-mono tracking-[0.15em] uppercase px-0 pr-12 text-sidebar-foreground",
             "transition-all duration-200 outline-none",
-            status === 'available' && "text-green-500",
-            (status === 'taken' || status === 'invalid' || error) && "text-red-500",
-            status === 'error' && "text-yellow-500",
+            status === 'available' && "text-success",
+            (status === 'taken' || status === 'invalid' || error) && "text-destructive",
+            status === 'error' && "text-warning",
             disabled && "opacity-50 cursor-not-allowed",
             "placeholder:text-sidebar-foreground/30 placeholder:tracking-normal placeholder:text-callout"
           )}
@@ -128,15 +128,15 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
         {/* Status Icon */}
         <div className="absolute right-0 top-1/2 -translate-y-1/2">
           {isChecking ? (
-            <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+            <Loader2 className="w-5 h-5 text-primary animate-spin" />
           ) : status === 'available' ? (
-            <div className="p-1 bg-green-500/10 rounded-full">
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
+            <div className="p-1 bg-success-muted rounded-full">
+              <CheckCircle2 className="w-5 h-5 text-success" />
             </div>
           ) : status === 'taken' || status === 'invalid' || error ? (
-            <AlertCircle className="w-5 h-5 text-red-500" />
+            <AlertCircle className="w-5 h-5 text-destructive" />
           ) : status === 'error' ? (
-            <AlertCircle className="w-5 h-5 text-yellow-500" />
+            <AlertCircle className="w-5 h-5 text-warning" />
           ) : null}
         </div>
       </div>
@@ -149,9 +149,9 @@ export function VINInput({ value, onChange, onDecode, disabled, excludeListingId
         {(message || error) && (
           <p className={cn(
             "text-caption1 font-semibold",
-            status === 'available' && "text-green-500",
-            (status === 'taken' || status === 'invalid' || error) && "text-red-500",
-            status === 'error' && "text-yellow-500"
+            status === 'available' && "text-success",
+            (status === 'taken' || status === 'invalid' || error) && "text-destructive",
+            status === 'error' && "text-warning"
           )}>
             {message || error}
           </p>

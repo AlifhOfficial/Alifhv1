@@ -47,7 +47,7 @@ interface StaffOverviewData {
 // Role badge config
 const ROLE_CONFIG: Record<string, { color: string; bg: string }> = {
   owner: { color: 'text-purple-600', bg: 'bg-purple-500/10' },
-  manager: { color: 'text-blue-600', bg: 'bg-blue-500/10' },
+  manager: { color: 'text-primary', bg: 'bg-primary-muted' },
   staff: { color: 'text-foreground', bg: 'bg-secondary' },
 };
 
@@ -95,15 +95,15 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
             </div>
             <div>
               <span className="text-caption1 text-muted-foreground">Active</span>
-              <p className="text-title3 font-semibold tracking-tight mt-1 text-green-500">{stats.activeStaff}</p>
+              <p className="text-title3 font-semibold tracking-tight mt-1 text-success">{stats.activeStaff}</p>
             </div>
             <div>
               <span className="text-caption1 text-muted-foreground">Pending</span>
-              <p className="text-title3 font-semibold tracking-tight mt-1 text-yellow-500">{stats.pendingInvites}</p>
+              <p className="text-title3 font-semibold tracking-tight mt-1 text-warning">{stats.pendingInvites}</p>
             </div>
             <div>
               <span className="text-caption1 text-muted-foreground">Managers</span>
-              <p className="text-title3 font-semibold tracking-tight mt-1 text-blue-500">{stats.managers}</p>
+              <p className="text-title3 font-semibold tracking-tight mt-1 text-primary">{stats.managers}</p>
             </div>
           </div>
         )}
@@ -112,7 +112,7 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
       <div className="flex items-center gap-3 mb-12">
         <Link
           href="/partner-dashboard/staff/manage"
-          className="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-blue-600 text-white text-subhead font-medium hover:bg-blue-700 transition-colors"
+          className="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-white text-subhead hover:bg-primary/90 transition-colors"
         >
           <UserPlus className="w-4 h-4" />
           Manage Team
@@ -167,11 +167,11 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
           {team.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <Users className="w-10 h-10 text-muted-foreground/20 mb-4" />
-              <h3 className="text-headline font-medium tracking-tight">No team members yet</h3>
+              <h3 className="text-headline tracking-tight">No team members yet</h3>
               <p className="text-subhead text-muted-foreground mt-1">Start by inviting your first staff member</p>
               <Link
                 href="/partner-dashboard/staff/manage"
-                className="mt-6 px-4 py-2 rounded-full bg-blue-600 text-white text-subhead font-medium hover:bg-blue-700 transition-colors"
+                className="mt-6 px-4 py-2 rounded-full bg-primary text-white text-subhead hover:bg-primary/90 transition-colors"
               >
                 Invite Team Member
               </Link>
@@ -193,7 +193,7 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
                     />
                     
                     <div className="flex-1 min-w-0">
-                      <p className="text-subhead font-medium tracking-tight truncate">
+                      <p className="text-subhead tracking-tight truncate">
                         {member.userName || 'Unknown'}
                       </p>
                       <p className="text-caption1 text-muted-foreground truncate">
@@ -203,7 +203,7 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
 
                     <div className="flex items-center gap-3">
                       <span className={cn(
-                        "px-2.5 py-1 rounded-md text-caption1 font-medium capitalize",
+                        "px-2.5 py-1 rounded-md text-caption1 capitalize",
                         roleBadge.bg,
                         roleBadge.color
                       )}>
@@ -245,12 +245,12 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
                     key={invite.id}
                     className="flex items-center gap-4 p-4 -mx-4 rounded-xl hover:bg-secondary/30 transition-colors"
                   >
-                    <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-4 h-4 text-yellow-600" />
+                    <div className="w-10 h-10 rounded-full bg-warning-muted flex items-center justify-center flex-shrink-0">
+                      <Mail className="w-4 h-4 text-warning" />
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <p className="text-subhead font-medium tracking-tight truncate">
+                      <p className="text-subhead tracking-tight truncate">
                         {invite.email}
                       </p>
                       <p className="text-caption1 text-muted-foreground">
@@ -259,7 +259,7 @@ export function StaffOverview({ initialData }: { initialData: StaffOverviewData 
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-yellow-500" />
+                      <Clock className="w-3.5 h-3.5 text-warning" />
                       <span className="text-caption1 text-muted-foreground">
                         Expires {new Date(invite.expiresAt).toLocaleDateString('en-AE', { month: 'short', day: 'numeric' })}
                       </span>

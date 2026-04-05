@@ -17,7 +17,7 @@ export function FormField({ label, required, error, hint, children, className }:
       <div className="flex items-baseline justify-between">
         <label className="text-footnote font-semibold tracking-tight text-foreground">
           {label}
-          {required && <span className="text-red-500 ml-0.5">*</span>}
+          {required && <span className="text-destructive ml-0.5">*</span>}
         </label>
         {hint && !error && (
           <span className="text-caption1 text-muted-foreground/60">{hint}</span>
@@ -25,7 +25,7 @@ export function FormField({ label, required, error, hint, children, className }:
       </div>
       {children}
       {error && (
-        <p className="text-caption1 font-semibold text-red-500">{error}</p>
+        <p className="text-caption1 font-semibold text-destructive">{error}</p>
       )}
     </div>
   );

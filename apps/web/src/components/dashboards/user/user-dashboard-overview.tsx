@@ -114,7 +114,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
       <div className="grid grid-cols-2 md:grid-cols-4 border border-border/20 rounded-lg divide-x divide-y md:divide-y-0 divide-border/20 bg-muted/5">
         <div className="p-4 sm:p-5 flex flex-col gap-1.5">
           <StatLabel label="Active" tooltip="Approximate count of your live listings visible to buyers" />
-          <span className="text-title3 sm:text-title2 font-semibold text-blue-500">{stats.activeListings ?? 0}</span>
+          <span className="text-title3 sm:text-title2 font-semibold text-primary">{stats.activeListings ?? 0}</span>
         </div>
         <div className="p-4 sm:p-5 flex flex-col gap-1.5">
           <StatLabel label="Views" tooltip="Estimated total views across all your listings" />
@@ -122,11 +122,11 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
         </div>
         <div className="p-4 sm:p-5 flex flex-col gap-1.5">
           <StatLabel label="Saved" tooltip="Approximate number of times your listings were saved" />
-          <span className="text-title3 sm:text-title2 font-semibold text-amber-500">{formatNumber(stats.totalSaves ?? 0)}</span>
+          <span className="text-title3 sm:text-title2 font-semibold text-warning">{formatNumber(stats.totalSaves ?? 0)}</span>
         </div>
         <div className="p-4 sm:p-5 flex flex-col gap-1.5">
           <StatLabel label="Sold" tooltip="Listings you've marked as sold" />
-          <span className="text-title3 sm:text-title2 font-semibold text-green-500">{formatNumber(stats.soldCount ?? 0)}</span>
+          <span className="text-title3 sm:text-title2 font-semibold text-success">{formatNumber(stats.soldCount ?? 0)}</span>
         </div>
       </div>
 
@@ -146,7 +146,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
             </div>
             <div className="flex flex-col justify-center">
               <p className="text-caption1 text-muted-foreground/60 mb-1">Total saves</p>
-              <p className="text-headline sm:text-title3 font-semibold text-amber-500">{formatNumber(stats.totalSaves ?? 0)}</p>
+              <p className="text-headline sm:text-title3 font-semibold text-warning">{formatNumber(stats.totalSaves ?? 0)}</p>
             </div>
             <div className="flex flex-col justify-center">
               <p className="text-caption1 text-muted-foreground/60 mb-1">Save rate</p>
@@ -243,7 +243,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
             </div>
             <div className="flex items-center justify-between">
               <span className="text-caption1 sm:text-subhead text-muted-foreground">Total sold</span>
-              <span className="text-caption1 sm:text-subhead font-semibold text-green-500">{formatNumber(stats?.soldCount ?? 0)}</span>
+              <span className="text-caption1 sm:text-subhead font-semibold text-success">{formatNumber(stats?.soldCount ?? 0)}</span>
             </div>
           </div>
         </div>
@@ -259,7 +259,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
             <p className="text-[10px] sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">My Listings</p>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
           </div>
-          <span className="text-title3 font-semibold text-blue-500">{stats?.activeListings ?? 0}<span className="text-caption1 text-muted-foreground font-normal ml-1">active</span></span>
+          <span className="text-title3 font-semibold text-primary">{stats?.activeListings ?? 0}<span className="text-caption1 text-muted-foreground font-normal ml-1">active</span></span>
         </Link>
         <Link
           href="/user-dashboard/favorites"
@@ -269,7 +269,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
             <p className="text-[10px] sm:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Saved Items</p>
             <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:translate-x-0.5 transition-transform" />
           </div>
-          <span className="text-title3 font-semibold text-rose-500">{stats?.mySaves ?? 0}<span className="text-caption1 text-muted-foreground font-normal ml-1">items</span></span>
+          <span className="text-title3 font-semibold text-favorite">{stats?.mySaves ?? 0}<span className="text-caption1 text-muted-foreground font-normal ml-1">items</span></span>
         </Link>
         <Link
           href="/user-dashboard/messaging"

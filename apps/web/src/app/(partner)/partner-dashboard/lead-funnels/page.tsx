@@ -34,7 +34,7 @@ export default async function PartnerLeadFunnelsPage({ searchParams }: PageProps
       <DashboardDisplayArea>
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="rounded-xl border border-border p-8 text-center">
-            <h2 className="text-headline font-medium text-foreground mb-2">Manager Access Required</h2>
+            <h2 className="text-headline text-foreground mb-2">Manager Access Required</h2>
             <p className="text-subhead text-muted-foreground">Only managers and owners can view all lead funnels.</p>
           </div>
         </div>

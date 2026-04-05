@@ -399,7 +399,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                   value={String(value || '')}
                   onChange={(e) => updateField({ [field as string]: e.target.value })}
                   placeholder={placeholder}
-                  className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                  className="w-full h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') saveField(field);
                     if (e.key === 'Escape') cancelEdit();
@@ -415,14 +415,14 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                   <button
                     onClick={(e) => { e.stopPropagation(); saveField(field); }}
                     disabled={saving}
-                    className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                    className="text-caption1 text-primary hover:text-primary font-semibold"
                   >
                     {saving ? '...' : 'Save'}
                   </button>
                 </div>
               </div>
             ) : (
-              <p className={cn("text-subhead font-medium text-foreground", disabled && "text-foreground/70")}>
+              <p className={cn("text-subhead text-foreground", disabled && "text-foreground/70")}>
                 {value || <span className="text-muted-foreground/50">{disabled ? '—' : 'Tap to add'}</span>}
               </p>
             )}
@@ -547,7 +547,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
               <h1 className="text-headline sm:text-title3 font-semibold tracking-tight truncate">{displayName}</h1>
               {profile?.kycVerified && !isKycExpired && (
                 <CheckCircle2 className={cn(
-                  "w-5 h-5 text-blue-500 transition-opacity",
+                  "w-5 h-5 text-primary transition-opacity",
                   isExpiringSoon && "opacity-50 animate-pulse"
                 )} />
               )}
@@ -568,8 +568,8 @@ export function ProfileView({ initialData }: ProfileViewProps) {
               <p className={cn(
                 "text-subhead font-semibold",
                 profile?.kycVerified && !isKycExpired ? "text-foreground" :
-                isKycExpired || profile?.kycStatus === 'rejected' ? "text-red-500" :
-                profile?.kycStatus === 'pending' ? "text-amber-500" :
+                isKycExpired || profile?.kycStatus === 'rejected' ? "text-destructive" :
+                profile?.kycStatus === 'pending' ? "text-warning" :
                 "text-foreground"
               )}>
                 {profile?.kycVerified && !isKycExpired ? 'Identity Verified' :
@@ -579,8 +579,8 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                  'Identity Not Verified'}
               </p>
               <p className={cn(
-                "text-caption1 font-medium mt-0.5",
-                isExpiringSoon ? "text-amber-500" : "text-muted-foreground/70"
+                "text-caption1 mt-0.5",
+                isExpiringSoon ? "text-warning" : "text-muted-foreground/70"
               )}>
                 {profile?.kycVerified && !isKycExpired && kycExpiryDate ? (
                   isExpiringSoon 
@@ -600,7 +600,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
             {(!profile?.kycVerified || isKycExpired || profile?.kycStatus === 'rejected' || showResubmit) && profile?.kycStatus !== 'pending' && (
               <button 
                 onClick={() => setKycModalOpen(true)}
-                className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold px-4 py-2 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors w-full sm:w-auto text-center"
+                className="text-caption1 text-primary hover:text-primary font-semibold px-4 py-2 rounded-lg bg-muted/30 hover:bg-muted/40 transition-colors w-full sm:w-auto text-center"
               >
                 {isKycExpired || profile?.kycStatus === 'rejected' ? 'Try Again' : 
                  showResubmit ? 'Renew' : 'Verify'}
@@ -630,7 +630,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
             <span className="text-headline sm:text-title3 font-bold text-foreground">
               {profile?.platformRating ? (
                 <span className="flex items-center gap-1.5">
-                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                  <Star className="w-4 h-4 text-warning fill-yellow-500" />
                   {profile.platformRating.toFixed(1)}
                 </span>
               ) : '—'}
@@ -656,7 +656,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <p className="text-subhead font-medium text-muted-foreground/60 mb-2">No badges earned yet</p>
+                <p className="text-subhead text-muted-foreground/60 mb-2">No badges earned yet</p>
                 <a 
                   href="/badges" 
                   className="text-subhead text-primary hover:text-primary/80 font-semibold transition-colors"
@@ -698,11 +698,11 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                 });
               } : undefined}
               suffix={profile?.emailVerified ? (
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <CheckCircle2 className="w-4 h-4 text-success" />
               ) : (
                 <a 
                   href="/verify-email" 
-                  className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                  className="text-caption1 text-primary hover:text-primary font-semibold"
                   onClick={(e) => e.stopPropagation()}
                 >
                   Verify
@@ -715,11 +715,11 @@ export function ProfileView({ initialData }: ProfileViewProps) {
               <div className="flex items-center justify-between mb-1">
                 <p className="text-subhead font-semibold text-muted-foreground/70">Phone Number</p>
                 {(profile?.phoneNumberVerified || phoneJustVerified) ? (
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  <CheckCircle2 className="w-4 h-4 text-success" />
                 ) : form.phone && phoneVerifyStep === 'idle' ? (
                   <button
                     onClick={sendPhoneOTP}
-                    className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                    className="text-caption1 text-primary hover:text-primary font-semibold"
                   >
                     Verify
                   </button>
@@ -756,7 +756,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                       <button
                         onClick={verifyPhoneOTP}
                         disabled={otp.length !== 6}
-                        className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+                        className="text-caption1 text-primary hover:text-primary font-semibold disabled:opacity-50"
                       >
                         Verify
                       </button>
@@ -779,7 +779,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                 // Edit phone number
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-subhead font-medium text-muted-foreground shrink-0">+971</span>
+                    <span className="text-subhead text-muted-foreground shrink-0">+971</span>
                     <input
                       autoFocus
                       type="tel"
@@ -787,7 +787,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                       value={form.phone}
                       onChange={(e) => updateField({ phone: e.target.value.replace(/[^\d]/g, '').slice(0, 9) })}
                       placeholder="50 000 0000"
-                      className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
+                      className="flex-1 h-10 bg-muted/20 rounded-lg px-3 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/50"
                       maxLength={9}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') saveField('phone');
@@ -805,7 +805,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                     <button
                       onClick={() => saveField('phone')}
                       disabled={saving}
-                      className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                      className="text-caption1 text-primary hover:text-primary font-semibold"
                     >
                       {saving ? '...' : 'Save'}
                     </button>
@@ -831,7 +831,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                     }
                   }}
                 >
-                  <p className="text-subhead font-medium text-foreground">
+                  <p className="text-subhead text-foreground">
                     {form.phone ? `+971 ${form.phone}` : <span className="text-muted-foreground/50">Tap to add</span>}
                   </p>
                 </div>
@@ -881,7 +881,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                       <button
                         onClick={(e) => { e.stopPropagation(); saveField('bio'); }}
                         disabled={saving}
-                        className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+                        className="text-caption1 text-primary hover:text-primary font-semibold"
                       >
                         {saving ? '...' : 'Save'}
                       </button>
@@ -890,7 +890,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                 </div>
               ) : (
                 <>
-                  <p className="text-subhead font-medium text-foreground whitespace-pre-wrap">
+                  <p className="text-subhead text-foreground whitespace-pre-wrap">
                     {form.bio || <span className="text-muted-foreground/50">Tap to add bio</span>}
                   </p>
                   {form.bio && (
@@ -925,7 +925,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                     )}
                   >
                     {tag}
-                    {isSelected && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                    {isSelected && <CheckCircle2 className="w-4 h-4 text-success" />}
                   </button>
                 );
               })}

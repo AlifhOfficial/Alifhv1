@@ -94,7 +94,7 @@ function MarketplaceGameInfographic() {
       <MacOSWindow url="car-marketplace.ae" contentClassName="flex flex-col md:flex-row aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[2.4/1] overflow-visible">
           {/* Left - Others: Cluttered fees with stacked cars */}
           <div className="flex-1 p-4 sm:p-6 lg:p-14 pt-6 sm:pt-8 lg:pt-16 pb-6 sm:pb-8 lg:pb-16 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5 overflow-visible">
-            <span className="text-[9px] sm:text-[10px] lg:text-caption1 font-medium text-white/30 mb-4 sm:mb-6 lg:mb-8">Others</span>
+            <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-white/30 mb-4 sm:mb-6 lg:mb-8">Others</span>
             
             <div className="relative w-full max-w-3xl py-3 sm:py-4">
               {/* 3 car cards - stacked/overlapping */}
@@ -123,13 +123,13 @@ function MarketplaceGameInfographic() {
                     <svg className="w-4 h-4 sm:w-5 sm:h-5 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M4 4l16 6.5-6.5 2-2 6.5z"/>
                     </svg>
-                    <div className="absolute -bottom-0.5 -right-0.5 w-1 h-1 sm:w-1.5 sm:h-1.5 lg:w-2.5 lg:h-2.5 rounded-full bg-red-500 animate-pulse" />
+                    <div className="absolute -bottom-0.5 -right-0.5 w-1 h-1 sm:w-1.5 sm:h-1.5 lg:w-2.5 lg:h-2.5 rounded-full bg-destructive animate-pulse" />
                   </div>
                 </div>
               </div>
               
               {/* Fee badges - floating around the cards */}
-              <div className="absolute top-0 sm:top-1 lg:top-0 left-4 sm:left-6 lg:left-10 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-red-500 text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-bold text-white shadow-lg -rotate-6 z-20">
+              <div className="absolute top-0 sm:top-1 lg:top-0 left-4 sm:left-6 lg:left-10 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-destructive text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-bold text-white shadow-lg -rotate-6 z-20">
                 Premium 299
               </div>
               <div className="absolute top-0 sm:top-1 lg:top-0 right-4 sm:right-6 lg:right-10 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-1.5 rounded-md bg-orange-500 text-[7px] sm:text-[9px] lg:text-caption1 xl:text-subhead font-semibold text-white shadow-lg rotate-6 z-20">
@@ -145,7 +145,7 @@ function MarketplaceGameInfographic() {
           
           {/* Right - Revvup: Clean proposition */}
           <div className="w-full md:w-[200px] lg:w-[280px] xl:w-[360px] p-6 sm:p-10 lg:p-16 flex flex-col items-center justify-center min-h-[160px] sm:min-h-0">
-            <span className="text-[9px] sm:text-[10px] lg:text-caption1 font-medium text-primary mb-4 sm:mb-6 lg:mb-10">Revvup</span>
+            <span className="text-[9px] sm:text-[10px] lg:text-caption1 text-primary mb-4 sm:mb-6 lg:mb-10">Revvup</span>
             
             <div className="flex flex-col items-center">
               {/* Giant zero */}

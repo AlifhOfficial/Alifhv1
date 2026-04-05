@@ -248,11 +248,11 @@ export function PartnerLeadFunnelsView({
           <div className="flex flex-wrap items-center gap-6 sm:gap-10">
             <div>
               <span className="text-caption1 text-muted-foreground">Total Funnels</span>
-              <p className="text-headline sm:text-title3 font-semibold tracking-tight mt-1 text-blue-500">{stats.total}</p>
+              <p className="text-headline sm:text-title3 font-semibold tracking-tight mt-1 text-primary">{stats.total}</p>
             </div>
             <div>
               <span className="text-caption1 text-muted-foreground">Active</span>
-              <p className="text-headline sm:text-title3 font-semibold tracking-tight mt-1 text-green-500">{stats.active}</p>
+              <p className="text-headline sm:text-title3 font-semibold tracking-tight mt-1 text-success">{stats.active}</p>
             </div>
             <div>
               <span className="text-caption1 text-muted-foreground">Staff Members</span>
@@ -439,7 +439,7 @@ export function PartnerLeadFunnelsView({
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Filter className="w-4 h-4 text-muted-foreground/40" />
           </div>
-          <p className="text-subhead font-medium text-foreground">No lead funnels yet</p>
+          <p className="text-subhead text-foreground">No lead funnels yet</p>
           <p className="text-caption1 text-muted-foreground/60 mt-1">Staff members haven't created any funnels</p>
         </div>
       )}
@@ -450,7 +450,7 @@ export function PartnerLeadFunnelsView({
           <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-3">
             <Search className="w-4 h-4 text-muted-foreground/40" />
           </div>
-          <p className="text-subhead font-medium text-foreground">No results found</p>
+          <p className="text-subhead text-foreground">No results found</p>
           <p className="text-caption1 text-muted-foreground/60 mt-1">Try a different search or filter</p>
           <button
             onClick={clearFilters}
@@ -533,7 +533,7 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
             <div className="flex flex-wrap gap-1 sm:gap-1.5 ml-5 sm:ml-7">
               {filterTags.length > 0 ? (
                 filterTags.slice(0, 5).map((tag, i) => (
-                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 font-medium bg-secondary text-muted-foreground rounded-md">
+                  <span key={i} className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
                     {tag}
                   </span>
                 ))
@@ -541,7 +541,7 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
                 <span className="text-caption2 sm:text-caption1 text-muted-foreground/40 italic">All vehicles</span>
               )}
               {filterTags.length > 5 && (
-                <span className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 font-medium bg-secondary text-muted-foreground rounded-md">
+                <span className="px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 bg-secondary text-muted-foreground rounded-md">
                   +{filterTags.length - 5} more
                 </span>
               )}
@@ -553,7 +553,7 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
             <span className={cn(
               'shrink-0 px-1.5 sm:px-2 py-0.5 text-caption2 sm:text-caption1 font-semibold rounded-full',
               funnel.isActive 
-                ? 'bg-green-500/10 text-green-600' 
+                ? 'bg-success-muted text-success' 
                 : 'bg-muted/50 text-muted-foreground'
             )}>
               {funnel.isActive ? 'Active' : 'Paused'}
@@ -626,7 +626,7 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
                       <p className="text-caption1 sm:text-subhead font-semibold truncate">
                         {listing.year} {listing.make}
                       </p>
-                      <p className="text-caption1 sm:text-subhead font-bold text-blue-600">
+                      <p className="text-caption1 sm:text-subhead font-bold text-primary">
                         AED {listing.price.toLocaleString()}
                       </p>
                     </div>

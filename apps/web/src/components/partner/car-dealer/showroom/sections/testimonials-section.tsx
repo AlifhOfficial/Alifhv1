@@ -147,7 +147,7 @@ export function TestimonialsSection({
             <button
               onClick={addTestimonial}
               disabled={(form.featuredTestimonials?.length || 0) >= 5}
-              className="inline-flex items-center gap-1.5 text-caption1 text-blue-500 hover:text-blue-600 font-semibold disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 text-caption1 text-primary hover:text-primary font-semibold disabled:opacity-50"
             >
               <Plus className="w-3.5 h-3.5" />
               Add

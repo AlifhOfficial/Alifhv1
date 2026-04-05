@@ -63,7 +63,7 @@ export function OwnershipCostCalculator() {
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-subhead font-medium mb-2">
+            <label className="block text-subhead mb-2">
               Car Price (AED)
             </label>
             <input
@@ -76,7 +76,7 @@ export function OwnershipCostCalculator() {
           </div>
 
           <div>
-            <label className="block text-subhead font-medium mb-2">
+            <label className="block text-subhead mb-2">
               Years to Own
             </label>
             <select
@@ -92,7 +92,7 @@ export function OwnershipCostCalculator() {
           </div>
 
           <div>
-            <label className="block text-subhead font-medium mb-2">
+            <label className="block text-subhead mb-2">
               Annual Mileage (km)
             </label>
             <input
@@ -105,7 +105,7 @@ export function OwnershipCostCalculator() {
           </div>
 
           <div>
-            <label className="block text-subhead font-medium mb-2">
+            <label className="block text-subhead mb-2">
               Insurance Type
             </label>
             <select

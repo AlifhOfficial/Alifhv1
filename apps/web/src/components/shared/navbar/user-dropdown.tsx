@@ -205,7 +205,7 @@ export function ProfileMenu({
                                       onNavigate?.();
                                       onToggleMenu();
                                     }}
-                                    className="block px-3 py-1.5 text-subhead font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                                    className="block px-3 py-1.5 text-subhead text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
                                   >
                                     {subItem.label}
                                   </Link>
@@ -371,7 +371,7 @@ export function ProfileMenu({
                                     onNavigate?.();
                                     onToggleMenu();
                                   }}
-                                  className="block px-3 py-1.5 text-subhead font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                                  className="block px-3 py-1.5 text-subhead text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
                                 >
                                   {subItem.label}
                                 </Link>

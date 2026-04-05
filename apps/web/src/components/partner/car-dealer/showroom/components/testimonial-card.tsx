@@ -64,7 +64,7 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove, onImageUpload
             value={form.customerName}
             onChange={(e) => setForm(f => ({ ...f, customerName: e.target.value }))}
             placeholder="Customer name"
-            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead font-medium focus:outline-none focus:ring-1 focus:ring-primary/30"
+            className="w-full h-8 bg-muted/20 rounded px-2 text-subhead focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
           <input
             value={form.customerTitle || ''}
@@ -88,7 +88,7 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove, onImageUpload
                 className="p-0.5"
               >
                 <Star
-                  className={cn("w-4 h-4", star <= form.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground")}
+                  className={cn("w-4 h-4", star <= form.rating ? "text-warning fill-yellow-500" : "text-muted-foreground")}
                 />
               </button>
             ))}
@@ -102,7 +102,7 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove, onImageUpload
           <div className="flex gap-2">
             <button
               onClick={() => { onUpdate(form); setIsEditing(false); }}
-              className="text-caption1 text-blue-500 hover:text-blue-600 font-semibold"
+              className="text-caption1 text-primary hover:text-primary font-semibold"
             >
               Save
             </button>
@@ -127,7 +127,7 @@ export function TestimonialCard({ testimonial, onUpdate, onRemove, onImageUpload
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
-                  className={cn("w-3 h-3", star <= testimonial.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30")}
+                  className={cn("w-3 h-3", star <= testimonial.rating ? "text-warning fill-yellow-500" : "text-muted-foreground/30")}
                 />
               ))}
             </div>

@@ -44,7 +44,7 @@ function FieldWrapper({
       <div className="flex items-baseline justify-between">
         <label className="text-subhead font-semibold text-muted-foreground/70">
           {label}
-          {required && <span className="text-red-500 ml-0.5">*</span>}
+          {required && <span className="text-destructive ml-0.5">*</span>}
         </label>
         {hint && (
           <span className="text-caption1 text-muted-foreground/70">{hint}</span>
@@ -203,7 +203,7 @@ export function CarValuationTool() {
           type="button"
           onClick={() => onChange(opt.value)}
           className={cn(
-            "h-11 px-3 rounded-lg text-subhead font-medium transition-colors",
+            "h-11 px-3 rounded-lg text-subhead transition-colors",
             value === opt.value
               ? 'bg-foreground text-background'
               : 'bg-muted text-muted-foreground hover:text-foreground'
@@ -368,7 +368,7 @@ export function CarValuationTool() {
                   placeholder="45,000"
                   className={cn(
                     "w-full h-12 bg-transparent border-b-2 border-border/40 focus:border-foreground",
-                    "outline-none transition-colors px-0 pr-12 text-subhead font-medium",
+                    "outline-none transition-colors px-0 pr-12 text-subhead",
                     "placeholder:text-muted-foreground/40"
                   )}
                 />
@@ -486,7 +486,7 @@ export function CarValuationTool() {
                         : 'bg-muted text-muted-foreground hover:text-foreground'
                     )}
                   >
-                    <span className="text-subhead font-medium">{opt.label}</span>
+                    <span className="text-subhead">{opt.label}</span>
                     {formData.warranty === opt.value && (
                       <CheckCircle2 className="w-4 h-4" />
                     )}
@@ -503,16 +503,16 @@ export function CarValuationTool() {
               {formData.year} {formData.make} {formData.model}
             </p>
             <div className="flex flex-wrap gap-2 mt-3">
-              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 font-medium text-muted-foreground">
+              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 text-muted-foreground">
                 {formData.mileage} km
               </span>
-              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 font-medium text-muted-foreground capitalize">
+              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 text-muted-foreground capitalize">
                 {formData.condition}
               </span>
-              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 font-medium text-muted-foreground capitalize">
+              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 text-muted-foreground capitalize">
                 {formData.fuelType?.replace('_', ' ')}
               </span>
-              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 font-medium text-muted-foreground uppercase">
+              <span className="px-3 py-1.5 rounded-lg bg-muted text-caption1 text-muted-foreground uppercase">
                 {formData.specs}
               </span>
             </div>
@@ -535,7 +535,7 @@ export function CarValuationTool() {
 
           {/* Result */}
           {result && (
-            <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-6 space-y-4">
+            <div className="rounded-xl border border-success/30 bg-success/5 p-6 space-y-4">
               <p className="text-center text-subhead font-semibold text-muted-foreground/70">
                 Estimated Market Value
               </p>
@@ -549,7 +549,7 @@ export function CarValuationTool() {
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-title1 font-bold tracking-tight text-green-500">
+                  <p className="text-title1 font-bold tracking-tight text-success">
                     AED {result.mid.toLocaleString()}
                   </p>
                 </div>
@@ -571,16 +571,16 @@ export function CarValuationTool() {
                         key={i}
                         className={cn(
                           "flex items-center gap-2 px-3 py-1.5 rounded-lg",
-                          f.positive ? 'bg-green-500/10' : 'bg-red-500/10'
+                          f.positive ? 'bg-success-muted' : 'bg-destructive-muted'
                         )}
                       >
                         <CheckCircle2 className={cn(
                           "w-3.5 h-3.5",
-                          f.positive ? 'text-green-500' : 'text-red-500'
+                          f.positive ? 'text-success' : 'text-destructive'
                         )} />
                         <span className={cn(
-                          "text-caption1 font-medium",
-                          f.positive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                          "text-caption1",
+                          f.positive ? 'text-success' : 'text-destructive'
                         )}>
                           {f.label} {f.impact}
                         </span>
