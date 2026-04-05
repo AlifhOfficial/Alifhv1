@@ -30,8 +30,9 @@ export async function PATCH(
 
 
     const { id } = await params;
-    const lastReadAt = new Date().toISOString();
-    await markConversationAsRead(id, user.id);
+    const body = await req.json().catch(() => ({})) as { messageId?: unknown };
+    const messageId = typeof body.messageId === 'string' ? body.messageId : undefined;
+    const lastReadAt = (await markConversationAsRead(id, user.id, messageId)).toISOString();
 
     const response = NextResponse.json({ success: true, lastReadAt });
 

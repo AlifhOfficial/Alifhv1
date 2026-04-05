@@ -8,10 +8,12 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { MessageCircle, PanelLeft } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { ConversationList } from './conversation-list';
 import { ChatWindow } from './chat-window';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useConversations } from '@/hooks/messaging';
+import { queryKeys } from '@/lib/query-keys';
 import { cn } from '@/utils/cn';
 import type { Conversation, InitialMessagesData } from '@/hooks/messaging';
 
@@ -34,12 +36,14 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
   const urlConversationId = searchParams?.get('conversationId');
   
   // Derive selected ID from URL, with local override for user selection
   const [localSelectedId, setLocalSelectedId] = useState<string | undefined>(undefined);
   const [showMobileOverride, setShowMobileOverride] = useState<boolean | null>(null);
   const [listOpen, setListOpen] = useState(true);
+  const [selectionVersion, setSelectionVersion] = useState(0);
   // Track which IDs we've already tried to refetch (prevent infinite loop)
   const [refetchedIds, setRefetchedIds] = useState<Set<string>>(new Set());
   
@@ -98,6 +102,12 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
           listOpen={listOpen}
           onListToggle={setListOpen}
           onSelectConversation={(id) => {
+            setSelectionVersion((v) => v + 1);
+            queryClient.invalidateQueries({
+              queryKey: queryKeys.messaging.messages(id),
+              exact: true,
+              refetchType: 'none',
+            });
             setLocalSelectedId(id);
             setShowMobileOverride(true);
             // Update URL for consistency (back button, refresh, sharing)
@@ -129,7 +139,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className, initialData
           )}
           {selected ? (
             <ChatWindow
-              key={selected.id}
+              key={`${selected.id}:${selectionVersion}`}
               conversationId={selected.id}
               userId={userId}
               conversationType={selected.type}

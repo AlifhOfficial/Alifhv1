@@ -63,10 +63,12 @@ async function fetchConversationsPage(
   return getConversationsAction(scope, limit, offset);
 }
 
-async function markAsReadAPI(conversationId: string): Promise<void> {
+async function markAsReadAPI(conversationId: string, messageId?: string): Promise<void> {
   const res = await fetch(`/api/conversations/${conversationId}/read`, {
     method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
+    body: JSON.stringify(messageId ? { messageId } : {}),
   });
   if (!res.ok) throw new Error('Failed to mark as read');
 }
@@ -399,6 +401,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
 
 export function useMarkAsRead() {
   const queryClient = useQueryClient();
+  const { isConnected, send } = useWebSocket();
   const markedRef = useRef(new Set<string>()); // Prevent duplicate calls within 5 seconds
 
   const mutation = useMutation({
@@ -409,7 +412,11 @@ export function useMarkAsRead() {
         return;
       }
       recentReadMarks.set(dedupeKey, Date.now());
-      await markAsReadAPI(conversationId);
+      if (isConnected) {
+        send({ type: 'mark_read', conversationId, messageId });
+        return;
+      }
+      await markAsReadAPI(conversationId, messageId);
     },
 
     onMutate: async ({ conversationId, messageId }) => {
@@ -425,6 +432,7 @@ export function useMarkAsRead() {
 
       await queryClient.cancelQueries({ queryKey: ['conversations'] });
       let unreadToRemove = 0;
+      const now = new Date();
 
       queryClient.setQueriesData({ queryKey: ['conversations'], exact: false }, (old: unknown) => {
         const data = old as ConversationsInfiniteData | undefined;
@@ -439,7 +447,7 @@ export function useMarkAsRead() {
             return {
               ...page,
               conversations: page.conversations.map(c =>
-                c.id === conversationId ? { ...c, unreadCount: 0 } : c
+                c.id === conversationId ? { ...c, unreadCount: 0, myLastReadAt: now } : c
               ),
               totalUnread: idx === 0
                 ? Math.max(0, (page.totalUnread || 0) - unreadToRemove)
@@ -452,15 +460,13 @@ export function useMarkAsRead() {
     },
 
     onError: (_error, variables) => {
-      if (variables?.messageId) {
-        recentReadMarks.delete(`${variables.conversationId}:${variables.messageId}`);
-      }
+      const dedupeKey = variables.messageId ? `${variables.conversationId}:${variables.messageId}` : variables.conversationId;
+      recentReadMarks.delete(dedupeKey);
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
 
     onSettled: (_, __, variables) => {
       const conversationId = variables.conversationId;
-      // Allow re-marking after 5 seconds
       setTimeout(() => markedRef.current.delete(conversationId), 5000);
     },
   });

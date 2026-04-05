@@ -14,12 +14,13 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 
 export type WSMessageType = 
   | 'connected' | 'ping' | 'pong' 
-  | 'new_message' | 'read_receipt' | 'typing' | 'presence';
+  | 'new_message' | 'read_receipt' | 'typing' | 'presence' | 'mark_read';
 
 export interface WSMessage {
   type: WSMessageType;
   conversationId?: string;
   userId?: string;
+  messageId?: string;
   message?: unknown;
   isTyping?: boolean;
   isOnline?: boolean;

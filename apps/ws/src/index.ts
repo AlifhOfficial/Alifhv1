@@ -4,7 +4,14 @@
  * Real-time messaging with presence, typing, and broadcasts
  */
 
-import { db, userProfile, eq, sql } from "@alifh/database";
+import {
+  db,
+  userProfile,
+  eq,
+  sql,
+  getConversationParticipants,
+  markConversationAsRead,
+} from "@alifh/database";
 
 const PORT = parseInt(process.env.WS_PORT || "3001");
 
@@ -193,10 +200,20 @@ const server = Bun.serve<WSData>({
 
     // Broadcast endpoint (for API -> WS)
     if (url.pathname === "/broadcast" && req.method === "POST") {
-      return req.json().then(({ channel, message }: { channel: string; message: unknown }) => {
+      return req.json().then((body: unknown) => {
+        const { channel, message } =
+          body && typeof body === "object"
+            ? body as { channel?: unknown; message?: unknown }
+            : {};
+
         if (!channel || !message) {
           return Response.json({ error: "channel and message required" }, { status: 400 });
         }
+
+        if (typeof channel !== "string") {
+          return Response.json({ error: "channel must be a string" }, { status: 400 });
+        }
+
         server.publish(channel, JSON.stringify(message));
         const userId = channel.startsWith('user:') ? channel.slice(5) : null;
         const connections = userId ? (presence.get(userId)?.connections ?? 0) : 0;
@@ -242,6 +259,30 @@ const server = Bun.serve<WSData>({
                 isTyping: data.isTyping,
                 timestamp: new Date().toISOString(),
               }));
+            }
+            break;
+
+          case "mark_read":
+            if (data.conversationId) {
+              markConversationAsRead(
+                data.conversationId,
+                userId,
+                typeof data.messageId === "string" ? data.messageId : undefined
+              )
+                .then(async (lastReadAt) => {
+                  const participants = await getConversationParticipants(data.conversationId);
+                  const payload = JSON.stringify({
+                    type: "read_receipt",
+                    conversationId: data.conversationId,
+                    userId,
+                    lastReadAt: lastReadAt.toISOString(),
+                  });
+
+                  for (const participant of participants) {
+                    server.publish(`user:${participant.userId}`, payload);
+                  }
+                })
+                .catch(() => {});
             }
             break;
 

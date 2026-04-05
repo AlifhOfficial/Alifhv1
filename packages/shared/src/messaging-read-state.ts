@@ -4,8 +4,6 @@ export interface MessagingReadStateMessage {
   createdAt: Date | string | number | null | undefined;
 }
 
-const READ_RECEIPT_SKEW_TOLERANCE_MS = 5000;
-
 function getTimestamp(value: Date | string | number | null | undefined): number | null {
   if (value instanceof Date) {
     const time = value.getTime();
@@ -41,20 +39,7 @@ export function getLastReadOwnMessageId<T extends MessagingReadStateMessage>(
 
   if (ownMessages.length === 0) return null;
 
-  const newestOwnMessage = ownMessages[0];
-  const newestOwnTime = getTimestamp(newestOwnMessage.createdAt);
-
-  // Read receipts can be slightly behind message createdAt due to server/client clock skew.
-  if (
-    newestOwnTime !== null &&
-    newestOwnTime > otherLastReadTime &&
-    newestOwnTime - otherLastReadTime <= READ_RECEIPT_SKEW_TOLERANCE_MS
-  ) {
-    return newestOwnMessage.id;
-  }
-
   for (const message of ownMessages) {
-
     const createdAt = getTimestamp(message.createdAt);
     if (createdAt !== null && createdAt <= otherLastReadTime) {
       return message.id;

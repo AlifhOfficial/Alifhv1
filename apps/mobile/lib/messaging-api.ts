@@ -253,12 +253,13 @@ export async function sendMessage(
 /**
  * Mark conversation as read
  */
-export async function markConversationAsRead(conversationId: string): Promise<void> {
+export async function markConversationAsRead(conversationId: string, messageId?: string): Promise<void> {
   const endpoint = `/api/conversations/${conversationId}/read`;
   const url = `${API_BASE}${endpoint}`;
   const requestStartedAt = performance.now();
   const response = await messagingFetch(endpoint, {
     method: 'PATCH',
+    body: messageId ? { messageId } : {},
   });
   
   if (!response.ok) {
@@ -266,7 +267,7 @@ export async function markConversationAsRead(conversationId: string): Promise<vo
     throw new Error(error.error || 'Failed to mark as read');
   }
   await parseJsonWithPerf<unknown>('messaging.mark-read', url, response, requestStartedAt, {
-    meta: { conversationId },
+    meta: { conversationId, messageId: messageId ?? null },
   }).catch(() => ({ data: null }));
 }
 

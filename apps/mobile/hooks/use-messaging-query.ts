@@ -9,6 +9,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useCallback, useRef } from 'react';
 
 import { queryKeys } from '@/lib/query-client';
+import { useWebSocket } from '@/context/websocket-context';
 import {
   fetchConversation,
   fetchConversations,
@@ -216,6 +217,7 @@ export function useConversationsQuery(options: UseConversationsQueryOptions = {}
  */
 export function useMarkAsRead(userId?: string) {
   const queryClient = useQueryClient();
+  const { isConnected, send } = useWebSocket();
   const markedRef = useRef(new Set<string>());
 
   const mutation = useMutation({
@@ -227,7 +229,11 @@ export function useMarkAsRead(userId?: string) {
       }
 
       recentReadMarks.set(dedupeKey, Date.now());
-      await markReadApi(conversationId);
+      if (isConnected) {
+        send({ type: 'mark_read', conversationId, messageId });
+        return conversationId;
+      }
+      await markReadApi(conversationId, messageId);
       return conversationId;
     },
     onMutate: async ({ conversationId, messageId }) => {
@@ -278,9 +284,8 @@ export function useMarkAsRead(userId?: string) {
     },
     onError: (_err, variables, context) => {
       // Rollback on error
-      if (variables?.messageId) {
-        recentReadMarks.delete(`${variables.conversationId}:${variables.messageId}`);
-      }
+      const dedupeKey = variables.messageId ? `${variables.conversationId}:${variables.messageId}` : variables.conversationId;
+      recentReadMarks.delete(dedupeKey);
       if (context?.previousData) {
         queryClient.setQueryData(queryKeys.conversations(userId, 'personal'), context.previousData);
       }

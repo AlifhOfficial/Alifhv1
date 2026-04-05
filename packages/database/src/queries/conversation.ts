@@ -4,7 +4,7 @@
  */
 
 import { db } from '../index';
-import { conversation, conversationParticipant, user, carListing, partner, userProfile, partnerStaff } from '../schema';
+import { conversation, conversationParticipant, user, carListing, partner, userProfile, partnerStaff, message } from '../schema';
 import { eq, and, desc, or, sql, inArray, isNull, not } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
@@ -493,31 +493,51 @@ export async function getConversationByListing(
  */
 export async function markConversationAsRead(
   conversationId: string,
-  userId: string
-): Promise<void> {
-  const now = new Date();
-  
-  await Promise.all([
-    // Update conversation participant
+  userId: string,
+  readThroughMessageId?: string
+): Promise<Date> {
+  const fallbackNow = new Date();
+
+  const readThroughMessage = readThroughMessageId
+    ? await db
+        .select({ createdAt: message.createdAt })
+        .from(message)
+        .where(
+          and(
+            eq(message.id, readThroughMessageId),
+            eq(message.conversationId, conversationId),
+            not(eq(message.senderId, userId)),
+            eq(message.isDeleted, false)
+          )
+        )
+        .limit(1)
+    : [];
+
+  const readAt = readThroughMessage[0]?.createdAt ?? fallbackNow;
+
+  const [updatedParticipants] = await Promise.all([
     db
       .update(conversationParticipant)
       .set({
         unreadCount: 0,
-        lastReadAt: now,
+        lastReadAt: sql<Date>`GREATEST(COALESCE(${conversationParticipant.lastReadAt}, ${readAt}), ${readAt})`,
       })
       .where(
         and(
           eq(conversationParticipant.conversationId, conversationId),
           eq(conversationParticipant.userId, userId)
         )
-      ),
-    
-    // Update user's lastActiveAt
+      )
+      .returning({ lastReadAt: conversationParticipant.lastReadAt }),
+
     db
       .update(userProfile)
-      .set({ lastActiveAt: now })
+      .set({ lastActiveAt: fallbackNow })
       .where(eq(userProfile.userId, userId)),
   ]);
+
+  const updatedParticipant = updatedParticipants[0];
+  return updatedParticipant?.lastReadAt ?? readAt;
 }
 
 /**
