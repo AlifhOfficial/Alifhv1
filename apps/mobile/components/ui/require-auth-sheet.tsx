@@ -16,23 +16,23 @@ interface RequireAuthSheetProps {
 export function RequireAuthSheet({ context }: RequireAuthSheetProps) {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const { isAuthenticated, authSheetVisible, showAuthSheet } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading, authSheetVisible, showAuthSheet } = useAuth();
 
   useFocusEffect(
     useCallback(() => {
-      if (!isAuthenticated && !authSheetVisible) {
+      if (!isAuthLoading && !isAuthenticated && !authSheetVisible) {
         showAuthSheet(context);
       }
-    }, [authSheetVisible, context, isAuthenticated, showAuthSheet])
+    }, [authSheetVisible, context, isAuthLoading, isAuthenticated, showAuthSheet])
   );
 
   const handleSignInPress = () => {
-    if (!authSheetVisible) {
+    if (!isAuthLoading && !authSheetVisible) {
       showAuthSheet(context);
     }
   };
 
-  if (isAuthenticated) {
+  if (isAuthLoading || isAuthenticated) {
     return null;
   }
 

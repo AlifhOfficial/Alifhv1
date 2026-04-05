@@ -6,7 +6,7 @@
  * actions now read from the same source of truth.
  */
 
-import { useAlert } from '@/components/ui';
+import { useAlert } from '@/components/ui/themed-alert';
 import React, { createContext, useContext, useMemo, useRef, type ReactNode, useCallback, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 

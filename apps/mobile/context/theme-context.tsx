@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode, startTransition } from 'react';
-import { useColorScheme as useDeviceColorScheme, Appearance, Platform, InteractionManager } from 'react-native';
+import { useColorScheme as useDeviceColorScheme, Appearance, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as NavigationBar from 'expo-navigation-bar';
 
@@ -87,11 +87,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // PERF: Defer native calls to avoid blocking theme switch animation
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
-    let interactionTask: ReturnType<typeof InteractionManager.runAfterInteractions> | null = null;
+    let idleCallbackId: number | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     // Let the React repaint land before running native bridge work.
     const frameId = requestAnimationFrame(() => {
-      interactionTask = InteractionManager.runAfterInteractions(() => {
+      const syncNativeTheme = () => {
         if (Platform.OS === 'android') {
           // Nav bar button colors (light/dark icons) for 3-button navigation
           // Has no effect on gesture navigation - Android provides no API for that
@@ -108,12 +109,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
             Appearance.setColorScheme(themeMode);
           }
         }
-      });
+      };
+
+      if (typeof globalThis.requestIdleCallback === 'function') {
+        idleCallbackId = globalThis.requestIdleCallback(syncNativeTheme);
+      } else {
+        timeoutId = setTimeout(syncNativeTheme, 0);
+      }
     });
 
     return () => {
       cancelAnimationFrame(frameId);
-      interactionTask?.cancel();
+      if (idleCallbackId !== null && typeof globalThis.cancelIdleCallback === 'function') {
+        globalThis.cancelIdleCallback(idleCallbackId);
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [themeMode, colorScheme]);
 

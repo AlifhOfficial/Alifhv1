@@ -8,7 +8,7 @@
 import { Bubble, ConfettiBurst, HapticRefreshControl, useFavoriteActions, EmptyState } from '@/components/ui';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { 
-  View, ScrollView, StyleSheet, InteractionManager, Platform } from 'react-native';
+  View, ScrollView, StyleSheet, Platform } from 'react-native';
 import { useLocalSearchParams, Stack, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Heart, Share2, Zap, AlertCircle, FileX } from 'lucide-react-native';
@@ -41,13 +41,26 @@ export default function ListingDetailScreen() {
   useEffect(() => {
     if (!listing?.listing.id) return;
     const currentListingId = listing.listing.id;
+    let idleCallbackId: number | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-    const interaction = InteractionManager.runAfterInteractions(() => {
+    const deferReady = () => {
       setActionsReadyListingId(currentListingId);
-    });
+    };
+
+    if (typeof globalThis.requestIdleCallback === 'function') {
+      idleCallbackId = globalThis.requestIdleCallback(deferReady);
+    } else {
+      timeoutId = setTimeout(deferReady, 0);
+    }
 
     return () => {
-      interaction.cancel();
+      if (idleCallbackId !== null && typeof globalThis.cancelIdleCallback === 'function') {
+        globalThis.cancelIdleCallback(idleCallbackId);
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [listing?.listing.id]);
 

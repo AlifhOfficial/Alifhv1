@@ -17,7 +17,7 @@ import { BookingsScreen } from '@/components/bookings/bookings-screen';
 import { Colors, Spacing } from '@/constants/theme';
 
 export default function BookingsRoute() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
@@ -30,7 +30,7 @@ export default function BookingsRoute() {
     headerShown: false,
   };
 
-  if (!isAuthenticated) {
+  if (!isAuthLoading && !isAuthenticated) {
     return <RequireAuthSheet context="bookings" />;
   }
 

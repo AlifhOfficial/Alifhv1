@@ -13,7 +13,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
-import { View, LogBox, Platform, InteractionManager, AppState, Text as RNText, TextInput as RNTextInput } from 'react-native';
+import { View, LogBox, Platform, AppState, Text as RNText, TextInput as RNTextInput } from 'react-native';
 import 'react-native-reanimated';
 
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -37,7 +37,7 @@ import { SimpleAuthWelcome } from '@/components/onboarding/simple-auth-welcome';
 // Suppress warnings from third-party dependencies that can't be fixed in user code
 // Note: These warnings come from dependencies, not our code
 LogBox.ignoreLogs([
-  /SafeAreaView.*deprecated/,
+  'SafeAreaView has been deprecated and will be removed in a future release. Please use \'react-native-safe-area-context\' instead.',
   'expo-notifications: Android Push notifications',
   '`expo-notifications` functionality is not fully supported in Expo Go',
 ]);
@@ -177,17 +177,29 @@ function RootLayoutNav() {
     // Set immediately on mount to avoid flash, then update when theme changes
     SystemUI.setBackgroundColorAsync(Colors.dark.black).catch(() => {});
 
-    let interactionTask: ReturnType<typeof InteractionManager.runAfterInteractions> | null = null;
+    let idleCallbackId: number | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const frameId = requestAnimationFrame(() => {
-      interactionTask = InteractionManager.runAfterInteractions(() => {
+      const applyBackground = () => {
         SystemUI.setBackgroundColorAsync(colors.background).catch(() => {});
-      });
+      };
+
+      if (typeof globalThis.requestIdleCallback === 'function') {
+        idleCallbackId = globalThis.requestIdleCallback(applyBackground);
+      } else {
+        timeoutId = setTimeout(applyBackground, 0);
+      }
     });
 
     return () => {
       cancelAnimationFrame(frameId);
-      interactionTask?.cancel();
+      if (idleCallbackId !== null && typeof globalThis.cancelIdleCallback === 'function') {
+        globalThis.cancelIdleCallback(idleCallbackId);
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [colors.background]);
   

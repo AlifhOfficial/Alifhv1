@@ -15,7 +15,7 @@
 
 import { Text, HapticPressable, Skeleton, BlkBadge } from '@/components/ui';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { InteractionManager, StyleSheet, View, Platform, Clipboard } from 'react-native';
+import { StyleSheet, View, Platform, Clipboard } from 'react-native';
 import Animated, {
   FadeInDown,
 } from 'react-native-reanimated';
@@ -170,12 +170,26 @@ export const CarCardDetailedM = memo(function CarCardDetailedM({
   }, [listing.vin]);
 
   useEffect(() => {
-    const interaction = InteractionManager.runAfterInteractions(() => {
+    let idleCallbackId: number | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    const deferSections = () => {
       setDeferredSectionsListingId(listing.id);
-    });
+    };
+
+    if (typeof globalThis.requestIdleCallback === 'function') {
+      idleCallbackId = globalThis.requestIdleCallback(deferSections);
+    } else {
+      timeoutId = setTimeout(deferSections, 0);
+    }
 
     return () => {
-      interaction.cancel();
+      if (idleCallbackId !== null && typeof globalThis.cancelIdleCallback === 'function') {
+        globalThis.cancelIdleCallback(idleCallbackId);
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [listing.id]);
 

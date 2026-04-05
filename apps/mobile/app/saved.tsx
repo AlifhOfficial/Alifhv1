@@ -28,7 +28,7 @@ import { consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 export default function SavedScreen() {
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
   const router = useRouter();
@@ -94,12 +94,12 @@ export default function SavedScreen() {
     headerShown: false,
   };
 
-  if (!isAuthenticated) {
+  if (!isAuthLoading && !isAuthenticated) {
     return <RequireAuthSheet context="saved" />;
   }
 
   // Loading state
-  if (isLoading && currentListings.length === 0) {
+  if ((isAuthLoading || isLoading) && currentListings.length === 0) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Stack.Screen options={{ ...nativeHeaderOptions, title: 'Saved', headerTintColor: colors.label }} />

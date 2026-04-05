@@ -43,7 +43,7 @@ export default function MessagesScreen() {
   const colors = Colors[colorScheme];
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
   const listRef = useRef<FlatList<ListItem>>(null);
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = React.useState(false);
 
@@ -194,7 +194,7 @@ export default function MessagesScreen() {
 
   // ── Empty / loading / error component for FlatList ──────────
   const renderEmpty = useCallback(() => {
-    if ((isLoading || isRefreshing) && conversations.length === 0) {
+    if ((isAuthLoading || isLoading || isRefreshing) && conversations.length === 0) {
       return (
         <View style={styles.skeletonList}>
           {Array.from({ length: 6 }).map((_, i) => (
@@ -232,7 +232,7 @@ export default function MessagesScreen() {
         style={styles.emptyState}
       />
     );
-  }, [isLoading, isRefreshing, conversations.length, error]);
+  }, [isAuthLoading, isLoading, isRefreshing, conversations.length, error]);
 
   const headerInset = getMobileHeaderContentInset(insets.top);
   const tabBarInset = getTabBarContentInset(insets.bottom);
@@ -248,7 +248,7 @@ export default function MessagesScreen() {
     return unsubscribe;
   }, [subscribeToScrollToTop]);
 
-  if (!isAuthenticated) {
+  if (!isAuthLoading && !isAuthenticated) {
     return <RequireAuthSheet context="messages" />;
   }
 

@@ -30,7 +30,7 @@ import {
 
 export default function ProfileScreen() {
   const colors = useProfileColors();
-  const { user, isAuthenticated, refreshSession, signOut } = useAuth();
+  const { user, isAuthenticated, isLoading: isAuthLoading, refreshSession, signOut } = useAuth();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { showAlert } = useAlert();
@@ -140,12 +140,12 @@ export default function ProfileScreen() {
   const nativeHeaderOptions = {
     headerShown: false,
   };
-  if (!isAuthenticated) {
+  if (!isAuthLoading && !isAuthenticated) {
     return <RequireAuthSheet context="profile" />;
   }
 
   // Loading state — skeleton
-  if (isLoading) {
+  if (isAuthLoading || isLoading) {
     return (
       <>
         <Stack.Screen

@@ -25,7 +25,7 @@ import {
 
 export default function SettingsScreen() {
   const colors = useSettingsColors();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth();
   const insets = useSafeAreaInsets();
   const headerInset = getMobileHeaderContentInset(insets.top);
   const router = useRouter();
@@ -53,11 +53,11 @@ export default function SettingsScreen() {
     Linking.openURL('https://revvup.ae/contact');
   }, []);
 
-  if (!isAuthenticated) {
+  if (!isAuthLoading && !isAuthenticated) {
     return <RequireAuthSheet context="profile" />;
   }
 
-  if (isLoading) {
+  if (isAuthLoading || isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}> 
         <MobileHeader title="Settings" showBackButton />

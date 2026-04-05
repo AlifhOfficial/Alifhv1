@@ -9,7 +9,7 @@ import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/context/theme-context';
 
 export default function InventoryRoute() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { colorScheme } = useTheme();
   const colors = Colors[colorScheme];
   const [isHeaderTitleHidden, setIsHeaderTitleHidden] = useState(false);
@@ -18,7 +18,7 @@ export default function InventoryRoute() {
     setIsHeaderTitleHidden(event.nativeEvent.contentOffset.y > Spacing.lg);
   }, []);
 
-  if (!isAuthenticated) {
+  if (!isAuthLoading && !isAuthenticated) {
     return <RequireAuthSheet context="listings" />;
   }
 
