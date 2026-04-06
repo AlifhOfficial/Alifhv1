@@ -17,9 +17,7 @@ interface MessageBubbleProps {
   message: Message;
   isOwn: boolean;
   showAvatar?: boolean;
-  isReadByOther?: boolean;
   showSeen?: boolean;
-  seenAt?: Date | string | null;
   otherUserAvatar?: string | null;
   otherUserName?: string | null;
   listing?: { id: string; title: string; thumbnail: string | null };
@@ -31,9 +29,7 @@ export function MessageBubble({
   message,
   isOwn,
   showAvatar = true,
-  isReadByOther: _isReadByOther = false,
   showSeen = false,
-  seenAt: _seenAt,
   otherUserAvatar,
   otherUserName,
   listing,

@@ -10,7 +10,7 @@ import { useWebSocket } from './use-websocket';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { queryKeys } from '@/lib/query-keys';
 import {
-  MESSAGING_CACHE_STALE_TIME_MS,
+  MESSAGING_MESSAGES_CACHE_STALE_TIME_MS,
   MESSAGING_CACHE_GC_TIME_MS,
   MESSAGING_MESSAGES_PAGE_SIZE,
 } from '@alifh/shared';
@@ -194,11 +194,16 @@ interface UseMessagesOptions {
   otherUserId?: string | null;
   initialLastReadAt?: Date | string | null;
   initialLastSeenAt?: Date | string | null;
+  /** Unread count from conversation - used to detect if thread is behind server */
+  unreadCount?: number;
+  /** Last message timestamp from conversation - used to detect if thread is behind server */
+  lastMessageAt?: string | Date | null;
 }
 
 export function useMessages(conversationId: string, userId?: string, options: UseMessagesOptions = {}) {
   const queryClient = useQueryClient();
   const { subscribe, send, isConnected } = useWebSocket();
+  const lastRefreshRef = useRef<number>(0);
 
   // Presence state (typing + online + lastRead)
   const [isOtherTyping, setIsOtherTyping] = useState(false);
@@ -268,7 +273,7 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     // WS drives live updates — only refetch when data is older than 30s.
     // This prevents redundant fetches while keeping a safety-net refetch on
     // tab focus / reconnect for the case where WS missed events.
-    staleTime: MESSAGING_CACHE_STALE_TIME_MS,
+    staleTime: MESSAGING_MESSAGES_CACHE_STALE_TIME_MS,
     gcTime: MESSAGING_CACHE_GC_TIME_MS,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
@@ -289,6 +294,38 @@ export function useMessages(conversationId: string, userId?: string, options: Us
       }
     }
   }, [firstPageLastReadAt]);
+
+  // Check if thread is behind server state (unread messages or newer messages exist)
+  const isThreadBehind = useCallback(() => {
+    // If there are unread messages, we're behind
+    if ((options.unreadCount ?? 0) > 0) return true;
+    
+    // If lastMessageAt is provided and newer than our newest loaded message, we're behind
+    if (options.lastMessageAt && query.data?.pages[0]?.messages.length) {
+      const newestLoadedMsg = query.data.pages[0].messages[0];
+      const newestLoadedTime = new Date(newestLoadedMsg.createdAt).getTime();
+      const lastServerTime = new Date(options.lastMessageAt).getTime();
+      if (lastServerTime > newestLoadedTime) return true;
+    }
+    
+    return false;
+  }, [options.lastMessageAt, options.unreadCount, query.data]);
+
+  // Metadata-based refetch: force fresh fetch if thread is behind server state
+  // This prevents false cache reuse when WS missed events while thread was closed
+  useEffect(() => {
+    if (!conversationId || !userId || query.isLoading) return;
+    
+    // Only check periodically to avoid excessive refetches
+    const now = Date.now();
+    if (now - lastRefreshRef.current < 1000) return; // Max once per second
+    
+    if (isThreadBehind()) {
+      lastRefreshRef.current = now;
+      // Force refetch even if data is fresh in cache
+      void query.refetch();
+    }
+  }, [conversationId, userId, query.isLoading, isThreadBehind, query]);
 
   // Watch presence for other user
   useEffect(() => {

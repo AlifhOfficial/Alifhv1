@@ -59,6 +59,8 @@ export function FloatingChatWindow({
     otherParticipant: otherParticipant || undefined,
     listing: listing || undefined,
     myLastReadAt: conversation.myLastReadAt,
+    unreadCount: conversation.unreadCount,
+    lastMessageAt: conversation.lastMessageAt,
     active: !isMinimized,
   });
 

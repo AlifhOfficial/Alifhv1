@@ -14,7 +14,7 @@ import {
 import { getAvatarUrl , consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
 import {
-  MESSAGING_CACHE_STALE_TIME_MS,
+  MESSAGING_MESSAGES_CACHE_STALE_TIME_MS,
   MESSAGING_CACHE_GC_TIME_MS,
   MESSAGING_MESSAGES_PAGE_SIZE,
 } from '@alifh/shared';
@@ -27,6 +27,10 @@ interface UseMessagesOptions {
   enabled?: boolean;
   /** Initial lastSeenAt from conversation snapshot (DB) - used before WS responds */
   initialLastSeenAt?: string | null;
+  /** Unread count from conversation - used to detect if thread is behind server */
+  unreadCount?: number;
+  /** Last message timestamp from conversation - used to detect if thread is behind server */
+  lastMessageAt?: string | null;
 }
 
 interface UseMessagesReturn {
@@ -73,6 +77,8 @@ export function useMessages({
   isAuthenticated,
   enabled = true,
   initialLastSeenAt,
+  unreadCount = 0,
+  lastMessageAt,
 }: UseMessagesOptions): UseMessagesReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -100,6 +106,8 @@ export function useMessages({
   const lastTypingSentRef = useRef(0);
   const watchingRef = useRef(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const lastRefreshRef = useRef<number>(0);
+  const lastFetchedCacheKeyRef = useRef<string | null>(null);
   
   // Track pending sends: tempId -> true (waiting for API) or realId (WS arrived first)
   // This prevents race conditions when WS and API responses arrive out of order
@@ -120,6 +128,9 @@ export function useMessages({
 
   // Persist latest thread snapshot into shared cache.
   useEffect(() => {
+    // Only write cache after a successful fetch for this exact key.
+    // Prevents open-time races writing transient empty state.
+    if (lastFetchedCacheKeyRef.current !== cacheKey) return;
     if (!isAuthenticated || !enabled || isLoading) return;
     pruneMessagesCache();
     messagesCache.set(cacheKey, {
@@ -367,6 +378,10 @@ export function useMessages({
             count: messagesWithUrls.length,
           });
         }
+
+        if (!cursor) {
+          lastFetchedCacheKeyRef.current = cacheKey;
+        }
         
         setHasMore(data.hasMore);
         setNextCursor(data.nextCursor);
@@ -382,8 +397,38 @@ export function useMessages({
         }
       }
     },
-    [conversationId, dedupeMessages, isAuthenticated, enabled]
+    [cacheKey, conversationId, dedupeMessages, isAuthenticated, enabled]
   );
+
+  // Check if thread is behind server state (unread messages or newer messages exist)
+  const isThreadBehind = useCallback(() => {
+    // If there are unread messages, we're behind
+    if (unreadCount > 0) return true;
+    
+    // If lastMessageAt is provided and newer than our newest loaded message, we're behind
+    if (lastMessageAt && messages.length > 0) {
+      const newestLoadedTime = new Date(messages[0].createdAt).getTime();
+      const lastServerTime = new Date(lastMessageAt).getTime();
+      if (lastServerTime > newestLoadedTime) return true;
+    }
+    
+    return false;
+  }, [lastMessageAt, messages, unreadCount]);
+
+  // Metadata-based refetch: force fresh fetch if thread is behind server state
+  // This prevents false cache reuse when WS missed events while thread was closed
+  useEffect(() => {
+    if (!isAuthenticated || !enabled || isLoading || !messages.length) return;
+    
+    // Only check periodically to avoid excessive refetches
+    const now = Date.now();
+    if (now - lastRefreshRef.current < 1000) return; // Max once per second
+    
+    if (isThreadBehind()) {
+      lastRefreshRef.current = now;
+      void loadMessages(); // Force fresh fetch
+    }
+  }, [isAuthenticated, enabled, isLoading, messages, isThreadBehind, loadMessages]);
 
   // Load on conversation change or initial mount (web-like staleTime/gcTime behavior)
   useEffect(() => {
@@ -399,9 +444,10 @@ export function useMessages({
         setOtherLastSeenAt(cached.otherLastSeenAt ?? initialLastSeenAtRef.current);
         setIsLoading(false);
 
-        const isFresh = Date.now() - cached.updatedAt < MESSAGING_CACHE_STALE_TIME_MS;
+        const isFresh = Date.now() - cached.updatedAt < MESSAGING_MESSAGES_CACHE_STALE_TIME_MS;
         if (!isFresh) {
           // Stale-while-revalidate: show cache now, refresh in background.
+          lastRefreshRef.current = Date.now();
           void loadMessages();
         }
       } else {

@@ -12,7 +12,13 @@ import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { useConversations, type Conversation } from '@/hooks/messaging';
 import { MESSAGING_CONVERSATIONS_PAGE_SIZE } from '@alifh/shared';
-// Union of the two shapes that can appear as a group "user"
+import { cn } from '@/utils/cn';
+import { formatDistanceToNow } from 'date-fns';
+import Link from 'next/link';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type Scope = 'personal' | 'staff';
 type NavGroupUser = NonNullable<Conversation['partner']> | NonNullable<Conversation['otherParticipant']>;
 
 type NavGroup = {
@@ -20,9 +26,6 @@ type NavGroup = {
   isPartner: boolean;
   conversations: Conversation[];
 };
-import { cn } from '@/utils/cn';
-import { formatDistanceToNow } from 'date-fns';
-import Link from 'next/link';
 
 interface NavbarMessagingProps {
   userId?: string;
@@ -31,16 +34,28 @@ interface NavbarMessagingProps {
 
 export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [scope, setScope] = useState<Scope>('personal');
   const router = useRouter();
 
-  const { conversations: allConversations, isLoading } = useConversations({
+  const { conversations: personalConversations, isLoading: isLoadingPersonal } = useConversations({
     userId,
     scope: 'personal',
-    limit: MESSAGING_CONVERSATIONS_PAGE_SIZE,
+    limit: MESSAGING_CONVERSATIONS_PAGE_SIZE * 2,
     enabled: !!userId,
   });
 
-  const hasUnread = allConversations.some((c) => c.unreadCount > 0);
+  const { conversations: staffConversations, isLoading: isLoadingStaff } = useConversations({
+    userId,
+    scope: 'staff',
+    limit: MESSAGING_CONVERSATIONS_PAGE_SIZE * 2,
+    enabled: !!userId,
+  });
+
+  const allConversations = scope === 'personal' ? personalConversations : staffConversations;
+  const isLoading = scope === 'personal' ? isLoadingPersonal : isLoadingStaff;
+  const personalUnread = personalConversations.reduce((sum, c) => sum + c.unreadCount, 0);
+  const staffUnread = staffConversations.reduce((sum, c) => sum + c.unreadCount, 0);
+
   const conversations = allConversations
     .filter((c) => c.messageCount > 0)
     .sort(
@@ -48,6 +63,36 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
         new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
     )
     .slice(0, 5);
+
+  const groups = Object.values(
+    conversations.reduce((acc, conv) => {
+      const isStaffScope = scope === 'staff';
+      const groupUser = isStaffScope ? conv.otherParticipant : (conv.partner ?? conv.otherParticipant);
+      const key = groupUser?.id || 'unknown';
+
+      if (!acc[key]) {
+        acc[key] = {
+          user: groupUser as NavGroupUser | null,
+          isPartner: !isStaffScope && !!conv.partner,
+          conversations: [],
+        };
+      }
+      acc[key].conversations.push(conv);
+      return acc;
+    }, {} as Record<string, NavGroup>)
+  )
+    .map((group) => ({
+      ...group,
+      conversations: [...group.conversations].sort(
+        (a, b) =>
+          new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
+      ),
+    }))
+    .sort((a, b) => {
+      const aLatest = a.conversations[0]?.lastMessageAt;
+      const bLatest = b.conversations[0]?.lastMessageAt;
+      return new Date(String(bLatest ?? 0)).getTime() - new Date(String(aLatest ?? 0)).getTime();
+    });
 
   useEffect(() => {
     if (!isOpen) return;
@@ -68,33 +113,15 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const handleOpenChat = useCallback((conversation: Conversation) => {
     setIsOpen(false);
     if (onOpenChat) { onOpenChat(conversation); return; }
-    router.push(`/user-dashboard/messaging?conversationId=${conversation.id}`);
-  }, [onOpenChat, router]);
-
-  const groups = Object.values(
-    conversations.reduce((acc, conv) => {
-      const key = conv.partner?.id || conv.otherParticipant?.id || 'unknown';
-      if (!acc[key]) {
-        acc[key] = { user: (conv.partner ?? conv.otherParticipant) as NavGroupUser | null, isPartner: !!conv.partner, conversations: [] };
-      }
-      acc[key].conversations.push(conv);
-      return acc;
-    }, {} as Record<string, NavGroup>)
-  )
-    .map((group) => ({
-      ...group,
-      conversations: [...group.conversations].sort(
-        (a, b) =>
-          new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
-      ),
-    }))
-    .sort((a, b) => {
-      const aLatest = a.conversations[0]?.lastMessageAt;
-      const bLatest = b.conversations[0]?.lastMessageAt;
-      return new Date(String(bLatest ?? 0)).getTime() - new Date(String(aLatest ?? 0)).getTime();
-    });
+    const messagingBasePath = scope === 'staff'
+      ? '/staff-dashboard/messaging'
+      : '/user-dashboard/messaging';
+    router.push(`${messagingBasePath}?conversationId=${conversation.id}`);
+  }, [onOpenChat, router, scope]);
 
   if (!userId) return null;
+
+  const displayUnread = personalUnread + staffUnread;
 
   return (
     <div className="relative hidden sm:block" data-messaging-dropdown>
@@ -104,20 +131,54 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
         aria-label="Messages"
       >
         <MessageCircle className="size-4" />
-        {hasUnread && (
-          <span className="absolute top-1 right-1 size-2.5 rounded-full bg-favorite border-2 border-background" />
+        {displayUnread > 0 && (
+          <span className="absolute top-0 right-0 flex items-center justify-center min-w-5 h-5 px-1 bg-favorite text-primary-foreground text-caption2 font-semibold rounded-full border-2 border-background tabular-nums">
+            {displayUnread > 9 ? '9+' : displayUnread}
+          </span>
         )}
       </button>
 
       {isOpen && <div className="fixed inset-0 z-[60]" onClick={() => setIsOpen(false)} />}
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-3 w-96 bg-sidebar border border-sidebar-border rounded-2xl shadow-2xl z-[70] overflow-hidden">
-          <div className="px-4 py-3.5 border-b border-sidebar-border">
-            <h3 className="text-subhead font-semibold text-sidebar-foreground">Messages</h3>
+        <div className="absolute right-0 top-full mt-3 w-96 bg-sidebar border border-sidebar-border rounded-2xl shadow-2xl z-[70] overflow-hidden flex flex-col">
+          {/* Tabs */}
+          <div className="flex border-b border-sidebar-border">
+            <button
+              onClick={() => setScope('personal')}
+              className={cn(
+                'flex-1 px-4 py-3 text-subhead font-semibold transition-colors inline-flex items-center justify-center gap-1.5',
+                scope === 'personal'
+                  ? 'text-sidebar-foreground border-b-2 border-sidebar-border'
+                  : 'text-sidebar-foreground/60 hover:text-sidebar-foreground/80'
+              )}
+            >
+              Personal
+              {personalUnread > 0 && (
+                <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 bg-favorite text-primary-foreground text-caption2 font-semibold rounded-full tabular-nums">
+                  {personalUnread > 9 ? '9+' : personalUnread}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setScope('staff')}
+              className={cn(
+                'flex-1 px-4 py-3 text-subhead font-semibold transition-colors inline-flex items-center justify-center gap-1.5',
+                scope === 'staff'
+                  ? 'text-sidebar-foreground border-b-2 border-sidebar-border'
+                  : 'text-sidebar-foreground/60 hover:text-sidebar-foreground/80'
+              )}
+            >
+              Staff
+              {staffUnread > 0 && (
+                <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 bg-favorite text-primary-foreground text-caption2 font-semibold rounded-full tabular-nums">
+                  {staffUnread > 9 ? '9+' : staffUnread}
+                </span>
+              )}
+            </button>
           </div>
 
-          <div className="max-h-[400px] overflow-y-auto">
+          <div className="max-h-[400px] overflow-y-auto flex-1">
             {isLoading ? (
               <div className="flex items-center justify-center py-14">
                 <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
@@ -138,7 +199,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
 
           <div className="border-t border-sidebar-border">
             <Link
-              href="/user-dashboard/messaging"
+              href={scope === 'staff' ? '/staff-dashboard/messaging' : '/user-dashboard/messaging'}
               onClick={() => setIsOpen(false)}
               className="flex items-center justify-center gap-1.5 px-4 py-3.5 text-subhead font-semibold text-primary hover:bg-sidebar-accent transition-colors"
             >
@@ -180,11 +241,6 @@ function GroupRow({ group, onSelect }: GroupRowProps) {
           ) : (
             <UserAvatar src={(user as NonNullable<Conversation['otherParticipant']>)?.avatarUrl} name={displayName} size="md" className="w-9 h-9" />
           )}
-          {totalUnread > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-favorite text-primary-foreground border-2 border-sidebar inline-flex items-center justify-center text-caption2 font-semibold leading-none tabular-nums">
-              {totalUnread > 99 ? '99' : totalUnread}
-            </span>
-          )}
           {isOnline && (
             <span className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full border-2 border-sidebar bg-success" />
           )}
@@ -198,6 +254,11 @@ function GroupRow({ group, onSelect }: GroupRowProps) {
         </span>
 
         <div className="flex items-center gap-2 flex-shrink-0">
+          {totalUnread > 0 && (
+            <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-favorite text-primary-foreground text-caption2 font-semibold leading-none tabular-nums">
+              {totalUnread > 9 ? '9+' : totalUnread}
+            </span>
+          )}
           <ChevronRight className={cn(
             'w-4 h-4 text-muted-foreground/40 transition-transform',
             isExpanded && 'rotate-90'
@@ -237,12 +298,19 @@ function NestedItem({ conversation, onClick }: { conversation: Conversation; onC
       )}
     >
       <div className="flex items-center justify-between gap-2 mb-0.5">
-        <span className={cn(
-          'text-footnote truncate',
-          hasUnread ? 'font-semibold text-sidebar-foreground' : 'font-medium text-sidebar-foreground/80'
-        )}>
-          {listing?.title || 'General'}
-        </span>
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          <span className={cn(
+            'text-footnote truncate',
+            hasUnread ? 'font-semibold text-sidebar-foreground' : 'font-medium text-sidebar-foreground/80'
+          )}>
+            {listing?.title || 'General'}
+          </span>
+          {hasUnread && (
+            <span className="inline-flex items-center justify-center px-1.5 py-0.5 bg-favorite text-primary-foreground text-caption2 font-semibold rounded-full flex-shrink-0 tabular-nums">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
+        </div>
         {lastMessageDate && (
           <span className="text-caption2 text-muted-foreground flex-shrink-0">
             {formatDistanceToNow(lastMessageDate, { addSuffix: false })}

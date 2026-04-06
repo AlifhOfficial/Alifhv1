@@ -15,7 +15,7 @@ import { getAvatarUrl , consumeDataReady, scheduleRenderPerf } from '@/lib/confi
 import { useWebSocket } from '@/context/websocket-context';
 import { isConversationActive } from './active-conversations';
 import {
-  MESSAGING_CACHE_STALE_TIME_MS,
+  MESSAGING_CONVERSATIONS_CACHE_STALE_TIME_MS,
   MESSAGING_CACHE_GC_TIME_MS,
   MESSAGING_CONVERSATIONS_PAGE_SIZE,
 } from '@alifh/shared';
@@ -67,6 +67,7 @@ export function useConversations({
   const abortControllerRef = useRef<AbortController | null>(null);
   const watchedUsersRef = useRef<Set<string>>(new Set());
   const loadConversationsRef = useRef<(() => Promise<void>) | null>(null);
+  const lastFetchedCacheKeyRef = useRef<string | null>(null);
   const cacheKey = useMemo(
     () => `${scope ?? 'personal'}:${userId ?? 'anon'}`,
     [scope, userId]
@@ -80,6 +81,9 @@ export function useConversations({
 
   // Persist latest conversations snapshot into shared cache.
   useEffect(() => {
+    // Only write cache after a successful fetch for this exact key.
+    // Prevents open-time races writing transient empty state.
+    if (lastFetchedCacheKeyRef.current !== cacheKey) return;
     if (!isAuthenticated || isLoading) return;
     pruneConversationsCache();
     conversationsCache.set(cacheKey, {
@@ -299,6 +303,7 @@ export function useConversations({
         scope: scope ?? 'personal',
         count: filteredConversations.length,
       });
+      lastFetchedCacheKeyRef.current = cacheKey;
     } catch (err) {
       // Don't set error for aborted requests
       if (controller.signal.aborted) return;
@@ -311,7 +316,7 @@ export function useConversations({
         setIsRefreshing(false);
       }
     }
-  }, [isAuthenticated, scope]);
+  }, [cacheKey, isAuthenticated, scope]);
 
   // Keep loadConversations ref up to date for WS handler
   useEffect(() => {
@@ -334,7 +339,7 @@ export function useConversations({
         setConversations(cached.conversations);
         setIsLoading(false);
 
-        const isFresh = Date.now() - cached.updatedAt < MESSAGING_CACHE_STALE_TIME_MS;
+        const isFresh = Date.now() - cached.updatedAt < MESSAGING_CONVERSATIONS_CACHE_STALE_TIME_MS;
         if (!isFresh) {
           // Stale-while-revalidate: show cache now, refresh in background.
           void loadConversations();

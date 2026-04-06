@@ -259,9 +259,6 @@ export function ConversationList({
         <div className="flex items-center justify-between mb-2.5 sm:mb-3">
           <h1 className="text-callout sm:text-headline font-semibold text-foreground">Messages</h1>
           <div className="flex items-center gap-2 sm:gap-3">
-            {totalUnread > 0 && (
-              <span className="w-2 h-2 bg-red-500 rounded-full" />
-            )}
             <button
               onClick={() => onListToggle(false)}
               className={cn(

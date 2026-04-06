@@ -67,6 +67,10 @@ interface UseChatThreadControllerOptions {
   listing?: ChatThreadListing;
   myLastReadAt?: Date | string | null;
   active?: boolean;
+  /** Unread count from conversation - used to detect if thread is behind server */
+  unreadCount?: number;
+  /** Last message timestamp from conversation - used to detect if thread is behind server */
+  lastMessageAt?: Date | string | null;
 }
 
 export function useChatThreadController({
@@ -76,6 +80,8 @@ export function useChatThreadController({
   listing,
   myLastReadAt,
   active = true,
+  unreadCount,
+  lastMessageAt,
 }: UseChatThreadControllerOptions): ChatThreadController {
   const {
     messages,
@@ -93,6 +99,8 @@ export function useChatThreadController({
     initialLastReadAt: otherParticipant?.lastReadAt ?? null,
     initialLastSeenAt: otherParticipant?.lastSeenAt ?? null,
     otherUserId: otherParticipant?.id ?? null,
+    unreadCount,
+    lastMessageAt,
   });
 
   const { sendMessage, isSending } = useSendMessage();
@@ -361,7 +369,6 @@ export function ChatThread({
               const nextMessage = arr[index + 1];
               const showAvatar = !nextMessage || nextMessage.senderId !== message.senderId;
               const isOwn = message.senderId === userId;
-              const isReadByOther = isOwn && otherLastReadAt ? messageDate <= otherLastReadAt : false;
               const showSeen = isOwn && message.id === lastReadMsgId;
 
               return (
@@ -383,9 +390,7 @@ export function ChatThread({
                     message={message}
                     isOwn={isOwn}
                     showAvatar={showAvatar}
-                    isReadByOther={isReadByOther}
                     showSeen={showSeen}
-                    seenAt={otherLastReadAt}
                     otherUserAvatar={otherParticipant?.avatarUrl ?? null}
                     otherUserName={otherParticipant?.name ?? null}
                     compact={compact}

@@ -45,6 +45,7 @@ import { useMemo, useState, useEffect, type ComponentType } from "react";
 import { UserAvatar } from "@/components/ui/data-display/user-avatar";
 import { BrandAvatar } from "@/components/partner/car-dealer/ui/brand-avatar";
 import { useAuth } from "@/providers/auth-provider";
+import { useConversations } from "@/hooks/messaging";
 import { SupportModal } from "@/components/shared/support/support-modal";
 import { handleSignOut } from '@/lib/auth/sign-out';
 import {
@@ -372,6 +373,15 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
   }, [staffOverride?.displayName, firstName, lastName, user.name]);
 
   const isStaffMode = Boolean(staffOverride?.companyLogo);
+  const messagingScope: 'personal' | 'staff' = pathname.startsWith('/staff-dashboard') ? 'staff' : 'personal';
+
+  const { totalUnread: messagingUnreadCount } = useConversations({
+    userId: user.id ?? undefined,
+    scope: messagingScope,
+    enabled: !!user.id,
+  });
+
+  const formattedMessagingUnread = messagingUnreadCount > 9 ? '9+' : String(messagingUnreadCount);
 
   return (
     <>
@@ -410,6 +420,11 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                                 <SidebarMenuSubButton asChild isActive={isActive} className={`font-medium tracking-tight ${isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'hover:bg-sidebar-accent/50'}`}>
                                   <Link href={item.href}>
                                     <span>{item.label}</span>
+                                    {item.href.includes('/messaging') && messagingUnreadCount > 0 && (
+                                      <span className="ml-2 inline-flex min-w-5 h-5 items-center justify-center rounded-full bg-favorite px-1.5 text-caption2 font-semibold text-primary-foreground tabular-nums">
+                                        {formattedMessagingUnread}
+                                      </span>
+                                    )}
                                   </Link>
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
@@ -452,6 +467,11 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                           <Link href={item.href}>
                             {Icon && <Icon className="size-4" />}
                             <span>{item.label}</span>
+                            {item.href.includes('/messaging') && messagingUnreadCount > 0 && (
+                              <span className="ml-auto inline-flex min-w-5 h-5 items-center justify-center rounded-full bg-favorite px-1.5 text-caption2 font-semibold text-primary-foreground tabular-nums">
+                                {formattedMessagingUnread}
+                              </span>
+                            )}
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>

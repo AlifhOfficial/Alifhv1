@@ -9,7 +9,6 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router/tabs';
 import { usePathname } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Store, MessageCircle, LayoutGrid } from 'lucide-react-native';
@@ -24,8 +23,8 @@ import Animated, {
 import { useTheme } from '@/context/theme-context';
 import { useAuth, type AuthSheetContext } from '@/context/auth-context';
 import { useSearch } from '@/context/search-context';
+import { useConversations } from '@/components/messages/hooks/useConversations';
 import { nativeSheetVisibility } from '@/lib/native-sheet-visibility';
-import { queryKeys } from '@/lib/query-client';
 import { AppFontFamilies, BorderWidths, Colors, Radius, Shadows, Sizes, Spacing, Typography, ZIndex } from '@/constants/theme';
 
 type TabConfigItem = {
@@ -209,35 +208,14 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     [chipActiveContent],
   );
 
-  const conversationsQueryKey = React.useMemo(
-    () => queryKeys.conversations(user?.id, 'personal'),
-    [user?.id]
-  );
-
-  const { data: cachedConversationsData } = useQuery<{
-    conversations?: { unreadCount?: number }[];
-    totalUnread?: number;
-  }>({
-    queryKey: conversationsQueryKey,
-    queryFn: async () => ({ conversations: [], totalUnread: 0 }),
-    enabled: false,
-    staleTime: Infinity,
+  // Mobile tabs only show user chats (personal scope), never staff.
+  const { totalUnread: personalUnreadChats } = useConversations({
+    isAuthenticated,
+    userId: user?.id,
+    scope: 'personal',
   });
 
-  const unreadChats = React.useMemo(() => {
-    if (!isAuthenticated) return 0;
-    if (typeof cachedConversationsData?.totalUnread === 'number') {
-      return cachedConversationsData.totalUnread;
-    }
-    return (cachedConversationsData?.conversations ?? []).reduce(
-      (sum, c) => sum + (c.unreadCount ?? 0),
-      0
-    );
-  }, [
-    cachedConversationsData?.conversations,
-    cachedConversationsData?.totalUnread,
-    isAuthenticated,
-  ]);
+  const unreadChats = isAuthenticated ? personalUnreadChats : 0;
 
   React.useEffect(() => {
     const activeLayout = chipLayouts[state.index];

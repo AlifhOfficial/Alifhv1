@@ -29,6 +29,7 @@ interface ChatWindowProps {
   listing?: { id: string; title: string; thumbnail: string | null };
   unreadCount?: number;
   myLastReadAt?: Date | string | null;
+  lastMessageAt?: Date | string | null;
   onBack?: () => void;
   className?: string;
 }
@@ -41,6 +42,8 @@ export function ChatWindow({
   partner,
   listing,
   myLastReadAt,
+  unreadCount,
+  lastMessageAt,
   onBack,
   className,
 }: ChatWindowProps) {
@@ -50,6 +53,8 @@ export function ChatWindow({
     otherParticipant,
     listing,
     myLastReadAt,
+    unreadCount,
+    lastMessageAt,
   });
 
   // Display

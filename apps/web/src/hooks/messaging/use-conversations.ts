@@ -10,7 +10,7 @@ import { useWebSocket } from './use-websocket';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { isConversationActive } from './active-conversations';
 import {
-  MESSAGING_CACHE_STALE_TIME_MS,
+  MESSAGING_CONVERSATIONS_CACHE_STALE_TIME_MS,
   MESSAGING_CACHE_GC_TIME_MS,
   MESSAGING_CONVERSATIONS_PAGE_SIZE,
 } from '@alifh/shared';
@@ -146,7 +146,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
     initialPageParam: 0,
     enabled: !!options.userId && enabled,
     // WS drives live updates — only refetch when data is older than 30s.
-    staleTime: MESSAGING_CACHE_STALE_TIME_MS,
+    staleTime: MESSAGING_CONVERSATIONS_CACHE_STALE_TIME_MS,
     gcTime: MESSAGING_CACHE_GC_TIME_MS,
     refetchOnWindowFocus: true,
     refetchOnMount: true,

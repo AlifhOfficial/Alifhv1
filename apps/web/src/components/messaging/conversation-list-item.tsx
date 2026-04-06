@@ -112,16 +112,24 @@ export function ConversationListItem({
 
         {/* Content */}
         <div className="flex-1 min-w-0 overflow-hidden">
-          <div className="flex items-center justify-between mb-0.5 overflow-hidden">
-            <h3
-              className={cn(
-                'text-subhead font-bold truncate flex-1',
-                unreadCount > 0 ? 'text-foreground' : 'text-foreground/90'
+          <div className="flex items-center justify-between mb-0.5 overflow-hidden gap-2">
+            <div className="flex items-center gap-1.5 min-w-0 flex-1">
+              <h3
+                className={cn(
+                  'text-subhead font-bold truncate flex-1',
+                  unreadCount > 0 ? 'text-foreground' : 'text-foreground/90'
+                )}
+              >
+                {displayName}
+              </h3>
+              {/* Unread count badge for nested items (non-nested shows avatar badge) */}
+              {isNested && unreadCount > 0 && (
+                <span className="inline-flex items-center justify-center px-1.5 py-0.5 bg-favorite text-primary-foreground rounded-full text-caption2 font-semibold flex-shrink-0 tabular-nums">
+                  {unreadCount > 99 ? '99' : unreadCount}
+                </span>
               )}
-            >
-              {displayName}
-            </h3>
-            <span className="text-caption1 font-medium text-muted-foreground/50 ml-2 flex-shrink-0">
+            </div>
+            <span className="text-caption1 font-medium text-muted-foreground/50 flex-shrink-0">
               {lastMessageDate ? formatDistanceToNow(lastMessageDate, { addSuffix: false }) : ''}
             </span>
           </div>

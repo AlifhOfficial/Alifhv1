@@ -108,6 +108,8 @@ export function ChatWindow({
     isAuthenticated,
     enabled: true,
     initialLastSeenAt: conversation?.otherParticipant?.lastSeenAt,
+    unreadCount: conversation?.unreadCount,
+    lastMessageAt: conversation?.lastMessageAt,
   });
 
   // Extract display info from conversation

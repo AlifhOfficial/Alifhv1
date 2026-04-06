@@ -8,7 +8,7 @@
 import { getStoredSession } from './auth-api';
 import { API_BASE, markDataReady, parseJsonWithPerf } from './config';
 import {
-  MESSAGING_CACHE_STALE_TIME_MS,
+  MESSAGING_CONVERSATIONS_CACHE_STALE_TIME_MS,
   MESSAGING_CACHE_GC_TIME_MS,
 } from '@alifh/shared';
 
@@ -191,7 +191,7 @@ export async function fetchConversation(
   if (
     cached &&
     !options?.force &&
-    Date.now() - cached.updatedAt < MESSAGING_CACHE_STALE_TIME_MS
+    Date.now() - cached.updatedAt < MESSAGING_CONVERSATIONS_CACHE_STALE_TIME_MS
   ) {
     return cached.conversation;
   }
