@@ -55,7 +55,7 @@ export function ConversationList({
   inbox = 'personal',
   conversations,
   isLoading,
-  totalUnread,
+  totalUnread: _totalUnread,
   activeConversationId,
   listOpen,
   onListToggle,
