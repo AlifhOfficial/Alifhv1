@@ -8,18 +8,19 @@
 import { type ReactNode } from 'react';
 import { FloatingChatProvider } from '@/components/messaging/floating-chat-manager';
 import { WebSocketProvider } from '@/providers/websocket-provider';
-import { useUser } from '@/hooks/auth/use-auth';
+import { useOptionalAuth } from '@/providers/auth-provider';
 
 interface GlobalChatProviderProps {
   children: ReactNode;
 }
 
 function GlobalChatProviderInner({ children }: GlobalChatProviderProps) {
-  const { user } = useUser();
+  const auth = useOptionalAuth();
+  const userId = auth?.session?.id;
   
   return (
-    <WebSocketProvider userId={user?.id} autoConnect={!!user?.id}>
-      <FloatingChatProvider userId={user?.id}>
+    <WebSocketProvider userId={userId} autoConnect={!!userId}>
+      <FloatingChatProvider userId={userId}>
         {children}
       </FloatingChatProvider>
     </WebSocketProvider>

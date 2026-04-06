@@ -222,12 +222,20 @@ export function useConversations(options: UseConversationsOptions = {}) {
         queryClient.setQueryData<InfiniteData<ConversationsResponse>>(queryKey, (current) => {
           if (!current) return current;
 
-          const payload = msg.message as { text?: string | null; createdAt?: string; senderId?: string } | undefined;
+          const payload = msg.message as {
+            text?: string | null;
+            createdAt?: string;
+            senderId?: string;
+            mediaType?: 'image' | 'audio' | 'video' | 'document' | 'location' | null;
+          } | undefined;
           const senderId = msg.userId ?? payload?.senderId;
           const isOwnMessage = senderId === options.userId;
           const isActiveOpenConversation = isConversationActive(msg.conversationId!);
           const createdAt = payload?.createdAt ?? new Date().toISOString();
-          const preview = payload?.text?.substring(0, 100) || 'New message';
+          const preview =
+            (payload?.text?.trim() ? payload.text.substring(0, 100) : null) ||
+            (payload?.mediaType ? `Sent a ${payload.mediaType}` : null) ||
+            'New message';
 
           const allConversations = current.pages.flatMap((page) => page.conversations);
           const updatedConversations = allConversations.map((conversation) => {
@@ -245,10 +253,7 @@ export function useConversations(options: UseConversationsOptions = {}) {
               ...conversation,
               lastMessageAt: createdAt,
               lastMessagePreview: preview,
-              messageCount: Math.max(
-                (conversation.messageCount || 0) + (isOwnMessage ? 0 : 1),
-                conversation.messageCount || 0
-              ),
+              messageCount: (conversation.messageCount || 0) + 1,
               unreadCount: nextUnread,
               myLastReadAt:
                 !isOwnMessage && isActiveOpenConversation
@@ -298,8 +303,38 @@ export function useConversations(options: UseConversationsOptions = {}) {
         });
       }
 
-      // Handle read receipts - update other participant's lastReadAt
-      if (msg.type === 'read_receipt' && msg.conversationId && msg.userId !== options.userId) {
+      // Handle read receipts
+      if (msg.type === 'read_receipt' && msg.conversationId) {
+        if (msg.userId === options.userId) {
+          queryClient.setQueryData<InfiniteData<ConversationsResponse>>(queryKey, (current) => {
+            if (!current) return current;
+
+            let delta = 0;
+            const updatedPages = current.pages.map((page) => ({
+              ...page,
+              conversations: page.conversations.map((conversation) => {
+                if (conversation.id !== msg.conversationId) return conversation;
+                delta += conversation.unreadCount || 0;
+                return {
+                  ...conversation,
+                  unreadCount: 0,
+                  myLastReadAt: msg.lastReadAt || conversation.myLastReadAt,
+                };
+              }),
+            }));
+
+            return {
+              ...current,
+              pages: updatedPages.map((page, pageIndex) => ({
+                ...page,
+                totalUnread:
+                  pageIndex === 0 ? Math.max(0, (page.totalUnread || 0) - delta) : page.totalUnread,
+              })),
+            };
+          });
+          return;
+        }
+
         queryClient.setQueryData<InfiniteData<ConversationsResponse>>(queryKey, (current) => {
           if (!current) return current;
 

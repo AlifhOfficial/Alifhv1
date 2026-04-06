@@ -148,7 +148,6 @@ export async function POST(
       after(async () => {
         // Get participants with profiles to get avatar URLs
         const participants = await getConversationParticipantsWithProfiles(conversationId);
-        const recipients = participants.filter((participant) => participant.userId !== user.id);
 
         const broadcastToUser = async (targetUserId: string) => {
           const maxAttempts = 2;
@@ -190,7 +189,7 @@ export async function POST(
         };
 
         await Promise.allSettled(
-          recipients.map((participant) => broadcastToUser(participant.userId))
+          participants.map((participant) => broadcastToUser(participant.userId))
         );
 
         // Send push notifications to other participants (fire and forget)

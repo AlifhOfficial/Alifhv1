@@ -124,14 +124,12 @@ export function ChatWindow({
   const listingTitle = conversation?.listing?.title;
   const otherUserAvatar = avatarUrl;
   const otherUserName = displayName;
+  const lastHandledLocationRefreshTokenRef = useRef<string | null>(null);
   const myLastReadAt = conversation?.myLastReadAt;
   const myLastReadAtDate = useMemo(
     () => (myLastReadAt ? new Date(myLastReadAt) : null),
     [myLastReadAt]
   );
-  const lastHandledLocationRefreshTokenRef = useRef<string | null>(null);
-  
-  // Track last marked message to prevent duplicate API calls
   const lastMarkedMsgIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -154,7 +152,6 @@ export function ChatWindow({
     [messages, userId, myLastReadAtDate]
   );
 
-  // Mark conversation as read when viewing messages from other user
   useEffect(() => {
     if (isLoading || !newestUnreadIncomingMessageId) return;
     if (lastMarkedMsgIdRef.current === newestUnreadIncomingMessageId) return;
@@ -162,6 +159,7 @@ export function ChatWindow({
     lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
     void markConversationAsRead(conversationId, newestUnreadIncomingMessageId);
   }, [conversationId, isLoading, newestUnreadIncomingMessageId]);
+
 
   // Handle sending message
   const handleSend = useCallback(

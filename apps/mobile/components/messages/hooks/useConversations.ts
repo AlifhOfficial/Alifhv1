@@ -113,13 +113,17 @@ export function useConversations({
           return prev
             .map(conv => {
               if (conv.id !== msg.conversationId) return conv;
-              const preview = newMsg?.text?.substring(0, 100) || conv.lastMessagePreview || 'New message';
+              const preview =
+                (newMsg?.text?.trim() ? newMsg.text.substring(0, 100) : null) ||
+                (newMsg?.mediaType ? `Sent a ${newMsg.mediaType}` : null) ||
+                conv.lastMessagePreview ||
+                'New message';
 
               return {
                 ...conv,
                 lastMessageAt: createdAt,
                 lastMessagePreview: preview,
-                messageCount: Math.max((conv.messageCount || 0) + (isOwnMessage ? 0 : 1), conv.messageCount || 0),
+                messageCount: (conv.messageCount || 0) + 1,
                 unreadCount: isOwnMessage || isActiveOpenConversation ? 0 : (conv.unreadCount || 0) + 1,
                 myLastReadAt:
                   !isOwnMessage && isActiveOpenConversation
@@ -133,8 +137,20 @@ export function useConversations({
 
       }
 
-      // Handle read receipts - only update otherParticipant's lastReadAt (not self)
-      if (msg.type === 'read_receipt' && msg.conversationId && msg.userId !== userIdRef.current) {
+      // Handle read receipts
+      if (msg.type === 'read_receipt' && msg.conversationId) {
+        if (msg.userId === userIdRef.current) {
+          setConversations(prev => prev.map(conv => {
+            if (conv.id !== msg.conversationId) return conv;
+            return {
+              ...conv,
+              unreadCount: 0,
+              myLastReadAt: msg.lastReadAt || conv.myLastReadAt,
+            };
+          }));
+          return;
+        }
+
         setConversations(prev => prev.map(conv => {
           if (conv.id !== msg.conversationId) return conv;
           return {

@@ -16,9 +16,7 @@ import {
 import { markConversationActive, markConversationInactive } from '@/hooks/messaging/active-conversations';
 import { cn } from '@/utils/cn';
 import type { LocationResult } from '@/hooks/use-location';
-import {
-  getNewestUnreadIncomingMessageId,
-} from '@alifh/shared';
+import { getNewestUnreadIncomingMessageId } from '@alifh/shared';
 
 interface ChatThreadParticipant {
   id: string;
@@ -100,7 +98,6 @@ export function useChatThreadController({
   const { sendMessage, isSending } = useSendMessage();
   const { sendLocationMessage } = useSendLocationMessage();
   const { markAsRead } = useMarkAsRead();
-
   const lastMarkedMsgIdRef = useRef<string | null>(null);
   const myLastReadAtDate = useMemo(() => {
     if (!myLastReadAt) return null;
@@ -129,13 +126,7 @@ export function useChatThreadController({
 
     lastMarkedMsgIdRef.current = newestUnreadIncomingMessageId;
     markAsRead(conversationId, newestUnreadIncomingMessageId);
-  }, [
-    active,
-    conversationId,
-    isLoading,
-    newestUnreadIncomingMessageId,
-    markAsRead,
-  ]);
+  }, [active, conversationId, isLoading, newestUnreadIncomingMessageId, markAsRead]);
 
   return {
     conversationId,
