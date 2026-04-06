@@ -45,6 +45,28 @@ type ConversationsCacheEntry = {
 
 const conversationsCache = new Map<string, ConversationsCacheEntry>();
 
+// Deduplicate repeated WS events so counts don't inflate when duplicate
+// broadcasts occur in a short window.
+const processedWsEvents = new Map<string, number>();
+const WS_EVENT_DEDUPE_WINDOW_MS = 15_000;
+
+function shouldProcessWsEvent(eventKey: string): boolean {
+  const now = Date.now();
+
+  for (const [key, timestamp] of processedWsEvents) {
+    if (now - timestamp > WS_EVENT_DEDUPE_WINDOW_MS) {
+      processedWsEvents.delete(key);
+    }
+  }
+
+  if (processedWsEvents.has(eventKey)) {
+    return false;
+  }
+
+  processedWsEvents.set(eventKey, now);
+  return true;
+}
+
 function pruneConversationsCache() {
   const now = Date.now();
   for (const [key, entry] of conversationsCache) {
@@ -98,6 +120,14 @@ export function useConversations({
       // Handle new messages - update lastMessagePreview, lastMessageAt, and unreadCount
       if (msg.type === 'new_message' && msg.conversationId) {
         const newMsg = msg.message as Message | undefined;
+        const eventKey = newMsg?.id
+          ? `new_message:${newMsg.id}`
+          : `new_message:${msg.conversationId}:${msg.userId ?? newMsg?.senderId ?? 'unknown'}:${newMsg?.createdAt ?? 'unknown'}`;
+
+        if (!shouldProcessWsEvent(eventKey)) {
+          return;
+        }
+
         // Check if this is the user's own message using msg.userId (broadcast wrapper)
         // or newMsg.senderId (message content)
         const senderId = msg.userId || newMsg?.senderId;
@@ -143,6 +173,11 @@ export function useConversations({
 
       // Handle read receipts
       if (msg.type === 'read_receipt' && msg.conversationId) {
+        const eventKey = `read_receipt:${msg.conversationId}:${msg.userId ?? 'unknown'}:${msg.messageId ?? 'none'}:${msg.lastReadAt ?? 'none'}`;
+        if (!shouldProcessWsEvent(eventKey)) {
+          return;
+        }
+
         if (msg.userId === userIdRef.current) {
           setConversations(prev => prev.map(conv => {
             if (conv.id !== msg.conversationId) return conv;

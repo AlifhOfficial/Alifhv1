@@ -52,6 +52,28 @@ export interface ConversationsResponse {
   hasMore: boolean;
 }
 
+// Multiple UI surfaces subscribe to messaging updates (sidebar, navbar, inbox).
+// Deduplicate WS events at module scope so one incoming event is applied once.
+const processedWsEvents = new Map<string, number>();
+const WS_EVENT_DEDUPE_WINDOW_MS = 15_000;
+
+function shouldProcessWsEvent(eventKey: string): boolean {
+  const now = Date.now();
+
+  for (const [key, timestamp] of processedWsEvents) {
+    if (now - timestamp > WS_EVENT_DEDUPE_WINDOW_MS) {
+      processedWsEvents.delete(key);
+    }
+  }
+
+  if (processedWsEvents.has(eventKey)) {
+    return false;
+  }
+
+  processedWsEvents.set(eventKey, now);
+  return true;
+}
+
 // ============================================================================
 // API
 // ============================================================================
@@ -176,22 +198,18 @@ export function useConversations(options: UseConversationsOptions = {}) {
 
   const pages = query.data?.pages;
 
-  // Flatten all pages to get conversations and aggregate totalUnread
+  // Flatten all pages to get conversations.
+  // Keep unread aggregation derived from conversation rows (mobile parity).
   const flatData = useMemo(() => {
-    if (!pages) return { conversations: [], totalUnread: 0 };
+    if (!pages) return { conversations: [] };
     
     const allConversations: Conversation[] = [];
-    let totalUnread = 0;
     
     for (const page of pages) {
       allConversations.push(...page.conversations);
-      // Only use totalUnread from first page (represents total count)
-      if (page === pages[0]) {
-        totalUnread = page.totalUnread;
-      }
     }
     
-    return { conversations: allConversations, totalUnread };
+    return { conversations: allConversations };
   }, [pages]);
 
   // Match mobile behavior: actively watch presence for all users shown in the conversation list
@@ -237,18 +255,28 @@ export function useConversations(options: UseConversationsOptions = {}) {
     const unsub = subscribe((msg) => {
       // Handle new messages
       if (msg.type === 'new_message' && msg.conversationId) {
+        const payload = msg.message as {
+          id?: string;
+          text?: string | null;
+          createdAt?: string;
+          senderId?: string;
+          mediaType?: 'image' | 'audio' | 'video' | 'document' | 'location' | null;
+        } | undefined;
+
+        const newMessageEventKey = payload?.id
+          ? `new_message:${payload.id}`
+          : `new_message:${msg.conversationId}:${msg.userId ?? payload?.senderId ?? 'unknown'}:${payload?.createdAt ?? 'unknown'}`;
+
+        if (!shouldProcessWsEvent(newMessageEventKey)) {
+          return;
+        }
+
         let found = false;
         let totalUnreadDelta = 0;
 
         queryClient.setQueryData<InfiniteData<ConversationsResponse>>(queryKey, (current) => {
           if (!current) return current;
 
-          const payload = msg.message as {
-            text?: string | null;
-            createdAt?: string;
-            senderId?: string;
-            mediaType?: 'image' | 'audio' | 'video' | 'document' | 'location' | null;
-          } | undefined;
           const senderId = msg.userId ?? payload?.senderId;
           const isOwnMessage = senderId === options.userId;
           const isActiveOpenConversation = isConversationActive(msg.conversationId!);
@@ -326,6 +354,11 @@ export function useConversations(options: UseConversationsOptions = {}) {
 
       // Handle read receipts
       if (msg.type === 'read_receipt' && msg.conversationId) {
+        const readReceiptEventKey = `read_receipt:${msg.conversationId}:${msg.userId ?? 'unknown'}:${msg.messageId ?? 'none'}:${msg.lastReadAt ?? 'none'}`;
+        if (!shouldProcessWsEvent(readReceiptEventKey)) {
+          return;
+        }
+
         if (msg.userId === options.userId) {
           queryClient.setQueryData<InfiniteData<ConversationsResponse>>(queryKey, (current) => {
             if (!current) return current;
@@ -404,12 +437,18 @@ export function useConversations(options: UseConversationsOptions = {}) {
     });
   }, [flatData.conversations, presenceMap]);
 
+  // Match mobile: unread total is derived from current conversation state.
+  const totalUnread = useMemo(
+    () => conversations.reduce((sum, conversation) => sum + (conversation.unreadCount || 0), 0),
+    [conversations]
+  );
+
   // Check if more pages can be loaded
   const hasMore = query.hasNextPage ?? false;
 
   return {
     conversations,
-    totalUnread: flatData.totalUnread,
+    totalUnread,
     hasMore,
     isLoading: query.isLoading,
     isFetchingMore: query.isFetchingNextPage,

@@ -184,10 +184,14 @@ export function ListingDetailView({
 
       const sellerDisplayName =
         sellerData?.type === 'partner'
-          ? sellerData.partner?.brandName ?? null
+          ? sellerData.partner?.brandName || sellerData.partner?.companyNameLegal || 'Dealership'
           : sellerData?.type === 'user' && sellerData.userProfile
-            ? `${sellerData.userProfile.firstName ?? ''} ${sellerData.userProfile.lastName ?? ''}`.trim() || null
-            : null;
+            ? (
+                `${sellerData.userProfile.firstName ?? ''} ${sellerData.userProfile.lastName ?? ''}`.trim() ||
+                sellerData.userProfile.userName ||
+                'Private Seller'
+              )
+            : 'Private Seller';
 
       const sellerAvatar =
         sellerData?.type === 'partner'
@@ -198,7 +202,11 @@ export function ListingDetailView({
 
       const partnerData =
         listing.partnerId && sellerData?.type === 'partner' && sellerData.partner
-          ? { id: listing.partnerId, name: sellerData.partner.brandName, logo: sellerData.partner.logo ?? null }
+          ? {
+              id: listing.partnerId,
+              name: sellerData.partner.brandName || sellerData.partner.companyNameLegal || sellerDisplayName,
+              logo: sellerData.partner.logo ?? null,
+            }
           : null;
 
       const { conversationId } = await createConversation({
