@@ -417,7 +417,7 @@ export function AppSidebar({ user: initialUser, items, sections, staffOverride }
                             
                             return (
                               <SidebarMenuSubItem key={item.label}>
-                                <SidebarMenuSubButton asChild isActive={isActive} className={`font-medium tracking-tight ${isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'hover:bg-sidebar-accent/50'}`}>
+                                <SidebarMenuSubButton asChild isActive={isActive} className={`font-semibold tracking-tight ${isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'hover:bg-sidebar-accent/50'}`}>
                                   <Link href={item.href}>
                                     <span>{item.label}</span>
                                     {item.href.includes('/messaging') && messagingUnreadCount > 0 && (
