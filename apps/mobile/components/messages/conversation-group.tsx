@@ -105,12 +105,13 @@ export function ConversationGroup({
                     position: 'absolute',
                     top: -Spacing.xs / 2,
                     right: -Spacing.xs / 2,
-                    width: UNREAD_BADGE_SIZE,
-                    height: UNREAD_BADGE_SIZE,
+                    minWidth: UNREAD_BADGE_SIZE + Spacing.xs,
+                    height: UNREAD_BADGE_SIZE + Spacing.xs,
                     borderRadius: Radius.full,
                     borderCurve: 'continuous',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    paddingHorizontal: Spacing.xs,
                     backgroundColor: colors.favorite,
                     borderWidth: 2,
                     borderColor: colors.background,
@@ -123,7 +124,7 @@ export function ConversationGroup({
                       fontVariant: ['tabular-nums'],
                     }}
                   >
-                    {totalUnread > 99 ? '99' : String(totalUnread)}
+                    {totalUnread > 9 ? '9+' : String(totalUnread)}
                   </Text>
                 </View>
               )}
@@ -249,12 +250,13 @@ export function ConversationGroup({
                             {c.unreadCount > 0 && (
                               <View
                                 style={{
-                                  width: UNREAD_BADGE_SIZE,
-                                  height: UNREAD_BADGE_SIZE,
+                                  minWidth: UNREAD_BADGE_SIZE + Spacing.xs,
+                                  height: UNREAD_BADGE_SIZE + Spacing.xs,
                                   borderRadius: Radius.full,
                                   borderCurve: 'continuous',
                                   alignItems: 'center',
                                   justifyContent: 'center',
+                                  paddingHorizontal: Spacing.xs,
                                   backgroundColor: colors.favorite,
                                 }}
                               >
@@ -265,7 +267,7 @@ export function ConversationGroup({
                                     fontVariant: ['tabular-nums'],
                                   }}
                                 >
-                                  {c.unreadCount > 99 ? '99' : String(c.unreadCount)}
+                                  {c.unreadCount > 9 ? '9+' : String(c.unreadCount)}
                                 </Text>
                               </View>
                             )}

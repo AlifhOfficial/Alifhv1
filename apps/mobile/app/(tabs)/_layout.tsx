@@ -52,6 +52,9 @@ type AnimatedTabChipProps = {
   Icon: LucideIcon;
   focused: boolean;
   unreadCount?: number;
+  unreadBadgeBgColor: string;
+  unreadBadgeTextColor: string;
+  unreadBadgeBorderColor: string;
   activeColor: string;
   inactiveColor: string;
   transparentActiveColor: string;
@@ -87,6 +90,9 @@ function AnimatedTabChip({
   Icon,
   focused,
   unreadCount = 0,
+  unreadBadgeBgColor,
+  unreadBadgeTextColor,
+  unreadBadgeBorderColor,
   activeColor,
   inactiveColor,
   transparentActiveColor,
@@ -111,6 +117,8 @@ function AnimatedTabChip({
   const inactiveLayerStyle = useAnimatedStyle(() => ({
     opacity: 1 - progress.value,
   }));
+
+  const unreadLabel = unreadCount > 9 ? '9+' : String(unreadCount);
 
   return (
     <HapticPressable
@@ -143,8 +151,16 @@ function AnimatedTabChip({
             />
           </Animated.View>
           {unreadCount > 0 && (
-            <View style={styles.tabBadge}>
-              <Text style={styles.tabBadgeText}>{unreadCount > 99 ? '99+' : String(unreadCount)}</Text>
+            <View
+              style={[
+                styles.tabBadge,
+                {
+                  backgroundColor: unreadBadgeBgColor,
+                  borderColor: unreadBadgeBorderColor,
+                },
+              ]}
+            >
+              <Text style={[styles.tabBadgeText, { color: unreadBadgeTextColor }]}>{unreadLabel}</Text>
             </View>
           )}
         </View>
@@ -280,6 +296,9 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 Icon={tab.icon}
                 focused={focused}
                 unreadCount={tab.name === '(messages)' ? unreadChats : 0}
+                unreadBadgeBgColor={colors.favorite}
+                unreadBadgeTextColor={colors.primaryForeground}
+                unreadBadgeBorderColor={colors.background}
                 activeColor={chipActiveContent}
                 inactiveColor={chipInactiveContent}
                 transparentActiveColor={chipTransparentActiveContent}
@@ -390,20 +409,19 @@ const styles = StyleSheet.create({
   tabBadge: {
     position: 'absolute',
     top: -6,
-    right: -12,
-    minWidth: 16,
+    right: -10,
+    width: 16,
     height: 16,
     borderRadius: Radius.full,
-    backgroundColor: '#EF4444',
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 4,
   },
   tabBadgeText: {
-    fontSize: 9,
-    lineHeight: 11,
-    color: '#FFFFFF',
+    fontSize: 7,
+    lineHeight: 8,
     fontFamily: AppFontFamilies.bold,
+    includeFontPadding: false,
   },
   overlayLayer: {
     position: 'absolute',
