@@ -13,6 +13,7 @@ import { ChatWindow } from './chat-window';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useConversations } from '@/hooks/messaging';
 import { cn } from '@/utils/cn';
+import { MESSAGING_CONVERSATIONS_PAGE_SIZE } from '@alifh/shared';
 
 interface ChatContainerProps {
   userId: string;
@@ -42,7 +43,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
   const { conversations, isLoading, totalUnread, refetch, hasMore, isFetchingMore, fetchMore } = useConversations({
     userId,
     scope: inbox,
-    limit: 50,
+    limit: MESSAGING_CONVERSATIONS_PAGE_SIZE,
   });
 
   // Fetch if conversation not in list (newly created) - but only once per ID

@@ -61,6 +61,10 @@ export default function ChatScreen() {
       return;
     }
 
+    if (initialConversation) {
+      return;
+    }
+
     let cancelled = false;
 
     const loadConversation = async () => {

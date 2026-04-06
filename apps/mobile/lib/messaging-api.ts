@@ -7,6 +7,10 @@
 
 import { getStoredSession } from './auth-api';
 import { API_BASE, markDataReady, parseJsonWithPerf } from './config';
+import {
+  MESSAGING_CACHE_STALE_TIME_MS,
+  MESSAGING_CACHE_GC_TIME_MS,
+} from '@alifh/shared';
 
 // ============================================================================
 // TYPES
@@ -79,6 +83,22 @@ interface SendMessageResponse {
 interface CreateConversationResponse {
   conversationId: string;
   created: boolean;
+}
+
+type ConversationCacheEntry = {
+  conversation: Conversation;
+  updatedAt: number;
+};
+
+const conversationCache = new Map<string, ConversationCacheEntry>();
+
+function pruneConversationCache() {
+  const now = Date.now();
+  for (const [conversationId, entry] of conversationCache) {
+    if (now - entry.updatedAt > MESSAGING_CACHE_GC_TIME_MS) {
+      conversationCache.delete(conversationId);
+    }
+  }
 }
 
 // ============================================================================
@@ -162,7 +182,20 @@ export async function getUnreadCount(): Promise<number> {
 /**
  * Fetch a single conversation by ID (for newly created convos not yet in list)
  */
-export async function fetchConversation(conversationId: string): Promise<Conversation> {
+export async function fetchConversation(
+  conversationId: string,
+  options?: { force?: boolean }
+): Promise<Conversation> {
+  pruneConversationCache();
+  const cached = conversationCache.get(conversationId);
+  if (
+    cached &&
+    !options?.force &&
+    Date.now() - cached.updatedAt < MESSAGING_CACHE_STALE_TIME_MS
+  ) {
+    return cached.conversation;
+  }
+
   const endpoint = `/api/conversations/${conversationId}`;
   const url = `${API_BASE}${endpoint}`;
   const requestStartedAt = performance.now();
@@ -177,6 +210,12 @@ export async function fetchConversation(conversationId: string): Promise<Convers
   const { data } = await parseJsonWithPerf<{ conversation: Conversation }>('messaging.conversation', url, response, requestStartedAt, {
     meta: { conversationId },
   });
+
+  conversationCache.set(conversationId, {
+    conversation: data.conversation,
+    updatedAt: Date.now(),
+  });
+
   return data.conversation;
 }
 

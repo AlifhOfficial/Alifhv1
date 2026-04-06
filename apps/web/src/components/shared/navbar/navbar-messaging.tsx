@@ -11,6 +11,15 @@ import { useRouter } from 'next/navigation';
 import { UserAvatar } from '@/components/ui/data-display/user-avatar';
 import { BrandAvatar } from '@/components/partner/car-dealer/ui/brand-avatar';
 import { useConversations, type Conversation } from '@/hooks/messaging';
+import { MESSAGING_CONVERSATIONS_PAGE_SIZE } from '@alifh/shared';
+// Union of the two shapes that can appear as a group "user"
+type NavGroupUser = NonNullable<Conversation['partner']> | NonNullable<Conversation['otherParticipant']>;
+
+type NavGroup = {
+  user: NavGroupUser | null;
+  isPartner: boolean;
+  conversations: Conversation[];
+};
 import { cn } from '@/utils/cn';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
@@ -27,7 +36,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
   const { conversations: allConversations, isLoading } = useConversations({
     userId,
     scope: 'personal',
-    limit: 50,
+    limit: MESSAGING_CONVERSATIONS_PAGE_SIZE,
     enabled: !!userId,
   });
 
@@ -66,11 +75,11 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
     conversations.reduce((acc, conv) => {
       const key = conv.partner?.id || conv.otherParticipant?.id || 'unknown';
       if (!acc[key]) {
-        acc[key] = { user: conv.partner || conv.otherParticipant, isPartner: !!conv.partner, conversations: [] };
+        acc[key] = { user: (conv.partner ?? conv.otherParticipant) as NavGroupUser | null, isPartner: !!conv.partner, conversations: [] };
       }
       acc[key].conversations.push(conv);
       return acc;
-    }, {} as Record<string, { user: any; isPartner: boolean; conversations: Conversation[] }>)
+    }, {} as Record<string, NavGroup>)
   )
     .map((group) => ({
       ...group,
@@ -146,7 +155,7 @@ export function NavbarMessaging({ userId, onOpenChat }: NavbarMessagingProps) {
 // ─── Group Row ────────────────────────────────────────────────────────────────
 
 interface GroupRowProps {
-  group: { user: any; isPartner: boolean; conversations: Conversation[] };
+  group: NavGroup;
   onSelect: (conversation: Conversation) => void;
 }
 
@@ -167,9 +176,9 @@ function GroupRow({ group, onSelect }: GroupRowProps) {
       >
         <div className="relative flex-shrink-0">
           {isPartner ? (
-            <BrandAvatar logoUrl={user?.logo} brandName={displayName} size="sm" className="w-9 h-9" />
+            <BrandAvatar logoUrl={(user as NonNullable<Conversation['partner']>)?.logo} brandName={displayName} size="sm" className="w-9 h-9" />
           ) : (
-            <UserAvatar src={user?.avatarUrl} name={displayName} size="md" className="w-9 h-9" />
+            <UserAvatar src={(user as NonNullable<Conversation['otherParticipant']>)?.avatarUrl} name={displayName} size="md" className="w-9 h-9" />
           )}
           {totalUnread > 0 && (
             <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-favorite text-primary-foreground border-2 border-sidebar inline-flex items-center justify-center text-caption2 font-semibold leading-none tabular-nums">

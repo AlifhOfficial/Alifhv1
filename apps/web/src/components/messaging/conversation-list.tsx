@@ -27,7 +27,8 @@ type ConversationPartner = NonNullable<Conversation['partner']>;
 type ConversationParticipant = NonNullable<Conversation['otherParticipant']>;
 
 function lastMessageTime(value: Conversation['lastMessageAt']) {
-  return new Date(value).getTime();
+  const timestamp = new Date(value).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
 }
 
 function latestConversationTime(conversations: Conversation[]) {

@@ -25,6 +25,8 @@ import { useAuth } from '@/context/auth-context';
 import { useSearch } from '@/context/search-context';
 import type { Conversation } from '@/lib/messaging-api';
 
+const FOCUS_REFRESH_STALE_TIME_MS = 30_000;
+
 // ── List Item Type - Always grouped ─────────────────────────────
 type ListItem = {
   key: string;
@@ -62,6 +64,7 @@ export default function MessagesScreen() {
 
   // Re-fetch conversations when this tab regains focus (not initial mount)
   const isFirstFocus = useRef(true);
+  const lastFocusRefreshAtRef = useRef(0);
   useFocusEffect(
     useCallback(() => {
       if (isFirstFocus.current) {
@@ -69,7 +72,11 @@ export default function MessagesScreen() {
         return; // Skip — initial useEffect in hook already loads
       }
       if (isAuthenticated) {
-        refresh();
+        const now = Date.now();
+        if (now - lastFocusRefreshAtRef.current >= FOCUS_REFRESH_STALE_TIME_MS) {
+          lastFocusRefreshAtRef.current = now;
+          void refresh();
+        }
       }
     }, [isAuthenticated, refresh])
   );

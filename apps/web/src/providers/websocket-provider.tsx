@@ -51,6 +51,7 @@ class WebSocketManager {
   private currentUserId: string | null = null;
   private connectionListeners = new Set<(connected: boolean) => void>();
   private heartbeatInterval: NodeJS.Timeout | null = null;
+  private lastPongAt = 0;
 
   static getInstance(): WebSocketManager {
     if (!WebSocketManager.instance) {
@@ -89,6 +90,7 @@ class WebSocketManager {
 
     ws.onopen = () => {
       this.attempts = 0;
+      this.lastPongAt = Date.now();
       this.notifyConnectionChange(true);
       this.startHeartbeat();
     };
@@ -96,6 +98,9 @@ class WebSocketManager {
     ws.onmessage = (e) => {
       try {
         const msg = JSON.parse(e.data) as WSMessage;
+        if (msg.type === 'pong' || msg.type === 'connected') {
+          this.lastPongAt = Date.now();
+        }
         this.handlers.forEach(h => h(msg));
       } catch { /* ignore */ }
     };
@@ -153,7 +158,15 @@ class WebSocketManager {
 
   private startHeartbeat(): void {
     this.stopHeartbeat();
-    this.heartbeatInterval = setInterval(() => this.send({ type: 'ping' }), 45000);
+    // Keepalive every 30s (matches mobile) to avoid idle-proxy disconnect stalls.
+    this.heartbeatInterval = setInterval(() => {
+      // If we haven't received a pong for too long, force close to trigger reconnect.
+      if (Date.now() - this.lastPongAt > 65000) {
+        this.ws?.close();
+        return;
+      }
+      this.send({ type: 'ping' });
+    }, 30000);
   }
 
   private stopHeartbeat(): void {
@@ -206,17 +219,32 @@ export function WebSocketProvider({ children, userId, autoConnect = true }: Prop
     };
   }, [userId, autoConnect, manager]);
 
-  // Page Visibility API: notify server when tab is hidden/shown
-  // This prevents users who have the tab open but aren't on the site from showing as online
+  // Page visibility + online events:
+  // - notify server on visible/hidden state
+  // - force reconnect immediately when user returns/connection is offline
   useEffect(() => {
     if (typeof document === 'undefined' || !userId) return;
 
     const handleVisibilityChange = () => {
       manager.send({ type: 'visibility', visible: !document.hidden });
+
+      if (!document.hidden && !manager.isConnected) {
+        manager.connect(userId);
+      }
+    };
+
+    const handleOnline = () => {
+      if (!manager.isConnected) {
+        manager.connect(userId);
+      }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('online', handleOnline);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('online', handleOnline);
+    };
   }, [userId, manager]);
 
   // Memoized callbacks

@@ -33,6 +33,13 @@ import { getSessionUser } from '@/lib/auth/session-context';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+function resolveWsBroadcastUrl() {
+  const wsUrl = process.env.INTERNAL_WS_URL || process.env.NEXT_PUBLIC_WS_URL || 'wss://ws.revvup.ae';
+  if (wsUrl.startsWith('wss://')) return `${wsUrl.replace('wss://', 'https://')}/broadcast`;
+  if (wsUrl.startsWith('ws://')) return `${wsUrl.replace('ws://', 'http://')}/broadcast`;
+  return `${wsUrl}/broadcast`;
+}
+
 
 // ============================================================================
 // Validation Schemas
@@ -128,7 +135,7 @@ export async function POST(req: NextRequest) {
         });
         
         // Notify banned user via WebSocket for immediate client-side effect
-        const wsBroadcastUrl = process.env.WS_BROADCAST_URL || 'http://localhost:3001/broadcast';
+        const wsBroadcastUrl = resolveWsBroadcastUrl();
         fetch(wsBroadcastUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

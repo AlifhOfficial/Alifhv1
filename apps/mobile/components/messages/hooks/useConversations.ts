@@ -14,6 +14,11 @@ import {
 import { getAvatarUrl , consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
 import { isConversationActive } from './active-conversations';
+import {
+  MESSAGING_CACHE_STALE_TIME_MS,
+  MESSAGING_CACHE_GC_TIME_MS,
+  MESSAGING_CONVERSATIONS_PAGE_SIZE,
+} from '@alifh/shared';
 
 interface UseConversationsOptions {
   isAuthenticated: boolean;
@@ -33,6 +38,22 @@ interface UseConversationsReturn {
   pullToRefresh: () => Promise<void>;
 }
 
+type ConversationsCacheEntry = {
+  conversations: Conversation[];
+  updatedAt: number;
+};
+
+const conversationsCache = new Map<string, ConversationsCacheEntry>();
+
+function pruneConversationsCache() {
+  const now = Date.now();
+  for (const [key, entry] of conversationsCache) {
+    if (now - entry.updatedAt > MESSAGING_CACHE_GC_TIME_MS) {
+      conversationsCache.delete(key);
+    }
+  }
+}
+
 export function useConversations({
   isAuthenticated,
   userId,
@@ -46,12 +67,26 @@ export function useConversations({
   const abortControllerRef = useRef<AbortController | null>(null);
   const watchedUsersRef = useRef<Set<string>>(new Set());
   const loadConversationsRef = useRef<(() => Promise<void>) | null>(null);
+  const cacheKey = useMemo(
+    () => `${scope ?? 'personal'}:${userId ?? 'anon'}`,
+    [scope, userId]
+  );
   
   // Keep userId in a ref for WebSocket handler
   const userIdRef = useRef(userId);
   useEffect(() => {
     userIdRef.current = userId;
   }, [userId]);
+
+  // Persist latest conversations snapshot into shared cache.
+  useEffect(() => {
+    if (!isAuthenticated || isLoading) return;
+    pruneConversationsCache();
+    conversationsCache.set(cacheKey, {
+      conversations,
+      updatedAt: Date.now(),
+    });
+  }, [cacheKey, conversations, isAuthenticated, isLoading]);
 
   // Subscribe to real-time updates
   useEffect(() => {
@@ -194,7 +229,7 @@ export function useConversations({
     setError(null);
     
     try {
-      const data = await fetchConversations({ scope, limit: 50 });
+      const data = await fetchConversations({ scope, limit: MESSAGING_CONVERSATIONS_PAGE_SIZE });
 
       // If this call was aborted (superseded), skip state updates
       if (controller.signal.aborted) return;
@@ -274,14 +309,27 @@ export function useConversations({
     };
   }, []);
 
-  // Initial load
+  // Initial load (web-like staleTime/gcTime behavior)
   useEffect(() => {
     if (isAuthenticated) {
-      loadConversations();
+      pruneConversationsCache();
+      const cached = conversationsCache.get(cacheKey);
+      if (cached) {
+        setConversations(cached.conversations);
+        setIsLoading(false);
+
+        const isFresh = Date.now() - cached.updatedAt < MESSAGING_CACHE_STALE_TIME_MS;
+        if (!isFresh) {
+          // Stale-while-revalidate: show cache now, refresh in background.
+          void loadConversations();
+        }
+      } else {
+        loadConversations();
+      }
     } else {
       setIsLoading(false);
     }
-  }, [loadConversations, isAuthenticated]);
+  }, [cacheKey, loadConversations, isAuthenticated]);
 
   // Silent background refresh — no RefreshControl spinner
   // Used by useFocusEffect when returning to the tab

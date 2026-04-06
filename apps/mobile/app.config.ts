@@ -139,8 +139,8 @@ export default ({ config }: ConfigContext): RevvupExpoConfig => {
       eas: {
         projectId: 'cd8cffff-33b0-46d9-b584-08eb6448e6dc',
       },
-      // Production-only mobile endpoints.
-      apiUrl: 'https://revvup.ae',
+      // LAN testing mobile endpoints.
+      apiUrl: 'http://192.168.1.56:3000',
       wsUrl: 'wss://ws.revvup.ae',
       cdnUrl: 'https://cdn.revvup.ae',
     },

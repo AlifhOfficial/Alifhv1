@@ -10,7 +10,6 @@ import { cn } from '@/utils/cn';
 import { getAppThumbUrl } from '@/utils/storage';
 import { formatDistanceToNow } from 'date-fns';
 import type { Message } from '@/hooks/messaging';
-import { X } from 'lucide-react';
 import { LocationBubble } from './location-bubble';
 import Link from 'next/link';
 
@@ -192,13 +191,6 @@ export function MessageBubble({
             {formatDistanceToNow(new Date(createdAt), { addSuffix: true })}
           </small>
         </div>
-
-        {/* Failed indicator - only show X if message failed to send */}
-        {isOwn && !isOptimistic && !message.deliveredAt && !message.createdAt && (
-          <div className="mt-1 px-2 flex items-center justify-end">
-            <X className="h-3 w-3 text-red-500" aria-label="Failed to send" />
-          </div>
-        )}
 
         {/* Seen indicator */}
         {showSeen && isOwn && (

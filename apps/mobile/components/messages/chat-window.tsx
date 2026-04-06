@@ -129,6 +129,7 @@ export function ChatWindow({
     () => (myLastReadAt ? new Date(myLastReadAt) : null),
     [myLastReadAt]
   );
+  const lastHandledLocationRefreshTokenRef = useRef<string | null>(null);
   
   // Track last marked message to prevent duplicate API calls
   const lastMarkedMsgIdRef = useRef<string | null>(null);
@@ -187,6 +188,11 @@ export function ChatWindow({
     if (!locationRefreshToken) {
       return;
     }
+
+    if (lastHandledLocationRefreshTokenRef.current === locationRefreshToken) {
+      return;
+    }
+    lastHandledLocationRefreshTokenRef.current = locationRefreshToken;
 
     void refresh();
     setTimeout(() => {

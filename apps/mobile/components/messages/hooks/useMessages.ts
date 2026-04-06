@@ -5,7 +5,7 @@
  * Includes real-time updates, typing indicators, and read receipts.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   fetchMessages,
   sendMessage as sendMessageAPI,
@@ -13,6 +13,11 @@ import {
 } from '@/lib/messaging-api';
 import { getAvatarUrl , consumeDataReady, scheduleRenderPerf } from '@/lib/config';
 import { useWebSocket } from '@/context/websocket-context';
+import {
+  MESSAGING_CACHE_STALE_TIME_MS,
+  MESSAGING_CACHE_GC_TIME_MS,
+  MESSAGING_MESSAGES_PAGE_SIZE,
+} from '@alifh/shared';
 
 interface UseMessagesOptions {
   conversationId: string;
@@ -41,6 +46,26 @@ interface UseMessagesReturn {
   sendTyping: (isTyping: boolean) => void;
 }
 
+type MessagesCacheEntry = {
+  messages: Message[];
+  hasMore: boolean;
+  nextCursor: string | null;
+  otherLastReadAt: string | null;
+  otherLastSeenAt: string | null;
+  updatedAt: number;
+};
+
+const messagesCache = new Map<string, MessagesCacheEntry>();
+
+function pruneMessagesCache() {
+  const now = Date.now();
+  for (const [key, entry] of messagesCache) {
+    if (now - entry.updatedAt > MESSAGING_CACHE_GC_TIME_MS) {
+      messagesCache.delete(key);
+    }
+  }
+}
+
 export function useMessages({
   conversationId,
   userId,
@@ -62,6 +87,10 @@ export function useMessages({
   const [error, setError] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const { subscribe, send, isConnected } = useWebSocket();
+  const cacheKey = useMemo(
+    () => `${conversationId}:${userId ?? 'anon'}`,
+    [conversationId, userId]
+  );
   
   const conversationIdRef = useRef(conversationId);
   const userIdRef = useRef(userId);
@@ -88,6 +117,30 @@ export function useMessages({
   useEffect(() => {
     initialLastSeenAtRef.current = initialLastSeenAt ?? null;
   }, [initialLastSeenAt]);
+
+  // Persist latest thread snapshot into shared cache.
+  useEffect(() => {
+    if (!isAuthenticated || !enabled || isLoading) return;
+    pruneMessagesCache();
+    messagesCache.set(cacheKey, {
+      messages,
+      hasMore,
+      nextCursor,
+      otherLastReadAt,
+      otherLastSeenAt,
+      updatedAt: Date.now(),
+    });
+  }, [
+    cacheKey,
+    enabled,
+    hasMore,
+    isAuthenticated,
+    isLoading,
+    messages,
+    nextCursor,
+    otherLastReadAt,
+    otherLastSeenAt,
+  ]);
 
   // Update lastSeenAt when initial value changes (conversation refresh)
   // Only update if new value is more recent (matches web behavior)
@@ -278,7 +331,7 @@ export function useMessages({
       
       try {
         const data = await fetchMessages(conversationId, {
-          limit: 50,
+          limit: MESSAGING_MESSAGES_PAGE_SIZE,
           cursor,
         });
 
@@ -332,15 +385,33 @@ export function useMessages({
     [conversationId, dedupeMessages, isAuthenticated, enabled]
   );
 
-  // Load on conversation change or initial mount
+  // Load on conversation change or initial mount (web-like staleTime/gcTime behavior)
   useEffect(() => {
     if (isAuthenticated && enabled) {
-      loadMessages();
+      pruneMessagesCache();
+      const cached = messagesCache.get(cacheKey);
+
+      if (cached) {
+        setMessages(cached.messages);
+        setHasMore(cached.hasMore);
+        setNextCursor(cached.nextCursor);
+        setOtherLastReadAt(cached.otherLastReadAt);
+        setOtherLastSeenAt(cached.otherLastSeenAt ?? initialLastSeenAtRef.current);
+        setIsLoading(false);
+
+        const isFresh = Date.now() - cached.updatedAt < MESSAGING_CACHE_STALE_TIME_MS;
+        if (!isFresh) {
+          // Stale-while-revalidate: show cache now, refresh in background.
+          void loadMessages();
+        }
+      } else {
+        loadMessages();
+      }
     }
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [conversationId, isAuthenticated, enabled, loadMessages]);
+  }, [cacheKey, conversationId, isAuthenticated, enabled, loadMessages]);
 
   // Refresh handler
   const refresh = useCallback(async () => {

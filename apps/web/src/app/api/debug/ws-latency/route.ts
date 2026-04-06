@@ -10,7 +10,19 @@ import { NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const WS_BROADCAST_URL = process.env.WS_BROADCAST_URL || 'https://ws.revvup.ae/broadcast';
+const WS_BROADCAST_URL = (() => {
+  const raw =
+    process.env.WS_BROADCAST_URL ||
+    process.env.NEXT_PUBLIC_WS_URL ||
+    'https://ws.revvup.ae';
+
+  const httpBase = raw
+    .replace(/^wss:\/\//, 'https://')
+    .replace(/^ws:\/\//, 'http://')
+    .replace(/\/$/, '');
+
+  return httpBase.endsWith('/broadcast') ? httpBase : `${httpBase}/broadcast`;
+})();
 const WS_HEALTH_URL = process.env.NEXT_PUBLIC_WS_URL 
   ? `${process.env.NEXT_PUBLIC_WS_URL.replace('ws://', 'http://').replace('wss://', 'https://')}/health`
   : 'https://ws.revvup.ae/health';
@@ -19,6 +31,10 @@ export async function GET() {
   const results: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
     vercelRegion: process.env.VERCEL_REGION || 'unknown',
+    ws: {
+      healthUrl: WS_HEALTH_URL,
+      broadcastUrl: WS_BROADCAST_URL,
+    },
   };
 
   // Test 1: Health endpoint (GET)

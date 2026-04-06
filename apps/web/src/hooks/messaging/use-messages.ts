@@ -5,10 +5,18 @@
 
 'use client';
 
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient, type InfiniteData } from '@tanstack/react-query';
 import { useWebSocket } from './use-websocket';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { queryKeys } from '@/lib/query-keys';
+import {
+  MESSAGING_CACHE_STALE_TIME_MS,
+  MESSAGING_CACHE_GC_TIME_MS,
+  MESSAGING_MESSAGES_PAGE_SIZE,
+} from '@alifh/shared';
+
+// Module-level counter for unique temp IDs — FIFO ordering across concurrent sends
+let tempIdCounter = 0;
 
 // ============================================================================
 // Types
@@ -41,13 +49,77 @@ interface MessagesPage {
   otherParticipantLastReadAt?: string | null; // Included on first page only
 }
 
+interface ConversationsCacheConversation {
+  id: string;
+  lastMessageAt: Date | string;
+  lastMessagePreview: string | null;
+  messageCount: number;
+  unreadCount: number;
+  myLastReadAt?: Date | string | null;
+}
+
+interface ConversationsCachePage {
+  conversations: ConversationsCacheConversation[];
+  totalUnread: number;
+  hasMore: boolean;
+}
+
+interface ConversationsCacheData {
+  pages: ConversationsCachePage[];
+  pageParams: unknown[];
+}
+
+function bumpConversationInCache(
+  current: ConversationsCacheData,
+  conversationId: string,
+  preview: string,
+  createdAt: string
+): ConversationsCacheData {
+  const allConversations = current.pages.flatMap((page) => page.conversations);
+  let found = false;
+
+  const updated = allConversations.map((conversation) => {
+    if (conversation.id !== conversationId) return conversation;
+    found = true;
+    return {
+      ...conversation,
+      lastMessageAt: createdAt,
+      lastMessagePreview: preview,
+    };
+  });
+
+  if (!found) return current;
+
+  const sorted = updated.sort(
+    (a, b) => new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
+  );
+
+  const rebuiltPages = current.pages.map((page, index) => {
+    const start = current.pages.slice(0, index).reduce((sum, p) => sum + p.conversations.length, 0);
+    const end = start + page.conversations.length;
+    return {
+      ...page,
+      conversations: sorted.slice(start, end),
+    };
+  });
+
+  return {
+    ...current,
+    pages: rebuiltPages,
+  };
+}
+
 // ============================================================================
 // API
 // ============================================================================
 
-async function fetchMessages(conversationId: string, cursor?: string): Promise<MessagesPage> {
+async function fetchMessages(
+  conversationId: string,
+  cursor?: string,
+  signal?: AbortSignal
+): Promise<MessagesPage> {
   const params = new URLSearchParams({
-    limit: '50',
+    limit: String(MESSAGING_MESSAGES_PAGE_SIZE),
   });
   if (cursor) {
     params.set('cursor', cursor);
@@ -58,6 +130,7 @@ async function fetchMessages(conversationId: string, cursor?: string): Promise<M
     {
       credentials: 'include',
       cache: 'no-store',
+      signal,
     }
   );
 
@@ -188,15 +261,17 @@ export function useMessages(conversationId: string, userId?: string, options: Us
   // Query
   const query = useInfiniteQuery({
     queryKey: messagesQueryKey,
-    queryFn: ({ pageParam }) => fetchMessages(conversationId, pageParam),
+    queryFn: ({ pageParam, signal }) => fetchMessages(conversationId, pageParam, signal),
     getNextPageParam: (page) => (page.hasMore ? page.nextCursor ?? undefined : undefined),
     initialPageParam: undefined as string | undefined,
     enabled: !!conversationId && !!userId,
-    // Disable client caching for messaging and always refresh from network.
-    staleTime: 0,
-    gcTime: 0,
+    // WS drives live updates — only refetch when data is older than 30s.
+    // This prevents redundant fetches while keeping a safety-net refetch on
+    // tab focus / reconnect for the case where WS missed events.
+    staleTime: MESSAGING_CACHE_STALE_TIME_MS,
+    gcTime: MESSAGING_CACHE_GC_TIME_MS,
     refetchOnWindowFocus: true,
-    refetchOnMount: 'always',
+    refetchOnMount: true,
     refetchOnReconnect: true,
   });
 
@@ -233,17 +308,84 @@ export function useMessages(conversationId: string, userId?: string, options: Us
     if (!conversationId || !userId) return;
 
     const unsub = subscribe((msg) => {
-      // New message
+      // New message — append to cache directly when payload is usable.
+      // If payload is partial/missing, immediately refetch this active thread.
       if (msg.type === 'new_message' && msg.conversationId === conversationId) {
-        const newMsg = msg.message as Message;
-        
-        // Skip own messages delivered via WebSocket - onSuccess handler already adds them
-        // This prevents duplicates caused by race between API response and WebSocket
-        if (newMsg.senderId === userId) {
-          return;
-        }
+        const payload = msg.message as Partial<Message> | undefined;
+        const hasUsablePayload =
+          !!payload &&
+          typeof payload.id === 'string' &&
+          typeof payload.senderId === 'string' &&
+          !!payload.createdAt;
 
-        queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+        if (!hasUsablePayload) {
+          // Some WS paths only provide conversation-level fields.
+          // Keep the open thread fresh instead of silently dropping the event.
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.messaging.messages(conversationId),
+            refetchType: 'active',
+          });
+        } else {
+          const newMsg = payload as Message;
+          let updated = false;
+
+          queryClient.setQueryData<InfiniteData<MessagesPage>>(
+            queryKeys.messaging.messages(conversationId),
+            (current) => {
+              if (!current) return current;
+
+              const allMessages = current.pages.flatMap((p) => p.messages);
+
+              if (newMsg.senderId === userId) {
+                // Own message echo — resolve the oldest pending temp (FIFO)
+                // temp IDs are prefixed `temp-{counter}-...` so sort gives FIFO order
+                if (allMessages.some((m) => m.id === newMsg.id)) {
+                  updated = true;
+                  return current; // already resolved by API
+                }
+
+                const tempIds = allMessages
+                  .map((m) => m.id)
+                  .filter((id) => id.startsWith('temp-'))
+                  .sort();
+
+                if (tempIds.length === 0) {
+                  // No temp found (late echo) — prepend real message
+                  const [first, ...rest] = current.pages;
+                  updated = true;
+                  return { ...current, pages: [{ ...first, messages: [newMsg, ...first.messages] }, ...rest] };
+                }
+
+                const oldestTempId = tempIds[0];
+                updated = true;
+                return {
+                  ...current,
+                  pages: current.pages.map((page) => ({
+                    ...page,
+                    messages: page.messages.map((m) => (m.id === oldestTempId ? newMsg : m)),
+                  })),
+                };
+              }
+
+              // Message from other user — dedup then prepend
+              if (allMessages.some((m) => m.id === newMsg.id)) {
+                updated = true;
+                return current;
+              }
+              const [first, ...rest] = current.pages;
+              updated = true;
+              return { ...current, pages: [{ ...first, messages: [newMsg, ...first.messages] }, ...rest] };
+            }
+          );
+
+          if (!updated) {
+            // Cache not ready yet (e.g., first mount race) — force active fetch.
+            queryClient.invalidateQueries({
+              queryKey: queryKeys.messaging.messages(conversationId),
+              refetchType: 'active',
+            });
+          }
+        }
       }
 
       // Typing indicator
@@ -271,6 +413,17 @@ export function useMessages(conversationId: string, userId?: string, options: Us
           const d = new Date(msg.lastSeenAt);
           if (!isNaN(d.getTime())) setOtherLastSeenAt(d);
         }
+      }
+
+      // FALLBACK: If we receive typing/message from the other user, they're definitely online
+      // This helps when presence state is lost (e.g., Railway multiple replicas)
+      if (
+        (msg.type === 'typing' || msg.type === 'new_message') &&
+        options.otherUserId &&
+        msg.userId === options.otherUserId
+      ) {
+        setIsOtherOnline(true);
+        setOtherLastSeenAt(new Date());
       }
     });
 
@@ -313,16 +466,127 @@ export function useMessages(conversationId: string, userId?: string, options: Us
 export function useSendMessage() {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: ({ conversationId, text }: { conversationId: string; senderId: string; text: string }) =>
-      postMessage(conversationId, text),
+  const mutation = useMutation<
+    { message: Message },
+    Error,
+    { conversationId: string; senderId: string; text: string },
+    { tempId: string }
+  >({
+    mutationFn: ({ conversationId, text }) => postMessage(conversationId, text),
 
-    onSuccess: (_data, { conversationId }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+    // Step 1: Optimistically insert a temp message — mirrors mobile pendingSendsRef pattern
+    onMutate: ({ conversationId, senderId, text }) => {
+      // Do not block optimistic UI on cancel timing — cancel in background.
+      void queryClient.cancelQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+
+      const counter = ++tempIdCounter;
+      const tempId = `temp-${String(counter).padStart(6, '0')}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+      const optimisticMessage: Message = {
+        id: tempId,
+        conversationId,
+        senderId,
+        text: text.trim(),
+        mediaUrl: null,
+        mediaType: null,
+        mediaThumbnail: null,
+        mediaMetadata: null,
+        isSystemMessage: false,
+        systemMessageType: null,
+        deliveredAt: null,
+        readAt: null,
+        isEdited: false,
+        editedAt: null,
+        isDeleted: false,
+        createdAt: new Date().toISOString(),
+        sender: { id: senderId, name: null, avatarUrl: null },
+      };
+
+      queryClient.setQueryData<InfiniteData<MessagesPage>>(
+        queryKeys.messaging.messages(conversationId),
+        (current) => {
+          if (!current) return current;
+          const [first, ...rest] = current.pages;
+          return { ...current, pages: [{ ...first, messages: [optimisticMessage, ...first.messages] }, ...rest] };
+        }
+      );
+
+      const nowIso = String(optimisticMessage.createdAt);
+      const preview = optimisticMessage.text ?? 'New message';
+      const hasThreadCache = !!queryClient.getQueryData(queryKeys.messaging.messages(conversationId));
+      if (hasThreadCache) {
+        queryClient.setQueriesData<ConversationsCacheData>(
+          { queryKey: ['conversations'] },
+          (current) => {
+            if (!current) return current;
+            return bumpConversationInCache(current, conversationId, preview, nowIso);
+          }
+        );
+      }
+
+      return { tempId };
     },
 
-    onError: (_err, { conversationId }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+    // Step 2: Replace temp with confirmed real message (if WS echo hasn't done it already)
+    onSuccess: (data, { conversationId }, context) => {
+      const realMessage = data.message;
+      const tempId = context?.tempId;
+
+      queryClient.setQueryData<InfiniteData<MessagesPage>>(
+        queryKeys.messaging.messages(conversationId),
+        (current) => {
+          if (!current) return current;
+
+          const allMessages = current.pages.flatMap((p) => p.messages);
+
+          // WS echo already swapped the temp for a real ID — just dedup
+          if (allMessages.some((m) => m.id === realMessage.id)) {
+            if (!tempId || !allMessages.some((m) => m.id === tempId)) return current;
+            return {
+              ...current,
+              pages: current.pages.map((page) => ({
+                ...page,
+                messages: page.messages.filter((m) => m.id !== tempId),
+              })),
+            };
+          }
+
+          // API won the race — replace temp with real message
+          if (tempId && allMessages.some((m) => m.id === tempId)) {
+            return {
+              ...current,
+              pages: current.pages.map((page) => ({
+                ...page,
+                messages: page.messages.map((m) => (m.id === tempId ? realMessage : m)),
+              })),
+            };
+          }
+
+          // Fallback: just prepend (should not normally reach here)
+          const [first, ...rest] = current.pages;
+          return { ...current, pages: [{ ...first, messages: [realMessage, ...first.messages] }, ...rest] };
+        }
+      );
+    },
+
+    // Step 3: Roll back the temp message on error
+    onError: (_err, { conversationId }, context) => {
+      const tempId = context?.tempId;
+      if (!tempId) return;
+
+      queryClient.setQueryData<InfiniteData<MessagesPage>>(
+        queryKeys.messaging.messages(conversationId),
+        (current) => {
+          if (!current) return current;
+          return {
+            ...current,
+            pages: current.pages.map((page) => ({
+              ...page,
+              messages: page.messages.filter((m) => m.id !== tempId),
+            })),
+          };
+        }
+      );
     },
   });
 
@@ -340,16 +604,125 @@ export function useSendMessage() {
 export function useSendLocationMessage() {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: ({ conversationId, location }: { conversationId: string; senderId: string; location: LocationData }) =>
-      postLocationMessage(conversationId, location),
+  const mutation = useMutation<
+    { message: Message },
+    Error,
+    { conversationId: string; senderId: string; location: LocationData },
+    { tempId: string }
+  >({
+    mutationFn: ({ conversationId, location }) => postLocationMessage(conversationId, location),
 
-    onSuccess: (_data, { conversationId }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+    onMutate: ({ conversationId, senderId, location }) => {
+      void queryClient.cancelQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+
+      const counter = ++tempIdCounter;
+      const tempId = `temp-${String(counter).padStart(6, '0')}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+      const optimisticMessage: Message = {
+        id: tempId,
+        conversationId,
+        senderId,
+        text: location.address || 'Shared location',
+        mediaUrl: null,
+        mediaType: 'location',
+        mediaThumbnail: null,
+        mediaMetadata: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+          address: location.address,
+          placeName: location.placeName,
+        },
+        isSystemMessage: false,
+        systemMessageType: null,
+        deliveredAt: null,
+        readAt: null,
+        isEdited: false,
+        editedAt: null,
+        isDeleted: false,
+        createdAt: new Date().toISOString(),
+        sender: { id: senderId, name: null, avatarUrl: null },
+      };
+
+      queryClient.setQueryData<InfiniteData<MessagesPage>>(
+        queryKeys.messaging.messages(conversationId),
+        (current) => {
+          if (!current) return current;
+          const [first, ...rest] = current.pages;
+          return { ...current, pages: [{ ...first, messages: [optimisticMessage, ...first.messages] }, ...rest] };
+        }
+      );
+
+      const nowIso = String(optimisticMessage.createdAt);
+      const preview = optimisticMessage.text ?? 'Shared location';
+      const hasThreadCache = !!queryClient.getQueryData(queryKeys.messaging.messages(conversationId));
+      if (hasThreadCache) {
+        queryClient.setQueriesData<ConversationsCacheData>(
+          { queryKey: ['conversations'] },
+          (current) => {
+            if (!current) return current;
+            return bumpConversationInCache(current, conversationId, preview, nowIso);
+          }
+        );
+      }
+
+      return { tempId };
     },
 
-    onError: (_err, { conversationId }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.messaging.messages(conversationId) });
+    onSuccess: (data, { conversationId }, context) => {
+      const realMessage = data.message;
+      const tempId = context?.tempId;
+
+      queryClient.setQueryData<InfiniteData<MessagesPage>>(
+        queryKeys.messaging.messages(conversationId),
+        (current) => {
+          if (!current) return current;
+
+          const allMessages = current.pages.flatMap((p) => p.messages);
+
+          if (allMessages.some((m) => m.id === realMessage.id)) {
+            if (!tempId || !allMessages.some((m) => m.id === tempId)) return current;
+            return {
+              ...current,
+              pages: current.pages.map((page) => ({
+                ...page,
+                messages: page.messages.filter((m) => m.id !== tempId),
+              })),
+            };
+          }
+
+          if (tempId && allMessages.some((m) => m.id === tempId)) {
+            return {
+              ...current,
+              pages: current.pages.map((page) => ({
+                ...page,
+                messages: page.messages.map((m) => (m.id === tempId ? realMessage : m)),
+              })),
+            };
+          }
+
+          const [first, ...rest] = current.pages;
+          return { ...current, pages: [{ ...first, messages: [realMessage, ...first.messages] }, ...rest] };
+        }
+      );
+    },
+
+    onError: (_err, { conversationId }, context) => {
+      const tempId = context?.tempId;
+      if (!tempId) return;
+
+      queryClient.setQueryData<InfiniteData<MessagesPage>>(
+        queryKeys.messaging.messages(conversationId),
+        (current) => {
+          if (!current) return current;
+          return {
+            ...current,
+            pages: current.pages.map((page) => ({
+              ...page,
+              messages: page.messages.filter((m) => m.id !== tempId),
+            })),
+          };
+        }
+      );
     },
   });
 

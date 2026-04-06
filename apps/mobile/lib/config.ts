@@ -2,20 +2,20 @@
  * API Configuration
  *
  * Centralized configuration for API endpoints.
- * Uses production hosts by default to avoid local network drift.
+ * Uses fixed hosts for deterministic behavior during testing.
  * Includes a global fetch interceptor to prevent native cookie leakage.
  */
-const PROD_API_BASE = 'https://revvup.ae';
+const PROD_API_BASE = 'http://192.168.1.56:3000';
 const PROD_WS_URL = 'wss://ws.revvup.ae';
 const PROD_CDN_URL = 'https://cdn.revvup.ae';
 
 function getApiBaseUrl(): string {
-  // Production-only base URL across iOS and Android.
+  // LAN testing base URL across iOS and Android.
   return PROD_API_BASE;
 }
 
 function getWsUrl(): string {
-  // Production-only WebSocket URL across iOS and Android.
+  // Production WebSocket URL across iOS and Android.
   return PROD_WS_URL;
 }
 

@@ -10,6 +10,20 @@ import { markConversationAsRead, getConversationParticipants } from '@alifh/data
 
 export const runtime = 'nodejs';
 
+function resolveWsBroadcastUrl() {
+  const raw =
+    process.env.WS_BROADCAST_URL ||
+    process.env.NEXT_PUBLIC_WS_URL ||
+    'https://ws.revvup.ae';
+
+  const httpBase = raw
+    .replace(/^wss:\/\//, 'https://')
+    .replace(/^ws:\/\//, 'http://')
+    .replace(/\/$/, '');
+
+  return httpBase.endsWith('/broadcast') ? httpBase : `${httpBase}/broadcast`;
+}
+
 // ============================================================================
 // PATCH /api/conversations/:id/read
 // Mark conversation as read (reset unread count)
@@ -44,7 +58,7 @@ export async function PATCH(
     queueMicrotask(() => {
       void (async () => {
         try {
-          const wsBroadcastUrl = process.env.WS_BROADCAST_URL || 'http://localhost:3001/broadcast';
+          const wsBroadcastUrl = resolveWsBroadcastUrl();
           const participants = await getConversationParticipants(id);
           
           for (const participant of participants) {

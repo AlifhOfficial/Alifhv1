@@ -5,7 +5,7 @@
 
 import { db } from '../index';
 import { message, conversation, conversationParticipant, user, userProfile } from '../schema';
-import { eq, and, desc, lt, sql, isNull } from 'drizzle-orm';
+import { eq, and, desc, lt, sql, isNull, inArray } from 'drizzle-orm';
 import { createId } from '@paralleldrive/cuid2';
 
 // ============================================================================
@@ -238,7 +238,8 @@ export async function getMessages(
 ): Promise<MessageWithSender[]> {
   const { limit = 50, cursor, userId } = options;
 
-  // Build messages query (join userProfile to get avatar)
+  // Query messages first, then resolve sender metadata in one compact query.
+  // This avoids joining user/userProfile for every message row.
   const messagesQuery = db
     .select({
       id: message.id,
@@ -257,12 +258,8 @@ export async function getMessages(
       editedAt: message.editedAt,
       isDeleted: message.isDeleted,
       createdAt: message.createdAt,
-      senderName: user.name,
-      senderImage: userProfile.avatar,
     })
     .from(message)
-    .innerJoin(user, eq(user.id, message.senderId))
-    .leftJoin(userProfile, eq(userProfile.userId, user.id))
     .where(
       and(
         eq(message.conversationId, conversationId),
@@ -295,6 +292,23 @@ export async function getMessages(
     throw new Error('User is not a participant in this conversation');
   }
 
+  const senderIds = Array.from(new Set(messages.map((msg) => msg.senderId)));
+  const senders = senderIds.length
+    ? await db
+        .select({
+          id: user.id,
+          name: user.name,
+          image: userProfile.avatar,
+        })
+        .from(user)
+        .leftJoin(userProfile, eq(userProfile.userId, user.id))
+        .where(inArray(user.id, senderIds))
+    : [];
+
+  const senderMap = new Map(
+    senders.map((sender) => [sender.id, { name: sender.name, avatarUrl: sender.image }])
+  );
+
   return messages.map((msg) => ({
     id: msg.id,
     conversationId: msg.conversationId,
@@ -314,8 +328,8 @@ export async function getMessages(
     createdAt: msg.createdAt,
     sender: {
       id: msg.senderId,
-      name: msg.senderName,
-      avatarUrl: msg.senderImage,
+      name: senderMap.get(msg.senderId)?.name ?? null,
+      avatarUrl: senderMap.get(msg.senderId)?.avatarUrl ?? null,
     },
   }));
 }

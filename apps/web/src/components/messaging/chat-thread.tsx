@@ -311,13 +311,13 @@ export function ChatThread({
     void fetchMore();
   }, [fetchMore, hasMore, isFetchingMore, updateScrollState]);
 
-  const handleSend = async (text: string) => {
+  const handleSend = useCallback(async (text: string) => {
     await sendMessage({ conversationId, senderId: userId, text });
-  };
+  }, [conversationId, userId, sendMessage]);
 
-  const handleConfirmLocation = async (location: LocationResult) => {
+  const handleConfirmLocation = useCallback(async (location: LocationResult) => {
     await sendLocationMessage({ conversationId, senderId: userId, location });
-  };
+  }, [conversationId, userId, sendLocationMessage]);
 
   return (
     <>
