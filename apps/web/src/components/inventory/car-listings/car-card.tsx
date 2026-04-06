@@ -291,12 +291,12 @@ export function CarCard({
       </Link>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col p-3 sm:p-4 gap-2 sm:gap-1.5">
+      <div className="flex flex-1 flex-col p-4 gap-1.5">
         {/* Title with Year */}
         <Link href={`/listings/${id}`} prefetch={false} className="group/title">
           <div className="flex items-baseline justify-between gap-2">
             <h3 className={cn(
-              "text-headline sm:text-subhead font-bold tracking-tight line-clamp-1 transition-colors flex-1 min-w-0 leading-tight",
+              "text-subhead font-bold tracking-tight line-clamp-1 transition-colors flex-1 min-w-0 leading-tight",
               isBlkListing 
                 ? "text-zinc-900 dark:text-white group-hover/title:text-zinc-600 dark:group-hover/title:text-zinc-300" 
                 : "text-foreground group-hover/title:text-primary"
@@ -304,7 +304,7 @@ export function CarCard({
               {make} {model}
             </h3>
             <span className={cn(
-              "text-subhead sm:text-caption1 font-semibold tabular-nums flex-shrink-0",
+              "text-caption1 font-semibold tabular-nums flex-shrink-0",
               isBlkListing ? "text-zinc-500 dark:text-zinc-500" : "text-muted-foreground/80"
             )}>
               {year}
@@ -314,180 +314,16 @@ export function CarCard({
 
         {/* Price */}
         <p className={cn(
-          "text-title3 sm:text-headline font-black tracking-tight leading-none",
+          "text-headline font-black tracking-tight leading-none",
           isBlkListing ? "text-zinc-900 dark:text-white" : "text-primary dark:text-primary"
         )}>
           {formatPrice(price)}
         </p>
 
-        {/* Mobile: Stats Row */}
-        <div className={cn(
-          "flex items-center gap-2 text-subhead min-w-0 overflow-hidden sm:hidden",
-          isBlkListing ? "text-zinc-500 dark:text-zinc-400" : "text-muted-foreground"
-        )}>
-          <span className="font-medium tabular-nums whitespace-nowrap">{formatMileage(mileage)} km</span>
-          <span className="font-medium whitespace-nowrap">{displaySpecs}</span>
-          <span className="font-medium truncate">{displayEmirate}</span>
-        </div>
-
-        {/* Mobile: Footer - Seller + Actions */}
-        <div className={cn(
-          "flex items-center justify-between pt-3 mt-1 sm:hidden border-t",
-          isBlkListing ? "border-zinc-100 dark:border-zinc-800" : "border-border/40"
-        )}>
-          {/* Seller Info */}
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            {isBlackTierPartner ? (
-              <div className="flex-shrink-0 rounded-full ring-2 ring-black ring-offset-1 ring-offset-background">
-                {isPartnerListing ? (
-                  <BrandAvatar
-                    logoUrl={partnerLogo}
-                    brandName={displaySellerName}
-                    size="xs"
-                    className={cn(
-                      "w-6 h-6",
-                      isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
-                    )}
-                  />
-                ) : (
-                  <UserAvatar
-                    src={sellerAvatarUrl}
-                    name={displaySellerName}
-                    size="sm"
-                    className={cn(
-                      "w-6 h-6",
-                      isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
-                    )}
-                  />
-                )}
-              </div>
-            ) : isPartnerListing ? (
-              <BrandAvatar
-                logoUrl={partnerLogo}
-                brandName={displaySellerName}
-                size="xs"
-                className={cn(
-                  "w-6 h-6 flex-shrink-0",
-                  isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
-                )}
-              />
-            ) : (
-              <UserAvatar
-                src={sellerAvatarUrl}
-                name={displaySellerName}
-                size="sm"
-                className={cn(
-                  "w-6 h-6 flex-shrink-0",
-                  isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
-                )}
-              />
-            )}
-            <span className={cn(
-              "text-subhead sm:text-caption2 font-semibold truncate",
-              isBlkListing ? "text-zinc-600 dark:text-zinc-300" : "text-foreground"
-            )}>
-              {displaySellerName}
-            </span>
-            {!isBlackTierPartner && (partnerVerified || kycVerified) && (
-              <CheckCircle2 
-                className="w-3.5 h-3.5 flex-shrink-0 text-primary" 
-                aria-label="Verified" 
-              />
-            )}
-            {isBlackTierPartner && (
-              <span className="flex-shrink-0 px-1.5 h-4 inline-flex items-center text-[8px] font-black tracking-widest uppercase bg-black text-white">
-                BLK
-              </span>
-            )}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <button 
-              className={cn(
-                "rounded-full p-1.5 transition-colors touch-manipulation",
-                isBlkListing 
-                  ? "text-zinc-400 dark:text-zinc-400 active:bg-zinc-200 dark:active:bg-zinc-800 active:text-zinc-600 dark:active:text-zinc-200" 
-                  : "text-muted-foreground active:bg-muted active:text-foreground"
-              )}
-              aria-label="Share"
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                handleShare();
-              }}
-            >
-              <Share2 className="h-[18px] w-[18px]" />
-            </button>
-            
-            <button 
-              className={cn(
-                "relative rounded-full p-1.5 transition-all active:scale-95 touch-manipulation",
-                favorite.isUpdating && "opacity-50",
-                mounted && favorite.isFavorite
-                  ? "text-favorite active:bg-favorite/10"
-                  : isBlkListing 
-                    ? "text-zinc-400 dark:text-zinc-400 active:bg-zinc-200 dark:active:bg-zinc-800 active:text-zinc-600 dark:active:text-zinc-200" 
-                    : "text-muted-foreground active:bg-muted active:text-foreground"
-              )}
-              aria-label={(mounted && favorite.isFavorite) ? "Remove favorite" : "Add to favorites"}
-              disabled={favorite.isUpdating}
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                handleFavoriteClick();
-              }}
-            >
-              {showHearts && (
-                <span className="absolute inset-0 rounded-full bg-favorite/20 animate-ripple" />
-              )}
-              <Heart
-                className={cn(
-                  "h-[18px] w-[18px] transition-transform duration-200",
-                  heartScale && "scale-125"
-                )}
-                strokeWidth={(mounted && favorite.isFavorite) ? 2.5 : 1.5}
-                fill={(mounted && favorite.isFavorite) ? "currentColor" : "none"}
-              />
-            </button>
-            
-            <button
-              className={cn(
-                "relative rounded-full p-1.5 transition-all active:scale-95 touch-manipulation",
-                superlike.isUpdating && "opacity-50",
-                mounted && superlike.isSuperliked
-                  ? "text-warning active:bg-warning-muted"
-                  : isBlkListing 
-                    ? "text-zinc-400 dark:text-zinc-400 active:bg-zinc-200 dark:active:bg-zinc-800 active:text-zinc-600 dark:active:text-zinc-200" 
-                    : "text-muted-foreground active:bg-muted active:text-foreground"
-              )}
-              aria-label={(mounted && superlike.isSuperliked) ? "Remove superlike" : "Superlike"}
-              disabled={superlike.isUpdating}
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                handleSuperlikeClick();
-              }}
-            >
-              {showSparkles && (
-                <span className="absolute inset-0 rounded-full bg-warning/20 animate-ripple" />
-              )}
-              <Zap
-                className={cn(
-                  "h-[18px] w-[18px] transition-transform duration-200",
-                  showSparkles && "scale-125"
-                )}
-                strokeWidth={(mounted && superlike.isSuperliked) ? 2.5 : 1.5}
-                fill={(mounted && superlike.isSuperliked) ? "currentColor" : "none"}
-              />
-            </button>
-          </div>
-        </div>
-
-        {/* Desktop: Stats Row */}
-        <div className="hidden sm:flex items-center gap-1.5 text-subhead">
+        {/* Stats Row - Shared responsive layout */}
+        <div className="flex items-center gap-1.5 text-subhead min-w-0 overflow-hidden">
           <span className={cn(
-            "font-semibold tabular-nums",
+            "font-semibold tabular-nums whitespace-nowrap",
             isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
           )}>
             {formatMileage(mileage)} km
@@ -508,8 +344,8 @@ export function CarCard({
           </span>
         </div>
 
-        {/* Desktop: Bottom Section with dealer + actions */}
-        <div className="hidden sm:flex items-center justify-between pt-3 mt-auto">
+        {/* Bottom Section with dealer + actions - Shared responsive layout */}
+        <div className="flex items-center justify-between pt-3 mt-auto">
           {/* Left - Dealer */}
           <div className="flex items-center gap-2.5 min-w-0">
             {/* Avatar - with ring for Black tier */}
@@ -559,7 +395,7 @@ export function CarCard({
               />
             )}
             <span className={cn(
-              "text-footnote",
+              "text-footnote font-normal truncate",
               isBlkListing ? "text-zinc-700 dark:text-zinc-200" : "text-foreground"
             )}>
               {displaySellerName}
@@ -725,50 +561,30 @@ function CarCardSkeletonComponent({ className }: CarCardSkeletonProps) {
       </div>
       
       {/* Content Section */}
-      <div className="flex flex-1 flex-col p-3 sm:p-4 gap-2 sm:gap-1">
+      <div className="flex flex-1 flex-col p-4 gap-1.5">
         {/* Title + Year row */}
         <div className="flex items-baseline justify-between gap-2">
-          <Skeleton className="h-5 sm:h-[15px] w-2/3" />
-          <Skeleton className="h-4 sm:h-3 w-8 flex-shrink-0" />
+          <Skeleton className="h-[15px] w-2/3" />
+          <Skeleton className="h-3 w-8 flex-shrink-0" />
         </div>
 
         {/* Price */}
-        <Skeleton className="h-6 sm:h-[18px] w-24 sm:w-28" />
+        <Skeleton className="h-[18px] w-28" />
 
-        {/* Mobile: Stats Row */}
-        <div className="flex items-center gap-2 sm:hidden">
-          <Skeleton className="h-4 w-10" />
-          <Skeleton className="h-4 w-12" />
-          <Skeleton className="h-4 w-12" />
-        </div>
-
-        {/* Mobile: Footer - Seller + Actions */}
-        <div className="flex items-center justify-between pt-3 mt-1 border-t border-border/40 sm:hidden">
-          <div className="flex items-center gap-2 min-w-0">
-            <Skeleton className="w-6 h-6 rounded-full flex-shrink-0" />
-            <Skeleton className="h-3 w-20" />
-          </div>
-          <div className="flex items-center gap-0.5">
-            <Skeleton className="h-7 w-7 rounded-full" />
-            <Skeleton className="h-7 w-7 rounded-full" />
-            <Skeleton className="h-7 w-7 rounded-full" />
-          </div>
-        </div>
-
-        {/* Desktop: Stats Row */}
-        <div className="hidden sm:flex items-center gap-1.5">
+        {/* Stats Row - shared responsive layout */}
+        <div className="flex items-center gap-1.5">
           <Skeleton className="h-3.5 w-14" />
           <Skeleton className="h-3.5 w-8" />
           <Skeleton className="h-3.5 w-12" />
         </div>
 
-        {/* Desktop: Bottom Section */}
-        <div className="hidden sm:flex items-center justify-between pt-3 mt-auto">
+        {/* Bottom Section - shared responsive layout */}
+        <div className="flex items-center justify-between pt-3 mt-auto">
           <div className="flex items-center gap-2.5 min-w-0">
             <Skeleton className="w-7 h-7 rounded-full flex-shrink-0" />
             <Skeleton className="h-[13px] w-24" />
           </div>
-          <div className="flex items-center gap-1 ml-auto">
+          <div className="flex items-center gap-1 -mr-1.5 ml-auto">
             <Skeleton className="h-8 w-8 rounded-full" />
             <Skeleton className="h-8 w-8 rounded-full" />
             <Skeleton className="h-8 w-8 rounded-full" />

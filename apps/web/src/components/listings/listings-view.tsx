@@ -162,20 +162,20 @@ export function ListingsView({
     <TooltipProvider>
       <div className={cn(
         "min-h-screen bg-background",
-        embedded ? "" : "pt-14 sm:pt-16"
+        embedded ? "" : "pt-14 md:pt-16"
       )}>
         {/* Main Layout Container - respects max-width */}
         <div className={cn(
-          "mx-auto px-4 sm:px-6 lg:px-8",
+          "mx-auto px-4 md:px-6 lg:px-8",
           !embedded && "max-w-[1600px] lg:pt-6"
         )}>
           {/* Mobile Layout (no resizable) */}
-          <div className="lg:hidden">
+          <div className="md:hidden">
             {/* TOP: Sticky mobile header */}
             <div
               className={cn(
                 "sticky z-30 bg-background",
-                embedded ? "top-0" : "top-[54px] sm:top-[62px]"
+                embedded ? "top-0" : "top-14"
               )}
             >
               <ListingsHeader
@@ -199,7 +199,7 @@ export function ListingsView({
             </div>
 
             {/* Content */}
-            <main className="pb-3 sm:pb-6">
+            <main className="pb-6">
               <ListingsContent
                 listings={listings}
                 meta={meta}
@@ -227,16 +227,18 @@ export function ListingsView({
             )}
           </div>
 
-          {/* Desktop Layout - sticky L-shell with normal page scroll */}
+          {/* Desktop/Tablet Layout - sticky shell with normal page scroll */}
           <div
             className={cn(
-              "hidden lg:grid gap-x-6",
-              sidebarOpen ? "grid-cols-[16rem_minmax(0,1fr)]" : "grid-cols-[minmax(0,1fr)]"
+              "hidden md:grid gap-x-6",
+              sidebarOpen
+                ? "grid-cols-[minmax(0,1fr)] lg:grid-cols-[16rem_minmax(0,1fr)]"
+                : "grid-cols-[minmax(0,1fr)]"
             )}
           >
             {/* LEFT: Sidebar */}
             {sidebarOpen && (
-              <div className="min-w-0">
+              <div className="hidden lg:block min-w-0">
                 <div
                   className={cn(
                     "sticky overflow-hidden",
@@ -259,7 +261,7 @@ export function ListingsView({
             )}
 
             {/* RIGHT COLUMN: Sticky header + page-flow content */}
-            <div className={cn("min-w-0", sidebarOpen && "col-start-2")}>
+            <div className={cn("min-w-0", sidebarOpen && "lg:col-start-2")}>
               <div
                 className={cn(
                   "sticky z-30 bg-background",
@@ -286,7 +288,7 @@ export function ListingsView({
                 />
               </div>
 
-              <main className="pt-1 pb-6 sm:pt-2">
+              <main className="pt-2 pb-6">
                 <ListingsContent
                   listings={listings}
                   meta={meta}
@@ -304,7 +306,7 @@ export function ListingsView({
           </div>
 
           {!embedded && !isLoading && !isFetching && listings.length > 0 && (
-            <div className={cn("hidden lg:block pt-6", sidebarOpen && "pl-[18.5rem]")}>
+            <div className={cn("hidden md:block pt-6", sidebarOpen && "lg:pl-[18.5rem]")}>
               <ListingsPagination
                 currentPage={currentPage}
                 canGoBack={canGoBack}
@@ -317,7 +319,7 @@ export function ListingsView({
           )}
 
           {embedded && !isLoading && !isFetching && listings.length > 0 && (
-            <div className="hidden lg:block pt-6">
+            <div className="hidden md:block pt-6">
               <ListingsPagination
                 currentPage={currentPage}
                 canGoBack={canGoBack}

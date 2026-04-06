@@ -172,23 +172,23 @@ export default async function InventoryPage({ searchParams }: PageProps) {
 
 function PageSkeleton() {
   return (
-    <div className="min-h-screen bg-background pt-16 sm:pt-20 overflow-y-auto scrollbar-hide">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="hidden lg:grid h-[calc(100dvh-4rem)] grid-cols-[16rem_minmax(0,1fr)] gap-x-6 overflow-hidden">
-          <div className="h-full rounded-2xl bg-muted/10" />
+    <div className="min-h-screen bg-background pt-14 md:pt-16 overflow-y-auto scrollbar-hide">
+      <div className="max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8">
+        <div className="hidden md:grid h-[calc(100dvh-4rem)] grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)] gap-x-6 overflow-hidden">
+          <div className="hidden lg:block h-full rounded-2xl bg-muted/10" />
           <main className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)]">
             <div className="h-20 bg-muted/20 rounded-lg animate-pulse" />
-            <div className="mt-4 min-h-0 space-y-3 overflow-hidden sm:mt-6 md:mt-8">
+            <div className="mt-4 min-h-0 space-y-3 overflow-hidden md:mt-8">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="h-32 bg-muted/20 rounded-lg animate-pulse" />
               ))}
             </div>
           </main>
         </div>
-        <div className="lg:hidden">
+        <div className="md:hidden">
           <main className="min-w-0 overflow-y-auto scrollbar-hide">
             <div className="h-20 bg-muted/20 rounded-lg animate-pulse" />
-            <div className="mt-4 space-y-3 sm:mt-6 md:mt-8">
+            <div className="mt-4 space-y-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="h-32 bg-muted/20 rounded-lg animate-pulse" />
               ))}

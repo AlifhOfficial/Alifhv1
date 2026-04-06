@@ -10,7 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth/session-context';
-import { getCachedUserStats } from '@/lib/listing-detail-cache';
+import { getCachedUserStats } from '@/lib/user-stats-cache';
 
 
 export const runtime = 'nodejs';

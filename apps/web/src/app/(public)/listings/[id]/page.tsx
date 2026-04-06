@@ -20,9 +20,9 @@ import {
   getCachedUserProfile,
   getCachedStaffContact,
   getCachedPartnerStats,
-  getCachedUserStats,
   getCachedHasShowroom,
 } from '@/lib/listing-detail-cache';
+import { getCachedUserStats } from '@/lib/user-stats-cache';
 
 interface PageProps {
   params: Promise<{ id: string }>;

@@ -207,8 +207,8 @@ export function ListingsHeader({
   return (
     <>
       {/* ===== MOBILE HEADER ===== */}
-      <div className="sm:hidden z-30 bg-background border-b border-border/20">
-        <div className="py-2.5 px-2.5 space-y-2">
+      <div className="md:hidden z-30 bg-background border-b border-border/20">
+        <div className="py-2.5 space-y-2">
           {/* Row 1: Search bar + controls */}
           <div className="flex items-center gap-2">
             {/* Filters trigger - pill style */}
@@ -642,7 +642,7 @@ export function ListingsHeader({
       </div>
 
       {/* ===== DESKTOP HEADER ===== */}
-      <header className="hidden sm:block z-30 bg-background border-b border-transparent [&:not(:first-child)]:border-border/20">
+      <header className="hidden md:block z-30 bg-background border-b border-transparent [&:not(:first-child)]:border-border/20">
         <div className="pt-4 pb-4 relative">
           <div className="flex flex-wrap items-center gap-2">
             {/* Sidebar Toggle (Desktop) */}
@@ -748,12 +748,12 @@ export function ListingsHeader({
             </div>
 
             {/* Right Controls Group */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-2">
               {/* Sort Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button 
-                    className="relative flex items-center gap-1.5 h-9 px-3 sm:px-4 bg-sidebar border border-sidebar-border rounded-full text-subhead font-semibold text-muted-foreground hover:text-foreground shadow-sm transition-colors touch-manipulation"
+                    className="relative flex items-center gap-1.5 h-9 px-4 bg-sidebar border border-sidebar-border rounded-full text-subhead font-semibold text-muted-foreground hover:text-foreground shadow-sm transition-colors touch-manipulation"
                   >
                     <span>Sort</span>
                     <ChevronDown className="size-3.5" />
@@ -778,11 +778,11 @@ export function ListingsHeader({
               </DropdownMenu>
 
               {/* View Toggle */}
-              <div className="flex items-center h-9 px-0.5 sm:px-1 bg-sidebar border border-sidebar-border rounded-full shadow-sm">
+              <div className="flex items-center h-9 px-1 bg-sidebar border border-sidebar-border rounded-full shadow-sm">
                 <button
                   onClick={() => onViewModeChange('grid')}
                   className={cn(
-                    "flex items-center justify-center w-8 h-8 sm:w-7 sm:h-7 rounded-full transition-colors touch-manipulation",
+                    "flex items-center justify-center w-8 h-8 rounded-full transition-colors touch-manipulation",
                     viewMode === 'grid' ? "text-foreground bg-muted/50" : "text-muted-foreground hover:text-foreground"
                   )}
                   title="Grid view"
@@ -792,7 +792,7 @@ export function ListingsHeader({
                 <button
                   onClick={() => onViewModeChange('minimal')}
                   className={cn(
-                    "flex items-center justify-center w-8 h-8 sm:w-7 sm:h-7 rounded-full transition-colors touch-manipulation",
+                    "flex items-center justify-center w-8 h-8 rounded-full transition-colors touch-manipulation",
                     viewMode === 'minimal' ? "text-foreground bg-muted/50" : "text-muted-foreground hover:text-foreground"
                   )}
                   title="Minimal view"
@@ -1392,8 +1392,8 @@ function ListingsHeaderSkeletonComponent() {
   return (
     <>
       {/* ===== MOBILE SKELETON ===== */}
-      <div className="sm:hidden z-30 bg-background border-b border-border/20">
-        <div className="py-2.5 px-2.5 space-y-2">
+      <div className="md:hidden z-30 bg-background border-b border-border/20">
+        <div className="py-2.5 space-y-2">
           {/* Row 1: Search bar + controls */}
           <div className="flex items-center gap-2">
             <Skeleton className="h-10 w-10 rounded-full shrink-0" />
@@ -1414,8 +1414,8 @@ function ListingsHeaderSkeletonComponent() {
       </div>
 
       {/* ===== DESKTOP SKELETON ===== */}
-      <header className="hidden sm:block z-30 bg-background border-b border-transparent [&:not(:first-child)]:border-sidebar-border/50">
-        <div className="py-3 sm:py-4">
+      <header className="hidden md:block z-30 bg-background border-b border-transparent [&:not(:first-child)]:border-sidebar-border/50">
+        <div className="py-4">
           {/* Search Row */}
           <div className="flex flex-wrap items-center gap-2">
             {/* Results count skeleton */}

@@ -29,7 +29,7 @@
  */
 
 import { db } from '../index';
-import { carListing, conversation, conversationParticipant } from '../schema';
+import { carListing, conversation, message } from '../schema';
 import { eq, and, sql, count, isNull, gt, isNotNull } from 'drizzle-orm';
 
 // Minimum inquiries required to show response stats
@@ -45,8 +45,10 @@ export interface UserStats {
 export async function calculateUserStats(userId: string): Promise<UserStats> {
   const now = new Date();
   
-  // Run queries in parallel since they're independent
-  const [listingsResult, soldResult, conversationStats] = await Promise.all([
+  // Run base counters in parallel since they're independent.
+  // Keep inquiry count separate so we can skip the expensive response-time query
+  // when there is not enough data to display stats.
+  const [listingsResult, soldResult, inquiryCountResult] = await Promise.all([
     // Total PUBLIC personal listings count (exclude partner/work listings)
     // Must match public visibility conditions (same as buildPublicConditions in car-card-query.ts)
     db
@@ -79,63 +81,14 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
         )
       ),
 
-    // Conversation stats - total, responded, and avg response time
-    // Only for personal listings (not partner/work listings)
+    // Total inquiries count (cheap aggregate)
     db
-      .select({
-        totalInquiries: sql<number>`COUNT(*) FILTER (WHERE 
-          ${conversation.type} = 'inquiry'
-        )`.as('total_inquiries'),
-        respondedInquiries: sql<number>`COUNT(*) FILTER (WHERE 
-          ${conversation.type} = 'inquiry' 
-          AND EXISTS (
-            SELECT 1 FROM message m 
-            WHERE m.conversation_id = ${conversation.id} 
-            AND m.sender_id != ${conversation.initiatedBy}
-            AND m.is_system_message = false
-          )
-        )`.as('responded_inquiries'),
-        avgResponseMinutes: sql<number>`AVG(
-          CASE WHEN ${conversation.type} = 'inquiry' AND EXISTS (
-            SELECT 1 FROM message m 
-            WHERE m.conversation_id = ${conversation.id} 
-            AND m.sender_id != ${conversation.initiatedBy}
-            AND m.is_system_message = false
-          ) THEN
-            -- Calculate business hours response time (9am-8pm GST = UTC+4)
-            -- Convert times to GST, clamp to business hours, then calculate difference
-            (
-              SELECT 
-                GREATEST(0,
-                  -- Calculate business minutes between clamped start and end times
-                  EXTRACT(EPOCH FROM (
-                    -- Clamp reply time to business hours (max 20:00 GST)
-                    LEAST(
-                      (m.created_at AT TIME ZONE 'Asia/Dubai'),
-                      DATE_TRUNC('day', m.created_at AT TIME ZONE 'Asia/Dubai') + INTERVAL '20 hours'
-                    )
-                    -
-                    -- Clamp inquiry time to business hours (min 09:00 GST)
-                    GREATEST(
-                      (${conversation.createdAt} AT TIME ZONE 'Asia/Dubai'),
-                      DATE_TRUNC('day', ${conversation.createdAt} AT TIME ZONE 'Asia/Dubai') + INTERVAL '9 hours'
-                    )
-                  )) / 60
-                )
-              FROM message m 
-              WHERE m.conversation_id = ${conversation.id} 
-              AND m.sender_id != ${conversation.initiatedBy}
-              AND m.is_system_message = false
-              ORDER BY m.created_at ASC
-              LIMIT 1
-            )
-          END
-        )`.as('avg_response_minutes'),
-      })
+      .select({ totalInquiries: count() })
       .from(conversation)
       .innerJoin(carListing, eq(conversation.listingId, carListing.id))
       .where(
         and(
+          eq(conversation.type, 'inquiry'),
           eq(carListing.userId, userId),
           eq(carListing.postedByRole, 'user'),
           isNull(carListing.partnerId)
@@ -146,19 +99,73 @@ export async function calculateUserStats(userId: string): Promise<UserStats> {
   const listingsCount = listingsResult[0]?.count ?? 0;
   const soldCount = soldResult[0]?.count ?? 0;
   
-  // Extract conversation stats
-  const totalInquiries = Number(conversationStats[0]?.totalInquiries ?? 0);
-  const respondedInquiries = Number(conversationStats[0]?.respondedInquiries ?? 0);
+  const totalInquiries = Number(inquiryCountResult[0]?.totalInquiries ?? 0);
   
-  // Only show response stats if minimum threshold met
   const hasEnoughData = totalInquiries >= MIN_INQUIRIES_FOR_STATS;
+
+  // Skip expensive response-time query when UI won't display these stats anyway.
+  if (!hasEnoughData) {
+    return {
+      listingsCount,
+      soldCount,
+      responseTime: null,
+      responseRate: null,
+    };
+  }
+
+  // Conversation stats for users with sufficient inquiry volume.
+  // Use one lateral lookup to fetch first non-system response per inquiry.
+  const [conversationStats] = await db
+    .select({
+      respondedInquiries: sql<number>`COUNT(*) FILTER (WHERE first_response.first_response_at IS NOT NULL)`.as('responded_inquiries'),
+      avgResponseMinutes: sql<number>`AVG(
+        CASE WHEN first_response.first_response_at IS NOT NULL THEN
+          GREATEST(
+            0,
+            EXTRACT(EPOCH FROM (
+              LEAST(
+                (first_response.first_response_at AT TIME ZONE 'Asia/Dubai'),
+                DATE_TRUNC('day', first_response.first_response_at AT TIME ZONE 'Asia/Dubai') + INTERVAL '20 hours'
+              )
+              -
+              GREATEST(
+                (${conversation.createdAt} AT TIME ZONE 'Asia/Dubai'),
+                DATE_TRUNC('day', ${conversation.createdAt} AT TIME ZONE 'Asia/Dubai') + INTERVAL '9 hours'
+              )
+            )) / 60
+          )
+        END
+      )`.as('avg_response_minutes'),
+    })
+    .from(conversation)
+    .innerJoin(carListing, eq(conversation.listingId, carListing.id))
+    .leftJoin(
+      sql<{ first_response_at: Date | null }>`LATERAL (
+        SELECT ${message.createdAt} AS first_response_at
+        FROM ${message}
+        WHERE ${message.conversationId} = ${conversation.id}
+          AND ${message.senderId} != ${conversation.initiatedBy}
+          AND ${message.isSystemMessage} = false
+        ORDER BY ${message.createdAt} ASC
+        LIMIT 1
+      ) AS first_response`,
+      sql`true`
+    )
+    .where(
+      and(
+        eq(conversation.type, 'inquiry'),
+        eq(carListing.userId, userId),
+        eq(carListing.postedByRole, 'user'),
+        isNull(carListing.partnerId)
+      )
+    );
+
+  const respondedInquiries = Number(conversationStats?.respondedInquiries ?? 0);
   
-  const responseRate = hasEnoughData
-    ? Math.round((respondedInquiries / totalInquiries) * 100)
-    : null;
+  const responseRate = Math.round((respondedInquiries / totalInquiries) * 100);
   
-  const responseTime = hasEnoughData && conversationStats[0]?.avgResponseMinutes 
-    ? Math.round(Number(conversationStats[0].avgResponseMinutes)) 
+  const responseTime = conversationStats?.avgResponseMinutes
+    ? Math.round(Number(conversationStats.avgResponseMinutes))
     : null;
 
   return {

@@ -166,8 +166,8 @@ export function ListingsContent({
   // Results - immediate skeleton swap, no fade animations
   return (
     <div>
-      {/* Mobile/Tablet: mobile card, grid, or minimal */}
-      <div className="lg:hidden">
+      {/* Mobile: mobile card, grid, or minimal */}
+      <div className="md:hidden">
         {showSkeletons ? (
           viewMode === 'minimal' ? (
             <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
@@ -236,8 +236,8 @@ export function ListingsContent({
         )}
       </div>
 
-      {/* Desktop (lg+): respects viewMode */}
-      <div className="hidden lg:block">
+      {/* Tablet/Desktop (md+): respects viewMode */}
+      <div className="hidden md:block">
         {showSkeletons ? (
           viewMode === 'list' ? (
             <div className="space-y-3">

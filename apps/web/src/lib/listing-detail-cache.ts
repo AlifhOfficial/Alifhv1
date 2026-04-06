@@ -19,10 +19,10 @@ import {
   getUserProfileByUserId,
   getStaffEffectivePhone,
   calculatePartnerStats,
-  calculateUserStats,
   hasPublishedShowroom,
   type SimilarListingsParams,
 } from '@alifh/database';
+import { getCachedUserStats } from '@/lib/user-stats-cache';
 
 // Cache listing detail for 5 minutes
 export const getCachedListingDetailed = unstable_cache(
@@ -66,12 +66,7 @@ export const getCachedPartnerStats = unstable_cache(
   { revalidate: 86400 }
 );
 
-// Cache user stats for 24 hours
-export const getCachedUserStats = unstable_cache(
-  async (userId: string) => calculateUserStats(userId),
-  ['user-stats'],
-  { revalidate: 86400 }
-);
+export { getCachedUserStats };
 
 // Cache showroom check for 5 minutes
 export const getCachedHasShowroom = unstable_cache(

@@ -1,5 +1,4 @@
 import {
-  calculateUserStats,
   db,
   ensureCurrentUserProfile,
   eq,
@@ -8,6 +7,7 @@ import {
 } from '@alifh/database';
 import type { ExtendedUser } from '@/types/auth';
 import type { UserProfile, UserProfileResponse } from '@/hooks/profile/user/use-user-profile';
+import { getCachedUserStats } from '@/lib/user-stats-cache';
 
 async function attachAvatarUrl(profile: UserProfile) {
   if (!profile.avatar) {
@@ -48,7 +48,7 @@ export async function getCurrentUserProfileBundle(user: ExtendedUser): Promise<U
   const profileWithAvatar = await attachAvatarUrl(profileWithSession);
 
   const [stats, passkeys] = await Promise.all([
-    calculateUserStats(user.id),
+    getCachedUserStats(user.id),
     db.select({
       id: passkey.id,
       name: passkey.name,

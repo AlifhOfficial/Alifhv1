@@ -218,8 +218,8 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-40 h-14 sm:h-16 bg-background will-change-transform [transform:translateZ(0)] [backface-visibility:hidden]">
-        <div className="flex h-full items-center max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="fixed top-0 left-0 right-0 z-40 h-14 md:h-16 bg-background will-change-transform [transform:translateZ(0)] [backface-visibility:hidden]">
+        <div className="flex h-full items-center max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8">
             <div className="flex min-w-0 flex-1 items-baseline">
               <Link
                 href="/"
@@ -241,7 +241,7 @@ export function Navbar() {
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="hidden lg:flex items-baseline gap-1">
+              <div className="hidden md:flex items-baseline gap-0.5 lg:gap-1">
                 {navItems.map((item) => (
                   <div 
                     key={item.label}
@@ -251,7 +251,7 @@ export function Navbar() {
                   >
                     <Link
                       href={item.href}
-                      className={`inline-flex items-baseline rounded-md px-4 py-2.5 text-subhead font-semibold leading-none tracking-tight transition-colors ${
+                      className={`inline-flex items-baseline rounded-md px-2.5 lg:px-4 py-2.5 text-subhead font-semibold leading-none tracking-tight transition-colors ${
                         pathname === item.href
                           ? "text-foreground"
                           : "text-muted-foreground hover:text-foreground"
@@ -312,7 +312,7 @@ export function Navbar() {
               {/* Signed-in desktop actions */}
               {mounted && isAuthenticated && user?.id && (
                 <>
-                  <div className="hidden sm:flex h-10 items-center gap-1.5 rounded-full border border-border/60 bg-muted/30 px-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                  <div className="hidden md:flex h-10 items-center gap-1.5 rounded-full border border-border/60 bg-muted/30 px-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
                     <NavbarMessaging userId={user.id} onOpenChat={openChat} />
                     <NavbarFavorites userId={user.id} />
 
@@ -344,7 +344,7 @@ export function Navbar() {
                     </div>
                   </div>
 
-                  <div className="sm:hidden flex h-10 items-center rounded-full border border-border/60 bg-muted/30 px-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                  <div className="md:hidden flex h-10 items-center rounded-full border border-border/60 bg-muted/30 px-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
                     <ProfileMenu
                       user={user}
                       showMenu={showProfileMenu}

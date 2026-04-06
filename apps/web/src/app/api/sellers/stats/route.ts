@@ -17,8 +17,8 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   getCachedHasShowroom,
   getCachedPartnerStats,
-  getCachedUserStats,
 } from '@/lib/listing-detail-cache';
+import { getCachedUserStats } from '@/lib/user-stats-cache';
 
 
 export const runtime = "nodejs";

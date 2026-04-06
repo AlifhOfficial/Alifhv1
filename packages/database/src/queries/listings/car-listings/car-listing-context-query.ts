@@ -7,7 +7,7 @@
  * @module queries/listings/car-listings/car-listing-context-query
  */
 
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, isNotNull, sql } from 'drizzle-orm';
 import { db } from '../../../dbclient';
 import { carListing } from '../../../schema/listing';
 
@@ -33,7 +33,7 @@ export async function getListingModerationContext(
   const result = await db
     .select({
       id: carListing.id,
-      userId: carListing.userId,
+      userId: sql<string>`${carListing.userId}`,
       partnerId: carListing.partnerId,
       postedByRole: carListing.postedByRole,
       moderationStatus: carListing.moderationStatus,
@@ -52,10 +52,18 @@ export async function getListingModerationContext(
       price: carListing.price,
     })
     .from(carListing)
-    .where(eq(carListing.id, listingId))
+    .where(and(eq(carListing.id, listingId), isNotNull(carListing.userId)))
     .limit(1);
 
-  return result[0] ?? null;
+  const row = result[0];
+  if (!row || !row.userId) {
+    return null;
+  }
+
+  return {
+    ...row,
+    userId: row.userId,
+  };
 }
 /**
  * Get listing images for cleanup (before hard delete)
