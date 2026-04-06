@@ -41,7 +41,7 @@ export default function ToolsPage() {
           <Link
             key={tool.href}
             href={tool.href}
-            className="group flex items-center justify-between py-4 px-1 border-b border-border/30 hover:border-border transition-colors"
+            className="group flex items-center justify-between py-4 px-1 border-b border-border/30  transition-colors"
           >
             <span className="text-subhead group-hover:text-foreground text-foreground/80 transition-colors">
               {tool.title}

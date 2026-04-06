@@ -89,7 +89,7 @@ export function ShowroomTeam({ showroom }: ShowroomTeamProps) {
               <Dialog key={member.id}>
                 <DialogTrigger asChild>
                   <button 
-                    className="flex-shrink-0 w-[260px] compact:w-[280px] h-[200px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group text-left cursor-pointer"
+                    className="flex-shrink-0 w-[260px] compact:w-[280px] h-[200px] p-6 rounded-xl bg-sidebar border border-border/40  transition-all duration-300 group text-left cursor-pointer"
                   >
                     {/* Avatar */}
                     <div className="relative w-14 h-14 rounded-full overflow-hidden bg-muted mb-4 ring-2 ring-border/40 group-hover:ring-primary/30 transition-colors">

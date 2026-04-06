@@ -178,7 +178,7 @@ function CategoryAccordion({
         <span className="text-subhead text-foreground/90 group-hover:text-foreground transition-colors">
           {name}
         </span>
-        <div className="flex items-center justify-center w-5 h-5 rounded-full border border-border/60 group-hover:border-border transition-colors">
+        <div className="flex items-center justify-center w-5 h-5 rounded-full border border-border/60 group- transition-colors">
           {isExpanded ? (
             <Minus className="w-3 h-3 text-muted-foreground" />
           ) : (

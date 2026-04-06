@@ -263,7 +263,7 @@ export function LoanCalculator() {
                   "py-2.5 rounded-lg text-subhead transition-all border",
                   formData.loanTerm === String(year)
                     ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-background border-border hover:border-primary/50"
+                    : "bg-background border-border "
                 )}
               >
                 {year} yr

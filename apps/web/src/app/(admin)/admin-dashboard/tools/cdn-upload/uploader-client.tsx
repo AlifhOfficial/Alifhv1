@@ -160,7 +160,7 @@ export function R2UploaderClient() {
           "border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all",
           isDragging 
             ? "border-primary bg-primary/5 scale-[1.02]" 
-            : "border-border hover:border-primary/50 hover:bg-muted/30"
+            : "border-border  hover:bg-muted/30"
         )}
       >
         <input

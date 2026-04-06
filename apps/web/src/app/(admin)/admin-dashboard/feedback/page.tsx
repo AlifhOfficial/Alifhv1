@@ -215,25 +215,25 @@ export default function AdminFeedbackPage() {
           </div>
           
           <div className="grid grid-cols-2 regular:grid-cols-4 gap-4">
-            <Card className="cursor-pointer hover:border-primary/40 transition-colors" onClick={() => setSelectedStatus('all')}>
+            <Card className="cursor-pointer  transition-colors" onClick={() => setSelectedStatus('all')}>
               <CardContent className="p-4">
                 <div className="text-title2 font-semibold">{allFeedback.length}</div>
                 <div className="text-subhead text-muted-foreground">Total</div>
               </CardContent>
             </Card>
-            <Card className="cursor-pointer hover:border-primary/40 transition-colors" onClick={() => setSelectedStatus('new')}>
+            <Card className="cursor-pointer  transition-colors" onClick={() => setSelectedStatus('new')}>
               <CardContent className="p-4">
                 <div className="text-title2 font-semibold text-primary">{newCount}</div>
                 <div className="text-subhead text-muted-foreground">New ({unreadCount} unread)</div>
               </CardContent>
             </Card>
-            <Card className="cursor-pointer hover:border-success/40 transition-colors" onClick={() => setSelectedStatus('reviewed')}>
+            <Card className="cursor-pointer  transition-colors" onClick={() => setSelectedStatus('reviewed')}>
               <CardContent className="p-4">
                 <div className="text-title2 font-semibold text-success">{reviewedCount}</div>
                 <div className="text-subhead text-muted-foreground">Reviewed</div>
               </CardContent>
             </Card>
-            <Card className="cursor-pointer hover:border-border transition-colors" onClick={() => setSelectedStatus('archived')}>
+            <Card className="cursor-pointer  transition-colors" onClick={() => setSelectedStatus('archived')}>
               <CardContent className="p-4">
                 <div className="text-title2 font-semibold text-muted-foreground">{archivedCount}</div>
                 <div className="text-subhead text-muted-foreground">Archived</div>

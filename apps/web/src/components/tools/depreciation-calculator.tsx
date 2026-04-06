@@ -216,7 +216,7 @@ export function DepreciationCalculator() {
                 "p-3 rounded-lg border text-center transition-all",
                 formData.specs === spec.id
                   ? "bg-primary/5 border-primary ring-1 ring-primary"
-                  : "bg-background border-border hover:border-primary/50"
+                  : "bg-background border-border "
               )}
             >
               <span className="text-headline">{spec.flag}</span>
@@ -298,7 +298,7 @@ export function DepreciationCalculator() {
                 "p-3 rounded-lg border transition-all",
                 formData.condition === cond.id
                   ? "bg-primary/5 border-primary"
-                  : "bg-background border-border hover:border-primary/50"
+                  : "bg-background border-border "
               )}
             >
               <p className={cn("text-subhead", formData.condition === cond.id && cond.color)}>

@@ -921,7 +921,7 @@ export function ProfileView({ initialData }: ProfileViewProps) {
                       "px-3 compact:px-4 py-1.5 compact:py-2 rounded-lg text-caption1 compact:text-subhead font-semibold transition-all border inline-flex items-center gap-1.5 compact:gap-2 cursor-pointer",
                       isSelected 
                         ? "bg-muted/40 text-foreground border-border/60" 
-                        : "bg-muted/30 text-foreground/90 border-border/40 hover:border-primary/40 hover:bg-muted/40"
+                        : "bg-muted/30 text-foreground/90 border-border/40  hover:bg-muted/40"
                     )}
                   >
                     {tag}

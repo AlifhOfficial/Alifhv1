@@ -442,7 +442,7 @@ export function ImageUpload({
               ? 'bg-muted/30 cursor-default'
               : dragActive
               ? 'border-2 border-dashed border-primary bg-primary/5 cursor-pointer'
-              : 'border-2 border-dashed border-border hover:border-primary/50 hover:bg-muted/50 cursor-pointer'
+              : 'border-2 border-dashed border-border  hover:bg-muted/50 cursor-pointer'
           }`}
         >
           <input

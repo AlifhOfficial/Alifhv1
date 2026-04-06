@@ -93,7 +93,7 @@ export function MessageBubble({
         {listing && (
           <Link
             href={`/listings/${listing.id}`}
-            className="mb-1.5 compact:mb-2 max-w-[240px] compact:max-w-[280px] rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm block hover:border-primary/50 hover:shadow-md transition-all"
+            className="mb-1.5 compact:mb-2 max-w-[240px] compact:max-w-[280px] rounded-xl overflow-hidden border border-border/30 bg-card shadow-sm block  hover:shadow-md transition-all"
           >
             {getAppThumbUrl(listing.thumbnail) ? (
               <img 

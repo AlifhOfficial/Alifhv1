@@ -147,7 +147,7 @@ export function FunnelMatchesView({ funnel, onBack }: FunnelMatchesViewProps) {
                 href={`/listings/${listing.id}`}
                 className="group"
               >
-                <div className="rounded-lg border border-sidebar-border bg-sidebar overflow-hidden hover:border-sidebar-border/80 hover:shadow-md transition-all">
+                <div className="rounded-lg border border-sidebar-border bg-sidebar overflow-hidden hover:shadow-md transition-all">
                   {/* Image */}
                   <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
                     {getAppThumbUrl(listing.thumbnail) ? (

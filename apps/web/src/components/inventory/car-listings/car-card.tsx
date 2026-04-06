@@ -257,8 +257,8 @@ export function CarCard({
     <div className={cn(
       "group relative flex flex-col overflow-hidden rounded-[20px] transition-all duration-300 w-full",
       isBlkListing 
-        ? "bg-background border border-border/40 hover:border-border/60 hover:shadow-2xl hover:shadow-black/20" 
-        : "bg-card border border-border/30 hover:border-border/50 hover:shadow-md",
+        ? "bg-background border border-border/40  hover:shadow-2xl hover:shadow-black/20" 
+        : "bg-card border border-border/30  hover:shadow-md",
       className
     )}>
       {/* Subtle top accent for BLK listings */}

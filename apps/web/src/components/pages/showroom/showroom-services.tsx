@@ -89,7 +89,7 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
               <Dialog>
                 <DialogTrigger asChild>
                   <button 
-                    className="flex-shrink-0 w-[280px] compact:w-[320px] h-[200px] p-6 rounded-xl bg-primary text-white border border-primary/40 hover:border-primary/40 transition-all duration-300 flex flex-col text-left cursor-pointer"
+                    className="flex-shrink-0 w-[280px] compact:w-[320px] h-[200px] p-6 rounded-xl bg-primary text-white border border-primary/40  transition-all duration-300 flex flex-col text-left cursor-pointer"
                   >
                     {/* VIP Label */}
                     <span className="text-title3 font-semibold text-white mb-3">
@@ -135,7 +135,7 @@ export function ShowroomServices({ showroom }: ShowroomServicesProps) {
               <Dialog key={service.id}>
                 <DialogTrigger asChild>
                   <button 
-                    className="flex-shrink-0 w-[280px] compact:w-[320px] h-[200px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col text-left cursor-pointer"
+                    className="flex-shrink-0 w-[280px] compact:w-[320px] h-[200px] p-6 rounded-xl bg-sidebar border border-border/40  transition-all duration-300 flex flex-col text-left cursor-pointer"
                   >
                     {getAppThumbUrl(service.image) && (
                       <div className="w-full h-24 rounded-lg overflow-hidden bg-muted mb-4">

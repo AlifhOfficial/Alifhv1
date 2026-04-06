@@ -293,7 +293,7 @@ export function GallerySection({
                   />
                 ))}
                 {(form.showroomImages?.length || 0) < 12 && (
-                  <label className="aspect-video rounded-lg border-2 border-dashed border-border/40 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/40 transition-colors">
+                  <label className="aspect-video rounded-lg border-2 border-dashed border-border/40 flex flex-col items-center justify-center gap-2 cursor-pointer  transition-colors">
                     <input
                       type="file"
                       accept="image/*"

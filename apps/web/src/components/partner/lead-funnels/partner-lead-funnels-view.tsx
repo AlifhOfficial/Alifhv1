@@ -501,7 +501,7 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
   }, [isExpanded, previewFetched, funnel.id]);
 
   return (
-    <div className="rounded-xl border border-border/40 bg-card hover:border-border/60 hover:shadow-sm transition-all overflow-hidden">
+    <div className="rounded-xl border border-border/40 bg-card  hover:shadow-sm transition-all overflow-hidden">
       {/* Funnel Header */}
       <div className="w-full p-3 compact:p-4 regular:p-5 border-b border-border/30">
         <div className="flex items-start justify-between gap-2 compact:gap-4">
@@ -604,7 +604,7 @@ function FunnelRow({ funnel, isExpanded, onToggle, onViewAll }: FunnelRowProps) 
                   target="_blank"
                   className="flex-shrink-0 w-[160px] compact:w-auto group"
                 >
-                  <div className="rounded-lg border border-border/40 bg-card overflow-hidden hover:border-border/60 hover:shadow-md transition-all">
+                  <div className="rounded-lg border border-border/40 bg-card overflow-hidden  hover:shadow-md transition-all">
                     {/* Image */}
                     <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
                       {getAppThumbUrl(listing.thumbnail) ? (

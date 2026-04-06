@@ -112,7 +112,7 @@ function TestimonialCard({
     (testimonial.customerImage?.startsWith('https://') ? testimonial.customerImage : getAppThumbUrl(testimonial.customerImage));
 
   return (
-    <div className="flex-shrink-0 w-[320px] compact:w-[380px] min-h-[260px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 flex flex-col">
+    <div className="flex-shrink-0 w-[320px] compact:w-[380px] min-h-[260px] p-6 rounded-xl bg-sidebar border border-border/40  transition-all duration-300 flex flex-col">
       {/* Rating */}
       <div className="flex items-center gap-1 mb-4">
         {[1, 2, 3, 4, 5].map((star) => (

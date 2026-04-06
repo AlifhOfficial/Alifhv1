@@ -73,7 +73,7 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
                 href={mapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group p-4 compact:p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-colors flex items-start gap-3 compact:gap-4 flex-1"
+                className="group p-4 compact:p-6 rounded-xl bg-sidebar border border-border/40  transition-colors flex items-start gap-3 compact:gap-4 flex-1"
               >
                 <div className="w-9 h-9 compact:w-10 compact:h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
                   <MapPin className="w-4 h-4 compact:w-5 compact:h-5 text-foreground" />
@@ -96,7 +96,7 @@ export function ShowroomContact({ showroom }: ShowroomContactProps) {
             {displayPhone && (
               <a 
                 href={`tel:${displayPhone}`}
-                className="group p-4 compact:p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-colors flex items-start gap-3 compact:gap-4 flex-1"
+                className="group p-4 compact:p-6 rounded-xl bg-sidebar border border-border/40  transition-colors flex items-start gap-3 compact:gap-4 flex-1"
               >
                 <div className="w-9 h-9 compact:w-10 compact:h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
                   <Phone className="w-4 h-4 compact:w-5 compact:h-5 text-foreground" />

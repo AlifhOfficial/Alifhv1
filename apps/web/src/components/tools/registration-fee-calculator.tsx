@@ -177,7 +177,7 @@ export function RegistrationFeeCalculator() {
                 "p-3 rounded-lg border text-subhead transition-all",
                 formData.emirate === emirate.id
                   ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background border-border hover:border-primary/50"
+                  : "bg-background border-border "
               )}
             >
               {emirate.name}
@@ -193,7 +193,7 @@ export function RegistrationFeeCalculator() {
                 "p-3 rounded-lg border text-subhead transition-all",
                 formData.emirate === emirate.id
                   ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background border-border hover:border-primary/50"
+                  : "bg-background border-border "
               )}
             >
               {emirate.name}
@@ -241,7 +241,7 @@ export function RegistrationFeeCalculator() {
                 "p-3 rounded-lg border text-left transition-all",
                 formData.registrationType === type.id
                   ? "bg-primary/5 border-primary"
-                  : "bg-background border-border hover:border-primary/50"
+                  : "bg-background border-border "
               )}
             >
               <p className="text-subhead">{type.label}</p>

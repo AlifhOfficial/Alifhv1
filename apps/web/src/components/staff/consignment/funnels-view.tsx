@@ -359,7 +359,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
   });
 
   return (
-    <div className="rounded-lg compact:rounded-xl border border-border/40 bg-card hover:border-border/60 transition-all overflow-hidden">
+    <div className="rounded-lg compact:rounded-xl border border-border/40 bg-card  transition-all overflow-hidden">
       {/* Funnel Header */}
       <div className="w-full p-3 compact:p-4 border-b border-border/30">
         <div className="flex items-start justify-between gap-3">
@@ -465,7 +465,7 @@ function FunnelRow({ funnel, onViewAll, onEdit, onDelete, isDeleting }: FunnelRo
                   href={`/listings/${listing.id}`}
                   className="flex-shrink-0 w-[140px] compact:w-auto group"
                 >
-                  <div className="rounded-lg border border-border/40 bg-card overflow-hidden hover:border-border/60 transition-all">
+                  <div className="rounded-lg border border-border/40 bg-card overflow-hidden  transition-all">
                     {/* Image */}
                     <div className="aspect-[4/3] bg-muted/20 relative overflow-hidden">
                       {getAppThumbUrl(listing.thumbnail) ? (

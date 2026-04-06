@@ -385,7 +385,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
                       <button
                         type="button"
                         className={cn(
-                          "w-full h-12 bg-transparent border-b-2 border-border/40 hover:border-primary/60 focus:border-primary",
+                          "w-full h-12 bg-transparent border-b-2 border-border/40  focus:border-primary",
                           "outline-none transition-colors px-0 text-subhead text-left",
                           !selectedDate && "text-muted-foreground/40"
                         )}
@@ -450,7 +450,7 @@ export function PartnerApplicationForm({ onSuccess }: { onSuccess?: () => void }
                     disabled={isUploading}
                     className={cn(
                       "w-full rounded-lg border-2 border-dashed border-border/40 bg-muted/10",
-                      "hover:bg-muted/20 hover:border-primary/40 transition-all p-8",
+                      "hover:bg-muted/20  transition-all p-8",
                       "disabled:opacity-50 disabled:cursor-not-allowed"
                     )}
                   >

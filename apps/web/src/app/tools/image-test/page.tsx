@@ -279,7 +279,7 @@ export default function ImageTestPage() {
 
       {/* Drop zone */}
       <label
-        className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-border rounded-xl p-12 cursor-pointer hover:border-foreground/40 transition-colors mb-8"
+        className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-border rounded-xl p-12 cursor-pointer  transition-colors mb-8"
         onDragOver={e => e.preventDefault()}
         onDrop={e => { e.preventDefault(); handleFiles(e.dataTransfer.files) }}
       >

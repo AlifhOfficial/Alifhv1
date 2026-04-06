@@ -253,7 +253,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
       <div className="grid grid-cols-2 compact:grid-cols-4 gap-3">
         <Link
           href="/user-dashboard/listings/my-listings"
-          className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
+          className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4  transition-colors"
         >
           <div className="flex items-center justify-between">
             <p className="text-caption2 compact:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">My Listings</p>
@@ -263,7 +263,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
         </Link>
         <Link
           href="/user-dashboard/favorites"
-          className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
+          className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4  transition-colors"
         >
           <div className="flex items-center justify-between">
             <p className="text-caption2 compact:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Saved Items</p>
@@ -273,7 +273,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
         </Link>
         <Link
           href="/user-dashboard/messaging"
-          className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
+          className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4  transition-colors"
         >
           <div className="flex items-center justify-between">
             <p className="text-caption2 compact:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Messages</p>
@@ -283,7 +283,7 @@ export function UserDashboardOverview({ user, initialStats: stats, initialHealth
         </Link>
         <Link
           href="/user-dashboard/listings/new"
-          className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4 hover:border-border/40 transition-colors"
+          className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-4  transition-colors"
         >
           <div className="flex items-center justify-between">
             <p className="text-caption2 compact:text-caption1 uppercase tracking-wider text-muted-foreground/60 font-medium">Create</p>

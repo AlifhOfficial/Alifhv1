@@ -175,7 +175,7 @@ function FuelPricesBanner({
               "p-2.5 rounded-lg border text-center transition-all backdrop-blur-sm",
               selected === fuel.id
                 ? "border-foreground bg-foreground/5"
-                : "border-border/40 bg-background/40 hover:border-foreground/30"
+                : "border-border/40 bg-background/40 "
             )}
           >
             <div className="text-caption2 text-muted-foreground mb-0.5">{fuel.name}</div>

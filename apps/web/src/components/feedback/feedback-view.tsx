@@ -221,7 +221,7 @@ export function FeedbackView() {
                 {feedbackList.map((feedback) => (
                   <div
                     key={feedback.id}
-                    className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4 hover:border-border/50 transition-colors"
+                    className="rounded-xl border border-border/40 bg-sidebar p-5 space-y-4  transition-colors"
                   >
                     {/* Header */}
                     <div className="flex items-start justify-between gap-4">

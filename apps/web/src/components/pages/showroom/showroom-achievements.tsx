@@ -74,7 +74,7 @@ export function ShowroomAchievements({ showroom }: ShowroomAchievementsProps) {
             {achievements.map((achievement, index) => (
               <div 
                 key={achievement.id} 
-                className="flex-shrink-0 w-[340px] compact:w-[380px] min-h-[280px] p-6 rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group flex flex-col"
+                className="flex-shrink-0 w-[340px] compact:w-[380px] min-h-[280px] p-6 rounded-xl bg-sidebar border border-border/40  transition-all duration-300 group flex flex-col"
               >
                 {/* Top Row - Year & Image */}
                 <div className="flex items-start justify-between mb-6">

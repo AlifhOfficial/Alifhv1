@@ -460,7 +460,7 @@ export function DealerInventory({
                 <div
                   key={listing.id}
                   className={cn(
-                    "group p-4 compact:p-5 rounded-[20px] hover:bg-secondary/40 transition-colors border border-transparent hover:border-border/40",
+                    "group p-4 compact:p-5 rounded-[20px] hover:bg-secondary/40 transition-colors border border-transparent ",
                     listing.isBlkListing && "bg-black/5"
                   )}
                 >

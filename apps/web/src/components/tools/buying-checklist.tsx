@@ -119,7 +119,7 @@ export function BuyingChecklist() {
                       className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
                         isChecked
                           ? 'bg-foreground border-foreground'
-                          : 'border-border group-hover:border-foreground/50'
+                          : 'border-border group-'
                       }`}
                     >
                       {isChecked && (

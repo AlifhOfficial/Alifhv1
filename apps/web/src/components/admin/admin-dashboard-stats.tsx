@@ -149,7 +149,7 @@ export function AdminDashboardStats() {
         <div className="grid grid-cols-1 regular:grid-cols-3 gap-4">
           <Link 
             href="/admin-dashboard/users"
-            className="group rounded-xl border border-border p-6 hover:border-primary/40 hover:bg-secondary/10 transition-all"
+            className="group rounded-xl border border-border p-6  hover:bg-secondary/10 transition-all"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-full bg-primary-muted flex items-center justify-center group-hover:bg-primary/15 transition-colors">
@@ -162,7 +162,7 @@ export function AdminDashboardStats() {
 
           <Link 
             href="/admin-dashboard/partners"
-            className="group rounded-xl border border-border p-6 hover:border-primary/40 hover:bg-secondary/10 transition-all"
+            className="group rounded-xl border border-border p-6  hover:bg-secondary/10 transition-all"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-full bg-primary-muted flex items-center justify-center group-hover:bg-primary/15 transition-colors">
@@ -175,7 +175,7 @@ export function AdminDashboardStats() {
 
           <Link 
             href="/admin-dashboard/ban-appeals"
-            className="group rounded-xl border border-border p-6 hover:border-primary/40 hover:bg-secondary/10 transition-all"
+            className="group rounded-xl border border-border p-6  hover:bg-secondary/10 transition-all"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-full bg-primary-muted flex items-center justify-center group-hover:bg-primary/15 transition-colors">

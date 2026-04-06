@@ -163,7 +163,7 @@ export function PartnerRequestAdminList() {
               {requests.map(({ request, user }) => (
                 <div 
                   key={request.id} 
-                  className="rounded-2xl border border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden hover:border-border/60 transition-all"
+                  className="rounded-2xl border border-border/40 bg-card/50 backdrop-blur-sm overflow-hidden  transition-all"
                 >
                   {/* Header */}
                   <div className="p-8 border-b border-border/40">
@@ -274,7 +274,7 @@ export function PartnerRequestAdminList() {
                         </button>
                         <button
                           onClick={() => setRejectingId(request.id)}
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-border/40 hover:border-destructive/30 hover:bg-destructive-muted text-foreground hover:text-destructive text-subhead transition-all"
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-border/40  hover:bg-destructive-muted text-foreground hover:text-destructive text-subhead transition-all"
                         >
                           <XCircle className="w-4 h-4" />
                           Reject

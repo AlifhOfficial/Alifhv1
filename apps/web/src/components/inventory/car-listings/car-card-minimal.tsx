@@ -62,8 +62,8 @@ export function CarCardMinimal({
       className={cn(
         'group flex flex-col overflow-hidden rounded-[20px] transition-all',
         isBlkListing 
-          ? 'bg-background border border-border/40 hover:border-border/60 hover:shadow-lg hover:shadow-black/20' 
-          : 'bg-card border border-border/30 hover:border-border/50 hover:shadow-sm',
+          ? 'bg-background border border-border/40  hover:shadow-lg hover:shadow-black/20' 
+          : 'bg-card border border-border/30  hover:shadow-sm',
         className
       )}
     >

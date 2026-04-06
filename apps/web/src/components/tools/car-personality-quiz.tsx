@@ -164,7 +164,7 @@ export function CarPersonalityQuiz() {
             <button
               key={index}
               onClick={() => handleAnswer(option.brand)}
-              className="w-full p-4 border rounded-lg hover:bg-primary/5 hover:border-primary transition-colors text-left"
+              className="w-full p-4 border rounded-lg hover:bg-primary/5  transition-colors text-left"
             >
               {option.text}
             </button>

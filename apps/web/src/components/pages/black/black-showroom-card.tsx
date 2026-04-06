@@ -79,7 +79,7 @@ export function BlackShowroomCard({ showroom, priority = false, index: _index }:
         'group relative block w-full',
         'rounded-xl overflow-hidden',
         'bg-sidebar border border-border/40',
-        'hover:border-primary/30 transition-all duration-300'
+        ' transition-all duration-300'
       )}
     >
       {/* Main Layout - Stacked mobile, split desktop */}

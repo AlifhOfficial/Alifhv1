@@ -368,7 +368,7 @@ export function SearchBar({
           'relative flex items-center',
           'bg-sidebar border border-sidebar-border rounded-full',
           'shadow-sm hover:shadow-md',
-          'hover:border-sidebar-border/80',
+          '',
           'transition-all duration-200',
           isFocused && 'border-primary/50 ring-2 ring-primary/20 shadow-md',
           sizeClasses[size]

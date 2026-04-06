@@ -415,7 +415,7 @@ function ShowroomCarCard({ listing, priority = false, index: _index, theme: _the
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="flex-shrink-0 w-[300px] compact:w-[340px] rounded-xl bg-sidebar border border-border/40 hover:border-primary/30 transition-all duration-300 group overflow-hidden"
+      className="flex-shrink-0 w-[300px] compact:w-[340px] rounded-xl bg-sidebar border border-border/40  transition-all duration-300 group overflow-hidden"
     >
       {/* Image Container */}
       <div className="relative aspect-[16/9] overflow-hidden">
