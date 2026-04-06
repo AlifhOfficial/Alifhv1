@@ -241,7 +241,7 @@ export default function AdminBanAppealsPage() {
                           value={reviewNote}
                           onChange={(e) => setReviewNote(e.target.value)}
                           placeholder="Add a review note (optional)"
-                          className="w-full h-24 p-3 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors placeholder:text-muted-foreground/30 resize-none"
+                          className="w-full h-24 p-3 bg-transparent border-b border-border/30 focus:border-foreground outline-none transition-colors placeholder:text-muted-foreground/30 resize-none"
                         />
                         <div className="flex items-center gap-3">
                           <button

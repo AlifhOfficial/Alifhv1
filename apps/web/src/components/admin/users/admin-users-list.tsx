@@ -196,7 +196,7 @@ export function AdminUsersList() {
               }
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full pl-10 pr-4 h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors placeholder:text-muted-foreground/30"
+              className="w-full pl-10 pr-4 h-10 bg-transparent border-b border-border/30 focus:border-foreground outline-none transition-colors placeholder:text-muted-foreground/30"
             />
           </div>
           
@@ -301,7 +301,7 @@ export function AdminUsersList() {
                 </div>
 
                 {/* Additional Info */}
-                <div className="grid grid-cols-2 regular:grid-cols-4 gap-4 pt-4 border-t border-border text-subhead">
+                <div className="grid grid-cols-2 regular:grid-cols-4 gap-4 pt-4 border-t border-border/30 text-subhead">
                   <div>
                     <p className="text-caption1 text-muted-foreground mb-1">KYC Status</p>
                     <div className="flex items-center gap-1.5">

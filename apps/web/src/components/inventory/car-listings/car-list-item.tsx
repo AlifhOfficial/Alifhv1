@@ -212,8 +212,8 @@ export function CarListItem({
     <div className={cn(
       "group relative overflow-hidden rounded-[20px] transition-all duration-300 flex flex-col large:flex-row w-full",
       isBlkListing 
-        ? "bg-background dark:bg-card border border-border hover:border-border/80 hover:shadow-2xl hover:shadow-black/20" 
-        : "bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-md",
+        ? "bg-background border border-border/40 hover:border-border/60 hover:shadow-2xl hover:shadow-black/20" 
+        : "bg-card border border-border/30 hover:border-border/50 hover:shadow-md",
       className
     )}>
       {/* Subtle top accent for BLK listings */}
@@ -225,7 +225,7 @@ export function CarListItem({
       <div className="p-3 w-full large:w-72 flex-shrink-0">
         <Link href={`/listings/${id}`} prefetch={false} className={cn(
           "relative aspect-[4/3] w-full overflow-hidden rounded-[20px] block",
-          isBlkListing ? "bg-zinc-900" : "bg-muted/20"
+          isBlkListing ? "bg-black" : "bg-surface-secondary"
         )}>
           {displayImage ? (
             <img
@@ -250,14 +250,14 @@ export function CarListItem({
               <h3 className={cn(
                 "text-headline large:text-subhead font-bold tracking-tight transition-colors line-clamp-1",
                 isBlkListing 
-                  ? "text-zinc-900 dark:text-white group-hover/title:text-zinc-600 dark:group-hover/title:text-zinc-300" 
+                  ? "text-black dark:text-white group-hover/title:text-black/70 dark:group-hover/title:text-white/70" 
                   : "text-foreground group-hover/title:text-primary"
               )}>
                 {make} {model}
               </h3>
               <span className={cn(
                 "text-subhead large:text-caption1 font-semibold tabular-nums flex-shrink-0",
-                isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
+                isBlkListing ? "text-black/60 dark:text-white/60" : "text-muted-foreground/70"
               )}>
                 {year}
               </span>
@@ -265,7 +265,7 @@ export function CarListItem({
             {trim && (
               <p className={cn(
                 "text-caption1 line-clamp-1 mt-0.5",
-                isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
+                isBlkListing ? "text-black/60 dark:text-white/60" : "text-muted-foreground/70"
               )}>
                 {trim}
               </p>
@@ -273,7 +273,7 @@ export function CarListItem({
           </Link>
           <p className={cn(
             "text-title3 large:text-headline font-black tracking-tight leading-none whitespace-nowrap",
-            isBlkListing ? "text-zinc-900 dark:text-white" : "text-primary dark:text-primary"
+            isBlkListing ? "text-black dark:text-white" : "text-primary dark:text-primary"
           )}>
             {formatPrice(price)}
           </p>
@@ -283,27 +283,27 @@ export function CarListItem({
         <div className="flex items-center gap-2 large:gap-1.5 text-subhead">
           <span className={cn(
             "font-semibold",
-            isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
+            isBlkListing ? "text-black/60 dark:text-white/60" : "text-muted-foreground/70"
           )}>
             {formatMileage(mileage)} km
           </span>
           <span className={cn(
             "hidden large:inline",
-            isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"
+            isBlkListing ? "text-black/30 dark:text-white/30" : "text-muted-foreground/30"
           )}>·</span>
           <span className={cn(
             "font-semibold",
-            isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
+            isBlkListing ? "text-black/60 dark:text-white/60" : "text-muted-foreground/70"
           )}>
             {displaySpecs}
           </span>
           <span className={cn(
             "hidden large:inline",
-            isBlkListing ? "text-zinc-300 dark:text-zinc-700" : "text-muted-foreground/30"
+            isBlkListing ? "text-black/30 dark:text-white/30" : "text-muted-foreground/30"
           )}>·</span>
           <span className={cn(
             "font-semibold truncate",
-            isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground/70"
+            isBlkListing ? "text-black/60 dark:text-white/60" : "text-muted-foreground/70"
           )}>
             {displayEmirate}
           </span>
@@ -323,7 +323,7 @@ export function CarListItem({
                     size="xs"
                     className={cn(
                       "w-7 h-7",
-                      isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
+                      isBlkListing ? "bg-black/10 dark:bg-white/10 border-black/10 dark:border-white/10" : "bg-muted/40 border-border/40"
                     )}
                   />
                 ) : (
@@ -333,7 +333,7 @@ export function CarListItem({
                     size="sm"
                     className={cn(
                       "w-7 h-7",
-                      isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
+                      isBlkListing ? "bg-black/10 dark:bg-white/10 border-black/10 dark:border-white/10 text-black/50 dark:text-white/50" : "bg-muted/40 border-border/40 text-muted-foreground/70"
                     )}
                   />
                 )}
@@ -345,7 +345,7 @@ export function CarListItem({
                 size="xs"
                 className={cn(
                   "w-7 h-7 flex-shrink-0",
-                  isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
+                  isBlkListing ? "bg-black/10 dark:bg-white/10 border-black/10 dark:border-white/10" : "bg-muted/40 border-border/40"
                 )}
               />
             ) : (
@@ -355,13 +355,13 @@ export function CarListItem({
                 size="sm"
                 className={cn(
                   "w-7 h-7 flex-shrink-0",
-                  isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
+                  isBlkListing ? "bg-black/10 dark:bg-white/10 border-black/10 dark:border-white/10 text-black/50 dark:text-white/50" : "bg-muted/40 border-border/40 text-muted-foreground/70"
                 )}
               />
             )}
             <span className={cn(
               "text-subhead large:text-footnote",
-              isBlkListing ? "text-zinc-700 dark:text-zinc-200" : "text-foreground"
+              isBlkListing ? "text-black/70 dark:text-white/70" : "text-foreground"
             )}>
               {displaySellerName}
             </span>
@@ -384,7 +384,7 @@ export function CarListItem({
               className={cn(
                 "rounded-full p-1.5 transition-colors",
                 isBlkListing 
-                  ? "text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50" 
+                  ? "text-black/60 dark:text-white/60 hover:text-black/80 dark:hover:text-white/80 hover:bg-black/5 dark:hover:bg-white/10" 
                   : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
               )}
               aria-label="Share"
@@ -404,10 +404,10 @@ export function CarListItem({
                 favorite.isUpdating && "opacity-50 cursor-not-allowed",
                 favorite.isFavorite
                   ? isBlkListing 
-                    ? "text-favorite dark:text-rose-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50" 
+                    ? "text-favorite hover:bg-black/5 dark:hover:bg-white/10" 
                     : "text-favorite hover:bg-muted/50"
                   : isBlkListing 
-                    ? "text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50" 
+                    ? "text-black/60 dark:text-white/60 hover:text-black/80 dark:hover:text-white/80 hover:bg-black/5 dark:hover:bg-white/10" 
                     : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
               )}
               aria-label={favorite.isFavorite ? "Remove favorite" : "Add to favorites"}
@@ -436,10 +436,10 @@ export function CarListItem({
                 superlike.isUpdating && "opacity-50 cursor-not-allowed",
                 superlike.isSuperliked
                   ? isBlkListing 
-                    ? "text-warning hover:bg-zinc-100 dark:hover:bg-zinc-800/50" 
+                    ? "text-warning hover:bg-black/5 dark:hover:bg-white/10" 
                     : "text-warning hover:bg-muted/50"
                   : isBlkListing 
-                    ? "text-zinc-400 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50" 
+                    ? "text-black/60 dark:text-white/60 hover:text-black/80 dark:hover:text-white/80 hover:bg-black/5 dark:hover:bg-white/10" 
                     : "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/50"
               )}
               aria-label={superlike.isSuperliked ? "Remove superlike" : "Superlike"}

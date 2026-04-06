@@ -287,7 +287,7 @@ export function RegistrationFeeCalculator() {
             type="checkbox"
             checked={formData.isFirstTime}
             onChange={(e) => setFormData({ ...formData, isFirstTime: e.target.checked })}
-            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+            className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
           />
           <div>
             <p className="text-subhead">First time in this emirate</p>

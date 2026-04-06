@@ -45,7 +45,7 @@ const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: strin
   },
   no_show: { 
     icon: AlertCircle, 
-    color: 'text-slate-500', 
+    color: 'text-muted-foreground', 
     message: 'No missed bookings', 
     subMessage: 'Missed bookings will appear here' 
   },

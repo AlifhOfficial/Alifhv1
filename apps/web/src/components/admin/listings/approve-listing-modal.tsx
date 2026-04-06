@@ -67,7 +67,7 @@ export function ApproveListingModal({ open, listing, onClose, onSuccess }: Appro
       {/* Modal */}
       <div className="relative z-50 w-full max-w-md bg-background border border-border rounded-xl shadow-xl m-4">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border/30">
           <h2 className="text-headline">Approve Listing</h2>
           <button
             onClick={onClose}

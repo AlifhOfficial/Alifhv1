@@ -268,7 +268,7 @@ export function AdvancedFilters({
             </div>
 
             {/* Header */}
-            <div className="px-5 pb-4 border-b border-border shrink-0">
+            <div className="px-5 pb-4 border-b border-border/30 shrink-0">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-headline font-bold tracking-tight">More Filters</h3>
@@ -305,7 +305,7 @@ export function AdvancedFilters({
             </div>
 
             {/* Sticky Footer with Apply Button */}
-            <div className="shrink-0 px-5 py-4 border-t border-border bg-background/95 backdrop-blur-sm pb-safe">
+            <div className="shrink-0 px-5 py-4 border-t border-border/30 bg-background/95 backdrop-blur-sm pb-safe">
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}

@@ -48,7 +48,7 @@ export function PageLoader({ message, compact = false }: PageLoaderProps) {
         <div
           aria-label="Revvup"
           className={cn(
-            'relative text-zinc-900 transition-opacity duration-300 dark:text-white',
+            'relative text-foreground transition-opacity duration-300',
             mounted ? 'opacity-90' : 'opacity-0'
           )}
         >

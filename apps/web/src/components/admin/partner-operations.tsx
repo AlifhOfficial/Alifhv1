@@ -247,7 +247,7 @@ export function AdminPartnerOperations({
         <div className="fixed inset-0 bg-background/40 backdrop-blur-2xl flex items-center justify-center z-50 p-4">
           <div className="bg-card rounded-xl border border-border max-w-md w-full">
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-border">
+            <div className="px-6 py-4 border-b border-border/30">
               <h3 className="text-headline font-semibold tracking-tight">Suspend Partner</h3>
             </div>
             
@@ -266,14 +266,14 @@ export function AdminPartnerOperations({
                   value={suspendReason}
                   onChange={(e) => setSuspendReason(e.target.value)}
                   rows={3}
-                  className="w-full px-0 py-2 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors resize-none placeholder:text-muted-foreground/30"
+                  className="w-full px-0 py-2 bg-transparent border-b border-border/30 focus:border-foreground outline-none transition-colors resize-none placeholder:text-muted-foreground/30"
                   placeholder="Enter suspension reason..."
                 />
               </div>
             </div>
 
             {/* Modal Actions */}
-            <div className="flex gap-3 px-6 py-4 border-t border-border">
+            <div className="flex gap-3 px-6 py-4 border-t border-border/30">
               <button
                 onClick={() => {
                   setShowSuspendModal(false);

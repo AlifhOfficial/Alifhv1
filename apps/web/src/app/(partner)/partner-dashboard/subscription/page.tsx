@@ -414,7 +414,7 @@ export default function PartnerBillingPage() {
                   <button
                     onClick={() => handleCheckout('black')}
                     disabled={checkoutPlan !== null}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-zinc-900 text-white text-subhead hover:bg-zinc-800 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-black text-white text-subhead hover:bg-black/90 transition-colors disabled:opacity-50"
                   >
                     {checkoutPlan === 'black' ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />

@@ -61,9 +61,9 @@ export function PartnerDashboardNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col h-full bg-emerald-50 border-r border-emerald-200">
-      <div className="p-6 border-b border-emerald-200">
-        <h2 className="text-headline font-semibold text-emerald-900">Partner Hub</h2>
+    <nav className="flex flex-col h-full bg-background border-r border-border/20">
+      <div className="p-6 border-b border-border/20">
+        <h2 className="text-headline font-semibold text-foreground">Partner Hub</h2>
       </div>
       
       <div className="flex-1 px-3 py-4">
@@ -77,16 +77,16 @@ export function PartnerDashboardNav() {
                   className={cn(
                     'group flex items-center px-3 py-2 text-subhead rounded-md transition-colors',
                     isActive
-                      ? 'bg-emerald-100 text-emerald-800 border-r-2 border-emerald-600'
-                      : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-900'
+                      ? 'bg-primary-muted text-primary'
+                      : 'text-foreground hover:bg-muted/50 hover:text-foreground'
                   )}
                 >
                   <item.icon
                     className={cn(
                       'mr-3 h-5 w-5 flex-shrink-0',
                       isActive
-                        ? 'text-emerald-600'
-                        : 'text-emerald-500 group-hover:text-emerald-600'
+                        ? 'text-primary'
+                        : 'text-muted-foreground group-hover:text-foreground'
                     )}
                   />
                   {item.name}
@@ -97,14 +97,14 @@ export function PartnerDashboardNav() {
         </ul>
       </div>
       
-      <div className="p-4 border-t border-emerald-200">
+      <div className="p-4 border-t border-border/20">
         <div className="flex items-center">
-          <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
             <span className="text-subhead text-white">P</span>
           </div>
           <div className="ml-3">
-            <p className="text-subhead text-emerald-800">Partner Portal</p>
-            <p className="text-caption1 text-emerald-600">Management</p>
+            <p className="text-subhead text-foreground">Partner Portal</p>
+            <p className="text-caption1 text-muted-foreground">Management</p>
           </div>
         </div>
       </div>

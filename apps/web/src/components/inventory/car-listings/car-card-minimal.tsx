@@ -62,8 +62,8 @@ export function CarCardMinimal({
       className={cn(
         'group flex flex-col overflow-hidden rounded-[20px] transition-all',
         isBlkListing 
-          ? 'bg-background dark:bg-card border border-border hover:border-border/80 hover:shadow-lg hover:shadow-black/20' 
-          : 'bg-sidebar border border-sidebar-border hover:border-sidebar-border/80 hover:shadow-sm',
+          ? 'bg-background border border-border/40 hover:border-border/60 hover:shadow-lg hover:shadow-black/20' 
+          : 'bg-card border border-border/30 hover:border-border/50 hover:shadow-sm',
         className
       )}
     >
@@ -71,7 +71,7 @@ export function CarCardMinimal({
       <div className="mx-1 mt-1">
         <div className={cn(
           "relative w-full aspect-[16/9] overflow-hidden rounded-[20px]",
-          isBlkListing ? "bg-zinc-900" : "bg-muted/20"
+          isBlkListing ? "bg-black" : "bg-surface-secondary"
         )}>
           {displayImage ? (
             <img
@@ -95,7 +95,7 @@ export function CarCardMinimal({
           {/* Make/Model */}
           <p className={cn(
             "text-subhead font-bold truncate",
-            isBlkListing ? "text-zinc-900 dark:text-white" : "text-foreground"
+            isBlkListing ? "text-black dark:text-white" : "text-foreground"
           )}>
             {make} {model}
           </p>
@@ -104,12 +104,12 @@ export function CarCardMinimal({
           <div className="flex items-center gap-1.5">
             <p className={cn(
               "text-caption1 font-semibold truncate",
-              isBlkListing ? "text-zinc-400 dark:text-zinc-500" : "text-muted-foreground"
+              isBlkListing ? "text-black/60 dark:text-white/60" : "text-muted-foreground"
             )}>
               {displaySellerName}
             </p>
             {isBlackTierPartner ? (
-              <span className="flex-shrink-0 px-1 h-3.5 inline-flex items-center text-[7px] font-black tracking-widest uppercase bg-black text-white border border-zinc-700">
+              <span className="flex-shrink-0 px-1 h-3.5 inline-flex items-center text-[7px] font-black tracking-widest uppercase bg-black text-white border border-white/10">
                 BLK
               </span>
             ) : isVerified && (
@@ -128,7 +128,7 @@ export function CarCardMinimal({
                 size="xs"
                 className={cn(
                   "w-8 h-8",
-                  isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
+                  isBlkListing ? "bg-black/10 dark:bg-white/10 border-black/10 dark:border-white/10" : "bg-muted/40 border-border/40"
                 )}
               />
             ) : (
@@ -138,7 +138,7 @@ export function CarCardMinimal({
                 size="sm"
                 className={cn(
                   "w-8 h-8",
-                  isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
+                  isBlkListing ? "bg-black/10 dark:bg-white/10 border-black/10 dark:border-white/10 text-black/50 dark:text-white/50" : "bg-muted/40 border-border/40 text-muted-foreground/70"
                 )}
               />
             )}
@@ -150,7 +150,7 @@ export function CarCardMinimal({
             size="xs"
             className={cn(
               "w-8 h-8 flex-shrink-0",
-              isBlkListing ? "bg-zinc-800 border-zinc-700" : "bg-muted/40 border-border/40"
+              isBlkListing ? "bg-black/10 dark:bg-white/10 border-black/10 dark:border-white/10" : "bg-muted/40 border-border/40"
             )}
           />
         ) : (
@@ -160,7 +160,7 @@ export function CarCardMinimal({
             size="sm"
             className={cn(
               "w-8 h-8 flex-shrink-0",
-              isBlkListing ? "bg-zinc-800 border-zinc-700 text-zinc-500" : "bg-muted/40 border-border/40 text-muted-foreground/70"
+              isBlkListing ? "bg-black/10 dark:bg-white/10 border-black/10 dark:border-white/10 text-black/50 dark:text-white/50" : "bg-muted/40 border-border/40 text-muted-foreground/70"
             )}
           />
         )}

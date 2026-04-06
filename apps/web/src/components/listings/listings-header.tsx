@@ -527,7 +527,7 @@ export function ListingsHeader({
                 </div>
 
                 {/* Sticky Footer */}
-                <div className="shrink-0 px-4 py-3 border-t border-border bg-background pb-safe">
+                <div className="shrink-0 px-4 py-3 border-t border-border/30 bg-background pb-safe">
                   <div className="flex items-center gap-3">
                     {activeFilterCount > 0 && (
                       <button
@@ -684,7 +684,7 @@ export function ListingsHeader({
                 </div>
 
                 {/* Header */}
-                <div className="px-5 pb-4 border-b border-border shrink-0">
+                <div className="px-5 pb-4 border-b border-border/30 shrink-0">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-headline font-bold tracking-tight">Filters</h3>
@@ -726,7 +726,7 @@ export function ListingsHeader({
                 </div>
 
                 {/* Sticky Footer with Apply Button */}
-                <div className="shrink-0 px-5 py-4 border-t border-border bg-background/95 backdrop-blur-sm pb-safe">
+                <div className="shrink-0 px-5 py-4 border-t border-border/30 bg-background/95 backdrop-blur-sm pb-safe">
                   <button
                     onClick={() => onMobileFiltersToggle(false)}
                     className="w-full h-12 bg-primary text-primary-foreground font-semibold text-callout rounded-2xl hover:bg-primary/90 active:scale-[0.98] transition-[background-color,transform] will-change-transform touch-manipulation shadow-lg"

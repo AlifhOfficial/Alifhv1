@@ -228,7 +228,7 @@ export function Navbar() {
               >
                 <span
                   aria-label="Revvup"
-                  className="text-zinc-900 dark:text-white"
+                  className="text-foreground"
                   suppressHydrationWarning
                 >
                   <span

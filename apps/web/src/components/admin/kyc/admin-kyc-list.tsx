@@ -59,14 +59,14 @@ function StatusBadge({ status }: { status: KycRecordData['status'] }) {
     },
     expired: {
       icon: AlertTriangle,
-      color: 'bg-gray-500/10 text-gray-600 dark:text-gray-400',
+      color: 'bg-muted text-muted-foreground',
       label: 'Expired',
     },
   };
 
   const config = configMap[status as keyof typeof configMap] || {
     icon: AlertTriangle,
-    color: 'bg-gray-500/10 text-gray-600 dark:text-gray-400',
+    color: 'bg-muted text-muted-foreground',
     label: status || 'Unknown',
   };
 
@@ -278,7 +278,7 @@ export function AdminKycList() {
                 </div>
 
                 {/* Extracted Info & Scores */}
-                <div className="grid grid-cols-2 regular:grid-cols-6 gap-4 pt-4 border-t border-border text-subhead">
+                <div className="grid grid-cols-2 regular:grid-cols-6 gap-4 pt-4 border-t border-border/30 text-subhead">
                   {/* Extracted Name */}
                   <div>
                     <p className="text-caption1 text-muted-foreground mb-1">Extracted Name</p>
@@ -337,7 +337,7 @@ export function AdminKycList() {
 
                 {/* Action Buttons for Pending */}
                 {record.status === 'pending' && (
-                  <div className="flex items-center gap-3 pt-4 mt-4 border-t border-border">
+                  <div className="flex items-center gap-3 pt-4 mt-4 border-t border-border/30">
                     <button
                       onClick={() => handleApprove(record.id)}
                       disabled={isApproving}
@@ -359,7 +359,7 @@ export function AdminKycList() {
 
                 {/* Rejection Reason */}
                 {record.status === 'rejected' && record.rejectionReason && (
-                  <div className="flex items-start gap-2 pt-4 mt-4 border-t border-border">
+                  <div className="flex items-start gap-2 pt-4 mt-4 border-t border-border/30">
                     <AlertTriangle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-caption1 text-muted-foreground mb-1">Rejection Reason</p>

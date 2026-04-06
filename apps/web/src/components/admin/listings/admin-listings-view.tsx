@@ -377,7 +377,7 @@ export function AdminListingsView() {
         </div>
 
       {/* Tabs */}
-      <div className="border-b border-border">
+      <div className="border-b border-border/30">
         <div className="flex items-center justify-between overflow-x-auto">
           {/* Main Tabs */}
           <div className="flex gap-1">
@@ -451,13 +451,13 @@ export function AdminListingsView() {
             placeholder="Search by make, model, user, email, ID..."
             value={searchInput}
             onChange={(e) => { setSearchInput(e.target.value); debouncedSetSearchTerm(e.target.value); }}
-            className="w-full h-10 bg-transparent border-b border-border focus:border-foreground outline-none transition-colors pl-6 pr-0 text-subhead"
+            className="w-full h-10 bg-transparent border-b border-border/30 focus:border-foreground outline-none transition-colors pl-6 pr-0 text-subhead"
           />
         </div>
 
         {/* Type Filter */}
         <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as TypeFilter)}>
-          <SelectTrigger className="h-10 w-[140px] border-0 border-b border-border rounded-none bg-transparent">
+          <SelectTrigger className="h-10 w-[140px] border-0 border-b border-border/30 rounded-none bg-transparent">
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
@@ -469,7 +469,7 @@ export function AdminListingsView() {
 
         {/* Sort */}
         <Select value={sortOption} onValueChange={(v) => setSortOption(v as SortOption)}>
-          <SelectTrigger className="h-10 w-[160px] border-0 border-b border-border rounded-none bg-transparent">
+          <SelectTrigger className="h-10 w-[160px] border-0 border-b border-border/30 rounded-none bg-transparent">
             <SelectValue placeholder="Newest Published" />
           </SelectTrigger>
           <SelectContent>

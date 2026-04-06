@@ -17,7 +17,7 @@ export function Logo({ className, width = 100, height = 30, priority = false }: 
   return (
     <span
       aria-label="Revvup"
-      className={cn("inline-flex items-center text-zinc-900 dark:text-white", className)}
+      className={cn("inline-flex items-center text-foreground", className)}
       style={{ width, height }}
       data-priority={priority ? "true" : undefined}
     >

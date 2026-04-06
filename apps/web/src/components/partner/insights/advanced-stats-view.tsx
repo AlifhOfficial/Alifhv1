@@ -140,7 +140,7 @@ interface AdvancedStats {
 // ============================================================================
 
 const BAR_COLORS = [
-  'bg-slate-500',
+  'bg-muted-foreground',
   'bg-sky-500',
   'bg-teal-500',
   'bg-indigo-500',
@@ -150,7 +150,7 @@ const BAR_COLORS = [
 
 // Donut chart colors - calm, muted palette
 const DONUT_COLORS = [
-  '#64748b', // slate-500
+  'hsl(var(--label-tertiary))',
   '#0ea5e9', // sky-500
   '#14b8a6', // teal-500
   '#6366f1', // indigo-500

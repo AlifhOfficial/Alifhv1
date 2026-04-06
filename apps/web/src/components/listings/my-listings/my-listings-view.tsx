@@ -58,7 +58,7 @@ const EMPTY_STATE_CONFIG: Record<string, { icon: React.ElementType; color: strin
   },
   archived: { 
     icon: Archive, 
-    color: 'text-slate-500', 
+    color: 'text-muted-foreground', 
     message: 'No archived listings', 
     subMessage: 'Listings you\'ve archived will appear here' 
   },
@@ -479,7 +479,7 @@ export function MyListingsView({
           </div>
           <div className="flex items-center gap-2">
             {listingType === 'work' && blackQuota && (
-              <div className="flex items-center gap-2 px-2 compact:px-3 py-1 compact:py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
+              <div className="flex items-center gap-2 px-2 compact:px-3 py-1 compact:py-1.5 rounded-full bg-black/80 text-white/90">
                 <span className="text-caption2 compact:text-caption1">
                   {blackQuota.blackListingQuota - blackQuota.activeBlackListingsCount} of {blackQuota.blackListingQuota} BLK
                 </span>

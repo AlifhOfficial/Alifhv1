@@ -100,7 +100,7 @@ export function EMICalculator({ price, currency = 'AED', className }: EMICalcula
 
       {/* Expanded Calculator */}
       {isExpanded && (
-        <div className="space-y-4 pt-4 border-t border-border">
+        <div className="space-y-4 pt-4 border-t border-border/30">
           {/* Down Payment */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">

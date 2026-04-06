@@ -380,7 +380,7 @@ export default function ImageTestPage() {
               ) : (
                 <>
                   {/* Timing breakdown row */}
-                  <div className="px-4 py-2 bg-muted/10 border-b border-border flex flex-wrap gap-x-4 gap-y-1">
+                  <div className="px-4 py-2 bg-muted/10 border-b border-border/30 flex flex-wrap gap-x-4 gap-y-1">
                     <span className="text-caption2 text-muted-foreground">
                       Sharp parallel <span className="font-medium text-foreground">{fmtMs(r.timing.sharpParallelMs)}</span>
                     </span>

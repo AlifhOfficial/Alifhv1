@@ -73,7 +73,7 @@ export function RejectListingModal({ open, listing, onClose, onSuccess }: Reject
       {/* Modal */}
       <div className="relative z-50 w-full max-w-md bg-background border border-border rounded-xl shadow-xl m-4">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border/30">
           <h2 className="text-headline">Reject Listing</h2>
           <button
             onClick={onClose}
@@ -107,7 +107,7 @@ export function RejectListingModal({ open, listing, onClose, onSuccess }: Reject
               onChange={(e) => setReason(e.target.value)}
               placeholder="e.g., Images are unclear, pricing seems unrealistic, duplicate listing..."
               rows={4}
-              className="w-full bg-transparent border-b border-border focus:border-foreground outline-none transition-colors text-subhead resize-none py-2"
+              className="w-full bg-transparent border-b border-border/30 focus:border-foreground outline-none transition-colors text-subhead resize-none py-2"
             />
           </div>
 

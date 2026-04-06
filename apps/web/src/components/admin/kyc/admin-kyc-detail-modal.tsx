@@ -240,14 +240,14 @@ function StatusBadge({ status }: { status: KycRecordData['status'] }) {
     },
     expired: {
       icon: AlertTriangle,
-      color: 'bg-gray-500/10 text-gray-500',
+      color: 'bg-muted text-muted-foreground',
       label: 'Expired',
     },
   };
 
   const config = configMap[status as keyof typeof configMap] || {
     icon: AlertTriangle,
-    color: 'bg-gray-500/10 text-gray-500',
+    color: 'bg-muted text-muted-foreground',
     label: status || 'Unknown',
   };
 
@@ -307,7 +307,7 @@ export function AdminKycDetailModal({
       <div className="relative z-50 w-full max-w-4xl max-h-[90vh] overflow-hidden bg-background border border-border rounded-xl shadow-xl m-4 flex flex-col">
         
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-border bg-background">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-border/30 bg-background">
           <div className="flex items-center gap-4">
             <UserAvatar
               src={displayRecord.userAvatar}
@@ -657,7 +657,7 @@ export function AdminKycDetailModal({
 
         {/* Footer Actions */}
         {displayRecord.status === 'pending' && (
-          <div className="sticky bottom-0 flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-sidebar">
+          <div className="sticky bottom-0 flex items-center justify-end gap-3 px-6 py-4 border-t border-border/30 bg-sidebar">
             <button
               onClick={onReject}
               disabled={isRejecting}

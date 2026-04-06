@@ -309,7 +309,7 @@ export function DealerInventory({
         <div className="flex items-center gap-2">
           {/* BLK Quota Badge */}
           {blackQuota && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 text-zinc-100">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/80 text-white/90">
               <Crown className="w-3 h-3" />
               <span className="text-caption1">
                 {blackQuota.blackListingQuota - blackQuota.activeBlackListingsCount} of {blackQuota.blackListingQuota} BLK
@@ -461,7 +461,7 @@ export function DealerInventory({
                   key={listing.id}
                   className={cn(
                     "group p-4 compact:p-5 rounded-[20px] hover:bg-secondary/40 transition-colors border border-transparent hover:border-border/40",
-                    listing.isBlkListing && "bg-zinc-500/5"
+                    listing.isBlkListing && "bg-black/5"
                   )}
                 >
                   <div className="flex items-start gap-4 compact:gap-5">
@@ -481,8 +481,8 @@ export function DealerInventory({
                         </div>
                       )}
                       {listing.isBlkListing && (
-                        <div className="absolute top-1.5 left-1.5 w-5 h-5 rounded bg-zinc-800 flex items-center justify-center">
-                          <Crown className="w-3 h-3 text-zinc-100" />
+                        <div className="absolute top-1.5 left-1.5 w-5 h-5 rounded bg-black flex items-center justify-center">
+                          <Crown className="w-3 h-3 text-white/90" />
                         </div>
                       )}
                     </div>

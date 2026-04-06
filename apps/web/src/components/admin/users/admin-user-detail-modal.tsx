@@ -65,7 +65,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
       <div className="relative z-50 w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-background border border-border rounded-xl shadow-xl m-4">
         
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-border bg-background">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-border/30 bg-background">
           <h2 className="text-headline">User Details</h2>
           <button
             onClick={onClose}
@@ -354,7 +354,7 @@ export function AdminUserDetailModal({ user, open, onClose }: AdminUserDetailMod
           )}
 
           {/* Admin Operations */}
-          <section className="space-y-6 pt-6 border-t border-border">
+          <section className="space-y-6 pt-6 border-t border-border/30">
             <div className="border-b border-border/40 pb-2">
               <h3 className="text-callout tracking-tight">Admin Operations</h3>
             </div>

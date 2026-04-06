@@ -80,13 +80,13 @@ export function DashboardLayout({ children, enableRightPanel = false }: Dashboar
         {enableRightPanel && (
           <>
             <div
-              className={`fixed top-0 right-0 h-full bg-background border-l border-border shadow-2xl transition-transform duration-300 z-30 ${
+              className={`fixed top-0 right-0 h-full bg-background border-l border-border/30 shadow-2xl transition-transform duration-300 z-30 ${
                 rightPanelOpen ? "translate-x-0" : "translate-x-full"
               } w-full regular:w-[400px] large:w-[500px]`}
             >
               {rightPanelOpen && (
                 <div className="flex flex-col h-full">
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-border/30">
                     <h2 className="text-headline font-semibold text-foreground">{rightPanelTitle}</h2>
                     <button
                       onClick={closeRightPanel}
@@ -153,7 +153,7 @@ export function DashboardContent({ children, header, fullHeight = false, noPaddi
       )}
 
       {/* Bottom Bar Panel */}
-      <footer className={`${hideFooterOnMobile ? 'hidden large:flex' : 'flex'} h-14 shrink-0 items-center gap-2 px-4 z-50 rounded-xl bg-background border-t border-border`}>
+      <footer className={`${hideFooterOnMobile ? 'hidden large:flex' : 'flex'} h-14 shrink-0 items-center gap-2 px-4 z-50 rounded-xl bg-background border-t border-border/30`}>
         <SidebarTrigger className="-ml-1" />
         <ThemeToggle />
         {header && (

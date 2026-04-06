@@ -89,7 +89,7 @@ function _getColorClasses(color?: string) {
     case 'yellow': return 'text-warning';
     case 'red': return 'text-destructive';
     case 'purple': return 'text-purple-600 dark:text-purple-400';
-    case 'gray': return 'text-gray-600 dark:text-gray-400';
+    case 'gray': return 'text-muted-foreground';
     default: return 'text-foreground';
   }
 }

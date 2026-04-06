@@ -404,7 +404,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
           <div className="flex-1 min-w-0 space-y-1.5">
             <h1 className={cn(
               "text-headline compact:text-title3 font-bold tracking-tight",
-              listing.isBlkListing ? "text-zinc-900 dark:text-white" : "text-foreground"
+              listing.isBlkListing ? "text-black dark:text-white" : "text-foreground"
             )}>
               {carTitle}
             </h1>
@@ -413,7 +413,7 @@ export function CarCardDetailed({ listing, kycVerified: _kycVerified, isBlackTie
             <div className="flex items-baseline gap-2.5 flex-wrap">
               <p className={cn(
                 "text-title3 compact:text-title2 font-black tabular-nums tracking-tight leading-none",
-                listing.isBlkListing ? "text-zinc-900 dark:text-white" : "text-primary dark:text-primary"
+                listing.isBlkListing ? "text-black dark:text-white" : "text-primary dark:text-primary"
               )}>
                 {formatPrice(listing.price)}
               </p>
