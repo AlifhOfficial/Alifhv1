@@ -91,13 +91,27 @@ async function markAsReadAPI(conversationId: string, messageId?: string): Promis
   if (!res.ok) throw new Error('Failed to mark as read');
 }
 
-async function createConversationAPI(params: {
+// Module-level counter for unique temp conversation IDs (FIFO ordering)
+let tempConvIdCounter = 0;
+
+interface CreateConversationInput {
   otherUserId: string;
   listingId?: string;
   partnerId?: string;
   type?: string;
   subject?: string;
-}): Promise<{ conversationId: string; created: boolean }> {
+  /**
+   * Pre-built conversation data for optimistic cache injection.
+   * Mirrors the mobile pattern: build conversation locally and inject into
+   * cache immediately so the messaging page opens without a network round-trip.
+   * This field is NOT sent to the API.
+   */
+  _optimistic?: Omit<Conversation, 'id'>;
+}
+
+async function createConversationAPI(
+  params: Omit<CreateConversationInput, '_optimistic'>
+): Promise<{ conversationId: string; created: boolean }> {
   const res = await fetch('/api/conversations', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -474,12 +488,93 @@ export function useMarkAsRead() {
 
 export function useCreateConversation() {
   const queryClient = useQueryClient();
-  
-  const mutation = useMutation({ 
-    mutationFn: createConversationAPI,
-    onSuccess: () => {
-      // Force refetch conversations list to include newly created conversation
-      queryClient.refetchQueries({ queryKey: ['conversations'] });
+
+  const mutation = useMutation<
+    { conversationId: string; created: boolean },
+    Error,
+    CreateConversationInput,
+    { tempId: string } | undefined
+  >({
+    // Strip _optimistic before sending to API (it's local-only data)
+    mutationFn: ({ _optimistic: _, ...params }) => createConversationAPI(params),
+
+    // Immediately inject the pre-built conversation into every conversations cache
+    // (navbar uses a different limit so we hit all caches with prefix key match).
+    // Mirrors mobile: build conversation locally and navigate to it with zero stall.
+    onMutate: async ({ _optimistic }) => {
+      if (!_optimistic) return undefined;
+
+      // Cancel any in-flight conversation fetches so they don't overwrite the
+      // optimistic entry. Non-blocking (void) — mirrors useSendMessage pattern.
+      void queryClient.cancelQueries({ queryKey: ['conversations'] });
+
+      const counter = ++tempConvIdCounter;
+      const tempId = `temp-conv-${String(counter).padStart(6, '0')}-${Date.now()}`;
+
+      const optimisticConv: Conversation = { id: tempId, ..._optimistic };
+
+      queryClient.setQueriesData<InfiniteData<ConversationsResponse>>(
+        { queryKey: ['conversations'] },
+        (current) => {
+          if (!current) return current;
+          const [first, ...rest] = current.pages;
+          return {
+            ...current,
+            pages: [{ ...first, conversations: [optimisticConv, ...first.conversations] }, ...rest],
+          };
+        }
+      );
+
+      return { tempId };
+    },
+
+    // Replace tempId with the real conversationId returned by the API
+    onSuccess: (data, _vars, context) => {
+      const realId = data.conversationId;
+      const tempId = context?.tempId;
+
+      if (tempId) {
+        queryClient.setQueriesData<InfiniteData<ConversationsResponse>>(
+          { queryKey: ['conversations'] },
+          (current) => {
+            if (!current) return current;
+            return {
+              ...current,
+              pages: current.pages.map((page) => ({
+                ...page,
+                conversations: page.conversations.map((conv) =>
+                  conv.id === tempId ? { ...conv, id: realId } : conv
+                ),
+              })),
+            };
+          }
+        );
+      } else {
+        // No optimistic data — single invalidation as fallback
+        queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      }
+    },
+
+    // Roll back the optimistic entry on failure
+    onError: (_err, _vars, context) => {
+      const tempId = context?.tempId;
+      if (!tempId) {
+        queryClient.invalidateQueries({ queryKey: ['conversations'] });
+        return;
+      }
+      queryClient.setQueriesData<InfiniteData<ConversationsResponse>>(
+        { queryKey: ['conversations'] },
+        (current) => {
+          if (!current) return current;
+          return {
+            ...current,
+            pages: current.pages.map((page) => ({
+              ...page,
+              conversations: page.conversations.filter((c) => c.id !== tempId),
+            })),
+          };
+        }
+      );
     },
   });
 

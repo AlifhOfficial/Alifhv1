@@ -35,6 +35,10 @@ const buttonVariants = cva(
         compact: "h-9 px-3",
         large: "h-11 px-8",
         icon: "h-10 w-10",
+        // Legacy aliases (keep until all usages are migrated)
+        sm: "h-9 px-3",
+        md: "h-10 px-4",
+        lg: "h-11 px-8",
       },
     },
     defaultVariants: {

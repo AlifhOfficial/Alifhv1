@@ -178,13 +178,62 @@ export function ListingDetailView({
 
     setIsStartingChat(true);
     try {
+      // Build full conversation object from local data — mirrors mobile's approach of
+      // constructing conversationData locally and navigating immediately without a refetch.
+      const listingTitle = `${listing.year} ${listing.make} ${listing.model}${listing.trim ? ` ${listing.trim}` : ''}`;
+
+      const sellerDisplayName =
+        sellerData?.type === 'partner'
+          ? sellerData.partner?.brandName ?? null
+          : sellerData?.type === 'user' && sellerData.userProfile
+            ? `${sellerData.userProfile.firstName ?? ''} ${sellerData.userProfile.lastName ?? ''}`.trim() || null
+            : null;
+
+      const sellerAvatar =
+        sellerData?.type === 'partner'
+          ? sellerData.partner?.logo ?? null
+          : sellerData?.type === 'user'
+            ? sellerData.userProfile?.avatar ?? null
+            : null;
+
+      const partnerData =
+        listing.partnerId && sellerData?.type === 'partner' && sellerData.partner
+          ? { id: listing.partnerId, name: sellerData.partner.brandName, logo: sellerData.partner.logo ?? null }
+          : null;
+
       const { conversationId } = await createConversation({
         otherUserId: contactUserId,
         listingId: listing.id,
         partnerId: listing.partnerId ?? undefined,
+        type: listing.partnerId ? 'listing' : 'direct',
+        _optimistic: {
+          type: listing.partnerId ? 'listing' : 'direct',
+          status: 'active',
+          listingId: listing.id,
+          partnerId: listing.partnerId ?? null,
+          subject: null,
+          lastMessageAt: new Date().toISOString(),
+          lastMessagePreview: null,
+          messageCount: 0,
+          unreadCount: 0,
+          myLastReadAt: null,
+          isArchived: false,
+          isMuted: false,
+          isPinned: false,
+          otherParticipant: {
+            id: contactUserId,
+            name: sellerDisplayName,
+            avatarUrl: sellerAvatar,
+            lastReadAt: null,
+            lastSeenAt: null,
+            isOnline: undefined,
+          },
+          listing: { id: listing.id, title: listingTitle, thumbnail: listing.thumbnail ?? null },
+          partner: partnerData,
+        },
       });
 
-      // Navigate to the messaging page with this conversation
+      // Navigate to messaging page — conversation is already in cache, no refetch needed
       router.push(`/user-dashboard/messaging?conversationId=${conversationId}`);
     } catch (error) {
       console.error('Failed to start conversation:', error);

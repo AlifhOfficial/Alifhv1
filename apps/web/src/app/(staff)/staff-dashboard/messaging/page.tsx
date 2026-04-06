@@ -1,18 +1,18 @@
 /**
  * Staff Messaging Page
  * V1: Customer inquiries only (team chat disabled for launch)
+ * Client-side: auth sourced from context (layout already guards access server-side)
  */
 
-import { redirect } from 'next/navigation';
-import { getSessionUser } from '@/lib/auth/session-context';
+'use client';
+
+import { useAuth } from '@/providers/auth-provider';
 import { ChatContainer } from '@/components/messaging';
 
-export default async function MessagingPage() {
-  const user = await getSessionUser();
+export default function MessagingPage() {
+  const { session: user, isLoading } = useAuth();
 
-  if (!user) {
-    redirect('/?auth=signin');
-  }
+  if (isLoading || !user) return null;
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
