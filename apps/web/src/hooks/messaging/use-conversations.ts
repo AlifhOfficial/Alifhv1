@@ -271,72 +271,81 @@ export function useConversations(options: UseConversationsOptions = {}) {
           return;
         }
 
+        // Use setQueriesData (prefix match) so ALL caches for this scope get updated
+        // (navbar uses a different limit → different queryKey, but same userId+scope prefix).
         let found = false;
-        let totalUnreadDelta = 0;
 
-        queryClient.setQueryData<InfiniteData<ConversationsResponse>>(queryKey, (current) => {
-          if (!current) return current;
+        queryClient.setQueriesData<InfiniteData<ConversationsResponse>>(
+          { queryKey: ['conversations', options.userId, options.scope] },
+          (current) => {
+            if (!current) return current;
 
-          const senderId = msg.userId ?? payload?.senderId;
-          const isOwnMessage = senderId === options.userId;
-          const isActiveOpenConversation = isConversationActive(msg.conversationId!);
-          const createdAt = payload?.createdAt ?? new Date().toISOString();
-          const preview =
-            (payload?.text?.trim() ? payload.text.substring(0, 100) : null) ||
-            (payload?.mediaType ? `Sent a ${payload.mediaType}` : null) ||
-            'New message';
+            const senderId = msg.userId ?? payload?.senderId;
+            const isOwnMessage = senderId === options.userId;
+            const isActiveOpenConversation = isConversationActive(msg.conversationId!);
+            const createdAt = payload?.createdAt ?? new Date().toISOString();
+            const preview =
+              (payload?.text?.trim() ? payload.text.substring(0, 100) : null) ||
+              (payload?.mediaType ? `Sent a ${payload.mediaType}` : null) ||
+              'New message';
 
-          const allConversations = current.pages.flatMap((page) => page.conversations);
-          const updatedConversations = allConversations.map((conversation) => {
-            if (conversation.id !== msg.conversationId) return conversation;
+            let localFound = false;
+            let totalUnreadDelta = 0;
+
+            const allConversations = current.pages.flatMap((page) => page.conversations);
+            const updatedConversations = allConversations.map((conversation) => {
+              if (conversation.id !== msg.conversationId) return conversation;
+
+              localFound = true;
+              const previousUnread = conversation.unreadCount || 0;
+              const nextUnread =
+                isOwnMessage || isActiveOpenConversation
+                  ? 0
+                  : previousUnread + 1;
+              totalUnreadDelta += nextUnread - previousUnread;
+
+              return {
+                ...conversation,
+                lastMessageAt: createdAt,
+                lastMessagePreview: preview,
+                messageCount: (conversation.messageCount || 0) + 1,
+                unreadCount: nextUnread,
+                myLastReadAt:
+                  !isOwnMessage && isActiveOpenConversation
+                    ? createdAt
+                    : conversation.myLastReadAt,
+              };
+            });
+
+            if (!localFound) return current;
 
             found = true;
-            const previousUnread = conversation.unreadCount || 0;
-            const nextUnread =
-              isOwnMessage || isActiveOpenConversation
-                ? 0
-                : previousUnread + 1;
-            totalUnreadDelta += nextUnread - previousUnread;
+
+            const sorted = updatedConversations.sort(
+              (a, b) => new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
+            );
+
+            const rebuiltPages = current.pages.map((page, index) => {
+              const start = current.pages.slice(0, index).reduce((sum, p) => sum + p.conversations.length, 0);
+              const end = start + page.conversations.length;
+              return {
+                ...page,
+                totalUnread:
+                  index === 0 ? Math.max(0, (page.totalUnread || 0) + totalUnreadDelta) : page.totalUnread,
+                conversations: sorted.slice(start, end),
+              };
+            });
 
             return {
-              ...conversation,
-              lastMessageAt: createdAt,
-              lastMessagePreview: preview,
-              messageCount: (conversation.messageCount || 0) + 1,
-              unreadCount: nextUnread,
-              myLastReadAt:
-                !isOwnMessage && isActiveOpenConversation
-                  ? createdAt
-                  : conversation.myLastReadAt,
+              ...current,
+              pages: rebuiltPages,
             };
-          });
-
-          if (!found) return current;
-
-          const sorted = updatedConversations.sort(
-            (a, b) => new Date(String(b.lastMessageAt)).getTime() - new Date(String(a.lastMessageAt)).getTime()
-          );
-
-          const rebuiltPages = current.pages.map((page, index) => {
-            const start = current.pages.slice(0, index).reduce((sum, p) => sum + p.conversations.length, 0);
-            const end = start + page.conversations.length;
-            return {
-              ...page,
-              totalUnread:
-                index === 0 ? Math.max(0, (page.totalUnread || 0) + totalUnreadDelta) : page.totalUnread,
-              conversations: sorted.slice(start, end),
-            };
-          });
-
-          return {
-            ...current,
-            pages: rebuiltPages,
-          };
-        });
+          }
+        );
 
         if (!found) {
-          // New conversation may exist but is not in current page slice.
-          queryClient.invalidateQueries({ queryKey });
+          // New conversation may exist but is not in any cache slice — invalidate all.
+          queryClient.invalidateQueries({ queryKey: ['conversations', options.userId, options.scope] });
         }
       }
       
@@ -360,62 +369,68 @@ export function useConversations(options: UseConversationsOptions = {}) {
         }
 
         if (msg.userId === options.userId) {
-          queryClient.setQueryData<InfiniteData<ConversationsResponse>>(queryKey, (current) => {
-            if (!current) return current;
+          queryClient.setQueriesData<InfiniteData<ConversationsResponse>>(
+            { queryKey: ['conversations', options.userId, options.scope] },
+            (current) => {
+              if (!current) return current;
 
-            let delta = 0;
-            const updatedPages = current.pages.map((page) => ({
-              ...page,
-              conversations: page.conversations.map((conversation) => {
-                if (conversation.id !== msg.conversationId) return conversation;
-                delta += conversation.unreadCount || 0;
-                return {
-                  ...conversation,
-                  unreadCount: 0,
-                  myLastReadAt: msg.lastReadAt || conversation.myLastReadAt,
-                };
-              }),
-            }));
-
-            return {
-              ...current,
-              pages: updatedPages.map((page, pageIndex) => ({
+              let delta = 0;
+              const updatedPages = current.pages.map((page) => ({
                 ...page,
-                totalUnread:
-                  pageIndex === 0 ? Math.max(0, (page.totalUnread || 0) - delta) : page.totalUnread,
-              })),
-            };
-          });
+                conversations: page.conversations.map((conversation) => {
+                  if (conversation.id !== msg.conversationId) return conversation;
+                  delta += conversation.unreadCount || 0;
+                  return {
+                    ...conversation,
+                    unreadCount: 0,
+                    myLastReadAt: msg.lastReadAt || conversation.myLastReadAt,
+                  };
+                }),
+              }));
+
+              return {
+                ...current,
+                pages: updatedPages.map((page, pageIndex) => ({
+                  ...page,
+                  totalUnread:
+                    pageIndex === 0 ? Math.max(0, (page.totalUnread || 0) - delta) : page.totalUnread,
+                })),
+              };
+            }
+          );
           return;
         }
 
-        queryClient.setQueryData<InfiniteData<ConversationsResponse>>(queryKey, (current) => {
-          if (!current) return current;
+        queryClient.setQueriesData<InfiniteData<ConversationsResponse>>(
+          { queryKey: ['conversations', options.userId, options.scope] },
+          (current) => {
+            if (!current) return current;
 
-          return {
-            ...current,
-            pages: current.pages.map((page) => ({
-              ...page,
-              conversations: page.conversations.map((conversation) => {
-                if (conversation.id !== msg.conversationId || !conversation.otherParticipant) {
-                  return conversation;
-                }
-                return {
-                  ...conversation,
-                  otherParticipant: {
-                    ...conversation.otherParticipant,
-                    lastReadAt: msg.lastReadAt || conversation.otherParticipant.lastReadAt,
-                  },
-                };
-              }),
-            })),
-          };
-        });
+            return {
+              ...current,
+              pages: current.pages.map((page) => ({
+                ...page,
+                conversations: page.conversations.map((conversation) => {
+                  if (conversation.id !== msg.conversationId || !conversation.otherParticipant) {
+                    return conversation;
+                  }
+                  return {
+                    ...conversation,
+                    otherParticipant: {
+                      ...conversation.otherParticipant,
+                      lastReadAt: msg.lastReadAt || conversation.otherParticipant.lastReadAt,
+                    },
+                  };
+                }),
+              })),
+            };
+          }
+        );
       }
     });
 
     return unsub;
-  }, [subscribe, queryClient, options.userId, queryKey]);
+  }, [subscribe, queryClient, options.userId, options.scope]);
 
   // Apply live presence updates to flattened conversations
   const conversations = useMemo(() => {
