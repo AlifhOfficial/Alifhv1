@@ -190,8 +190,8 @@ export function MessageInput({
       compact ? 'px-2.5 py-2' : 'px-3 compact:px-4 py-2.5 compact:py-3'
     )}>
       <div className={cn(
-        'flex items-center gap-2',
-        compact ? 'gap-1.5' : 'gap-2'
+        'flex items-end rounded-full border border-border/30 bg-background',
+        compact ? 'gap-1 p-1' : 'gap-1.5 p-1.5'
       )}>
         {/* Location Button - Circle */}
         {onRequestLocation && (
@@ -200,8 +200,8 @@ export function MessageInput({
             onClick={onRequestLocation}
             disabled={disabled}
             className={cn(
-              'flex-shrink-0 rounded-full border border-border bg-sidebar transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center',
-              compact ? 'w-8 h-8' : 'w-10 h-10 compact:w-11 compact:h-11',
+              'flex-shrink-0 rounded-full bg-surface-secondary transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center',
+              compact ? 'w-8 h-8' : 'w-9 h-9 compact:w-10 compact:h-10',
               'text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/50'
             )}
             aria-label="Share location"
@@ -211,10 +211,10 @@ export function MessageInput({
           </button>
         )}
 
-        {/* Text Input - Pill shaped */}
+        {/* Text Input - Mobile-style pill */}
         <div className={cn(
-          'flex-1 bg-sidebar border border-border rounded-full min-w-0 overflow-hidden flex items-center',
-          compact ? 'px-4 h-8' : 'px-4 compact:px-5 h-10 compact:h-11'
+          'flex-1 bg-surface-secondary rounded-full min-w-0 overflow-hidden flex items-center',
+          compact ? 'px-3 py-1.5' : 'px-3.5 compact:px-4 py-2 compact:py-2.5'
         )}>
           <textarea
             ref={textareaRef}
@@ -228,10 +228,10 @@ export function MessageInput({
             tabIndex={0}
             className={cn(
               'w-full bg-transparent text-foreground placeholder:text-muted-foreground/50 resize-none overflow-hidden focus:outline-none focus:ring-0 font-medium',
-              compact ? 'max-h-16 text-footnote' : 'max-h-20 compact:max-h-24 large:max-h-32 text-footnote compact:text-subhead'
+              compact ? 'max-h-16 text-caption1 leading-snug' : 'max-h-20 compact:max-h-24 large:max-h-32 text-caption1 compact:text-footnote leading-snug'
             )}
             style={{
-              minHeight: '20px',
+              minHeight: '18px',
               height: 'auto',
             }}
           />
@@ -243,11 +243,11 @@ export function MessageInput({
           onClick={handleSend}
           disabled={!text.trim() || disabled}
           className={cn(
-            'flex-shrink-0 rounded-full border transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center',
-            compact ? 'w-8 h-8' : 'w-10 h-10 compact:w-11 compact:h-11',
+            'flex-shrink-0 rounded-full transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center',
+            compact ? 'w-8 h-8' : 'w-9 h-9 compact:w-10 compact:h-10',
             text.trim() && !disabled
-              ? 'bg-primary border-primary text-primary-foreground hover:bg-primary/90'
-              : 'bg-sidebar border-border text-muted-foreground/50'
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+              : 'bg-surface-secondary text-muted-foreground/50'
           )}
           aria-label="Send message"
         >
@@ -257,7 +257,7 @@ export function MessageInput({
 
       {/* Hint - hide in compact mode and on mobile */}
       {!compact && (
-        <p className="hidden compact:block text-caption1 font-medium text-muted-foreground/50 mt-1.5 compact:mt-2 px-1">
+        <p className="hidden compact:block text-caption2 font-medium text-muted-foreground/50 mt-1.5 compact:mt-2 px-1">
           Enter to send · Shift+Enter for new line
         </p>
       )}

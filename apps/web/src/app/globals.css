@@ -378,18 +378,18 @@
   
   p {
     @apply text-caption1 compact:text-subhead;
-    font-weight: var(--fw-semibold);
+    font-weight: var(--fw-regular);
     line-height: var(--lh-footnote);
   }
   
   small, .text-meta {
     @apply text-caption1;
-    font-weight: var(--fw-semibold);
+    font-weight: var(--fw-regular);
   }
   
   /* Buttons and interactive text */
   button, [role="button"], a {
-    font-weight: var(--fw-semibold);
+    font-weight: inherit;
   }
   
   /* Prevent theme transition flash */

@@ -49,7 +49,7 @@ export function UserDashboardNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col h-full bg-background border-r border-border/20">
+    <nav className="flex flex-col h-full bg-background border-r border-border/40">
       <div className="p-6">
         <h2 className="text-headline font-semibold text-foreground">Dashboard</h2>
       </div>

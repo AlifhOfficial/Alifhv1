@@ -325,7 +325,7 @@ export function ChatThread({
         onScroll={handleScroll}
         className={cn(
           'relative flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain bg-background flex flex-col',
-          compact ? 'p-3 pb-12 gap-1.5' : 'p-3 compact:p-4 pb-20 compact:pb-24 gap-1.5 compact:gap-2',
+          compact ? 'p-3 pb-12 gap-0.5' : 'p-3 compact:p-4 pb-20 compact:pb-24 gap-0.5 compact:gap-0.5',
           className,
         )}
       >
@@ -338,7 +338,7 @@ export function ChatThread({
         )}
 
         {isLoading ? (
-          <div className={cn('flex flex-col', compact ? 'gap-2 py-2' : 'gap-2 compact:gap-3 py-4')}>
+          <div className={cn('flex flex-col', compact ? 'gap-0.5 py-2' : 'gap-0.5 compact:gap-1 py-2')}>
             <Skeleton className={cn('self-end', compact ? 'h-7 w-28 rounded-xl rounded-br-sm' : 'h-9 w-36 rounded-2xl rounded-br-md')} />
             <Skeleton className={cn('self-start', compact ? 'h-9 w-36 rounded-xl rounded-bl-sm' : 'h-12 w-44 rounded-2xl rounded-bl-md')} />
             <Skeleton className={cn('self-end', compact ? 'h-6 w-24 rounded-xl rounded-br-sm' : 'h-8 w-28 rounded-2xl rounded-br-md')} />
@@ -374,7 +374,7 @@ export function ChatThread({
               return (
                 <div key={message.id}>
                   {showDateSeparator && (
-                    <div className={cn('flex justify-center', compact ? 'py-2' : 'py-1.5 compact:py-2')}>
+                    <div className={cn('flex justify-center', compact ? 'py-0.5' : 'py-0.5 compact:py-0.5')}>
                       <span
                         className={cn(
                           'rounded-full bg-muted/60 text-muted-foreground/70 font-semibold',

@@ -64,7 +64,7 @@ const recentActivity = [
 
 export function PartnerSecondaryNav({ currentSection, onActionSelect }: PartnerSecondaryNavProps) {
   return (
-    <div className="flex flex-col h-full bg-background border-r border-border/20 w-64">
+    <div className="flex flex-col h-full bg-background border-r border-border/40 w-64">
       <div className="p-4 border-b border-border/20">
         <h3 className="text-subhead font-semibold text-foreground">Quick Actions</h3>
         <p className="text-caption1 text-muted-foreground mt-1">

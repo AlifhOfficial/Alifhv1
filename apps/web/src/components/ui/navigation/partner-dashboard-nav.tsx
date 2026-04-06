@@ -61,7 +61,7 @@ export function PartnerDashboardNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col h-full bg-background border-r border-border/20">
+    <nav className="flex flex-col h-full bg-background border-r border-border/40">
       <div className="p-6 border-b border-border/20">
         <h2 className="text-headline font-semibold text-foreground">Partner Hub</h2>
       </div>

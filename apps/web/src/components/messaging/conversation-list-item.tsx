@@ -116,8 +116,8 @@ export function ConversationListItem({
             <div className="flex items-center gap-1.5 min-w-0 flex-1">
               <h3
                 className={cn(
-                  'text-subhead font-bold truncate flex-1',
-                  unreadCount > 0 ? 'text-foreground' : 'text-foreground/90'
+                  'text-footnote font-semibold truncate flex-1',
+                  unreadCount > 0 ? 'text-foreground' : 'text-foreground/85'
                 )}
               >
                 {displayName}
@@ -148,10 +148,10 @@ export function ConversationListItem({
           <div className="flex items-center justify-between overflow-hidden gap-2">
             <p
               className={cn(
-                'text-subhead truncate min-w-0 flex-1',
+                'text-caption1 truncate min-w-0 flex-1',
                 unreadCount > 0
-                  ? 'text-foreground/80 font-semibold'
-                  : 'text-muted-foreground/70 font-medium'
+                  ? 'text-foreground/75 font-semibold'
+                  : 'text-muted-foreground/65 font-medium'
               )}
             >
               {lastMessagePreview || 'No messages yet'}

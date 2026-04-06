@@ -51,7 +51,7 @@ export function MessageBubble({
   // System message (centered, muted)
   if (isSystemMessage) {
     return (
-      <div className="flex justify-center py-2">
+      <div className="flex justify-center py-1">
         <small className="text-caption1 text-muted-foreground/70 px-3 py-1.5 bg-muted/40 rounded-full font-semibold">
           {text}
         </small>
@@ -62,8 +62,8 @@ export function MessageBubble({
   return (
     <div
       className={cn(
-        'flex items-end mb-1 compact:mb-1.5 group animate-in fade-in slide-in-from-bottom-2 duration-200',
-        compact ? 'gap-1.5' : 'gap-2 compact:gap-2.5',
+        'flex items-end mb-0.5 compact:mb-0.5 group animate-in fade-in slide-in-from-bottom-2 duration-200',
+        compact ? 'gap-0.5' : 'gap-0.5 compact:gap-1',
         isOwn ? 'flex-row-reverse' : 'flex-row',
         isOptimistic && 'opacity-70'
       )}
@@ -118,7 +118,7 @@ export function MessageBubble({
           <div
             className={cn(
               'break-words transition-all duration-200',
-              compact ? 'rounded-xl px-3 py-2' : 'rounded-2xl compact:rounded-[18px] px-3 compact:px-4 py-2 compact:py-2.5',
+              compact ? 'rounded-md px-2 py-1' : 'rounded-lg compact:rounded-[12px] px-2.5 compact:px-3 py-1 compact:py-1.5',
               isOwn
                 ? 'bg-blue-500 text-white rounded-br-md'
                 : 'bg-sidebar border border-border/30 text-foreground rounded-bl-md',

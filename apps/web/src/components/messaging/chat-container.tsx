@@ -74,8 +74,8 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
     <div className={cn('flex h-full min-h-0 large:gap-3 overflow-hidden overscroll-contain', className)}>
       {/* List Panel - Rounded window like sidebar on desktop, full on mobile */}
       <div className={cn(
-        'flex-shrink-0 min-h-0 transition-all duration-200 overflow-hidden',
-        'rounded-xl bg-background',
+        'flex-shrink-0 min-h-0 transition-all duration-200 overflow-hidden large:border-r large:border-border/40',
+        'bg-background',
         listOpen ? 'w-full large:w-80 xlarge:w-96' : 'w-0',
         showMobile && 'hidden large:flex'
       )}>
@@ -104,7 +104,7 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
       {/* Chat Panel - Rounded window like sidebar on desktop, clean on mobile */}
       <div className={cn(
         'flex-1 min-w-0 min-h-0 hidden large:flex relative overflow-hidden',
-        'large:rounded-xl large:border large:border-border bg-background large:shadow-sm',
+        'bg-background',
         showMobile && 'flex'
       )}>
           {/* Show list button when collapsed AND no chat selected */}
@@ -151,15 +151,10 @@ function ChatContainerInner({ userId, inbox = 'personal', className }: ChatConta
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full w-full bg-sidebar/30">
-              <div className="text-center space-y-3 compact:space-y-4">
-                <div className="w-16 h-16 compact:w-20 compact:h-20 mx-auto rounded-full bg-sidebar/80 flex items-center justify-center border border-border/30">
-                  <MessageCircle className="w-7 h-7 compact:w-9 compact:h-9 text-muted-foreground/50 stroke-[1.5]" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-subhead compact:text-callout font-semibold text-foreground/80">No conversation selected</p>
-                  <p className="text-caption1 compact:text-subhead font-medium text-muted-foreground/60">Choose a conversation from the list to start chatting</p>
-                </div>
+            <div className="flex flex-col items-center justify-center h-full w-full">
+              <div className="text-center space-y-1">
+                <p className="text-subhead compact:text-callout font-semibold text-foreground/80">No conversation selected</p>
+                <p className="text-caption1 compact:text-subhead font-medium text-muted-foreground/60">Choose a conversation from the list to start chatting</p>
               </div>
             </div>
           )}
